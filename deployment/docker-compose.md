@@ -349,7 +349,7 @@ PRISMA_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRE
 
 ***
 
-**Incloude Redis (Recommend)**
+**Include Redis (Recommend)**
 
 docker-compose-yaml\*\*:\*\*
 
