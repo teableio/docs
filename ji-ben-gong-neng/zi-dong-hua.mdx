@@ -1,0 +1,129 @@
+---
+title: "Overview"
+---
+
+1. [基本功能](/ji-ben-gong-neng)
+
+Teable 的自动化功能是一个强大的工具，允许用户创建自动化工作流程，以提高效率并减少重复性任务
+
+高级版版及以上适用
+
+### 概述
+
+自动化由以下几个关键组件组成：
+
+* 触发器：定义何时启动自动化流程。可以基于数据库中的变化、时间或外部事件。
+
+* 动作：指定触发器激活后要执行的操作。可以包括数据操作、通知发送或与外部系统集成等。
+
+* 条件：允许在触发器和动作之间添加逻辑判断，实现更精细的控制。
+
+* 测试：提供了在实际部署前测试自动化流程的功能，确保其按预期工作。
+
+* 执行日志：记录自动化的运行历史，用于监控和故障排查。
+
+<Frame caption="自动化功能预览">
+  <img src="/images/ji-ben-gong-neng/files%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252F3UAxYOALe4vISZRKICva%252Fuploads%252Fa9Lnoh9GuAfXfIROi9vQ%252Fimage.png" />
+</Frame>
+
+### 创建自动化工作流程
+
+以下是创建自动化工作流程的步骤：
+
+#### 1. 创建触发器
+
+* 选择触发器类型，例如"当记录更新时"。
+
+* 选择要监听的表格。
+
+* 选择要监听的具体字段。
+
+![](/images/ji-ben-gong-neng/files%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252F3UAxYOALe4vISZRKICva%252Fuploads%252FQ4NoSt61aAPzFskeh6AB%252Fimage.png)
+
+* 配置完成后，点击"测试"按钮。
+
+* 系统会显示触发器的测试结果，通常是当前表格中一条记录的内容。
+
+<Frame caption="测试结果">
+  <img src="/images/ji-ben-gong-neng/files%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252F3UAxYOALe4vISZRKICva%252Fuploads%252FVQvH5AH0UykgXyFvcaXS%252Fimage.png" />
+</Frame>
+
+#### 2. 创建动作
+
+* 选择动作类型，例如"在另一个表中创建记录"
+
+* 选择目标表格。
+
+* 配置新记录的字段值
+
+* 从动态记录中选择来自触发器的值。
+
+![](/images/ji-ben-gong-neng/files%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252F3UAxYOALe4vISZRKICva%252Fuploads%252F7Qw0nUAyWGle0FyLycZM%252Fimage.png)
+
+* 点击"**生成预览**"按钮验证动作配置。或者点击“**按配置运行**”按钮，创建一条真实的记录并获取返回值
+
+![](/images/ji-ben-gong-neng/files%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252F3UAxYOALe4vISZRKICva%252Fuploads%252Feeu3Y2iiUjqv1cDRQOAZ%252Fimage.png)
+
+#### 3. 添加条件判断（可选）
+
+1. 创建一个条件判断。
+
+2. 设置判断规则
+
+3. 例如检查某个字段的值。
+
+4. 点击"测试"按钮验证条件判断。
+
+#### 4. 添加更多动作（可选）
+
+1. 根据条件判断结果，可以添加更多动作，如发送 HTTP 请求。
+
+2. 配置动作详情。
+
+3. 点击"测试"按钮验证每个新添加的动作。
+
+#### 5. 启动自动化
+
+1. 完成所有配置后，点击左上方的启动按钮。
+
+2. 确认启动自动化。
+
+### 验证执行情况
+
+1. 修改被监听表格中的一条记录，触发自动化。
+
+2. 返回自动化界面。
+
+3. 点击"执行运行历史"查看历史记录。
+
+4. 检查最新的执行记录，确认自动化是否按预期执行。
+
+![](/images/ji-ben-gong-neng/files%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252F3UAxYOALe4vISZRKICva%252Fuploads%252FwqrStFnhZob1IZofYviF%252Fimage.png)
+
+![](/images/ji-ben-gong-neng/files%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252F3UAxYOALe4vISZRKICva%252Fuploads%252FXwSEdO6I6TPOgJxKlTkD%252Fimage.png)
+
+### 自动化流程的典型工作方式
+
+1. 当满足触发条件时（例如，记录被修改），自动化被激活。
+
+2. 系统检查是否有设置条件，如果有，则评估这些条件。
+
+3. 如果条件满足（或没有设置条件），系统执行定义的动作。
+
+4. 整个过程被记录在执行日志中。
+
+### 修改自动化
+
+当你要修改一条正在运行的自动化时，为了方便调试，对自动化配置的修改动作不会立即在运行的自动化中生效，而是会在页面上弹出一条提示，当你确认更新之后，自动化才会被应用到正在运行的流程中去。你可以放心的对自动化进行修改而不怕意外打断现有的流程。
+
+![](/images/ji-ben-gong-neng/files%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252F3UAxYOALe4vISZRKICva%252Fuploads%252FCAP0gIl6m6eROM5qIFdy%252Fimage.png)
+
+通过组合这些元素，用户可以创建复杂的自动化工作流，从简单的数据更新到复杂的多步骤业务流程。自动化不仅可以节省时间，还可以减少人为错误，确保流程的一致性和可靠性。
+
+在接下来的章节中，我们将详细探讨每个组件的功能、配置方法和最佳实践。
+
+[上一页权限矩阵](/ji-ben-gong-neng/quan-xian-guan-li)[下一页触发器](/ji-ben-gong-neng/zi-dong-hua/chu-fa-qi)
+
+最后更新于2个月前
+
+这有帮助吗？
