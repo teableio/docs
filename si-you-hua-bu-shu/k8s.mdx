@@ -1,0 +1,360 @@
+---
+title: "K8s 部署"
+---
+
+## 前置条件
+### Teable 镜像
+- 应用镜像: `registry.cn-shenzhen.aliyuncs.com/teable/teable-ee:latest`
+- 数据库初始化镜像: `registry.cn-shenzhen.aliyuncs.com/teable/teable-db-migrate-ee:latest`
+
+### 运行环境
+- 运行中的 Kubernetes 集群
+
+### 已配置的外部服务
+#### 数据库服务
+- PostgreSQL 数据库: postgres:15.4（版本号大于 12）
+  - PG 镜像: `registry.cn-shenzhen.aliyuncs.com/teable/postgres:15.4`
+  - PolarDB（信创替代方案）镜像: `registry.cn-hangzhou.aliyuncs.com/polardb_pg/polardb_pg_local_instance:15`
+
+#### 缓存服务
+- Redis 缓存服务: redis:7.2.4（版本号大于 5）
+  - Redis 镜像: `registry.cn-shenzhen.aliyuncs.com/teable/redis:7.2.4`
+
+#### 对象存储服务
+- MinIO 对象存储服务: minio:RELEASE.2024-10-13T13-34-11Z-cpuv1
+  - MinIO 镜像: `registry.cn-shenzhen.aliyuncs.com/teable/minio:RELEASE.2024-10-13T13-34-11Z-cpuv1`
+  - 注意: 可以直接使用最新版本，或者使用云存储，配置参考，下方示例使用 minio 来做例子。
+
+### 必要工具
+- kubectl 命令行工具
+
+## 依赖组件配置
+### 文件存储 minio
+<Note>文件存储服务需要支持外网访问（即终端用户可直接访问到）</Note>
+文件存储需要预先创建好两个 bucket。
+1. 公共可读 bucket, 配置权限为公共可读
+```sh
+BACKEND_STORAGE_PUBLIC_BUCKET=teable-pub
+```
+2. 私有的 bucket, 无需配置权限
+```sh
+BACKEND_STORAGE_PRIVATE_BUCKET=teable-pvt
+```
+Teable Minio 环境变量总览
+```sh
+# 固定值
+BACKEND_STORAGE_PROVIDER=minio
+# 公共桶
+BACKEND_STORAGE_PUBLIC_BUCKET=teable-pub
+# 私有桶
+BACKEND_STORAGE_PRIVATE_BUCKET=teable-pvt
+# 外网端点，重要！需要终端用户可以直接访问到
+BACKEND_STORAGE_MINIO_ENDPOINT=minio.example.com
+# 与前面的值保持一样，但是要加个协议名称
+STORAGE_PREFIX=https://minio.example.com
+# 内网端点
+BACKEND_STORAGE_MINIO_INTERNAL_ENDPOINT=internal.network
+# 外网端口，一般为 443 或者 9000
+BACKEND_STORAGE_MINIO_PORT=443
+# 内网端口，一般为 80 或者 9000
+BACKEND_STORAGE_MINIO_INTERNAL_PORT=80
+# 是否启用 HTTPS, 注意如果 Teable 启用了 https 则 minio 也必须启用 https 否则有跨域问题
+BACKEND_STORAGE_MINIO_USE_SSL="true"
+# 管理员账号
+BACKEND_STORAGE_MINIO_ACCESS_KEY=root
+# 管理员密码
+BACKEND_STORAGE_MINIO_SECRET_KEY=rootPassword
+```
+
+### 数据库
+需要创建一个具有管理员权限的数据库账户，以及一个数据库，并且设置密码。
+对应环境变量示例:
+  - 数据库名称: teable
+  - 密码：your-password
+  - 账号: postgres
+  - 端口: 5432
+```sh
+PRISMA_DATABASE_URL="postgresql://postgres:your-password@your-postgres-host:5432/teable"
+```
+
+### 缓存 Redis
+Teable 配置 redis 缓存只需要提供内网连接地址即可。（注意 Redis 不仅管理缓存还管理队列，不可或缺。数据需要定时备份）
+对应环境变量示例
+```sh
+BACKEND_CACHE_REDIS_URI="redis://username:password@your-redis-host:6379/0"
+```
+
+## 创建配置文件
+
+```yaml teable-config.yaml（非敏感配置）
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: teable-config
+data:
+  # 应用基础配置，对外访问的域名
+  PUBLIC_ORIGIN: "https://your-domain.com"
+  
+  # 存储配置
+  BACKEND_STORAGE_PROVIDER: "minio"
+  # 外网端点，重要！需要终端用户可以直接访问到
+  BACKEND_STORAGE_MINIO_ENDPOINT: "minio.example.com"
+  # 与前面的值保持一样，但是要加个协议名称
+  STORAGE_PREFIX: "https://minio.example.com"
+  # 内网端点
+  BACKEND_STORAGE_MINIO_INTERNAL_ENDPOINT: "minio.namespace.svc"
+  # 外网端口，一般为 443 或者 9000
+  BACKEND_STORAGE_MINIO_PORT: "443"
+  # 内网端口，一般为 80 或者 9000
+  BACKEND_STORAGE_MINIO_INTERNAL_PORT: "80"
+  # 是否启用 HTTPS, 注意如果 Teable 启用了 https 则 minio 也必须启用 https 否则有跨域问题
+  BACKEND_STORAGE_MINIO_USE_SSL: "true"
+  
+  # 缓存配置, 固定值
+  BACKEND_CACHE_PROVIDER: "redis"
+  
+  # 其他配置，固定值
+  NEXT_ENV_IMAGES_ALL_REMOTE: "true"
+  PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: "1"
+  # 使用自签发证书需要保留这个
+  NODE_TLS_REJECT_UNAUTHORIZED: '0'
+```
+
+```yaml secrets.yaml（敏感信息）
+apiVersion: v1
+kind: Secret
+metadata:
+  name: teable-secrets
+type: Opaque
+stringData:
+  # 数据库敏感信息
+  PRISMA_DATABASE_URL: "postgresql://postgres:your-password@your-postgres-host:5432/teable"
+  
+  # 应用密钥
+  BACKEND_JWT_SECRET: "your-jwt-secret"
+  BACKEND_SESSION_SECRET: "your-session-secret"
+  
+  # MinIO 认证信息
+  BACKEND_STORAGE_PUBLIC_BUCKET: "teable-pub"
+  BACKEND_STORAGE_PRIVATE_BUCKET: "teable-pvt"
+  BACKEND_STORAGE_MINIO_ACCESS_KEY: "your-minio-access-key"
+  BACKEND_STORAGE_MINIO_SECRET_KEY: "your-minio-secret-key"
+  
+  # Redis 认证信息
+  BACKEND_CACHE_REDIS_URI: "redis://username:password@your-redis-host:6379/0"
+```
+
+```yaml job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: teable-db-migrate
+  labels:
+    app: teable
+    component: db-migrate
+spec:
+  ttlSecondsAfterFinished: 100  # Job 完成后 100 秒自动删除
+  backoffLimit: 3               # 最多重试 3 次
+  template:
+    spec:
+      containers:
+        - name: db-migrate
+          image: registry.cn-shenzhen.aliyuncs.com/teable/teable-db-migrate-ee:latest
+          envFrom:
+            - configMapRef:
+                name: teable-config
+            - secretRef:
+                name: teable-secrets
+          resources:
+            requests:
+              cpu: 100m
+              memory: 102Mi
+            limits:
+              cpu: 1000m
+              memory: 1024Mi
+      restartPolicy: Never
+```
+
+```yaml deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: teable
+spec:
+  replicas: 1 # 根据需要配置
+  selector:
+    matchLabels:
+      app: teable
+  template:
+    metadata:
+      labels:
+        app: teable
+    spec:
+      containers:
+        - name: teable
+          image: registry.cn-shenzhen.aliyuncs.com/teable/teable-ee:latest
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: teable-config
+            - secretRef:
+                name: teable-secrets
+          resources:
+            requests:
+              cpu: 200m
+              memory: 400Mi
+            limits:
+              cpu: 2000m
+              memory: 4096Mi
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 30
+            successThreshold: 1
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+```
+
+```yaml service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: teable
+spec:
+  ports:
+    - port: 3000
+      targetPort: 3000
+  selector:
+    app: teable
+```
+
+```yaml ingress.yaml (可选)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: teable
+  # 以 nginx 做示例，如果使用其他的 ingress class 请替换
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+spec:
+  rules:
+    - host: your-domain.com  # 应用基础配置，对外访问的域名
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: teable
+                port:
+                  number: 3000
+  tls:
+    - hosts:
+        - your-domain.com  # 应用基础配置，对外访问的域名
+      secretName: your-tls-secret 
+```
+
+
+## 部署步骤
+
+1. 创建配置和密钥：
+```sh
+kubectl apply -f config.yaml
+kubectl apply -f secrets.yaml
+```
+2. 部署应用：
+```sh
+kubectl apply -f job.yaml
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+kubectl apply -f ingress.yaml
+```
+
+3. 验证部署：
+```sh
+# 检查 Pod 状态
+kubectl get pods -l app=teable
+
+# 查看应用日志
+kubectl logs -l app=teable
+```
+
+### 配置注意事项
+
+1. 敏感信息管理
+  - 所有密码、密钥类信息应通过 Secrets 管理
+
+2. 数据库配置
+  - 确保数据库已创建 teable 数据库
+  - 数据库用户需要具备适当权限
+  - 建议使用连接池管理数据库连接
+
+3. MinIO 配置
+  - 确保存储桶已创建且权限正确, 一个公共桶，一个私有桶
+  - 公共桶需要完全公开读
+  - 内外部访问地址配置正确
+
+4. Redis 配置
+  - 建议启用 Redis 持久化
+  - 配置适当的内存限制
+  - 考虑使用 Redis 集群提高可用性
+
+5. 安全建议
+  - 使用强密码和密钥
+  - 启用 TLS/SSL 加密
+  - 定期更新证书
+  - 限制网络访问范围
+
+6. 资源配置
+  - 根据实际负载调整资源限制
+  - 监控资源使用情况
+  - 配置适当的健康检查参数
+
+### 故障排查
+
+1. 检查 Pod 状态：
+```sh
+kubectl describe pod -l app=teable
+```
+
+2. 查看应用日志：
+```sh
+kubectl logs -l app=teable
+```
+
+3. 验证配置：
+```sh
+kubectl describe configmap teable-config
+kubectl describe secret teable-secrets
+```
+
+4. 检查网络连接：
+```sh
+kubectl exec -it <pod-name> -- curl -v localhost:3000/health
+```
