@@ -91,9 +91,7 @@ vim docker-compose.yaml
 
 <Tabs>
 <Tab title="企业版">
-docker-compose.yaml:
-
-```yaml
+```yaml docker-compose.yaml
 version: '3.9'
 
 services:
@@ -178,9 +176,7 @@ volumes:
 
 ```
 
-.env:
-
-```bash
+```bash .env
 # 替换下面默认密码, 推荐使用 8 位以上的强密码。
 POSTGRES_PASSWORD=replace_this_password
 REDIS_PASSWORD=replace_this_password
@@ -218,9 +214,7 @@ BACKEND_CACHE_REDIS_URI=redis://default:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_
 
 **不包括 Redis**
 
-docker-compose.yaml:
-
-```yaml
+```yaml docker-compose.yaml
 version: '3.9'
 
 services:
@@ -286,9 +280,7 @@ volumes:
 
 ```
 
-.env:
-
-```bash
+```bash .env
 # 替换下面默认密码, 推荐使用 8 位以上的强密码。
 POSTGRES_PASSWORD=replace_this_password
 SECRET_KEY=replace_this_secret_key
@@ -313,9 +305,7 @@ PRISMA_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRE
 
 **包括 Redis**
 
-docker-compose-yam&#x6C;**:**
-
-```yaml
+```yaml docker-compose-yam
 version: '3.9'
 
 services:
@@ -400,9 +390,7 @@ volumes:
 
 ```
 
-env:
-
-```bash
+```bash .env
 # 替换下面默认密码, 推荐使用 8 位以上的强密码。
 POSTGRES_PASSWORD=replace_this_password
 REDIS_PASSWORD=replace_this_password
@@ -441,9 +429,7 @@ Teable 默认使用本地存储管理附件资源，可以添加 minio 或云存
 <Tab title="docker-compose 增加 minio">
 minio 提供了额外的存储管理界面（9001 端口）以及更强大的稳定的文件服务
 
-docker-compose.yaml:
-
-```yaml
+```yaml docker-compose.yaml
 version: '3.9'
 
 services:
@@ -489,9 +475,7 @@ volumes:
 
 ```
 
-.env:
-
-```bash
+```bash .env
 # 替换下面默认密码, 推荐使用 8 位以上的强密码。
 POSTGRES_PASSWORD=replace_this_password
 REDIS_PASSWORD=replace_this_password
@@ -540,9 +524,7 @@ STORAGE_PREFIX=${PROTOCAL}://${PUBLIC_HOST}:${BACKEND_STORAGE_MINIO_PORT}
 <Tab title="连接外部 minio">
 开始之前，你需要在 minio 上创建两个桶。一个公开桶存储头像和表单头图，一个私有桶用来存储附件内容。
 
-.env:
-
-```sh
+```sh .env
 # ...前面的内容
 # 使用 minio provider
 BACKEND_STORAGE_PROVIDER=minio
@@ -566,9 +548,7 @@ STORAGE_PREFIX=https://minio.example.com
 <Tab title="连接阿里云 oss">
 开始之前，你需要在阿里云上创建两个桶。一个公开桶存储头像和表单头图，一个私有桶用来存储附件内容。
 
-.env:
-
-```sh
+```sh .env
 # ...前面的内容
 # 使用 s3 标准 provider
 BACKEND_STORAGE_PROVIDER: s3
@@ -608,7 +588,6 @@ docker-compose up -d
 ```
 
 
-
 #### 使用托管的数据库（可选）
 
 如果希望使用托管的数据库和，则可以进一步精简部署过程。
@@ -620,11 +599,9 @@ docker-compose up -d
 
 **完整示例**
 
-`docker-compose.yaml`
-
 <Tabs>
 <Tab title="企业版">
-```sh
+```yaml docker-compose.yaml
 version: '3.9'
 
 services:
@@ -686,7 +663,7 @@ volumes:
 </Tab>
 
 <Tab title="社区版">
-```shell
+```yaml docker-compose.yaml
 version: '3.9'
 
 services:
@@ -748,11 +725,9 @@ volumes:
 </Tab>
 </Tabs>
 
-**.env**
-
 填写数据库参数为托管数据库的连接参数即可
 
-```sh
+```sh .env
 POSTGRES_HOST=your-database.com
 POSTGRES_PORT=5432
 POSTGRES_DB=teable
@@ -764,14 +739,12 @@ POSTGRES_USER=teable
 </Note>
 
 
-
 **如果使用外部托管 redis 则同理**
 
 * 删除 service.teable-cache
 * 删除 service.teable.depends\_on.teable-cache
 * 删除 volumes.teable-cache
 * 更新 .env 替换为托管redis的配置
-
 
 
 ### 下一步
