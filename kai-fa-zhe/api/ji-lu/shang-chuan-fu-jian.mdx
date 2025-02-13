@@ -1,12 +1,7 @@
 ---
 title: "上传附件"
+description: "将本地文件或通过 URL 将文件上传至指定记录中附件字段的末尾"
 ---
-
-1. [开发者](/kai-fa-zhe)
-2. [API](/kai-fa-zhe/api)
-3. [记录](/kai-fa-zhe/api/ji-lu)
-
-将本地文件或通过 URL 将文件上传至指定记录中附件字段的末尾
 
 ### 路径
 
@@ -17,9 +12,7 @@ POST /table/\{tableId}/record/\{recordId}/\{fieldId}/uploadAttachment
 #### 路径参数
 
 * tableId (string): 表的唯一标识符[（如何获取）](/kai-fa-zhe/api/huo-qu-id#tableid)。
-
 * recordId (string): 要更新的记录的唯一标识符[ (如何获取）](/kai-fa-zhe/api/huo-qu-id#recordid)。
-
 * fieldId (string): 要上传到的附件字段 ID [(如何获取)](/kai-fa-zhe/api/huo-qu-id#fieldid)
 
 附件字段可以上传多个附件，该 API 每次允许上传一个附件到单元格最末尾
@@ -37,19 +30,12 @@ fieldId 必须为附件类型字段
 参数：
 
 * **file（ 可选）**
-
   * 描述：要更新的记录数据
-
   * 类型：Buffer 或 ReadStream
-
 * **fileUrl（可选）**
-
   * 描述：要进行上传的 URL
-
   * 类型：字符串
-
   * 示例：`https://app.teable.io/favicon.ico`
-
   * 说明：file 和 fileUrl 同时只能指定一个，若都制定则优先 file
 
 ### 响应
@@ -57,14 +43,11 @@ fieldId 必须为附件类型字段
 #### 成功响应
 
 * 状态码: 201 Created
-
 * 响应体: 返回更新后的记录数据。
 
 **示例响应体**
 
-复制
-
-```
+```json
 {
     "id": "rec123456789ABCDE",
     "fields": {
@@ -88,306 +71,144 @@ fieldId 必须为附件类型字段
 #### 错误响应
 
 * 状态码: 400 Bad Request: 请求体格式错误或缺少必需字段。
-
 * 状态码: 404 Not Found: 指定的表 tableId 或记录 recordId 不存在。
 
 ### 示例代码
 
-<Tabs>
-  <Tab title="CURL">
-    通过文件上传
-  </Tab>
+<CodeGroup>
+  ```bash CURL
+  # 通过文件上传
 
-  <Tab title="JS SDK">
-    复制
-  </Tab>
+  curl -X POST 'https://app.teable.cn/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment' \
+    -H 'Authorization: Bearer __token__' \
+    -H 'Content-Type: multipart/form-data' \
+    -F 'file=@/path/to/your/file.jpg'
 
-  <Tab title="TypeScript">
-    ```
-    curl -X POST 'https://app.teable.cn/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment' \
-      -H 'Authorization: Bearer __token__' \
-      -H 'Content-Type: multipart/form-data' \
-      -F 'file=@/path/to/your/file.jpg'
-    ```
-  </Tab>
+  # 通过 URL 上传
+  curl -X POST 'https://app.teable.cn/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment' \
+    -H 'Authorization: Bearer __token__' \
+    -H 'Content-Type: multipart/form-data' \
+    -F 'fileUrl=https://example.com/image.jpg'
+  ```
 
-  <Tab title="Python">
-    通过 URL 上传
-  </Tab>
+  ```js JS SDK
+  import { configApi, uploadAttachment } from '@teable/openapi';
 
-  <Tab title>
-    复制
-  </Tab>
+  configApi({
+    endpoint: 'https://app.teable.cn',
+    token: '__token__',
+  });
 
-  <Tab title>
-    ```
-    curl -X POST 'https://app.teable.cn/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment' \
-      -H 'Authorization: Bearer __token__' \
-      -H 'Content-Type: multipart/form-data' \
-      -F 'fileUrl=https://example.com/image.jpg'
-    ```
-  </Tab>
+  // Node.js 环境：上传本地文件
+  const fileStream = fs.createReadStream('/path/to/your/file.jpg');
+  const response = await uploadAttachment('__tableId__', '__recordId__', '__fieldId__', fileStream);
 
-  <Tab title>
-    复制
-  </Tab>
+  console.log(response.data);
 
-  <Tab title>
-    ```
-    import { configApi, uploadAttachment } from '@teable/openapi';
+  // 上传 URL（适用于 Node.js 和浏览器环境）
+  const response = await uploadAttachment('__tableId__', '__recordId__', '__fieldId__', 'https://example.com/image.jpg');
 
-    configApi({
-      endpoint: 'https://app.teable.cn',
-      token: '__token__',
-    });
+  console.log(response.data);
 
-    // Node.js 环境：上传本地文件
-    const fileStream = fs.createReadStream('/path/to/your/file.jpg');
-    const response = await uploadAttachment('__tableId__', '__recordId__', '__fieldId__', fileStream);
+  // 浏览器环境：上传文件
+  // 假设有一个 file input 元素: <input type="file" id="fileInput">
+  document.getElementById('fileInput').addEventListener('change', async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const response = await uploadAttachment('__tableId__', '__recordId__', '__fieldId__', file);
+      console.log(response.data);
+    }
+  });
+  ```
 
-    console.log(response.data);
+  ```ts TypeScript
+  import FormData from 'form-data';
+  import fs from 'fs';
 
-    // 上传 URL（适用于 Node.js 和浏览器环境）
-    const response = await uploadAttachment('__tableId__', '__recordId__', '__fieldId__', 'https://example.com/image.jpg');
+  // Node.js 环境：上传本地文件
+  const formData = new FormData();
+  formData.append('file', fs.createReadStream('/path/to/your/file.jpg'));
 
-    console.log(response.data);
-
-    // 浏览器环境：上传文件
-    // 假设有一个 file input 元素: <input type="file" id="fileInput">
-    document.getElementById('fileInput').addEventListener('change', async (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        const response = await uploadAttachment('__tableId__', '__recordId__', '__fieldId__', file);
-        console.log(response.data);
-      }
-    });
-    ```
-  </Tab>
-
-  <Tab title>
-    复制
-  </Tab>
-
-  <Tab title>
-    ```
-    import FormData from 'form-data';
-    import fs from 'fs';
-
-    // Node.js 环境：上传本地文件
-    const formData = new FormData();
-    formData.append('file', fs.createReadStream('/path/to/your/file.jpg'));
-
-    const response = await fetch('https://app.teable.cn/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer __token__',
-        ...formData.getHeaders()
-      },
-      body: formData
-    });
-
-    console.log(await response.json());
-
-    // 上传 URL（适用于 Node.js 和浏览器环境）
-    const formDataUrl = new FormData();
-    formDataUrl.append('fileUrl', 'https://example.com/image.jpg');
-
-    const responseUrl = await fetch('https://app.teable.cn/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer __token__',
-        ...formDataUrl.getHeaders()
-      },
-      body: formDataUrl
-    });
-
-    console.log(await responseUrl.json());
-
-    // 浏览器环境：上传文件
-    // 假设有一个 file input 元素: <input type="file" id="fileInput">
-    document.getElementById('fileInput').addEventListener('change', async (event: Event) => {
-      const fileInput = event.target as HTMLInputElement;
-      const file = fileInput.files?.[0];
-      if (file) {
-        const formData = new FormData();
-        formData.append('file', file);
-
-        const response = await fetch('https://app.teable.cn/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment', {
-          method: 'POST',
-          headers: {
-            'Authorization': 'Bearer __token__'
-          },
-          body: formData
-        });
-
-        console.log(await response.json());
-      }
-    });
-    ```
-  </Tab>
-
-  <Tab title>
-    复制
-  </Tab>
-
-  <Tab title>
-    ```
-    import requests
-    import mimetypes
-    import os
-
-    # 上传本地文件
-    file_path = '/path/to/your/file.jpg'
-    with open(file_path, 'rb') as file:
-        file_name = os.path.basename(file_path)
-        mime_type, _ = mimetypes.guess_type(file_path)
-        files = {'file': (file_name, file, mime_type)}
-        response = requests.post(
-            'https://app.teable.cn/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment',
-            headers={
-                'Authorization': 'Bearer __token__'
-            },
-            files=files
-        )
-
-    print(response.json())
-
-    # 上传 URL
-    response_url = requests.post(
-        'https://app.teable.cn/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment',
-        headers={
-            'Authorization': 'Bearer __token__'
-        },
-        data={'fileUrl': 'https://example.com/image.jpg'}
-    )
-
-    print(response_url.json())
-    ```
-  </Tab>
-</Tabs>
-
-复制
-
-```
-import { configApi, uploadAttachment } from '@teable/openapi';
-
-configApi({
-  endpoint: 'https://app.teable.cn',
-  token: '__token__',
-});
-
-// Node.js 环境：上传本地文件
-const fileStream = fs.createReadStream('/path/to/your/file.jpg');
-const response = await uploadAttachment('__tableId__', '__recordId__', '__fieldId__', fileStream);
-
-console.log(response.data);
-
-// 上传 URL（适用于 Node.js 和浏览器环境）
-const response = await uploadAttachment('__tableId__', '__recordId__', '__fieldId__', 'https://example.com/image.jpg');
-
-console.log(response.data);
-
-// 浏览器环境：上传文件
-// 假设有一个 file input 元素: <input type="file" id="fileInput">
-document.getElementById('fileInput').addEventListener('change', async (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    const response = await uploadAttachment('__tableId__', '__recordId__', '__fieldId__', file);
-    console.log(response.data);
-  }
-});
-```
-
-复制
-
-```
-import FormData from 'form-data';
-import fs from 'fs';
-
-// Node.js 环境：上传本地文件
-const formData = new FormData();
-formData.append('file', fs.createReadStream('/path/to/your/file.jpg'));
-
-const response = await fetch('https://app.teable.cn/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment', {
-  method: 'POST',
-  headers: {
-    'Authorization': 'Bearer __token__',
-    ...formData.getHeaders()
-  },
-  body: formData
-});
-
-console.log(await response.json());
-
-// 上传 URL（适用于 Node.js 和浏览器环境）
-const formDataUrl = new FormData();
-formDataUrl.append('fileUrl', 'https://example.com/image.jpg');
-
-const responseUrl = await fetch('https://app.teable.cn/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment', {
-  method: 'POST',
-  headers: {
-    'Authorization': 'Bearer __token__',
-    ...formDataUrl.getHeaders()
-  },
-  body: formDataUrl
-});
-
-console.log(await responseUrl.json());
-
-// 浏览器环境：上传文件
-// 假设有一个 file input 元素: <input type="file" id="fileInput">
-document.getElementById('fileInput').addEventListener('change', async (event: Event) => {
-  const fileInput = event.target as HTMLInputElement;
-  const file = fileInput.files?.[0];
-  if (file) {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const response = await fetch('https://app.teable.cn/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer __token__'
-      },
-      body: formData
-    });
-
-    console.log(await response.json());
-  }
-});
-```
-
-复制
-
-```
-import requests
-import mimetypes
-import os
-
-# 上传本地文件
-file_path = '/path/to/your/file.jpg'
-with open(file_path, 'rb') as file:
-    file_name = os.path.basename(file_path)
-    mime_type, _ = mimetypes.guess_type(file_path)
-    files = {'file': (file_name, file, mime_type)}
-    response = requests.post(
-        'https://app.teable.cn/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment',
-        headers={
-            'Authorization': 'Bearer __token__'
-        },
-        files=files
-    )
-
-print(response.json())
-
-# 上传 URL
-response_url = requests.post(
-    'https://app.teable.cn/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment',
-    headers={
-        'Authorization': 'Bearer __token__'
+  const response = await fetch('https://app.teable.cn/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer __token__',
+      ...formData.getHeaders()
     },
-    data={'fileUrl': 'https://example.com/image.jpg'}
-)
+    body: formData
+  });
 
-print(response_url.json())
-```
+  console.log(await response.json());
+
+  // 上传 URL（适用于 Node.js 和浏览器环境）
+  const formDataUrl = new FormData();
+  formDataUrl.append('fileUrl', 'https://example.com/image.jpg');
+
+  const responseUrl = await fetch('https://app.teable.cn/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer __token__',
+      ...formDataUrl.getHeaders()
+    },
+    body: formDataUrl
+  });
+
+  console.log(await responseUrl.json());
+
+  // 浏览器环境：上传文件
+  // 假设有一个 file input 元素: <input type="file" id="fileInput">
+  document.getElementById('fileInput').addEventListener('change', async (event: Event) => {
+    const fileInput = event.target as HTMLInputElement;
+    const file = fileInput.files?.[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('https://app.teable.cn/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer __token__'
+        },
+        body: formData
+      });
+
+      console.log(await response.json());
+    }
+  });
+  ```
+
+  ```python Python
+  import requests
+  import mimetypes
+  import os
+
+  # 上传本地文件
+  file_path = '/path/to/your/file.jpg'
+  with open(file_path, 'rb') as file:
+      file_name = os.path.basename(file_path)
+      mime_type, _ = mimetypes.guess_type(file_path)
+      files = {'file': (file_name, file, mime_type)}
+      response = requests.post(
+          'https://app.teable.cn/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment',
+          headers={
+              'Authorization': 'Bearer __token__'
+          },
+          files=files
+      )
+
+  print(response.json())
+
+  # 上传 URL
+  response_url = requests.post(
+      'https://app.teable.cn/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment',
+      headers={
+          'Authorization': 'Bearer __token__'
+      },
+      data={'fileUrl': 'https://example.com/image.jpg'}
+  )
+
+  print(response_url.json())
+  ```
+</CodeGroup>
+
 
