@@ -1,0 +1,71 @@
+---
+title: "配置邮件服务"
+description: "启用邮件服务可以开启站内的邮件通知，用户自助修改密码等功能，请根据邮件服务提供商的信息配置如下环境变量启用邮件服务"
+---
+
+
+## 环境变量
+```sh
+BACKEND_MAIL_HOST=mail.example.com
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=noreply@company.com
+BACKEND_MAIL_SENDER_NAME=noreply
+BACKEND_MAIL_AUTH_USER=username
+BACKEND_MAIL_AUTH_PASS=usertoken
+```
+
+
+## 案例
+
+### 阿里云邮件推送服务配置
+```sh
+# 获取方式：登录阿里云控制台 → 邮件推送 → SMTP设置 → 生成密码
+BACKEND_MAIL_HOST=smtpdm.aliyun.com
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=noreply@yourdomain.com  # 需在控制台验证过的发信地址
+BACKEND_MAIL_SENDER_NAME=阿里云推送
+BACKEND_MAIL_AUTH_USER=your_smtp_username   # 控制台显示的SMTP账号
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx       # 控制台生成的SMTP密码
+```
+
+### QQ 邮箱配置
+```sh
+# 获取方式：登录网页版QQ邮箱 → 设置 → 账户 → 开启「POP3/SMTP服务」→ 获取授权码
+BACKEND_MAIL_HOST=smtp.qq.com
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=your_qq@qq.com
+BACKEND_MAIL_SENDER_NAME=系统通知
+BACKEND_MAIL_AUTH_USER=your_qq@qq.com
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # 16位SMTP授权码
+```
+
+### 163 邮箱配置
+```sh
+# 获取方式：登录163邮箱 → 设置 → POP3/SMTP → 开启「客户端授权密码」
+BACKEND_MAIL_HOST=smtp.163.com
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=yourname@163.com
+BACKEND_MAIL_SENDER_NAME=系统通知
+BACKEND_MAIL_AUTH_USER=yourname@163.com
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # 客户端授权密码
+```
+
+### Gmail 配置
+```sh
+# 获取方式：Google账号 → 安全 → 两步验证 → 应用专用密码
+BACKEND_MAIL_HOST=smtp.gmail.com
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=you@gmail.com
+BACKEND_MAIL_SENDER_NAME=系统通知
+BACKEND_MAIL_AUTH_USER=you@gmail.com
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # 16位应用密码
+```
+
+## 更多环境变量配置
+
+[环境变量](/zh/deploy/env)
