@@ -1,0 +1,84 @@
+---
+title: "获取记录"
+---
+
+<Tip>我们为开发者提供了一个内置的[查询参数构建器](https://app.teable.cn/developer/tool/query-builder)，可以根据你的现有表格来构建自定义请求。</Tip>
+
+
+### 路径
+GET /table/\{tableId\}/record
+​
+### 请求
+#### 路径参数
+tableId (string): 表的唯一标识符[（如何获取）](/zh/api-doc/get-id#tableid)。
+
+#### 基础查询参数
+所有参数均为可选
+
+<ParamField query="viewId" type="string">
+  指定要获取的视图 ID。如果未指定，会按照创建时间来返回记录的顺序，并且返回所有记录和字段。
+</ParamField>
+
+<ParamField query="take" type="number">
+  指定要获取的记录数量，最大值为 2000。
+</ParamField>
+
+<ParamField query="skip" type="number">
+  指定要跳过的记录数量，用于分页。
+</ParamField>
+
+<ParamField query="fieldKeyType" type="string" default="name">
+  定义记录中字段的键类型，可选值：
+  - `name`: 使用字段名称作为键（默认）
+  - `id`: 使用字段 ID 作为键
+</ParamField>
+
+<ParamField query="cellFormat" type="string" default="json">
+  定义单元格返回值的格式，可选值：
+  - `json`: 返回结构化的 JSON 数据（默认）
+  - `text`: 返回纯文本格式
+</ParamField>
+
+<ParamField query="projection" type="string[]">
+  如果只需要获取特定字段，可以通过此参数指定。否则将获取所有可见字段。参数值取决于 fieldKeyType 设置（使用字段名称或 ID）。
+</ParamField>
+
+<ParamField query="orderBy" type="string">
+  指定记录排序方式的排序对象数组。
+</ParamField>
+
+<ParamField query="filter" type="string">
+  用于筛选结果的复杂查询条件对象。支持基于字段、运算符和值的复杂查询条件。
+</ParamField>
+
+<ParamField query="search" type="string[]">
+  搜索匹配指定字段和值的记录。
+</ParamField>
+
+<Accordion title="高级查询参数">
+<ParamField query="groupBy" type="string">
+  指定记录分组方式的分组对象数组。
+</ParamField>
+
+<ParamField query="collapsedGroupIds" type="string[]">
+  指定要折叠的分组 ID 数组。
+</ParamField>
+
+
+<ParamField query="selectedRecordIds" type="string[]">
+  通过记录 ID 筛选选定的记录。
+</ParamField>
+
+<ParamField query="ignoreViewQuery" type="boolean">
+  当指定了 viewId 时，设置为 true 将忽略视图的筛选、排序等设置。
+</ParamField>
+
+<ParamField query="filterLinkCellCandidate" type="string[]">
+  从关联表中筛选出可被指定链接单元格选择的记录。例如，对于一对多或一对一关系的字段，已被选择的记录 ID 将不会出现。
+</ParamField>
+
+<ParamField query="filterLinkCellSelected" type="string[]">
+  从关联表中筛选出此链接单元格已选择的记录。注意：此时 viewId、filter 和 orderBy 将不生效，因为选定的记录有其自身的顺序。
+</ParamField>
+</Accordion>
+
