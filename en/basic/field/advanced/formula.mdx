@@ -1,76 +1,76 @@
 ---
-title: "公式"
-description: "通过在字段中定义公式，开发者和用户能够对数据进行动态计算"
+title: "Formula"
+description: "Through defining formulas in fields, developers and users can perform dynamic calculations on data"
 ---
 
-公式字段允许您执行基于其他字段值的计算。这些计算可以是简单的数学运算，也可以是复杂的字符串操作或逻辑判断。
+Formula fields allow you to perform calculations based on other field values. These calculations can be simple mathematical operations or complex string manipulations and logical evaluations.
 
-### 数据类型与公式
+### Data Types and Formulas
 
-在开始编写公式之前，理解数据类型对于确保您的公式正常工作非常重要。不同的数据类型支持不同的操作和函数。常见的数据类型包括：
+Before starting to write formulas, understanding data types is crucial for ensuring your formulas work correctly. Different data types support different operations and functions. Common data types include:
 
-* 数字：整数或小数，支持四则运算。
-* 文本：字符串值，支持连接和部分文本操作。
-* 日期：特定格式的日期，支持日期计算。
-* 布尔值：真（TRUE）或假（FALSE），用于逻辑运算。
+* Numbers: Integers or decimals, supporting arithmetic operations.
+* Text: String values, supporting concatenation and partial text operations.
+* Dates: Specifically formatted dates, supporting date calculations.
+* Boolean: True (TRUE) or false (FALSE), used for logical operations.
 
-### 引用字段
+### Referencing Fields
 
-在公式中，您可以通过字段名称引用其他字段的值。请确保使用正确的字段名称，并注意字段名称对大小写敏感。
+In formulas, you can reference other field values by their field names. Make sure to use the correct field names and note that field names are case-sensitive.
 
-### 公式编写实践
+### Formula Writing Practices
 
-编写公式时，您将会使用运算符、函数以及字段引用。下面是一些实用的公式编写实践：
+When writing formulas, you'll use operators, functions, and field references. Here are some practical formula writing practices:
 
-#### 使用运算符
+#### Using Operators
 
-* **加法** (`+`): 用于计算数值的和或连接字符串。
-* **减法** (`-`): 用于计算数值的差。
-* **乘法** (`*`): 用于计算数值的积。
-* **除法** (`/`): 用于计算数值的商。
-* 取模 (`%`): 用于计算数值的模。
+* **Addition** (`+`): Used for calculating sums of numbers or concatenating strings.
+* **Subtraction** (`-`): Used for calculating differences between numbers.
+* **Multiplication** (`*`): Used for calculating products of numbers.
+* **Division** (`/`): Used for calculating quotients of numbers.
+* **Modulo** (`%`): Used for calculating remainders of numbers.
 
-#### 应用函数
+#### Applying Functions
 
-函数是执行特定操作的预定义公式。例如，`SUM` 函数可以计算多个值的总和，而 `LEFT` 函数可以从文本字段中提取一定数量的字符。
+Functions are predefined formulas that perform specific operations. For example, the `SUM` function can calculate the total of multiple values, while the `LEFT` function can extract a certain number of characters from a text field.
 
-#### 处理文本
+#### Handling Text
 
-在处理文本时，可能需要使用到以下操作：
+When working with text, you might need to use the following operations:
 
-* **连接**：使用 `&` 或 `CONCATENATE` 函数将两个或多个文本字符串连接起来。
-* **子串**：使用 `LEFT`、`RIGHT` 或 `MID` 函数来提取字符串的一部分。
+* **Concatenation**: Use the `&` operator or `CONCATENATE` function to join two or more text strings.
+* **Substrings**: Use `LEFT`, `RIGHT`, or `MID` functions to extract parts of strings.
 
-#### 逻辑判断
+#### Logical Evaluation
 
-使用 `IF` 函数进行逻辑判断可以根据条件返回不同的值。格式如下：
+Use the `IF` function for logical evaluation to return different values based on conditions. The format is:
 
 ```js
 IF(condition, value_if_true, value_if_false)
 ```
 
-#### 复杂表达式
+#### Complex Expressions
 
-您可能需要编写包含多个操作和函数的复杂表达式。在这种情况下，请确保使用正确的括号来控制操作的顺序。
+You may need to write complex expressions involving multiple operations and functions. In such cases, ensure you use proper parentheses to control the order of operations.
 
-### 格式化和交互展现
+### Formatting and Interactive Display
 
-公式输出的结果也可以参与[格式化](/zh/basic/field/common/formatter)[交互展现](/zh/basic/field/common/show-as)的配置，是的输出内容也可以满足自定义显示的需求。由于公式的输出结果是动态的，那么它可选的格式化和交互展现的配置也是根据具体的表达式推断结果来决定的。
+Formula output results can also participate in [formatting](/en/basic/field/common/formatter) and [interactive display](/en/basic/field/common/show-as) configurations, allowing output content to meet custom display requirements. Since formula outputs are dynamic, the available formatting and interactive display configurations are determined by the inferred result of the specific expression.
 
-> 公式的字段的值类型是在输入公式的时候进行静态推导得到的，不需要等到代入引用值进行实际进行计算的时候。所以，你总是可以在输入完公式之后就可以马上选择进行格式化和交互展现的配置。
+> The field value type of a formula is statically inferred when entering the formula, without waiting for actual calculation with referenced values. Therefore, you can always select formatting and interactive display configurations immediately after entering the formula.
 
-## 调试与优化
+## Debugging and Optimization
 
-公式编写正确后，它应该能够无错误地执行并返回预期结果。如果公式不按预期工作，您可能需要进行调试。
+Once a formula is written correctly, it should execute without errors and return expected results. If a formula isn't working as expected, you may need to debug it.
 
-### 调试建议
+### Debugging Tips
 
-* **检查数据类型**：确认您的操作和函数使用了正确的数据类型。
-* **验证字段引用**：确保引用的字段名称正确无误。
-* **逐步检查**：将复杂公式拆分成较小的部分，分别测试每个部分。
+* **Check Data Types**: Confirm that your operations and functions use the correct data types.
+* **Verify Field References**: Ensure referenced field names are correct.
+* **Step-by-Step Testing**: Break down complex formulas into smaller parts and test each part separately.
 
-### 性能考虑
+### Performance Considerations
 
-* **避免冗余计算**：如果同一个计算在多个地方使用，考虑将其结果存储在一个单独的字段中。
-* **限制使用复杂函数**：一些复杂的函数，如那些涉及大量数据操作的函数，可能会影响性能。
+* **Avoid Redundant Calculations**: If the same calculation is used in multiple places, consider storing its result in a separate field.
+* **Limit Complex Functions**: Some complex functions, such as those involving large data operations, may impact performance.
 

@@ -1,24 +1,24 @@
 ---
-title: "更新记录"
+title: "Update Records"
 ---
 
-### 路径
+### Path
 
-PATCH /table/\{tableId}/record/\{recordId}
+PATCH /table/{tableId}/record/{recordId}
 
-### 请求
+### Request
 
-#### 路径参数
+#### Path Parameters
 
-* tableId (string): 表的唯一标识符[（如何获取）](/zh/api-doc/get-id#tableid)。
-* recordId (string): 要更新的记录的唯一标识符[ (如何获取）](/zh/api-doc/get-id#recordid)。
+* tableId (string): The unique identifier of the table [(how to get)](/en/api-doc/get-id#tableid).
+* recordId (string): The unique identifier of the record to update [(how to get)](/en/api-doc/get-id#recordid).
 
-#### 请求体
+#### Request Body
 
-* **record（必填）**
-  * 描述：要更新的记录数据
-  * 类型：对象
-  * 示例：
+* **record (required)**
+  * Description: The record data to update
+  * Type: Object
+  * Example:
     ```json
     {
       "fields": {
@@ -28,20 +28,20 @@ PATCH /table/\{tableId}/record/\{recordId}
       }
     }
     ```
-  * 说明：`fields` 对象包含要更新的字段名和对应的新值。每一种字段值结构都不一样，详情请[查看记录字段值类型](/zh/api-doc/record/interface)
+  * Note: The `fields` object contains field names and their corresponding new values. Each field type has a different value structure, see [Record Field Value Types](/en/api-doc/record/interface) for details.
 
-要清空一个字段的值请显式的传递 `null,`如果字段名没有传递则不会进行任何更新
+To clear a field's value, explicitly pass `null`. If a field name is not included, no update will be performed for that field.
 
-* **fieldKeyType（可选）**
-  * 描述：指定字段键的类型
-  * 类型：字符串
-  * 可选值：
-    * "name"：使用字段名作为键
-    * "id"：使用字段 ID 作为键
-  * 示例：`"name"` 或 `"id"`
-  * 说明：如果不指定，默认使用字段名作为键。
-  * 用法：
-    * 当设置为 "name" 时：
+* **fieldKeyType (optional)**
+  * Description: Specifies the type of field key
+  * Type: String
+  * Possible values:
+    * "name": Use field name as key
+    * "id": Use field ID as key
+  * Example: `"name"` or `"id"`
+  * Note: If not specified, field name is used as key by default.
+  * Usage:
+    * When set to "name":
       ```json
       {
         fields: {
@@ -50,7 +50,7 @@ PATCH /table/\{tableId}/record/\{recordId}
         }
       }
       ```
-    * 当设置为 "id" 时：
+    * When set to "id":
       ```json
       {
         fields: {
@@ -59,42 +59,42 @@ PATCH /table/\{tableId}/record/\{recordId}
         }
       }
       ```
-* **typecast（可选）**
-  * 描述：是否自动转换字段值类型，默认会严格校验，需要保证输入的值符合当前字段的数据类型，如果开启则会尝试自动进行转换。
-  * 类型：布尔值
-  * 可选值：true 或 false
-  * 示例：`true`
-  * 说明：如果设置为 true，系统会尝试将输入值转换为正确的字段值类型。
-  * 用法示例：
-    * 关联字段：可以直接使用主键文本进行关联
+* **typecast (optional)**
+  * Description: Whether to automatically convert field value types. By default, strict validation is enforced, requiring input values to match the current field's data type. If enabled, the system will attempt automatic conversion.
+  * Type: Boolean
+  * Possible values: true or false
+  * Example: `true`
+  * Note: If set to true, the system will attempt to convert input values to the correct field value type.
+  * Usage examples:
+    * Link field: Can directly use primary key text for linking
       ```json
       {
-        "User table": "张三"
+        "User table": "John Smith"
       }
       ```
-    * 日期字段：可以使用非标准格式的日期字符串
+    * Date field: Can use non-standard format date strings
       ```json
       {
         "Date": "2023-05-15"
       }
       ```
-    * 用户字段：可以直接使用用户名
+    * User field: Can directly use username
       ```json
       {
         "Assigned To": "John Doe"
       }
       ```
 
-如果需要上传新文件到附件字段，请参阅[上传附件](/zh/api-doc/record/upload-attachment)章节
+For uploading new files to attachment fields, please refer to the [Upload Attachment](/en/api-doc/record/upload-attachment) section.
 
-### 响应
+### Response
 
-#### 成功响应
+#### Success Response
 
-* 状态码: 200 OK
-* 响应体: 返回更新后的记录数据。
+* Status code: 200 OK
+* Response body: Returns the updated record data.
 
-**示例响应体**
+**Example Response Body**
 ```json
 {
     "id": "rec123456789ABCDE",
@@ -106,16 +106,16 @@ PATCH /table/\{tableId}/record/\{recordId}
 }
 ```
 
-#### 错误响应
+#### Error Responses
 
-* 状态码: 400 Bad Request: 请求体格式错误或缺少必需字段。
-* 状态码: 404 Not Found: 指定的表 tableId 或记录 recordId 不存在。
+* Status code: 400 Bad Request: Request body format error or missing required fields.
+* Status code: 404 Not Found: Specified tableId or recordId does not exist.
 
-#### 示例代码
+#### Example Code
 
 <CodeGroup>
   ```bash CURL
-  curl -X PATCH 'https://app.teable.cn/table/__tableId__/record/__recordId__' \
+  curl -X PATCH 'https://app.teable.io/table/__tableId__/record/__recordId__' \
     -H 'Authorization: Bearer __token__' \
     -H 'Content-Type: application/json' \
     -d '{
@@ -132,7 +132,7 @@ PATCH /table/\{tableId}/record/\{recordId}
   import { configApi, updateRecord } from '@teable/openapi';
 
   configApi({
-    endpoint: 'https://app.teable.cn',
+    endpoint: 'https://app.teable.io',
     token,
   });
 
@@ -149,7 +149,7 @@ PATCH /table/\{tableId}/record/\{recordId}
   ```
 
   ```ts TypeScript
-  const response = await fetch('https://app.teable.cn/table/__tableId__/record/__recordId__', {
+  const response = await fetch('https://app.teable.io/table/__tableId__/record/__recordId__', {
     method: 'PATCH',
     headers: {
       'Authorization': 'Bearer __token__',
@@ -172,7 +172,7 @@ PATCH /table/\{tableId}/record/\{recordId}
   import requests
 
   response = requests.patch(
-      'https://app.teable.cn/table/__tableId__/record/__recordId__',
+      'https://app.teable.io/table/__tableId__/record/__recordId__',
       headers={
           'Authorization': 'Bearer __token__',
           'Content-Type': 'application/json'

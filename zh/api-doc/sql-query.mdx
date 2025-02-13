@@ -9,7 +9,7 @@ title: "通过 SQL 访问表格数据"
 3. **选择 Postgresql Connection**：在弹出的选项中，选择 Postgresql Connection。
 4. **进入设置界面**：点击创建，系统将自动创建一个只读的 Postgres 用户，包括用户名、密码和数据库链接地址。
 
-<img alt="pg connection" style={{ maxWidth: '50%' }} src="/images/kai-fa-zhe/dd60fcb2becb23c5.png" />
+<img alt="pg connection" src="/images/kai-fa-zhe/dd60fcb2becb23c5.png" />
 
 #### 连接方式
 
@@ -22,17 +22,17 @@ title: "通过 SQL 访问表格数据"
 
 1. 点击任意表格进入界面，URL 上方以 `bse` 开头的字符串就是 baseId。
 
-<img alt="baseId" style={{ maxWidth: '50%' }} src="/images/kai-fa-zhe/e8ef17c59ac0c067.png" />
+<img alt="baseId" src="/images/kai-fa-zhe/e8ef17c59ac0c067.png" />
 
 1. 进入数据库设计界面（表格右上角的 ⚙ 图标），里面的 schema 名就是 baseId。
 
-<img alt="Design page" style={{ maxWidth: '50%' }} src="/images/kai-fa-zhe/64fbddbd0f5519c4.png" />
+<img alt="Design page" src="/images/kai-fa-zhe/64fbddbd0f5519c4.png" />
 
 ### 连接数据库
 
 在不同的产品上，连接数据库的方式略有不同，但大同小异，我们这里进行一个简单的示例
 
-<img alt="Connection example" style={{ maxWidth: '50%' }} src="/images/kai-fa-zhe/ceef01dd644628f4.png" />
+<img alt="Connection example" src="/images/kai-fa-zhe/ceef01dd644628f4.png" />
 
 ### 关闭数据库连接
 
@@ -47,7 +47,7 @@ title: "通过 SQL 访问表格数据"
 
 修改Teable 中的表名称不会同步修改数据库中的 table name，您必须显式的修改物理数据库中的表名。
 
-<img alt="table info" style={{ maxWidth: '50%' }} src="/images/kai-fa-zhe/ba2fdb846b2062ce.png" />
+<img alt="table info" src="/images/kai-fa-zhe/ba2fdb846b2062ce.png" />
 
 当你完成表名修改之后，就可以直接使用 SQL 进行查询，下面是一个例子查询当前表格的前 100 行数据
 
@@ -67,7 +67,7 @@ SELECT * from "bseamGnQT65TVSCzIaC"."clients" limit 100
 
 **修改 teable 中的字段名并不会同步修改 dbFieldName, 您必须显式的修改 dbFieldName 以修改 Postgres 中实际的 column name**
 
-<img alt="db field name" style={{ maxWidth: '50%' }} src="/images/kai-fa-zhe/7609033391e8e7c1.png" />
+<img alt="db field name" src="/images/kai-fa-zhe/7609033391e8e7c1.png" />
 
 #### **Teable 系统字段**
 
@@ -95,7 +95,7 @@ SELECT * from "bseamGnQT65TVSCzIaC"."clients" limit 100
 
 创建的连接用户权限访问范围为当前所在的 Base (Teable界面上称数据库），它对应 Postgres 中的 schema, schema 是 Postgres 中命名空间概念，提供了非常好的权限隔离特性，保证当前连接仅可访问该 schema 中的表，但是 postgres 中创建的角色会拥有所有 schema 的名称查看能力，这也就是为什么当你使用外部应用连接上数据库是时可能会看到下图一样非常多的 baseId (实际上是schema 名称）。但是可以放心的是，除了这个 Id 之外任何其他的用户内容是无法被访问的。
 
-<img alt="base id in TablePlus" style={{ maxWidth: '50%' }} src="/images/kai-fa-zhe/093aebb4bc8cf732.png" />
+<img alt="base id in TablePlus" src="/images/kai-fa-zhe/093aebb4bc8cf732.png" />
 
 ### 直接写数据库
 

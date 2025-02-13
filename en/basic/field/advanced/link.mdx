@@ -1,57 +1,57 @@
 ---
-title: "关联"
-description: "关联字段是数据管理中的一个强大工具，它允许用户在不同的数据表之间建立关系。通过关联字段，用户可以轻松地在当前表中插入其他表中的记录，并快速查看和跳转至关联的数据表。"
+title: "Link"
+description: "Link fields are powerful tools in data management that allow users to establish relationships between different tables. Through link fields, users can easily insert records from other tables into the current table and quickly view and navigate to linked data tables."
 ---
 
-## 创建关联字段
+## Creating Link Fields
 
-打开你需要添加关联字段的表。 选择"添加字段"，然后选择"关联字段"。 从下拉菜单中，选择你希望关联的另一张表。
+Open the table where you need to add a link field. Select "Add Field," then choose "Link Field." From the dropdown menu, select the table you want to link to.
 
-选择关联类型：打开你希望添加关联字段的表，点击"添加字段"，然后选择"关联字段"。从下拉菜单中选择你希望关联的另一个表。
+Select the link type: Open the table where you want to add a link field, click "Add Field," then select "Link Field." Choose the table you want to link to from the dropdown menu.
 
-单向与双向关联：如果你希望数据仅在当前表更新，选择单向关联。如果希望两个表都反映关联的变化，选择双向关联。双向关联会在关联表创建一个对称的关联字段，两个关联字段的数据总是相互映射的。
+One-way vs. Two-way Links: If you want data to update only in the current table, choose a one-way link. If you want both tables to reflect link changes, choose a two-way link. Two-way links create a symmetric link field in the linked table, and the data in both link fields is always mutually mapped.
 
-定义关联关系：配置当前表字段和对应的关联字段，确定是**允许单选**还是**允许多选**。通过两个关联字段的配置组合，我们可以定义数据之间的管理那关系，关联关系在下方详细解释。
+Define Link Relationship: Configure the current table field and corresponding link field, determining whether to **Allow Single Selection** or **Allow Multiple Selection**. Through the combination of configurations for both link fields, we can define the relationship between data, which is explained in detail below.
 
-## 单、双向关联
+## One-way vs. Two-way Links
 
-用户可以根据需求选择是否创建双向关联。
+Users can choose whether to create two-way links based on their needs.
 
-### 单向关联
+### One-way Links
 
-定义：在一个表中创建的关联，不会自动在另一个表中创建关联。 例子：想象你在社交媒体上关注了一个名人，这意味着你可以看到他们的动态，但他们不一定知道你是谁。
+Definition: A link created in one table does not automatically create a link in the other table. Example: Imagine following a celebrity on social media - you can see their updates, but they might not know who you are.
 
-### 双向关联
+### Two-way Links
 
-定义：在一个表中创建的关联，会自动在另一个表中创建相应的关联。 例子：像 Facebook 的好友请求，当你添加某人为好友，他们也会添加你为好友。
+Definition: A link created in one table automatically creates a corresponding link in the other table. Example: Like Facebook friend requests - when you add someone as a friend, they also add you as a friend.
 
-## 关联关系
+## Link Relationships
 
-当我们在数据库中构建关系时，通常会遇到以下几种关联关系。这些关系帮助我们更好地组织数据并理解不同数据表之间的交互。
+When building relationships in databases, we typically encounter several types of link relationships. These relationships help us better organize data and understand interactions between different tables.
 
-## 关联关系及如何建立
-| 关联关系 | 描述                         | 例子             | 如何在 A 表中创建          |
-| ---- | -------------------------- | -------------- | ------------------- |
-| 一对一  | 表 A 中的一条记录仅与表 B 中的一条记录关联。  | 一个作者与其唯一的自传。   | A 表字段单选 + B 表对称字段单选 |
-| 一对多  | 表 A 中的一条记录可以与表 B 中的多条记录关联。 | 一个作者与他写的多本书。   | A 表字段多选 + B 表对称字段单选 |
-| 多对一  | 表 A 中的多条记录可能与表 B 中的一条记录关联。 | 多位作者与一个共同的出版社。 | A 表字段单选 + B 表对称字段多选 |
-| 多对多  | 表 A 中的多条记录可以与表 B 中的多条记录关联。 | 多位作者与多个文学奖项。   | A 表字段多选 + B 表对称字段多选 |
+## Link Relationships and How to Establish Them
+| Relationship Type | Description | Example | How to Create in Table A |
+| ---------------- | ----------- | ------- | ----------------------- |
+| One-to-One | One record in Table A links to only one record in Table B. | An author and their unique autobiography. | Single select in Table A + Single select in symmetric Table B field |
+| One-to-Many | One record in Table A can link to multiple records in Table B. | An author and their multiple books. | Multiple select in Table A + Single select in symmetric Table B field |
+| Many-to-One | Multiple records in Table A might link to one record in Table B. | Multiple authors with one common publisher. | Single select in Table A + Multiple select in symmetric Table B field |
+| Many-to-Many | Multiple records in Table A can link to multiple records in Table B. | Multiple authors and multiple literary awards. | Multiple select in Table A + Multiple select in symmetric Table B field |
 
-### 关系实例解析
+### Relationship Examples Analysis
 
-为了更好地理解上述的关系类型，让我们用作者和他们的作品作为例子：
+To better understand these relationship types, let's use authors and their works as examples:
 
-1. **一对一关系**：假设 J.K. Rowling 只写了一本自传，那么她和这本自传之间就是一对一的关系。
-2. **一对多关系**：J.K. Rowling 写了“哈利·波特”系列的多本书。这里，J.K. Rowling 是一位作者与多本书之间的关系。
-3. **多对一关系**：如果我们考虑多位作者，例如 J.K. Rowling、George Orwell 和 Jane Austen，都与一个出版社“Classic Books”合作，则这些作者与出版社之间的关系就是多对一。
-4. **多对多关系**：假设“国际文学奖”和“年度最佳作家奖”是两个奖项，而 J.K. Rowling 和 George Orwell 都曾获得这两个奖项。在这种情况下，两位作者与两个奖项之间存在多对多的关系。
+1. **One-to-One Relationship**: If J.K. Rowling wrote only one autobiography, then there's a one-to-one relationship between her and this autobiography.
+2. **One-to-Many Relationship**: J.K. Rowling wrote multiple books in the "Harry Potter" series. Here, there's a relationship between one author and multiple books.
+3. **Many-to-One Relationship**: If we consider multiple authors like J.K. Rowling, George Orwell, and Jane Austen all working with one publisher "Classic Books," then the relationship between these authors and the publisher is many-to-one.
+4. **Many-to-Many Relationship**: Suppose "International Literary Award" and "Best Author of the Year" are two awards, and both J.K. Rowling and George Orwell have won both awards. In this case, there's a many-to-many relationship between the two authors and the two awards.
 
-### 重要提示
+### Important Notes
 
-在 A 表一对多关系中，B 表的同一条记录只能在 A 表中被选择一次。换句话说，一旦 B 表中的某条记录在 A 表中被选择为关联记录，那么这条记录将不会再出现在 A 表的备选列表中。这是由关联关系的特性决定的。
+In a one-to-many relationship in Table A, the same record from Table B can only be selected once in Table A. In other words, once a record from Table B is selected as a linked record in Table A, that record will not appear in the selection list in Table A again. This is determined by the nature of the link relationship.
 
-**示例**: 假设我们有一个“作者”表（A 表）和一个“书籍”表（B 表）。在“作者”表中，有一个一对多的关系字段用于选择该作者写的书。现在，当我们为一个作者选择了“哈利·波特与魔法石”这本书后，这本书就不会再出现在其他作者的备选列表中，因为它已经被关联到了一个作者。这保证了每本书只能被关联到一个作者，从而遵循了一对多的关系规则。
+**Example**: Suppose we have an "Authors" table (Table A) and a "Books" table (Table B). In the "Authors" table, there's a one-to-many relationship field for selecting books written by each author. Now, when we select "Harry Potter and the Philosopher's Stone" for one author, this book won't appear in the selection list for other authors because it's already linked to one author. This ensures each book can only be linked to one author, following the one-to-many relationship rules.
 
-## 进一步扩展
+## Further Extensions
 
-设置关联字段之后，我们可以进行下一步进阶的引用和汇总操作，它们之间互相配合可以实现非常强大的自动数据查找和汇总计算能力。具体请看引用和汇总字段章节
+After setting up link fields, we can proceed with advanced lookup and rollup operations. These features work together to achieve powerful automatic data lookup and aggregation calculation capabilities. Please see the Lookup and Rollup Field sections for details.

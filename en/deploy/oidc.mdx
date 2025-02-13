@@ -1,88 +1,88 @@
 ---
-title: "OIDC 单点登录"
-description: "Teable 支持 OIDC 单点登录，通过 OIDC 单点登录，您可以方便的将 Teable 与外部系统进行集成，实现用户认证和授权。"
+title: "OIDC Single Sign-On"
+description: "Teable supports OIDC single sign-on, allowing you to easily integrate Teable with external systems for user authentication and authorization."
 ---
 
-#### 环境变量配置
+#### Environment Variables Configuration
 
-要在 Teable 中启用 OIDC 集成，请在您的 .env 文件中设置以下环境变量：
+To enable OIDC integration in Teable, set the following environment variables in your .env file:
 
 ```sh
-# OIDC 配置示例（以 Google 为提供商）
+# OIDC configuration example (using Google as provider)
 BACKEND_OIDC_CLIENT_ID=google_client_id
 
-# OIDC 提供商（本例中为 Google）提供的客户端密钥
+# Client secret provided by the OIDC provider (Google in this example)
 BACKEND_OIDC_CLIENT_SECRET=google_client_secret
 
-# OIDC 提供商在成功认证后将重定向到的 URL
+# URL where the OIDC provider will redirect after successful authentication
 BACKEND_OIDC_CALLBACK_URL=https://app.teable.io/api/auth/oidc/callback
 
-# 用于获取已认证用户信息的端点 URL
+# Endpoint URL for retrieving authenticated user information
 BACKEND_OIDC_USER_INFO_URL=https://openidconnect.googleapis.com/v1/userinfo
 
-# 用于获取访问令牌的端点 URL
+# Endpoint URL for obtaining access tokens
 BACKEND_OIDC_TOKEN_URL=https://oauth2.googleapis.com/token
 
-# 用户进行身份验证的端点 URL
+# Endpoint URL where users authenticate
 BACKEND_OIDC_AUTHORIZATION_URL=https://accounts.google.com/o/oauth2/auth
 
-# OIDC 提供商（本例中为 Google）的标识符 URL
+# Identifier URL for the OIDC provider (Google in this example)
 BACKEND_OIDC_ISSUER=https://accounts.google.com
 
-# 以 JSON 格式提供的其他 OIDC 配置选项
+# Additional OIDC configuration options in JSON format
 BACKEND_OIDC_OTHER={"scope": ["email", "profile"]}
 
-# 支持的社交认证提供商列表，以逗号分隔
+# Comma-separated list of supported social authentication providers
 SOCIAL_AUTH_PROVIDERS=oidc
 ```
 
-#### 配置详情
+#### Configuration Details
 
-* `BACKEND_OIDC_CLIENT_ID`：OIDC 提供商为 Teable 提供的客户端 ID。
-* `BACKEND_OIDC_CLIENT_SECRET`：OIDC 提供商为 Teable 提供的客户端密钥。
-* `BACKEND_OIDC_CALLBACK_URL`：Teable 的回调 URL。设置为 https\://app.teable.io/api/auth/oidc/callback。确保这与在 OIDC 提供商处注册的回调 URL 一致。
-* `BACKEND_OIDC_USER_INFO_URL`：从 OIDC 提供商获取用户信息的端点 URL。
-* `BACKEND_OIDC_TOKEN_URL`：从 OIDC 提供商获取访问令牌的端点 URL。
-* `BACKEND_OIDC_AUTHORIZATION_URL`：用户在 OIDC 提供商处进行身份验证的端点 URL。
-* `BACKEND_OIDC_ISSUER`：OIDC 提供商的标识符 URL。
-* `BACKEND_OIDC_OTHER`：以 JSON 格式提供的其他 OIDC 配置选项。在此示例中，我们请求了"email"和"profile"作用域。
+* `BACKEND_OIDC_CLIENT_ID`: Client ID provided by the OIDC provider for Teable.
+* `BACKEND_OIDC_CLIENT_SECRET`: Client secret provided by the OIDC provider for Teable.
+* `BACKEND_OIDC_CALLBACK_URL`: Teable's callback URL. Set to https://app.teable.io/api/auth/oidc/callback. Ensure this matches the callback URL registered with your OIDC provider.
+* `BACKEND_OIDC_USER_INFO_URL`: Endpoint URL for retrieving user information from the OIDC provider.
+* `BACKEND_OIDC_TOKEN_URL`: Endpoint URL for obtaining access tokens from the OIDC provider.
+* `BACKEND_OIDC_AUTHORIZATION_URL`: Endpoint URL where users authenticate with the OIDC provider.
+* `BACKEND_OIDC_ISSUER`: Identifier URL of the OIDC provider.
+* `BACKEND_OIDC_OTHER`: Additional OIDC configuration options in JSON format. In this example, we request "email" and "profile" scopes.
 
-#### 在 Teable 中启用 OIDC 认证
+#### Enabling OIDC Authentication in Teable
 
-要在 Teable 中启用 OIDC 作为认证方法，请在 `SOCIAL_AUTH_PROVIDERS` 环境变量中包含 "oidc"：
+To enable OIDC as an authentication method in Teable, include "oidc" in the `SOCIAL_AUTH_PROVIDERS` environment variable:
 
 ```sh
 SOCIAL_AUTH_PROVIDERS=github,google,oidc
 ```
 
-这将允许用户在 Teable 中使用 OIDC、GitHub 和 Google 进行身份验证。
+This allows users to authenticate in Teable using OIDC, GitHub, and Google.
 
-#### 重要注意事项
+#### Important Notes
 
-1. 确保所有 URL 都使用 HTTPS 协议以保证安全性。
-2. 在生产环境中，切勿将这些敏感信息直接硬编码到 Teable 应用程序中。始终使用环境变量或安全的密钥管理系统。
-3. 具体的 URL 和配置可能会因您选择的 OIDC 提供商（如 Google、Okta、Auth0 等）而有所不同。请参考您的 OIDC 提供商的文档以获取准确的端点 URL 和配置要求。
-4. 在设置 BACKEND\_OIDC\_OTHER 时，您可能需要根据您的需求和 OIDC 提供商的支持添加其他参数。
-5. .env.example 文件中的示例使用 Google 作为 OIDC 提供商。如果您使用不同的提供商，请确保相应地更新 URL。
+1. Ensure all URLs use HTTPS protocol for security.
+2. Never hardcode these sensitive details directly into the Teable application in production. Always use environment variables or secure key management systems.
+3. Specific URLs and configurations may vary depending on your chosen OIDC provider (such as Google, Okta, Auth0, etc.). Refer to your OIDC provider's documentation for accurate endpoint URLs and configuration requirements.
+4. When setting BACKEND_OIDC_OTHER, you may need to add additional parameters based on your requirements and OIDC provider support.
+5. The example in .env.example uses Google as the OIDC provider. If you use a different provider, make sure to update the URLs accordingly.
 
-通过正确配置这些环境变量，您的 Teable 应用程序应该能够成功集成 OIDC 认证。如果遇到任何问题，请检查您的 OIDC 提供商文档，并确保所有 URL 和凭证都是正确的。
+With proper configuration of these environment variables, your Teable application should successfully integrate OIDC authentication. If you encounter any issues, check your OIDC provider documentation and ensure all URLs and credentials are correct.
 
-#### 示例：使用 Authentik 作为 OIDC 提供商
+#### Example: Using Authentik as OIDC Provider
 
-按照以下步骤将 Authentik 配置为 Teable 应用程序的 OIDC 提供商：
-1. 登录到您的 Authentik 管理面板并创建一个新的 OAuth2 Provider。
-2. 在 OAuth2 Provider 设置中，将重定向 URI 设置为与您的 `BACKEND_OIDC_CALLBACK_URL` 匹配。格式应为：
+Follow these steps to configure Authentik as an OIDC provider for your Teable application:
+1. Log in to your Authentik admin panel and create a new OAuth2 Provider.
+2. In the OAuth2 Provider settings, set the redirect URI to match your `BACKEND_OIDC_CALLBACK_URL`. The format should be:
   ```
   https://your-teable-domain.com/api/auth/oidc/callback
   ```
-3. 创建 OAuth2 Provider 后，您需要将 Authentik 配置映射到 Teable 环境变量。使用以下对应关系：
+3. After creating the OAuth2 Provider, you need to map Authentik configuration to Teable environment variables. Use the following correspondence:
    * Client ID → `BACKEND_OIDC_CLIENT_ID`
    * Userinfo URL → `BACKEND_OIDC_USER_INFO_URL`
    * Token URL → `BACKEND_OIDC_TOKEN_URL`
    * Authorize URL → `BACKEND_OIDC_AUTHORIZATION_URL`
    * OpenID Configuration Issuer → `BACKEND_OIDC_ISSUER`
-4. 在 Authentik 中生成客户端密钥，并将其设置为 Teable 环境变量中的 `BACKEND_OIDC_CLIENT_SECRET`。
-5. 使用这些值更新您的 Teable `.env` 文件。您的配置应该类似于这样：
+4. Generate a client secret in Authentik and set it as `BACKEND_OIDC_CLIENT_SECRET` in Teable environment variables.
+5. Update your Teable `.env` file with these values. Your configuration should look something like this:
    ```sh
    SOCIAL_AUTH_PROVIDERS=oidc
    BACKEND_OIDC_CLIENT_ID=your_authentik_client_id
@@ -95,10 +95,10 @@ SOCIAL_AUTH_PROVIDERS=github,google,oidc
    BACKEND_OIDC_OTHER={"scope": ["email", "profile"]}
    ```
 
-记得将 `your-teable-domain.com` 和 `your-authentik-domain.com` 替换为您的实际域名。
+Remember to replace `your-teable-domain.com` and `your-authentik-domain.com` with your actual domain names.
 
-按照这些步骤，您应该已经成功将 Authentik 配置为 Teable 应用程序的 OIDC 提供商。确保在更新环境变量后重启 Teable 应用程序，以使更改生效。
+Following these steps, you should have successfully configured Authentik as an OIDC provider for your Teable application. Make sure to restart your Teable application after updating the environment variables for the changes to take effect.
 
-## 更多环境变量配置
+## More Environment Variables
 
-[环境变量](/zh/deploy/env)
+[Environment Variables](/en/deploy/env)

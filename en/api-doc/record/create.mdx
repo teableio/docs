@@ -1,25 +1,23 @@
 ---
-title: "创建记录"
+title: "Create Records"
 ---
 
-### 路径
+### Path
 
-POST /table/\{tableId}/record
+POST /table/{tableId}/record
 
-### 请求
+### Request
 
-#### 路径参数
+#### Path Parameters
 
-* tableId (string): 表的唯一标识符。
+* tableId (string): The unique identifier of the table.
 
-#### 请求体
+#### Request Body
 
-非常感谢您的反馈。我会根据您的建议进行修改和补充。以下是更新后的列表：
-
-* **records（必填）**
-  * 描述：要创建的记录数组
-  * 类型：数组
-  * 示例：
+* **records (required)**
+  * Description: Array of records to create
+  * Type: Array
+  * Example:
     ```json
     [
       {
@@ -38,17 +36,17 @@ POST /table/\{tableId}/record
       }
     ]
     ```
-  * 说明：每个记录都是一个包含 `fields` 对象的项。`fields` 对象包含字段名和对应的值，每一种字段值结构都不一样，详情请[查看记录字段值类型](/zh/api-doc/record/interface)。
-* **fieldKeyType（可选）**
-  * 描述：指定字段键的类型
-  * 类型：字符串
-  * 可选值：
-    * "name"：使用字段名作为键
-    * "id"：使用字段 ID 作为键
-  * 示例：`"name"` 或 `"id"`
-  * 说明：如果不指定，默认使用字段名作为键。
-  * 用法：
-    * 当设置为 "name" 时：
+  * Note: Each record is an item containing a `fields` object. The `fields` object contains field names and their corresponding values. Each field type has a different value structure, see [Record Field Value Types](/en/api-doc/record/interface) for details.
+* **fieldKeyType (optional)**
+  * Description: Specifies the type of field key
+  * Type: String
+  * Possible values:
+    * "name": Use field name as key
+    * "id": Use field ID as key
+  * Example: `"name"` or `"id"`
+  * Note: If not specified, field name is used as key by default.
+  * Usage:
+    * When set to "name":
       ```json
       {
         fields: {
@@ -57,7 +55,7 @@ POST /table/\{tableId}/record
         }
       }
       ```
-    * 当设置为 "id" 时：
+    * When set to "id":
       ```json
       {
         fields: {
@@ -66,51 +64,51 @@ POST /table/\{tableId}/record
         }
       }
       ```
-* **typecast（可选）**
-  * 描述：是否自动转换字段值类型，默认会严格校验，需要保证输入的值符合当前字段的数据类型，如果开启则会尝试自动进行转换。
-  * 类型：布尔值
-  * 可选值：true 或 false
-  * 示例：`true`
-  * 说明：如果设置为 true，系统会尝试将输入值转换为正确的字段值类型。
-  * 用法示例：
-    * 关联字段：可以直接使用主键文本进行关联
+* **typecast (optional)**
+  * Description: Whether to automatically convert field value types. By default, strict validation is enforced, requiring input values to match the current field's data type. If enabled, the system will attempt automatic conversion.
+  * Type: Boolean
+  * Possible values: true or false
+  * Example: `true`
+  * Note: If set to true, the system will attempt to convert input values to the correct field value type.
+  * Usage examples:
+    * Link field: Can directly use primary key text for linking
       ```json
       {
-        "User table": "张三"
+        "User table": "John Smith"
       }
       ```
-    * 日期字段：可以使用非标准格式的日期字符串
+    * Date field: Can use non-standard format date strings
       ```json
       {
         "Date": "2023-05-15"
       }
       ```
-    * 用户字段：可以直接使用用户名
+    * User field: Can directly use username
       ```json
       {
         "Assigned To": "John Doe"
       }
       ```
-* **order（可选）**
-  * 描述：指定新记录的在指定视图所在的位置
-  * 类型：对象
-  * 包含以下属性：
+* **order (optional)**
+  * Description: Specifies the position of new records in a specific view
+  * Type: Object
+  * Properties:
     * viewId
-      * 描述：视图的 ID [（如何获取）](/zh/api-doc/get-id#viewid)
-      * 类型：字符串
-      * 示例：`"viwABCDEFGHIJKLMN"`
+      * Description: View ID [(how to get)](/en/api-doc/get-id#viewid)
+      * Type: String
+      * Example: `"viwABCDEFGHIJKLMN"`
     * anchorId
-      * 描述：锚点记录的 ID[（如何获取）](/zh/api-doc/get-id#recordid)
-      * 类型：字符串
-      * 示例：`"rec123456789ABCDE"`
+      * Description: Anchor record ID [(how to get)](/en/api-doc/get-id#recordid)
+      * Type: String
+      * Example: `"rec123456789ABCDE"`
     * position
-      * 描述：相对于锚点记录的位置
-      * 类型：字符串
-      * 可选值：
-        * "before"：在锚点记录之前
-        * "after"：在锚点记录之后
-      * 示例：`"after"`
-  * 完整示例：
+      * Description: Position relative to the anchor record
+      * Type: String
+      * Possible values:
+        * "before": Before the anchor record
+        * "after": After the anchor record
+      * Example: `"after"`
+  * Complete example:
     ```json
     {
       viewId: "viwABCDEFGHIJKLMN",
@@ -118,16 +116,16 @@ POST /table/\{tableId}/record
       position: "after"
     }
     ```
-  * 说明：使用 order 可以精确控制新记录在特定视图中的位置。
+  * Note: Using order allows precise control of new record positions in a specific view.
 
-### 响应
+### Response
 
-#### 成功响应
+#### Success Response
 
-* 状态码: 201 Created
-* 响应体: 返回创建的记录数据。
+* Status code: 201 Created
+* Response body: Returns the created record data.
 
-**示例响应体**
+**Example Response Body**
 
 ```json
 {
@@ -148,16 +146,16 @@ POST /table/\{tableId}/record
 }
 ```
 
-### 错误响应
+### Error Responses
 
-* 状态码: 400 Bad Request: 请求体格式错误或缺少必需字段。
-* 状态码: 404 Not Found: 指定的表 tableId 不存在。
+* Status code: 400 Bad Request: Request body format error or missing required fields.
+* Status code: 404 Not Found: Specified tableId does not exist.
 
-### 示例代码
+### Example Code
 
 <CodeGroup>
   ```bash CURL
-  curl -X POST 'https://app.teable.cn/table/__tableId__/record' \
+  curl -X POST 'https://app.teable.io/table/__tableId__/record' \
     -H 'Authorization: Bearer __token__' \
     -H 'Content-Type: application/json' \
     -d '{
@@ -176,7 +174,7 @@ POST /table/\{tableId}/record
   import { configApi, createRecords } from '@teable/openapi';
 
   configApi({
-    endpoint: 'https://app.teable.cn',
+    endpoint: 'https://app.teable.io',
     token,
   });
 
@@ -195,7 +193,7 @@ POST /table/\{tableId}/record
   ```
 
   ```ts TypeScript
-  const response = await fetch('https://app.teable.cn/table/__tableId__/record', {
+  const response = await fetch('https://app.teable.io/table/__tableId__/record', {
     method: 'POST',
     headers: {
       'Authorization': 'Bearer __token__',
@@ -220,7 +218,7 @@ POST /table/\{tableId}/record
   import requests
 
   response = requests.post(
-      'https://app.teable.cn/table/__tableId__/record',
+      'https://app.teable.io/table/__tableId__/record',
       headers={
           'Authorization': 'Bearer __token__',
           'Content-Type': 'application/json'

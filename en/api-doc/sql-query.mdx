@@ -1,105 +1,103 @@
 ---
-title: "通过 SQL 访问表格数据"
+title: "SQL Query"
 ---
 
-### 创建数据库连接
+### Creating a Database Connection
 
-1. **进入表格**：首先，打开您想要连接的表格。
-2. **选择 API 按钮**：在右侧找到并点击 API 按钮。
-3. **选择 Postgresql Connection**：在弹出的选项中，选择 Postgresql Connection。
-4. **进入设置界面**：点击创建，系统将自动创建一个只读的 Postgres 用户，包括用户名、密码和数据库链接地址。
+1. **Open the Table**: First, open the table you want to connect to.
+2. **Select API Button**: Find and click the API button on the right.
+3. **Choose PostgreSQL Connection**: In the popup options, select PostgreSQL Connection.
+4. **Enter Settings Interface**: Click create, and the system will automatically create a read-only PostgreSQL user, including username, password, and database connection address.
 
-<img alt="pg connection" style={{ maxWidth: '50%' }} src="/images/kai-fa-zhe/dd60fcb2becb23c5.png" />
+<img alt="pg connection" src="/images/kai-fa-zhe/dd60fcb2becb23c5.png" />
 
-#### 连接方式
+#### Connection Methods
 
-* **标准 PostgreSQL 客户端**：如 DataGrip, Navcat, TablePlus 等。
-* **BI 产品**：如 PowerBI, Metabase, Superset 等。
-* **低代码软件**：如 Appsmith, Budibase 等。
-* **应用程序代码**：通过选择对应语言的 Postgres Driver。
+* **Standard PostgreSQL Clients**: Such as DataGrip, Navcat, TablePlus, etc.
+* **BI Products**: Such as PowerBI, Metabase, Superset, etc.
+* **Low-Code Software**: Such as Appsmith, Budibase, etc.
+* **Application Code**: Through corresponding PostgreSQL drivers for different programming languages.
 
-### 获取 BaseId
+### Getting the BaseId
 
-1. 点击任意表格进入界面，URL 上方以 `bse` 开头的字符串就是 baseId。
+1. Click on any table to enter the interface. The string starting with `bse` in the URL is the baseId.
 
-<img alt="baseId" style={{ maxWidth: '50%' }} src="/images/kai-fa-zhe/e8ef17c59ac0c067.png" />
+<img alt="baseId" src="/images/kai-fa-zhe/e8ef17c59ac0c067.png" />
 
-1. 进入数据库设计界面（表格右上角的 ⚙ 图标），里面的 schema 名就是 baseId。
+2. Enter the base design interface (⚙ icon in the top right corner of the table), where the schema name is the baseId.
 
-<img alt="Design page" style={{ maxWidth: '50%' }} src="/images/kai-fa-zhe/64fbddbd0f5519c4.png" />
+<img alt="Design page" src="/images/kai-fa-zhe/64fbddbd0f5519c4.png" />
 
-### 连接数据库
+### Connecting to the Database
 
-在不同的产品上，连接数据库的方式略有不同，但大同小异，我们这里进行一个简单的示例
+While connection methods may vary slightly across different products, they follow a similar pattern. Here's a simple example:
 
-<img alt="Connection example" style={{ maxWidth: '50%' }} src="/images/kai-fa-zhe/ceef01dd644628f4.png" />
+<img alt="Connection example" src="/images/kai-fa-zhe/ceef01dd644628f4.png" />
 
-### 关闭数据库连接
+### Closing the Database Connection
 
-1. **进入 Database Connection 界面**：在 Database Connection 界面点击删除，即可关闭连接。
-2. **密码清除**：删除后旧的密码将被清除。重新新建将会是新的连接。
+1. **Access Database Connection Interface**: Click delete in the Database Connection interface to close the connection.
+2. **Password Clearing**: After deletion, the old password will be cleared. Creating a new connection will generate new credentials.
 
-### 数据库表中的内容
+### Database Table Contents
 
-点击表格右上角的 ⚙️ 图标进入**数据库设计界面**，里面包含了关于当前表格在数据库中的名称和结构详情，对于如何在外部进行数据查询非常有帮助
+Click the ⚙️ icon in the top right corner to enter the **Base Design Interface**, which contains details about the table's name and structure in the database. This is very helpful for external data queries.
 
-#### 数据库表名称
+#### Database Table Names
 
-修改Teable 中的表名称不会同步修改数据库中的 table name，您必须显式的修改物理数据库中的表名。
+Changing a table name in Teable won't automatically sync with the table name in the database. You must explicitly modify the table name in the physical database.
 
-<img alt="table info" style={{ maxWidth: '50%' }} src="/images/kai-fa-zhe/ba2fdb846b2062ce.png" />
+<img alt="table info" src="/images/kai-fa-zhe/ba2fdb846b2062ce.png" />
 
-当你完成表名修改之后，就可以直接使用 SQL 进行查询，下面是一个例子查询当前表格的前 100 行数据
+After modifying the table name, you can directly use SQL for queries. Here's an example query to fetch the first 100 rows from the current table:
 
-复制
-
-```
+```sql
 SELECT * from "bseamGnQT65TVSCzIaC"."clients" limit 100
 ```
 
-查询的时候需要带上 schema 名称也就是 BaseId, 并使用物理数据库表名进行查询，**请注意在 Postgres 中必须使用双引号**`"` **将 schema 和 table 名称包住才能够正确的区分大小写。**
+When querying, you need to include the schema name (BaseId) and use the physical database table name. **Note that in PostgreSQL, you must use double quotes** `"` **around schema and table names to preserve case sensitivity.**
 
-#### **用户创建的字段**
+#### **User-Created Fields**
 
-您在表格中创建的所有字段。
+All fields you create in the table.
 
-注意，数据库表中的字段 (列) 名与用户在 Teable 界面上的命名不会完全一致，请在进行查询前先在数据库设计界面页面检查字段在数据库中的名称，并进行必要的修改。
+Note that the field (column) names in the database won't exactly match the names in the Teable interface. Please check the field names in the database design interface before querying and make necessary modifications.
 
-**修改 teable 中的字段名并不会同步修改 dbFieldName, 您必须显式的修改 dbFieldName 以修改 Postgres 中实际的 column name**
+**Changing field names in Teable won't automatically sync with dbFieldName. You must explicitly modify the dbFieldName to change the actual column name in PostgreSQL.**
 
-<img alt="db field name" style={{ maxWidth: '50%' }} src="/images/kai-fa-zhe/7609033391e8e7c1.png" />
+<img alt="db field name" src="/images/kai-fa-zhe/7609033391e8e7c1.png" />
 
-#### **Teable 系统字段**
+#### **Teable System Fields**
 
-系统字段无法被重命名
+System fields cannot be renamed:
 
-1. `__id` 唯一 ID
-2. `__version` 版本号
-3. `__auto_number` 自增数字，主键
-4. `__created_time` 创建时间
-5. `__last_modified_time` 最近修改时间
-6. `__created_by` 创建人 ID
-7. `__last_modified_by` 最近修改人 ID
-8. 视图索引字段：以 `__row` 开头的字段，用于维护当前视图中记录的顺序。
-9. 外键：如果存在关联字段，会创建逻辑外键，命名以 `__fk` 开头。
+1. `__id` Unique ID
+2. `__version` Version number
+3. `__auto_number` Auto-incrementing number, primary key
+4. `__created_time` Creation time
+5. `__last_modified_time` Last modified time
+6. `__created_by` Creator ID
+7. `__last_modified_by` Last modifier ID
+8. View index fields: Fields starting with `__row`, used to maintain record order in the current view
+9. Foreign keys: If there are relationship fields, logical foreign keys will be created, starting with `__fk`
 
-#### 中间表
+#### Junction Tables
 
-以 `junction_` 开头的表，用于处理 ManyToMany 以及单向关联关系。
+Tables starting with `junction_` are used to handle ManyToMany and unidirectional relationships.
 
-### 连接数限制
+### Connection Limits
 
-数据库连接就像是应用和数据库之间的桥梁，用于交换信息。我们的系统允许最多同时建立3条这样的桥梁（也就是连接）。这意味着，同时只能有3个应用直接与数据库交流（一个应用可能占用多条连接，这取决于你的设置）。超过这个数量，其他用户就需要等待直到有连接变得可用。这个限制帮助我们保持系统的稳定和高效，确保每位用户都能获得良好的体验。你可以在连接设置界面查看到当前有几个连接。
+Database connections act as bridges between applications and the database for information exchange. Our system allows a maximum of 3 simultaneous connections. This means only 3 applications can communicate directly with the database at the same time (one application might use multiple connections, depending on your settings). Beyond this limit, other users must wait until a connection becomes available. This limitation helps maintain system stability and efficiency, ensuring a good experience for all users. You can view the current number of connections in the connection settings interface.
 
-### 权限说明
+### Permission Notes
 
-创建的连接用户权限访问范围为当前所在的 Base (Teable界面上称数据库），它对应 Postgres 中的 schema, schema 是 Postgres 中命名空间概念，提供了非常好的权限隔离特性，保证当前连接仅可访问该 schema 中的表，但是 postgres 中创建的角色会拥有所有 schema 的名称查看能力，这也就是为什么当你使用外部应用连接上数据库是时可能会看到下图一样非常多的 baseId (实际上是schema 名称）。但是可以放心的是，除了这个 Id 之外任何其他的用户内容是无法被访问的。
+The created connection user's access scope is limited to the current base (called database in the Teable interface), which corresponds to a schema in PostgreSQL. Schemas in PostgreSQL provide excellent permission isolation, ensuring the current connection can only access tables within that schema. However, PostgreSQL roles created will have the ability to view all schema names, which is why you might see many baseIds (actually schema names) as shown in the image below when connecting through external applications. Rest assured that besides this ID, no other user content can be accessed.
 
-<img alt="base id in TablePlus" style={{ maxWidth: '50%' }} src="/images/kai-fa-zhe/093aebb4bc8cf732.png" />
+<img alt="base id in TablePlus" src="/images/kai-fa-zhe/093aebb4bc8cf732.png" />
 
-### 直接写数据库
+### Direct Database Writing
 
-Teable 不允许通过外部连接直接操作数据库，直接修改数据库内容是危险的，可能会破坏应用程序的逻辑，导致崩溃或数据丢失。Teable 不提供可写的数据库连接。如果需要修改数据，请通过 Teable API 进行，API 提供了更精细的权限控制和良好的操作封装。
+Teable does not allow direct database operations through external connections. Directly modifying the database content is dangerous and may break application logic, leading to crashes or data loss. Teable does not provide writable database connections. If you need to modify data, please use the Teable API, which provides more granular permission control and well-encapsulated operations.
 
 ###
 
