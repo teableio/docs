@@ -2,31 +2,30 @@
 title: "Docker Deployment"
 ---
 
-## Image Versions
+## Image Editions
 
-Teable offers both Enterprise Edition and Community Edition images. Add the -ee suffix to the image name to switch to the Enterprise Edition.
+Teable offers both Enterprise Edition (EE) and Community Edition (CE) images. Add the `-ee` suffix to the image name to switch to the EE.
 
-### Enterprise Edition
-
-```bash
+```bash EE
 # Application
 ghcr.io/teableio/teable-ee:latest
 # Database Migration
 ghcr.io/teableio/teable-db-migrate-ee:latest
 ```
 
-The Enterprise Edition allows free use of all Community Edition features and supports Enterprise-exclusive features through License subscription. You can view Enterprise features on the [pricing page](https://app.teable.io/setting/license-plan). Enterprise Edition data is compatible with the Community Edition, and you can switch between versions.
+<Note>
+The EE is now in the preview test, mail to support@teable.io we will give a 1-month trial license
+</Note>
+The EE allows free use of all CE features and supports Enterprise-exclusive features through License subscription. You can view Enterprise features on the [pricing page](https://app.teable.io/setting/license-plan). EE data is compatible with the CE, and you can switch between versions.
 
-### Community Edition
-
-```bash
+```bash CE
 # Application
 ghcr.io/teableio/teable:latest
 # Database Migration
 ghcr.io/teableio/teable-db-migrate:latest
 ```
 
-The Community Edition is built from open-source code and does not include any Enterprise features. Its data is compatible with the Enterprise Edition, and you can switch to the Enterprise Edition at any time.
+The CE is built from open-source code and does not include any Enterprise features. Its data is compatible with the EE, and you can switch to the EE at any time.
 
 ## Docker Compose Deployment
 
@@ -68,7 +67,7 @@ docker-compose --version
 
 ### Installing the Application
 
-#### 1. Create Docker Compose File
+#### 1. Create docker-compose.yaml File
 
 Access your server, create and enter the teable folder:
 
@@ -87,10 +86,8 @@ vim docker-compose.yaml
 #### **Minimal Deployment:**
 
 <Tabs>
-<Tab title="Enterprise Edition">
+<Tab title="EE">
 ```yaml docker-compose.yaml
-version: '3.9'
-
 services:
   teable:
     image: ghcr.io/teableio/teable-ee:latest
@@ -147,7 +144,7 @@ services:
         condition: service_healthy
 
   teable-cache:
-    image: registry.cn-shenzhen.aliyuncs.com/teable/redis:7.2.4
+    image: redis:7.2.4
     restart: always
     expose:
       - '6379'
@@ -172,12 +169,12 @@ volumes:
   teable-cache: {}
 
 ```bash .env
-# 替换下面默认密码, 推荐使用 8 位以上的强密码。
+# Replace the default password below with a strong password (ASCII) of at least 8 characters.
 POSTGRES_PASSWORD=replace_this_password
 REDIS_PASSWORD=replace_this_password
 SECRET_KEY=replace_this_secret_key
 
-# 请将下面替换为可公开访问的地址
+# Replace the following with a publicly accessible address
 PUBLIC_ORIGIN=http://127.0.0.1:3000
 
 # ---------------------
@@ -201,16 +198,14 @@ BACKEND_CACHE_REDIS_URI=redis://default:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_
 
 </Tab>
 
-<Tab title="Community Edition">
+<Tab title="CE">
 <Note>
-注意：社区版最小部署缺少 redis 无法直接升级企业版，建议增加 redis 组件（下方方案)
+Note: The minimum deployment of the CE lacks redis and cannot be upgraded to the EE directly. We recommend adding the redis component (the solution below).
 </Note>
 
-**不包括 Redis**
+**Does not include Redis**
 
 ```yaml docker-compose.yaml
-version: '3.9'
-
 services:
   teable:
     image: ghcr.io/teableio/teable:latest
@@ -275,11 +270,11 @@ volumes:
 ```
 
 ```bash .env
-# 替换下面默认密码, 推荐使用 8 位以上的强密码。
+# Replace the default password below with a strong password (ASCII) of at least 8 characters.
 POSTGRES_PASSWORD=replace_this_password
 SECRET_KEY=replace_this_secret_key
 
-# 请将下面替换为可公开访问的地址
+# Replace the following with a publicly accessible address
 PUBLIC_ORIGIN=http://127.0.0.1:3000
 
 # ---------------------
@@ -297,11 +292,9 @@ PRISMA_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRE
 
 ***
 
-**包括 Redis**
+**Includes Redis**
 
-```yaml docker-compose-yam
-version: '3.9'
-
+```yaml docker-compose.yaml
 services:
   teable:
     image: ghcr.io/teableio/teable:latest
@@ -329,7 +322,7 @@ services:
       retries: 3
 
   teable-db:
-    image: registry.cn-shenzhen.aliyuncs.com/teable/postgres:15.4
+    image: postgres:15.4
     restart: always
     ports:
       - '42345:5432'
@@ -358,7 +351,7 @@ services:
         condition: service_healthy
 
   teable-cache:
-    image: registry.cn-shenzhen.aliyuncs.com/teable/redis:7.2.4
+    image: redis:7.2.4
     restart: always
     expose:
       - '6379'
@@ -385,12 +378,12 @@ volumes:
 ```
 
 ```bash .env
-# 替换下面默认密码, 推荐使用 8 位以上的强密码。
+# Replace the default password below with a strong password (ASCII) of at least 8 characters.
 POSTGRES_PASSWORD=replace_this_password
 REDIS_PASSWORD=replace_this_password
 SECRET_KEY=replace_this_secret_key
 
-# 请将下面替换为可公开访问的地址
+# Replace the following with a publicly accessible address
 PUBLIC_ORIGIN=http://127.0.0.1:3000
 
 # ---------------------
@@ -472,5 +465,5 @@ If you encounter any issues during deployment, please contact our support team a
 
 ## License
 
-Teable Community Edition is open source under the AGPL-3.0 license. For Enterprise Edition, please [contact us](https://app.teable.io/share/shrg1ljiQXm4goJ7Cu9/view) for commercial licensing.
+Teable CE is open source under the AGPL-3.0 license. For EE, please [contact us](mailto:support@teable.io) for commercial licensing.
 

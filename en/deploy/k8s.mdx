@@ -4,8 +4,8 @@ title: "Kubernetes Deployment"
 
 ## Prerequisites
 ### Teable Images
-- Application image: `public.ecr.aws/teable/teable-ee:latest`
-- Database initialization image: `public.ecr.aws/teable/teable-db-migrate-ee:latest`
+- Application image: `ghcr.io/teableio/teable-ee:latest`
+- Database initialization image: `ghcr.io/teableio/teable-db-migrate-ee:latest`
 
 ### Runtime Environment
 - Running Kubernetes cluster
@@ -13,16 +13,14 @@ title: "Kubernetes Deployment"
 ### Required External Services
 #### Database Service
 - PostgreSQL database: postgres:15.4 (version > 12)
-  - PG image: `public.ecr.aws/teable/postgres:15.4`
+  - PG image: `postgres:15.4`
 
 #### Cache Service
 - Redis cache service: redis:7.2.4 (version > 5)
-  - Redis image: `public.ecr.aws/teable/redis:7.2.4`
+  - Redis image: `redis:7.2.4`
 
 #### Object Storage Service
-- MinIO object storage service: minio:RELEASE.2024-10-13T13-34-11Z-cpuv1
-  - MinIO image: `public.ecr.aws/teable/minio:RELEASE.2024-10-13T13-34-11Z-cpuv1`
-  - Note: You can use the latest version or cloud storage services. See configuration examples below using MinIO as an example.
+- MinIO object storage service: `minio:latest`
 
 ### Required Tools
 - kubectl command-line tool
@@ -158,7 +156,7 @@ spec:
     spec:
       containers:
         - name: db-migrate
-          image: public.ecr.aws/teable/teable-db-migrate-ee:latest
+          image: ghcr.io/teableio/teable-db-migrate-ee:latest
           envFrom:
             - configMapRef:
                 name: teable-config
@@ -191,7 +189,7 @@ spec:
     spec:
       containers:
         - name: teable
-          image: public.ecr.aws/teable/teable-ee:latest
+          image: ghcr.io/teableio/teable-ee:latest
           ports:
             - containerPort: 3000
           envFrom:
@@ -248,12 +246,12 @@ spec:
     app: teable
 ```
 
-```yaml ingress.yaml (可选)
+```yaml ingress.yaml (Optional)
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: teable
-  # 以 nginx 做示例，如果使用其他的 ingress class 请替换
+  # Example using nginx, if using other ingress class, please replace
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/proxy-body-size: "100m"
@@ -263,7 +261,7 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
 spec:
   rules:
-    - host: your-domain.com  # 应用基础配置，对外访问的域名
+    - host: your-domain.com  # Application base configuration, public access domain
       http:
         paths:
           - path: /
@@ -275,7 +273,7 @@ spec:
                   number: 3000
   tls:
     - hosts:
-        - your-domain.com  # 应用基础配置，对外访问的域名
+        - your-domain.com  # Application base configuration, public access domain
       secretName: your-tls-secret 
 ```
 

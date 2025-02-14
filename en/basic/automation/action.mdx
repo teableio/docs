@@ -1,255 +1,201 @@
 ---
-title: "动作"
+title: "Actions"
 ---
-<Tip>适用于高级版及以上</Tip>
+<Tip>Available in Professional and higher plans</Tip>
 
-动作定义了触发器被激活后要执行的具体操作。Teable 提供了多种动作类型，让您能够实现各种自动化需求。以下是详细的动作配置说明：
+Actions define specific operations to be executed when a trigger is activated. Teable offers various action types to help you achieve different automation needs. Here's a detailed guide on action configuration:
 
-### 1. 创建记录
+### 1. Create Record
 
-**功能**：在指定表格中创建新记录。
+**Function**: Creates a new record in a specified table.
 
-**配置项**：
+**Configuration**:
 
-* 目标表格：选择要创建记录的表格
+* Target Table: Select the table where you want to create the record
 
-* 字段值：为新记录设置各个字段的值
+* Field Values: Set values for each field in the new record
+  * Supports both static values and dynamic variables
+  * Multiple fields can be configured
 
-  * 可以使用静态值、动态变量
+**Notes**:
 
-  * 支持设置多个字段
+* Ensure all required fields are filled
+* You can use trigger data or data from previous steps to populate the new record
 
-**注意事项**：
+### 2. Get Records
 
-* 确保填写所有必填字段
+**Function**: Retrieves records from a specified view or based on specific conditions.
 
-* 可以利用触发器或之前步骤的数据来填充新记录
+**Configuration**:
 
-### 2. 获取记录
+* Data Source: Select the table and view to query
+* Query Conditions: Set filters (optional)
+* Sort: Configure result sorting (optional)
+* Limit: Set maximum number of records to return (up to 1000)
 
-**功能**：从指定视图或基于特定条件查找记录。
+**Notes**:
 
-**配置项**：
+* Use query conditions efficiently to optimize performance
+* Retrieved records can be used in subsequent actions
 
-* 数据源：选择要查询的表格和视图
+### 3. HTTP Request
 
-* 查询条件：设置筛选条件（可选）
+**Function**: Sends custom HTTP requests to external APIs.
 
-* 排序：设置结果排序方式（可选）
+**Configuration**:
 
-* 限制：设置返回记录的最大数量（最多1000条）
+* Request URL: Enter the target API URL
+* Request Method: Choose GET, POST, PUT, DELETE, etc.
+* Headers: Add custom HTTP headers
+* Body: Set request body content (for POST, PUT methods)
 
-**注意事项**：
+**Advanced Options**:
 
-* 合理使用查询条件可以提高查询效率
+* Mixed Mode: Combine static values and dynamic variables in requests
+* File Mode: Specifically for sending file data
 
-* 获取的记录可以用于后续动作中
+**Notes**:
 
-### 3. HTTP 请求
+* Ensure URL and authentication details are correct
+* Be mindful of API rate limits and response formats
 
-**功能**：发送自定义 HTTP 请求到外部 API。
+### 4. Send Email
 
-**配置项**：
+**Function**: Sends customized emails.
 
-* 请求 URL：输入目标 API 的 URL
+**Configuration**:
 
-* 请求方法：选择 GET、POST、PUT、DELETE 等
+* Recipients: Enter recipient email addresses
+* Subject: Set email subject
+* Body: Compose email content
+* Sender Name: Customize the display name of the sender
+* CC: Add carbon copy recipients
+* BCC: Add blind carbon copy recipients
+* Reply-To: Set reply-to email address
+* Attachments: Add email attachments
 
-* 请求头：添加自定义 HTTP 头
+**Notes**:
 
-* Body：设置请求体内容（适用于 POST、PUT 等方法）
+* Supports HTML formatting in email content
+* Use dynamic variables to personalize emails
+* Be aware of attachment size limits
 
-**高级选项**：
+### 5. Update Record
 
-* 混合模式：可以在请求中使用静态值和动态变量
+**Function**: Updates field values in existing records.
 
-* 文件模式：专门用于发送文件类型的数据
+**Configuration**:
 
-**注意事项**：
+* Target Record: Select the record to update via table and record ID
+* Update Fields: Choose fields to update and set new values
+* Update Mode:
+  * Single Field Update: Updates only specified fields
+  * Template Update: Updates multiple fields using a predefined template
 
-* 确保 URL 和认证信息的正确性
+**Notes**:
 
-* 注意 API 的速率限制和响应格式
+* Can use conditions to determine whether to execute updates
+* Updates will trigger related field automations and formula recalculations
 
-### 4. 发送邮件
+## Cross-Base Access
 
-**功能**：发送自定义邮件。
+Teable's automation feature supports cross-base record access, enhancing automation flexibility and functionality. Here's a detailed explanation:
 
-**配置项**：
+#### Overview
 
-* 收件人：输入收件人邮箱地址
+* Allows accessing data from other spaces and bases in automation workflows
+* Ideal for complex workflows requiring integration of multiple base information
 
-* 主题：设置邮件主题
+#### Configuration
 
-* 正文：编写邮件内容
+1. Click "Cross-Base Access" next to the table selection area
+2. Switch to any space and base
+3. Select target table or view
 
-* 发件人姓名：自定义发件人显示名称
+#### Access Permissions
 
-* 抄送（CC）：添加抄送收件人
+* Access is determined by the automation creator
+* External bases are accessed using the automation configurator's permissions and identity
 
-* 密送（BCC）：添加密送收件人
+#### Important Notes
 
-* 回复邮件地址：设置回复时的目标地址
+* Automation will fail if the configurator loses access to the target base
 
-* 附件：添加邮件附件
+#### Use Cases
 
-**注意事项**：
+1. **Data Integration**: Gather data from multiple bases for analysis or reporting
+2. **Cross-Department Collaboration**: Sync or update information between different department bases
+3. **Global Updates**: Update records across multiple bases based on changes in one base
 
-* 支持使用 HTML 格式化邮件内容
+#### Application in Existing Actions
 
-* 可以使用动态变量个性化邮件内容
+1. **Create Records**: Create new records based on data from other bases
+2. **Get Records**: Retrieve records from other bases for current automation
+3. **Update Records**: Update current base records using cross-base information
 
-* 注意附件大小限制
+## Loop run
 
-### 5. 更新记录
+**Overview**
 
-**功能**：更新已存在记录的字段值。
+Loop run allows batch processing of multiple elements in an array when performing update records, create records, and HTTP request operations. The system automatically iterates through each array element and executes operations sequentially, significantly improving data processing efficiency.
 
-**配置项**：
+**Configuration Guide**
 
-* 目标记录：通过表格和记录 ID 选择要更新的记录
+#### Update and Create Records Configuration
 
-* 更新字段：选择需要更新的字段并设置新值
+1. Locate the table selection area
+2. Click "Loop run" below the table selection area
+3. Select an array variable as the loop source from the dropdown menu
 
-* 更新模式：
+**Loop Create Records**
 
-  * 单字段更新：只更新指定的字段
+1. Select loop data source: Choose an array variable containing multiple data entries (e.g., record list)
+![](/images/2025-02-14-16-39-17.png)
 
-  * 模板更新：按预定义的模板更新多个字段
+![](/images/2025-02-14-16-34-17.png)
 
-**注意事项**：
+2. Configure field mapping: Select specific element variables from the record list in field values
 
-* 可以使用条件来决定是否执行更新
+![](/images/2025-02-14-16-40-32.png)
 
-* 更新操作会触发相关的字段自动化和公式重新计算
+The system will automatically create corresponding records upon execution.
 
-## 跨数据库访问
+![](/images/2025-02-14-16-41-03.png)
 
-Teable 的自动化功能支持跨数据库访问记录，这大大增强了自动化的灵活性和功能性。以下是关于跨数据库访问的详细说明：
+#### HTTP Request Configuration
 
-#### 功能概述
+1. Enter the HTTP request editing interface
+2. Find the "Array Output" option above the body editing area
+3. Click and select the array data source for loop processing
 
-* 允许在自动化流程中访问其他空间和数据库的数据
+**Usage Notes**
 
-* 适用于需要整合多个数据库信息的复杂工作流
+#### Data Processing Mechanism
 
-#### 配置方法
+* System automatically iterates through each array element
+* When selecting array variables in parameter configuration, each iteration processes only the current element value
+* Execution follows array element order
 
-1. 在选择表格时，点击表格选择区旁边的"跨数据库访问"选项
+**HTTP Request Special Notes**
 
-2. 切换到任意空间的任意数据库
+* When using array output directly in the body editor, array elements are automatically converted to string format
 
-3. 选择目标表格或视图
+**Application Scenarios**
 
-#### 访问权限
+1\. Batch Record Creation
+* Bulk user data import
+* Batch order creation
+* Bulk task generation
 
-* 访问权限由自动化创建者决定
+#### 2. Batch Record Updates
+* Bulk status modifications
+* Batch price updates
+* Bulk inventory adjustments
 
-* 外部数据库将通过自动化配置人员的权限和身份进行访问
+#### 3. Batch HTTP Requests
+* Bulk notification pushing
+* Batch data synchronization
+* Bulk information validation
 
-#### 注意事项
-
-* 若配置人员失去目标数据库的访问权限，则自动化将执行失败
-
-#### 应用场景
-
-1. **数据整合**：从多个数据库获取数据，进行综合分析或报告生成
-
-2. **跨部门协作**：在不同部门的数据库之间同步或更新信息
-
-3. **全局更新**：根据一个数据库的变化，更新多个相关数据库的记录
-
-#### 在现有动作中的应用
-
-1. **创建记录**：可以基于其他数据库的数据在当前数据库创建新记录
-
-2. **获取记录**：从其他数据库获取记录用于当前自动化流程
-
-3. **更新记录**：使用跨数据库获取的信息更新当前数据库的记录
-
-## 循环执行
-
-**功能概述**
-
-循环执行允许您在进行更新记录、创建记录和HTTP请求操作时，对数组中的多个元素进行批量处理。系统会自动遍历数组中的每个元素并依次执行相应操作，大大提升了数据处理效率。
-
-**配置指南**
-
-#### 更新记录和创建记录配置
-
-1. 在表格选择界面找到表格选择区
-
-2. 点击表格选择区下方的"循环执行"选项
-
-3. 从下拉菜单中选择作为循环源的数组变量
-
-![](/images/ji-ben-gong-neng/zi-dong-hua/074810dedd57b7be.jpeg)
-
-**循环创建记录**
-
-1. 选择循环的数据来源：选择包含多条数据的数组变量（如记录列表）
-
-![](/images/ji-ben-gong-neng/zi-dong-hua/9e311692db609645.png)
-
-1. 配置字段映射：在记录列表中选择字段值里具体元素变量
-
-![](/images/ji-ben-gong-neng/zi-dong-hua/f678e3c12a1812ad.png)
-
-执行后，系统将自动创建对应的记录。
-
-![](/images/ji-ben-gong-neng/zi-dong-hua/c192064172399184.jpeg)
-
-#### HTTP请求配置
-
-1. 进入HTTP请求编辑界面
-
-2. 在body编辑区域上方找到"数组输出"选项
-
-3. 点击并选择需要循环处理的数组数据源
-
-![](/images/ji-ben-gong-neng/zi-dong-hua/44076141f341cf47.jpeg)
-
-**使用须知**
-
-#### 数据处理机制
-
-* 系统会自动遍历数组中的每个元素
-
-* 在参数配置中选择数组内部的变量时，每次循环仅处理当前元素值
-
-* 整个过程按数组元素顺序依次执行
-
-**HTTP请求特殊说明**
-
-* 在body编辑框内直接使用数组输出时，数组内元素自动转换为字符串格式输出
-
-![](/images/ji-ben-gong-neng/zi-dong-hua/c7015bb95de446d5.jpeg)
-
-**应用场景示例**
-
-1\. 批量创建记录
-
-* 批量导入用户数据
-
-* 批量创建订单信息
-
-* 批量生成任务记录
-
-#### 2. 批量更新记录
-
-* 批量修改状态
-
-* 批量更新价格
-
-* 批量调整库存
-
-#### 3. 批量HTTP请求
-
-* 批量推送消息通知
-
-* 批量同步数据
-
-* 批量验证信息
-
-通过灵活组合这些动作，您可以构建复杂的自动化工作流，大大提高工作效率和数据处理的准确性。
+By combining these actions flexibly, you can build complex automation workflows to significantly improve work efficiency and data processing accuracy.
 

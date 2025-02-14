@@ -5,95 +5,57 @@ description: "Integrate Single Sign-On (SSO) with support for standard OIDC and 
 
 <Tip>Available for Enterprise Edition</Tip>
 
-Supported SSO Providers:
+Teable supports Single Sign-On (SSO) integration to help you manage user authentication through your existing identity providers. Currently, we support:
 
-* Standard OIDC
+* Standard OIDC (OpenID Connect)
 * Feishu/Lark
 
-## Feishu/Lark Integration
+## Understanding OIDC Configuration
 
-### 1. Create a Custom App in Feishu/Lark
+When setting up OIDC integration, you'll need to configure the following parameters:
 
-**Feishu Client -> Workplace -> Create App**
+- **Name**: A descriptive name for your SSO configuration
+- **Client ID**: A unique identifier assigned by your identity provider
+- **Client Secret**: A secret key used to authenticate your application
+- **Authorization URL**: The endpoint where users are redirected to authenticate
+- **Token URL**: The endpoint used to exchange the authorization code for access tokens
+- **User Info URL**: The endpoint to retrieve authenticated user information
+- **Issuer**: The URL that identifies your identity provider
 
-Obtain the App ID and App Secret
+## Configuration Steps
 
-![](/images/kai-fa-zhe/ji-cheng/dan-dian-deng-lu/eafb64024965053a.png)
+1. Configure your identity provider:
+   - Register your Teable application in your identity provider
+   - Set the callback URL to: `https://app.teable.io/api/auth/authentication/__providerId__/callback`
+   - Obtain the Client ID and Client Secret
 
-### 2. Create Authentication Provider in Teable
+2. Configure Teable:
+   - Navigate to **Admin Panel** → **Authentication Settings**
+   - Click "Create Authentication Provider"
+   - Fill in the configuration details from your identity provider
+   - After saving, you'll get a `providerId` - replace `__providerId__` in the callback URL with this value
+   - Update this final callback URL in your identity provider's configuration
 
-**Organization Management Panel -> Authentication Settings**
+## Example: Configuring Authentik
 
-<Note>Requires organization administrator account</Note>
+Here's a practical example using Authentik as your identity provider:
 
-![](/images/kai-fa-zhe/ji-cheng/dan-dian-deng-lu/d9e424732c7bd9c7.png)
+1. In Authentik:
+   - Create a new OAuth2/OpenID Provider
+   - Initially set a temporary callback URL (you'll update this later)
+   - Note down the Client ID and Client Secret
 
-#### Enter APP ID and APP Secret
+2. In Teable:
+   - Create a new authentication provider with:
+   ```
+   Authorization URL: https://your-authentik-domain.com/application/o/authorize/
+   Token URL: https://your-authentik-domain.com/application/o/token/
+   User Info URL: https://your-authentik-domain.com/application/o/userinfo/
+   Issuer: https://your-authentik-domain.com/application/o/teable/
+   ```
+   - After saving, note the generated `providerId`
+   - Update your Authentik configuration with the complete callback URL: `https://app.teable.io/api/auth/authentication/YOUR_PROVIDER_ID/callback`
 
-These values are obtained when creating the custom app in step 1
-
-![](/images/kai-fa-zhe/ji-cheng/dan-dian-deng-lu/8f8c41d77bde45a2.png)
-
-**Click to copy the providerId for later use**
-
-![](/images/kai-fa-zhe/ji-cheng/dan-dian-deng-lu/49353a708fc1f1e1.png)
-
-### 3. Return to Feishu/Lark App Configuration
-
-#### 3.1 Permission Settings
-
-Development Configuration -> Permission Management
-
-Search and select:
-
-`contact:user.base:readonly`
-
-`contact:user.email:readonly`
-
-#### 3.2 Security Settings
-
-Development Configuration -> Security Settings
-
-Redirect URL:
-
-`https://app.teable.io/api/auth/authentication/__providerId__/callback`
-
-Replace `__providerId__` with the providerId copied in step 2
-
-For self-hosted instances, replace `app.teable.io` with your instance's domain or IP
-
-#### 3.3 Web Application Settings
-
-App Capabilities -> Web App -> Web App Configuration, click Settings -> Desktop Homepage, Mobile Homepage:
-
-Same as the redirect URL:
-
-`https://app.teable.io/api/auth/authentication/__providerId__`
-
-### 4. Publish Version
-
-Click Create Version -> Upload Icon
-
-![](/images/kai-fa-zhe/ji-cheng/dan-dian-deng-lu/66f7441d660f2858.png)
-
-Set version number (e.g., 1.0.0)
-Choose availability scope (e.g., visible to all)
-Click publish and complete the approval process
-
-### 5. Access the Application
-<Tabs>
-<Tab title="Cloud Version">
-
-Cloud login URL requires your `organizationId`
-For example: `https://app.teable.io/auth/login?organizationId=orgxxxxxxxx`
-The login page will then show the added Feishu/Lark login button, or you can click the app icon directly in Feishu/Lark
-
-</Tab>
-<Tab title="Self-Hosted">
-
-For self-hosted version:
-Simply access the application URL to see the login button, or click the app icon in Feishu/Lark
-![](/images/kai-fa-zhe/ji-cheng/dan-dian-deng-lu/54501614ff7424f1.png)
-</Tab>
-</Tabs>
-
+<Note>
+Remember to replace `your-authentik-domain.com` with your actual Authentik instance domain, and `YOUR_PROVIDER_ID` with the ID generated by Teable. The exact URLs may vary depending on your identity provider's configuration.
+</Note>
