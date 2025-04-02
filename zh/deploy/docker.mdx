@@ -121,7 +121,7 @@ services:
       retries: 3
 
   teable-db:
-    image: postgres:15.4
+    image: registry.cn-shenzhen.aliyuncs.com/teable/postgres:15.4
     restart: always
     ports:
       - '42345:5432'
@@ -242,7 +242,7 @@ services:
       retries: 3
 
   teable-db:
-    image: postgres:15.4
+    image: registry.cn-shenzhen.aliyuncs.com/teable/postgres:15.4
     restart: always
     ports:
       - '42345:5432'
@@ -536,16 +536,32 @@ BACKEND_STORAGE_PRIVATE_BUCKET=private
 BACKEND_STORAGE_MINIO_ENDPOINT=minio.example.com
 # minio 端口
 BACKEND_STORAGE_MINIO_PORT=443
+# 是否启用了 https
+BACKEND_STORAGE_MINIO_USE_SSL=true
 # minio access key
 BACKEND_STORAGE_MINIO_ACCESS_KEY=_minio_access_key_
 # minio secret key
 BACKEND_STORAGE_MINIO_SECRET_KEY=_minio_secret_key_
 # 完整的访问地址
 STORAGE_PREFIX=https://minio.example.com
+
+# ---内网配置（可选）---
+# 内网 minio 服务 endpoint ip 或域名 (暂不支持 https)
+BACKEND_STORAGE_MINIO_INTERNAL_ENDPOINT=teable-storage.internal
+# 内网 minio 端口
+BACKEND_STORAGE_MINIO_INTERNAL_PORT=9000
+# ---region 配置（可选）---
+# 可用区名称
+BACKEND_STORAGE_MINIO_REGION=us-east-1
+
 ```
 </Tab>
 
 <Tab title="连接阿里云 oss">
+<Note>
+注意：当前方案存在问题，我们已经知悉，正在修复中。
+</Note>
+
 开始之前，你需要在阿里云上创建两个桶。一个公开桶存储头像和表单头图，一个私有桶用来存储附件内容。
 
 ```sh .env
@@ -760,4 +776,35 @@ POSTGRES_USER=teable
 ## 许可证
 
 Teable 社区版本在 AGPL-3.0 协议下开源。企业版本请[联系我们](https://app.teable.cn/share/shrg1ljiQXm4goJ7Cu9/view)获取商业许可。
+
+
+## 常见问题
+
+<Accordion title="为什么我安装过后无法导入文件/无法上传图片">
+无法导入文件通常是因为没有正确配置PUBLIC_ORIGIN环境变量。您需要将PUBLIC_ORIGIN设置为当前可访问的地址：
+```bash
+# 本地开发环境
+PUBLIC_ORIGIN=http://127.0.0.1:3000
+
+# 局域网访问
+PUBLIC_ORIGIN=http://192.168.1.100:3000
+
+# 域名访问
+PUBLIC_ORIGIN=https://teable.example.com
+```
+<Callout type="warning">
+重要提示：URL末尾不要包含斜杠("/")。
+</Callout>
+更改此配置后，您需要重启Teable实例以使更改生效。
+</Accordion>
+
+<Accordion title="如何启用HTTPS">
+启用HTTPS需要以下步骤：
+获取有效的SSL证书
+在配置文件中设置PROTOCOL=https
+如果使用MinIO，记得将BACKEND_STORAGE_MINIO_USE_SSL设置为true
+<Tip>
+推荐使用反向代理（如Nginx或Traefik）来处理SSL终止。
+</Tip>
+</Accordion>
 

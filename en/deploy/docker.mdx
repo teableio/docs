@@ -410,6 +410,171 @@ BACKEND_CACHE_REDIS_URI=redis://default:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_
 </Tabs>
 
 
+#### **Adding Storage Service (Optional)**
+
+Teable uses local storage to manage attachment resources by default. You can add MinIO or cloud storage for more powerful and stable service.
+
+<Tabs>
+<Tab title="Add MinIO to docker-compose">
+MinIO provides an additional storage management interface (port 9001) and more powerful, stable file service.
+
+```yaml docker-compose.yaml
+services:
+  # ...previous content
+  teable-storage:
+    image: minio/minio:RELEASE.2024-02-17T01-15-57Z
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+    volumes:
+      - teable-storage:/data:rw
+    networks:
+      - teable
+    command: server /data --console-address ":9001"
+  createbuckets:
+    image: minio/mc
+    networks:
+      - teable
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set teable-storage http://teable-storage:9000 ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY};
+      /usr/bin/mc mb teable-storage/public;
+      /usr/bin/mc anonymous set public teable-storage/public;
+      /usr/bin/mc mb teable-storage/private;
+      exit 0;
+      "
+    depends_on:
+      teable-storage:
+        condition: service_started
+
+networks:
+  teable:
+    name: teable-network
+
+volumes:
+  teable-db: {}
+  teable-cache: {}
+  # Add a new volume
+  teable-storage: {}
+
+```
+
+```bash .env
+# Replace the default passwords below with strong passwords (ASCII) of at least 8 characters.
+POSTGRES_PASSWORD=replace_this_password
+REDIS_PASSWORD=replace_this_password
+SECRET_KEY=replace_this_secret_key
+
+# If you enable HTTPS, set PROTOCOL to https.
+PROTOCAL=http
+# Set PUBLIC_HOST to the IP or domain name of your deployment. Cannot use localhost or 127.0.0.1.
+PUBLIC_HOST=192.168.x.x
+# Modify the final port to match your access port, or remove :port if using standard ports (80/443).
+PUBLIC_ORIGIN=${PROTOCAL}://${PUBLIC_HOST}:3000
+
+# ---------------------
+
+# Postgres
+POSTGRES_HOST=teable-db
+POSTGRES_PORT=5432
+POSTGRES_DB=teable
+POSTGRES_USER=teable
+
+# Redis
+REDIS_HOST=teable-cache
+REDIS_PORT=6379
+REDIS_DB=0
+
+# Minio
+MINIO_ACCESS_KEY=teable_minio_access
+MINIO_SECRET_KEY=${SECRET_KEY}
+
+# App
+PRISMA_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+BACKEND_CACHE_PROVIDER=redis
+BACKEND_CACHE_REDIS_URI=redis://default:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB}
+BACKEND_STORAGE_PROVIDER=minio
+BACKEND_STORAGE_PUBLIC_BUCKET=public
+BACKEND_STORAGE_PRIVATE_BUCKET=private
+BACKEND_STORAGE_MINIO_USE_SSL=false # If you enable HTTPS, modify this value to true
+BACKEND_STORAGE_MINIO_ENDPOINT=${PUBLIC_HOST}
+BACKEND_STORAGE_MINIO_PORT=9000
+BACKEND_STORAGE_MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+BACKEND_STORAGE_MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+STORAGE_PREFIX=${PROTOCAL}://${PUBLIC_HOST}:${BACKEND_STORAGE_MINIO_PORT}
+```
+</Tab>
+
+<Tab title="Connect to External MinIO">
+Before starting, you need to create two buckets on MinIO. One public bucket stores profile images and form headers, and one private bucket stores attachment content.
+
+```sh .env
+# ...previous content
+# Use minio provider
+BACKEND_STORAGE_PROVIDER=minio
+# Public bucket name
+BACKEND_STORAGE_PUBLIC_BUCKET=public
+# Private bucket name
+BACKEND_STORAGE_PRIVATE_BUCKET=private
+# Minio service endpoint ip or domain name
+BACKEND_STORAGE_MINIO_ENDPOINT=minio.example.com
+# Minio port
+BACKEND_STORAGE_MINIO_PORT=443
+# Whether HTTPS is enabled
+BACKEND_STORAGE_MINIO_USE_SSL=true
+# minio access key
+BACKEND_STORAGE_MINIO_ACCESS_KEY=_minio_access_key_
+# minio secret key
+BACKEND_STORAGE_MINIO_SECRET_KEY=_minio_secret_key_
+# Full access address
+STORAGE_PREFIX=https://minio.example.com
+
+# ---Internal Network Configuration (Optional)---
+# Internal minio service endpoint ip or domain name (not supported for HTTPS)
+BACKEND_STORAGE_MINIO_INTERNAL_ENDPOINT=teable-storage.internal
+# Internal minio port
+BACKEND_STORAGE_MINIO_INTERNAL_PORT=9000
+# ---region configuration (Optional)---
+# Region name
+BACKEND_STORAGE_MINIO_REGION=us-east-1
+
+```
+</Tab>
+
+<Tab title="Connect to AWS S3">
+<Note>
+Note: There are currently some issues with this solution. We are aware and working on a fix.
+</Note>
+Before starting, you need to create two buckets in AWS S3. One public bucket for storing avatars and form headers, and one private bucket for storing attachment content.
+
+```sh .env
+# ...previous content
+# Use standard S3 provider
+BACKEND_STORAGE_PROVIDER: s3
+# Region name
+BACKEND_STORAGE_S3_REGION: us-west-2
+# Endpoint, must include protocol (typically https)
+BACKEND_STORAGE_S3_ENDPOINT: https://s3.us-west-2.amazonaws.com
+# Access key
+BACKEND_STORAGE_S3_ACCESS_KEY: access_key
+# Secret key
+BACKEND_STORAGE_S3_SECRET_KEY: secret_key
+# Public bucket
+BACKEND_STORAGE_PUBLIC_BUCKET: your-public-bucket
+# Private bucket
+BACKEND_STORAGE_PRIVATE_BUCKET: your-private-bucket
+
+```
+
+This process applies to most cloud providers, not just AWS S3.
+
+</Tab>
+</Tabs>
+
+
 
 #### Start the Application
 
@@ -468,3 +633,33 @@ If you encounter any issues during deployment, please contact our support team a
 
 Teable CE is open source under the AGPL-3.0 license. For EE, please [contact us](mailto:support@teable.io) for commercial licensing.
 
+
+## Common Issues
+
+<Accordion title="Why can't I import CSV/xlsx or upload images after installation">
+File import issues are typically due to incorrect configuration of the PUBLIC_ORIGIN environment variable. You need to set PUBLIC_ORIGIN to the currently accessible address:
+```bash
+# For local development
+PUBLIC_ORIGIN=http://127.0.0.1:3000
+
+# For local network access
+PUBLIC_ORIGIN=http://192.168.1.100:3000
+
+# For domain name access
+PUBLIC_ORIGIN=https://teable.example.com
+```
+<Callout type="warning">
+Important: Do not include a trailing slash ("/") at the end of the URL.
+</Callout>
+After changing this configuration, you'll need to restart your Teable instance for the changes to take effect.
+</Accordion>
+
+<Accordion title="How to enable HTTPS">
+Enabling HTTPS requires the following steps:
+Obtain a valid SSL certificate
+Set PROTOCOL=https in your configuration file
+If using MinIO, remember to set BACKEND_STORAGE_MINIO_USE_SSL to true
+<Tip>
+It's recommended to use a reverse proxy (like Nginx or Traefik) to handle SSL termination.
+</Tip>
+</Accordion>
