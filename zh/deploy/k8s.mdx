@@ -5,7 +5,6 @@ title: "K8s 部署"
 ## 前置条件
 ### Teable 镜像
 - 应用镜像: `registry.cn-shenzhen.aliyuncs.com/teable/teable-ee:latest`
-- 数据库初始化镜像: `registry.cn-shenzhen.aliyuncs.com/teable/teable-db-migrate-ee:latest`
 
 ### 运行环境
 - 运行中的 Kubernetes 集群
@@ -144,36 +143,6 @@ stringData:
   BACKEND_CACHE_REDIS_URI: "redis://username:password@your-redis-host:6379/0"
 ```
 
-```yaml job.yaml
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: teable-db-migrate
-  labels:
-    app: teable
-    component: db-migrate
-spec:
-  ttlSecondsAfterFinished: 100  # Job 完成后 100 秒自动删除
-  backoffLimit: 3               # 最多重试 3 次
-  template:
-    spec:
-      containers:
-        - name: db-migrate
-          image: registry.cn-shenzhen.aliyuncs.com/teable/teable-db-migrate-ee:latest
-          envFrom:
-            - configMapRef:
-                name: teable-config
-            - secretRef:
-                name: teable-secrets
-          resources:
-            requests:
-              cpu: 100m
-              memory: 102Mi
-            limits:
-              cpu: 1000m
-              memory: 1024Mi
-      restartPolicy: Never
-```
 
 ```yaml deployment.yaml
 apiVersion: apps/v1
@@ -190,9 +159,29 @@ spec:
       labels:
         app: teable
     spec:
+      # Add initContainers for database migration
+      initContainers:
+        - name: db-migrate
+          image: registry.cn-shenzhen.aliyuncs.com/teable/teable-ee:latest
+          args:
+            - migrate-only
+          envFrom:
+            - configMapRef:
+                name: teable-config
+            - secretRef:
+                name: teable-secrets
+          resources:
+            requests:
+              cpu: 100m
+              memory: 102Mi
+            limits:
+              cpu: 1000m
+              memory: 1024Mi
       containers:
         - name: teable
           image: registry.cn-shenzhen.aliyuncs.com/teable/teable-ee:latest
+          args:
+            - skip-migrate
           ports:
             - containerPort: 3000
           envFrom:
@@ -290,7 +279,6 @@ kubectl apply -f secrets.yaml
 ```
 2. 部署应用：
 ```sh
-kubectl apply -f job.yaml
 kubectl apply -f deployment.yaml
 kubectl apply -f service.yaml
 kubectl apply -f ingress.yaml

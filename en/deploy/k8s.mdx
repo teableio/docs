@@ -5,7 +5,6 @@ title: "Kubernetes Deployment"
 ## Prerequisites
 ### Teable Images
 - Application image: `ghcr.io/teableio/teable-ee:latest`
-- Database initialization image: `ghcr.io/teableio/teable-db-migrate-ee:latest`
 
 ### Runtime Environment
 - Running Kubernetes cluster
@@ -141,37 +140,6 @@ stringData:
   BACKEND_CACHE_REDIS_URI: "redis://username:password@your-redis-host:6379/0"
 ```
 
-```yaml job.yaml
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: teable-db-migrate
-  labels:
-    app: teable
-    component: db-migrate
-spec:
-  ttlSecondsAfterFinished: 100  # Job will be deleted 100 seconds after completion
-  backoffLimit: 3               # Maximum 3 retry attempts
-  template:
-    spec:
-      containers:
-        - name: db-migrate
-          image: ghcr.io/teableio/teable-db-migrate-ee:latest
-          envFrom:
-            - configMapRef:
-                name: teable-config
-            - secretRef:
-                name: teable-secrets
-          resources:
-            requests:
-              cpu: 100m
-              memory: 102Mi
-            limits:
-              cpu: 1000m
-              memory: 1024Mi
-      restartPolicy: Never
-```
-
 ```yaml deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -187,9 +155,29 @@ spec:
       labels:
         app: teable
     spec:
+      # Add initContainers for database migration
+      initContainers:
+        - name: db-migrate
+          image: ghcr.io/teableio/teable-ee:latest
+          args:
+            - migrate-only
+          envFrom:
+            - configMapRef:
+                name: teable-config
+            - secretRef:
+                name: teable-secrets
+          resources:
+            requests:
+              cpu: 100m
+              memory: 102Mi
+            limits:
+              cpu: 1000m
+              memory: 1024Mi
       containers:
         - name: teable
           image: ghcr.io/teableio/teable-ee:latest
+          args:
+            - skip-migrate
           ports:
             - containerPort: 3000
           envFrom:
@@ -287,7 +275,6 @@ kubectl apply -f secrets.yaml
 ```
 2. Deploy application:
 ```sh
-kubectl apply -f job.yaml
 kubectl apply -f deployment.yaml
 kubectl apply -f service.yaml
 kubectl apply -f ingress.yaml

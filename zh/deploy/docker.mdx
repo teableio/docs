@@ -9,10 +9,7 @@ Teable 镜像分为企业版和社区版两个版本，在镜像名称后添加 
 ### 企业版
 
 ```bash
-# 应用
 registry.cn-shenzhen.aliyuncs.com/teable/teable-ee:latest
-# 数据库初始化
-registry.cn-shenzhen.aliyuncs.com/teable/teable-db-migrate-ee:latest
 ```
 
 企业版可免费使用社区版包含的本全部功能，并支持使用 License 订阅企业版本独有功能，企业版功能可在[价格页面](https://app.teable.cn/setting/license-plan)查阅。企业版本数据与社区版本兼容，版本可以互相切换。
@@ -20,10 +17,7 @@ registry.cn-shenzhen.aliyuncs.com/teable/teable-db-migrate-ee:latest
 ### 社区版
 
 ```bash
-# 应用
 registry.cn-shenzhen.aliyuncs.com/teable/teable:latest
-# 数据库初始化
-registry.cn-shenzhen.aliyuncs.com/teable/teable-db-migrate:latest
 ```
 
 社区版是由开源代码构建出来的镜像，不包含企业版本的任何功能。数据与企业版兼容，可随时切换为企业版本。
@@ -109,8 +103,8 @@ services:
     networks:
       - teable
     depends_on:
-      teable-db-migrate:
-        condition: service_completed_successfully
+      teable-db:
+        condition: service_healthy
       teable-cache:
         condition: service_healthy
     healthcheck:
@@ -138,16 +132,6 @@ services:
       interval: 10s
       timeout: 3s
       retries: 3
-
-  teable-db-migrate:
-    image: registry.cn-shenzhen.aliyuncs.com/teable/teable-db-migrate-ee:latest
-    environment:
-      - PRISMA_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
-    networks:
-      - teable
-    depends_on:
-      teable-db:
-        condition: service_healthy
 
   teable-cache:
     image: registry.cn-shenzhen.aliyuncs.com/teable/redis:7.2.4
@@ -232,8 +216,8 @@ services:
     networks:
       - teable
     depends_on:
-      teable-db-migrate:
-        condition: service_completed_successfully
+      teable-db:
+        condition: service_healthy
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
       start_period: 5s
@@ -259,16 +243,6 @@ services:
       interval: 10s
       timeout: 3s
       retries: 3
-
-  teable-db-migrate:
-    image: registry.cn-shenzhen.aliyuncs.com/teable/teable-db-migrate:latest
-    environment:
-      - PRISMA_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
-    networks:
-      - teable
-    depends_on:
-      teable-db:
-        condition: service_healthy
 
 networks:
   teable:
@@ -323,8 +297,8 @@ services:
     networks:
       - teable
     depends_on:
-      teable-db-migrate:
-        condition: service_completed_successfully
+      teable-db:
+        condition: service_healthy
       teable-cache:
         condition: service_healthy
     healthcheck:
@@ -352,16 +326,6 @@ services:
       interval: 10s
       timeout: 3s
       retries: 3
-
-  teable-db-migrate:
-    image: registry.cn-shenzhen.aliyuncs.com/teable/teable-db-migrate:latest
-    environment:
-      - PRISMA_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
-    networks:
-      - teable
-    depends_on:
-      teable-db:
-        condition: service_healthy
 
   teable-cache:
     image: registry.cn-shenzhen.aliyuncs.com/teable/redis:7.2.4
@@ -609,9 +573,8 @@ docker-compose up -d
 如果希望使用托管的数据库和，则可以进一步精简部署过程。
 
 1. 删除 services.teable-db
-2. 删除 service.teable-db-migrate.depends\_on
-3. 删除 volumes.teable-db
-4. 更新 .env 替换为托管数据库的配置
+2. 删除 volumes.teable-db
+3. 更新 .env 替换为托管数据库的配置
 
 **完整示例**
 
@@ -633,8 +596,8 @@ services:
     networks:
       - teable
     depends_on:
-      teable-db-migrate:
-        condition: service_completed_successfully
+      teable-db:
+        condition: service_healthy
       teable-cache:
         condition: service_healthy
     healthcheck:
@@ -643,15 +606,6 @@ services:
       interval: 5s
       timeout: 3s
       retries: 3
-
-  teable-db-migrate:
-    image: registry.cn-shenzhen.aliyuncs.com/teable/teable-db-migrate-ee:latest
-    environment:
-      - TZ=${TIMEZONE}
-      - PRISMA_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
-    networks:
-      - teable
-
   teable-cache:
     image: registry.cn-shenzhen.aliyuncs.com/teable/redis:7.2.4
     restart: always
@@ -695,8 +649,8 @@ services:
     networks:
       - teable
     depends_on:
-      teable-db-migrate:
-        condition: service_completed_successfully
+      teable-db:
+        condition: service_healthy
       teable-cache:
         condition: service_healthy
     healthcheck:
@@ -705,15 +659,6 @@ services:
       interval: 5s
       timeout: 3s
       retries: 3
-
-  teable-db-migrate:
-    image: registry.cn-shenzhen.aliyuncs.com/teable/teable-db-migrate-ee:latest
-    environment:
-      - TZ=${TIMEZONE}
-      - PRISMA_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
-    networks:
-      - teable
-
   teable-cache:
     image: registry.cn-shenzhen.aliyuncs.com/teable/redis:7.2.4
     restart: always
