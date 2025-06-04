@@ -515,7 +515,7 @@ BACKEND_STORAGE_MINIO_REGION=us-east-1
 
 <Tab title="连接阿里云 oss">
 <Note>
-注意：当前方案存在问题，我们已经知悉，正在修复中。
+注意：请确保正确配置跨域(CORS)设置，否则可能会影响文件访问。
 </Note>
 
 开始之前，你需要在阿里云上创建两个桶。一个公开桶存储头像和表单头图，一个私有桶用来存储附件内容。
@@ -523,19 +523,21 @@ BACKEND_STORAGE_MINIO_REGION=us-east-1
 ```sh .env
 # ...前面的内容
 # 使用 s3 标准 provider
-BACKEND_STORAGE_PROVIDER: s3
+BACKEND_STORAGE_PROVIDER=s3
 # 可用区名称
-BACKEND_STORAGE_S3_REGION: oss-cn-shenzhen
+BACKEND_STORAGE_S3_REGION=oss-cn-shenzhen
 # 端点，注意要带上协议，一般是 https
-BACKEND_STORAGE_S3_ENDPOINT: https://oss-cn-shenzhen.aliyuncs.com
+BACKEND_STORAGE_S3_ENDPOINT=https://oss-cn-shenzhen.aliyuncs.com
 # access key
-BACKEND_STORAGE_S3_ACCESS_KEY: access_key
+BACKEND_STORAGE_S3_ACCESS_KEY=access_key
 # secret key
-BACKEND_STORAGE_S3_SECRET_KEY: secret_key
+BACKEND_STORAGE_S3_SECRET_KEY=secret_key
 # 公共桶
-BACKEND_STORAGE_PUBLIC_BUCKET: your-public-bucket
+BACKEND_STORAGE_PUBLIC_BUCKET=your-public-bucket
 # 私有桶
-BACKEND_STORAGE_PRIVATE_BUCKET: your-private-bucket
+BACKEND_STORAGE_PRIVATE_BUCKET=your-private-bucket
+# 完整的访问地址，你的公共桶的访问地址
+STORAGE_PREFIX=https://your-public-bucket.oss-cn-shenzhen.aliyuncs.com
 
 ```
 

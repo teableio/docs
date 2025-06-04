@@ -507,26 +507,28 @@ BACKEND_STORAGE_MINIO_REGION=us-east-1
 
 <Tab title="Connect to AWS S3">
 <Note>
-Note: There are currently some issues with this solution. We are aware and working on a fix.
+Note: Please ensure proper CORS (Cross-Origin Resource Sharing) configuration is set up, as it may affect file access.
 </Note>
 Before starting, you need to create two buckets in AWS S3. One public bucket for storing avatars and form headers, and one private bucket for storing attachment content.
 
 ```sh .env
 # ...previous content
 # Use standard S3 provider
-BACKEND_STORAGE_PROVIDER: s3
+BACKEND_STORAGE_PROVIDER=s3
 # Region name
-BACKEND_STORAGE_S3_REGION: us-west-2
+BACKEND_STORAGE_S3_REGION=us-west-2
 # Endpoint, must include protocol (typically https)
-BACKEND_STORAGE_S3_ENDPOINT: https://s3.us-west-2.amazonaws.com
+BACKEND_STORAGE_S3_ENDPOINT=https://s3.us-west-2.amazonaws.com
 # Access key
-BACKEND_STORAGE_S3_ACCESS_KEY: access_key
+BACKEND_STORAGE_S3_ACCESS_KEY=access_key
 # Secret key
-BACKEND_STORAGE_S3_SECRET_KEY: secret_key
+BACKEND_STORAGE_S3_SECRET_KEY=secret_key
 # Public bucket
-BACKEND_STORAGE_PUBLIC_BUCKET: your-public-bucket
+BACKEND_STORAGE_PUBLIC_BUCKET=your-public-bucket
 # Private bucket
-BACKEND_STORAGE_PRIVATE_BUCKET: your-private-bucket
+BACKEND_STORAGE_PRIVATE_BUCKET=your-private-bucket
+# Full access address, your public bucket's access address
+STORAGE_PREFIX=https://your-public-bucket.s3.us-west-2.amazonaws.com
 
 ```
 
