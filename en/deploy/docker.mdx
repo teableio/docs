@@ -2,21 +2,6 @@
 title: "Docker Deployment"
 ---
 
-## Image Editions
-
-Teable offers both Enterprise Edition (EE) and Community Edition (CE) images. Add the `-ee` suffix to the image name to switch to the EE.
-
-```bash EE
-ghcr.io/teableio/teable-ee:latest
-```
-
-The EE allows free use of all CE features and supports Enterprise-exclusive features through License subscription. You can view Enterprise features on the [pricing page](https://app.teable.io/public/pricing?host=self-hosted&billing=year). EE data is compatible with the CE, and you can switch between versions.
-
-```bash CE
-ghcr.io/teableio/teable-community:latest
-```
-
-The CE is built from open-source code and does not include any Enterprise features. Its data is compatible with the EE, and you can switch to the EE at any time.
 
 ## Docker Compose Deployment
 
@@ -76,12 +61,10 @@ vim docker-compose.yaml
 
 #### **Minimal Deployment:**
 
-<Tabs>
-<Tab title="EE">
 ```yaml docker-compose.yaml
 services:
   teable:
-    image: ghcr.io/teableio/teable-ee:latest
+    image: ghcr.io/teableio/teable:latest
     restart: always
     ports:
       - '3000:3000'
@@ -177,198 +160,6 @@ PRISMA_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRE
 BACKEND_CACHE_PROVIDER=redis
 BACKEND_CACHE_REDIS_URI=redis://default:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB}
 ```
-
-</Tab>
-
-<Tab title="CE">
-<Note>
-Note: The minimum deployment of the CE lacks redis and cannot be upgraded to the EE directly. We recommend adding the redis component (the solution below).
-</Note>
-
-**Does not include Redis**
-
-```yaml docker-compose.yaml
-services:
-  teable:
-    image: ghcr.io/teableio/teable-community:latest
-    restart: always
-    ports:
-      - '3000:3000'
-    volumes:
-      - teable-data:/app/.assets:rw
-    env_file:
-      - .env
-    environment:
-      - NEXT_ENV_IMAGES_ALL_REMOTE=true
-    networks:
-      - teable
-    depends_on:
-      teable-db:
-        condition: service_healthy
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
-      start_period: 5s
-      interval: 5s
-      timeout: 3s
-      retries: 3
-
-  teable-db:
-    image: postgres:15.4
-    restart: always
-    ports:
-      - '42345:5432'
-    volumes:
-      - teable-db:/var/lib/postgresql/data:rw
-    environment:
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    networks:
-      - teable
-    healthcheck:
-      test: ['CMD-SHELL', "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
-      interval: 10s
-      timeout: 3s
-      retries: 3
-
-networks:
-  teable:
-    name: teable-network
-
-volumes:
-  teable-db: {}
-  teable-data: {}
-
-```
-
-```bash .env
-# Replace the default password below with a strong password (ASCII) of at least 8 characters.
-POSTGRES_PASSWORD=replace_this_password
-SECRET_KEY=replace_this_secret_key
-
-# Replace the following with a publicly accessible address
-PUBLIC_ORIGIN=http://127.0.0.1:3000
-
-# ---------------------
-
-# Postgres
-POSTGRES_HOST=teable-db
-POSTGRES_PORT=5432
-POSTGRES_DB=teable
-POSTGRES_USER=teable
-
-# App
-PRISMA_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
-
-```
-
-***
-
-**Includes Redis**
-
-```yaml docker-compose.yaml
-services:
-  teable:
-    image: ghcr.io/teableio/teable-community:latest
-    restart: always
-    ports:
-      - '3000:3000'
-    volumes:
-      - teable-data:/app/.assets:rw
-    env_file:
-      - .env
-    environment:
-      - NEXT_ENV_IMAGES_ALL_REMOTE=true
-    networks:
-      - teable
-    depends_on:
-      teable-db:
-        condition: service_healthy
-      teable-cache:
-        condition: service_healthy
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
-      start_period: 5s
-      interval: 5s
-      timeout: 3s
-      retries: 3
-
-  teable-db:
-    image: postgres:15.4
-    restart: always
-    ports:
-      - '42345:5432'
-    volumes:
-      - teable-db:/var/lib/postgresql/data:rw
-    environment:
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    networks:
-      - teable
-    healthcheck:
-      test: ['CMD-SHELL', "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
-      interval: 10s
-      timeout: 3s
-      retries: 3
-
-  teable-cache:
-    image: redis:7.2.4
-    restart: always
-    expose:
-      - '6379'
-    volumes:
-      - teable-cache:/data:rw
-    networks:
-      - teable
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
-    healthcheck:
-      test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
-      interval: 10s
-      timeout: 3s
-      retries: 3
-
-networks:
-  teable:
-    name: teable-network
-
-volumes:
-  teable-db: {}
-  teable-data: {}
-  teable-cache: {}
-
-```
-
-```bash .env
-# Replace the default password below with a strong password (ASCII) of at least 8 characters.
-POSTGRES_PASSWORD=replace_this_password
-REDIS_PASSWORD=replace_this_password
-SECRET_KEY=replace_this_secret_key
-
-# Replace the following with a publicly accessible address
-PUBLIC_ORIGIN=http://127.0.0.1:3000
-
-# ---------------------
-
-# Postgres
-POSTGRES_HOST=teable-db
-POSTGRES_PORT=5432
-POSTGRES_DB=teable
-POSTGRES_USER=teable
-
-# Redis
-REDIS_HOST=teable-cache
-REDIS_PORT=6379
-REDIS_DB=0
-
-# App
-PRISMA_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
-BACKEND_CACHE_PROVIDER=redis
-BACKEND_CACHE_REDIS_URI=redis://default:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB}
-
-```
-</Tab>
-</Tabs>
 
 
 #### **Adding Storage Service (Optional)**
@@ -594,6 +385,13 @@ If you encounter any issues during deployment, please contact our support team a
 ## License
 
 Teable CE is open source under the AGPL-3.0 license. For EE license subscription, please visit our [pricing page](https://app.teable.io/public/pricing?host=self-hosted&billing=year) to learn more about our enterprise offerings.
+
+<Note>
+The `rghcr.io/teableio/teable:latest` image contains all features of both enterprise and community editions, and is free to use.
+
+If you need to use only the community edition, you can choose the `ghcr.io/teableio/teable-community:latest` image.
+</Note>
+
 
 ## Common Issues
 

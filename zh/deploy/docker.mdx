@@ -2,25 +2,7 @@
 title: "Docker 部署"
 ---
 
-## 镜像版本
 
-Teable 镜像分为企业版和社区版两个版本，在镜像名称后添加 -ee 后缀即可切换。
-
-### 企业版
-
-```bash
-registry.cn-shenzhen.aliyuncs.com/teable/teable-ee:latest
-```
-
-企业版可免费使用社区版包含的本全部功能，并支持使用 License 订阅企业版本独有功能，企业版功能可在[价格页面](https://app.teable.cn/setting/license-plan)查阅。企业版本数据与社区版本兼容，版本可以互相切换。
-
-### 社区版
-
-```bash
-registry.cn-shenzhen.aliyuncs.com/teable/teable-community:latest
-```
-
-社区版是由开源代码构建出来的镜像，不包含企业版本的任何功能。数据与企业版兼容，可随时切换为企业版本。
 
 ## Docker Compose 部署
 
@@ -83,12 +65,10 @@ vim docker-compose.yaml
 
 #### **最小化部署：**
 
-<Tabs>
-<Tab title="企业版">
 ```yaml docker-compose.yaml
 services:
   teable:
-    image: registry.cn-shenzhen.aliyuncs.com/teable/teable-ee:latest
+    image: registry.cn-shenzhen.aliyuncs.com/teable/teable:latest
     restart: always
     ports:
       - '3000:3000'
@@ -187,197 +167,6 @@ BACKEND_CACHE_REDIS_URI=redis://default:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_
 ```
 
 
-</Tab>
-
-<Tab title="社区版">
-<Note>
-注意：社区版最小部署缺少 redis 无法直接升级企业版，建议增加 redis 组件（下方方案)
-</Note>
-
-**不包括 Redis**
-
-```yaml docker-compose.yaml
-services:
-  teable:
-    image: registry.cn-shenzhen.aliyuncs.com/teable/teable-community:latest
-    restart: always
-    ports:
-      - '3000:3000'
-    volumes:
-      - teable-data:/app/.assets:rw
-    env_file:
-      - .env
-    environment:
-      - NEXT_ENV_IMAGES_ALL_REMOTE=true
-    networks:
-      - teable
-    depends_on:
-      teable-db:
-        condition: service_healthy
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
-      start_period: 5s
-      interval: 5s
-      timeout: 3s
-      retries: 3
-
-  teable-db:
-    image: registry.cn-shenzhen.aliyuncs.com/teable/postgres:15.4
-    restart: always
-    ports:
-      - '42345:5432'
-    volumes:
-      - teable-db:/var/lib/postgresql/data:rw
-    environment:
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    networks:
-      - teable
-    healthcheck:
-      test: ['CMD-SHELL', "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
-      interval: 10s
-      timeout: 3s
-      retries: 3
-
-networks:
-  teable:
-    name: teable-network
-
-volumes:
-  teable-db: {}
-  teable-data: {}
-
-```
-
-```bash .env
-# 替换下面默认密码, 推荐使用 8 位以上的强密码。
-POSTGRES_PASSWORD=replace_this_password
-SECRET_KEY=replace_this_secret_key
-
-# 请将下面替换为可公开访问的地址
-PUBLIC_ORIGIN=http://127.0.0.1:3000
-
-# ---------------------
-
-# Postgres
-POSTGRES_HOST=teable-db
-POSTGRES_PORT=5432
-POSTGRES_DB=teable
-POSTGRES_USER=teable
-
-# App
-PRISMA_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
-
-```
-
-***
-
-**包括 Redis**
-
-```yaml docker-compose-yaml
-services:
-  teable:
-    image: registry.cn-shenzhen.aliyuncs.com/teable/teable-community:latest
-    restart: always
-    ports:
-      - '3000:3000'
-    volumes:
-      - teable-data:/app/.assets:rw
-    env_file:
-      - .env
-    environment:
-      - NEXT_ENV_IMAGES_ALL_REMOTE=true
-    networks:
-      - teable
-    depends_on:
-      teable-db:
-        condition: service_healthy
-      teable-cache:
-        condition: service_healthy
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
-      start_period: 5s
-      interval: 5s
-      timeout: 3s
-      retries: 3
-
-  teable-db:
-    image: registry.cn-shenzhen.aliyuncs.com/teable/postgres:15.4
-    restart: always
-    ports:
-      - '42345:5432'
-    volumes:
-      - teable-db:/var/lib/postgresql/data:rw
-    environment:
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    networks:
-      - teable
-    healthcheck:
-      test: ['CMD-SHELL', "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
-      interval: 10s
-      timeout: 3s
-      retries: 3
-
-  teable-cache:
-    image: registry.cn-shenzhen.aliyuncs.com/teable/redis:7.2.4
-    restart: always
-    expose:
-      - '6379'
-    volumes:
-      - teable-cache:/data:rw
-    networks:
-      - teable
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
-    healthcheck:
-      test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
-      interval: 10s
-      timeout: 3s
-      retries: 3
-
-networks:
-  teable:
-    name: teable-network
-
-volumes:
-  teable-db: {}
-  teable-data: {}
-  teable-cache: {}
-
-```
-
-```bash .env
-# 替换下面默认密码, 推荐使用 8 位以上的强密码。
-POSTGRES_PASSWORD=replace_this_password
-REDIS_PASSWORD=replace_this_password
-SECRET_KEY=replace_this_secret_key
-
-# 请将下面替换为可公开访问的地址
-PUBLIC_ORIGIN=http://127.0.0.1:3000
-
-# ---------------------
-
-# Postgres
-POSTGRES_HOST=teable-db
-POSTGRES_PORT=5432
-POSTGRES_DB=teable
-POSTGRES_USER=teable
-
-# Redis
-REDIS_HOST=teable-cache
-REDIS_PORT=6379
-REDIS_DB=0
-
-# App
-PRISMA_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
-BACKEND_CACHE_PROVIDER=redis
-BACKEND_CACHE_REDIS_URI=redis://default:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB}
-
-```
-</Tab>
-</Tabs>
 
 #### **增加存储服务（可选）：**
 
@@ -572,12 +361,12 @@ docker-compose up -d
 
 **完整示例**
 
-<Tabs>
-<Tab title="企业版">
+
+
 ```yaml docker-compose.yaml
 services:
   teable:
-    image: registry.cn-shenzhen.aliyuncs.com/teable/teable-ee:latest
+    image: registry.cn-shenzhen.aliyuncs.com/teable/teable:latest
     restart: always
     ports:
       - '3000:3000'
@@ -622,59 +411,9 @@ volumes:
   teable-cache: {}
 
 ```
-</Tab>
 
-<Tab title="社区版">
-```yaml docker-compose.yaml
-services:
-  teable:
-    image: registry.cn-shenzhen.aliyuncs.com/teable/teable-community:latest
-    restart: always
-    ports:
-      - '3000:3000'
-    env_file:
-      - .env
-    environment:
-      - NEXT_ENV_IMAGES_ALL_REMOTE=true
-    networks:
-      - teable
-    depends_on:
-      teable-db:
-        condition: service_healthy
-      teable-cache:
-        condition: service_healthy
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
-      start_period: 5s
-      interval: 5s
-      timeout: 3s
-      retries: 3
-  teable-cache:
-    image: registry.cn-shenzhen.aliyuncs.com/teable/redis:7.2.4
-    restart: always
-    expose:
-      - '6379'
-    volumes:
-      - teable-cache:/data:rw
-    networks:
-      - teable
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
-    healthcheck:
-      test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
-      interval: 10s
-      timeout: 3s
-      retries: 3
-networks:
-  teable:
-    name: teable-network
-    driver: bridge
 
-volumes:
-  teable-cache: {}
 
-```
-</Tab>
-</Tabs>
 
 填写数据库参数为托管数据库的连接参数即可
 
@@ -712,6 +451,11 @@ POSTGRES_USER=teable
 
 Teable 社区版本在 AGPL-3.0 协议下开源。企业版本请[联系我们](https://app.teable.cn/share/shrg1ljiQXm4goJ7Cu9/view)获取商业许可。
 
+<Note>
+`registry.cn-shenzhen.aliyuncs.com/teable/teable:latest` 镜像包含企业版和社区版所有功能，并可免费使用。
+
+如果需要单独使用社区版，可选择 `registry.cn-shenzhen.aliyuncs.com/teable/teable-community:latest` 镜像。
+</Note>
 
 ## 常见问题
 
