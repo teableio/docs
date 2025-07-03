@@ -4,7 +4,7 @@ title: "Kubernetes Deployment"
 
 ## Prerequisites
 ### Teable Images
-- Application image: `ghcr.io/teableio/teable-ee:latest`
+- Application image: `ghcr.io/teableio/teable:latest`
 
 ### Runtime Environment
 - Running Kubernetes cluster
@@ -158,7 +158,7 @@ spec:
       # Add initContainers for database migration
       initContainers:
         - name: db-migrate
-          image: ghcr.io/teableio/teable-ee:latest
+          image: ghcr.io/teableio/teable:latest
           args:
             - migrate-only
           envFrom:
@@ -175,7 +175,7 @@ spec:
               memory: 1024Mi
       containers:
         - name: teable
-          image: ghcr.io/teableio/teable-ee:latest
+          image: ghcr.io/teableio/teable:latest
           args:
             - skip-migrate
           ports:

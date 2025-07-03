@@ -4,7 +4,7 @@ title: "K8s 部署"
 
 ## 前置条件
 ### Teable 镜像
-- 应用镜像: `registry.cn-shenzhen.aliyuncs.com/teable/teable-ee:latest`
+- 应用镜像: `registry.cn-shenzhen.aliyuncs.com/teable/teable:latest`
 
 ### 运行环境
 - 运行中的 Kubernetes 集群
@@ -162,7 +162,7 @@ spec:
       # Add initContainers for database migration
       initContainers:
         - name: db-migrate
-          image: registry.cn-shenzhen.aliyuncs.com/teable/teable-ee:latest
+          image: registry.cn-shenzhen.aliyuncs.com/teable/teable:latest
           args:
             - migrate-only
           envFrom:
@@ -179,7 +179,7 @@ spec:
               memory: 1024Mi
       containers:
         - name: teable
-          image: registry.cn-shenzhen.aliyuncs.com/teable/teable-ee:latest
+          image: registry.cn-shenzhen.aliyuncs.com/teable/teable:latest
           args:
             - skip-migrate
           ports:
