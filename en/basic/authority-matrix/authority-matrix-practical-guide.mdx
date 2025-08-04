@@ -1,0 +1,148 @@
+---
+title: "Authority Matrix Practical Guide"
+---
+
+<Tip> Think of the Authority Matrix as a powerful tool. It lets you build precise data access rights for each role on your team, just like assembling building blocks. Don't worry if it seems complex; we'll walk you through a common scenario step by step. </Tip>
+
+![](/images/2025-08-02-17-31-04.png)
+> Note: The Authority Matrix must be enabled here for your settings to take effect.
+
+## Sales Management Scenario
+
+In this scenario, our sales team needs to collaborate on managing customers, orders, and products. Our goals are:
+
+-   **Sales Director**: Can view all customer and sales data for high-level oversight but cannot easily change product prices.
+-   **Sales Rep**: Can only view and edit their own customers and orders. They can add new customers but cannot delete completed orders.
+-   **Data Entry Clerk**: Is responsible for adding new products but cannot modify or delete existing ones, and has no access to customer or order information.
+
+### Step 1: Setup and Role Creation
+
+1.  **Enable the Authority Matrix**: In your base, find and toggle on the "Authority Matrix". You and the space administrator will automatically be granted Admin roles.
+2.  **Create Roles**: Click the `Add Role` button in the top-right corner. We'll create three roles:
+    -   Sales Director
+    -   Sales Rep
+    -   Data Entry Clerk
+
+![Create three roles: Sales Director, Sales Rep, Data Entry Clerk!](/images/2025-08-02-17-32-25.png)
+
+### Step 2: Configure Permissions for Each Role
+
+Now, let's configure granular permissions for each role. We have three tables: `Customers`, `Sales Orders`, and `Products`.
+
+#### 1. Configure the [Sales Director] Role
+
+> As the manager, this role needs the highest level of view access.
+
+-   **For the `Customers` and `Sales Orders` tables**:
+    -   **Record-level Permissions**: Enable permissions for the table. Leave the settings at their default to grant full data access.
+-   **For the `Products` table**:
+    -   **Action Permissions**: Only check `View records` and `Comment on records`. This allows the director to see product information without being able to modify it, preventing accidental changes to pricing.
+    -   **Collaboration**: The director can also comment on specific products, which fosters team communication and timely feedback, boosting overall efficiency.
+    -   Click the `Save` button in the bottom-left corner to apply the settings.
+
+![](/images/2025-08-02-17-46-51.png)
+
+> <Info> Adding Members to a Role </Info>
+> Once a role is created and configured, enable it using the toggle switch to its left. Then, assign team members to the role using the `Add User` or `Add from Organization` buttons.
+
+![](/images/2025-08-02-17-48-23.png)
+
+**The Sales Director's View**: Once configured, "Sales Director Alice" can view all customer and sales data but is restricted from editing product prices.
+
+![](/images/2025-08-02-17-52-02.gif)
+
+#### 2. Configure the [Sales Rep] Role
+
+> This is the most critical part of the setup, ensuring data privacy and security.
+
+-   **For the `Customers` table**:
+    -   **Record-level Permissions**: This is key! Add a filter where `Sales Rep` `is` `Me(Current User)`.
+    
+    > **Dynamic Permissions**: This means that when "Sales Rep Emily" logs in, he will only see customers where the 'Sales Rep' field is set to "Emily".
+
+    ![](/images/2025-08-02-17-57-44.gif)
+
+    ![](/images/2025-08-02-18-01-51.png)
+
+    -   **Action Permissions**: Check `View records`, `Update records`, and `Create records`. We recommend leaving `Delete records` unchecked to prevent accidental data loss.
+
+-   **For the `Sales Orders` table**:
+    -   **Record-level Permissions**: Apply the same filter: `Sales Rep` `is` `Current User`.
+    -   **Action Permissions**: Check `View records` and `Create records`. To protect historical data, you can leave `Update records` and `Delete records` unchecked.
+    -   **Field-level Permissions**: If you don't want reps to see sensitive information, you can hide specific fields. For example, find the `Payment Method` field and uncheck the `View data in this field` permission.
+    -   Click the `Save` button in the bottom-left corner to apply the settings.
+
+    ![](/images/2025-08-02-18-03-32.png)
+
+> <Info> Adding Members to a Role </Info>
+> Once a role is created and configured, enable it using the toggle switch to its left. Then, assign team members to the role using the `Add User` or `Add from Organization` buttons.
+
+![](/images/2025-08-02-18-04-14.png)
+
+**The Sales Rep's View**: After setup, "Sales Rep Emily" can only see and edit his own customers and orders. He can add new customers but cannot delete completed orders.
+
+![Preview of the Sales Rep's view](/images/2025-08-02-18-06-26.gif)
+
+#### 3. Configure the [Data Entry Clerk] Role
+
+> This role is highly restricted and focused on a single task.
+
+-   **For the `Products` table**:
+    -   **Action Permissions**: Only check `Create records`.
+    -   This ensures they can only add new rows (products) to the `Products` table. They cannot see, edit, or delete any existing product data.
+    -   **Field-level Permissions**: To prevent them from seeing linked order data, find the `Orders` linked field and uncheck the `View data in this field` permission.
+-   **For the `Customers` and `Sales Orders` tables**:
+    -   Leave the permission toggles off (the default "no access" state). They will not be able to see these tables at all.
+
+![](/images/2025-08-02-18-24-39.png)
+
+> <Info> Adding Members to a Role </Info>
+> Once a role is created and configured, enable it using the toggle switch to its left. Then, assign team members to the role using the `Add User` or `Add from Organization` buttons.
+
+![](/images/2025-08-02-18-25-24.png)
+
+**The Data Entry Clerk's View**: Once configured, "Data Entry Clerk Alex Ray" can only add new products. They cannot modify or delete existing ones and have no visibility into customer or order information.
+
+![Preview of the Data Entry Clerk's view](/images/2025-08-02-18-27-14.gif)
+
+---
+
+> <Tip> Advanced Technique: Balancing Sales Collaboration with Data Security </Tip>
+>
+> By default, sales reps are often restricted to seeing only their own customers. But in the real world, collaboration and shared learning are vital. For instance, during a weekly sales review, you might want reps to see everyone's customer data to learn from their peers, while still ensuring they can only edit their own accounts.
+>
+> Here’s how to implement this granular control using the Authority Matrix:
+>
+> **Goal:**
+> - **View Permissions**: The `Sales Rep` role can view all customer records in the company.
+> - **Edit Permissions**: The `Sales Rep` role can only edit or delete customer records they own.
+>
+> **The Strategy:**
+> This is a clever and common approach: instead of modifying the existing `Sales Rep` role, we'll create a new, dedicated "viewer" role. This works because our permission system allows different filters to be applied to different actions ([View], [Update], [Delete], etc.).
+>
+> **Configuration Steps:**
+>
+> ##### Step 1: Create a new "Viewer" role
+> - In the Authority Matrix, click `Add Role` and name it something like `Global Customer Viewer`.
+>
+> ##### Step 2: Configure read-only permissions for the new role
+> - Click the `Global Customer Viewer` role to open its settings.
+> - Go to the `Customers` table.
+> - **Action Permissions**: Check `View records` ONLY. Ensure that `Update records`, `Delete records`, and `Create records` are all unchecked.
+> - **Record-level Permissions**: Do not apply any filters. Leaving the filter section empty means the role grants access to all records in the table.
+>
+> ![](/images/2025-08-02-18-29-15.png)
+>
+> ##### Step 3: Add "Emily" to the new role
+> - Return to the main Authority Matrix screen.
+> - Next to the `Global Customer Viewer` role, click `+ Add User` and add your sales rep (e.g., "Emily").
+>
+> ![](/images/2025-08-02-18-29-48.png)
+>
+> **The Result:**
+>
+> Now, when Sales Rep "Emily" logs in, he has the permissions of *both* roles:
+> -   **Full Visibility**: When he opens the `Customers` table, he can see every customer in the company, giving him a complete overview for analysis and team reviews.
+> -   **Complete Security**: When he double-clicks a record owned by another rep, he'll see that all fields are read-only (often grayed out and uneditable). There are no "Save," "Edit," or "Delete" buttons available. This completely eliminates the risk of accidental changes, allowing him to browse and present data with confidence.
+>
+> ![The Sales Rep's view with added viewer permissions](/images/2025-08-02-18-31-53.gif)

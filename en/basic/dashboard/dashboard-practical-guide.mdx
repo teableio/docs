@@ -1,0 +1,180 @@
+---
+title: "A Practical Guide to Dashboards"
+---
+
+<Tip> Think of a dashboard as a dynamic command center for your data. It allows you to dig deep into vast amounts of information from your tables, transforming complex data into intuitive charts like bar, pie, and line graphs. This helps you see the big picture, make precise decisions, and boost your overall business performance. </Tip>
+
+## Building a Sales Dashboard: Your Personal Performance Cockpit
+
+As a sales manager, you constantly need to track team performance, monitor key metrics, and make swift decisions. Traditional reporting is slow and lacks clarity. Let's use Teable's dashboard feature to build a dynamic, real-time "Sales Performance Cockpit."
+
+### Step 1: Prepare Your Data
+
+Before we begin, make sure you have the necessary business data tables set up in Teable.
+
+![](/images/2025-08-01-16-43-32.png)
+
+---
+
+### Step 2: Create Your Dashboard
+
+1.  In the left sidebar, click the `+` icon next to "Dashboards."
+2.  Name it `Sales Performance Dashboard`.
+
+A blank canvas appears. Let's start filling it with insightful data widgets.
+
+![](/images/2025-08-01-16-30-52.png)
+
+---
+
+### Step 3: Add Analytical Widgets
+
+#### Widget 1: Employee Sales Contribution
+
+Let's add our first widget to the dashboard, starting with a fundamental overview of team performance.
+
+<Info>
+  **Goal**: Get a quick overview of the team's total sales and see each person's contribution, making it easy to identify top performers.
+</Info>
+
+Once you're in the widget configuration screen, the first step is to set up your data source.
+
+##### Data Query Configuration
+
+-   **Source Table**: Select the `Sales history` table. This is where all our sales records live.
+-   **Filters**: We want to focus on this month's performance.
+    -   Click `+ Add Condition`.
+    -   Set the rule to: `Sales Date` `is` `This month`.
+
+![](/images/2025-08-01-16-51-11.png)
+
+##### Configure the Chart
+
+-   **Chart Type**: Choose `Pie Chart` from the dropdown.
+-   **Dimension**: Select `Sales rep`.
+-   **Metric**: Select `Actual sales achievedt` and set the aggregation to `Sum`.
+-   **Key Display Options**:
+    -   Toggle on `Show values label on chart`: This shows the exact sales amount and percentage on each slice of the pie.
+    -   Toggle on `Show total`: This places the grand total in the center of the chart for an immediate summary.
+    -   Toggle on `Show legend`: This lists each Sales rep and their corresponding color for easy reference.
+
+![](/images/2025-08-01-16-56-21.png)
+
+Click save, and your first widget appears on the dashboard: a clean donut chart showing the team's total sales in the middle, surrounded by color-coded "slices" representing each team member's contribution.
+
+At a glance, you can now see:
+
+-   The team's total sales: `970,000`
+-   This month's sales champion: `Bieber`, with the largest slice.
+-   Performance balance: Quickly spot performance gaps and identify team members who might need support.
+
+#### Widget 2: Sales Target vs. Actuals
+
+<Info>
+  **Goal**: Go beyond just looking at sales figures; compare them against set targets. This chart clearly visualizes each rep's progress, helping you instantly spot high-achievers and those who may need coaching.
+</Info>
+
+On your dashboard, click `Add Widget` again. This time, our data will come from the `Task Completion` table, which conveniently holds both targets and actuals.
+
+##### Data Query Configuration
+
+-   **Source Table**: Select the `SalesRep task` table.
+-   **Filters**: To review a specific month, we'll lock the date.
+    -   Click `+ Add Condition`.
+    -   Set the rule to: `Month` `is` `2025-03`.
+-   **Order by**: Let's Order by `Actual Sales Amount` in `Ascending` order.
+
+![](/images/2025-08-01-17-46-33.png)
+
+##### Configure the Chart
+
+Now, let's visualize this data with an intuitive combo chart.
+
+-   **Chart Type**: Select `Bar Chart` as the base.
+-   **X-Axis**: Select `Sales rep` to compare each rep individually.
+-   **Y-Axis**: Here's the key part. We'll configure two data series:
+    1.  **Series 1 (Target)**: Select `Sales Target`. This will create the bars representing the goal for each rep.
+    2.  **Series 2 (Actual)**:
+        -   Click `Add another series`.
+        -   In the new series, select `Actual Sales Amount`.
+        -   In this series' display options, change the style from `Bar` to `Line`.
+
+![](/images/2025-08-01-17-13-02.gif)
+
+You now have a powerful performance comparison chart. The bars represent the goal, while the line shows the reality.
+
+At a glance, you can now see:
+
+-   **Top Performers**: When the line is well above the bar (like for `Bieber` and `Lyss`), you know they've significantly exceeded their targets.
+-   **Areas for Focus**: When the line dips below the bar (like for `wang`, `chen`, and `li`), it's a clear signal to check in and see if they're facing challenges.
+-   **Team-wide Trend**: The overall shape of the line gives you an instant impression of the team's monthly performance.
+
+#### Widget 3: Deep-Dive Customer Value Analysis
+
+<Info>
+  **Goal**: This isn't just a sales leaderboard. We want to analyze customer value from multiple angles: total revenue, purchase volume, and order frequency. This helps you distinguish between high-value clients and high-frequency loyal customers, so you can tailor your retention strategies.
+</Info>
+
+All the data we need is in the `Sales history` table, but we'll use grouping and aggregation to get these deeper insights.
+
+##### Data Query Configuration
+
+-   **Source Table**: Select the `Sales history` table.
+-   **Filters**: Let's focus on a specific time frame for our review.
+    -   Add a condition: `Sales date` `is on or after` `2025-03-01`.
+    -   Add another condition: `Sales date` `is before` `2025-04-01`. (This scopes the data to March).
+-   **Group By**: We want to analyze by customer.
+    -   Group by the `Linked Customer` field.
+-   **Summarize**: This is the most important step. We'll calculate three metrics:
+    1.  **Total Revenue**: Add a summary for `Sales revenue` using `Sum`.
+    2.  **Total Items Sold**: Add a summary for `Sales Quantity` using `Sum`.
+    3.  **Total Orders**: Add a summary for `Order ID` (or another unique transaction field) using `Count`.
+
+![](/images/2025-08-01-17-26-15.png)
+
+##### Configure the Chart
+
+Let's display this rich data in an information-packed combo chart.
+
+-   **Chart Type**: Select `Bar Chart`.
+-   **X-Axis**: Select the field we grouped by: `Linked Customer`.
+-   **Y-Axis**: We'll add three data series with different styles.
+    1.  **Series 1 (Total Revenue)**: Select `Actual sales achievedt (Sum)`. This will appear as a bar.
+    2.  **Series 2 (Items Sold)**: Click `Add another series` and select `Sales Quantity (Sum)`. This will also be a bar, shown next to the revenue bar.
+    3.  **Series 3 (Order Count)**: Click `Add another series` again and select `Order ID (Count)`. Then, change this series' style from `Bar` to `Line`.
+
+![](/images/2025-08-01-17-28-13.png)
+
+You now have a high-density, multi-metric chart just like the example.
+
+At a glance, you can now see:
+
+-   **Your Anchor Clients**: The customers with the tallest bars (`C013`) are the cornerstones of your business and deserve VIP treatment.
+-   **Your High-Frequency Fans**: Customers with a high point on the line chart are your loyal, repeat buyers. They're perfect candidates for new product launches and upselling.
+
+![](/images/2025-08-01-17-30-16.gif)
+
+---
+
+### Step 4: Arrange and Customize
+
+Your Sales Performance Dashboard is now populated with widgets. Feel free to drag them around and resize them to create a layout that works best for you.
+
+![](/images/2025-08-01-17-32-02.gif)
+
+---
+
+### Summary and Next Steps
+
+Congratulations! You've successfully transformed raw Sales history into a powerful, visual management tool. With this dashboard, you can:
+
+-   **Monitor in Real-Time**: Data is always up-to-date, so you're always in the know.
+-   **Make Faster Decisions**: Quickly identify opportunities and challenges, from celebrating top performers to adjusting sales strategies.
+-   **Share with Ease**: Effortlessly share your data-driven insights with your team and leadership.
+
+From here, you can explore even further:
+
+-   **Add a Target Line**: On a sales trend chart, add a target line to visually track progress against goals.
+-   **Analyze by Industry**: Create a new widget to analyze sales by customer industry and identify your most profitable sectors.
+
+Now it's your turn. Start with the one metric that matters most to you and build your own dashboard
