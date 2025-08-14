@@ -1,0 +1,121 @@
+---
+title: "Button Practical Guide"
+---
+
+Recurring, multi-step processes—like lead conversion, content approval pipelines, or project task reminders—often involve tedious manual work: copying, pasting, switching between apps, and sending notifications.
+
+The Button field is designed to eliminate this friction. Think of it as a "smart remote" for each row of your data, allowing you to trigger complex, pre-configured workflows with a single click.
+
+<Info>
+This guide will walk you through two key areas:
+1.  **What can the Button field do?**—Unlock its full potential.
+2.  **How do you use it?**—A step-by-step guide to configuring your first automation button.
+</Info>
+
+---
+
+## What Can You Do With It?
+
+The core value of the Button field lies in its ability to connect and execute. It can link data within your tables and integrate with external systems, bundling a series of actions into a single click.
+
+### Use Case 1: One-Click Lead Conversion
+
+In a CRM, when a sales representative identifies a mature lead, they can simply click a "Convert to Opportunity" button.
+
+The automation instantly creates a new record in the "Opportunities Table," populates it with all the key information from the lead, and updates the original lead's status to "Converted."
+![](/images/2025-08-14-16-42-12.gif)
+
+### Use Case 2: One-Click Content Scheduling
+
+Once a content draft is approved, an editor clicks the "Schedule for Publication" button.
+
+The system automatically creates a new post entry in the "Social Media Schedule Table" and sends an email notification to the social media manager: "A new draft [xxx] is ready for scheduling."
+![](/images/2025-08-14-17-41-07.gif)
+![](/images/2025-08-14-17-52-42.png)
+
+### Use Case 3: One-Click Task Reminders
+
+When a project task is nearing its deadline but remains incomplete, the project manager clicks the "Send Reminder" button.
+
+The system immediately sends a notification via your team's preferred communication tool (e.g., Slack, Teams, Email): "[Task Reminder] The task 'XXX' assigned to you is due soon. Please prioritize its completion!" This seamlessly integrates your data table with your team's communication workflow.
+![](/images/2025-08-14-17-50-22.png)
+
+---
+
+## How to Set It Up
+
+Let's walk through the classic "One-Click Lead Conversion" example to see how to configure a button.
+
+First, you'll need two tables: a **"Leads Table"** and an **"Opportunities Table"**.
+
+### Step 1: Create the Button Field
+
+In your "Leads Table," add a new field with the following settings:
+
+1.  **Field Type**: Choose "Button".
+2.  **Button Label**: Enter "Convert" and pick a distinct color, like blue.
+![](/images/2025-08-14-17-54-04.png)
+
+### Step 2: Custom the Automation Workflow
+
+![](/images/2025-08-14-17-56-07.gif)
+
+1.  Click "Custom automation"
+
+2.  **Configure Actions**: Define what happens when the button is clicked.
+    -   **Action 1: Create a new record in the "Opportunities Table"**
+        -   **Action Type**: Select "Create Record".
+        -   **Target Table**: Choose the "Opportunities Table".
+        -   **Field Mapping**: This is the most critical part, where you pass data from the lead to the new opportunity.
+            > - `Opportunity Name` field = `Company Name` from the triggering record.
+            > - `Related Contact` field = `Contact Name` from the triggering record.
+            > - ... (map other relevant fields).
+    -   **Action 2: Update the current lead's status**
+        -   Add a second action of type "Update Record".
+        -   **Target Table**: "Leads Table".
+        -   **Record ID**: Select the ID "from the record that triggered the workflow".
+        -   **Field to Update**: Set the `Status` field to "Converted".
+
+And you're done! Your "Lead to Opportunity" workflow is now active.
+
+<Tip title="Advanced Actions: HTTP Requests, Messages, and Emails">
+In the "Actions" step, you can add even more powerful integrations.
+
+#### Send an Email
+
+To notify a sales director of a new conversion, add a "Send Email" action. You can configure:
+- **Recipient**: Use a static email address or dynamically pull from a "User" field.
+- **Subject/Body**: Insert dynamic values from the triggering record.
+  > Example: "New Opportunity: [Company Name] was converted by [Owner]."
+
+![](/images/2025-08-14-17-50-22.png)
+> Example of a task reminder email.
+
+#### Make an HTTP Request
+This advanced feature lets you communicate with any external system via API. For instance, you could sync a new customer's details to a separate accounting software.
+![](/images/2025-08-14-18-03-07.png)
+
+</Tip>
+
+---
+
+## Advanced Feature: Precise Control with Limit Clicks
+
+The Button field settings include two powerful options: "Max Clicks" and "Allow Reset".
+
+### Feature Breakdown
+-   **Max Clicks**: Sets a maximum number of times the button can be clicked for each individual record. The button becomes disabled once the limit is reached.
+-   **Allow Reset**: Allows a user to manually reset the click count, re-enabling a disabled button.
+
+### Use Case: Preventing Duplicate Lead Conversions
+
+<Info title="Why is this important?">
+This simple setting is crucial for maintaining data integrity. By setting the maximum clicks to `1`, you ensure a lead can only be converted into one opportunity, eliminating the risk of duplicate records from accidental double-clicks.
+</Info>
+
+-   **Max Clicks**: Set to `1`.
+-   **Allow Reset**: Keep this option disabled.
+
+![](/images/2025-08-14-18-04-04.png)
+
+With these granular controls, the Button field evolves from a simple trigger into a smart controller with built-in business logic, capable of handling more complex and sophisticated management scenarios.
