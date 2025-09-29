@@ -1,0 +1,290 @@
+---
+title: "AI Script"
+description: "Use JavaScript code to automate data processing and implement complex business logic and data operations"
+---
+<Tip>Available for Plus plan and above</Tip>
+
+Coding Tip: This document provides coding guides and examples for AI Script functionality. For optimal coding results, we recommend using the claude-sonnet-4 model to write and optimize scripts.
+
+## Basic Concepts
+
+Teable Script functionality allows you to automate data processing through JavaScript code, implementing complex business logic and data operations.
+
+## Execution Environment
+
+- **Language**: JavaScript (ES6+)
+- **Environment**: Secure sandbox environment
+- **Module System**: CommonJS (`require()`)
+- **Support**: Top-level await, modern JavaScript features
+
+## Getting Input Data
+
+Scripts get output from previous workflow steps through the `input` object. Each previous step's output uses its actionId as the key:
+
+```javascript
+// View all available action IDs
+console.log("Available action nodes:", Object.keys(input));
+
+// Get first action data (most common case)
+const actionIds = Object.keys(input);
+const firstAction = input[actionIds[0]];
+
+// Get user information
+const user = firstAction.user;
+console.log("Username:", user.name);
+
+// Get record information
+const record = firstAction.record;
+console.log("Record name:", record.name);
+console.log("Record ID:", record.id);
+
+// Get field values (using field IDs)
+const fields = record.fields;
+console.log("All fields:", Object.keys(fields));
+
+// Example: Get specific field values
+const taskName = fields.fldUzGUph7OcCoBs8Ax; // Task name
+const priority = fields.fldLutlmzOfk0XCWStS; // Priority
+const status = fields.fldOvtZuB4WTac5LSNx; // Status
+```
+
+## Setting Output Results (Recommended Method)
+
+**Using `output.set()` is the best approach** because it preserves the complete format of objects:
+
+```javascript
+// Recommended: Use output.set() to set output
+const actionIds = Object.keys(input);
+const record = input[actionIds[0]].record;
+
+// Set single values
+output.set("taskName", record.name);
+output.set("priority", record.fields.fldLutlmzOfk0XCWStS);
+
+// Set objects (recommended)
+output.set("taskInfo", {
+  id: record.id,
+  name: record.name,
+  priority: record.fields.fldLutlmzOfk0XCWStS,
+  status: record.fields.fldOvtZuB4WTac5LSNx,
+  url: record.url,
+});
+
+// Set arrays
+output.set("fieldList", Object.keys(record.fields));
+
+// Set processing results
+output.set("processed", true);
+output.set("message", "Task processing completed");
+```
+
+## Dependency Management
+
+If using external npm packages, they must be declared in dependency configuration:
+
+```javascript
+// Use lodash in code
+const _ = require("lodash");
+
+// If specific version is needed, configure in dependencies, otherwise sandbox will auto-resolve latest package
+[{ name: "lodash", version: "4.17.21" }];
+```
+
+**Recommendation: Prioritize using JavaScript built-in features to avoid additional dependencies**
+
+## HTTP Requests
+
+Use the built-in `fetch()` function:
+
+```javascript
+// GET request
+const response = await fetch("https://api.example.com/data");
+const data = await response.json();
+output.set("apiData", data);
+
+// POST request
+const response = await fetch("https://api.example.com/create", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: "Bearer your-token",
+  },
+  body: JSON.stringify({ name: "test", value: 123 }),
+});
+
+const result = await response.json();
+output.set("createResult", result);
+```
+
+## Debugging Tips
+
+### 1. View Input Data Structure
+
+```javascript
+// View complete input structure
+console.log("Complete input:", JSON.stringify(input, null, 2));
+
+// View first action data
+const firstActionId = Object.keys(input)[0];
+const firstAction = input[firstActionId];
+console.log("First action:", firstAction);
+
+// View field information
+if (firstAction.record && firstAction.record.fields) {
+  console.log("Available fields:", Object.keys(firstAction.record.fields));
+  for (const fieldId in firstAction.record.fields) {
+    console.log(`${fieldId}: ${firstAction.record.fields[fieldId]}`);
+  }
+}
+
+// Temporary debug output
+output.set("debug", {
+  actionIds: Object.keys(input),
+  firstAction: firstAction,
+  fields: firstAction.record ? Object.keys(firstAction.record.fields) : [],
+});
+```
+
+### 2. Error Handling
+
+```javascript
+try {
+  // Your main code
+  const actionIds = Object.keys(input);
+  const record = input[actionIds[0]].record;
+
+  output.set("result", "Processing successful");
+  output.set("data", record.name);
+} catch (error) {
+  console.error("Processing error:", error.message);
+  output.set("error", true);
+  output.set("message", error.message);
+}
+```
+
+## Quick Start Steps
+
+1. **Debug input first** - Use `console.log(JSON.stringify(input, null, 2))` to view data structure
+2. **Extract needed data** - Get field values through `input[actionId].record.fields[fieldId]`
+3. **Process data** - Use JavaScript for calculations, transformations, filtering, and other operations
+4. **Set output** - Use `output.set(key, value)` to set results
+5. **Test and verify** - Run script to check if output meets expectations
+
+## Practical Application Examples
+
+### Basic Data Processing
+
+```javascript
+// Process input data
+const inputData = input.dataNode.records;
+const processedRecords = inputData.map((record) => ({
+  id: record.id,
+  title: record.title,
+  content: `Title: ${record.title}\nContent: ${record.content}`,
+  updatedAt: new Date().toISOString(),
+}));
+
+// Output results
+output.set("processedRecords", processedRecords);
+output.set("totalCount", processedRecords.length);
+output.set("status", "success");
+```
+
+### API Call Example
+
+```javascript
+try {
+  const response = await fetch("https://api.example.com/data");
+  const data = await response.json();
+
+  output.set("apiData", data);
+  output.set("success", true);
+} catch (error) {
+  output.set("success", false);
+  output.set("error", error.message);
+}
+```
+
+### Teable API Operations
+
+```javascript
+// Basic configuration
+const baseUrl = "https://app.teable.ai/api";
+const token = process.env.AUTOMATION_TOKEN; // Built-in token
+
+// Create record
+async function createRecord(tableId, recordData) {
+  const response = await fetch(`${baseUrl}/table/${tableId}/record`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      records: [{ fields: recordData }],
+    }),
+  });
+
+  return response.json();
+}
+
+// Usage example
+const newRecord = await createRecord("tbl123", {
+  Name: "Zhang San",
+  Email: "zhangsan@example.com",
+});
+
+output.set("createdRecord", newRecord);
+```
+
+## Important Notes
+
+### Authentication and Security
+
+- Use built-in `process.env.AUTOMATION_TOKEN`
+- Avoid hardcoding sensitive information in scripts
+- Ensure scripts only access necessary tables and fields
+
+### Data Processing
+
+- Recommend enabling `typecast: true` for automatic type conversion
+- Validate input data integrity and format before processing
+- Use meaningful field names
+
+### Performance Optimization
+
+- Prefer batch operations over individual loop operations
+- Use pagination for large datasets
+- Only retrieve required fields
+
+### Error Handling
+
+- All API calls must be wrapped with try/catch
+- Record detailed error information for debugging
+- Implement graceful degradation, partial failures should not affect overall flow
+
+## Common Teable API Endpoints
+
+```javascript
+// Query records
+GET /table/{tableId}/record
+
+// Create records
+POST /table/{tableId}/record
+
+// Update records
+PATCH /table/{tableId}/record
+
+// Delete records
+DELETE /table/{tableId}/record
+
+// Get table information
+GET /table/{tableId}
+
+// Get field list
+GET /table/{tableId}/field
+```
+
+## Getting Help
+
+If you have specific script requirements or encounter issues, please describe your needs in detail in the script editor. AI will generate corresponding code examples and solutions for you.
