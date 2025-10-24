@@ -493,3 +493,35 @@ PUBLIC_ORIGIN=https://teable.example.com
 进入「设置」页面，页面下拉至最底部。找到「实例ID」信息，点击旁边的复制按钮即可完成复制。
 ![](/images/2025-08-13-15-43-16.png)
 </Accordion>
+
+<Accordion title="我如何进行数据备份？">
+对于 Docker Compose 部署，您有以下几种备份选项：
+
+**方案 1：完整虚拟机备份**（推荐，最简单）
+- 定期备份托管 Teable 的整个虚拟机
+- 提供完整的系统恢复能力
+
+**方案 2：Docker 卷备份**
+- 备份 `docker-compose.yaml` 中定义的所有 Docker 卷
+- 列出所有卷：`docker volume ls`
+- 备份单个卷：
+  ```bash
+  docker run --rm -v <卷名称>:/data -v $(pwd):/backup alpine tar czf /backup/<卷名称>.tar.gz /data
+  ```
+
+**方案 3：组件级备份**（推荐，便于精细控制）
+- **PostgreSQL 数据库**：包含所有表格数据
+  ```bash
+  docker exec teable-db pg_dump -U teable teable > backup.sql
+  ```
+- **Redis 数据库**：包含自动化队列数据
+  ```bash
+  docker exec teable-cache redis-cli --rdb /data/dump.rdb
+  ```
+- **数据目录**：备份 `teable-data` 卷（包含所有附件文件）
+  ```bash
+  docker run --rm -v teable-data:/data -v $(pwd):/backup alpine tar czf /backup/teable-data.tar.gz /data
+  ```
+
+对于生产环境，我们建议设置自动化的每日备份并制定保留策略。
+</Accordion>

@@ -422,3 +422,35 @@ If using MinIO, remember to set BACKEND_STORAGE_MINIO_USE_SSL to true
 It's recommended to use a reverse proxy (like Nginx or Traefik) to handle SSL termination.
 </Tip>
 </Accordion>
+
+<Accordion title="How do I backup my data?">
+For Docker Compose deployments, you have several backup options:
+
+**Option 1: Full Virtual Machine Backup** (Recommended for simplicity)
+- Regularly backup the entire virtual machine hosting Teable
+- Provides complete system recovery capability
+
+**Option 2: Docker Volume Backup**
+- Backup all Docker volumes defined in your `docker-compose.yaml`
+- List volumes: `docker volume ls`
+- Backup a volume:
+  ```bash
+  docker run --rm -v <volume_name>:/data -v $(pwd):/backup alpine tar czf /backup/<volume_name>.tar.gz /data
+  ```
+
+**Option 3: Component-Level Backup** (Recommended for granular control)
+- **PostgreSQL database**: Contains all table data
+  ```bash
+  docker exec teable-db pg_dump -U teable teable > backup.sql
+  ```
+- **Redis database**: Contains automation queue data
+  ```bash
+  docker exec teable-cache redis-cli --rdb /data/dump.rdb
+  ```
+- **Data directory**: Backup the `teable-data` volume (contains all attachment files)
+  ```bash
+  docker run --rm -v teable-data:/data -v $(pwd):/backup alpine tar czf /backup/teable-data.tar.gz /data
+  ```
+
+For production environments, we recommend setting up automated daily backups with retention policies.
+</Accordion>

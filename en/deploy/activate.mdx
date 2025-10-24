@@ -6,46 +6,74 @@ This guide will walk you through the process of subscribing to a Teable self-hos
 
 ## Overview
 
-Teable offers different plans for self-hosted deployments, each with its own set of features. To unlock these features, you need to subscribe to a plan and activate your instance with a license key.
+Teable offers different plans for self-hosted deployments, each with its own set of features. To unlock these features, you need to first install Teable, get your Instance ID, subscribe to a plan, and then activate your instance with a license key.
 
-## Step 1: View Available Plans
+## Step 1: Install Teable
 
-Visit the [Teable Self-Hosted Pricing Page](https://app.teable.ai/public/pricing?host=self-hosted) to explore the different plans and their features.
+Before subscribing to a plan, you need to have Teable installed and running on your server.
 
-On this page, you can:
-- Compare features across different plans
-- View pricing information
-- Select the plan that best fits your needs
+If you haven't installed Teable yet, please follow one of these installation guides:
+- [Docker Deployment](/en/deploy/docker) (Recommended for quick setup)
+- [Kubernetes Deployment](/en/deploy/k8s) (For production environments)
+- [One-Key Deployment](/en/deploy/one-key) (For simplified setup)
+
+<Note>
+Make sure your Teable instance is up and running before proceeding to the next steps.
+</Note>
+
+## Step 2: Access the Admin Panel
+
+After successfully installing Teable:
+
+1. Log in to your self-hosted Teable instance
+2. Navigate to the **Admin Panel**
+3. You can access the Admin Panel from the user menu
+
+![admin panel](/images/2025-10-14-11-16-37.png)
+
+## Step 3: Copy Your Instance ID
+
+In the Admin Panel, you'll find your unique Instance ID:
+
+1. Locate the **Instance ID** section in the Admin Panel
+2. Click the **Copy** button to copy your Instance ID
+3. Keep this Instance ID ready - you'll need it during the subscription process
+
+![Copy Instance Id](/images/2025-10-24-16-13-17.png)
+
+<Note>
+Your Instance ID is a unique identifier for your self-hosted installation. It's required to bind your license to your specific instance.
+</Note>
+
+## Step 4: Subscribe to a Plan
+
+Now that you have your Instance ID, you can proceed to subscribe:
+
+1. Visit the [Teable Self-Hosted Pricing Page](https://app.teable.ai/public/pricing?host=self-hosted)
+2. Compare features across different plans
+3. Choose the plan that meets your requirements
+4. Complete the subscription process
+5. During subscription, you'll be asked to provide your **Instance ID**
+
+![Enter Instance Id](/images/2025-10-24-16-18-46.png)
+
+6. After successful subscription, you'll receive a **License Key**
 
 ![license detail](/images/2025-10-14-11-20-31.png)
-
-## Step 2: Subscribe to a Plan
-
-1. Choose the plan that meets your requirements
-2. Complete the subscription process
-3. After successful subscription, you'll receive a **License Key**
 
 <Note>
 Make sure to copy your License Key immediately after subscription. You'll need it in the next step.
 </Note>
 
-## Step 3: Activate Your Self-Hosted Instance
+## Step 5: Activate Your License
 
-Once you have your License Key, follow these steps to activate your instance:
+Once you have your License Key, return to your Teable instance to activate it:
 
-### Access the Admin Panel
-
-1. Log in to your self-hosted Teable instance
-2. Navigate to the **Admin Panel**
-3. Look for the License activation section
-
-![admin panel](/images/2025-10-14-11-16-37.png)
-
-### Enter Your License Key
-
-1. Paste your **License Key** into the activation field
-2. Click the activation button
-3. Wait for the confirmation message
+1. Go back to the **Admin Panel** in your self-hosted Teable instance
+2. Find the License activation section
+3. Paste your **License Key** into the activation field
+4. Click the activation button
+5. Wait for the confirmation message
 
 ![activate license](/images/2025-10-14-11-16-31.png)
 
@@ -53,7 +81,7 @@ Once you have your License Key, follow these steps to activate your instance:
 After successful activation, your instance will immediately have access to all features included in your subscribed plan.
 </Tip>
 
-## Step 4: Manage Your License
+## Step 6: Manage Your License
 
 You can view and manage your licenses at any time:
 
@@ -63,6 +91,60 @@ You can view and manage your licenses at any time:
   - Check license expiration dates
   - Renew or upgrade your licenses
   - View usage details
+  - Manage multiple instances if you have more than one
+
+## Frequently Asked Questions
+
+<Accordion title="Will the Instance ID change when I update the application?">
+No, your Instance ID remains constant throughout application updates. It's a permanent identifier for your self-hosted installation.
+</Accordion>
+
+<Accordion title="How do I keep my Instance ID unchanged when migrating environments?">
+When migrating environments, perform a complete database migration. This ensures your Instance ID remains unchanged, as the Instance ID is stored in the database. Simply migrate your entire PostgreSQL database to the new environment.
+</Accordion>
+
+<Accordion title="What happens if my user count exceeds the subscribed seats?">
+If your user count exceeds the subscribed seats in a paid plan, data editing capabilities will be restricted. All users will receive notifications when attempting to access paid features. To restore full functionality, you'll need to upgrade your subscription to accommodate more seats.
+</Accordion>
+
+<Accordion title="What happens when my subscription expires?">
+When your subscription expires, your Teable instance will revert to the basic version. However, all your data will be preserved and remain safe. Once you renew and reactivate your subscription, all premium features will be immediately restored.
+</Accordion>
+
+<Accordion title="When should I renew my subscription?">
+Teable provides a 7-day grace period after subscription expiration. During this grace period:
+- All features remain fully functional
+- Administrators receive email reminders
+- You have time to renew without service interruption
+
+We recommend renewing before the grace period ends to ensure uninterrupted access to premium features.
+</Accordion>
+
+<Accordion title="How do I backup my data?">
+For Docker Compose deployments, you have several backup options:
+
+**Option 1: Full Virtual Machine Backup** (Recommended for simplicity)
+- Regularly backup the entire virtual machine hosting Teable
+- Provides complete system recovery capability
+
+**Option 2: Docker Volume Backup**
+- Backup all Docker volumes defined in your `docker-compose.yaml`
+- Use `docker volume ls` to list volumes
+- Use `docker run --rm -v <volume_name>:/data -v $(pwd):/backup alpine tar czf /backup/<volume_name>.tar.gz /data`
+
+**Option 3: Component-Level Backup** (Recommended for granular control)
+- **PostgreSQL database**: Backup using `pg_dump` (contains all table data)
+  ```bash
+  docker exec teable-db pg_dump -U teable teable > backup.sql
+  ```
+- **Redis database**: Backup RDB file (contains automation queue data)
+  ```bash
+  docker exec teable-cache redis-cli --rdb /data/dump.rdb
+  ```
+- **Data directory**: Backup the `teable-data` volume (contains all attachment files)
+
+For production environments, we recommend setting up automated daily backups with retention policies.
+</Accordion>
 
 ## Troubleshooting
 
@@ -70,6 +152,7 @@ You can view and manage your licenses at any time:
 If your license activation fails, please check:
 - The License Key is copied correctly without extra spaces
 - The license hasn't expired
+- Your instance has internet connectivity to reach the license server
 
 If issues persist, contact support at support@teable.ai
 </Accordion>
@@ -77,7 +160,9 @@ If issues persist, contact support at support@teable.ai
 <Accordion title="Features not appearing after activation">
 If features don't appear immediately after activation:
 - Try refreshing your browser
+- Clear your browser cache
 - Verify the activation status in the License Management Page
+- Check that your subscription is active and not expired
 </Accordion>
 
 ## Next Steps
