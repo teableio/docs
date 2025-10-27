@@ -1,0 +1,236 @@
+title: "Example: Create Automation with JavaScript"
+description: "Create automation by calling Teable APIs"
+---
+
+> Scenario: After an e-commerce order status changes from "Paid" to "Shipped", automatically notify a WeCom (WeChat Work) bot group so customer support and fulfillment stay in sync.
+
+### Prerequisites
+
+- **Access token**: Personal Access Token (PAT). Prefer providing via environment variable, for example `process.env.TEABLE_TOKEN`
+- **IDs**: The target orders table `tableId`, and required field `fieldId`s (e.g., `fldStatus`, `fldOrderNo`, `fldCarrier`, `fldTrackingNo`)
+- **Webhook**: WeCom robot Webhook URL (or Microsoft Teams/DingTalk Hook)
+- References: [`Get IDs`](../api-doc/get-id.mdx) and [`Access Token`](../api-doc/token.mdx)
+
+### Flow overview
+
+1. Create automation
+2. Create trigger node
+3. Create HTTP request action node
+4. Configure nodes
+5. Test nodes
+6. Enable automation
+
+### JavaScript example
+> API
+
+```javascript
+const baseUrl = "https://app.teable.ai/api"; // Adjust for your environment, e.g., https://app.teable.cn/api
+const token = process.env.TEABLE_TOKEN; // Recommended to use environment variables
+const baseId = "bserxxxxxx"
+
+const headers = {
+  Authorization: `Bearer ${token}`,
+  "Content-Type": "application/json",
+};
+
+async function http(method, url, body) {
+  const res = await fetch(url, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`${method} ${url} -> ${res.status} ${text}`);
+  }
+  return res.json();
+}
+
+
+// Create automation (workflow)
+async function createWorkflow(name, description) {
+  // Placeholder endpoint: use the endpoints available in your environment
+  return http("POST", `${baseUrl}/base/${baseId}/workflow`, {
+    name,
+    description,
+  });
+}
+
+// Create trigger node (when record is created)
+async function createTriggerNode(workflowId, config) {
+  return http("POST", `${baseUrl}/base/${baseId}/workflow/${workflowId}/trigger`, {
+    // recordCreated, recordUpdated, recordCreatedOrUpdated, buttonClick, formSubmitted, scheduledTime
+    type: "recordCreated",
+    config,
+  });
+}
+
+// Test the trigger node (if subsequent nodes need related parameters)
+async function updateTriggerNode(workflowId, nodeId, config) {
+  return http("POST", `${baseUrl}/base/${baseId}/workflow/${workflowId}/test/${nodeId}`, {
+    type: "recordCreated",
+    config,
+  });
+}
+
+// Create HTTP request action node
+async function createHttpNode(workflowId, parentNodeId, config) {
+  return http("POST", `${baseUrl}/base/${baseId}/workflow/${workflowId}/action`, {
+    type: "httpRequest",
+    // Parent node; here it is the trigger node: cmxxxx
+    parentNodeId: parentNodeId,
+  });
+}
+
+// Test HTTP node
+async function testNode(workflowId, nodeId) {
+  return http("POST", `${baseUrl}/base/${baseId}/workflow/${workflowId}/test/${nodeId}`);
+}
+
+// Enable/disable automation
+async function toggleWorkflow(workflowId, enabled) {
+  return http("PUT", `${baseUrl}/base/${baseId}/workflow/${workflowId}/active`, {
+    // deactivate to disable
+    method: "activate",
+  });
+}
+```
+
+> Main function
+
+```javascript
+async function main() {
+  // ====== Replace the variables below as needed ======
+  const tableId = "tblOrderxxxxxxxx"; // Orders table ID
+  const fldTrackingNo = "fldTrackingNoxxxx"; // Tracking number field ID
+  const wxWebhookUrl = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=YOUR_KEY";
+
+  // 1. Create automation
+  const wf = await createWorkflow(
+    "WeCom notification for shipped orders",
+    "When order status becomes Shipped, send a message to the WeCom group"
+  );
+
+  const workflowId = wf.id;
+
+  // 2. Create a trigger node (listen to record updates)
+  // Simplified condition: current status == Shipped (if you need a transition check like Paid -> Shipped,
+  // configure previous/current according to what your API supports)
+  const triggerCfg = {
+    tableId,
+    filter: {
+      // Example expression: trigger only when the current status is "Shipped"
+      filterSet: [{
+        fieldId: fldStatus,
+        operator: "is",
+        value: "Shipped"
+      }],
+      conjunction: "and"
+    },
+  };
+
+  const trigger = await createTriggerNode(workflowId, triggerCfg);
+
+  // 3. Test the trigger to generate variables for downstream nodes
+  const outputVariable = await testNode(workflowId, trigger.id);
+
+  // 4. Create HTTP request action node (send to WeCom robot)
+  // Use variable placeholders: read fields from the trigger's record context
+  const httpCfg = {
+    method: "post",
+    url: {
+      resolvable: true,
+      type: "literal",
+      value: "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=YOUR_KEY"
+    },
+    headers: [{
+      key: {
+        resolvable: true,
+        type: "literal",
+        value: "Content-Type"
+      },
+      value: {
+        resolvable: true,
+        type: "literal",
+        value: "application/json"
+      }
+    }],
+    bodyMode: "json",
+    body: {
+      type: "array",
+      resolvable: true,
+      nodes: [
+        {
+          resolvable: true,
+          type: "literal",
+          value: `{`
+        },
+        {
+          resolvable: true,
+          type: "literal",
+          value: "\"msgtype\": \"markdown\","
+        },
+        {
+          resolvable: true,
+          type: "literal",
+          value: "\"markdown\": {"
+        },
+        {
+          resolvable: true,
+          type: "literal",
+          value: "\"content\":  \"Tracking No: "
+        },
+        {
+          // NodeId of the trigger; which node this variable comes from
+          "fact: "cmh8xxx",
+          // Variable hierarchy, taken from the variables returned by the test; see the test node response
+          "keyStack": ["$.record", "$.record.fields"],
+          params: [pipes: []],
+          // Placeholder for the tracking number variable
+          path: "$.record.fields.fldTrackingNoxxxx"
+          resolvable: true,
+          type: "fact"
+        },
+        {
+          resolvable: true,
+          type: "literal",
+          value: "\""
+        },
+        {
+          resolvable: true,
+          type: "literal",
+          value: "}"
+        },
+        {
+          resolvable: true,
+          type: "literal",
+          value: "}"
+        },
+      ]
+    },
+  };
+
+  const httpNode = await createHttpNode(workflowId, trigger.id, httpCfg);
+
+  // 5. Test the HTTP node (will not actually listen to the trigger; just a one-time simulation/send of the current configuration)
+  // Note: Some environments may require providing a test record context; pass it according to your API
+  await testNode(workflowId, httpNode.id);
+
+  // 6. Enable automation
+  await toggleWorkflow(workflowId, true);
+}
+
+main().catch((e) => {
+  console.error("Failed to create automation", e);
+});
+```
+
+### Security and best practices
+- Use the least-privileged PAT and restrict accessible spaces/bases.
+- Store sensitive configurations (Token, Webhook) in a secure secret manager or environment variables; avoid hardcoding.
+- Before enabling, use "Test Node" to verify HTTP reachability and that template variables resolve correctly.
+- Configure reasonable timeouts and retries for external APIs, and monitor failures/alerts.
+
+### Related documentation
+
+- [`Automation API reference`](../../api-reference/automation/put-base-workflow-action)
