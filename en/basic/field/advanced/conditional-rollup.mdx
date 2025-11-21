@@ -1,0 +1,99 @@
+---
+title: "Conditional Rollup"
+description: "Cross-table data query functionality that performs statistical calculations on filtered data, returning single aggregated result values."
+---
+
+## Overview
+
+Conditional Rollup is a cross-table data query feature that performs statistical calculations on filtered data, returning a single aggregated result value. It allows you to obtain qualifying data from other tables based on configured filter conditions and perform statistical analysis without pre-establishing relationships between tables.
+
+- **Conditional Aggregation**: Only perform statistics on data that meets conditions, excluding irrelevant data
+- **Multi-dimensional Statistics**: Support for various calculation methods including sum, count, average, etc.
+- **Real-time Updates**: Automatically recalculate when source data changes to ensure data accuracy
+
+## Procedure
+
+**Step 1: Create Conditional Rollup Field**
+1. Click the + icon on the right side of the field name
+2. Select "Conditional Rollup" field type
+3. Enter field title (e.g., "Total Sales Amount")
+
+**Step 2: Select Target Table**
+1. Choose the data table to query from the "Target Table Selection" dropdown menu
+2. The system will display the field list of that table for subsequent configuration
+
+**Step 3: Configure Rollup Field**
+1. Select the data field to perform statistical calculations on from the "Rollup Field"
+2. Determine data type (number, text, date, etc.)
+
+**Step 4: Set Filter Conditions**
+1. Click "Add Filter Condition"
+2. Select the field to filter
+3. Select condition type (equals, not equals, contains, greater than, less than, before, after, etc.)
+4. Set comparison value:
+   - Static value: Directly input specific numerical value
+   - Field reference: Select current table field as dynamic value
+
+**Step 5: Select Aggregate Function**
+
+- Select appropriate calculation method based on data type: original value, unique, unique count, sum, count, average, maximum, minimum, etc.
+
+## Use Cases
+
+### Use Case 1: Team Task Volume Statistics
+
+**Tables:**
+- Task Table
+- Statistics Table
+
+**Scenario:**
+Team administrators need to count the number of tasks in different statuses for each employee, including in-progress and completed tasks, for workload management and progress tracking.
+
+**Procedure:**
+
+**In-Progress Tasks**
+1. Create new conditional rollup field in employee information table, title "In-Progress Tasks"
+2. Target table: Task Assignment Table
+3. Rollup field: Task ID
+4. Filter conditions:
+   - Field: Assignee → Condition: Equals → Value: Employee field of current table
+   - Field: Task Status → Condition: Equals → Value: "In Progress"
+5. Aggregate function: Count All
+
+**Completed Tasks**
+1. Create another conditional rollup field, title "Completed Tasks"
+2. Target table: Task Assignment Table
+3. Rollup field: Task ID
+4. Filter conditions:
+   - Field: Assignee → Condition: Equals → Value: Employee field of current table
+   - Field: Task Status → Condition: Equals → Value: "Completed"
+5. Aggregate function: Count All
+
+### Use Case 2: Find Duplicate Values
+
+**Tables:**
+- Customer Table (contains customer name, contact phone fields)
+
+**Scenario:**
+Find duplicate customer names in the customer table to identify duplicate customer records for data cleaning and customer information management.
+
+**Procedure:**
+1. Create new conditional rollup field in customer table, title "Customer Name Duplicate Count"
+2. Target table: Customer Table (this table)
+3. Rollup field: Customer Name
+4. Filter conditions:
+   - Field: Customer Name → Condition: Equals → Value: Customer Name field of current table
+5. Aggregate function: Count All
+6. Create new formula field, title "Duplicate Flag"
+7. Formula: `IF(Customer Name Duplicate Count > 1, "❗️ Duplicate", BLANK())`
+
+**Result**: The customer table will display the occurrence count of each customer name, and show "❗️ Duplicate" flag next to duplicate records for quick identification and processing of duplicate data.
+
+## FAQ
+
+<Accordion title="What's the difference between Conditional Rollup and Conditional Lookup?">
+Key differences:
+1. **Return Results**: Conditional Rollup returns a single calculated value, while Conditional Lookup returns a list of multiple original values
+2. **Different Uses**: Conditional Rollup is used for statistical analysis, while Conditional Lookup is used for viewing detailed data
+3. **Calculation Method**: Conditional Rollup includes aggregate calculations, while Conditional Lookup only filters and extracts data
+</Accordion>
