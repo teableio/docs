@@ -1,111 +1,83 @@
 ---
-title: "概览"
+title: "表格"
+description: "表格是数据库中存储数据的核心容器。与 Excel 中的“工作表 (Sheet)”类似，它是行与列的集合；但在 Teable 中，表格更是构建关系型数据库的基础单元。"
 ---
 
-每个数据库可以包含多张表格。表格是一种结构化数据存储方式，用于存储数据库内相关数据的集合。
+## 一、 基础操作
 
-每个表格通常会包含多个行和列，其中每一列代表一个字段及其属性，而每一行代表一个记录或数据项。表格是数据库的核心组成部分，用于收集、存储和处理数据以便后续的检索、操作和构建数据库。
+### 1. 新建表格
+进入目标数据库，点击左侧目录栏顶部的 `+` 按钮，您可以选择以下三种方式：
+- **新建空白表格**：从零开始设计表格结构
+- **导入 CSV**：从 `.csv` 文件中导入表格
+- **导入 Excel**：从 Excel 文件中导入表格
 
-Teable的表格等同于数据库中表的概念，这个概念有助于理解[Teable和传统电子表格之间的差异](/zh/compare/teable-vs-excel)，以便更好地掌握Teable。
+具体操作可参考 **[导入](/zh/basic/table/import)** 章节
 
-### 添加表格
+<img src="/images/ji-ben-gong-neng/8ae8eb8b819f57cc.png" style={{width: "300px", height: "auto"}} className="mx-auto" />
 
-1. 进入目标数据库
-2. 点击目录中的+号按钮
+### 2. 修改表格名称
+清晰的命名有助于团队协作。
+- **操作**：双击左侧目录中的表格名称，输入新名字后点击任意空白处即可自动保存
 
-<img
-  src="/images/ji-ben-gong-neng/8ae8eb8b819f57cc.png"
-  style={{width: "300px", height: "auto"}}
-  className="mx-auto"
-/>
+<img src="/images/ji-ben-gong-neng/678c305b16e3f816.png" style={{width: "300px", height: "auto"}} className="mx-auto" />
 
-你可以选择
+### 3. 删除表格
+- **操作**：鼠标悬停在表格名称上，点击右侧的 `...` 菜单，选择 **删除**
 
-1. 创建一个新表格
-2. 从 Csv 文件中导入表格
-3. 从 Excel 文件中导入表格
+<img src="/images/ji-ben-gong-neng/1d314b6aef13dc24.png" style={{width: "300px", height: "auto"}} className="mx-auto" />
 
-具体导入过程可查看[导入章节](/zh/basic/table/import)
+## 二、 进阶管理
 
-### 修改表格名称
+### 1. 回收站
+如果不小心删除了重要的表格，可以去回收站找回。
+- **入口**：点击数据库界面左上角的 **回收站** 图标
+<img src="/images/2025-12-01-21-54-44.png" style={{width: "300px", height: "auto"}} className="mx-auto" />
 
-1. 在应用中，双击目录中表格名称
-2. 修改表格名称
-3. 点击输入框外任意区域
-
-<img
-  src="/images/ji-ben-gong-neng/678c305b16e3f816.png"
-  style={{width: "300px", height: "auto"}}
-  className="mx-auto"
-/>
-
-### 删除表格
-
-1. 鼠标悬停在目录中的表格上，点击「…」按钮打开菜单
-2. 点击菜单中的删除按钮
-
-<img
-  src="/images/ji-ben-gong-neng/1d314b6aef13dc24.png"
-  style={{width: "300px", height: "auto"}}
-  className="mx-auto"
-/>
-
-### 回收站
-
-点击数据库左上方回收站按钮，即可进入表格回收站界面并执行以下操作。
-
-> 回收站中的表格数据仍可被数据库连接所访问
-
-* 清空回收站：永久删除所有的表格数据
-* 恢复：将表格恢复到数据库中去
+- **操作**：
+    - **恢复**：将表格还原到数据库中，数据完好无损
+    - **清空**：永久删除表格，无法再恢复
+- **注**：处于回收站中的表格，其数据在物理层面上依然存在，数据库连接仍可访问
 
 ![](/images/ji-ben-gong-neng/d95c9e75be841b6e.png)
 
-### 设计
+### 2. 设计
+点击表格菜单中的 **设计** 按钮，可以查看表格的基础信息。
+- **基础信息**：表格的数据库 ID、物理表名、最后修改时间
+- **字段明细**：查看每个字段的类型、是否是计算字段、是否有唯一值校验等详细属性
 
-点击菜单中的设计按钮，进入表格设计页面，可查看表格的基础属性，包括：
-
-**表格相关**
-
-* 表格所属数据库 Schema
-* 表格名称，以及在物理表中的名称
-* 表格描述
-* 修改时间
-
-**字段信息**
-
-字段详细属性
-
-* id 字段 ID
-* name 字段名称
-* dbFieldName 字段在物理数据库中的名称
-* type 字段类型
-* description 字段描述
-* graph 查看当前字段依赖关系
-* cellValueType 当前字段值类型
-* isLookup 是否为从关联表查找出来的字段
-* isMultipleCellValue 是否为[数组值字段](/zh/basic/field/common/is-multiple-value)
-* isComputed 是否为计算字段（计算字段的记录值不可修改）
-* isPending 是否为计算中
-* hasError 是否存在计算错误
-* notNull 是否启用非空校验
-* unique 是否启用唯一值校验
+| 属性名 | 描述 |
+| :--- | :--- |
+| **id** | 字段 ID |
+| **name** | 字段名称 |
+| **dbFieldName** | 字段在物理数据库中的名称 |
+| **type** | 字段类型 |
+| **description** | 字段描述 |
+| **graph** | 查看当前字段依赖关系 |
+| **cellValueType** | 当前字段值类型 |
+| **isLookup** | 是否为从关联表查找出来的字段 |
+| **isMultipleCellValue** | 是否为[数组值字段](/zh/basic/field/common/is-multiple-value) |
+| **isComputed** | 是否为计算字段（计算字段的记录值不可修改） |
+| **isPending** | 是否为计算中 |
+| **hasError** | 是否存在计算错误 |
+| **notNull** | 是否启用非空校验 |
+| **unique** | 是否启用唯一值校验 |
 
 ![](/images/ji-ben-gong-neng/7120f4c7aa1ad8e2.png)
 
-### 访问表格的方式
+---
+
+## 三、 查看
 
 用户可通过三种方式访问表格：
-
-* [视图](/zh/basic/view)
-* [API](/zh/api-doc)
-* [SQL查询语句](/zh/api-doc/sql-query)
+- **[视图](/zh/basic/view)**
+- **[API](/zh/api-doc)**
+- **[SQL 查询语句](/zh/api-doc/sql-query)**
 
 视图是最直观的访问方式。用户可通过各种视图对表格进行操作，并构建复杂的应用。
 
 新添加的表格默认包含[表格视图](/zh/basic/view/grid)，便于用户快速开始处理数据。
 
-### 表格的功能
+## 四、 特别注意
 
-**创建视图**：用户可创建多种视图操作表格，满足不同场景需求。例如：表格视图数据密度高，操作接近电子表格，易于上手；看板视图为项目管理提供更好支持。
-
+- 虽然 Teable 看起来像 Excel，但它更严格。例如，**“数字”列里不能填文字**。这种约束确保了数据规范，是实现高级筛选和自动化的基础。更多细节请看 **[Teable vs Excel](/zh/compare/teable-vs-excel)**
+- 在删除表格前，请检查它是否通过 **关联字段** 被其他表格引用。如果删除了源头表格，可能会导致关联表格中的数据显示异常
