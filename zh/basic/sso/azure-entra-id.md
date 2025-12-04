@@ -8,7 +8,7 @@ description: "配置 Azure Entra ID 作为 Teable 的 SSO 认证提供商"
 ## 步骤 1：在 Teable 中创建认证提供商
 
 1. 进入 Teable 的 SSO 设置页面
-2. 创建新的认证提供商，命名为 **Azure Entra ID**
+2. 创建新的认证提供商，命名为 **Azure Entra ID** 并选择 **OpenID Connect**
 
 ![](/images/2025-12-04-18-00-20.png)
 
@@ -111,7 +111,7 @@ description: "配置 Azure Entra ID 作为 Teable 的 SSO 认证提供商"
 **方式 2：域名验证**
 1. 点击左侧菜单中的**域名验证**
 2. 验证你的自定义域名
-3. 访问你的 Teable 实例
+3. 访问 https://app.teable.io
 4. 点击 SSO 登录按钮
 5. 输入已验证域名下的电子邮件地址以登录
 

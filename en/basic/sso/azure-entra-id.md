@@ -8,7 +8,7 @@ description: "Configure Azure Entra ID as your SSO authentication provider for T
 ## Step 1: Create Authentication Provider in Teable
 
 1. Navigate to your Teable SSO settings
-2. Create a new authentication provider and name it **Azure Entra ID**
+2. Create a new authentication provider and name it **Azure Entra ID** and select **OpenID Connect**
 
 ![](/images/2025-12-04-18-00-20.png)
 
@@ -69,7 +69,7 @@ Click **Register** to create the application.
 
 ![](/images/2025-12-04-18-01-44.png)
 
-2. Click **+ New client secret**
+2. Click **+ Add a certificate or secret**
 
 ![](/images/2025-12-04-18-01-50.png)
 
@@ -105,12 +105,14 @@ Click **Register** to create the application.
 
 You have two options to enable SSO login:
 
+![](/images/2025-12-04-18-34-30.png)
+
 **Option 1: Direct Authentication URL**
 - Use the authentication URL as your SSO login URL
 
 **Option 2: Domain Verification**
 1. Click **Domain verification** in the left menu
 2. Verify your custom domain
-3. Visit your Teable instance
+3. Visit your teable login page
 4. Click the SSO login button
 5. Enter your email address under the verified domain to log in
