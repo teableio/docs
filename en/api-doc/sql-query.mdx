@@ -1,104 +1,113 @@
 ---
 title: "SQL Query"
 ---
-<Tip>Available for self-hosted or cloud enterprise plan</Tip>
+
+<Tip>
+- **Self-hosted**: Available for all versions with unlimited connections
+- **Cloud**: Available for Enterprise plan only (20 connections limit)
+</Tip>
+
+Teable allows you to connect to its underlying PostgreSQL database through external tools for read-only queries. This enables integration with BI tools (PowerBI, Metabase, Superset), database clients (DataGrip, Navicat, TablePlus), low-code platforms (Appsmith, Budibase), and application code.
 
 ### Creating a Database Connection
 
-1. **Open the Table**: First, open the table you want to connect to.
-2. **Select API Button**: Find and click the API button on the right.
-3. **Choose PostgreSQL Connection**: In the popup options, select PostgreSQL Connection.
-4. **Enter Settings Interface**: Click create, and the system will automatically create a read-only PostgreSQL user, including username, password, and database connection address.
+1. **Open a Table**: First, open any table within the base you want to connect to.
+2. **Enter Design Page**: Click the ⚙️ icon in the top right corner to enter the Base Design page.
 
-<img alt="pg connection" src="/images/kai-fa-zhe/dd60fcb2becb23c5.png" />
+![](/images/../../images/2025-12-05-01-16-08.png)
 
-#### Connection Methods
+3. **Find Database Connection Panel**: In the Design page, locate the "Database Connection" panel.
+4. **Create Connection**: Click create, and the system will automatically generate a read-only PostgreSQL connection with username, password, and host address.
 
-* **Standard PostgreSQL Clients**: Such as DataGrip, Navcat, TablePlus, etc.
-* **BI Products**: Such as PowerBI, Metabase, Superset, etc.
-* **Low-Code Software**: Such as Appsmith, Budibase, etc.
-* **Application Code**: Through corresponding PostgreSQL drivers for different programming languages.
-
-### Getting the BaseId
-
-1. Click on any table to enter the interface. The string starting with `bse` in the URL is the baseId.
-
-<img alt="baseId" src="/images/kai-fa-zhe/e8ef17c59ac0c067.png" />
-
-2. Enter the base design interface (⚙ icon in the top right corner of the table), where the schema name is the baseId.
-
-<img alt="Design page" src="/images/kai-fa-zhe/64fbddbd0f5519c4.png" />
+![](/images/../../images/2025-12-05-01-17-53.png)
 
 ### Connecting to the Database
 
-While connection methods may vary slightly across different products, they follow a similar pattern. Here's a simple example:
+Use the credentials to connect through your preferred tool. Here's an example:
 
 <img alt="Connection example" src="/images/kai-fa-zhe/ceef01dd644628f4.png" />
 
-### Closing the Database Connection
+### Querying Data
 
-1. **Access Database Connection Interface**: Click delete in the Database Connection interface to close the connection.
-2. **Password Clearing**: After deletion, the old password will be cleared. Creating a new connection will generate new credentials.
+Once connected, you can query data using SQL:
 
-### Database Table Contents
+```sql
+SELECT * FROM "bseamGnQT65TVSCzIaC"."clients" LIMIT 100
+```
 
-Click the ⚙️ icon in the top right corner to enter the **Base Design Interface**, which contains details about the table's name and structure in the database. This is very helpful for external data queries.
+**Note:** In PostgreSQL, use double quotes `"` around schema and table names to preserve case sensitivity.
 
-#### Database Table Names
+To write this query, you'll need to know three things:
+- **Schema name (BaseId)**: The base identifier starting with `bse`
+- **Table name**: The physical table name in PostgreSQL
+- **Field names**: The actual column names in the database
 
-Changing a table name in Teable won't automatically sync with the table name in the database. You must explicitly modify the table name in the physical database.
+The following sections explain how to find each of these.
+
+### Finding the BaseId (Schema Name)
+
+Each Base in Teable corresponds to a **schema** in PostgreSQL. The BaseId is the schema name used in SQL queries.
+
+**Method 1:** Look at the URL - the string starting with `bse` is the BaseId.
+
+<img alt="baseId" src="/images/kai-fa-zhe/e8ef17c59ac0c067.png" />
+
+**Method 2:** In the Base Design interface, the schema name shown is the BaseId.
+
+<img alt="Design page" src="/images/kai-fa-zhe/64fbddbd0f5519c4.png" />
+
+### Finding Table Names
+
+Table names in Teable interface don't automatically sync with physical database table names. Check the Base Design Interface for the actual database table name.
 
 <img alt="table info" src="/images/kai-fa-zhe/ba2fdb846b2062ce.png" />
 
-After modifying the table name, you can directly use SQL for queries. Here's an example query to fetch the first 100 rows from the current table:
+**Tip:** You can modify the physical table name in the design interface if needed.
 
-```sql
-SELECT * from "bseamGnQT65TVSCzIaC"."clients" limit 100
-```
+### Finding Field Names
 
-When querying, you need to include the schema name (BaseId) and use the physical database table name. **Note that in PostgreSQL, you must use double quotes** `"` **around schema and table names to preserve case sensitivity.**
-
-#### **User-Created Fields**
-
-All fields you create in the table.
-
-Note that the field (column) names in the database won't exactly match the names in the Teable interface. Please check the field names in the database design interface before querying and make necessary modifications.
-
-**Changing field names in Teable won't automatically sync with dbFieldName. You must explicitly modify the dbFieldName to change the actual column name in PostgreSQL.**
+Field (column) names in the database may differ from the Teable interface. Check the `dbFieldName` in the design interface.
 
 <img alt="db field name" src="/images/kai-fa-zhe/7609033391e8e7c1.png" />
 
-#### **Teable System Fields**
+**Tip:** Changing field names in Teable won't sync automatically. Modify `dbFieldName` explicitly to change the actual column name in PostgreSQL.
 
-System fields cannot be renamed:
+### System Fields
 
-1. `__id` Unique ID
-2. `__version` Version number
-3. `__auto_number` Auto-incrementing number, primary key
-4. `__created_time` Creation time
-5. `__last_modified_time` Last modified time
-6. `__created_by` Creator ID
-7. `__last_modified_by` Last modifier ID
-8. View index fields: Fields starting with `__row`, used to maintain record order in the current view
-9. Foreign keys: If there are relationship fields, logical foreign keys will be created, starting with `__fk`
+Teable automatically creates these system fields (cannot be renamed):
 
-#### Junction Tables
+| Field | Description |
+|-------|-------------|
+| `__id` | Unique ID |
+| `__version` | Version number |
+| `__auto_number` | Auto-incrementing number, primary key |
+| `__created_time` | Creation time |
+| `__last_modified_time` | Last modified time |
+| `__created_by` | Creator ID |
+| `__last_modified_by` | Last modifier ID |
+| `__row*` | View index fields, used to maintain record order |
+| `__fk*` | Foreign keys for relationship fields |
 
-Tables starting with `junction_` are used to handle ManyToMany and unidirectional relationships.
+### Junction Tables
+
+Tables starting with `junction_` are system-generated tables for handling ManyToMany and unidirectional relationships.
+
+### Permission Notes
+
+The database connection is scoped to the current base only. PostgreSQL schemas provide permission isolation, ensuring you can only access tables within your base.
+
+You may see other baseIds (schema names) when connecting, but you cannot access their content.
+
+<img alt="base id in TablePlus" src="/images/kai-fa-zhe/093aebb4bc8cf732.png" />
 
 ### Connection Limits
 
 Default limit is 20 concurrent connections.
 
-### Permission Notes
+### Writing Data
 
-The created connection user's access scope is limited to the current base (called database in the Teable interface), which corresponds to a schema in PostgreSQL. Schemas in PostgreSQL provide excellent permission isolation, ensuring the current connection can only access tables within that schema. However, PostgreSQL roles created will have the ability to view all schema names, which is why you might see many baseIds (actually schema names) as shown in the image below when connecting through external applications. Rest assured that besides this ID, no other user content can be accessed.
+Teable does not allow direct database writes through external connections. To modify data, use the [Teable API](/api-doc/token) instead.
 
-<img alt="base id in TablePlus" src="/images/kai-fa-zhe/093aebb4bc8cf732.png" />
+### Closing the Connection
 
-### Direct Database Writing
-
-Teable does not allow direct database operations through external connections. Directly modifying the database content is dangerous and may break application logic, leading to crashes or data loss. Teable does not provide writable database connections. If you need to modify data, please use the Teable API, which provides more granular permission control and well-encapsulated operations.
-
-###
-
+In the Database Connection panel, click delete to close the connection. The old password will be cleared, and creating a new connection will generate new credentials.
