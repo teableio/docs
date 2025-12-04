@@ -2,104 +2,112 @@
 title: "通过 SQL 访问表格数据"
 ---
 
-<Tip>适用于私有化部署或云端企业版</Tip>
+<Tip>
+- **私有化部署**：所有版本均可用，无连接数限制
+- **云端版本**：仅企业版可用，限制 20 个连接
+</Tip>
+
+Teable 允许您通过外部工具连接底层 PostgreSQL 数据库进行只读查询。支持 BI 工具（PowerBI、Metabase、Superset）、数据库客户端（DataGrip、Navicat、TablePlus）、低代码平台（Appsmith、Budibase）以及应用程序代码。
 
 ### 创建数据库连接
 
-1. **进入表格**：首先，打开您想要连接的表格。
-2. **选择 API 按钮**：在右侧找到并点击 API 按钮。
-3. **选择 Postgresql Connection**：在弹出的选项中，选择 Postgresql Connection。
-4. **进入设置界面**：点击创建，系统将自动创建一个只读的 Postgres 用户，包括用户名、密码和数据库链接地址。
+1. **进入表格**：首先，打开您想要连接的 Base 中的任意一个表格。
+2. **进入设计页面**：点击右上角的 ⚙️ 图标，进入 Base 设计页面。
 
-<img alt="pg connection" src="/images/kai-fa-zhe/dd60fcb2becb23c5.png" />
+![](/images/../../images/2025-12-05-01-20-28.png)
 
-#### 连接方式
+3. **找到数据库连接面板**：在设计页面中，找到「数据库连接」面板。
+4. **创建连接**：点击创建，系统将自动生成一个只读的 PostgreSQL 连接，包括用户名、密码和连接地址。
 
-* **标准 PostgreSQL 客户端**：如 DataGrip, Navcat, TablePlus 等。
-* **BI 产品**：如 PowerBI, Metabase, Superset 等。
-* **低代码软件**：如 Appsmith, Budibase 等。
-* **应用程序代码**：通过选择对应语言的 Postgres Driver。
-
-### 获取 BaseId
-
-1. 点击任意表格进入界面，URL 上方以 `bse` 开头的字符串就是 baseId。
-
-<img alt="baseId" src="/images/kai-fa-zhe/e8ef17c59ac0c067.png" />
-
-1. 进入数据库设计界面（表格右上角的 ⚙ 图标），里面的 schema 名就是 baseId。
-
-<img alt="Design page" src="/images/kai-fa-zhe/64fbddbd0f5519c4.png" />
+![](/images/../../images/2025-12-05-01-19-34.png)
 
 ### 连接数据库
 
-在不同的产品上，连接数据库的方式略有不同，但大同小异，我们这里进行一个简单的示例
+使用获取的凭证通过您喜欢的工具进行连接，示例如下：
 
 <img alt="Connection example" src="/images/kai-fa-zhe/ceef01dd644628f4.png" />
 
-### 关闭数据库连接
+### 查询数据
 
-1. **进入 Database Connection 界面**：在 Database Connection 界面点击删除，即可关闭连接。
-2. **密码清除**：删除后旧的密码将被清除。重新新建将会是新的连接。
+连接成功后，您可以使用 SQL 查询数据：
 
-### 数据库表中的内容
+```sql
+SELECT * FROM "bseamGnQT65TVSCzIaC"."clients" LIMIT 100
+```
 
-点击表格右上角的 ⚙️ 图标进入**数据库设计界面**，里面包含了关于当前表格在数据库中的名称和结构详情，对于如何在外部进行数据查询非常有帮助
+**注意**：在 PostgreSQL 中，必须使用双引号 `"` 将 schema 和表名包裹起来以保持大小写敏感。
 
-#### 数据库表名称
+编写查询语句需要知道以下三个信息：
+- **Schema 名称（BaseId）**：以 `bse` 开头的 Base 标识符
+- **表名**：PostgreSQL 中的物理表名
+- **字段名**：数据库中的实际列名
 
-修改Teable 中的表名称不会同步修改数据库中的 table name，您必须显式的修改物理数据库中的表名。
+以下章节将说明如何获取这些信息。
+
+### 获取 BaseId（Schema 名称）
+
+Teable 中的每个 Base 对应 PostgreSQL 中的一个 **schema**。BaseId 就是 SQL 查询中使用的 schema 名称。
+
+**方法一**：查看 URL，以 `bse` 开头的字符串就是 BaseId。
+
+<img alt="baseId" src="/images/kai-fa-zhe/e8ef17c59ac0c067.png" />
+
+**方法二**：在 Base 设计界面中，显示的 schema 名就是 BaseId。
+
+<img alt="Design page" src="/images/kai-fa-zhe/64fbddbd0f5519c4.png" />
+
+### 获取表名
+
+Teable 界面上的表名不会自动同步到物理数据库表名。请在 Base 设计界面中查看实际的数据库表名。
 
 <img alt="table info" src="/images/kai-fa-zhe/ba2fdb846b2062ce.png" />
 
-当你完成表名修改之后，就可以直接使用 SQL 进行查询，下面是一个例子查询当前表格的前 100 行数据
+**提示**：如需修改物理表名，可以在设计界面中进行修改。
 
-```sql
-SELECT * from "bseamGnQT65TVSCzIaC"."clients" limit 100
-```
+### 获取字段名
 
-查询的时候需要带上 schema 名称也就是 BaseId, 并使用物理数据库表名进行查询，**请注意在 Postgres 中必须使用双引号**`"` **将 schema 和 table 名称包住才能够正确的区分大小写。**
-
-#### **用户创建的字段**
-
-您在表格中创建的所有字段。
-
-注意，数据库表中的字段 (列) 名与用户在 Teable 界面上的命名不会完全一致，请在进行查询前先在数据库设计界面页面检查字段在数据库中的名称，并进行必要的修改。
-
-**修改 teable 中的字段名并不会同步修改 dbFieldName, 您必须显式的修改 dbFieldName 以修改 Postgres 中实际的 column name**
+数据库中的字段（列）名可能与 Teable 界面上显示的不同。请在设计界面中查看 `dbFieldName`。
 
 <img alt="db field name" src="/images/kai-fa-zhe/7609033391e8e7c1.png" />
 
-#### **Teable 系统字段**
+**提示**：修改 Teable 中的字段名不会自动同步。如需修改 PostgreSQL 中的实际列名，请显式修改 `dbFieldName`。
 
-系统字段无法被重命名
+### 系统字段
 
-1. `__id` 唯一 ID
-2. `__version` 版本号
-3. `__auto_number` 自增数字，主键
-4. `__created_time` 创建时间
-5. `__last_modified_time` 最近修改时间
-6. `__created_by` 创建人 ID
-7. `__last_modified_by` 最近修改人 ID
-8. 视图索引字段：以 `__row` 开头的字段，用于维护当前视图中记录的顺序。
-9. 外键：如果存在关联字段，会创建逻辑外键，命名以 `__fk` 开头。
+Teable 自动创建以下系统字段（无法重命名）：
 
-#### 中间表
+| 字段 | 说明 |
+|------|------|
+| `__id` | 唯一 ID |
+| `__version` | 版本号 |
+| `__auto_number` | 自增数字，主键 |
+| `__created_time` | 创建时间 |
+| `__last_modified_time` | 最近修改时间 |
+| `__created_by` | 创建人 ID |
+| `__last_modified_by` | 最近修改人 ID |
+| `__row*` | 视图索引字段，用于维护记录顺序 |
+| `__fk*` | 关联字段的外键 |
 
-以 `junction_` 开头的表，用于处理 ManyToMany 以及单向关联关系。
+### 中间表
 
-### 连接数限制
-
-数据库默认限制为 20 个并发连接。
+以 `junction_` 开头的表是系统自动生成的，用于处理多对多和单向关联关系。
 
 ### 权限说明
 
-创建的连接用户权限访问范围为当前所在的 Base (Teable界面上称数据库），它对应 Postgres 中的 schema, schema 是 Postgres 中命名空间概念，提供了非常好的权限隔离特性，保证当前连接仅可访问该 schema 中的表，但是 postgres 中创建的角色会拥有所有 schema 的名称查看能力，这也就是为什么当你使用外部应用连接上数据库是时可能会看到下图一样非常多的 baseId (实际上是schema 名称）。但是可以放心的是，除了这个 Id 之外任何其他的用户内容是无法被访问的。
+数据库连接的访问范围仅限于当前 Base。PostgreSQL 的 schema 提供了权限隔离，确保您只能访问自己 Base 中的表。
+
+连接时您可能会看到其他的 BaseId（schema 名称），但无法访问它们的内容。
 
 <img alt="base id in TablePlus" src="/images/kai-fa-zhe/093aebb4bc8cf732.png" />
 
-### 直接写数据库
+### 连接数限制
 
-Teable 不允许通过外部连接直接操作数据库，直接修改数据库内容是危险的，可能会破坏应用程序的逻辑，导致崩溃或数据丢失。Teable 不提供可写的数据库连接。如果需要修改数据，请通过 Teable API 进行，API 提供了更精细的权限控制和良好的操作封装。
+默认限制为 20 个并发连接。
 
-###
+### 写入数据
 
+Teable 不允许通过外部连接直接写入数据库。如需修改数据，请使用 [Teable API](/api-doc/token)。
+
+### 关闭连接
+
+在数据库连接面板中点击删除即可关闭连接。旧密码将被清除，重新创建连接将生成新的凭证。
