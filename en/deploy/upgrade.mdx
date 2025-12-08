@@ -8,10 +8,6 @@ This document describes how to upgrade your self-hosted Teable deployment.
 
 You have full control over when to update your self-hosted Teable instance. Whenever a new version is released, you can flexibly choose whether to upgrade. You can view all available versions on [GitHub Packages](https://github.com/teableio/teable-enterprise/pkgs/container/teable-ee).
 
-<Tip>
-If you need to ensure stability, we recommend only updating to versions with the `stable` tag.
-</Tip>
-
 <Note>
 Before performing any upgrade, we strongly recommend backing up your data first.
 </Note>
@@ -22,18 +18,26 @@ If you deployed Teable using Docker Compose, follow these steps to upgrade:
 
 ### Backup Data (Recommended)
 
-Before upgrading, we recommend backing up your important data:
+We recommend backing up your entire cloud server, or backing up the PostgreSQL / Redis / storage volumes you're using.
 
-**Backup PostgreSQL database:**
+If you need fine-grained logical backups:
+
+**Backup PostgreSQL database (table data):**
 
 ```bash
 docker exec teable-db pg_dump -U teable teable > backup_$(date +%Y%m%d).sql
 ```
 
-**Backup attachment data:**
+**Backup attachment data (user uploaded files):**
 
 ```bash
 docker run --rm -v teable-data:/data -v $(pwd):/backup alpine tar czf /backup/teable-data_$(date +%Y%m%d).tar.gz /data
+```
+
+**Backup Redis data (Automation queue data):**
+
+```bash
+docker exec teable-cache redis-cli BGSAVE
 ```
 
 ### Navigate to Deployment Directory
