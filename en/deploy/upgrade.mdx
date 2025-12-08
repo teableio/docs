@@ -20,26 +20,6 @@ If you deployed Teable using Docker Compose, follow these steps to upgrade:
 
 We recommend backing up your entire cloud server, or backing up the PostgreSQL / Redis / storage volumes you're using.
 
-If you need fine-grained logical backups:
-
-**Backup PostgreSQL database (table data):**
-
-```bash
-docker exec teable-db pg_dump -U teable teable > backup_$(date +%Y%m%d).sql
-```
-
-**Backup attachment data (user uploaded files):**
-
-```bash
-docker run --rm -v teable-data:/data -v $(pwd):/backup alpine tar czf /backup/teable-data_$(date +%Y%m%d).tar.gz /data
-```
-
-**Backup Redis data (Automation queue data):**
-
-```bash
-docker exec teable-cache redis-cli BGSAVE
-```
-
 ### Navigate to Deployment Directory
 
 ```bash
@@ -199,4 +179,3 @@ You can check the current version by:
 3. If the issue persists, rollback to the previous version
 4. Contact support at support@teable.ai
 </Accordion>
-
