@@ -1,0 +1,169 @@
+---
+title: "安全"
+description: "了解 Teable 的安全架构、数据保护和合规措施"
+---
+
+<CardGroup cols={4}>
+  <Card title="数据加密" icon="lock">
+    AES-256 & TLS
+  </Card>
+  <Card title="ISO 27001" icon="shield-check">
+    已认证
+  </Card>
+  <Card title="AWS 托管" icon="server">
+    美西俄勒冈
+  </Card>
+  <Card title="SSO 支持" icon="key">
+    OIDC 协议
+  </Card>
+</CardGroup>
+
+<Info>
+Teable 致力于维护您数据的安全和隐私。我们的安全实践旨在保护您的信息，同时让您完全掌控自己的工作空间。
+</Info>
+
+## 数据加密
+
+### 传输加密
+
+您的浏览器与 Teable 服务器之间传输的所有数据都使用 **256 位 SSL/TLS 加密** 保护。我们对所有连接强制使用 HTTPS，并自动将 HTTP 重定向到 HTTPS。
+
+### 静态加密
+
+<Tabs>
+  <Tab title="Teable Cloud">
+    存储在我们数据库中的所有数据都通过 AWS 基础设施使用 **AES-256 加密**。包括：
+    - 数据库存储（AWS RDS 上的 PostgreSQL）
+    - 文件附件
+    - 备份数据
+  </Tab>
+  <Tab title="私有部署">
+    您可以根据基础设施要求完全控制加密配置。我们建议：
+    - 启用数据库级加密
+    - 使用加密存储卷
+    - 实施备份加密
+  </Tab>
+</Tabs>
+
+## 基础设施安全
+
+Teable Cloud 托管在 **亚马逊云服务 (AWS)** 的美西（俄勒冈）区域，利用 AWS 的企业级安全基础设施。
+
+<CardGroup cols={2}>
+  <Card title="安全响应头" icon="shield-halved">
+    实施 Helmet 和内容安全策略 (CSP)，防止 XSS 和点击劫持等常见 Web 漏洞。
+  </Card>
+  <Card title="机器人防护" icon="robot">
+    集成 Cloudflare Turnstile，防止自动化攻击和垃圾注册。
+  </Card>
+  <Card title="速率限制" icon="gauge-high">
+    登录尝试的暴力破解防护和账户锁定机制，以及邮件验证和密码重置操作的速率限制。
+  </Card>
+  <Card title="密码安全" icon="key">
+    所有密码都使用 bcrypt 算法和唯一盐值进行哈希处理，能够抵御彩虹表攻击。
+  </Card>
+</CardGroup>
+
+## 访问控制
+
+### 基于角色的权限
+
+Teable 提供细粒度的基于角色的访问控制，包含五个权限级别：
+
+| 角色 | 能力 |
+|------|------|
+| **所有者** | 对工作空间的完全控制，包括账单和删除 |
+| **创建者** | 可以创建表格、视图并管理工作空间结构 |
+| **编辑者** | 可以编辑记录和字段值 |
+| **评论者** | 可以查看内容并添加评论 |
+| **查看者** | 只读访问内容 |
+
+### 权限矩阵
+
+<Tip>
+权限矩阵允许在字段、记录和视图级别进行细粒度的权限控制，使您能够精确定义每个用户或角色可以查看和修改的内容。
+</Tip>
+
+此功能特别适用于：
+- 限制敏感字段（如工资、个人信息）
+- 基于所有权或部门限制记录访问
+- 创建具有不同权限集的自定义视图
+
+### 分享链接保护
+
+使用密码保护您分享的视图。启用后，接收者必须输入正确的密码才能访问分享的内容。
+
+## 数据管理
+
+### 记录历史
+
+通过全面的修订历史跟踪对记录所做的所有更改：
+- 查看谁在何时进行了更改
+- 查看修改前的值
+- 了解数据的完整生命周期
+
+### 回收站与恢复
+
+删除的项目会移至回收站，可以在保留期内恢复，防止意外数据丢失。
+
+## 单点登录 (SSO)
+
+Teable 通过 **OIDC（OpenID Connect）** 协议支持企业 SSO，兼容主要身份提供商：
+
+<CardGroup cols={3}>
+  <Card title="Azure Entra ID" icon="microsoft" href="/zh/basic/sso/azure-entra-id" />
+  <Card title="Okta" icon="o" href="/zh/basic/sso/okta" />
+  <Card title="Google Workspace" icon="google" href="/zh/basic/sso/google-workspace" />
+  <Card title="Auth0" icon="a" href="/zh/basic/sso/auth0" />
+  <Card title="OneLogin" icon="1" href="/zh/basic/sso/onelogin" />
+  <Card title="Authentik" icon="lock" href="/zh/basic/sso/authentik" />
+</CardGroup>
+
+## 合规认证
+
+<Card title="ISO 27001 认证" icon="certificate">
+  Teable Cloud 已获得 ISO 27001 认证，证明我们对信息安全管理最佳实践的承诺。
+</Card>
+
+## 私有部署
+
+对于有严格安全或合规要求的组织，Teable 提供私有部署选项：
+
+<Steps>
+  <Step title="数据驻留">
+    将所有数据保留在您自己的基础设施和地理边界内
+  </Step>
+  <Step title="网络控制">
+    在您的 VPC 内部署，使用自定义防火墙规则和网络策略
+  </Step>
+  <Step title="自定义安全">
+    与您现有的安全堆栈、SIEM 和监控工具集成
+  </Step>
+  <Step title="备份控制">
+    实施您自己的备份和灾难恢复程序
+  </Step>
+</Steps>
+
+## 安全最佳实践
+
+我们建议以下做法来最大化您工作空间的安全性：
+
+<AccordionGroup>
+  <Accordion title="使用强而独特的密码">
+    创建包含大小写字母、数字和符号组合的密码。考虑使用密码管理器。
+  </Accordion>
+  <Accordion title="尽可能启用 SSO">
+    单点登录提供集中的身份验证管理和额外的安全控制。
+  </Accordion>
+  <Accordion title="定期审查协作者权限">
+    定期审核您的工作空间成员及其权限级别，确保最小权限访问。
+  </Accordion>
+  <Accordion title="使用密码保护的分享链接">
+    在外部分享视图时，对于敏感数据始终启用密码保护。
+  </Accordion>
+</AccordionGroup>
+
+## 联系我们
+
+如有安全相关问题或报告漏洞，请联系 **support@teable.ai**
+
