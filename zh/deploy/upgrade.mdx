@@ -20,26 +20,6 @@ Teable 私有化版本的更新完全由您自主决定。只要有新版本发�
 
 我们建议直接备份整个云主机，或者备份使用到的 PostgreSQL / Redis / 存储卷。
 
-如果需要进行精细的逻辑备份：
-
-**备份 PostgreSQL 数据库（表格数据）：**
-
-```bash
-docker exec teable-db pg_dump -U teable teable > backup_$(date +%Y%m%d).sql
-```
-
-**备份附件数据（用户上传的附件数据）：**
-
-```bash
-docker run --rm -v teable-data:/data -v $(pwd):/backup alpine tar czf /backup/teable-data_$(date +%Y%m%d).tar.gz /data
-```
-
-**备份 Redis 数据（Automation 队列数据）：**
-
-```bash
-docker exec teable-cache redis-cli BGSAVE
-```
-
 ### 进入部署目录
 
 ```bash
@@ -199,4 +179,3 @@ kubectl rollout undo deployment/teable -n teable --to-revision=<revision>
 3. 如果问题持续，可以回滚到之前的版本
 4. 联系支持团队 support@teable.ai
 </Accordion>
-
