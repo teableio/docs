@@ -1,0 +1,203 @@
+---
+title: "Security"
+description: "Learn about Teable's security architecture, data protection, and compliance measures"
+---
+
+import { Shield, Lock, Server, Users, Key, Database, FileCheck, Globe } from 'lucide-react';
+
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 my-8">
+  <Card>
+    <div className="flex items-center gap-3">
+      <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+        <Lock className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+      </div>
+      <div>
+        <div className="font-semibold">Encryption</div>
+        <div className="text-sm text-gray-500">AES-256 & TLS</div>
+      </div>
+    </div>
+  </Card>
+  <Card>
+    <div className="flex items-center gap-3">
+      <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
+        <Shield className="w-6 h-6 text-green-600 dark:text-green-400" />
+      </div>
+      <div>
+        <div className="font-semibold">ISO 27001</div>
+        <div className="text-sm text-gray-500">Certified</div>
+      </div>
+    </div>
+  </Card>
+  <Card>
+    <div className="flex items-center gap-3">
+      <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
+        <Server className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+      </div>
+      <div>
+        <div className="font-semibold">AWS Hosted</div>
+        <div className="text-sm text-gray-500">US-West Oregon</div>
+      </div>
+    </div>
+  </Card>
+  <Card>
+    <div className="flex items-center gap-3">
+      <div className="p-2 bg-orange-100 dark:bg-orange-900 rounded-lg">
+        <Key className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+      </div>
+      <div>
+        <div className="font-semibold">SSO Ready</div>
+        <div className="text-sm text-gray-500">OIDC Protocol</div>
+      </div>
+    </div>
+  </Card>
+</div>
+
+<Info>
+Teable is committed to maintaining the security and privacy of your data. Our security practices are designed to protect your information while giving you full control over your workspace.
+</Info>
+
+## Data Encryption
+
+### Encryption in Transit
+
+All data transmitted between your browser and Teable servers is protected using **256-bit SSL/TLS encryption**. We enforce HTTPS for all connections with automatic HTTP to HTTPS redirection.
+
+### Encryption at Rest
+
+<Tabs>
+  <Tab title="Teable Cloud">
+    All data stored in our databases is encrypted using **AES-256 encryption** through AWS infrastructure. This includes:
+    - Database storage (PostgreSQL on AWS RDS)
+    - File attachments
+    - Backups
+  </Tab>
+  <Tab title="Self-Hosted">
+    You have full control over your encryption configuration based on your infrastructure requirements. We recommend:
+    - Enabling database-level encryption
+    - Using encrypted storage volumes
+    - Implementing backup encryption
+  </Tab>
+</Tabs>
+
+## Infrastructure Security
+
+Teable Cloud is hosted on **Amazon Web Services (AWS)** in the US-West (Oregon) region, leveraging AWS's enterprise-grade security infrastructure.
+
+<CardGroup cols={2}>
+  <Card title="Security Headers" icon="shield-halved">
+    Implementation of Helmet and Content Security Policy (CSP) to prevent common web vulnerabilities like XSS and clickjacking.
+  </Card>
+  <Card title="Bot Protection" icon="robot">
+    Cloudflare Turnstile integration to prevent automated attacks and spam registrations.
+  </Card>
+  <Card title="Rate Limiting" icon="gauge-high">
+    Protection against brute-force attacks on login attempts with account lockout, and rate limiting on email verification and password reset operations.
+  </Card>
+  <Card title="Password Security" icon="key">
+    All passwords are hashed using bcrypt algorithm with unique salts, making them resistant to rainbow table attacks.
+  </Card>
+</CardGroup>
+
+## Access Controls
+
+### Role-Based Permissions
+
+Teable provides granular role-based access control with five permission levels:
+
+| Role | Capabilities |
+|------|-------------|
+| **Owner** | Full control over the workspace, including billing and deletion |
+| **Creator** | Can create tables, views, and manage workspace structure |
+| **Editor** | Can edit records and field values |
+| **Commenter** | Can view content and add comments |
+| **Viewer** | Read-only access to content |
+
+### Authority Matrix
+
+<Tip>
+Authority Matrix allows fine-grained permission control at the field, record, and view level, enabling you to precisely define what each user or role can see and modify.
+</Tip>
+
+This feature is particularly useful for:
+- Restricting sensitive fields (e.g., salary, personal information)
+- Limiting record access based on ownership or department
+- Creating custom views with different permission sets
+
+### Share Link Protection
+
+Protect your shared views with password authentication. When enabled, recipients must enter the correct password before accessing the shared content.
+
+## Data Management
+
+### Record History
+
+Track all changes made to your records with a comprehensive revision history:
+- See who made changes and when
+- View previous values before modifications
+- Understand the complete lifecycle of your data
+
+### Trash & Recovery
+
+Deleted items are moved to trash and can be recovered within the retention period, providing protection against accidental data loss.
+
+## Single Sign-On (SSO)
+
+Teable supports enterprise SSO through the **OIDC (OpenID Connect)** protocol, compatible with major identity providers:
+
+<CardGroup cols={3}>
+  <Card title="Auth0" icon="a" href="/basic/sso/auth0" />
+  <Card title="Okta" icon="o" href="/basic/sso/okta" />
+  <Card title="Azure Entra ID" icon="microsoft" href="/basic/sso/azure-entra-id" />
+  <Card title="Google Workspace" icon="google" href="/basic/sso/google-workspace" />
+  <Card title="OneLogin" icon="1" href="/basic/sso/onelogin" />
+  <Card title="Authentik" icon="lock" href="/basic/sso/authentik" />
+</CardGroup>
+
+## Compliance
+
+<Card title="ISO 27001 Certified" icon="certificate">
+  Teable Cloud has achieved ISO 27001 certification, demonstrating our commitment to information security management best practices.
+</Card>
+
+## Self-Hosted Deployment
+
+For organizations with strict security or compliance requirements, Teable offers self-hosted deployment options:
+
+<Steps>
+  <Step title="Data Residency">
+    Keep all data within your own infrastructure and geographic boundaries
+  </Step>
+  <Step title="Network Control">
+    Deploy within your VPC with custom firewall rules and network policies
+  </Step>
+  <Step title="Custom Security">
+    Integrate with your existing security stack, SIEM, and monitoring tools
+  </Step>
+  <Step title="Backup Control">
+    Implement your own backup and disaster recovery procedures
+  </Step>
+</Steps>
+
+## Security Best Practices
+
+We recommend the following practices to maximize your workspace security:
+
+<AccordionGroup>
+  <Accordion title="Use strong, unique passwords">
+    Create passwords with a mix of uppercase, lowercase, numbers, and symbols. Consider using a password manager.
+  </Accordion>
+  <Accordion title="Enable SSO when available">
+    Single Sign-On provides centralized authentication management and additional security controls.
+  </Accordion>
+  <Accordion title="Review collaborator permissions regularly">
+    Audit your workspace members and their permission levels periodically to ensure least-privilege access.
+  </Accordion>
+  <Accordion title="Use password-protected share links">
+    When sharing views externally, always enable password protection for sensitive data.
+  </Accordion>
+</AccordionGroup>
+
+## Contact
+
+For security-related inquiries or to report a vulnerability, please contact us at **support@teable.ai**
+
