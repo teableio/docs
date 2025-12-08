@@ -20,7 +20,7 @@ Before performing any upgrade, we strongly recommend backing up your data first.
 
 If you deployed Teable using Docker Compose, follow these steps to upgrade:
 
-### 1. Backup Data (Recommended)
+### Backup Data (Recommended)
 
 Before upgrading, we recommend backing up your important data:
 
@@ -36,19 +36,19 @@ docker exec teable-db pg_dump -U teable teable > backup_$(date +%Y%m%d).sql
 docker run --rm -v teable-data:/data -v $(pwd):/backup alpine tar czf /backup/teable-data_$(date +%Y%m%d).tar.gz /data
 ```
 
-### 2. Navigate to Deployment Directory
+### Navigate to Deployment Directory
 
 ```bash
 cd teable  # Navigate to your teable deployment directory
 ```
 
-### 3. Pull Latest Images
+### Pull Latest Images
 
 ```bash
 docker-compose pull
 ```
 
-### 4. Restart Services
+### Restart Services
 
 ```bash
 docker-compose up -d
@@ -56,7 +56,7 @@ docker-compose up -d
 
 The system will automatically recreate containers using the latest images. Your data is stored in Docker volumes and will not be lost.
 
-### 5. Verify Upgrade
+### Verify Upgrade
 
 ```bash
 # Check container status
