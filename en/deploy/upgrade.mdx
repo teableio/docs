@@ -1,0 +1,198 @@
+---
+title: "Version Upgrade"
+---
+
+This document describes how to upgrade your self-hosted Teable deployment.
+
+## Update Frequency
+
+You have full control over when to update your self-hosted Teable instance. Whenever a new version is released, you can flexibly choose whether to upgrade. You can view all available versions on [GitHub Packages](https://github.com/teableio/teable-enterprise/pkgs/container/teable-ee).
+
+<Tip>
+If you need to ensure stability, we recommend only updating to versions with the `stable` tag.
+</Tip>
+
+<Note>
+Before performing any upgrade, we strongly recommend backing up your data first.
+</Note>
+
+## Docker Compose Upgrade
+
+If you deployed Teable using Docker Compose, follow these steps to upgrade:
+
+### 1. Backup Data (Recommended)
+
+Before upgrading, we recommend backing up your important data:
+
+**Backup PostgreSQL database:**
+
+```bash
+docker exec teable-db pg_dump -U teable teable > backup_$(date +%Y%m%d).sql
+```
+
+**Backup attachment data:**
+
+```bash
+docker run --rm -v teable-data:/data -v $(pwd):/backup alpine tar czf /backup/teable-data_$(date +%Y%m%d).tar.gz /data
+```
+
+### 2. Navigate to Deployment Directory
+
+```bash
+cd teable  # Navigate to your teable deployment directory
+```
+
+### 3. Pull Latest Images
+
+```bash
+docker-compose pull
+```
+
+### 4. Restart Services
+
+```bash
+docker-compose up -d
+```
+
+The system will automatically recreate containers using the latest images. Your data is stored in Docker volumes and will not be lost.
+
+### 5. Verify Upgrade
+
+```bash
+# Check container status
+docker-compose ps
+
+# View logs to confirm successful startup
+docker-compose logs -f teable
+```
+
+Visit your Teable instance to confirm the service is running properly.
+
+## Upgrade to Specific Version
+
+If you want to upgrade to a specific version instead of the latest, modify the image tag in `docker-compose.yaml`:
+
+```yaml
+services:
+  teable:
+    image: ghcr.io/teableio/teable-ee:0.5.0-alpha-1.x.x-build.xxx  # Specify version
+```
+
+Then execute:
+
+```bash
+docker-compose pull
+docker-compose up -d
+```
+
+<Tip>
+You can view all available versions on the [GitHub Releases](https://github.com/teableio/teable/releases) page.
+</Tip>
+
+## Kubernetes Upgrade
+
+If you deployed Teable using Kubernetes, follow these steps to upgrade:
+
+### Upgrade with Helm
+
+```bash
+# Update Helm repository
+helm repo update
+
+# View available versions
+helm search repo teable --versions
+
+# Upgrade to latest version
+helm upgrade teable teable/teable -n teable
+
+# Or upgrade to specific version
+helm upgrade teable teable/teable -n teable --version x.x.x
+```
+
+### Manual Image Update
+
+If you're using custom Kubernetes configuration, you can directly update the image version in your Deployment:
+
+```bash
+kubectl set image deployment/teable teable=ghcr.io/teableio/teable-ee:0.5.0-alpha-1.x.x-build.xxx -n teable
+```
+
+### Verify Upgrade
+
+```bash
+# Check Pod status
+kubectl get pods -n teable
+
+# Check rollout status
+kubectl rollout status deployment/teable -n teable
+
+# View logs
+kubectl logs -f deployment/teable -n teable
+```
+
+## Database Migration
+
+Teable automatically executes database migrations on startup, no manual intervention required. If you encounter issues after upgrading, check the logs to confirm migration was successful:
+
+```bash
+# Docker Compose
+docker-compose logs teable | grep -i migration
+
+# Kubernetes
+kubectl logs deployment/teable -n teable | grep -i migration
+```
+
+## Rollback
+
+If you encounter issues after upgrading, you can rollback to the previous version.
+
+### Docker Compose Rollback
+
+1. Modify the image tag in `docker-compose.yaml` to the previous version
+2. Execute `docker-compose up -d`
+
+### Kubernetes Rollback
+
+```bash
+# View rollout history
+kubectl rollout history deployment/teable -n teable
+
+# Rollback to previous version
+kubectl rollout undo deployment/teable -n teable
+
+# Rollback to specific revision
+kubectl rollout undo deployment/teable -n teable --to-revision=<revision>
+```
+
+## FAQ
+
+<Accordion title="Will I lose data after upgrading?">
+No. Your data is stored in Docker volumes or external databases, and upgrading containers will not affect your data. However, we still recommend backing up before upgrading.
+</Accordion>
+
+<Accordion title="Will my Instance ID change after upgrading?">
+No. Your Instance ID remains unchanged during application updates. It is a permanent identifier for your self-hosted installation.
+</Accordion>
+
+<Accordion title="How long does the upgrade take?">
+Typically, pulling new images takes a few minutes (depending on network speed), and container restart only takes a few seconds. The entire process usually completes within 5-10 minutes.
+</Accordion>
+
+<Accordion title="Will there be service interruption during upgrade?">
+Using `docker-compose up -d` or Kubernetes rolling update, there will be a brief service interruption (usually a few seconds to tens of seconds). For zero-downtime upgrades, we recommend using Kubernetes with appropriate rolling update strategies configured.
+</Accordion>
+
+<Accordion title="How do I check the current running version?">
+You can check the current version by:
+- Viewing the version number at the bottom left of the Teable interface
+- Using an admin account to access the admin panel
+- Running `docker inspect teable-teable-1 --format='{{.Config.Image}}'` to check the image version
+</Accordion>
+
+<Accordion title="What if the upgrade fails?">
+1. First check container logs to troubleshoot: `docker-compose logs teable`
+2. If it's a database migration issue, try restoring from backup
+3. If the issue persists, rollback to the previous version
+4. Contact support at support@teable.ai
+</Accordion>
+
