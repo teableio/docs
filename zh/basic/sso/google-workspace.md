@@ -3,7 +3,7 @@ title: "Google Workspace SSO"
 description: "配置 Google Workspace 作为 Teable 的 SSO 认证提供商"
 ---
 
-<Tip>适用于 Pro 及以上版本</Tip>
+<Tip>适用于专业版及以上版本</Tip>
 
 ## 步骤 1：在 Teable 中创建认证提供商
 
@@ -57,7 +57,7 @@ description: "配置 Google Workspace 作为 Teable 的 SSO 认证提供商"
 3. 选择 **Web application** 作为应用程序类型
 4. 配置客户端：
    - **Name**（名称）：Teable SSO Client
-   - **Authorized JavaScript origins**（授权的 JavaScript 来源）：（可选）`https://app.teable.io`
+   - **Authorized JavaScript origins**（授权的 JavaScript 来源）：（可选）`https://app.teable.cn`
    - **Authorized redirect URIs**（授权的重定向 URI）：粘贴 Teable 中的**回调 URL**
 5. 点击 **Create**
 
@@ -91,7 +91,7 @@ description: "配置 Google Workspace 作为 Teable 的 SSO 认证提供商"
 **方式 2：域名验证**
 1. 在 Teable 中配置域名验证
 2. 验证你的 Google Workspace 域名
-3. 访问 https://app.teable.io
+3. 访问 https://app.teable.cn
 4. 点击 SSO 登录按钮
 5. 输入你的 Google Workspace 电子邮件地址以登录
 

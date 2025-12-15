@@ -3,7 +3,7 @@ title: "Auth0 SSO"
 description: "配置 Auth0 作为 Teable 的 SSO 认证提供商"
 ---
 
-<Tip>适用于 Pro 及以上版本</Tip>
+<Tip>适用于专业版及以上版本</Tip>
 
 ## 步骤 1：在 Teable 中创建认证提供商
 
@@ -40,8 +40,8 @@ description: "配置 Auth0 作为 Teable 的 SSO 认证提供商"
 向下滚动到 **Application URIs** 部分：
 
 1. **Allowed Callback URLs**（允许的回调 URL）：粘贴 Teable 中的**回调 URL**
-2. **Allowed Logout URLs**（允许的登出 URL）：（可选）`https://app.teable.io`
-3. **Allowed Web Origins**（允许的 Web 来源）：（可选）`https://app.teable.io`
+2. **Allowed Logout URLs**（允许的登出 URL）：（可选）`https://app.teable.cn`
+3. **Allowed Web Origins**（允许的 Web 来源）：（可选）`https://app.teable.cn`
 4. 点击页面底部的 **Save Changes**
 
 > **警告**：在离开页面之前务必保存更改。
@@ -106,7 +106,7 @@ Auth0 允许你启用多个身份提供商。要配置可用的登录方法：
 **方式 2：域名验证**
 1. 在 Teable 中配置域名验证
 2. 验证你的自定义域名
-3. 访问 https://app.teable.io
+3. 访问 https://app.teable.cn
 4. 点击 SSO 登录按钮
 5. 输入已验证域名下的电子邮件地址以登录
 

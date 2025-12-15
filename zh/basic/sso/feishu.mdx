@@ -1,0 +1,71 @@
+---
+title: "飞书"
+description: "配置飞书作为 Teable 的 SSO 认证提供商"
+---
+
+<Tip>适用于专业版及以上版本</Tip>
+
+## 步骤 1：在飞书创建自建应用
+
+1. 打开飞书客户端，进入 **工作台**
+2. 点击 **创建应用**
+3. 创建成功后，获取 **App ID** 和 **App Secret**
+
+![](/images/kai-fa-zhe/ji-cheng/dan-dian-deng-lu/eafb64024965053a.png)
+
+## 步骤 2：在 Teable 中创建认证提供商
+
+1. 进入 Teable 的 SSO 设置页面(`空间设置`->`认证设置`)
+2. 创建新的认证提供商
+3. 填写第一步中获取的 **App ID** 和 **App Secret**
+   <img src="/images/kai-fa-zhe/ji-cheng/dan-dian-deng-lu/8f8c41d77bde45a2.png" alt="配置页面" style={{width: '80%', maxWidth: '600px'}} />
+4. 创建完成后，点击复制 **providerId**，稍后配置飞书应用时需要用到
+   <img src="/images/kai-fa-zhe/ji-cheng/dan-dian-deng-lu/49353a708fc1f1e1.png" alt="复制providerId" style={{width: '80%', maxWidth: '600px'}} />
+
+## 步骤 3：配置飞书应用
+
+回到飞书开放平台控制台进行以下配置：
+
+### 配置权限
+
+1. 进入 **开发配置** → **权限管理**
+2. 搜索并勾选以下权限：
+   - `contact:user.base:readonly`
+   - `contact:user.email:readonly`
+
+### 安全设置
+
+1. 进入 **开发配置** → **安全设置**
+2. 在 **重定向 URL** 中填写：
+   `https://app.teable.cn/api/auth/authentication/__providerId__/callback`
+
+> **注意**：
+> 1. 请将 URL 中的 `__providerId__` 替换为 **步骤 2** 中复制的 ID。
+
+### 网页应用设置
+
+1. 进入 **应用能力** → **网页应用**
+2. 点击 **网页应用配置** 的 **设置**
+3. 在 **桌面端主页** 和 **移动端主页** 中填写：
+   `https://app.teable.cn/api/auth/authentication/__providerId__`
+
+> **注意**：同样需要替换 `__providerId__` 和域名（同上一步）。
+
+## 步骤 4：发布应用版本
+
+1. 点击 **创建版本**
+2. 上传应用图标
+   <img src="/images/kai-fa-zhe/ji-cheng/dan-dian-deng-lu/66f7441d660f2858.png" alt="上传应用图标" style={{width: '30%', maxWidth: '600px'}} />
+3. 设置 **版本号**（例如 `1.0.0`）
+4. 选择 **可用范围**（例如全员可见）
+5. 点击 **发布**，等待审批通过即可生效
+
+## 步骤 5：访问应用与登录测试
+
+公有云登录链接需要带上您的 `organizationId`。
+
+例如：`https://app.teable.cn/auth/login?organizationId=orgxxxxxxxx`
+
+此时登录页面会出现飞书登录按钮，或者直接在飞书工作台点击应用图标进入。
+
+<img src="/images/kai-fa-zhe/ji-cheng/dan-dian-deng-lu/54501614ff7424f1.png" alt="登录页面" style={{width: '70%', maxWidth: '600px'}} />

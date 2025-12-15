@@ -3,7 +3,7 @@ title: "Authentik SSO"
 description: "配置 Authentik 作为 Teable 的 SSO 认证提供商"
 ---
 
-<Tip>适用于 Pro 及以上版本</Tip>
+<Tip>适用于专业版及以上版本</Tip>
 
 ## 步骤 1：在 Teable 中创建认证提供商
 
@@ -34,8 +34,8 @@ description: "配置 Authentik 作为 Teable 的 SSO 认证提供商"
 ### 重定向 URI
 
 - **Redirect URIs/Origins (RegEx)**（重定向 URI/来源）：粘贴 Teable 中的**回调 URL**
-  - 精确匹配：`https://app.teable.io/api/auth/callback/authentik`
-  - 正则表达式模式：`https://app\.teable\.io/api/auth/callback/.*`
+  - 精确匹配：`https://app.teable.cn/api/auth/callback/authentik`
+  - 正则表达式模式：`https://app\.teable\.cn/api/auth/callback/.*`
 
 ### 高级设置
 
@@ -66,7 +66,7 @@ description: "配置 Authentik 作为 Teable 的 SSO 认证提供商"
    - **Name**（名称）：Teable
    - **Slug**（标识符）：`teable`（或你偏好的标识符）
    - **Provider**（提供商）：选择你在步骤 3 中创建的 **Teable SSO Provider**
-   - **Launch URL**（启动 URL）：（可选）`https://app.teable.io`
+   - **Launch URL**（启动 URL）：（可选）`https://app.teable.cn`
    - **UI settings**（界面设置）：（可选）上传 Teable 徽标并自定义外观
 
 点击 **Create** 完成。
@@ -135,7 +135,7 @@ description: "配置 Authentik 作为 Teable 的 SSO 认证提供商"
 **方式 2：域名验证**
 1. 在 Teable 中配置域名验证
 2. 验证你的自定义域名
-3. 访问 https://app.teable.io
+3. 访问 https://app.teable.cn
 4. 点击 SSO 登录按钮
 5. 输入已验证域名下的电子邮件地址以登录
 
