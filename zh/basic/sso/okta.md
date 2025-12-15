@@ -3,7 +3,7 @@ title: "Okta SSO"
 description: "配置 Okta 作为 Teable 的 SSO 认证提供商"
 ---
 
-<Tip>适用于 Pro 及以上版本</Tip>
+<Tip>适用于专业版及以上版本</Tip>
 
 ## 步骤 1：在 Teable 中创建认证提供商
 
@@ -30,7 +30,7 @@ description: "配置 Okta 作为 Teable 的 SSO 认证提供商"
 - **App integration name**（应用集成名称）：Teable SSO
 - **Grant type**（授权类型）：勾选 **Authorization Code**
 - **Sign-in redirect URIs**（登录重定向 URI）：粘贴 Teable 中的**回调 URL**
-- **Sign-out redirect URIs**（登出重定向 URI）：（可选）`https://app.teable.io`
+- **Sign-out redirect URIs**（登出重定向 URI）：（可选）`https://app.teable.cn`
 - **Controlled access**（访问控制）：选择谁可以访问此应用程序
 
 点击 **Save** 创建应用程序。
@@ -73,7 +73,7 @@ description: "配置 Okta 作为 Teable 的 SSO 认证提供商"
 **方式 2：域名验证**
 1. 在 Teable 中配置域名验证
 2. 验证你的自定义域名
-3. 访问 https://app.teable.io
+3. 访问 https://app.teable.cn
 4. 点击 SSO 登录按钮
 5. 输入已验证域名下的电子邮件地址以登录
 

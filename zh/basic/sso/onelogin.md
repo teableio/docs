@@ -3,7 +3,7 @@ title: "OneLogin SSO"
 description: "配置 OneLogin 作为 Teable 的 SSO 认证提供商"
 ---
 
-<Tip>适用于 Pro 及以上版本</Tip>
+<Tip>适用于专业版及以上版本</Tip>
 
 ## 步骤 1：在 Teable 中创建认证提供商
 
@@ -40,7 +40,7 @@ description: "配置 OneLogin 作为 Teable 的 SSO 认证提供商"
 进入 **Configuration** 选项卡并配置：
 
 1. **Redirect URIs**（重定向 URI）：粘贴 Teable 中的**回调 URL**
-2. **Login Url**（登录 URL）：（可选）`https://app.teable.io`
+2. **Login Url**（登录 URL）：（可选）`https://app.teable.cn`
 3. **Application Type**（应用程序类型）：Web
 4. 点击 **Save**
 
@@ -118,7 +118,7 @@ description: "配置 OneLogin 作为 Teable 的 SSO 认证提供商"
 **方式 3：域名验证**
 1. 在 Teable 中配置域名验证
 2. 验证你的自定义域名
-3. 访问 https://app.teable.io
+3. 访问 https://app.teable.cn
 4. 点击 SSO 登录按钮
 5. 输入已验证域名下的电子邮件地址以登录
 
