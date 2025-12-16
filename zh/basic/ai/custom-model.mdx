@@ -1,0 +1,93 @@
+---
+title: 自定义 AI 模型
+description: 本指南将帮助您在 Teable 中添加和配置您的 AI 模型，以便在您的空间中充分利用 AI 功能。
+---
+
+<Tip>专业版及以上适用</Tip>
+
+## 在空间中集成 AI 模型
+
+1. **打开一个空间**：首先，在 Teable 中导航并进入您希望集成 AI 模型的特定空间。
+2. **进入设置界面**：在当前空间的界面中，找到并点击右上角的"设置"选项。
+3. **进入 AI 设置**：在设置菜单中，选择并点击"AI 设置"。
+4. **添加 LLM 提供商**：在 AI 设置界面，点击"+ 添加 LLM 提供商"按钮。
+5. **配置提供商信息：**
+   - 为您的模型提供商提供一个名称（如 "OpenAI"、"Claude"）。
+   - 选择提供商类型（OpenAI、Anthropic、Google 等）。
+   - 设置您的模型提供商的基础 URL。
+   - 输入相应的 API Key。
+   - 输入模型名称（用逗号分隔，如 `gpt-4o, gpt-4-turbo`）。
+6. **完成添加**：配置完成后，点击"添加"按钮。
+
+![](/images/2025-09-25-21-21-06.png)
+
+7. **配置模型偏好**：添加提供商后，配置不同任务使用的模型：
+   - **高级对话模型** - 用于规划、编码和其他复杂推理任务（**启用自定义模型必须配置**）
+   - **中等对话模型** - 用于 AI 公式生成
+   - **小型对话模型** - 用于自动生成对话标题和数据库名称
+
+8. **启用自定义模型**：切换开关以启用您的自定义模型配置。
+
+完成以上步骤后，您将能够在 Teable 的 AI 功能中看到"空间模型"和"系统模型"的区分。您刚刚配置的 AI 模型将显示在"空间"栏目下。
+
+![](/images/2025-06-09-10-57-08.png)
+
+---
+
+## 配置提示
+
+### 基础 URL 填写指南
+
+<Warning>基础 URL 必须是 API 端点地址，而不是提供商的网站地址。请确保包含完整路径（通常以 `/v1` 或类似后缀结尾）。</Warning>
+
+| 提供商 | 基础 URL 格式 |
+|--------|--------------|
+| OpenAI | `https://api.openai.com/v1` |
+| Anthropic | `https://api.anthropic.com/v1` |
+| Google | `https://generativelanguage.googleapis.com/v1beta` |
+| DeepSeek | `https://api.deepseek.ai/v1` |
+| Azure | `https://{您的资源名称}.openai.azure.com` |
+| Mistral | `https://api.mistral.ai/v1` |
+| 通义千问 | `https://dashscope.aliyuncs.com/compatible-mode/v1` |
+| 智谱 AI | `https://open.bigmodel.cn/api/paas/v4` |
+| XAI (Grok) | `https://api.x.ai/v1` |
+| OpenRouter | `https://openrouter.ai/api/v1` |
+| TogetherAI | `https://api.together.xyz/v1` |
+| Ollama (本地) | `http://localhost:11434` |
+
+### 模型名称填写指南
+
+<Note>请按照提供商指定的格式准确输入模型名称。多个模型之间用逗号分隔。</Note>
+
+**各提供商常用模型示例：**
+
+| 提供商 | 模型名称示例 |
+|--------|------------|
+| OpenAI | `gpt-4o, gpt-4o-mini, gpt-4-turbo` |
+| Anthropic | `claude-sonnet-4-20250514, claude-3-5-haiku-20241022` |
+| Google | `gemini-2.0-flash, gemini-1.5-pro` |
+| DeepSeek | `deepseek-chat, deepseek-reasoner` |
+| XAI | `grok-2, grok-3` |
+| 通义千问 | `qwen-plus, qwen-max` |
+| OpenRouter | `openai/gpt-4o, anthropic/claude-3.5-sonnet` |
+| TogetherAI | `deepseek-ai/DeepSeek-V3, mistralai/Mistral-7B-Instruct-v0.3` |
+| Mistral | `mistral-large-latest, open-mistral-nemo` |
+| Ollama | `llama3.1:8b, llama3.1:70b` |
+
+**注意事项：**
+- 模型名称**区分大小写** - 请使用提供商文档中的准确名称
+- 部分提供商要求逗号后**不要加空格**（如 `gpt-4o,gpt-4-turbo`）
+- OpenRouter 格式为：`提供商/模型名称`（如 `openai/gpt-4o`）
+- 您可以在之后通过更新提供商配置来添加更多模型
+
+### 常见问题排查
+
+| 问题 | 解决方案 |
+|-----|---------|
+| "测试失败"错误 | 检查 API Key 是否有效且有足够额度 |
+| 连接超时 | 检查基础 URL 是否正确且可访问 |
+| 找不到模型 | 确保模型名称与提供商文档完全一致 |
+| 无法启用自定义模型 | 确保已配置高级对话模型 (lg) |
+
+<Tip>除了设置空间级别的 AI 模型，管理员还可以在管理员面板中配置实例级别的 AI 设置（SaaS 版本和私有化版本均可用）。</Tip>
+

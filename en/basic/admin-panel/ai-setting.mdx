@@ -1,62 +1,76 @@
 ---
 title: "AI Settings"
-description: "Teable allows self-hosted deployment users to independently configure AI model providers, model preferences, and capability settings for the instance, managing AI function integration within Teable"
+description: "Configure AI model providers, model preferences, and capability settings for the instance."
 ---
 
 <Tip>Available for self-hosted Pro plan and above</Tip>
 
-#### 1. AI Capability Settings
-    - AI Basic Capability: AI Basic Capability, include AI table query tool, execute SQL query tool, generate script tool, table data visualization tool, update database information tool
+Path: Admin Panel → AI Settings
+
+### 1. AI Capability Settings
+
+- Description:
+  - Instance administrators can independently control whether each AI feature is available within the instance.
+  - Features in the list include:
+    - AI Basic Capability: AI basic capability for table queries, SQL execution, script generation, and data visualization
     - Create Base: Create Base from scratch
     - Create App: Create App based on Base
     - Create Automation: Create Automation from scratch
     - Base Resource Operation: Create, modify, and delete tables, views, fields, and records through ai
-    - Suggestion: Give suggestions based on the current database data and conversation content
+    - Suggestions: Give suggestions based on the current database data and conversation content
 
 ![](/images/2025-10-10-20-50-42.png)
 
-#### 2. Custom Model
-- Enabling AI capabilities will use your custom model and consume your own tokens.
+### 2. Custom Model
 
-#### 3. Model Providers and Model Preferences
+- Used to activate or deactivate all custom AI API configurations within the instance.
+- Description:
+  - Off: AI features will be disabled or use system defaults if available.
+  - On: Use configured AI models. Please configure the Advanced Chat Model before enabling.
 
-##### Step 1: Add Model Provider
+> [Configure Custom Model Guide](/en/basic/ai/custom-model)
 
-1.  Click the `+ Add Model Provider` button.
-2.  In the popup form, select your model service provider.
-3.  Enter the API key and other necessary information provided by the service provider and save.
+### 3. LLM Providers
 
-Note: Before you add and correctly configure model providers, the system will prompt "You have not configured AI LLM API," and all features dependent on large language models (such as AI conversation, AI automation, etc.) will be unavailable.
+- Manage the integration of third-party AI model providers.
 
 ![](/images/2025-10-10-20-52-37.png)
 
-##### Step 2: Set Model Preferences
+### 4. Model Preferences
 
-After adding providers, you need to specify preferred models for different complexity tasks to balance cost, speed, and capability.
-
-*   Chat Model
-    *   Advanced chat model: For handling the most complex tasks, such as detailed planning, code generation, deep analysis, etc. Recommend using the most capable models (like claude-sonnet-4, GPT-4).
-    *   Medium chat model: For daily tasks that balance speed and quality, such as creating databases, regular conversations, etc. Recommend using performance-balanced models (like GPT-4o).
-    *   Small chat model: For fast, simple tasks, such as scenario recommendations, quick operations, etc. Recommend using fast, low-cost models.
-
-*   Large model ability
-    *   Image / PDF: Enabling these options gives your advanced model visual capabilities to understand and analyze uploaded image or PDF document content.
-    *   Test Model: Click this button to verify whether your selected advanced model and its API key are configured correctly and available.
-
-*   Embedding Model
-    *   Purpose: This model is used to convert text into vectors.
-    *   Configuration: Usually select models with "embedding" in their model ID.
+- Specify default chat models for different types of task scenarios to optimize cost and performance.
+  - Advanced Chat Model:
+    - Used for AI Chat primary conversation, complex reasoning, and code generation tasks.
+    - Recommended: `claude-sonnet-4.5` or models with strong reasoning capabilities.
+  - Medium Chat Model:
+    - Used for AI formula generation.
+    - Falls back to Advanced Chat Model if not configured.
+    - Recommended: `GPT-4o`
+  - Small Chat Model:
+    - Used for lightweight tasks such as auto-generating chat titles and base names.
+    - Falls back to Advanced Chat Model if not configured.
+    - Recommended: Fast, cost-effective models like `gemini-2.5-flash-lite`
 
 ![](/images/2025-10-10-20-51-59.png)
 
-#### 4. App Generation
+### 5. Advanced Chat Model Capabilities
 
-*   Function: Allows AI to generate a fully functional application from a simple text prompt.
-*   Configuration: Requires a `v0` API key. Please visit v0's official settings page to obtain your key and enter it here. If not configured, the system will prompt "You have not configured v0 API."
+- Test the multimodal processing capabilities of the selected "Advanced Chat Model".
+- Description:
+  - You can use the "Test Model" button to verify whether the selected advanced model supports processing images and PDF content.
 
-#### 5. Web Search
+### 6. Embedding Model
 
-*   Function: Gives AI real-time access to the internet and the ability to search for the latest information.
-*   Configuration: This feature is implemented through integration with the `Firecrawl` service. Please visit Firecrawl's settings page to obtain your API key and enter it here. If not configured, the system will prompt "You have not configured web search API."
+- Optional. Used for document Q&A - when users upload documents and ask questions about their content.
+
+### 7. App Generation
+
+- Description: Configure the v0 API Key to enable APP Generation capabilities. Access v0 setting to obtain your API Key
+
+### 8. Web Search
+
+- Description: Configure Firecrawl API key to enable web search feature, access Firecrawl settings to get API key
 
 ![](/images/2025-10-10-20-53-33.png)
+
+<Tip>Space settings can override these configurations if "Custom Model" is enabled at the space level.</Tip>

@@ -1,5 +1,5 @@
 ---
-title: "Space AI Settings"
+title: "AI Settings"
 description: "Configure AI model providers, model preferences, and capability settings within a space"
 ---
 <Tip>Available for Pro plan and above</Tip>
@@ -12,7 +12,7 @@ Path: Space → Settings → AI Settings
 - Description:
   - Space administrators can independently control whether each AI feature is available within the space.
   - Features in the list include:
-    - AI Basic Capabilitiy: AI Basic Capability, include AI table query tool, execute SQL query tool, generate script tool, table data visualization tool, update database information tool
+    - AI Basic Capability: AI basic capability for table queries, SQL execution, script generation, and data visualization
     - Create Base: Create Base from scratch
     - Create App: Create App based on Base
     - Create Automation: Create Automation from scratch
@@ -26,38 +26,43 @@ Path: Space → Settings → AI Settings
 - Used to activate or deactivate all custom AI API configurations within the current space. When enabled, space AI configurations will take priority.
 - Description:
   - Off: Use official default AI models.
-  - On: Use custom configured AI models. Please configure the large coding model before enabling.
+  - On: Use custom configured AI models (consumes your own tokens). Please configure the Advanced Chat Model before enabling.
+
+
+> [Configure Custom Model Guide](/en/basic/ai/custom-model)
 
 ### 3. LLM Providers
 
 - Manage the integration of third-party AI model providers.
 
+
+
 ![](/images/2025-10-10-19-44-41.png)
 
 ### 4. Model Preferences
 
-- Specify default conversation models for different types of task scenarios. By matching the most suitable models for different tasks, achieve fine-grained management of cost and performance.
-  - Advanced Conversation Model:
-    - Scenario: For planning, coding, and other complex task scenarios, it is recommended to use claude-sonnet-4.
-    - Recommended model: `claude-sonnet-4`
-    - Purpose: When AI functions requiring high intelligence and strong logical reasoning are triggered within the application, the model selected here will be called.
-  - Medium Conversation Model:
-    - Scenario: For scenarios that require speed and quality, such as creating Base, it is recommended to use GPT-4o.
-    - Recommended model: `GPT-4o`
-    - Purpose: Used for most daily core AI tasks, balancing cost and performance.
-  - Small Conversation Model:
-    - Scenario: Used for tasks such as scene recommendation and simple quick operations.
-    - Purpose: Used for simple tasks requiring fast response and low latency, such as auto-completion, quick classification, etc., with the lowest cost.
+- Specify default chat models for different types of task scenarios to optimize cost and performance.
+  - Advanced Chat Model:
+    - Used for AI Chat primary conversation, complex reasoning, and code generation tasks.
+    - Recommended: `claude-sonnet-4.5` or models with strong reasoning capabilities.
+  - Medium Chat Model:
+    - Used for AI formula generation.
+    - Falls back to Advanced Chat Model if not configured.
+    - Recommended: `GPT-4o`
+  - Small Chat Model:
+    - Used for lightweight tasks such as auto-generating chat titles and base names.
+    - Falls back to Advanced Chat Model if not configured.
+    - Recommended: Fast, cost-effective models like `gemini-2.5-flash-lite`
 
-### 5. Advanced Conversation Model Capabilities
+### 5. Advanced Chat Model Capabilities
 
-- Test the multimodal processing capabilities of the selected "Advanced Conversation Model".
+- Test the multimodal processing capabilities of the selected "Advanced Chat Model".
 - Description:
   - You can use the "Test Model" button to verify whether the selected advanced model supports processing images and PDF content.
 
 ### 6. Embedding Model
 
-- Specify the model used for generating suggestions (based on current database data and conversation content to provide suggestions).
+- Optional. Used for document Q&A - when users upload documents and ask questions about their content.
 
 ![](/images/2025-09-29-23-13-17.png)
 
