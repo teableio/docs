@@ -64,3 +64,50 @@ To delete an app, click the **Settings** (gear icon) button in the header and se
 - **Start Simple**: Let AI build the basic structure first, then iterate on specific features.
 - **Check Mobile**: Many users access apps on mobile devices, so frequently check the Mobile preview.
 - **Version Control**: You can save versions or reset edits if you want to experiment with different designs.
+
+## Self-Hosted Configuration
+
+If you're running Teable self-hosted, configure App Builder settings in **Admin Panel → AI Settings → App**.
+
+### Required Settings
+
+| Setting | Description |
+|---------|-------------|
+| **v0 API Key** | Get from [v0.dev/chat/settings/keys](https://v0.dev/chat/settings/keys) |
+
+<Warning>
+The v0 API requires a **paid v0 subscription**. Free tier credits are not sufficient. If you see "Internal Server Error" when creating apps, please upgrade your v0 plan.
+</Warning>
+
+### Custom Domain (Optional)
+
+To use custom domains for published apps:
+
+1. Purchase a domain from [Vercel Domains](https://vercel.com/domains)
+2. Enter the domain in **Custom Domain** field
+3. Add your **Vercel API Token** from [Vercel Settings](https://vercel.com/account/settings/tokens)
+
+<Note>
+Apps are deployed to Vercel's cloud infrastructure, not your Teable server. Your existing reverse proxy (Nginx, Coolify) or Cloudflare tunnels cannot route traffic to published apps. Path-based URLs (e.g., `yourdomain.com/app/xxx`) are also not supported.
+</Note>
+
+### API Proxy (Optional)
+
+For regions with restricted access to v0/Vercel APIs, you can configure proxy URLs:
+
+| Setting | Description |
+|---------|-------------|
+| **v0 Base URL** | Proxy URL for v0 API |
+| **Vercel Base URL** | Proxy URL for Vercel API |
+
+### AI Gateway (Optional)
+
+If you use [Vercel AI Gateway](https://vercel.com/docs/ai-gateway), you can configure your API key here to enable:
+
+- Centralized monitoring and logging of AI requests
+- Rate limiting and cost controls
+- Caching to reduce API costs
+
+| Setting | Description |
+|---------|-------------|
+| **AI Gateway API Key** | Get from your Vercel AI Gateway settings |

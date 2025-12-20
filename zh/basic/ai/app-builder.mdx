@@ -64,3 +64,50 @@ Teable 自动跟踪每一次部署。
 - **由简入繁**：先让 AI 构建基础结构，然后迭代特定功能。
 - **检查移动端**：频繁检查移动端预览，因为很多使用场景发生在手机上。
 - **版本控制**：如果您想尝试不同的设计，可以保存版本或重置编辑。
+
+## 私有化部署配置
+
+如果您使用私有化部署的 Teable，请在 **管理员后台 → AI 设置 → App** 中配置 App Builder。
+
+### 必需配置
+
+| 配置项 | 说明 |
+|--------|------|
+| **v0 API 密钥** | 从 [v0.dev/chat/settings/keys](https://v0.dev/chat/settings/keys) 获取 |
+
+<Warning>
+v0 API 需要**付费订阅**才能使用。免费额度不足以支持 API 调用。如果创建应用时出现「Internal Server Error」错误，请升级您的 v0 订阅计划。
+</Warning>
+
+### 自定义域名 (可选)
+
+如需为发布的应用使用自定义域名：
+
+1. 从 [Vercel Domains](https://vercel.com/domains) 购买域名
+2. 在 **自定义域名** 字段中输入域名
+3. 从 [Vercel 设置](https://vercel.com/account/settings/tokens) 获取并添加 **Vercel API Token**
+
+<Note>
+应用部署在 Vercel 云端，而非您的 Teable 服务器。您现有的反向代理 (如 Nginx、Coolify) 或 Cloudflare 隧道无法将流量路由到已发布的应用。同时也不支持路径形式的 URL (如 `yourdomain.com/app/xxx`)。
+</Note>
+
+### API 代理 (可选)
+
+对于访问 v0/Vercel API 受限的地区，可以配置代理 URL：
+
+| 配置项 | 说明 |
+|--------|------|
+| **v0 Base URL** | v0 API 的代理地址 |
+| **Vercel Base URL** | Vercel API 的代理地址 |
+
+### AI Gateway (可选)
+
+如果您使用 [Vercel AI Gateway](https://vercel.com/docs/ai-gateway)，可以在这里配置 API 密钥以启用：
+
+- AI 请求的集中监控和日志记录
+- 速率限制和成本控制
+- 缓存以降低 API 成本
+
+| 配置项 | 说明 |
+|--------|------|
+| **AI Gateway API Key** | 从 Vercel AI Gateway 设置中获取 |
