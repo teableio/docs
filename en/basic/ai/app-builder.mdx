@@ -67,13 +67,13 @@ To delete an app, click the **Settings** (gear icon) button in the header and se
 
 ## Self-Hosted Configuration
 
-If you're running Teable self-hosted, configure App Builder settings in **Admin Panel → AI Settings → App**.
+If you're running Teable self-hosted, configure App Builder settings in **Admin panel → AI settings → App builder**.
 
 ### Required Settings
 
 | Setting | Description |
 |---------|-------------|
-| **v0 API Key** | Get from [v0.dev/chat/settings/keys](https://v0.dev/chat/settings/keys) |
+| **v0 API Key** | Get from [v0.app/chat/settings/keys](https://v0.app/chat/settings/keys) |
 
 <Warning>
 The v0 API requires a **paid v0 subscription**. Free tier credits are not sufficient. If you see "Internal Server Error" when creating apps, please upgrade your v0 plan.
@@ -81,14 +81,37 @@ The v0 API requires a **paid v0 subscription**. Free tier credits are not suffic
 
 ### Custom Domain (Optional)
 
-To use custom domains for published apps:
+Apps built with App Builder are deployed to Vercel. There are two ways to use a custom domain:
+
+#### Option A: Vercel Domains (Automatic)
+
+Domains purchased from Vercel get automatic binding configured for you.
 
 1. Purchase a domain from [Vercel Domains](https://vercel.com/domains)
-2. Enter the domain in **Custom Domain** field
+2. Enter the domain in **Custom Domain** field in Admin Panel
 3. Add your **Vercel API Token** from [Vercel Settings](https://vercel.com/account/settings/tokens)
 
+#### Option B: External Domain (Manual DNS)
+
+If you already own a domain from another registrar (e.g., Cloudflare, GoDaddy):
+
+1. In Teable Admin Panel, enter your root domain in **Custom Domain** (e.g., `example.com`)
+2. Add your **Vercel API Token**
+3. When you publish an app, note the **App ID** from the URL (e.g., `appXXX123`)
+4. In your DNS provider, add a CNAME record for each app:
+
+| Field | Value |
+|-------|-------|
+| Type | CNAME |
+| Name | The app ID (e.g., `appXXX123`) |
+| Target | `cname.vercel-dns.com` |
+| Proxy | DNS only (if using Cloudflare) |
+
+5. In Vercel Dashboard (Project → Settings → Domains), add the full domain (e.g., `appXXX123.example.com`) and click **Verify**
+6. Once verified, HTTPS will be provisioned automatically
+
 <Note>
-Apps are deployed to Vercel's cloud infrastructure, not your Teable server. Your existing reverse proxy (Nginx, Coolify) or Cloudflare tunnels cannot route traffic to published apps. Path-based URLs (e.g., `yourdomain.com/app/xxx`) are also not supported.
+Each app gets a unique subdomain based on its App ID. Path-based URLs (e.g., `yourdomain.com/app/xxx`) are not supported.
 </Note>
 
 ### API Proxy (Optional)
