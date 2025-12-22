@@ -73,7 +73,7 @@ Teable 自动跟踪每一次部署。
 
 | 配置项 | 说明 |
 |--------|------|
-| **v0 API 密钥** | 从 [v0.dev/chat/settings/keys](https://v0.dev/chat/settings/keys) 获取 |
+| **v0 API 密钥** | 从 [v0.app/chat/settings/keys](https://v0.app/chat/settings/keys) 获取 |
 
 <Warning>
 v0 API 需要**付费订阅**才能使用。免费额度不足以支持 API 调用。如果创建应用时出现「Internal Server Error」错误，请升级您的 v0 订阅计划。
@@ -81,14 +81,37 @@ v0 API 需要**付费订阅**才能使用。免费额度不足以支持 API 调�
 
 ### 自定义域名 (可选)
 
-如需为发布的应用使用自定义域名：
+App Builder 构建的应用部署在 Vercel 上。有两种方式使用自定义域名：
+
+#### 方式 A：Vercel 域名 (自动配置)
+
+从 Vercel 购买的域名会自动完成绑定配置。
 
 1. 从 [Vercel Domains](https://vercel.com/domains) 购买域名
-2. 在 **自定义域名** 字段中输入域名
+2. 在管理员后台的 **自定义域名** 字段中输入域名
 3. 从 [Vercel 设置](https://vercel.com/account/settings/tokens) 获取并添加 **Vercel API Token**
 
+#### 方式 B：外部域名 (手动 DNS 配置)
+
+如果您已经从其他注册商 (如 Cloudflare、GoDaddy) 购买了域名：
+
+1. 在 Teable 管理员后台，在 **自定义域名** 中输入您的根域名 (如 `example.com`)
+2. 添加您的 **Vercel API Token**
+3. 发布应用时，从 URL 中记录 **App ID** (如 `appXXX123`)
+4. 在您的 DNS 服务商中为每个应用添加 CNAME 记录：
+
+| 字段 | 值 |
+|------|-----|
+| 类型 | CNAME |
+| 名称 | App ID (如 `appXXX123`) |
+| 目标 | `cname.vercel-dns.com` |
+| 代理 | 仅 DNS (如使用 Cloudflare) |
+
+5. 在 Vercel 控制台 (项目 → 设置 → 域名) 中添加完整域名 (如 `appXXX123.example.com`) 并点击 **Verify**
+6. 验证通过后，HTTPS 将自动配置
+
 <Note>
-应用部署在 Vercel 云端，而非您的 Teable 服务器。您现有的反向代理 (如 Nginx、Coolify) 或 Cloudflare 隧道无法将流量路由到已发布的应用。同时也不支持路径形式的 URL (如 `yourdomain.com/app/xxx`)。
+每个应用会获得一个基于 App ID 的唯一子域名。不支持路径形式的 URL (如 `yourdomain.com/app/xxx`)。
 </Note>
 
 ### API 代理 (可选)
