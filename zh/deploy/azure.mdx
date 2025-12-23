@@ -1,0 +1,81 @@
+---
+title: "在 Azure 上部署"
+description: "Azure 部署：App Service（容器）+ PostgreSQL + Azure Cache for Redis + S3-compatible 存储"
+---
+
+## 推荐架构
+
+- **计算**：Azure App Service（Linux，容器方式）
+- **数据库**：Azure Database for PostgreSQL – Flexible Server
+- **Redis**：Azure Cache for Redis
+- **对象存储**：**S3-compatible**（public + private 双桶）
+
+<Callout type="warning">
+生产环境请使用 **S3-compatible 对象存储**（`s3` 或 `minio`），并按 **public/private 双桶**配置权限与 CORS。  
+详见：[对象存储（S3-compatible）](/zh/deploy/storage)
+</Callout>
+
+## Azure 上对象存储怎么选
+
+Teable 对象存储需要一个 **S3-compatible endpoint**。在 Azure 上通常有以下选择：
+
+- 直接使用 **`BACKEND_STORAGE_PROVIDER=s3`**，指向你们已有的 S3 endpoint（例如 AWS S3）。这是很常见的跨云方案。
+- 自建 **MinIO** 作为 S3-compatible endpoint（部署在 VM / AKS）
+- 或使用你们选择的托管 **S3-compatible** 服务
+
+## 最小环境变量示例
+
+### 方案 A：使用 S3 Provider（示例：AWS S3）
+
+```bash
+# Storage（S3 双桶）
+BACKEND_STORAGE_PROVIDER=s3
+BACKEND_STORAGE_S3_REGION=us-west-2
+BACKEND_STORAGE_S3_ENDPOINT=https://s3.us-west-2.amazonaws.com
+BACKEND_STORAGE_S3_ACCESS_KEY=***REDACTED***
+BACKEND_STORAGE_S3_SECRET_KEY=***REDACTED***
+BACKEND_STORAGE_PUBLIC_BUCKET=storage-public.teable.io
+BACKEND_STORAGE_PRIVATE_BUCKET=storage-private.teable.io
+STORAGE_PREFIX=https://s3.us-west-2.amazonaws.com/storage-public.teable.io
+```
+
+<Note>
+请确保 public bucket 配置 **public-read** 与 **允许任意跨域（CORS）**。详见：[对象存储（S3-compatible）](/zh/deploy/storage)
+</Note>
+
+### 方案 B：使用 MinIO Provider
+
+```bash
+# Core
+PUBLIC_ORIGIN=https://teable.example.com
+SECRET_KEY=***REDACTED***
+BACKEND_CACHE_PROVIDER=redis
+
+# Database
+PRISMA_DATABASE_URL=postgresql://user:pass@your-postgres-flex-endpoint:5432/teable?sslmode=require
+
+# Redis（队列依赖）
+BACKEND_CACHE_REDIS_URI=rediss://:password@your-redis-name.redis.cache.windows.net:6380/0
+
+# 性能缓存（可选；可指向同一个 Redis）
+BACKEND_PERFORMANCE_CACHE=rediss://:password@your-redis-name.redis.cache.windows.net:6380/0
+
+# Storage（S3-compatible 双桶）
+BACKEND_STORAGE_PROVIDER=minio
+BACKEND_STORAGE_MINIO_ENDPOINT=minio.example.com
+BACKEND_STORAGE_MINIO_PORT=443
+BACKEND_STORAGE_MINIO_USE_SSL=true
+BACKEND_STORAGE_MINIO_ACCESS_KEY=***REDACTED***
+BACKEND_STORAGE_MINIO_SECRET_KEY=***REDACTED***
+BACKEND_STORAGE_PUBLIC_BUCKET=public
+BACKEND_STORAGE_PRIVATE_BUCKET=private
+STORAGE_PREFIX=https://minio.example.com
+```
+
+## App Service 配置建议
+
+- 设置 `WEBSITES_PORT=3000`。
+- 确保 App Service 可以访问 PostgreSQL / Redis（如有需要请使用 VNet Integration）。
+- 配置健康检查路径：`/health`。
+
+

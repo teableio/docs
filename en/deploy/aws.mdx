@@ -1,0 +1,73 @@
+---
+title: "Deploy on AWS"
+description: "Production deployment on AWS: ECS + RDS PostgreSQL + ElastiCache Redis + S3 dual buckets"
+---
+
+## Recommended architecture
+
+- **Compute**: AWS ECS (Fargate or EC2)
+- **Database**: Amazon RDS for PostgreSQL (or Aurora PostgreSQL)
+- **Redis**: Amazon ElastiCache (Redis/Valkey)
+- **Object storage**: Amazon S3 (**two buckets: public + private**)
+
+<Tip>
+Start simple: deploy **one Teable service** with the official image. The Teable image can provide integrated sandbox by default (if `SANDBOX_URL` is not set).
+</Tip>
+
+## Prerequisites checklist
+
+- A public URL for Teable (ALB / CloudFront / reverse proxy)
+- PostgreSQL connection string (`PRISMA_DATABASE_URL`)
+- Redis URL (`BACKEND_CACHE_REDIS_URI`) **must be set** for queues
+- S3 dual buckets + permissions + CORS: see [Object Storage (S3-compatible)](/en/deploy/storage)
+
+## Environment variables (minimal)
+
+```bash
+# Core
+PUBLIC_ORIGIN=https://teable.example.com
+SECRET_KEY=***REDACTED***
+BACKEND_CACHE_PROVIDER=redis
+
+# Database
+PRISMA_DATABASE_URL=postgresql://user:pass@your-rds-endpoint:5432/teable?sslmode=require
+
+# Redis (required for queues)
+BACKEND_CACHE_REDIS_URI=rediss://:password@your-elasticache-endpoint:6379/0
+
+# Performance cache (optional; can point to the same Redis to reduce ops complexity)
+BACKEND_PERFORMANCE_CACHE=rediss://:password@your-elasticache-endpoint:6379/0
+
+# Storage (S3 dual buckets)
+BACKEND_STORAGE_PROVIDER=s3
+BACKEND_STORAGE_S3_REGION=us-west-2
+BACKEND_STORAGE_S3_ENDPOINT=https://s3.us-west-2.amazonaws.com
+BACKEND_STORAGE_S3_ACCESS_KEY=***REDACTED***
+BACKEND_STORAGE_S3_SECRET_KEY=***REDACTED***
+BACKEND_STORAGE_PUBLIC_BUCKET=teable-public
+BACKEND_STORAGE_PRIVATE_BUCKET=teable-private
+STORAGE_PREFIX=https://teable-public.s3.us-west-2.amazonaws.com
+```
+
+## Notes for AWS services
+
+### RDS / Aurora PostgreSQL
+
+- Ensure the DB is reachable from your ECS tasks (VPC + security groups).
+- Use SSL (`sslmode=require`) if your organization requires it.
+
+### ElastiCache (Redis/Valkey)
+
+- `BACKEND_CACHE_REDIS_URI` is required for background queues.
+- `BACKEND_PERFORMANCE_CACHE` is optional. For smaller setups you can point it to the same Redis instance.
+
+### S3 buckets
+
+You must configure **two buckets**:
+
+- **Public bucket**: public-read + CORS allow any origin.
+- **Private bucket**: keep private.
+
+See the exact bucket policy & CORS examples in: [Object Storage (S3-compatible)](/en/deploy/storage)
+
+

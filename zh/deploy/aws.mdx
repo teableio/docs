@@ -1,0 +1,73 @@
+---
+title: "在 AWS 上部署"
+description: "AWS 生产部署：ECS + RDS PostgreSQL + ElastiCache Redis + S3 双桶(public/private)"
+---
+
+## 推荐架构
+
+- **计算**：AWS ECS（Fargate 或 EC2）
+- **数据库**：Amazon RDS for PostgreSQL（或 Aurora PostgreSQL）
+- **Redis**：Amazon ElastiCache（Redis/Valkey）
+- **对象存储**：Amazon S3（**public + private 双桶**）
+
+<Tip>
+先做减法：直接部署 **一个 Teable Service** 使用官方镜像。默认情况下（未设置 `SANDBOX_URL`）镜像会提供集成 sandbox 能力。
+</Tip>
+
+## 部署前检查清单
+
+- Teable 对外访问地址（ALB / CloudFront / 反向代理）
+- PostgreSQL 连接串（`PRISMA_DATABASE_URL`）
+- Redis 连接串（`BACKEND_CACHE_REDIS_URI`）**必须配置**（队列依赖）
+- S3 双桶 + 权限 + CORS：详见 [对象存储（S3-compatible）](/zh/deploy/storage)
+
+## 最小环境变量示例
+
+```bash
+# Core
+PUBLIC_ORIGIN=https://teable.example.com
+SECRET_KEY=***REDACTED***
+BACKEND_CACHE_PROVIDER=redis
+
+# Database
+PRISMA_DATABASE_URL=postgresql://user:pass@your-rds-endpoint:5432/teable?sslmode=require
+
+# Redis（队列依赖）
+BACKEND_CACHE_REDIS_URI=rediss://:password@your-elasticache-endpoint:6379/0
+
+# 性能缓存（可选；为了简化运维，也可指向同一个 Redis）
+BACKEND_PERFORMANCE_CACHE=rediss://:password@your-elasticache-endpoint:6379/0
+
+# Storage（S3 双桶）
+BACKEND_STORAGE_PROVIDER=s3
+BACKEND_STORAGE_S3_REGION=us-west-2
+BACKEND_STORAGE_S3_ENDPOINT=https://s3.us-west-2.amazonaws.com
+BACKEND_STORAGE_S3_ACCESS_KEY=***REDACTED***
+BACKEND_STORAGE_S3_SECRET_KEY=***REDACTED***
+BACKEND_STORAGE_PUBLIC_BUCKET=teable-public
+BACKEND_STORAGE_PRIVATE_BUCKET=teable-private
+STORAGE_PREFIX=https://teable-public.s3.us-west-2.amazonaws.com
+```
+
+## AWS 组件配置要点
+
+### RDS / Aurora PostgreSQL
+
+- 确保 ECS 任务可访问数据库（VPC + 安全组）。
+- 如需强制 SSL，可在连接串中使用 `sslmode=require`。
+
+### ElastiCache（Redis/Valkey）
+
+- `BACKEND_CACHE_REDIS_URI` 必需：队列依赖。
+- `BACKEND_PERFORMANCE_CACHE` 可选：小规模部署可指向同一个 Redis 实例以降低运维复杂度。
+
+### S3 双桶
+
+必须创建并配置 **两个 bucket**：
+
+- **public bucket**：public-read + 允许任意跨域（CORS）。
+- **private bucket**：保持私有（禁止 public read）。
+
+Bucket policy / CORS 示例见：[对象存储（S3-compatible）](/zh/deploy/storage)
+
+

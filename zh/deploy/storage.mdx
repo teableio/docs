@@ -1,0 +1,123 @@
+---
+title: "对象存储（S3-compatible）"
+description: "Teable 生产环境存储指引：public/private 双桶、权限与跨域（CORS）"
+---
+
+<Callout type="warning">
+生产环境强烈推荐使用 **S3-compatible 对象存储**（S3 / MinIO / 兼容 S3 的 OSS / 其他 S3-compatible 服务），并按 **public/private 双桶**进行配置。
+</Callout>
+
+## 为什么要两个 Bucket？
+
+Teable 会将不同类型的文件放在不同 bucket：
+
+- **Public bucket**：头像、表单头图等需要公开访问的资源。
+- **Private bucket**：附件等需要权限保护的资源（通过签名 URL 访问）。
+
+## 必需环境变量
+
+最少需要配置：
+
+- **Provider**
+  - `BACKEND_STORAGE_PROVIDER`：`s3` 或 `minio`
+- **Buckets**
+  - `BACKEND_STORAGE_PUBLIC_BUCKET`
+  - `BACKEND_STORAGE_PRIVATE_BUCKET`
+- **公共访问前缀**
+  - `STORAGE_PREFIX`：建议设置为 **public bucket 的访问基址**（或其前面的 CDN 域名）
+
+### S3 Provider 示例
+
+```bash
+BACKEND_STORAGE_PROVIDER=s3
+BACKEND_STORAGE_S3_REGION=us-west-2
+BACKEND_STORAGE_S3_ENDPOINT=https://s3.us-west-2.amazonaws.com
+BACKEND_STORAGE_S3_ACCESS_KEY=***REDACTED***
+BACKEND_STORAGE_S3_SECRET_KEY=***REDACTED***
+
+BACKEND_STORAGE_PUBLIC_BUCKET=your-public-bucket
+BACKEND_STORAGE_PRIVATE_BUCKET=your-private-bucket
+
+# public bucket 的访问基址（或 CDN）
+STORAGE_PREFIX=https://your-public-bucket.s3.us-west-2.amazonaws.com
+```
+
+### MinIO Provider 示例
+
+```bash
+BACKEND_STORAGE_PROVIDER=minio
+BACKEND_STORAGE_MINIO_ENDPOINT=minio.example.com
+BACKEND_STORAGE_MINIO_PORT=443
+BACKEND_STORAGE_MINIO_USE_SSL=true
+BACKEND_STORAGE_MINIO_ACCESS_KEY=***REDACTED***
+BACKEND_STORAGE_MINIO_SECRET_KEY=***REDACTED***
+
+BACKEND_STORAGE_PUBLIC_BUCKET=public
+BACKEND_STORAGE_PRIVATE_BUCKET=private
+STORAGE_PREFIX=https://minio.example.com
+```
+
+## Public bucket 必做项
+
+### 1）Public Read（公共读）
+
+**public bucket 必须允许公开读**对象。
+
+以 AWS S3 为例，可配置 Bucket Policy：
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "PublicReadGetObject",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::your-public-bucket/*"
+    }
+  ]
+}
+```
+
+<Note>
+AWS S3 可能需要调整 public bucket 的 **Block Public Access** 相关选项。请遵循你们公司的安全规范。
+</Note>
+
+### 2）CORS（允许任意跨域）
+
+为保证浏览器端访问与上传，public bucket 需要配置 CORS，允许跨域请求。
+
+AWS S3 示例：
+
+```json
+[
+  {
+    "AllowedHeaders": ["*"],
+    "AllowedMethods": ["GET", "HEAD"],
+    "AllowedOrigins": ["*"],
+    "ExposeHeaders": ["ETag", "x-amz-request-id", "x-amz-id-2"],
+    "MaxAgeSeconds": 3000
+  }
+]
+```
+
+如果你们启用 **浏览器直传（presigned PUT）**，则可能还需要把 `PUT` 加到 `AllowedMethods`。
+
+## Private bucket 提示
+
+- **private bucket** 必须保持私有（禁止 public read）。
+- Teable 会通过 **签名 URL** 访问 private 对象。
+- 如需为 private bucket 使用独立域名/endpoint，可配置：
+  - `BACKEND_STORAGE_PRIVATE_BUCKET_ENDPOINT`（可选）
+
+## Azure / GCP 说明
+
+Teable 对象存储使用 **S3 API**。Azure Blob Storage 与 Google Cloud Storage **并非 S3-native**。
+
+- 在 **Azure / GCP** 上部署时，只要 Teable 运行环境能访问到某个 S3 endpoint（例如 AWS S3），同样可以直接使用 `BACKEND_STORAGE_PROVIDER=s3`。
+- 或选用 **S3-compatible** 的对象存储：
+  - 自建 MinIO（作为 S3 endpoint）
+  - 或其他你们选择的托管 S3-compatible 服务
+
+

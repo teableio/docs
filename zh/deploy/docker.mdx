@@ -170,7 +170,9 @@ BACKEND_CACHE_REDIS_URI=redis://default:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_
 
 #### **增加存储服务（可选）：**
 
-Teable 默认使用本地存储管理附件资源，可以添加 minio 或云存储来获取更强大、稳定的服务
+生产环境强烈推荐使用 **S3-compatible 对象存储**（S3 / MinIO / 其他兼容 S3 的服务），以获得更好的可靠性与扩展能力。
+
+详见：[对象存储（S3-compatible）](/zh/deploy/storage)
 
 <Tabs>
 <Tab title="docker-compose 增加 minio">
@@ -304,7 +306,7 @@ BACKEND_STORAGE_MINIO_REGION=us-east-1
 
 <Tab title="连接阿里云 oss">
 <Note>
-注意：请确保正确配置跨域(CORS)设置，否则可能会影响文件访问。
+注意：请配置 **public/private 双桶**。其中 **public bucket 必须 public-read**，并配置 **允许任意跨域（CORS）**，否则浏览器访问可能失败。
 </Note>
 
 开始之前，你需要在阿里云上创建两个桶。一个公开桶存储头像和表单头图，一个私有桶用来存储附件内容。

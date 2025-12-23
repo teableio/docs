@@ -164,7 +164,9 @@ BACKEND_CACHE_REDIS_URI=redis://default:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_
 
 #### **Adding Storage Service (Optional)**
 
-Teable uses local storage to manage attachment resources by default. You can add MinIO or cloud storage for more powerful and stable service.
+For production deployments, Teable is strongly recommended to use **S3-compatible object storage** (S3 / MinIO / other S3-compatible services) for better durability and scaling.
+
+See: [Object Storage (S3-compatible)](/en/deploy/storage)
 
 <Tabs>
 <Tab title="Add MinIO to docker-compose">
@@ -298,7 +300,7 @@ BACKEND_STORAGE_MINIO_REGION=us-east-1
 
 <Tab title="Connect to AWS S3">
 <Note>
-Note: Please ensure proper CORS (Cross-Origin Resource Sharing) configuration is set up, as it may affect file access.
+Note: You must configure **two buckets** (public/private). The **public bucket** must be **public-read** and must allow **CORS for any origin**, otherwise browser access may fail.
 </Note>
 Before starting, you need to create two buckets in AWS S3. One public bucket for storing avatars and form headers, and one private bucket for storing attachment content.
 
@@ -323,7 +325,7 @@ STORAGE_PREFIX=https://your-public-bucket.s3.us-west-2.amazonaws.com
 
 ```
 
-This process applies to most cloud providers, not just AWS S3.
+This process applies to most cloud providers, not just AWS S3. For exact bucket policy and CORS examples, see: [Object Storage (S3-compatible)](/en/deploy/storage)
 
 </Tab>
 </Tabs>

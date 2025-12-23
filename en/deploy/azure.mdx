@@ -1,0 +1,81 @@
+---
+title: "Deploy on Azure"
+description: "Azure deployment: App Service (container) + PostgreSQL + Azure Cache for Redis + S3-compatible storage"
+---
+
+## Recommended architecture
+
+- **Compute**: Azure App Service (Linux, container-based)
+- **Database**: Azure Database for PostgreSQL – Flexible Server
+- **Redis**: Azure Cache for Redis
+- **Object storage**: **S3-compatible** (two buckets: public + private)
+
+<Callout type="warning">
+For production deployments, please use **S3-compatible object storage** (`s3` or `minio`) with **public/private dual buckets**.  
+See: [Object Storage (S3-compatible)](/en/deploy/storage)
+</Callout>
+
+## Object storage on Azure (what to use)
+
+Teable requires an **S3-compatible endpoint** for object storage. On Azure, choose one of the following:
+
+- Use **`BACKEND_STORAGE_PROVIDER=s3`** and point to an existing S3 endpoint (for example, AWS S3). This is a common cross-cloud setup.
+- **MinIO** as an S3-compatible endpoint (self-managed on VM/AKS)
+- Another managed **S3-compatible** service (your choice)
+
+## Environment variables (minimal)
+
+### Option A: Use S3 provider (example: AWS S3)
+
+```bash
+# Storage (S3 dual buckets)
+BACKEND_STORAGE_PROVIDER=s3
+BACKEND_STORAGE_S3_REGION=us-west-2
+BACKEND_STORAGE_S3_ENDPOINT=https://s3.us-west-2.amazonaws.com
+BACKEND_STORAGE_S3_ACCESS_KEY=***REDACTED***
+BACKEND_STORAGE_S3_SECRET_KEY=***REDACTED***
+BACKEND_STORAGE_PUBLIC_BUCKET=storage-public.teable.io
+BACKEND_STORAGE_PRIVATE_BUCKET=storage-private.teable.io
+STORAGE_PREFIX=https://s3.us-west-2.amazonaws.com/storage-public.teable.io
+```
+
+<Note>
+The public bucket must be **public-read** and must allow **CORS** for any origin. See: [Object Storage (S3-compatible)](/en/deploy/storage)
+</Note>
+
+### Option B: Use MinIO provider
+
+```bash
+# Core
+PUBLIC_ORIGIN=https://teable.example.com
+SECRET_KEY=***REDACTED***
+BACKEND_CACHE_PROVIDER=redis
+
+# Database
+PRISMA_DATABASE_URL=postgresql://user:pass@your-postgres-flex-endpoint:5432/teable?sslmode=require
+
+# Redis (required for queues)
+BACKEND_CACHE_REDIS_URI=rediss://:password@your-redis-name.redis.cache.windows.net:6380/0
+
+# Performance cache (optional; can point to the same Redis)
+BACKEND_PERFORMANCE_CACHE=rediss://:password@your-redis-name.redis.cache.windows.net:6380/0
+
+# Storage (S3-compatible dual buckets)
+BACKEND_STORAGE_PROVIDER=minio
+BACKEND_STORAGE_MINIO_ENDPOINT=minio.example.com
+BACKEND_STORAGE_MINIO_PORT=443
+BACKEND_STORAGE_MINIO_USE_SSL=true
+BACKEND_STORAGE_MINIO_ACCESS_KEY=***REDACTED***
+BACKEND_STORAGE_MINIO_SECRET_KEY=***REDACTED***
+BACKEND_STORAGE_PUBLIC_BUCKET=public
+BACKEND_STORAGE_PRIVATE_BUCKET=private
+STORAGE_PREFIX=https://minio.example.com
+```
+
+## App Service tips
+
+- Set `WEBSITES_PORT=3000`.
+- Ensure your App Service can reach PostgreSQL/Redis endpoints (VNet integration if required).
+- Configure a health check path: `/health`.
+
+
