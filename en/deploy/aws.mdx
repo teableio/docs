@@ -1,73 +1,396 @@
 ---
 title: "Deploy on AWS"
-description: "Production deployment on AWS: ECS + RDS PostgreSQL + ElastiCache Redis + S3 dual buckets"
+description: "Step-by-step guide: Deploy Teable on AWS using ECS, RDS PostgreSQL, ElastiCache, and S3"
 ---
 
-## Recommended architecture
+<Callout type="info">
+**Recommended for:** Production deployments with 100+ users
+</Callout>
 
-- **Compute**: AWS ECS (Fargate or EC2)
-- **Database**: Amazon RDS for PostgreSQL (or Aurora PostgreSQL)
-- **Redis**: Amazon ElastiCache (Redis/Valkey)
-- **Object storage**: Amazon S3 (**two buckets: public + private**)
+## Architecture overview
 
-<Tip>
-Start simple: deploy **one Teable service** with the official image. The Teable image can provide integrated sandbox by default (if `SANDBOX_URL` is not set).
-</Tip>
+```mermaid
+graph TB
+    ECS["AWS ECS<br/>(Fargate or EC2)<br/>Teable App: 4+ replicas<br/>Sandbox: 2+ replicas (optional)"]
+    
+    RDS["Amazon RDS<br/>Aurora PostgreSQL"]
+    ElastiCache["Amazon ElastiCache<br/>(Valkey/Redis)<br/>Queue & Cache"]
+    S3["Amazon S3<br/>Public + Private buckets"]
+    
+    ECS --> RDS
+    ECS --> ElastiCache
+    ECS --> S3
+    
+    style ECS fill:#ff9900,stroke:#cc7a00,color:#fff
+    style RDS fill:#527fff,stroke:#3d5fd9,color:#fff
+    style ElastiCache fill:#c925d1,stroke:#a01ba8,color:#fff
+    style S3 fill:#569a31,stroke:#3f7224,color:#fff
+```
 
-## Prerequisites checklist
+## Prerequisites
 
-- A public URL for Teable (ALB / CloudFront / reverse proxy)
-- PostgreSQL connection string (`PRISMA_DATABASE_URL`)
-- Redis URL (`BACKEND_CACHE_REDIS_URI`) **must be set** for queues
-- S3 dual buckets + permissions + CORS: see [Object Storage (S3-compatible)](/en/deploy/storage)
+- AWS CLI installed and configured
+- AWS account with permissions for ECS, RDS, ElastiCache, S3, IAM
+- Docker image registry access (or ECR for your built images)
 
-## Environment variables (minimal)
+---
+
+## Step 1: Create AWS resources
+
+### 1.1 Create RDS PostgreSQL
+
+```bash
+aws rds create-db-instance \
+  --db-instance-identifier teable-db \
+  --db-instance-class db.t3.medium \
+  --engine postgres \
+  --engine-version 16 \
+  --master-username teableadmin \
+  --master-user-password '<YourStrongPassword>' \
+  --allocated-storage 100 \
+  --vpc-security-group-ids sg-xxxxxx \
+  --db-subnet-group-name your-subnet-group \
+  --publicly-accessible false
+```
+
+<Note>
+Wait until the instance status is `available`. Get the endpoint:
+```bash
+aws rds describe-db-instances \
+  --db-instance-identifier teable-db \
+  --query 'DBInstances[0].Endpoint.Address' --output text
+```
+</Note>
+
+### 1.2 Create ElastiCache Redis (for queues)
+
+```bash
+aws elasticache create-cache-cluster \
+  --cache-cluster-id teable-cache \
+  --engine redis \
+  --cache-node-type cache.t3.small \
+  --num-cache-nodes 1 \
+  --engine-version 7.0 \
+  --security-group-ids sg-xxxxxx \
+  --cache-subnet-group-name your-subnet-group
+```
+
+<Note>
+Get the endpoint:
+```bash
+aws elasticache describe-cache-clusters \
+  --cache-cluster-id teable-cache \
+  --show-cache-node-info \
+  --query 'CacheClusters[0].CacheNodes[0].Endpoint.Address' --output text
+```
+</Note>
+
+### 1.3 Create S3 buckets (public + private)
+
+```bash
+# Create public bucket
+aws s3api create-bucket \
+  --bucket teable-public-<your-unique-suffix> \
+  --region us-west-2 \
+  --create-bucket-configuration LocationConstraint=us-west-2
+
+# Create private bucket
+aws s3api create-bucket \
+  --bucket teable-private-<your-unique-suffix> \
+  --region us-west-2 \
+  --create-bucket-configuration LocationConstraint=us-west-2
+```
+
+**Must-do: Configure public bucket**
+
+1. **Public read policy**:
+
+```bash
+cat > public-bucket-policy.json <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "PublicReadGetObject",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::teable-public-<your-unique-suffix>/*"
+    }
+  ]
+}
+EOF
+
+aws s3api put-bucket-policy \
+  --bucket teable-public-<your-unique-suffix> \
+  --policy file://public-bucket-policy.json
+```
+
+2. **Disable "Block Public Access" for public bucket**:
+
+```bash
+aws s3api put-public-access-block \
+  --bucket teable-public-<your-unique-suffix> \
+  --public-access-block-configuration \
+    BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false
+```
+
+3. **CORS configuration** (allow any origin):
+
+```bash
+cat > cors.json <<EOF
+{
+  "CORSRules": [
+    {
+      "AllowedHeaders": ["*"],
+      "AllowedMethods": ["GET", "HEAD", "PUT"],
+      "AllowedOrigins": ["*"],
+      "ExposeHeaders": ["ETag"],
+      "MaxAgeSeconds": 3000
+    }
+  ]
+}
+EOF
+
+aws s3api put-bucket-cors \
+  --bucket teable-public-<your-unique-suffix> \
+  --cors-configuration file://cors.json
+```
+
+<Callout type="warning">
+**Security reminder**: The public bucket must allow public read. Ensure this complies with your organization's security policy. The private bucket should remain non-public.
+</Callout>
+
+### 1.4 Create IAM user/role for S3 access
+
+```bash
+# Create IAM user
+aws iam create-user --user-name teable-s3-user
+
+# Attach S3 full access policy (or create a custom policy)
+aws iam attach-user-policy \
+  --user-name teable-s3-user \
+  --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess
+
+# Create access key
+aws iam create-access-key --user-name teable-s3-user
+```
+
+<Note>
+Save the `AccessKeyId` and `SecretAccessKey` from the output.
+</Note>
+
+---
+
+## Step 2: Prepare environment variables
+
+Create a `.env` file (or ECS task definition environment):
 
 ```bash
 # Core
-PUBLIC_ORIGIN=https://teable.example.com
-SECRET_KEY=***REDACTED***
-BACKEND_CACHE_PROVIDER=redis
+PUBLIC_ORIGIN=https://teable.yourcompany.com
+SECRET_KEY=<generate-32-char-random-string>
 
 # Database
-PRISMA_DATABASE_URL=postgresql://user:pass@your-rds-endpoint:5432/teable?sslmode=require
+PRISMA_DATABASE_URL=postgresql://teableadmin:<password>@<rds-endpoint>:5432/teable
 
 # Redis (required for queues)
-BACKEND_CACHE_REDIS_URI=rediss://:password@your-elasticache-endpoint:6379/0
+BACKEND_CACHE_PROVIDER=redis
+BACKEND_CACHE_REDIS_URI=redis://<elasticache-endpoint>:6379/0
 
-# Performance cache (optional; can point to the same Redis to reduce ops complexity)
-BACKEND_PERFORMANCE_CACHE=rediss://:password@your-elasticache-endpoint:6379/0
+# Performance cache (optional; can point to the same Redis or a separate cluster)
+BACKEND_PERFORMANCE_CACHE=redis://<elasticache-endpoint>:6379/0
 
 # Storage (S3 dual buckets)
 BACKEND_STORAGE_PROVIDER=s3
 BACKEND_STORAGE_S3_REGION=us-west-2
 BACKEND_STORAGE_S3_ENDPOINT=https://s3.us-west-2.amazonaws.com
-BACKEND_STORAGE_S3_ACCESS_KEY=***REDACTED***
-BACKEND_STORAGE_S3_SECRET_KEY=***REDACTED***
-BACKEND_STORAGE_PUBLIC_BUCKET=teable-public
-BACKEND_STORAGE_PRIVATE_BUCKET=teable-private
-STORAGE_PREFIX=https://teable-public.s3.us-west-2.amazonaws.com
+BACKEND_STORAGE_S3_ACCESS_KEY=<access-key-from-step-1.4>
+BACKEND_STORAGE_S3_SECRET_KEY=<secret-key-from-step-1.4>
+BACKEND_STORAGE_PUBLIC_BUCKET=teable-public-<your-unique-suffix>
+BACKEND_STORAGE_PRIVATE_BUCKET=teable-private-<your-unique-suffix>
+STORAGE_PREFIX=https://teable-public-<your-unique-suffix>.s3.us-west-2.amazonaws.com
+
+# Optional: Sandbox service (if deploying separately)
+# SANDBOX_URL=http://teable-sandbox:7070
 ```
 
-## Notes for AWS services
+<Tip>
+Generate a strong `SECRET_KEY`:
+```bash
+openssl rand -base64 32
+```
+</Tip>
 
-### RDS / Aurora PostgreSQL
+---
 
-- Ensure the DB is reachable from your ECS tasks (VPC + security groups).
-- Use SSL (`sslmode=require`) if your organization requires it.
+## Step 3: Deploy to ECS
 
-### ElastiCache (Redis/Valkey)
+### Option A: Using ECS Fargate (recommended for simplicity)
 
-- `BACKEND_CACHE_REDIS_URI` is required for background queues.
-- `BACKEND_PERFORMANCE_CACHE` is optional. For smaller setups you can point it to the same Redis instance.
+1. **Create ECS cluster**:
 
-### S3 buckets
+```bash
+aws ecs create-cluster --cluster-name teable-cluster
+```
 
-You must configure **two buckets**:
+2. **Create task definition** (`teable-task.json`):
 
-- **Public bucket**: public-read + CORS allow any origin.
-- **Private bucket**: keep private.
+```json
+{
+  "family": "teable",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "2048",
+  "memory": "4096",
+  "containerDefinitions": [
+    {
+      "name": "teable",
+      "image": "ghcr.io/teableio/teable:latest",
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {"name": "PUBLIC_ORIGIN", "value": "https://teable.yourcompany.com"},
+        {"name": "SECRET_KEY", "value": "***REDACTED***"},
+        {"name": "PRISMA_DATABASE_URL", "value": "postgresql://..."},
+        {"name": "BACKEND_CACHE_PROVIDER", "value": "redis"},
+        {"name": "BACKEND_CACHE_REDIS_URI", "value": "redis://..."},
+        {"name": "BACKEND_STORAGE_PROVIDER", "value": "s3"},
+        {"name": "BACKEND_STORAGE_S3_REGION", "value": "us-west-2"},
+        {"name": "BACKEND_STORAGE_S3_ENDPOINT", "value": "https://s3.us-west-2.amazonaws.com"},
+        {"name": "BACKEND_STORAGE_S3_ACCESS_KEY", "value": "***"},
+        {"name": "BACKEND_STORAGE_S3_SECRET_KEY", "value": "***"},
+        {"name": "BACKEND_STORAGE_PUBLIC_BUCKET", "value": "teable-public-xxx"},
+        {"name": "BACKEND_STORAGE_PRIVATE_BUCKET", "value": "teable-private-xxx"},
+        {"name": "STORAGE_PREFIX", "value": "https://teable-public-xxx.s3.us-west-2.amazonaws.com"}
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/teable",
+          "awslogs-region": "us-west-2",
+          "awslogs-stream-prefix": "teable"
+        }
+      }
+    }
+  ]
+}
+```
 
-See the exact bucket policy & CORS examples in: [Object Storage (S3-compatible)](/en/deploy/storage)
+3. **Register task definition**:
 
+```bash
+aws ecs register-task-definition --cli-input-json file://teable-task.json
+```
 
+4. **Create ECS service**:
+
+```bash
+aws ecs create-service \
+  --cluster teable-cluster \
+  --service-name teable-service \
+  --task-definition teable \
+  --desired-count 2 \
+  --launch-type FARGATE \
+  --network-configuration "awsvpcConfiguration={subnets=[subnet-xxx,subnet-yyy],securityGroups=[sg-xxx],assignPublicIp=ENABLED}" \
+  --load-balancers "targetGroupArn=arn:aws:elasticloadbalancing:...,containerName=teable,containerPort=3000"
+```
+
+<Note>
+You need to create an Application Load Balancer (ALB) and target group separately, then reference it in `--load-balancers`.
+</Note>
+
+---
+
+## Step 4: Verify deployment
+
+1. **Check ECS service status**:
+
+```bash
+aws ecs describe-services \
+  --cluster teable-cluster \
+  --services teable-service
+```
+
+2. **Check logs**:
+
+```bash
+aws logs tail /ecs/teable --follow
+```
+
+3. **Access health check**:
+
+```bash
+curl https://teable.yourcompany.com/health
+```
+
+Expected response:
+```json
+{"status":"ok"}
+```
+
+4. **Open Teable in browser**: `https://teable.yourcompany.com`
+
+---
+
+## Troubleshooting
+
+### Database connection errors
+
+- Verify RDS security group allows traffic from ECS tasks
+- Check `PRISMA_DATABASE_URL` format: `postgresql://user:pass@endpoint:5432/dbname`
+
+### Redis connection errors
+
+- Verify ElastiCache security group allows traffic from ECS
+- Use the **primary endpoint** (not reader endpoint)
+
+### S3 access errors
+
+- Verify IAM user has `s3:GetObject`, `s3:PutObject`, `s3:DeleteObject` permissions
+- Check bucket names match exactly in `BACKEND_STORAGE_PUBLIC_BUCKET` / `BACKEND_STORAGE_PRIVATE_BUCKET`
+- Ensure public bucket has public read policy and CORS configured
+
+### Container fails to start
+
+- Check CloudWatch Logs: `/ecs/teable`
+- Verify all required environment variables are set
+- Ensure `SECRET_KEY` is set (not empty)
+
+---
+
+## Production recommendations
+
+1. **High availability**:
+   - Run at least 2 ECS tasks across multiple AZs
+   - Use RDS Multi-AZ deployment
+   - Use ElastiCache with replicas
+
+2. **Scaling**:
+   - Enable ECS auto-scaling based on CPU/memory
+   - Use Application Load Balancer for traffic distribution
+
+3. **Security**:
+   - Use AWS Secrets Manager for sensitive values (instead of plaintext environment variables)
+   - Enable RDS encryption at rest
+   - Use VPC endpoints for S3/ECR to avoid internet traffic
+
+4. **Monitoring**:
+   - Enable CloudWatch Container Insights for ECS
+   - Set up alarms for task failures, high CPU/memory
+
+5. **Backup**:
+   - Enable RDS automated backups (retention: 7-30 days)
+   - Enable S3 versioning for private bucket
+
+---
+
+## Related documentation
+
+- [Environment Variables Reference](/en/deploy/env)
+- [Object Storage (S3-compatible)](/en/deploy/storage)
+- [Kubernetes Deployment](/en/deploy/k8s)

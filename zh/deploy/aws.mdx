@@ -1,73 +1,396 @@
 ---
 title: "在 AWS 上部署"
-description: "AWS 生产部署：ECS + RDS PostgreSQL + ElastiCache Redis + S3 双桶(public/private)"
+description: "分步指引：在 AWS 上使用 ECS、RDS PostgreSQL、ElastiCache 与 S3 部署 Teable"
 ---
 
-## 推荐架构
+<Callout type="info">
+**推荐场景**：100+ 用户的生产环境
+</Callout>
 
-- **计算**：AWS ECS（Fargate 或 EC2）
-- **数据库**：Amazon RDS for PostgreSQL（或 Aurora PostgreSQL）
-- **Redis**：Amazon ElastiCache（Redis/Valkey）
-- **对象存储**：Amazon S3（**public + private 双桶**）
+## 架构概览
 
-<Tip>
-先做减法：直接部署 **一个 Teable Service** 使用官方镜像。默认情况下（未设置 `SANDBOX_URL`）镜像会提供集成 sandbox 能力。
-</Tip>
+```mermaid
+graph TB
+    ECS["AWS ECS<br/>(Fargate 或 EC2)<br/>Teable 应用: 4+ 副本<br/>Sandbox: 2+ 副本 (可选)"]
+    
+    RDS["Amazon RDS<br/>Aurora PostgreSQL"]
+    ElastiCache["Amazon ElastiCache<br/>(Valkey/Redis)<br/>队列 & 缓存"]
+    S3["Amazon S3<br/>Public + Private 双桶"]
+    
+    ECS --> RDS
+    ECS --> ElastiCache
+    ECS --> S3
+    
+    style ECS fill:#ff9900,stroke:#cc7a00,color:#fff
+    style RDS fill:#527fff,stroke:#3d5fd9,color:#fff
+    style ElastiCache fill:#c925d1,stroke:#a01ba8,color:#fff
+    style S3 fill:#569a31,stroke:#3f7224,color:#fff
+```
 
-## 部署前检查清单
+## 前置要求
 
-- Teable 对外访问地址（ALB / CloudFront / 反向代理）
-- PostgreSQL 连接串（`PRISMA_DATABASE_URL`）
-- Redis 连接串（`BACKEND_CACHE_REDIS_URI`）**必须配置**（队列依赖）
-- S3 双桶 + 权限 + CORS：详见 [对象存储（S3-compatible）](/zh/deploy/storage)
+- 已安装并配置 AWS CLI
+- AWS 账号具备 ECS、RDS、ElastiCache、S3、IAM 权限
+- Docker 镜像仓库访问权（或 ECR）
 
-## 最小环境变量示例
+---
+
+## 步骤 1：创建 AWS 资源
+
+### 1.1 创建 RDS PostgreSQL
+
+```bash
+aws rds create-db-instance \
+  --db-instance-identifier teable-db \
+  --db-instance-class db.t3.medium \
+  --engine postgres \
+  --engine-version 16 \
+  --master-username teableadmin \
+  --master-user-password '<你的强密码>' \
+  --allocated-storage 100 \
+  --vpc-security-group-ids sg-xxxxxx \
+  --db-subnet-group-name your-subnet-group \
+  --publicly-accessible false
+```
+
+<Note>
+等待实例状态变为 `available`。获取 endpoint：
+```bash
+aws rds describe-db-instances \
+  --db-instance-identifier teable-db \
+  --query 'DBInstances[0].Endpoint.Address' --output text
+```
+</Note>
+
+### 1.2 创建 ElastiCache Redis（用于队列）
+
+```bash
+aws elasticache create-cache-cluster \
+  --cache-cluster-id teable-cache \
+  --engine redis \
+  --cache-node-type cache.t3.small \
+  --num-cache-nodes 1 \
+  --engine-version 7.0 \
+  --security-group-ids sg-xxxxxx \
+  --cache-subnet-group-name your-subnet-group
+```
+
+<Note>
+获取 endpoint：
+```bash
+aws elasticache describe-cache-clusters \
+  --cache-cluster-id teable-cache \
+  --show-cache-node-info \
+  --query 'CacheClusters[0].CacheNodes[0].Endpoint.Address' --output text
+```
+</Note>
+
+### 1.3 创建 S3 bucket（public + private）
+
+```bash
+# 创建 public bucket
+aws s3api create-bucket \
+  --bucket teable-public-<你的唯一后缀> \
+  --region us-west-2 \
+  --create-bucket-configuration LocationConstraint=us-west-2
+
+# 创建 private bucket
+aws s3api create-bucket \
+  --bucket teable-private-<你的唯一后缀> \
+  --region us-west-2 \
+  --create-bucket-configuration LocationConstraint=us-west-2
+```
+
+**必做：配置 public bucket**
+
+1. **Public read 策略**：
+
+```bash
+cat > public-bucket-policy.json <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "PublicReadGetObject",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::teable-public-<你的唯一后缀>/*"
+    }
+  ]
+}
+EOF
+
+aws s3api put-bucket-policy \
+  --bucket teable-public-<你的唯一后缀> \
+  --policy file://public-bucket-policy.json
+```
+
+2. **关闭 public bucket 的"阻止公共访问"**：
+
+```bash
+aws s3api put-public-access-block \
+  --bucket teable-public-<你的唯一后缀> \
+  --public-access-block-configuration \
+    BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false
+```
+
+3. **CORS 配置**（允许任意跨域）：
+
+```bash
+cat > cors.json <<EOF
+{
+  "CORSRules": [
+    {
+      "AllowedHeaders": ["*"],
+      "AllowedMethods": ["GET", "HEAD", "PUT"],
+      "AllowedOrigins": ["*"],
+      "ExposeHeaders": ["ETag"],
+      "MaxAgeSeconds": 3000
+    }
+  ]
+}
+EOF
+
+aws s3api put-bucket-cors \
+  --bucket teable-public-<你的唯一后缀> \
+  --cors-configuration file://cors.json
+```
+
+<Callout type="warning">
+**安全提醒**：public bucket 必须允许公开读。请确保符合你们公司的安全规范。private bucket 保持私有即可。
+</Callout>
+
+### 1.4 创建 IAM 用户/角色用于 S3 访问
+
+```bash
+# 创建 IAM 用户
+aws iam create-user --user-name teable-s3-user
+
+# 附加 S3 完全访问策略（或创建自定义策略）
+aws iam attach-user-policy \
+  --user-name teable-s3-user \
+  --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess
+
+# 创建访问密钥
+aws iam create-access-key --user-name teable-s3-user
+```
+
+<Note>
+保存输出中的 `AccessKeyId` 和 `SecretAccessKey`。
+</Note>
+
+---
+
+## 步骤 2：准备环境变量
+
+创建 `.env` 文件（或 ECS 任务定义的环境变量）：
 
 ```bash
 # Core
-PUBLIC_ORIGIN=https://teable.example.com
-SECRET_KEY=***REDACTED***
-BACKEND_CACHE_PROVIDER=redis
+PUBLIC_ORIGIN=https://teable.yourcompany.com
+SECRET_KEY=<生成32位随机字符串>
 
 # Database
-PRISMA_DATABASE_URL=postgresql://user:pass@your-rds-endpoint:5432/teable?sslmode=require
+PRISMA_DATABASE_URL=postgresql://teableadmin:<password>@<rds-endpoint>:5432/teable
 
 # Redis（队列依赖）
-BACKEND_CACHE_REDIS_URI=rediss://:password@your-elasticache-endpoint:6379/0
+BACKEND_CACHE_PROVIDER=redis
+BACKEND_CACHE_REDIS_URI=redis://<elasticache-endpoint>:6379/0
 
-# 性能缓存（可选；为了简化运维，也可指向同一个 Redis）
-BACKEND_PERFORMANCE_CACHE=rediss://:password@your-elasticache-endpoint:6379/0
+# 性能缓存（可选；可指向同一个 Redis 或单独集群）
+BACKEND_PERFORMANCE_CACHE=redis://<elasticache-endpoint>:6379/0
 
 # Storage（S3 双桶）
 BACKEND_STORAGE_PROVIDER=s3
 BACKEND_STORAGE_S3_REGION=us-west-2
 BACKEND_STORAGE_S3_ENDPOINT=https://s3.us-west-2.amazonaws.com
-BACKEND_STORAGE_S3_ACCESS_KEY=***REDACTED***
-BACKEND_STORAGE_S3_SECRET_KEY=***REDACTED***
-BACKEND_STORAGE_PUBLIC_BUCKET=teable-public
-BACKEND_STORAGE_PRIVATE_BUCKET=teable-private
-STORAGE_PREFIX=https://teable-public.s3.us-west-2.amazonaws.com
+BACKEND_STORAGE_S3_ACCESS_KEY=<步骤1.4的access-key>
+BACKEND_STORAGE_S3_SECRET_KEY=<步骤1.4的secret-key>
+BACKEND_STORAGE_PUBLIC_BUCKET=teable-public-<你的唯一后缀>
+BACKEND_STORAGE_PRIVATE_BUCKET=teable-private-<你的唯一后缀>
+STORAGE_PREFIX=https://teable-public-<你的唯一后缀>.s3.us-west-2.amazonaws.com
+
+# 可选：Sandbox 服务（如果单独部署）
+# SANDBOX_URL=http://teable-sandbox:7070
 ```
 
-## AWS 组件配置要点
+<Tip>
+生成强 `SECRET_KEY`：
+```bash
+openssl rand -base64 32
+```
+</Tip>
 
-### RDS / Aurora PostgreSQL
+---
 
-- 确保 ECS 任务可访问数据库（VPC + 安全组）。
-- 如需强制 SSL，可在连接串中使用 `sslmode=require`。
+## 步骤 3：部署到 ECS
 
-### ElastiCache（Redis/Valkey）
+### 方案 A：使用 ECS Fargate（推荐，简单）
 
-- `BACKEND_CACHE_REDIS_URI` 必需：队列依赖。
-- `BACKEND_PERFORMANCE_CACHE` 可选：小规模部署可指向同一个 Redis 实例以降低运维复杂度。
+1. **创建 ECS 集群**：
 
-### S3 双桶
+```bash
+aws ecs create-cluster --cluster-name teable-cluster
+```
 
-必须创建并配置 **两个 bucket**：
+2. **创建任务定义** (`teable-task.json`)：
 
-- **public bucket**：public-read + 允许任意跨域（CORS）。
-- **private bucket**：保持私有（禁止 public read）。
+```json
+{
+  "family": "teable",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "2048",
+  "memory": "4096",
+  "containerDefinitions": [
+    {
+      "name": "teable",
+      "image": "ghcr.io/teableio/teable:latest",
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {"name": "PUBLIC_ORIGIN", "value": "https://teable.yourcompany.com"},
+        {"name": "SECRET_KEY", "value": "***REDACTED***"},
+        {"name": "PRISMA_DATABASE_URL", "value": "postgresql://..."},
+        {"name": "BACKEND_CACHE_PROVIDER", "value": "redis"},
+        {"name": "BACKEND_CACHE_REDIS_URI", "value": "redis://..."},
+        {"name": "BACKEND_STORAGE_PROVIDER", "value": "s3"},
+        {"name": "BACKEND_STORAGE_S3_REGION", "value": "us-west-2"},
+        {"name": "BACKEND_STORAGE_S3_ENDPOINT", "value": "https://s3.us-west-2.amazonaws.com"},
+        {"name": "BACKEND_STORAGE_S3_ACCESS_KEY", "value": "***"},
+        {"name": "BACKEND_STORAGE_S3_SECRET_KEY", "value": "***"},
+        {"name": "BACKEND_STORAGE_PUBLIC_BUCKET", "value": "teable-public-xxx"},
+        {"name": "BACKEND_STORAGE_PRIVATE_BUCKET", "value": "teable-private-xxx"},
+        {"name": "STORAGE_PREFIX", "value": "https://teable-public-xxx.s3.us-west-2.amazonaws.com"}
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/teable",
+          "awslogs-region": "us-west-2",
+          "awslogs-stream-prefix": "teable"
+        }
+      }
+    }
+  ]
+}
+```
 
-Bucket policy / CORS 示例见：[对象存储（S3-compatible）](/zh/deploy/storage)
+3. **注册任务定义**：
 
+```bash
+aws ecs register-task-definition --cli-input-json file://teable-task.json
+```
 
+4. **创建 ECS 服务**：
+
+```bash
+aws ecs create-service \
+  --cluster teable-cluster \
+  --service-name teable-service \
+  --task-definition teable \
+  --desired-count 2 \
+  --launch-type FARGATE \
+  --network-configuration "awsvpcConfiguration={subnets=[subnet-xxx,subnet-yyy],securityGroups=[sg-xxx],assignPublicIp=ENABLED}" \
+  --load-balancers "targetGroupArn=arn:aws:elasticloadbalancing:...,containerName=teable,containerPort=3000"
+```
+
+<Note>
+你需要单独创建 Application Load Balancer (ALB) 和目标组，然后在 `--load-balancers` 中引用。
+</Note>
+
+---
+
+## 步骤 4：验证部署
+
+1. **检查 ECS 服务状态**：
+
+```bash
+aws ecs describe-services \
+  --cluster teable-cluster \
+  --services teable-service
+```
+
+2. **查看日志**：
+
+```bash
+aws logs tail /ecs/teable --follow
+```
+
+3. **访问健康检查**：
+
+```bash
+curl https://teable.yourcompany.com/health
+```
+
+预期返回：
+```json
+{"status":"ok"}
+```
+
+4. **浏览器访问 Teable**：`https://teable.yourcompany.com`
+
+---
+
+## 故障排查
+
+### 数据库连接错误
+
+- 验证 RDS 安全组允许来自 ECS 任务的流量
+- 检查 `PRISMA_DATABASE_URL` 格式：`postgresql://user:pass@endpoint:5432/dbname`
+
+### Redis 连接错误
+
+- 验证 ElastiCache 安全组允许来自 ECS 的流量
+- 使用 **主节点 endpoint**（不是只读副本）
+
+### S3 访问错误
+
+- 验证 IAM 用户具有 `s3:GetObject`、`s3:PutObject`、`s3:DeleteObject` 权限
+- 检查 bucket 名称在 `BACKEND_STORAGE_PUBLIC_BUCKET` / `BACKEND_STORAGE_PRIVATE_BUCKET` 中完全匹配
+- 确保 public bucket 已配置 public read 策略与 CORS
+
+### 容器启动失败
+
+- 检查 CloudWatch Logs：`/ecs/teable`
+- 验证所有必需环境变量已设置
+- 确保 `SECRET_KEY` 已设置（不为空）
+
+---
+
+## 生产环境建议
+
+1. **高可用**：
+   - 至少运行 2 个 ECS 任务，跨多个可用区
+   - 使用 RDS Multi-AZ 部署
+   - ElastiCache 使用副本
+
+2. **弹性伸缩**：
+   - 启用 ECS 基于 CPU/内存的自动伸缩
+   - 使用 Application Load Balancer 分发流量
+
+3. **安全**：
+   - 使用 AWS Secrets Manager 存储敏感值（而非明文环境变量）
+   - 启用 RDS 静态加密
+   - 使用 VPC endpoint 访问 S3/ECR 避免公网流量
+
+4. **监控**：
+   - 启用 CloudWatch Container Insights for ECS
+   - 设置任务失败、高 CPU/内存的告警
+
+5. **备份**：
+   - 启用 RDS 自动备份（保留 7-30 天）
+   - 为 private bucket 启用 S3 版本控制
+
+---
+
+## 相关文档
+
+- [环境变量参考](/zh/deploy/env)
+- [对象存储（S3-compatible）](/zh/deploy/storage)
+- [Kubernetes 部署](/zh/deploy/k8s)
