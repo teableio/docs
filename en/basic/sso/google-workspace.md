@@ -57,7 +57,7 @@ If you selected "External", add test users during development:
 3. Select **Web application** as the application type
 4. Configure the client:
    - **Name**: Teable SSO Client
-   - **Authorized JavaScript origins**: (Optional) `https://app.teable.io`
+   - **Authorized JavaScript origins**: (Optional) `https://app.teable.ai`
    - **Authorized redirect URIs**: Paste the **Callback URL** from Teable
 5. Click **Create**
 
@@ -91,7 +91,7 @@ You have two options to enable SSO login:
 **Option 2: Domain Verification**
 1. In Teable, configure domain verification
 2. Verify your Google Workspace domain
-3. Visit https://app.teable.io
+3. Visit https://app.teable.ai
 4. Click the SSO login button
 5. Enter your Google Workspace email address to log in
 

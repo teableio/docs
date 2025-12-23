@@ -3,12 +3,29 @@ title: "访问令牌"
 description: "个人访问令牌是一种用于身份验证和授权的令牌。"
 ---
 
+个人访问令牌适合脚本、内部工具、服务端集成等场景。
+
+如果你要做面向外部用户的多租户集成，更推荐使用 OAuth：见 [OAuth 应用](/zh/api-doc/oauth)。
+
+## 创建令牌
+
 1. 进入[令牌管理页面](https://app.teable.cn/setting/personal-access-token)，点击”创建令牌“按钮来创建一个新的个人访问令牌。
 
-2. 为您的令牌选择一个有效期，注意改有效期无法修改。
+2. 为您的令牌选择一个有效期，注意该有效期无法修改。
 
 3. 为您的令牌添加合适的权限范围。
 
 4. 指定令牌可访问的数据库和空间。
 
 <Note>一旦您的令牌创建成功，我们只会向您显示一次，我们建议您将其复制粘贴到你认为安全的地方进行存储。</Note>
+
+## 使用令牌
+
+将令牌放到 `Authorization` 请求头中：
+
+```bash
+curl -H 'Authorization: Bearer __token__' \
+  'https://app.teable.cn/api/table/__tableId__/record'
+```
+
+需要获取 `tbl...` 这类 ID？见 [如何获取 ID](/zh/api-doc/get-id)。

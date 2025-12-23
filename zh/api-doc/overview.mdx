@@ -1,0 +1,63 @@
+---
+title: "API 概览"
+description: "快速上手 Teable API：基础地址、鉴权方式、ID 获取与常见请求模式。"
+---
+
+这一页用于把 API 文档的关键概念串起来，帮助你更快开始调用 Teable API。
+
+## 基础地址（Base URL）
+
+- **Teable 云端**：`https://app.teable.cn`
+- **私有化部署**：使用你自己的域名（例如 `https://teable.example.com`）
+
+本文档中的 API 路径均相对于基础地址，且以 `/api` 开头。
+
+## 身份验证（Authentication）
+
+Teable API 使用 **Bearer Token**：
+
+```bash
+curl -H 'Authorization: Bearer __token__' \
+  'https://app.teable.cn/api/table/__tableId__/record'
+```
+
+你可以使用两种令牌之一：
+
+- **个人访问令牌**：适合脚本、内部工具、服务端集成。见 [访问令牌](/zh/api-doc/token)。
+- **OAuth 访问令牌**：适合面向多租户的集成应用，由终端用户授权。见 [OAuth 应用](/zh/api-doc/oauth)。
+
+## 各类 ID（spaceId / baseId / tableId / viewId / fieldId / recordId）
+
+多数接口需要 `tbl...`、`rec...` 这类 ID。见 [如何获取 ID](/zh/api-doc/get-id)。
+
+## 权限范围与权限不足
+
+个人访问令牌与 OAuth 令牌都支持权限范围（scope）。如果你收到 403，通常表示令牌缺少必要权限范围。
+
+- 见 [错误码](/zh/api-doc/error-code)
+- OAuth scope 列表：见 [OAuth 应用](/zh/api-doc/oauth#可用权限范围)
+
+## 分页（take / skip）
+
+很多列表接口支持：
+
+- `take`：返回条数（部分接口存在上限，例如记录查询最多 1000）
+- `skip`：跳过条数
+
+## 字段键与单元格格式（fieldKeyType / cellFormat）
+
+部分接口允许你控制记录字段在响应中的表示方式：
+
+- `fieldKeyType`：`name`（默认）/ `id` / `dbFieldName`
+- `cellFormat`：`json`（默认）/ `text`
+
+记录字段值结构详见：[记录字段接口](/zh/api-doc/record/interface)。
+
+## 下一步建议
+
+- **只想读取数据**：看 [获取记录](/zh/api-doc/record/get)
+- **增删改记录**：看 [创建记录](/zh/api-doc/record/create)、[更新记录](/zh/api-doc/record/update)、[删除记录](/zh/api-doc/record/delete)
+- **上传附件**：看 [上传附件](/zh/api-doc/record/upload-attachment)
+- **完整接口列表**：左侧导航的 **API Reference**
+
+

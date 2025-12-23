@@ -30,7 +30,7 @@ Fill in the application configuration form:
 - **App integration name**: Teable SSO
 - **Grant type**: Select **Authorization Code**
 - **Sign-in redirect URIs**: Paste the **Callback URL** from Teable
-- **Sign-out redirect URIs**: (Optional) `https://app.teable.io`
+- **Sign-out redirect URIs**: (Optional) `https://app.teable.ai`
 - **Controlled access**: Choose who can access this application
 
 Click **Save** to create the application.
@@ -73,7 +73,7 @@ You have two options to enable SSO login:
 **Option 2: Domain Verification**
 1. In Teable, configure domain verification
 2. Verify your custom domain
-3. Visit https://app.teable.io
+3. Visit https://app.teable.ai
 4. Click the SSO login button
 5. Enter your email address under the verified domain to log in
 

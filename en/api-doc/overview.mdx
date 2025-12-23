@@ -1,0 +1,63 @@
+---
+title: "API Overview"
+description: "Everything you need to start calling the Teable API: base URL, authentication, IDs, and common request patterns."
+---
+
+This section helps you start using the Teable API quickly and safely.
+
+## Base URL
+
+- **Teable Cloud**: `https://app.teable.ai`
+- **Self-hosted**: use your own domain (for example `https://teable.example.com`)
+
+All API paths in this documentation are relative to the base URL and start with `/api`.
+
+## Authentication
+
+Teable APIs use **Bearer tokens**:
+
+```bash
+curl -H 'Authorization: Bearer __token__' \
+  'https://app.teable.ai/api/table/__tableId__/record'
+```
+
+You can use either:
+
+- **Personal Access Token**: best for scripts, internal tools, and server-side integrations. See [Access Token](/en/api-doc/token).
+- **OAuth Access Token**: best for multi-tenant integrations where end users grant access. See [OAuth App](/en/api-doc/oauth).
+
+## IDs (spaceId / baseId / tableId / viewId / fieldId / recordId)
+
+Most endpoints require IDs like `tbl...`, `rec...`. See [Getting IDs](/en/api-doc/get-id).
+
+## Scopes & permissions
+
+Both Personal Access Tokens and OAuth tokens are permission-scoped. If you get a 403, it usually means the token is missing the required scope.
+
+- See [Error Codes](/en/api-doc/error-code)
+- OAuth scopes reference: [OAuth App](/en/api-doc/oauth#available-scopes)
+
+## Pagination (take / skip)
+
+Many list endpoints support:
+
+- `take`: number of items to return (some endpoints cap this, e.g. records max 1000)
+- `skip`: number of items to skip
+
+## Field keys & cell format
+
+Some APIs let you control how record fields are represented:
+
+- `fieldKeyType`: `name` (default) / `id` / `dbFieldName`
+- `cellFormat`: `json` (default) / `text`
+
+For record field value structures, see [Record Field Interface](/en/api-doc/record/interface).
+
+## Where to go next
+
+- **Just want to fetch data**: [Get Records](/en/api-doc/record/get)
+- **Create/update/delete records**: [Create Records](/en/api-doc/record/create), [Update Record](/en/api-doc/record/update), [Delete Records](/en/api-doc/record/delete)
+- **Upload attachments**: [Upload Attachment](/en/api-doc/record/upload-attachment)
+- **Full endpoint list**: use the left navigation under **API Reference**
+
+

@@ -3,7 +3,13 @@ title: "Access Token"
 description: "Personal access tokens are used for authentication and authorization."
 ---
 
-1. Go to the [Token Management Page](https://app.teable.io/setting/personal-access-token) and click the "Create Token" button to create a new personal access token.
+Personal Access Tokens are best for scripts, internal tools, and server-side integrations.
+
+If you're building a multi-tenant integration for external users, use OAuth instead: see [OAuth App](/en/api-doc/oauth).
+
+## Create a token
+
+1. Go to the [Token Management Page](https://app.teable.ai/setting/personal-access-token) and click the "Create Token" button to create a new personal access token.
 
 2. Choose an expiration period for your token. Note that this period cannot be modified once set.
 
@@ -12,3 +18,14 @@ description: "Personal access tokens are used for authentication and authorizati
 4. Specify which bases and spaces the token can access.
 
 <Note>Once your token is created, it will only be displayed once. We recommend copying and storing it in a secure location.</Note>
+
+## Use the token
+
+Send the token in the `Authorization` header:
+
+```bash
+curl -H 'Authorization: Bearer __token__' \
+  'https://app.teable.ai/api/table/__tableId__/record'
+```
+
+Need help finding IDs like `tbl...`? See [Getting IDs](/en/api-doc/get-id).

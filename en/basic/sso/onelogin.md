@@ -40,7 +40,7 @@ In the **Configuration** tab:
 Go to the **Configuration** tab and configure:
 
 1. **Redirect URIs**: Paste the **Callback URL** from Teable
-2. **Login Url**: (Optional) `https://app.teable.io`
+2. **Login Url**: (Optional) `https://app.teable.ai`
 3. **Application Type**: Web
 4. Click **Save**
 
@@ -118,7 +118,7 @@ You have three options to enable SSO login:
 **Option 3: Domain Verification**
 1. In Teable, configure domain verification
 2. Verify your custom domain
-3. Visit https://app.teable.io
+3. Visit https://app.teable.ai
 4. Click the SSO login button
 5. Enter your email address under the verified domain to log in
 

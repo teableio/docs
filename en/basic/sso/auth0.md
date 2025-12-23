@@ -40,8 +40,8 @@ After creating the application, go to the **Settings** tab:
 Scroll down to the **Application URIs** section:
 
 1. **Allowed Callback URLs**: Paste the **Callback URL** from Teable
-2. **Allowed Logout URLs**: (Optional) `https://app.teable.io`
-3. **Allowed Web Origins**: (Optional) `https://app.teable.io`
+2. **Allowed Logout URLs**: (Optional) `https://app.teable.ai`
+3. **Allowed Web Origins**: (Optional) `https://app.teable.ai`
 4. Click **Save Changes** at the bottom of the page
 
 > **Warning**: Make sure to save your changes before leaving the page.
@@ -106,7 +106,7 @@ You have two options to enable SSO login:
 **Option 2: Domain Verification**
 1. In Teable, configure domain verification
 2. Verify your custom domain
-3. Visit https://app.teable.io
+3. Visit https://app.teable.ai
 4. Click the SSO login button
 5. Enter your email address under the verified domain to log in
 

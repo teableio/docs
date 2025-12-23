@@ -34,8 +34,8 @@ description: "Configure Authentik as your SSO authentication provider for Teable
 ### Redirect URIs
 
 - **Redirect URIs/Origins (RegEx)**: Paste the **Callback URL** from Teable
-  - For exact match: `https://app.teable.io/api/auth/callback/authentik`
-  - For regex pattern: `https://app\.teable\.io/api/auth/callback/.*`
+  - For exact match: `https://app.teable.ai/api/auth/callback/authentik`
+  - For regex pattern: `https://app\.teable\.ai/api/auth/callback/.*`
 
 ### Advanced Settings
 
@@ -66,7 +66,7 @@ After creating the provider:
    - **Name**: Teable
    - **Slug**: `teable` (or your preferred slug)
    - **Provider**: Select the **Teable SSO Provider** you created in Step 3
-   - **Launch URL**: (Optional) `https://app.teable.io`
+   - **Launch URL**: (Optional) `https://app.teable.ai`
    - **UI settings**: (Optional) Upload Teable logo and customize appearance
 
 Click **Create** to finish.
@@ -135,7 +135,7 @@ You have two options to enable SSO login:
 **Option 2: Domain Verification**
 1. In Teable, configure domain verification
 2. Verify your custom domain
-3. Visit https://app.teable.io
+3. Visit https://app.teable.ai
 4. Click the SSO login button
 5. Enter your email address under the verified domain to log in
 
