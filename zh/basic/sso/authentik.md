@@ -3,7 +3,7 @@ title: "Authentik SSO"
 description: "配置 Authentik 作为 Teable 的 SSO 认证提供商"
 ---
 
-<Tip>适用于专业版及以上版本</Tip>
+<Tip>适用于 Business 版及以上版本</Tip>
 
 ## 步骤 1：在 Teable 中创建认证提供商
 

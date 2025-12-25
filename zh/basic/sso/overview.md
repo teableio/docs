@@ -3,7 +3,7 @@ title: "单点登录 (SSO)"
 description: "使用 OpenID Connect 为你的 Teable 工作区配置 SSO 认证"
 ---
 
-<Tip>适用于专业版及以上版本</Tip>
+<Tip>适用于 Business 版及以上版本</Tip>
 
 ## 概述
 
