@@ -3,7 +3,7 @@ title: "Authentik SSO"
 description: "Configure Authentik as your SSO authentication provider for Teable"
 ---
 
-<Tip>Available for Pro plan and above</Tip>
+<Tip>Available for Business plan and above</Tip>
 
 ## Step 1: Create Authentication Provider in Teable
 

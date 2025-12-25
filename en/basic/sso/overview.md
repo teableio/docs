@@ -3,7 +3,7 @@ title: "Single Sign-On (SSO)"
 description: "Configure SSO authentication for your Teable workspace using OpenID Connect"
 ---
 
-<Tip>Available for Pro plan and above</Tip>
+<Tip>Available for Business plan and above</Tip>
 
 ## Overview
 
