@@ -1,76 +1,127 @@
 ---
-title: "[DEPRECATED] Configure Email Service"
-description: "This method of email configuration is deprecated. Please use Admin Panel > Settings for visual email configuration instead. Enable email service to activate in-app email notifications, self-service password reset, and other features."
+title: "Configure Email Service"
+description: "Enable email service to activate in-app email notifications, self-service password reset, invitation emails, and other features."
 ---
 
-<Info>
-Deprecated Configuration Method
-**This documentation is deprecated.** Environment variable-based email configuration is no longer recommended. 
+## Configuration Methods
 
-**Please use the Admin Panel > Settings instead** for a visual and user-friendly email configuration experience.
-</Info>
+Teable supports two ways to configure email service:
 
-## Environment Variables
+<CardGroup cols={2}>
+  <Card title="Admin Panel (Recommended)" icon="sliders" href="#option-1-admin-panel-recommended">
+    Visual configuration with live testing. No restart required.
+  </Card>
+  <Card title="Environment Variables" icon="code" href="#option-2-environment-variables">
+    Traditional configuration via `.env` file. Requires container restart.
+  </Card>
+</CardGroup>
+
+---
+
+## Option 1: Admin Panel (Recommended)
+
+The easiest way to configure email is through the Admin Panel:
+
+1. Log in as an administrator (the first registered user)
+2. Go to **Admin Panel** → **Settings**
+3. Find the **Email Configuration** section
+4. Click the **+** or **✏️** button to configure
+
+<Tip>
+The Admin Panel configuration supports **live testing** — you can verify your SMTP settings work before saving.
+</Tip>
+
+### Configuration Fields
+
+| Field | Description | Example |
+|-------|-------------|---------|
+| SMTP Host | SMTP server address | `smtp.gmail.com` |
+| Port | SMTP port | `465` (SSL) or `587` (TLS) |
+| Secure | Use SSL/TLS | `true` |
+| Sender Email | From address | `noreply@company.com` |
+| Sender Name | Display name | `Teable Notification` |
+| Username | SMTP authentication user | `noreply@company.com` |
+| Password | SMTP password or app password | `xxxxxxxxxxxxxx` |
+
+---
+
+## Option 2: Environment Variables
+
+For deployments where you prefer file-based configuration, use environment variables:
+
 ```sh
-BACKEND_MAIL_HOST=mail.example.com
+BACKEND_MAIL_HOST=smtp.example.com
 BACKEND_MAIL_PORT=465
 BACKEND_MAIL_SECURE=true
 BACKEND_MAIL_SENDER=noreply@company.com
-BACKEND_MAIL_SENDER_NAME=noreply
+BACKEND_MAIL_SENDER_NAME=Teable
 BACKEND_MAIL_AUTH_USER=username
-BACKEND_MAIL_AUTH_PASS=usertoken
+BACKEND_MAIL_AUTH_PASS=your_password
 ```
 
-## Examples
+<Note>
+After changing environment variables, you must **restart** the Teable container for changes to take effect.
+</Note>
 
-### AWS SES Configuration
+---
+
+## SMTP Provider Examples
+
+<Accordion title="AWS SES">
 ```sh
-# How to obtain: Login to AWS Console → Simple Email Service → SMTP Settings → Create SMTP Credentials
+# How to obtain: AWS Console → Simple Email Service → SMTP Settings → Create SMTP Credentials
 BACKEND_MAIL_HOST=email-smtp.us-east-1.amazonaws.com  # Replace with your region
 BACKEND_MAIL_PORT=465
 BACKEND_MAIL_SECURE=true
 BACKEND_MAIL_SENDER=noreply@yourdomain.com  # Must be a verified sender address
-BACKEND_MAIL_SENDER_NAME=System Notification
+BACKEND_MAIL_SENDER_NAME=Teable Notification
 BACKEND_MAIL_AUTH_USER=your_smtp_username   # AWS SMTP username
 BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx       # AWS SMTP password
 ```
+</Accordion>
 
-### Gmail Configuration
+<Accordion title="Gmail">
 ```sh
 # How to obtain: Google Account → Security → 2-Step Verification → App Passwords
 BACKEND_MAIL_HOST=smtp.gmail.com
 BACKEND_MAIL_PORT=465
 BACKEND_MAIL_SECURE=true
 BACKEND_MAIL_SENDER=you@gmail.com
-BACKEND_MAIL_SENDER_NAME=System Notification
+BACKEND_MAIL_SENDER_NAME=Teable Notification
 BACKEND_MAIL_AUTH_USER=you@gmail.com
 BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # 16-digit app password
 ```
+</Accordion>
 
-### Microsoft 365 / Outlook Configuration
+<Accordion title="Microsoft 365 / Outlook">
 ```sh
 # How to obtain: Microsoft 365 admin center → Security → Policies & rules → Email authentication
 BACKEND_MAIL_HOST=smtp.office365.com
 BACKEND_MAIL_PORT=587
 BACKEND_MAIL_SECURE=true
 BACKEND_MAIL_SENDER=your.name@yourdomain.com
-BACKEND_MAIL_SENDER_NAME=System Notification
+BACKEND_MAIL_SENDER_NAME=Teable Notification
 BACKEND_MAIL_AUTH_USER=your.name@yourdomain.com
-BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # Your Microsoft 365 password or app password if MFA is enabled
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # Your Microsoft 365 password or app password
 ```
+</Accordion>
 
-### SendGrid Configuration
+<Accordion title="SendGrid">
 ```sh
 # How to obtain: SendGrid Dashboard → Settings → API Keys → Create API Key
 BACKEND_MAIL_HOST=smtp.sendgrid.net
 BACKEND_MAIL_PORT=465
 BACKEND_MAIL_SECURE=true
 BACKEND_MAIL_SENDER=noreply@yourdomain.com
-BACKEND_MAIL_SENDER_NAME=System Notification
+BACKEND_MAIL_SENDER_NAME=Teable Notification
 BACKEND_MAIL_AUTH_USER=apikey
 BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # Your SendGrid API Key
 ```
+</Accordion>
 
-## More Environment Variables
+---
 
-[Environment Variables](/en/deploy/env)
+## Related Documentation
+
+- [Environment Variables Reference](/en/deploy/env)
+- [Admin Panel Overview](/en/basic/admin-panel/overview)

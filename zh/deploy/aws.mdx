@@ -4,7 +4,7 @@ description: "分步指引：在 AWS 上使用 ECS、RDS PostgreSQL、ElastiCach
 ---
 
 <Callout type="info">
-**推荐场景**：100+ 用户的生产环境
+**推荐场景**：50+ 用户的生产环境
 </Callout>
 
 ## 架构概览
@@ -363,34 +363,22 @@ curl https://teable.yourcompany.com/health
 
 ---
 
-## 生产环境建议
+## 生产环境最佳实践
 
-1. **高可用**：
-   - 至少运行 2 个 ECS 任务，跨多个可用区
-   - 使用 RDS Multi-AZ 部署
-   - ElastiCache 使用副本
+<Tip>
+详细的生产环境建议（包括配置、高可用、扩展策略）请参考 [私有化部署概览](/zh/deploy/architecture)。
+</Tip>
 
-2. **弹性伸缩**：
-   - 启用 ECS 基于 CPU/内存的自动伸缩
-   - 使用 Application Load Balancer 分发流量
-
-3. **安全**：
-   - 使用 AWS Secrets Manager 存储敏感值（而非明文环境变量）
-   - 启用 RDS 静态加密
-   - 使用 VPC endpoint 访问 S3/ECR 避免公网流量
-
-4. **监控**：
-   - 启用 CloudWatch Container Insights for ECS
-   - 设置任务失败、高 CPU/内存的告警
-
-5. **备份**：
-   - 启用 RDS 自动备份（保留 7-30 天）
-   - 为 private bucket 启用 S3 版本控制
+**AWS 特定建议**：
+- 使用 AWS Secrets Manager 存储敏感值
+- 启用 RDS 静态加密
+- 使用 VPC endpoint 访问 S3/ECR 避免公网流量
+- 启用 CloudWatch Container Insights for ECS
 
 ---
 
 ## 相关文档
 
+- [私有化部署概览](/zh/deploy/architecture) — 架构、配置与扩展
 - [环境变量参考](/zh/deploy/env)
 - [对象存储（S3-compatible）](/zh/deploy/storage)
-- [Kubernetes 部署](/zh/deploy/k8s)

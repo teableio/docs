@@ -4,7 +4,7 @@ description: "Step-by-step guide: Deploy Teable on Azure using App Service, Post
 ---
 
 <Callout type="info">
-**Recommended for:** Production deployments with 50-500 users
+**Recommended for:** Production deployments with 50+ users
 </Callout>
 
 ## Architecture overview
@@ -136,6 +136,8 @@ STORAGE_PREFIX=https://teable-public-<suffix>.s3.us-west-2.amazonaws.com
 ### Option B: Deploy MinIO on Azure
 
 If you prefer to keep everything in Azure, deploy MinIO as an S3-compatible gateway.
+
+**Recommended image**: `minio/minio:RELEASE.2025-04-22T22-12-26Z`
 
 **Quick setup (Azure VM)**:
 
@@ -367,31 +369,19 @@ Expected response:
 
 ---
 
-## Production recommendations
+## Production best practices
 
-1. **High availability**:
-   - Scale out App Service to 2+ instances
-   - Enable PostgreSQL zone redundancy
-   - Use Standard or Premium Redis tier with replicas
+<Tip>
+For detailed production recommendations including resource sizing, high availability, and scaling strategies, see [Self-Hosted Overview](/en/deploy/architecture).
+</Tip>
 
-2. **Networking**:
-   - Use VNet Integration to restrict database/redis access to App Service only
-   - Remove public access from PostgreSQL (`--public-access None`)
+**Azure-specific tips**:
+- Use Azure Key Vault for sensitive values
+- Enable HTTPS only: `az webapp update --https-only true`
+- Use VNet Integration to restrict database/redis access
+- Enable Application Insights for monitoring
 
-3. **Security**:
-   - Use Azure Key Vault for sensitive values (instead of plaintext app settings)
-   - Enable HTTPS only: `az webapp update --https-only true`
-   - Use managed identity for accessing Azure resources
-
-4. **Monitoring**:
-   - Enable Application Insights for App Service
-   - Set up alerts for app failures, high CPU/memory, database connection errors
-
-5. **Backup**:
-   - Enable PostgreSQL automated backups (default: 7 days retention)
-   - For S3: enable versioning on private bucket
-
-6. **Custom domain**:
+**Custom domain setup**:
 ```bash
 # Add custom domain
 az webapp config hostname add \
@@ -410,6 +400,6 @@ az webapp config ssl create \
 
 ## Related documentation
 
+- [Self-Hosted Overview](/en/deploy/architecture) — Architecture, sizing, and scaling
 - [Environment Variables Reference](/en/deploy/env)
 - [Object Storage (S3-compatible)](/en/deploy/storage)
-- [AWS Deployment](/en/deploy/aws) (for S3 setup if using Option A)
