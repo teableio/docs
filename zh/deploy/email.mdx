@@ -1,42 +1,86 @@
 ---
-title: "[已弃用] 配置邮件服务"
-description: "此邮件配置方法已弃用。请使用管理面板 > 设置进行可视化邮件配置。启用邮件服务可以开启站内的邮件通知，用户自助修改密码等功能。"
+title: "配置邮件服务"
+description: "启用邮件服务可以开启站内的邮件通知、用户自助修改密码、邀请邮件等功能。"
 ---
 
-<Info>
-已弃用的配置方法
-**此文档已弃用。** 不再推荐使用环境变量方式配置邮件。
+## 配置方式
 
-**请使用管理面板 > 设置** 进行可视化和用户友好的邮件配置。
-</Info>
+Teable 支持两种方式配置邮件服务：
 
-## 环境变量
+<CardGroup cols={2}>
+  <Card title="管理面板（推荐）" icon="sliders" href="#方式一管理面板推荐">
+    可视化配置，支持在线测试。无需重启。
+  </Card>
+  <Card title="环境变量" icon="code" href="#方式二环境变量">
+    通过 `.env` 文件配置。需要重启容器。
+  </Card>
+</CardGroup>
+
+---
+
+## 方式一：管理面板（推荐）
+
+最简单的配置方式是通过管理面板：
+
+1. 使用管理员账号登录（默认为第一个注册的用户）
+2. 进入 **管理面板** → **设置**
+3. 找到 **邮件配置** 部分
+4. 点击 **+** 或 **✏️** 按钮进行配置
+
+<Tip>
+管理面板配置支持**在线测试** — 保存前可以验证 SMTP 设置是否正确。
+</Tip>
+
+### 配置字段说明
+
+| 字段 | 说明 | 示例 |
+|------|------|------|
+| SMTP 主机 | SMTP 服务器地址 | `smtp.qq.com` |
+| 端口 | SMTP 端口 | `465` (SSL) 或 `587` (TLS) |
+| 安全连接 | 使用 SSL/TLS | `true` |
+| 发件人邮箱 | 发件地址 | `noreply@company.com` |
+| 发件人名称 | 显示名称 | `系统通知` |
+| 用户名 | SMTP 认证用户 | `noreply@company.com` |
+| 密码 | SMTP 密码或授权码 | `xxxxxxxxxxxxxx` |
+
+---
+
+## 方式二：环境变量
+
+如果你更倾向于基于文件的配置，可以使用环境变量：
+
 ```sh
-BACKEND_MAIL_HOST=mail.example.com
+BACKEND_MAIL_HOST=smtp.example.com
 BACKEND_MAIL_PORT=465
 BACKEND_MAIL_SECURE=true
 BACKEND_MAIL_SENDER=noreply@company.com
-BACKEND_MAIL_SENDER_NAME=noreply
+BACKEND_MAIL_SENDER_NAME=系统通知
 BACKEND_MAIL_AUTH_USER=username
-BACKEND_MAIL_AUTH_PASS=usertoken
+BACKEND_MAIL_AUTH_PASS=your_password
 ```
 
+<Note>
+修改环境变量后，需要**重启** Teable 容器才能生效。
+</Note>
 
-## 案例
+---
 
-### 阿里云邮件推送服务配置
+## SMTP 服务商配置示例
+
+<Accordion title="阿里云邮件推送">
 ```sh
-# 获取方式：登录阿里云控制台 → 邮件推送 → SMTP设置 → 生成密码
+# 获取方式：阿里云控制台 → 邮件推送 → SMTP设置 → 生成密码
 BACKEND_MAIL_HOST=smtpdm.aliyun.com
 BACKEND_MAIL_PORT=465
 BACKEND_MAIL_SECURE=true
 BACKEND_MAIL_SENDER=noreply@yourdomain.com  # 需在控制台验证过的发信地址
-BACKEND_MAIL_SENDER_NAME=阿里云推送
+BACKEND_MAIL_SENDER_NAME=系统通知
 BACKEND_MAIL_AUTH_USER=your_smtp_username   # 控制台显示的SMTP账号
 BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx       # 控制台生成的SMTP密码
 ```
+</Accordion>
 
-### QQ 邮箱配置
+<Accordion title="QQ 邮箱">
 ```sh
 # 获取方式：登录网页版QQ邮箱 → 设置 → 账户 → 开启「POP3/SMTP服务」→ 获取授权码
 BACKEND_MAIL_HOST=smtp.qq.com
@@ -47,8 +91,9 @@ BACKEND_MAIL_SENDER_NAME=系统通知
 BACKEND_MAIL_AUTH_USER=your_qq@qq.com
 BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # 16位SMTP授权码
 ```
+</Accordion>
 
-### 163 邮箱配置
+<Accordion title="163 邮箱">
 ```sh
 # 获取方式：登录163邮箱 → 设置 → POP3/SMTP → 开启「客户端授权密码」
 BACKEND_MAIL_HOST=smtp.163.com
@@ -59,8 +104,9 @@ BACKEND_MAIL_SENDER_NAME=系统通知
 BACKEND_MAIL_AUTH_USER=yourname@163.com
 BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # 客户端授权密码
 ```
+</Accordion>
 
-### Gmail 配置
+<Accordion title="Gmail">
 ```sh
 # 获取方式：Google账号 → 安全 → 两步验证 → 应用专用密码
 BACKEND_MAIL_HOST=smtp.gmail.com
@@ -71,7 +117,24 @@ BACKEND_MAIL_SENDER_NAME=系统通知
 BACKEND_MAIL_AUTH_USER=you@gmail.com
 BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # 16位应用密码
 ```
+</Accordion>
 
-## 更多环境变量配置
+<Accordion title="AWS SES">
+```sh
+# 获取方式：AWS Console → Simple Email Service → SMTP Settings → Create SMTP Credentials
+BACKEND_MAIL_HOST=email-smtp.us-east-1.amazonaws.com  # 替换为你的区域
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=noreply@yourdomain.com  # 需在 SES 验证过的发信地址
+BACKEND_MAIL_SENDER_NAME=系统通知
+BACKEND_MAIL_AUTH_USER=your_smtp_username   # AWS SMTP 用户名
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx       # AWS SMTP 密码
+```
+</Accordion>
 
-[环境变量](/zh/deploy/env)
+---
+
+## 相关文档
+
+- [环境变量参考](/zh/deploy/env)
+- [管理员后台概览](/zh/basic/admin-panel/overview)

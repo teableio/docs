@@ -1,20 +1,11 @@
 ---
-title: "Self-Hosted Overview"
-description: "Architecture, sizing, and deployment path selection for self-hosted Teable"
+title: "Overview"
+description: "Architecture, sizing, and deployment path selection for production Teable deployments"
 ---
 
-## Before You Begin
-
-<CardGroup cols={2}>
-  <Card title="Evaluating Teable?" icon="flask" href="/en/deploy/docker">
-    Start with **Docker Quick Start** for small teams and testing.
-  </Card>
-  <Card title="Deploying for Production?" icon="server" href="#architecture-overview">
-    Read this page first, then choose your platform below.
-  </Card>
-</CardGroup>
-
----
+<Callout type="info">
+**Recommended for:** Production deployments with 50+ users
+</Callout>
 
 ## Architecture Overview
 
@@ -69,8 +60,9 @@ graph TB
 
 ## Resource Recommendations
 
-> [!IMPORTANT]
-> These are **production** recommendations from the Teable engineering team. For evaluation/testing, see [Docker Quick Start](/en/deploy/docker).
+<Warning>
+These are **production** recommendations from the Teable engineering team. For evaluation/testing, see [Docker Quick Start](/en/deploy/docker).
+</Warning>
 
 ### Application Tier (Teable Pods)
 
@@ -95,8 +87,9 @@ Use Kubernetes with Horizontal Pod Autoscaler (HPA), or equivalent auto-scaling 
 | Backup | Daily automated |
 | Version | 15+ recommended |
 
-> [!IMPORTANT]
-> Always deploy with a replica for high availability. Use managed database services for automatic failover.
+<Warning>
+Always deploy with a replica for high availability. Use managed database services for automatic failover.
+</Warning>
 
 ### Cache (Redis)
 
@@ -144,11 +137,12 @@ See [Object Storage Guide](/en/deploy/storage) for bucket configuration details.
 | Teable App | 1 instance, 2c4g | 2+ pods, 2c4g each, auto-scaling |
 | PostgreSQL | 2c4g, single instance | 4c16g, 1 master + 1 replica |
 | Redis | 1 instance, 1c2g | 2 instances (queue + performance) |
-| Storage | Local disk | S3-compatible object storage |
+| Storage | S3-compatible object storage | S3-compatible object storage |
 | Availability | None (single point of failure) | High availability with redundancy |
 
-> [!CAUTION]
-> The "Minimum" setup is for **evaluation only**. It has no redundancy—data loss is possible if the server fails.
+<Warning>
+The "Minimum" setup is for **evaluation only**. It has no redundancy—data loss is possible if the server fails.
+</Warning>
 
 ---
 
@@ -159,7 +153,7 @@ See [Object Storage Guide](/en/deploy/storage) for bucket configuration details.
     Deploy on any K8s cluster with full control over infrastructure.
   </Card>
   <Card title="AWS" icon="aws" href="/en/deploy/aws">
-    ECS + RDS + ElastiCache + S3. Recommended for 100+ users.
+    ECS + RDS + ElastiCache + S3. Recommended for 50+ users.
   </Card>
   <Card title="Azure" icon="microsoft" href="/en/deploy/azure">
     App Service + PostgreSQL + Redis + S3-compatible storage.
