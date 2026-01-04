@@ -1,6 +1,6 @@
 ---
 title: "在 Azure 上部署"
-description: "分步指引：在 Azure 上使用 App Service、PostgreSQL Flexible Server、Azure Cache for Redis 与 S3-compatible 存储部署 Teable"
+description: "分步指引：在 Azure 上使用 App Service 或 AKS 部署 Teable，搭配 PostgreSQL Flexible Server、Azure Cache for Redis 与 S3-compatible 存储"
 ---
 
 <Callout type="info">
@@ -398,8 +398,423 @@ az webapp config ssl create \
 
 ---
 
+## 替代方案：在 AKS 上部署（Azure Kubernetes Service）
+
+对于大规模部署或已使用 Kubernetes 的团队，AKS 提供更好的可扩展性和控制能力。
+
+### AKS 架构
+
+```mermaid
+graph TB
+    subgraph AKS["Azure Kubernetes Service"]
+        Ingress["Ingress Controller<br/>(AGIC 或 NGINX)"]
+        Pods["Teable Pods<br/>(水平扩展)"]
+    end
+    
+    DB["Azure Database for<br/>PostgreSQL Flexible Server"]
+    Redis["Azure Cache for Redis"]
+    S3["S3-compatible 存储<br/>(MinIO 或 AWS S3)"]
+    
+    Ingress --> Pods
+    Pods --> DB
+    Pods --> Redis
+    Pods --> S3
+    
+    style AKS fill:#326ce5,stroke:#1a4ba0,color:#fff
+    style DB fill:#0078d4,stroke:#005a9e,color:#fff
+    style Redis fill:#0078d4,stroke:#005a9e,color:#fff
+    style S3 fill:#ff9900,stroke:#cc7a00,color:#fff
+```
+
+### 步骤 1：创建 AKS 集群
+
+```bash
+# 创建 AKS 集群
+az aks create \
+  --resource-group teable-rg \
+  --name teable-aks \
+  --location eastus \
+  --node-count 2 \
+  --node-vm-size Standard_D4s_v3 \
+  --enable-managed-identity \
+  --generate-ssh-keys
+
+# 获取凭据
+az aks get-credentials \
+  --resource-group teable-rg \
+  --name teable-aks
+```
+
+### 步骤 2：创建 Azure 托管服务
+
+使用与 [步骤 1.2](#12-创建-postgresql-flexible-server) 和 [步骤 1.3](#13-创建-azure-cache-for-redis) 相同的命令创建 PostgreSQL 和 Redis。
+
+<Note>
+对于 AKS，建议启用 VNet 集成以保护连接：
+
+```bash
+# 获取 AKS VNet ID
+AKS_VNET=$(az aks show \
+  --resource-group teable-rg \
+  --name teable-aks \
+  --query "networkProfile.networkPlugin" -o tsv)
+
+# 配置 PostgreSQL 接受来自 AKS VNet 的连接
+az postgres flexible-server vnet-rule create \
+  --resource-group teable-rg \
+  --server-name teable-db \
+  --name aks-access \
+  --vnet-name <aks-vnet-名称> \
+  --subnet <aks-subnet-名称>
+```
+</Note>
+
+### 步骤 3：在 AKS 中部署 MinIO（可选）
+
+如果希望存储保持在 Azure 内部，可以在 AKS 中部署 MinIO：
+
+```yaml
+# minio-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minio
+  template:
+    metadata:
+      labels:
+        app: minio
+    spec:
+      containers:
+        - name: minio
+          image: minio/minio:latest
+          args:
+            - server
+            - /data
+            - --console-address
+            - ":9001"
+          env:
+            - name: MINIO_ROOT_USER
+              value: "minioadmin"
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secrets
+                  key: password
+          ports:
+            - containerPort: 9000
+            - containerPort: 9001
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: minio-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio
+spec:
+  ports:
+    - name: api
+      port: 9000
+      targetPort: 9000
+    - name: console
+      port: 9001
+      targetPort: 9001
+  selector:
+    app: minio
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: minio-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: managed-premium
+```
+
+<Tip>
+对于生产环境的 MinIO 部署，建议使用 [MinIO Operator](https://min.io/docs/minio/kubernetes/upstream/) 实现分布式模式与数据冗余。
+</Tip>
+
+### 步骤 4：创建 Kubernetes 配置
+
+创建包含 Azure 特定设置的 ConfigMap：
+
+```yaml
+# teable-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: teable-config
+data:
+  PUBLIC_ORIGIN: "https://teable.yourcompany.com"
+  
+  # 存储（AKS 内的 MinIO）
+  BACKEND_STORAGE_PROVIDER: "minio"
+  BACKEND_STORAGE_MINIO_ENDPOINT: "minio.yourcompany.com"
+  STORAGE_PREFIX: "https://minio.yourcompany.com"
+  BACKEND_STORAGE_MINIO_INTERNAL_ENDPOINT: "minio.default.svc.cluster.local"
+  BACKEND_STORAGE_MINIO_PORT: "443"
+  BACKEND_STORAGE_MINIO_INTERNAL_PORT: "9000"
+  BACKEND_STORAGE_MINIO_USE_SSL: "true"
+  
+  # 缓存
+  BACKEND_CACHE_PROVIDER: "redis"
+  
+  # 其他
+  NEXT_ENV_IMAGES_ALL_REMOTE: "true"
+  PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: "1"
+```
+
+创建包含 Azure 服务凭据的 Secrets：
+
+```yaml
+# teable-secrets.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: teable-secrets
+type: Opaque
+stringData:
+  # PostgreSQL (Azure Flexible Server)
+  PRISMA_DATABASE_URL: "postgresql://teableadmin:<密码>@teable-db.postgres.database.azure.com:5432/postgres?sslmode=require"
+  
+  # 应用密钥
+  SECRET_KEY: "<你的密钥>"
+  
+  # MinIO 凭据
+  BACKEND_STORAGE_PUBLIC_BUCKET: "public"
+  BACKEND_STORAGE_PRIVATE_BUCKET: "private"
+  BACKEND_STORAGE_MINIO_ACCESS_KEY: "minioadmin"
+  BACKEND_STORAGE_MINIO_SECRET_KEY: "<minio-密码>"
+  
+  # Redis (Azure Cache for Redis)
+  BACKEND_CACHE_REDIS_URI: "rediss://:<redis-key>@teable-cache.redis.cache.windows.net:6380/0"
+```
+
+### 步骤 5：部署 Teable
+
+```yaml
+# teable-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: teable
+spec:
+  replicas: 2  # 按需扩展
+  selector:
+    matchLabels:
+      app: teable
+  template:
+    metadata:
+      labels:
+        app: teable
+    spec:
+      initContainers:
+        - name: db-migrate
+          image: ghcr.io/teableio/teable:latest
+          args:
+            - migrate-only
+          envFrom:
+            - configMapRef:
+                name: teable-config
+            - secretRef:
+                name: teable-secrets
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 1024Mi
+      containers:
+        - name: teable
+          image: ghcr.io/teableio/teable:latest
+          args:
+            - skip-migrate
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: teable-config
+            - secretRef:
+                name: teable-secrets
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 2000m
+              memory: 4Gi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: teable
+spec:
+  ports:
+    - port: 3000
+      targetPort: 3000
+  selector:
+    app: teable
+```
+
+### 步骤 6：配置 Ingress
+
+**方案 A：使用 NGINX Ingress Controller**
+
+```bash
+# 安装 NGINX Ingress
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm install ingress-nginx ingress-nginx/ingress-nginx \
+  --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz
+```
+
+```yaml
+# teable-ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: teable
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  tls:
+    - hosts:
+        - teable.yourcompany.com
+      secretName: teable-tls
+  rules:
+    - host: teable.yourcompany.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: teable
+                port:
+                  number: 3000
+```
+
+**方案 B：使用 Azure Application Gateway Ingress Controller (AGIC)**
+
+```bash
+# 启用 AGIC 插件
+az aks enable-addons \
+  --resource-group teable-rg \
+  --name teable-aks \
+  --addons ingress-appgw \
+  --appgw-name teable-appgw \
+  --appgw-subnet-cidr "10.225.0.0/16"
+```
+
+```yaml
+# teable-ingress-agic.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: teable
+  annotations:
+    kubernetes.io/ingress.class: azure/application-gateway
+    appgw.ingress.kubernetes.io/backend-path-prefix: "/"
+    appgw.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  tls:
+    - hosts:
+        - teable.yourcompany.com
+      secretName: teable-tls
+  rules:
+    - host: teable.yourcompany.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: teable
+                port:
+                  number: 3000
+```
+
+### 步骤 7：应用所有配置
+
+```bash
+# 应用配置
+kubectl apply -f teable-config.yaml
+kubectl apply -f teable-secrets.yaml
+kubectl apply -f minio-deployment.yaml  # 如果在 AKS 中使用 MinIO
+kubectl apply -f teable-deployment.yaml
+kubectl apply -f teable-ingress.yaml
+
+# 验证部署
+kubectl get pods -l app=teable
+kubectl logs -l app=teable
+```
+
+### AKS 生产环境建议
+
+1. **自动扩缩容**：
+```bash
+# 启用 Horizontal Pod Autoscaler
+kubectl autoscale deployment teable --cpu-percent=70 --min=2 --max=10
+
+# 启用集群自动扩缩容
+az aks update \
+  --resource-group teable-rg \
+  --name teable-aks \
+  --enable-cluster-autoscaler \
+  --min-count 2 \
+  --max-count 5
+```
+
+2. **使用 Azure Key Vault** 替代 Kubernetes secrets 存储敏感信息：
+```bash
+# 启用 Key Vault secrets provider
+az aks enable-addons \
+  --resource-group teable-rg \
+  --name teable-aks \
+  --addons azure-keyvault-secrets-provider
+```
+
+3. **启用 Azure Monitor**：
+```bash
+az aks enable-addons \
+  --resource-group teable-rg \
+  --name teable-aks \
+  --addons monitoring
+```
+
+4. **使用 Azure Private Link** 连接 PostgreSQL 和 Redis，保持流量在 Azure 网络内。
+
+---
+
 ## 相关文档
 
 - [私有化部署概览](/zh/deploy/production-overview) — 架构、配置与扩展
 - [环境变量参考](/zh/deploy/env)
 - [对象存储（S3-compatible）](/zh/deploy/storage)
+- [Kubernetes 部署](/zh/deploy/k8s)（通用 K8s 指南）
+- [AWS 部署](/zh/deploy/aws)（如使用跨云存储需参考 S3 设置）

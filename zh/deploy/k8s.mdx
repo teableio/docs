@@ -35,18 +35,44 @@ title: "K8s 部署"
 - kubectl 命令行工具
 
 ## 依赖组件配置
-### 文件存储 minio
+### 文件存储 MinIO
 <Note>文件存储服务需要支持外网访问（即终端用户可直接访问到）</Note>
-文件存储需要预先创建好两个 bucket。
-1. 公共可读 bucket, 配置权限为公共可读
+
+文件存储需要预先创建好两个 bucket：
+
+| Bucket | 环境变量 | 权限 |
+|--------|---------|------|
+| 公共桶 | `BACKEND_STORAGE_PUBLIC_BUCKET=teable-pub` | **公共可读（必须开启匿名访问）** |
+| 私有桶 | `BACKEND_STORAGE_PRIVATE_BUCKET=teable-pvt` | 私有（默认） |
+
+<Warning>
+公共桶**必须**开启匿名读取权限。否则用户将无法查看共享图片、头像等公开文件。
+</Warning>
+
+#### 使用 MinIO Client (mc) 创建 Bucket
+
+在部署 Teable 之前，请先创建所需的 bucket：
+
 ```sh
-BACKEND_STORAGE_PUBLIC_BUCKET=teable-pub
+# 设置 MinIO 客户端别名
+mc alias set teable-minio https://minio.example.com YOUR_ACCESS_KEY YOUR_SECRET_KEY
+
+# 创建公共桶并设置匿名读取权限
+mc mb --ignore-existing teable-minio/teable-pub
+mc anonymous set public teable-minio/teable-pub
+
+# 创建私有桶
+mc mb --ignore-existing teable-minio/teable-pvt
+
+# 验证 bucket 是否创建成功
+mc ls teable-minio
+# 预期输出：
+# [2024-01-01 00:00:00 UTC]     0B teable-pub/
+# [2024-01-01 00:00:00 UTC]     0B teable-pvt/
 ```
-2. 私有的 bucket, 无需配置权限
-```sh
-BACKEND_STORAGE_PRIVATE_BUCKET=teable-pvt
-```
-Teable Minio 环境变量总览
+
+#### Teable MinIO 环境变量总览
+
 ```sh
 # 固定值
 BACKEND_STORAGE_PROVIDER=minio
@@ -58,8 +84,9 @@ BACKEND_STORAGE_PRIVATE_BUCKET=teable-pvt
 BACKEND_STORAGE_MINIO_ENDPOINT=minio.example.com
 # 与前面的值保持一样，但是要加个协议名称
 STORAGE_PREFIX=https://minio.example.com
-# 内网端点
-BACKEND_STORAGE_MINIO_INTERNAL_ENDPOINT=internal.network
+# 内网端点（Kubernetes DNS 格式：<service>.<namespace>.svc.cluster.local）
+# ⚠️ 请将 <namespace> 替换为实际的命名空间，例如：minio.teable.svc.cluster.local
+BACKEND_STORAGE_MINIO_INTERNAL_ENDPOINT=minio.teable.svc.cluster.local
 # 外网端口，一般为 443 或者 9000
 BACKEND_STORAGE_MINIO_PORT=443
 # 内网端口，一般为 80 或者 9000
@@ -97,18 +124,23 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: teable-config
+  namespace: teable  # 请替换为你的命名空间
 data:
   # 应用基础配置，对外访问的域名
   PUBLIC_ORIGIN: "https://your-domain.com"
   
   # 存储配置
   BACKEND_STORAGE_PROVIDER: "minio"
+  # Bucket 名称（需要在部署前于 MinIO 中创建）
+  BACKEND_STORAGE_PUBLIC_BUCKET: "teable-pub"
+  BACKEND_STORAGE_PRIVATE_BUCKET: "teable-pvt"
   # 外网端点，重要！需要终端用户可以直接访问到
   BACKEND_STORAGE_MINIO_ENDPOINT: "minio.example.com"
   # 与前面的值保持一样，但是要加个协议名称
   STORAGE_PREFIX: "https://minio.example.com"
-  # 内网端点
-  BACKEND_STORAGE_MINIO_INTERNAL_ENDPOINT: "minio.namespace.svc"
+  # 内网端点（Kubernetes DNS 格式：<service>.<namespace>.svc.cluster.local）
+  # ⚠️ 请将 'teable' 替换为实际的命名空间
+  BACKEND_STORAGE_MINIO_INTERNAL_ENDPOINT: "minio.teable.svc.cluster.local"
   # 外网端口，一般为 443 或者 9000
   BACKEND_STORAGE_MINIO_PORT: "443"
   # 内网端口，一般为 80 或者 9000
@@ -126,11 +158,12 @@ data:
   NODE_TLS_REJECT_UNAUTHORIZED: '0'
 ```
 
-```yaml secrets.yaml（敏感信息）
+```yaml teable-secrets.yaml（敏感信息）
 apiVersion: v1
 kind: Secret
 metadata:
   name: teable-secrets
+  namespace: teable  # 请替换为你的命名空间
 type: Opaque
 stringData:
   # 数据库敏感信息
@@ -141,8 +174,6 @@ stringData:
   BACKEND_SESSION_SECRET: "your-session-secret"
   
   # MinIO 认证信息
-  BACKEND_STORAGE_PUBLIC_BUCKET: "teable-pub"
-  BACKEND_STORAGE_PRIVATE_BUCKET: "teable-pvt"
   BACKEND_STORAGE_MINIO_ACCESS_KEY: "your-minio-access-key"
   BACKEND_STORAGE_MINIO_SECRET_KEY: "your-minio-secret-key"
   
@@ -151,11 +182,12 @@ stringData:
 ```
 
 
-```yaml deployment.yaml
+```yaml teable-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: teable
+  namespace: teable  # 请替换为你的命名空间
 spec:
   replicas: 1 # 根据需要配置
   selector:
@@ -232,11 +264,12 @@ spec:
             successThreshold: 1
 ```
 
-```yaml service.yaml
+```yaml teable-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
   name: teable
+  namespace: teable  # 请替换为你的命名空间
 spec:
   ports:
     - port: 3000
@@ -245,22 +278,23 @@ spec:
     app: teable
 ```
 
-```yaml ingress.yaml (可选)
+```yaml teable-ingress.yaml (可选)
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: teable
+  namespace: teable  # 请替换为你的命名空间
   # 以 nginx 做示例，如果使用其他的 ingress class 请替换
   annotations:
-    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/proxy-body-size: "100m"
     nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
 spec:
+  ingressClassName: nginx  # 如果使用其他 ingress class 请修改
   rules:
-    - host: your-domain.com  # 应用基础配置，对外访问的域名
+    - host: your-domain.com  # 请替换为你的域名
       http:
         paths:
           - path: /
@@ -272,32 +306,53 @@ spec:
                   number: 3000
   tls:
     - hosts:
-        - your-domain.com  # 应用基础配置，对外访问的域名
+        - your-domain.com  # 请替换为你的域名
       secretName: your-tls-secret 
 ```
+
+<Warning>
+**请勿**添加 `nginx.ingress.kubernetes.io/rewrite-target` 注解，这会破坏 Teable 的内部路由。
+</Warning>
 
 
 ## 部署步骤
 
-1. 创建配置和密钥：
+<Warning>
+在部署 Teable 之前，请确保：
+1. MinIO bucket（`teable-pub` 和 `teable-pvt`）已创建
+2. 公共桶已开启匿名读取权限
+3. PostgreSQL 数据库 `teable` 已存在
+4. Redis 服务可访问
+</Warning>
+
+1. 创建命名空间（如果不存在）：
 ```sh
-kubectl apply -f config.yaml
-kubectl apply -f secrets.yaml
-```
-2. 部署应用：
-```sh
-kubectl apply -f deployment.yaml
-kubectl apply -f service.yaml
-kubectl apply -f ingress.yaml
+kubectl create namespace teable
 ```
 
-3. 验证部署：
+2. 创建配置和密钥：
+```sh
+kubectl apply -f teable-config.yaml
+kubectl apply -f teable-secrets.yaml
+```
+
+3. 部署应用：
+```sh
+kubectl apply -f teable-deployment.yaml
+kubectl apply -f teable-service.yaml
+kubectl apply -f teable-ingress.yaml  # 可选，如果使用 Ingress
+```
+
+4. 验证部署：
 ```sh
 # 检查 Pod 状态
-kubectl get pods -l app=teable
+kubectl get pods -n teable -l app=teable
+
+# 等待 Pod 就绪
+kubectl rollout status deployment/teable -n teable
 
 # 查看应用日志
-kubectl logs -l app=teable
+kubectl logs -n teable -l app=teable
 ```
 
 ### 配置注意事项
@@ -333,23 +388,42 @@ kubectl logs -l app=teable
 
 ### 故障排查
 
+#### 常见问题
+
+| 错误信息 | 原因 | 解决方案 |
+|---------|------|---------|
+| `ECONNREFUSED` 连接 MinIO 失败 | MinIO 内网端点配置错误或不可达 | 检查 `BACKEND_STORAGE_MINIO_INTERNAL_ENDPOINT` 格式是否正确：`<service>.<namespace>.svc.cluster.local` |
+| `Bucket not found` | MinIO bucket 未创建 | 在部署前使用 `mc mb` 命令创建 bucket |
+| `Access Denied` 文件上传失败 | MinIO 凭证错误 | 检查 `BACKEND_STORAGE_MINIO_ACCESS_KEY` 和 `SECRET_KEY` |
+| 访问页面显示 `Page not found` | Ingress 配置了 `rewrite-target` | 移除 Ingress 中的 `rewrite-target` 注解 |
+| Pod 处于 `CrashLoopBackOff` 状态 | 后端启动失败 | 检查日志，确认 MinIO、数据库、Redis 连接是否正常 |
+
+#### 诊断命令
+
 1. 检查 Pod 状态：
 ```sh
-kubectl describe pod -l app=teable
+kubectl describe pod -n teable -l app=teable
 ```
 
 2. 查看应用日志：
 ```sh
-kubectl logs -l app=teable
+kubectl logs -n teable -l app=teable
+kubectl logs -n teable -l app=teable --previous  # 如果 Pod 崩溃
 ```
 
 3. 验证配置：
 ```sh
-kubectl describe configmap teable-config
-kubectl describe secret teable-secrets
+kubectl describe configmap teable-config -n teable
+kubectl describe secret teable-secrets -n teable
 ```
 
 4. 检查网络连接：
 ```sh
-kubectl exec -it <pod-name> -- curl -v localhost:3000/health
+kubectl exec -it <pod-name> -n teable -- curl -v localhost:3000/health
+```
+
+5. 测试 MinIO 集群内部连接：
+```sh
+kubectl run test-minio --rm -it --image=curlimages/curl --restart=Never -n teable -- \
+  curl -v http://minio.teable.svc.cluster.local/minio/health/live
 ```

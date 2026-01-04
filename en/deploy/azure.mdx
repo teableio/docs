@@ -1,6 +1,6 @@
 ---
 title: "Deploy on Azure"
-description: "Step-by-step guide: Deploy Teable on Azure using App Service, PostgreSQL Flexible Server, Azure Cache for Redis, and S3-compatible storage"
+description: "Step-by-step guide: Deploy Teable on Azure using App Service or AKS, with PostgreSQL Flexible Server, Azure Cache for Redis, and S3-compatible storage"
 ---
 
 <Callout type="info">
@@ -398,8 +398,423 @@ az webapp config ssl create \
 
 ---
 
+## Alternative: Deploy on AKS (Azure Kubernetes Service)
+
+For larger deployments or teams already using Kubernetes, AKS provides better scalability and control.
+
+### AKS Architecture
+
+```mermaid
+graph TB
+    subgraph AKS["Azure Kubernetes Service"]
+        Ingress["Ingress Controller<br/>(AGIC or NGINX)"]
+        Pods["Teable Pods<br/>(scale horizontally)"]
+    end
+    
+    DB["Azure Database for<br/>PostgreSQL Flexible Server"]
+    Redis["Azure Cache for Redis"]
+    S3["S3-compatible Storage<br/>(MinIO or AWS S3)"]
+    
+    Ingress --> Pods
+    Pods --> DB
+    Pods --> Redis
+    Pods --> S3
+    
+    style AKS fill:#326ce5,stroke:#1a4ba0,color:#fff
+    style DB fill:#0078d4,stroke:#005a9e,color:#fff
+    style Redis fill:#0078d4,stroke:#005a9e,color:#fff
+    style S3 fill:#ff9900,stroke:#cc7a00,color:#fff
+```
+
+### Step 1: Create AKS Cluster
+
+```bash
+# Create AKS cluster
+az aks create \
+  --resource-group teable-rg \
+  --name teable-aks \
+  --location eastus \
+  --node-count 2 \
+  --node-vm-size Standard_D4s_v3 \
+  --enable-managed-identity \
+  --generate-ssh-keys
+
+# Get credentials
+az aks get-credentials \
+  --resource-group teable-rg \
+  --name teable-aks
+```
+
+### Step 2: Create Azure Managed Services
+
+Create PostgreSQL and Redis using the same commands from [Step 1.2](#12-create-postgresql-flexible-server) and [Step 1.3](#13-create-azure-cache-for-redis).
+
+<Note>
+For AKS, you may want to enable VNet integration to secure the connection:
+
+```bash
+# Get AKS VNet ID
+AKS_VNET=$(az aks show \
+  --resource-group teable-rg \
+  --name teable-aks \
+  --query "networkProfile.networkPlugin" -o tsv)
+
+# Configure PostgreSQL to accept connections from AKS VNet
+az postgres flexible-server vnet-rule create \
+  --resource-group teable-rg \
+  --server-name teable-db \
+  --name aks-access \
+  --vnet-name <aks-vnet-name> \
+  --subnet <aks-subnet-name>
+```
+</Note>
+
+### Step 3: Deploy MinIO to AKS (Optional)
+
+If you prefer to keep storage within Azure, deploy MinIO to AKS:
+
+```yaml
+# minio-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minio
+  template:
+    metadata:
+      labels:
+        app: minio
+    spec:
+      containers:
+        - name: minio
+          image: minio/minio:latest
+          args:
+            - server
+            - /data
+            - --console-address
+            - ":9001"
+          env:
+            - name: MINIO_ROOT_USER
+              value: "minioadmin"
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secrets
+                  key: password
+          ports:
+            - containerPort: 9000
+            - containerPort: 9001
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: minio-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio
+spec:
+  ports:
+    - name: api
+      port: 9000
+      targetPort: 9000
+    - name: console
+      port: 9001
+      targetPort: 9001
+  selector:
+    app: minio
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: minio-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: managed-premium
+```
+
+<Tip>
+For production MinIO deployments, consider using the [MinIO Operator](https://min.io/docs/minio/kubernetes/upstream/) for distributed mode with data redundancy.
+</Tip>
+
+### Step 4: Create Kubernetes Configurations
+
+Create the ConfigMap with Azure-specific settings:
+
+```yaml
+# teable-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: teable-config
+data:
+  PUBLIC_ORIGIN: "https://teable.yourcompany.com"
+  
+  # Storage (MinIO in AKS)
+  BACKEND_STORAGE_PROVIDER: "minio"
+  BACKEND_STORAGE_MINIO_ENDPOINT: "minio.yourcompany.com"
+  STORAGE_PREFIX: "https://minio.yourcompany.com"
+  BACKEND_STORAGE_MINIO_INTERNAL_ENDPOINT: "minio.default.svc.cluster.local"
+  BACKEND_STORAGE_MINIO_PORT: "443"
+  BACKEND_STORAGE_MINIO_INTERNAL_PORT: "9000"
+  BACKEND_STORAGE_MINIO_USE_SSL: "true"
+  
+  # Cache
+  BACKEND_CACHE_PROVIDER: "redis"
+  
+  # Other
+  NEXT_ENV_IMAGES_ALL_REMOTE: "true"
+  PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: "1"
+```
+
+Create secrets with Azure service credentials:
+
+```yaml
+# teable-secrets.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: teable-secrets
+type: Opaque
+stringData:
+  # PostgreSQL (Azure Flexible Server)
+  PRISMA_DATABASE_URL: "postgresql://teableadmin:<password>@teable-db.postgres.database.azure.com:5432/postgres?sslmode=require"
+  
+  # Application secrets
+  SECRET_KEY: "<your-secret-key>"
+  
+  # MinIO credentials
+  BACKEND_STORAGE_PUBLIC_BUCKET: "public"
+  BACKEND_STORAGE_PRIVATE_BUCKET: "private"
+  BACKEND_STORAGE_MINIO_ACCESS_KEY: "minioadmin"
+  BACKEND_STORAGE_MINIO_SECRET_KEY: "<minio-password>"
+  
+  # Redis (Azure Cache for Redis)
+  BACKEND_CACHE_REDIS_URI: "rediss://:<redis-key>@teable-cache.redis.cache.windows.net:6380/0"
+```
+
+### Step 5: Deploy Teable
+
+```yaml
+# teable-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: teable
+spec:
+  replicas: 2  # Scale as needed
+  selector:
+    matchLabels:
+      app: teable
+  template:
+    metadata:
+      labels:
+        app: teable
+    spec:
+      initContainers:
+        - name: db-migrate
+          image: ghcr.io/teableio/teable:latest
+          args:
+            - migrate-only
+          envFrom:
+            - configMapRef:
+                name: teable-config
+            - secretRef:
+                name: teable-secrets
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 1024Mi
+      containers:
+        - name: teable
+          image: ghcr.io/teableio/teable:latest
+          args:
+            - skip-migrate
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: teable-config
+            - secretRef:
+                name: teable-secrets
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 2000m
+              memory: 4Gi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: teable
+spec:
+  ports:
+    - port: 3000
+      targetPort: 3000
+  selector:
+    app: teable
+```
+
+### Step 6: Configure Ingress
+
+**Option A: Using NGINX Ingress Controller**
+
+```bash
+# Install NGINX Ingress
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm install ingress-nginx ingress-nginx/ingress-nginx \
+  --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz
+```
+
+```yaml
+# teable-ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: teable
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  tls:
+    - hosts:
+        - teable.yourcompany.com
+      secretName: teable-tls
+  rules:
+    - host: teable.yourcompany.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: teable
+                port:
+                  number: 3000
+```
+
+**Option B: Using Azure Application Gateway Ingress Controller (AGIC)**
+
+```bash
+# Enable AGIC addon
+az aks enable-addons \
+  --resource-group teable-rg \
+  --name teable-aks \
+  --addons ingress-appgw \
+  --appgw-name teable-appgw \
+  --appgw-subnet-cidr "10.225.0.0/16"
+```
+
+```yaml
+# teable-ingress-agic.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: teable
+  annotations:
+    kubernetes.io/ingress.class: azure/application-gateway
+    appgw.ingress.kubernetes.io/backend-path-prefix: "/"
+    appgw.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  tls:
+    - hosts:
+        - teable.yourcompany.com
+      secretName: teable-tls
+  rules:
+    - host: teable.yourcompany.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: teable
+                port:
+                  number: 3000
+```
+
+### Step 7: Apply All Configurations
+
+```bash
+# Apply configurations
+kubectl apply -f teable-config.yaml
+kubectl apply -f teable-secrets.yaml
+kubectl apply -f minio-deployment.yaml  # If using MinIO in AKS
+kubectl apply -f teable-deployment.yaml
+kubectl apply -f teable-ingress.yaml
+
+# Verify deployment
+kubectl get pods -l app=teable
+kubectl logs -l app=teable
+```
+
+### AKS Production Recommendations
+
+1. **Autoscaling**:
+```bash
+# Enable Horizontal Pod Autoscaler
+kubectl autoscale deployment teable --cpu-percent=70 --min=2 --max=10
+
+# Enable Cluster Autoscaler
+az aks update \
+  --resource-group teable-rg \
+  --name teable-aks \
+  --enable-cluster-autoscaler \
+  --min-count 2 \
+  --max-count 5
+```
+
+2. **Use Azure Key Vault** for secrets instead of Kubernetes secrets:
+```bash
+# Enable Key Vault secrets provider
+az aks enable-addons \
+  --resource-group teable-rg \
+  --name teable-aks \
+  --addons azure-keyvault-secrets-provider
+```
+
+3. **Enable Azure Monitor**:
+```bash
+az aks enable-addons \
+  --resource-group teable-rg \
+  --name teable-aks \
+  --addons monitoring
+```
+
+4. **Use Azure Private Link** for PostgreSQL and Redis to keep traffic within Azure network.
+
+---
+
 ## Related documentation
 
 - [Self-Hosted Overview](/en/deploy/production-overview) — Architecture, sizing, and scaling
 - [Environment Variables Reference](/en/deploy/env)
 - [Object Storage (S3-compatible)](/en/deploy/storage)
+- [Kubernetes Deployment](/en/deploy/k8s) (generic K8s guide)
+- [AWS Deployment](/en/deploy/aws) (for S3 setup if using cross-cloud storage)
