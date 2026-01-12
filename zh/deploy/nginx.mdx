@@ -1,0 +1,130 @@
+---
+title: "Nginx 配置"
+description: "Teable 的 Nginx 反向代理配置：HTTPS（证书）、WebSocket、Docker 场景与 Nginx Proxy Manager。"
+---
+
+当你希望用域名访问、启用 HTTPS（SSL 终止）、或把 Teable 放在内网并由统一网关对外暴露时，推荐在 Teable 前面加一层 Nginx（或同类反向代理）。
+
+<Callout type="info">
+关键点：
+- `PUBLIC_ORIGIN` 必须设置为最终用户访问的公网地址（例如 `https://teable.example.com`，末尾不要带 `/`）
+- 我们强烈建议 **默认使用 HTTPS + 证书**（生产环境不要把 Teable 裸奔在 HTTP 上）
+- 如果使用了 WebSocket（实时协作/通知等场景），反向代理需要透传 `Upgrade/Connection` 相关头
+</Callout>
+
+## 推荐：HTTPS（默认/生产必选）
+
+我们建议把 HTTPS 当作默认方案：**对外只开放 443**（80 仅用于跳转到 443，或用于 ACME 签发证书挑战）。
+
+下面是一个“推荐生产写法”的完整示例（HTTPS + WebSocket + HTTP→HTTPS 跳转）。请按你的证书路径与域名替换：
+
+```nginx
+upstream teable {
+  server 127.0.0.1:3000;
+  # 如果 Nginx 与 Teable 在同一个 Docker 网络内，也可以写：
+  # server teable:3000;
+}
+
+map $http_upgrade $connection_upgrade {
+  default upgrade;
+  '' close;
+}
+
+# 80 端口仅做跳转（或用于 ACME challenge）
+server {
+  listen 80;
+  server_name teable.example.com;
+  return 301 https://$host$request_uri;
+}
+
+server {
+  listen 443 ssl http2;
+  server_name teable.example.com;
+
+  ssl_certificate     /etc/letsencrypt/live/teable.example.com/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/teable.example.com/privkey.pem;
+
+  # 如果你确认域名长期只走 HTTPS，可开启 HSTS（谨慎使用）
+  # add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+
+  location / {
+    proxy_pass http://teable;
+
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto https;
+
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+    proxy_set_header Host $host;
+
+    proxy_http_version 1.1;
+  }
+}
+```
+
+### 证书获取/续期
+
+- **Let's Encrypt（推荐）**：可用 Certbot / acme.sh 自动签发与续期
+- **面板类工具**：如 Nginx Proxy Manager 也能在 UI 中申请并自动续期证书
+
+## 示例 1：最简 `location /`（适合快速上手）
+
+> 说明：这是 **仅 HTTP 的简化示例**，适合内网/临时验证；生产环境请优先使用上面的 HTTPS 推荐配置。
+
+如果你想快速跑通 HTTP，可以用下面这个最小可用示例（包含 WebSocket 必要配置）：
+
+```nginx
+upstream teable {
+  server 127.0.0.1:3000;
+  # 如果 Nginx 与 Teable 在同一个 Docker 网络内，也可以写：
+  # server teable:3000;
+}
+
+map $http_upgrade $connection_upgrade {
+  default upgrade;
+  '' close;
+}
+
+server {
+  listen 80;
+  server_name teable.example.com;
+
+  location / {
+    proxy_pass http://teable;
+
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+    proxy_set_header Host $host;
+
+    proxy_http_version 1.1;
+  }
+}
+```
+
+## Docker 场景提示
+
+- **Nginx 跑在宿主机，Teable 跑在容器里**：一般用 `proxy_pass http://127.0.0.1:3000;`（前提是你把 `3000:3000` 暴露到宿主机）
+- **Nginx 和 Teable 都在同一个 Docker 网络**：可以用容器名/服务名直连，例如 `proxy_pass http://teable:3000;`
+
+## 常见坑
+
+- **不要做 path rewrite**：例如 `rewrite` / `rewrite-target` 之类可能破坏 Teable 内部路由（除非你非常清楚自己在做什么）。
+- **`PUBLIC_ORIGIN` 一定要对**：它影响导入/上传、跳转链接、回调等生成的完整 URL。
+
+## 可视化管理：Nginx Proxy Manager（NPM）
+
+如果你不想手写 Nginx 配置，可以用图形化工具来管理域名、证书和反向代理，例如：
+
+- **Nginx Proxy Manager（NPM）**：常见于 Docker 场景，UI 里创建 Proxy Host 即可
+
+以 **Nginx Proxy Manager** 为例：
+
+- **创建 Proxy Host**：`Domain Names` 填 `teable.example.com`，`Scheme` 选 `http`，`Forward Hostname / IP` 填 `127.0.0.1`（或 Docker 网络里的 `teable`），`Forward Port` 填 `3000`
+- **开启 WebSocket 支持**：在 Proxy Host 的高级/选项里启用 WebSocket（不同版本 UI 文案略有差异）
+- **签发/绑定证书**：在 SSL 相关页面选择/申请 Let's Encrypt，并勾选强制 HTTPS（可选）
+- **别忘了 Teable 的环境变量**：把 `PUBLIC_ORIGIN` 设置为最终访问地址（例如 `https://teable.example.com`）
