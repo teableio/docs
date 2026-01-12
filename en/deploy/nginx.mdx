@@ -1,0 +1,132 @@
+---
+title: "Nginx (Reverse Proxy)"
+description: "Recommended Nginx reverse proxy setup for Teable: HTTPS (certificates), WebSocket, Docker tips, and Nginx Proxy Manager."
+---
+
+If you want to access Teable via a domain name, enable HTTPS (SSL termination), or keep Teable in a private network behind a single gateway, putting Nginx in front of Teable is a common setup.
+
+<Callout type="info">
+Key points:
+- `PUBLIC_ORIGIN` must match the final public URL your users use (e.g. `https://teable.example.com`, without a trailing `/`)
+- We strongly recommend treating **HTTPS + certificates** as the default (don’t run production traffic over plain HTTP)
+- If you rely on WebSocket features, your reverse proxy must forward the `Upgrade/Connection` headers
+</Callout>
+
+<Tip>
+Teable is commonly used in **collaborative / real-time** workflows, so keeping WebSocket support enabled tends to be the most reliable setup. Even for mostly single‑user usage, leaving these WebSocket-related settings in place won’t affect normal access.
+</Tip>
+
+## Recommended: HTTPS (default / production)
+
+Treat HTTPS as the default: **serve end users on 443**; keep port 80 only for redirecting to 443 (or for ACME HTTP-01 challenges).
+
+Below is a production‑style example (HTTPS + WebSocket + HTTP→HTTPS redirect). Replace the domain and certificate paths:
+
+```nginx
+upstream teable {
+  server 127.0.0.1:3000;
+  # If Nginx runs in the same Docker network as Teable:
+  # server teable:3000;
+}
+
+map $http_upgrade $connection_upgrade {
+  default upgrade;
+  '' close;
+}
+
+# Port 80 only redirects (or is used for ACME challenges)
+server {
+  listen 80;
+  server_name teable.example.com;
+  return 301 https://$host$request_uri;
+}
+
+server {
+  listen 443 ssl http2;
+  server_name teable.example.com;
+
+  ssl_certificate     /etc/letsencrypt/live/teable.example.com/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/teable.example.com/privkey.pem;
+
+  # If you’re sure the domain should always use HTTPS, you can enable HSTS (use with care)
+  # add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+
+  location / {
+    proxy_pass http://teable;
+
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto https;
+
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+    proxy_set_header Host $host;
+
+    proxy_http_version 1.1;
+  }
+}
+```
+
+### Certificates (issuance / renewal)
+
+- **Let’s Encrypt (recommended)**: use Certbot or acme.sh for automatic issuance and renewal
+- **GUI tools**: Nginx Proxy Manager can request and auto‑renew certificates from its UI
+
+## Example 1: Minimal `location /` (quick start)
+
+> Note: This is an **HTTP-only** example for internal networks or quick verification. For production, prefer the HTTPS configuration above.
+
+```nginx
+upstream teable {
+  server 127.0.0.1:3000;
+  # If Nginx runs in the same Docker network as Teable:
+  # server teable:3000;
+}
+
+map $http_upgrade $connection_upgrade {
+  default upgrade;
+  '' close;
+}
+
+server {
+  listen 80;
+  server_name teable.example.com;
+
+  location / {
+    proxy_pass http://teable;
+
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+    proxy_set_header Host $host;
+
+    proxy_http_version 1.1;
+  }
+}
+```
+
+## Docker tips
+
+- **Nginx on the host, Teable in containers**: typically use `proxy_pass http://127.0.0.1:3000;` (assuming `3000:3000` is published)
+- **Nginx and Teable in the same Docker network**: you can route via the service/container name, e.g. `proxy_pass http://teable:3000;`
+
+## Common pitfalls
+
+- **Avoid path rewrites**: rewrites can break Teable’s internal routing unless you know exactly what you’re doing.
+- **Make sure `PUBLIC_ORIGIN` is correct**: it affects generated URLs, redirects, import/upload flows, callbacks, etc.
+
+## Nginx Proxy Manager (NPM)
+
+If you don’t want to write Nginx config by hand, GUI tools can help manage domains, certificates, and proxy hosts:
+
+- **Nginx Proxy Manager (NPM)**: common in Docker-based setups
+
+For **Nginx Proxy Manager**, a typical setup is:
+
+- **Create a Proxy Host**: set `Domain Names` to `teable.example.com`, `Scheme` to `http`, `Forward Hostname / IP` to `127.0.0.1` (or `teable` inside a Docker network), and `Forward Port` to `3000`
+- **Enable WebSocket support**: turn on WebSocket support in Proxy Host options (label varies by version)
+- **Provision/attach SSL**: request/select a Let's Encrypt certificate and optionally force HTTPS redirect
+- **Don’t forget Teable env**: set `PUBLIC_ORIGIN` to the final public URL (e.g. `https://teable.example.com`)
