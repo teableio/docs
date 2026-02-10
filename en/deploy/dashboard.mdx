@@ -1,0 +1,34 @@
+---
+title: "Enable Dashboard"
+description: "How to enable the Dashboard feature for self-hosted deployments"
+---
+
+## Overview
+
+For self-hosted Teable instances, the Dashboard feature is disabled by default. Follow the steps below to enable it.
+
+## Steps
+
+### Step 1: Execute SQL Statement
+
+Connect to the PostgreSQL database used by Teable and execute the following SQL statement to set `disallowDashboard` to `false`:
+
+```sql
+UPDATE setting SET content = 'false' WHERE name = 'disallowDashboard';
+```
+
+### Step 2: Clear the Setting Table Cache
+
+After executing the SQL, you need to clear the `setting` table cache for the configuration to take effect.
+
+Since there is no direct cache-clearing entry point, you can trigger a cache refresh by **toggling any instance setting option**. For example:
+
+1. Go to **Admin Panel** > **Instance Settings**
+2. **Enable** the email verification option
+3. **Disable** the email verification option again
+
+<Callout type="info">
+The purpose of this step is to trigger a cache refresh of the setting table. Simply toggling any setting option is sufficient — you don't need to permanently change any configuration.
+</Callout>
+
+After completing both steps, refresh the page and the Dashboard feature will be enabled.
