@@ -5,6 +5,8 @@ description: This guide will help you add and configure your AI models in Teable
 
 <Tip>Available for Business plan and above</Tip>
 
+<Note>Custom model configuration applies to **AI Chat**, **AI Fields**, and **Automations**. **App Builder** currently does not support BYOK — it uses the system default model and cannot be switched to a custom model.</Note>
+
 ## Integrate AI Models in Teable
 
 ### Steps:
@@ -28,8 +30,6 @@ description: This guide will help you add and configure your AI models in Teable
    - **Medium chat model** - For AI formula generation. Recommended: `claude-haiku-4.5`
    - **Small chat model** - For auto-generating chat titles and base names. Recommended: `claude-haiku-4.5`
 
-<Note>Custom model configuration applies to AI Chat, AI Fields, and Automations. **App Builder** currently does not support BYOK — it uses the system default model and cannot be switched to a custom model.</Note>
-
 8. **Enable Custom Model:** Toggle the switch to enable your custom model configuration.
 
 After completing these steps, you'll see a distinction between "Space Models" and "System Models" within Teable's AI features. The AI model you just configured will appear under the "Space" section.
@@ -42,7 +42,7 @@ After completing these steps, you'll see a distinction between "Space Models" an
 
 ### Base URL Guidelines
 
-<Warning>The Base URL must be the API endpoint URL, not the provider's website URL. Make sure to include the complete path (usually ending with `/v1` or similar).</Warning>
+<Warning>The Base URL must be the API endpoint URL, not the provider's website URL. Make sure to include the complete path (usually ending with `/v1` or similar). **Do not include a trailing slash (`/`)** at the end of the URL — for example, use `https://generativelanguage.googleapis.com/v1beta` instead of `https://generativelanguage.googleapis.com/v1beta/`.</Warning>
 
 | Provider | Base URL Format |
 |----------|----------------|
@@ -88,6 +88,7 @@ After completing these steps, you'll see a distinction between "Space Models" an
 
 | Issue | Solution |
 |-------|----------|
+| All model tests failed | Check if your Base URL ends with a trailing slash (`/`) and remove it. Also verify your API key has the required API enabled (e.g., Generative Language API for Google) |
 | "Test failed" error | Verify your API key is valid and has sufficient credits |
 | Connection timeout | Check if your Base URL is correct and accessible |
 | Model not found | Ensure the model name matches exactly with the provider's documentation |
