@@ -7,79 +7,124 @@ description: "Configure AI model providers, model preferences, and capability se
 
 Path: Admin Panel → AI Settings
 
-### 1. AI Capability Settings
+Use the toggle in the top-right corner to enable or disable all AI features for the instance. When disabled, a warning banner is shown and users cannot access any AI-related functionality.
 
-- Description:
-  - Instance administrators can independently control whether each AI feature is available within the instance.
-  - Features in the list include:
-    - AI Basic Capability: AI basic capability for table queries, SQL execution, script generation, and data visualization
-    - Create Base: Create Base from scratch
-    - Create App: Create App based on Base
-    - Create Automation: Create Automation from scratch
-    - Base Resource Operation: Create, modify, and delete tables, views, fields, and records through ai
-    - Suggestions: Give suggestions based on the current database data and conversation content
+---
 
-![](/images/2025-10-10-20-50-42.png)
+## 1. Configure LLM API
 
-### 2. Custom Model
+Choose how to connect your AI models. Two options are available:
 
-- Used to activate or deactivate all custom AI API configurations within the instance.
-- Description:
-  - Off: AI features will be disabled or use system defaults if available.
-  - On: Use configured AI models. Please configure the Advanced Chat Model before enabling.
+### AI Gateway (Recommended)
 
-> [Configure Custom Model Guide](/en/basic/ai/custom-model)
+Access hundreds of models via Vercel AI Gateway with best compatibility and reliability.
 
-### 3. LLM Providers
+- **AI Gateway API Key** (Required): Obtain from the Vercel AI Gateway dashboard. First-time use requires adding a credit card in Vercel. BYOK (bring your own provider keys) is supported.
+- **Custom Gateway URL** (Optional): Override the default gateway endpoint (default: `https://ai-gateway.vercel.sh/v1`).
 
-- Manage the integration of third-party AI model providers.
+### Custom Provider
 
-![](/images/2025-10-10-20-52-37.png)
+Connect to self-hosted or private models. Supports multiple providers (OpenAI, Anthropic, Azure, etc.).
 
-### 4. Model Preferences
+- Click **+ Add LLM provider** to add a provider with its API key and models.
+- Use the **Test** button next to a provider or model to verify connectivity.
+- Each model displays its supported capabilities: **Image**, **PDF**, **Web search**, **Tool Call**, **Reasoning**, **Image Generation**.
+- Check **Image Generation Model** for models that generate images rather than text.
 
-- Specify default chat models for different types of task scenarios to optimize cost and performance.
-  - Advanced Chat Model:
-    - Used for AI Chat primary conversation, complex reasoning, and code generation tasks.
-    - Recommended: `claude-sonnet-4.5` or models with strong reasoning capabilities.
-  - Medium Chat Model:
-    - Used for AI formula generation.
-    - Falls back to Advanced Chat Model if not configured.
-    - Recommended: `claude-haiku-4.5`
-  - Small Chat Model:
-    - Used for lightweight tasks such as auto-generating chat titles and base names.
-    - Falls back to Advanced Chat Model if not configured.
-    - Recommended: `claude-haiku-4.5`
+After configuring your providers, click **Test Model Capabilities** to automatically detect what each model supports. This ensures capabilities like image and PDF processing are correctly identified before proceeding.
 
-![](/images/2025-10-10-20-51-59.png)
+Click **Save & Continue** when done.
 
-### 5. Advanced Chat Model Capabilities
+---
 
-- Test the multimodal processing capabilities of the selected "Advanced Chat Model".
-- Description:
-  - You can use the "Test Model" button to verify whether the selected advanced model supports processing images and PDF content.
+## 2. Configure Recommended Models
 
-### 6. Embedding Model
+Set which models are available for users to select in AI fields and automation. When using AI Gateway, models are selected here manually; when using a Custom Provider, models are managed in Step 1.
 
-- Optional. Used for document Q&A - when users upload documents and ask questions about their content.
+---
 
-### 7. App Builder
+## 3. Set Chat Model
 
-Configure settings to enable the [App Builder](/en/basic/ai/app-builder) feature for generating custom web applications from your data.
+Manually select the model used for the sidebar AI chat feature.
 
-**Available settings:**
-- **v0 API Key** (Required): Obtain from [v0.app/chat/settings/keys](https://v0.app/chat/settings/keys). Requires paid v0 subscription.
-- **Custom Domain**: Configure your own domain for published apps
-- **Vercel API Token**: Required for custom domain binding
-- **API Proxy URLs**: For regions with restricted API access
-- **AI Gateway API Key**: For centralized monitoring and cost controls
+- **Quick Setup**: Click **Use Recommended** to set the top recommended model as the default for all chat scenarios with one click.
+- **Chat Model**: Use the dropdown to manually select a specific model from your recommended model pool.
 
-> For detailed configuration instructions, see [App Builder Self-Hosted Configuration](/en/basic/ai/app-builder#self-hosted-configuration)
+---
 
-### 8. Web Search
+## App Builder
 
-- Description: Configure Firecrawl API key to enable web search feature, access Firecrawl settings to get API key
+Configure settings to enable the [App Builder](/en/basic/ai/app-builder) feature for generating custom web applications from your data, powered by v0.
 
-![](/images/2025-10-10-20-53-33.png)
+- **v0**: Vercel's AI app generation platform, responsible for generating app UI and components.
+- **Vercel**: App deployment platform. Teable deploys apps to production via Vercel when you publish.
 
-<Tip>Space settings can override these configurations if "Custom Model" is enabled at the space level.</Tip>
+<Warning>
+Please ensure Teable is publicly accessible, as v0 and Vercel need to access the Teable API of this instance. Use the **Test Public Access** button to verify.
+</Warning>
+
+### Required Settings
+
+| Setting | Description |
+|---------|-------------|
+| **v0 API Key** | Get from [v0.app/chat/settings/keys](https://v0.app/chat/settings/keys) |
+| **Vercel API Token** | Get from [vercel.com/account/settings/tokens](https://vercel.com/account/settings/tokens) |
+
+<Warning>
+The v0 API requires a **paid v0 subscription**. Free tier credits are not sufficient. If you see "Internal Server Error" when creating apps, please upgrade your v0 plan.
+</Warning>
+
+### Custom Domain (Optional)
+
+Apps built with App Builder are deployed to Vercel. There are two ways to use a custom domain:
+
+#### Option A: Vercel Domains (Automatic)
+
+Domains purchased from Vercel get automatic binding configured for you.
+
+1. Purchase a domain from [Vercel Domains](https://vercel.com/domains)
+2. Enter the domain in **Custom Domain** field in Admin Panel
+
+#### Option B: External Domain (Manual DNS)
+
+If you already own a domain from another registrar (e.g., Cloudflare, GoDaddy):
+
+1. In Teable Admin Panel, enter your root domain in **Custom Domain** (e.g., `example.com`)
+2. Add your **Vercel API Token**
+3. When you publish an app, note the **App ID** from the URL (e.g., `appXXX123`)
+4. In your DNS provider, add a CNAME record for each app:
+
+| Field | Value |
+|-------|-------|
+| Type | CNAME |
+| Name | The app ID (e.g., `appXXX123`) |
+| Target | `cname.vercel-dns.com` |
+| Proxy | DNS only (if using Cloudflare) |
+
+5. In Vercel Dashboard (Project → Settings → Domains), add the full domain (e.g., `appXXX123.example.com`) and click **Verify**
+6. Once verified, HTTPS will be provisioned automatically
+
+<Note>
+Each app gets a unique subdomain based on its App ID. Path-based URLs (e.g., `yourdomain.com/app/xxx`) are not supported.
+</Note>
+
+### API Proxy (Optional)
+
+For regions with restricted access to v0/Vercel APIs, you can configure proxy URLs:
+
+| Setting | Description |
+|---------|-------------|
+| **v0 Base URL** | Proxy URL for v0 API |
+| **Vercel Base URL** | Proxy URL for Vercel API |
+
+### AI Gateway (Optional)
+
+If you use [Vercel AI Gateway](https://vercel.com/docs/ai-gateway), you can configure your API key here to enable:
+
+- Centralized monitoring and logging of AI requests
+- Rate limiting and cost controls
+- Caching to reduce API costs
+
+| Setting | Description |
+|---------|-------------|
+| **AI Gateway API Key** | Get from your Vercel AI Gateway settings |
