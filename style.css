@@ -15,6 +15,77 @@
   display: none !important;
 }
 
+/* Changelog: hide only page title text, keep RSS button visible */
+#header:has(+ #content[data-page-href$="/changelog"]) #page-title {
+  display: none !important;
+}
+
+#header:has(+ #content[data-page-href$="/changelog"]) {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#content[data-page-href$="/changelog"] {
+  margin-top: 0 !important;
+}
+
+#content[data-page-href$="/changelog"] .update-container:first-child {
+  padding-top: 0 !important;
+}
+
+#content[data-page-href$="/changelog"] .update-container:first-child [data-component-part="update-content"] > h1:first-child {
+  margin-top: 0 !important;
+}
+
+/* Monochrome refinements with mode-specific tone */
+html:not(.dark) {
+  --primary: 19 20 21;
+  --primary-light: 19 20 21;
+  --primary-dark: 19 20 21;
+}
+
+.dark {
+  --primary: 249 250 251;
+  --primary-light: 249 250 251;
+  --primary-dark: 249 250 251;
+}
+
+#banner {
+  background: rgb(var(--primary)) !important;
+}
+
+html:not(.dark) #banner,
+html:not(.dark) #banner * {
+  color: rgb(249, 250, 251) !important;
+}
+
+html:not(.dark) #banner a {
+  color: rgb(249, 250, 251) !important;
+  text-decoration-color: rgba(249, 250, 251, 0.7) !important;
+}
+
+.dark #banner,
+.dark #banner * {
+  color: rgb(19, 20, 21) !important;
+}
+
+.dark #banner a {
+  color: rgb(19, 20, 21) !important;
+  text-decoration-color: rgba(19, 20, 21, 0.35) !important;
+}
+
+[data-component-part="update-label"] {
+  background: rgba(17, 17, 17, 0.08) !important;
+  color: #111111 !important;
+  border: 1px solid rgba(17, 17, 17, 0.18);
+}
+
+.dark [data-component-part="update-label"] {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #f3f4f6 !important;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
 /* Move language selector to bottom-right on desktop only */
 @media (min-width: 1024px) {
   #localization-select-trigger {
