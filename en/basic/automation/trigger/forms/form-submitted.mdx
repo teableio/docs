@@ -1,0 +1,74 @@
+---
+title: "When form submitted"
+description: "Trigger a workflow when a form view is submitted"
+---
+
+<Tip>Just tell AI what you want the workflow to do. AI will automatically pick the right trigger and set up the workflow for you.</Tip>
+
+This trigger runs when someone submits a specific form view. All submitted fields are available to the next steps.
+
+## Build with AI
+
+Open the AI Chat in your table's right sidebar and describe what you want.
+
+AI handles everything: it chooses the right trigger, maps the relevant fields, and sets up all actions automatically.
+
+Describe the goal once, and the workflow is ready — no manual setup needed.
+
+**Example:** *"When someone submits the contact form, send a confirmation email."*
+
+## Configuration
+
+| Setting | Required | Description |
+|---|---|---|
+| Table | Yes | The table the form belongs to |
+| Form | Yes | The specific form view to watch for submissions |
+
+## How to set it up
+
+1. Make sure you already have a form view on your table. If not, create one by clicking **+** in the view bar and selecting **Form**.
+2. Open your automation and add a new trigger.
+3. Select **When form submitted**.
+4. Choose the **Table** that contains the form.
+5. Choose the **Form** view you want to monitor.
+6. Save and activate the automation.
+7. Add your action steps. Click **+** in any action field to reference the submitted data — all form fields are available.
+
+## What data is available to next steps
+
+When a form is submitted, the following data is passed to your workflow:
+
+- **Record ID** — the unique identifier of the newly created record.
+- **All submitted field values** — every field that was included in the form (text, email, numbers, dates, selections, attachments, etc.) can be referenced by clicking **+** in subsequent actions.
+
+Fields that the form does not include (hidden fields) will not have values from the submission, but they may have default values set on the table.
+
+## Form submission also creates a record
+
+It is important to understand that a form submission and a record creation are the same event at the data level. When someone submits a form, a new record is added to the table. This means:
+
+- If you also have a **When record created** automation on the same table, *both* automations will fire on a form submission.
+- To avoid duplicate processing, either use the Form Submitted trigger exclusively or add a filter to the Record Created trigger that excludes form-originated records.
+
+<Note>A form submission is essentially a record creation. If the same table also has a "When record created" trigger configured, both workflows will run.</Note>
+
+## When to use
+
+- **Send a confirmation email after submission.** When a customer fills out a contact form, automatically send them a "thank you" email with details of their submission.
+- **Auto-classify new support tickets with AI.** Use the AI Generate action to categorize the ticket based on the description the user submitted.
+- **Notify your team about incoming applications.** When someone submits a job application form, post a notification to Slack or email the hiring team.
+- **Create linked records in other tables.** When an order form is submitted, automatically create records in an "Order Items" table or a "Shipments" table.
+- **Validate and flag submissions.** Check if required information is complete or if a value is out of range, and update a status field to "Needs Review" if something looks off.
+
+## Tips
+
+- This trigger fires once per submission. If the same person submits the form twice, it fires twice.
+- If you need to trigger on all new records regardless of source (manual entry, API, form), use [When record created](/basic/automation/trigger/records/record-created) instead.
+- You can have multiple automations watching the same form. For example, one automation sends a confirmation email while another creates a linked task.
+- Form views respect field visibility settings. Only fields visible in the form are filled by the submission — hidden fields keep their defaults or remain empty.
+
+## Related
+
+- [When record created](/basic/automation/trigger/records/record-created) — fires on any new record, not just form submissions
+- [When button clicked](/basic/automation/trigger/forms/button-click) — fires when a user clicks a button field in an existing row
+- [Send email action](/basic/automation/actions/communication/send-email) — commonly paired with form submissions for confirmations

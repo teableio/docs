@@ -1,0 +1,71 @@
+---
+title: "用 API 编程创建自动化"
+description: "使用 Teable API 和 JavaScript 以编程方式创建和配置工作流"
+---
+
+**目标：** 使用 Teable API 创建一个工作流，当订单发货时向 Webhook 发送通知。
+
+## 前提条件
+
+- 一个个人访问令牌（PAT）。参见[访问令牌](../../api-doc/token)。
+- 你的 Base ID、表格 ID 和字段 ID。参见[获取 ID](../../api-doc/get-id)。
+
+## 辅助函数
+
+```javascript
+const baseUrl = "https://app.teable.io/api";
+const token = process.env.TEABLE_TOKEN;
+const baseId = "bserxxxxxx";
+
+const headers = {
+  Authorization: `Bearer ${token}`,
+  "Content-Type": "application/json",
+};
+
+async function api(method, path, body) {
+  const res = await fetch(`${baseUrl}${path}`, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!res.ok) throw new Error(`${method} ${path} → ${res.status}`);
+  return res.json();
+}
+```
+
+## 创建工作流
+
+```javascript
+// 1. 创建工作流
+const wf = await api("POST", `/base/${baseId}/workflow`, {
+  name: "Notify on shipment",
+  description: "Send webhook when order status becomes Shipped",
+});
+
+// 2. 添加触发器
+const trigger = await api("POST", `/base/${baseId}/workflow/${wf.id}/trigger`, {
+  type: "recordUpdated",
+  config: { tableId: "tblOrders", watchFieldIds: ["fldStatus"] },
+});
+
+// 3. 测试触发器
+await api("POST", `/base/${baseId}/workflow/${wf.id}/test/${trigger.id}`);
+
+// 4. 添加 HTTP 请求操作
+const action = await api("POST", `/base/${baseId}/workflow/${wf.id}/action`, {
+  type: "httpRequest",
+  parentNodeId: trigger.id,
+});
+
+// 5. 启用
+await api("PUT", `/base/${baseId}/workflow/${wf.id}/active`, {
+  method: "activate",
+});
+```
+
+## 最佳实践
+
+- 使用最小权限的 PAT——仅授权其所需的空间/Base。
+- 将令牌存储在环境变量中，切勿硬编码。
+- 在启用之前使用**测试节点**进行验证。
+- 参见完整的[自动化 API 参考文档](../../api-reference/automation/put-base-workflow-action)。

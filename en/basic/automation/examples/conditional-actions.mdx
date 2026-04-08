@@ -1,0 +1,29 @@
+---
+title: "Run different actions based on record values"
+description: "Use conditional logic to branch your workflow and perform different actions depending on field values"
+---
+
+**Goal:** When a support ticket is created, send it to different email addresses based on its Priority — urgent tickets go to the on-call team, others go to the general queue.
+
+## Steps
+
+1. **Create a workflow** with trigger **When Record Created**.
+2. Select your **Tickets** table.
+3. Click **Test** to get a sample record.
+4. **Add a Condition** node.
+5. Set the rule: **Priority** `is` **Urgent**.
+6. Click **Test**.
+7. **On the true path** → add a **Send Email** action:
+   - To: `oncall@yourcompany.com`
+   - Subject: `Urgent ticket: ` + ticket title (via **+**)
+   - Body: ticket description (via **+**)
+8. **On the false path** → add a **Send Email** action:
+   - To: `support@yourcompany.com`
+   - Subject: `New ticket: ` + ticket title
+   - Body: ticket description
+9. Test both paths, then **enable**.
+
+## Tips
+
+- You can nest conditions: add another condition inside the false path to separate "High" from "Low" priority.
+- Combine rules with AND/OR — e.g. `Priority is Urgent AND Assignee is empty`.

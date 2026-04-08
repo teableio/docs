@@ -1,0 +1,26 @@
+---
+title: "Send deadline reminders before tasks are due"
+description: "Automatically email assignees about tasks that are due soon"
+---
+
+**Goal:** Every morning, find tasks due within the next 2 days and email their assignees.
+
+## Steps
+
+1. **Create a workflow** with trigger **At Scheduled Time** — daily at 08:00.
+2. **Add an action** → **Get Records**.
+   - Table: **Tasks**
+   - Filter: `Due Date` **is within** `next 2 days` AND `Status` **is not** `Completed`
+3. Click **Test** to see matching records.
+4. **Add an action** → **Send Email** with **Loop** enabled.
+5. Select the array from the Get Records step as the loop source.
+6. Map:
+   - To → Assignee's email (via **+**, referencing the current loop item)
+   - Subject: `Reminder: "<task title>" is due soon`
+   - Body: `Your task "<task title>" is due on <due date>. Please update the status when done.`
+7. Click **Test**, then **enable**.
+
+## Tips
+
+- Adjust the filter window ("next 2 days", "next 7 days") based on how urgent tasks typically are.
+- Add a condition to only email tasks where the Assignee is not empty.

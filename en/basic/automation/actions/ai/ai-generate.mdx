@@ -1,0 +1,187 @@
+---
+title: "AI generate"
+description: "Use AI models to generate text or structured data in a workflow"
+---
+
+<Note>Available on all Cloud plans. Self-Hosted requires Business or higher.</Note>
+
+<Tip>Just tell AI what you want the workflow to do. AI will automatically set up the Run Script action and write the code for you. If you add actions manually, AI may not be able to recognize or modify them later.</Tip>
+
+## Build with AI
+
+Open the AI Chat in your table's right sidebar and describe what you want.
+
+AI handles everything: it picks the right trigger, chooses the appropriate actions, maps the fields, and configures the entire workflow automatically.
+
+Describe the goal once, and the workflow is ready — no manual setup needed.
+
+Sends a prompt to a large language model and returns text or structured JSON. Use it to classify, extract, summarize, or generate data based on your records.
+
+## Configuration
+
+| Setting | Required | Description |
+|---|---|---|
+| Prompt | Yes | Your instruction to the AI. Click **+** to insert dynamic variables from previous steps |
+| Model | No | Choose a model. Defaults to the system model. Vision and Reasoning models are also available |
+| Temperature | No | Controls randomness: 0 = most deterministic, 1 = most creative. Default is usually around 0.7 |
+| Output Type | No | **Text** (default) — returns free-form text. **JSON** — returns structured JSON matching a schema you define |
+| Attachments | No | Upload images, PDFs, Word docs, or Excel files. Requires a vision-capable model |
+
+## Model capabilities
+
+| Tag | Meaning |
+|---|---|
+| **Vision** | Can read and analyze images, PDFs, Word documents, and Excel files attached to the prompt |
+| **Reasoning** | Returns both the answer and step-by-step reasoning (chain of thought), useful for complex analysis |
+
+You can connect third-party AI models via **Space → Settings → Integrations**. This lets you use models from OpenAI, Anthropic, Google, and other providers.
+
+## How to set it up
+
+1. Add an **AI Generate** action to your workflow.
+2. Write your **Prompt**. This is the instruction the AI will follow. Click **+** to insert dynamic values — for example, the text of a support ticket, the contents of a form submission, or a product description.
+3. (Optional) Select a **Model** if you want to use a specific one instead of the default.
+4. (Optional) Adjust **Temperature**. Lower values (0–0.3) give more consistent, predictable outputs. Higher values (0.7–1.0) give more varied, creative outputs.
+5. (Optional) Switch **Output Type** to **JSON** if you need structured data. Define the JSON schema so the AI knows what format to return.
+6. (Optional) Add **Attachments** if you want the AI to read documents or images (requires a vision model).
+7. Save the action. The AI's response will be available to subsequent steps via the **+** variable picker.
+
+## Prompt writing tips
+
+The quality of the AI output depends heavily on your prompt. Here are practical guidelines:
+
+- **Be specific.** Instead of "Classify this", write "Classify this support ticket into one of these categories: Billing, Technical, Account, Other."
+- **Give examples in the prompt.** Show the AI what you expect:
+  ```
+  Classify the following support ticket. Return only the category name.
+
+  Categories: Billing, Technical, Account, Other
+
+  Examples:
+  - "I can't log in to my account" → Account
+  - "My invoice amount is wrong" → Billing
+  - "The API returns a 500 error" → Technical
+
+  Ticket: {{Ticket Description}}
+  ```
+- **Define the output format.** If you want a specific format, say so: "Return only the category name, nothing else" or "Return a JSON object with keys: category, confidence, reason."
+- **Keep it focused.** One task per prompt works better than asking the AI to do multiple things at once.
+
+## JSON output
+
+When you set Output Type to **JSON**, the AI returns structured data instead of free text. This is useful when you need to extract multiple pieces of information and use them separately in later steps.
+
+Example prompt for JSON output:
+
+```
+Extract the following information from this invoice email. Return JSON with these keys:
+- vendor_name (string)
+- invoice_number (string)
+- amount (number)
+- due_date (string in YYYY-MM-DD format)
+
+Email body: {{Email Body}}
+```
+
+The AI returns something like:
+
+```json
+{
+  "vendor_name": "Acme Corp",
+  "invoice_number": "INV-2024-001",
+  "amount": 1250.00,
+  "due_date": "2024-03-15"
+}
+```
+
+Each key in the JSON is then available as a separate variable in subsequent steps, so you can map `vendor_name` to one field, `amount` to another, and so on.
+
+## Vision models and attachments
+
+Vision models can analyze images and documents. Attach files to the prompt and the AI will "read" them:
+
+- **Images:** screenshots, photos, diagrams, charts.
+- **PDFs:** invoices, contracts, reports.
+- **Word / Excel files:** documents and spreadsheets.
+
+Use cases: extract text from scanned documents, read data from invoice images, analyze chart images, process uploaded forms.
+
+Make sure to select a model with the **Vision** tag. Non-vision models will ignore attachments.
+
+## Credit system
+
+Each AI Generate call consumes credits based on:
+
+- The **model** used (more powerful models cost more credits per token).
+- The **number of tokens** processed (both input and output).
+
+The exact credit cost is shown in the test panel after a test run. Monitor your credit usage in your account settings, especially if you are using AI Generate inside a Loop over many records.
+
+## Concrete prompt examples
+
+### Classification
+
+```
+Classify this customer feedback into: Positive, Negative, or Neutral.
+Return only the classification.
+
+Feedback: {{Feedback Text}}
+```
+
+### Data extraction
+
+```
+Extract all email addresses mentioned in the following text.
+Return them as a JSON array of strings.
+
+Text: {{Message Body}}
+```
+
+### Summarization
+
+```
+Summarize the following meeting notes in 3 bullet points.
+Focus on action items and decisions made.
+
+Notes: {{Meeting Notes}}
+```
+
+### Content generation
+
+```
+Write a professional follow-up email to {{Customer Name}} regarding their inquiry about {{Product Name}}.
+Keep it under 150 words. Mention that we will respond within 24 hours.
+```
+
+### Translation
+
+```
+Translate the following text from {{Source Language}} to {{Target Language}}.
+Preserve the original formatting.
+
+Text: {{Content}}
+```
+
+## When to use
+
+- **Classify support tickets by topic.** Automatically categorize incoming tickets so they can be routed to the right team.
+- **Extract structured data from invoices or emails.** Pull out amounts, dates, names, and reference numbers into separate fields.
+- **Summarize long text fields.** Condense meeting notes, descriptions, or comments into brief summaries.
+- **Generate personalized email content.** Create custom email body text based on record data.
+- **Analyze images and documents.** Use vision models to read uploaded invoices, receipts, or screenshots.
+
+## Tips
+
+- Use the **test panel** to iterate on your prompt before activating the automation. Run tests with real data to verify the output format and quality.
+- For consistent results (especially classification), set Temperature to 0 or near 0.
+- JSON output mode is more reliable when you provide a clear schema in your prompt. Always list the expected keys and their types.
+- If you are processing many records in a [Loop](../logic/loop-run), keep your prompts concise to reduce token usage and credit costs.
+- Connect additional AI providers via Space → Settings → Integrations if the default models do not meet your needs.
+
+<Tip>Connect third-party AI models via **Space → Settings → Integrations**.</Tip>
+
+## Related
+
+- [Loop (batch)](../logic/loop-run) — process multiple records with AI in a single automation run
+- [AI script guide](/basic/automation/ai/scripting/ai-script-guide) — for custom logic that goes beyond prompt-based generation
+- [Create record](/basic/automation/actions/records/create-record) — store AI-generated data as new records

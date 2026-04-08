@@ -1,0 +1,76 @@
+---
+title: "When button clicked"
+description: "Trigger a workflow when a button field is clicked"
+---
+
+<Tip>Just tell AI what you want the workflow to do. AI will automatically pick the right trigger and set up the workflow for you.</Tip>
+
+This trigger runs when a user clicks a Button field in a table row. The workflow receives that row's data.
+
+## Build with AI
+
+Open the AI Chat in your table's right sidebar and describe what you want.
+
+AI handles everything: it chooses the right trigger, maps the relevant fields, and sets up all actions automatically.
+
+Describe the goal once, and the workflow is ready — no manual setup needed.
+
+**Example:** *"When I click the Approve button, update the status and notify the team."*
+
+## Configuration
+
+| Setting | Required | Description |
+|---|---|---|
+| Table | Yes | The table that contains the button field |
+| Watch Fields | Yes | The button field(s) to monitor for clicks |
+| Filter | No | Only trigger if the record matches these conditions when the button is clicked |
+
+## How to create a Button field
+
+Before you can use this trigger, you need a Button field in your table:
+
+1. Open the table where you want the button.
+2. Click **+** to add a new field.
+3. In the field type menu, go to **Advanced** and select **Button**.
+4. Give the field a name (e.g., "Approve", "Send Invoice", "Export").
+5. Save the field. A clickable button will now appear in every row of that column.
+
+## How to set it up
+
+1. Open your automation and add a new trigger.
+2. Select **When button clicked**.
+3. Choose the **Table** that has the button field.
+4. In **Watch Fields**, select the button field you want to monitor. You can select multiple button fields if needed.
+5. (Optional) Add a **Filter** to restrict which rows can trigger the automation. For example, `Status` not equal to `Completed` will prevent the button from firing on already-completed records.
+6. Save and activate the automation.
+7. Add your action steps. Click **+** in any action field to insert data from the clicked row.
+
+## What data is available to next steps
+
+When a button is clicked, the trigger provides:
+
+- **Record ID** — the unique identifier of the row where the button was clicked.
+- **All field values** — every field in the clicked row is available as a variable. This includes text, numbers, dates, linked records, attachments, and more.
+
+This means you can use the row's data to populate emails, update other records, or send data to external APIs — all based on the specific row the user clicked.
+
+## When to use
+
+- **One-click approval workflows.** Add an "Approve" button to each row. When clicked, update the status to "Approved" and send a notification to the requestor.
+- **Generate a report or document on demand.** A "Generate Report" button triggers an AI action or HTTP request to create a PDF or summary for that specific record.
+- **Push a record to an external system.** A "Sync to CRM" button sends the row's data to Salesforce, HubSpot, or another platform via an HTTP request.
+- **Send a personalized email.** A "Send Reminder" button composes and sends an email using the row's contact information and relevant details.
+- **Trigger a manual review step.** A "Flag for Review" button marks the record and notifies a manager, giving humans explicit control over which items get escalated.
+
+## Tips
+
+- The button field itself does not store data — it is purely a trigger mechanism. You will not see a value in the cell; just a clickable button.
+- If you have multiple button fields in a table, you can create separate automations for each one, or use a single automation that watches multiple buttons and uses conditional logic.
+- The filter is evaluated at the moment the button is clicked. If the record does not match the filter, the automation simply does not run — the user will not see an error.
+- Button triggers are great for workflows where you want human judgment before an action is taken, rather than fully automatic processing.
+
+## Related
+
+- [When form submitted](/basic/automation/trigger/forms/form-submitted) — fires on form submissions rather than button clicks
+- [When record updated](/basic/automation/trigger/records/record-updated) — fires automatically on field changes, no user action required
+- [Update record action](/basic/automation/actions/records/update-record) — commonly paired with button clicks to change the row's status

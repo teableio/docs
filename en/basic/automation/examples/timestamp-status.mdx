@@ -1,0 +1,28 @@
+---
+title: "Auto-record the time when a status changes"
+description: "Automatically write a timestamp when a record's status changes to a specific value"
+---
+
+**Goal:** When a task's Status changes to "Completed", write the current date and time into a "Completed At" field.
+
+## Steps
+
+1. **Create a workflow** with trigger **When Record Matches Conditions**.
+2. Select your **Tasks** table.
+3. Set the filter: `Status` **is** `Completed`.
+4. Click **Test**.
+5. **Add an action** → **Update Record**.
+6. Map:
+   - Record ID → the trigger record's ID (via **+**)
+   - Completed At → use an expression or set to the trigger's timestamp
+7. Click **Test**, then **enable**.
+
+## Why "When Record Matches Conditions"?
+
+This trigger fires **once** — at the moment the record transitions to matching. If someone later edits the Description (while Status is still "Completed"), the workflow does **not** fire again. This prevents the timestamp from being overwritten.
+
+## Variations
+
+- **"Started At"** — trigger when Status becomes "In Progress".
+- **"Escalated At"** — trigger when Priority becomes "Urgent".
+- **"Approved At"** — trigger when Approval becomes "Yes".

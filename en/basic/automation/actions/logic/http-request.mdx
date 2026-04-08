@@ -1,0 +1,129 @@
+---
+title: "HTTP request"
+description: "Call any external API from a workflow"
+---
+
+<Tip>Just tell AI what you want the workflow to do. AI will automatically set up the Run Script action and write the code for you. If you add actions manually, AI may not be able to recognize or modify them later.</Tip>
+
+## Build with AI
+
+Open the AI Chat in your table's right sidebar and describe what you want.
+
+AI handles everything: it picks the right trigger, chooses the appropriate actions, maps the fields, and configures the entire workflow automatically.
+
+Describe the goal once, and the workflow is ready — no manual setup needed.
+
+Sends an HTTP request to any URL and returns the response. Use it to call REST APIs, send notifications to Slack or Discord, push data to CRMs, or interact with any service that has an HTTP API.
+
+## Configuration
+
+| Setting | Required | Description |
+|---|---|---|
+| URL | Yes | The target endpoint. Supports dynamic variables via **+** |
+| Method | Yes | GET, POST, PUT, PATCH, DELETE, or HEAD |
+| Headers | No | Custom HTTP headers as key-value pairs |
+| Content-Type | No | The format of the request body (see below) |
+| Body | No | The request payload — text or key-value pairs depending on Content-Type |
+
+## How to set it up
+
+1. Add an **HTTP Request** action to your workflow.
+2. Enter the **URL** of the API endpoint. You can use **+** to insert dynamic values (e.g., include a Record ID in the URL path).
+3. Choose the **Method**:
+   - **GET** — retrieve data.
+   - **POST** — send data to create something.
+   - **PUT / PATCH** — update existing data.
+   - **DELETE** — remove data.
+4. Add **Headers** if the API requires them (e.g., authorization tokens, custom headers).
+5. Choose a **Content-Type** and write the **Body** if needed (for POST, PUT, PATCH).
+6. Save the action.
+
+## Content-Type options explained
+
+| Content-Type | When to use | Body format |
+|---|---|---|
+| `application/json` | Most REST APIs. Send structured data | JSON text (e.g., `{"key": "value"}`) |
+| `application/x-www-form-urlencoded` | Traditional form submissions, some legacy APIs | Key-value pairs, URL-encoded automatically |
+| `multipart/form-data` | File uploads or mixed data | Key-value pairs with file support |
+| `text/plain` | Simple text payloads | Plain text string |
+
+<Tip>If you are unsure which Content-Type to use, choose `application/json`. Most modern APIs use JSON.</Tip>
+
+If you are unsure which to use, `application/json` is the right choice for most modern APIs.
+
+## Authentication examples
+
+Many APIs require authentication. Here are common patterns you can set up in the Headers section:
+
+### Bearer Token
+
+Add a header:
+- **Key:** `Authorization`
+- **Value:** `Bearer your-api-token-here`
+
+This works for APIs like Slack, GitHub, Notion, and many others.
+
+### API Key in header
+
+Add a header:
+- **Key:** `X-API-Key` (or whatever the API expects, e.g., `api-key`, `x-api-token`)
+- **Value:** `your-api-key`
+
+### Basic Authentication
+
+Add a header:
+- **Key:** `Authorization`
+- **Value:** `Basic base64encoded(username:password)`
+
+You will need to Base64-encode your credentials outside of Teable or use a Script action to generate the header value.
+
+## Concrete example: send a Slack notification
+
+Goal: Post a message to a Slack channel when a new record is created.
+
+1. **Trigger:** When record created.
+2. **Action:** HTTP Request with:
+   - **URL:** `https://hooks.slack.com/services/T00/B00/xxxx` (your Slack webhook URL)
+   - **Method:** POST
+   - **Content-Type:** `application/json`
+   - **Body:**
+     ```json
+     {
+       "text": "New task created: {{Task Name}} — Priority: {{Priority}}"
+     }
+     ```
+   Replace `{{Task Name}}` and `{{Priority}}` with dynamic variables from the trigger by clicking **+**.
+
+## Using response data in next steps
+
+After the HTTP request runs, the response is available to subsequent actions:
+
+- **Status code** — the HTTP status (200, 201, 404, etc.).
+- **Response body** — the data returned by the API, parsed as JSON if applicable.
+
+You can reference specific fields from the response using the **+** variable picker in later steps. For example, if the API returns `{"id": "abc123", "status": "created"}`, you can reference `id` and `status` individually.
+
+This is useful for chaining API calls — for example, create something via POST, get back an ID, then use that ID in a subsequent Update Record or another HTTP request.
+
+## When to use
+
+- **Post messages to Slack or Discord.** Send notifications to channels using incoming webhook URLs.
+- **Sync data with a CRM or ERP.** Push new or updated records to Salesforce, HubSpot, or any system with an API.
+- **Call any third-party API.** Interact with payment processors, shipping services, analytics tools, or custom internal APIs.
+- **Trigger external workflows.** Call Zapier webhooks, Make (Integromat) scenarios, or other automation platforms.
+- **Fetch data from external sources.** Use GET requests to pull exchange rates, weather data, or any public API data into your workflow.
+
+## Tips
+
+- Always check the API's documentation for required headers, authentication, and expected body format.
+- Use `application/json` as the Content-Type for most modern APIs. If the API expects form data, switch to `x-www-form-urlencoded`.
+- If the API returns an error (4xx or 5xx status), the action still completes — but subsequent steps will see the error response. Check the status code in your workflow if you need conditional handling.
+- For APIs that return large responses, only reference the specific fields you need in subsequent steps.
+- Combine with [Loop (Batch)](loop-run) to make multiple API calls, one per record. Be mindful of the external API's rate limits.
+- Use the [HTTP Array Body](loop-run) feature when you need to send multiple items in a single request instead of one request per item.
+
+## Related
+
+- [Loop (batch)](loop-run) — make HTTP requests for each item in an array
+- [When webhook received](/basic/automation/trigger/external/webhook-received) — the inbound counterpart: receive HTTP requests from external systems
+- [AI script guide](/basic/automation/ai/scripting/ai-script-guide) — for more complex API interactions with custom code

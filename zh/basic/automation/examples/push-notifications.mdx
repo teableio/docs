@@ -1,0 +1,62 @@
+---
+title: "推送通知到 Slack、Discord 或 Teams"
+description: "当表格中发生事件时，向聊天频道发送消息"
+---
+
+**目标：** 当创建新的高优先级工单时，向 Slack 发送消息。
+
+## 前提条件
+
+你需要从聊天平台获取一个 Webhook URL：
+- **Slack：** 创建一个 [Incoming Webhook](https://api.slack.com/messaging/webhooks)
+- **Discord：** 服务器设置 → 集成 → Webhooks → 新建 Webhook
+- **Teams：** 频道 → 连接器 → Incoming Webhook
+
+## 步骤
+
+1. **创建工作流**，触发器选择 **记录创建时**。
+2. 选择你的**工单**表。
+3. 添加筛选条件：`优先级` **是** `高`。
+4. 点击**测试**。
+5. **添加操作** → **HTTP 请求**。
+6. 配置：
+   - 方法：**POST**
+   - URL：你的 Webhook URL
+   - Content-Type：`application/json`
+   - Body（Slack 格式）：
+     ```json
+     {
+       "text": "新的高优先级工单：<工单标题>"
+     }
+     ```
+   - 使用 **+** 按钮动态插入工单标题。
+7. 点击**测试**，然后**启用**。
+
+## 适配 Discord
+
+Discord 使用 `"content"` 代替 `"text"`：
+
+```json
+{
+  "content": "新的高优先级工单：<工单标题>"
+}
+```
+
+## 适配 Teams
+
+Teams 使用 Adaptive Card 格式：
+
+```json
+{
+  "type": "message",
+  "attachments": [{
+    "contentType": "application/vnd.microsoft.card.adaptive",
+    "content": {
+      "type": "AdaptiveCard",
+      "body": [{ "type": "TextBlock", "text": "新的高优先级工单：<工单标题>" }],
+      "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+      "version": "1.2"
+    }
+  }]
+}
+```

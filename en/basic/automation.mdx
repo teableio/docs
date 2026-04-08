@@ -1,90 +1,54 @@
 ---
 title: "Overview"
-description: "Teable's automation feature is a powerful tool that allows users to create automated workflows to improve efficiency and reduce repetitive tasks"
+description: "Teable integrates powerful AI across the platform to help you work smarter with data"
 ---
 
+AI powers Teable across the platform, turning your data into intelligent, fully automated workflows in seconds. From smart field processing to end-to-end automation, AI handles every step so you can focus on what matters.
 
-### Overview
+Teable Automation lets anyone build powerful workflows without writing code. Just tell AI what you need in plain language.
 
-Automation consists of several key components:
+## Build automation from scratch with AI
 
-* Triggers: Define when to initiate the automation process. Can be based on changes in the base, time, or external events.
-* Actions: Specify operations to execute after a trigger is activated. Can include data operations, sending notifications, or integration with external systems.
-* Conditions: Allow adding logical decisions between triggers and actions for more precise control.
-* Testing: Provides functionality to test automation processes before actual deployment, ensuring they work as expected.
-* Execution Logs: Record automation run history for monitoring and troubleshooting.
+The easiest way to get started. Open any table, click the **AI chat** on the right sidebar, and describe what you want:
 
-![](/images/2025-02-14-16-19-22.png)
+- *"When a new order comes in, send a Slack notification with the customer name and amount."*
+- *"Every Monday morning, email me a summary of tasks that are overdue."*
+- *"When someone submits the feedback form, classify it and update the category field."*
 
-### Creating Automation Workflows
+AI creates the entire automation for you — trigger, actions, and field mappings. Review it in the Automation panel and enable.
 
-Here are the steps to create an automation workflow:
+## Build automation from triggers with AI
 
-#### 1. Create a Trigger
+You can also start from a specific trigger and let AI build the actions:
 
-* Choose a trigger type, such as "When Record Updates".
-* Select the table to monitor.
-* Choose specific fields to monitor.
+1. **Add a trigger** — choose a trigger type (e.g. "When Record Created") and configure it.
+2. **Add an action** — click **+**, go to **Build with AI**, and select **Run Script**.
+3. In the configuration panel, click **Open Editor**.
+4. Pick from the **suggestions** to get started quickly, or describe what you need in your own words.
+5. AI generates the JavaScript code. Review it, click **Apply**.
+6. Click **Test** to run the script with real data, then **Enable** the workflow.
 
-![](/images/2025-02-14-16-20-12.png)
+## Build automation manually
 
-* After configuration, click the "Test" button.
-* The system will display the trigger test results, typically showing the content of a current record in the table.
+You can also build automations step by step using the built-in actions:
 
-![](/images/2025-02-14-16-21-14.png)
+1. **Add a trigger** — choose a trigger type, select the table, configure fields. Click **Test**.
+2. **Add an action** — choose an action type (Create Record, Send Email, HTTP Request, etc.), map field values using **+** to insert dynamic variables. Click **Generate Preview** or **Run as Configured**.
+3. **Enable** — click the toggle in the top-left corner.
 
-#### 2. Create an Action
+## Editing a live workflow
 
-* Select an action type, such as "Create Record in Another Table"
-* Choose the target table.
-* Configure field values for the new record
-* Select values from the trigger's dynamic record.
-![](/images/2025-02-14-16-22-00.png)
+Changes are saved as a draft. The live workflow keeps running on the previous version until you click **Apply Update**.
 
-* Click the "**Generate Preview**" button to validate the action configuration. Or click "**Run as Configured**" to create an actual record and get the return value
+## Execution history
 
-![](/images/2025-02-14-16-24-32.png)
+Open a workflow → **Execution History**. Each run shows status, time spent, and per-step input/output. Click a run to inspect every step.
 
-#### 3. Add Conditions (Optional)
+## Limits
 
-1. Create a condition.
-2. Set up decision rules
-3. For example, check the value of a specific field.
-4. Click the "Test" button to validate the condition.
-
-#### 4. Add More Actions (Optional)
-
-1. Based on condition results, you can add more actions, such as sending HTTP requests.
-2. Configure action details.
-3. Click the "Test" button to validate each newly added action.
-
-#### 5. Start Automation
-
-1. After completing all configurations, click the start button in the upper left.
-2. Confirm to start the automation.
-
-### Verify Execution
-
-1. Modify a record in the monitored table to trigger the automation.
-2. Return to the automation interface.
-3. Click "Execution History" to view the logs.
-4. Check the latest execution record to confirm if the automation executed as expected.
-
-![](/images/2025-02-14-16-24-13.png)
-
-### How Automation Workflows Typically Work
-
-1. When trigger conditions are met (e.g., a record is modified), the automation is activated.
-2. The system checks for any set conditions and evaluates them if present.
-3. If conditions are met (or if no conditions are set), the system executes the defined actions.
-4. The entire process is recorded in the execution log.
-
-### Modifying Automation
-
-When modifying a running automation, for easier debugging, changes to the automation configuration won't take effect immediately in the running automation. Instead, a prompt will appear on the page, and the automation will only be applied to the running process after you confirm the update. You can safely modify the automation without worrying about accidentally interrupting existing processes.
-
-![](/images/2025-02-14-16-23-58.png)
-
-By combining these elements, users can create complex automation workflows, from simple data updates to complex multi-step business processes. Automation not only saves time but also reduces human error, ensuring process consistency and reliability.
-
-In the following chapters, we'll explore in detail the functionality, configuration methods, and best practices for each component.
+| Item | Limit |
+|---|---|
+| Email sending rate | 5 / second / base |
+| Webhook receiving rate | 50 / second / base, 2 / second / workflow |
+| Webhook payload size | 4 MB |
+| Run quota & history retention | Varies by plan |

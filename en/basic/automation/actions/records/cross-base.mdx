@@ -1,0 +1,74 @@
+---
+title: "Cross-base access"
+description: "Read and write data across different bases in a single workflow"
+---
+
+By default, automation actions operate on tables within the workflow's own base. Cross-Base Access removes that boundary, letting you read from and write to tables in **any base you have access to**. This is essential for workflows that span multiple departments, projects, or datasets.
+
+For example, a Sales base automation can create a fulfillment record in a separate Operations base, or a reporting workflow can pull data from multiple project bases into a single summary.
+
+## Supported actions
+
+| Action | Cross-Base Support |
+|---|---|
+| Create Record | Yes |
+| Update Record | Yes |
+| Get Records | Yes |
+
+These are the three record-oriented actions. Other actions (Send Email, HTTP Request, etc.) do not need cross-base access because they do not target a specific table.
+
+## How to set it up
+
+1. Open a supported action (Create Record, Update Record, or Get Records) in your workflow.
+2. Next to the **Table** selector, click **Cross-Base Access**.
+3. A panel opens showing all spaces and bases your account can access. Select the target **Space**, then the target **Base**.
+4. Choose the **Table** within that base. If the action supports it, you can also select a specific **View**.
+5. Map fields and configure the action as usual. The field list now reflects the target table's fields, not the current base's fields.
+6. Save the action.
+
+## Concrete example: Sales to Fulfillment
+
+Imagine you have two bases:
+
+- **Sales Base** — contains a "Deals" table where the sales team tracks closed deals.
+- **Operations Base** — contains a "Fulfillment" table where the ops team manages shipping.
+
+You want to automatically create a fulfillment record when a deal closes:
+
+1. **Trigger:** In the Sales Base, use "When record matches conditions" with filter: `Stage` equals `Closed Won`.
+2. **Action:** Create Record with Cross-Base Access pointing to the Operations Base > Fulfillment table.
+3. **Field mapping:** Map the deal's Customer Name, Product, Quantity, and Shipping Address to the corresponding fields in the Fulfillment table.
+
+Now, every time a deal closes, a fulfillment record is automatically created in the Operations Base — no manual handoff needed.
+
+## Permission model
+
+Cross-base operations run under the **workflow creator's** identity. This has important implications:
+
+| Scenario | Result |
+|---|---|
+| Creator has Editor access to target base | Actions can read, create, and update records |
+| Creator has Viewer access to target base | Only Get Records works; Create and Update will fail |
+| Creator loses access to target base | All cross-base actions in the workflow will fail |
+| Creator's account is deactivated | The entire workflow stops working |
+
+### What happens when the creator loses access
+
+If the workflow creator loses access to the target base (for example, they are removed from the space or their permissions are downgraded), any cross-base action targeting that base will fail at runtime. The workflow will log an error, and the failed action step will show a permission error.
+
+To fix this:
+1. Have someone with access to both bases duplicate or recreate the workflow.
+2. Or restore the original creator's access to the target base.
+
+## Tips
+
+- Cross-base access works across different **spaces**, not just different bases in the same space. As long as the workflow creator has access, the action can reach any base.
+- When mapping fields across bases, field types must be compatible. For example, you cannot map a text field to an attachment field.
+- If you restructure a target base (rename tables, delete fields), the cross-base actions referencing those tables and fields will break. Update your workflow after making structural changes.
+- For complex cross-base workflows, consider centralizing your automations in one "hub" base to keep things organized.
+
+## Related
+
+- [Create record](create-record) — create records in the current or another base
+- [Update record](update-record) — update records in the current or another base
+- [Get records](get-records) — retrieve records from the current or another base

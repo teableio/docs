@@ -1,0 +1,25 @@
+---
+title: "Batch-process records with loop"
+description: "Use Get Records + Loop to process multiple records in a single workflow run"
+---
+
+**Goal:** Every day, find all overdue tasks and mark them as "Overdue".
+
+## Steps
+
+1. **Create a workflow** with trigger **At Scheduled Time** — daily at 08:00.
+2. **Add an action** → **Get Records**.
+   - Table: **Tasks**
+   - Filter: `Due Date` **is before** `today` AND `Status` **is not** `Overdue`
+3. Click **Test** to see matching records.
+4. **Add an action** → **Update Record**.
+5. Click **Loop Run** below the table selector.
+6. Select the array output from the Get Records step.
+7. Map:
+   - Record ID → the current item's record ID (via **+**)
+   - Status → `Overdue`
+8. Click **Test**, then **enable**.
+
+## How It Works
+
+The Get Records step returns an array. The Update Record step with Loop enabled iterates through each item and updates it individually, in order.

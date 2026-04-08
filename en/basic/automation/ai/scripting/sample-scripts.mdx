@@ -1,0 +1,344 @@
+---
+title: "Sample scripts"
+description: "Ready-to-use JavaScript examples for common automation tasks"
+---
+
+This page provides copy-and-paste JavaScript examples for common automation tasks. Each script is designed to work in the Script action's sandbox environment, using `input` to read data from previous steps and `output.set()` to pass results forward.
+
+## Call an external API
+
+**When to use:** You need to fetch data from a third-party service — weather data, exchange rates, a lookup service, or any REST API.
+
+```javascript
+const res = await fetch("https://api.example.com/data", {
+  headers: {
+    "Authorization": "Bearer your-api-key",
+    "Content-Type": "application/json"
+  }
+});
+
+if (!res.ok) {
+  output.set("success", false);
+  output.set("error", `API returned ${res.status}`);
+} else {
+  const data = await res.json();
+  output.set("success", true);
+  output.set("apiData", data);
+}
+```
+
+## Call the Teable API
+
+**When to use:** You need to interact with Teable data in ways that go beyond the built-in Get Records, Create Record, and Update Record actions — for example, batch operations or reading table metadata.
+
+```javascript
+const base = process.env.PUBLIC_ORIGIN + "/api";
+const token = process.env.AUTOMATION_TOKEN;
+
+const res = await fetch(`${base}/table/${tableId}/record`, {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    records: [{ fields: { Name: "Alice" } }]
+  })
+});
+
+const result = await res.json();
+output.set("created", result);
+```
+
+## Batch create records via Teable API
+
+**When to use:** You need to create many records at once and want to do it in a single API call instead of looping with the Create Record action. This is faster for large batches.
+
+```javascript
+const base = process.env.PUBLIC_ORIGIN + "/api";
+const token = process.env.AUTOMATION_TOKEN;
+const tableId = "tblXXXXXXXXX"; // Replace with your table ID
+
+// Build an array of records to create
+const actionIds = Object.keys(input);
+const sourceRecords = input[actionIds[0]].records;
+
+const newRecords = sourceRecords.map(r => ({
+  fields: {
+    fldName: r.fields.fldSourceName,
+    fldStatus: "New",
+    fldCreatedBy: "Automation"
+  }
+}));
+
+// Teable API supports batch creation — send up to 1000 records per call
+const batchSize = 1000;
+let totalCreated = 0;
+
+for (let i = 0; i < newRecords.length; i += batchSize) {
+  const batch = newRecords.slice(i, i + batchSize);
+  const res = await fetch(`${base}/table/${tableId}/record`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ records: batch })
+  });
+
+  if (!res.ok) {
+    console.log(`Batch starting at ${i} failed: ${res.status}`);
+  } else {
+    const result = await res.json();
+    totalCreated += result.records?.length || 0;
+  }
+}
+
+output.set("totalCreated", totalCreated);
+output.set("success", true);
+```
+
+## Process and transform data
+
+**When to use:** You need to reshape or extract specific fields from records before passing them to the next step — for example, creating a simplified summary array.
+
+```javascript
+const actionIds = Object.keys(input);
+const records = input[actionIds[0]].records;
+
+const summary = records.map(r => ({
+  id: r.id,
+  title: r.fields.fldTitle,
+  status: r.fields.fldStatus,
+}));
+
+output.set("summary", summary);
+output.set("count", summary.length);
+```
+
+## Filter records by condition
+
+**When to use:** You have an array of records and need to narrow it down based on custom logic that is more complex than what the built-in filter builder supports — for example, date comparisons, multi-field conditions, or calculations.
+
+```javascript
+const actionIds = Object.keys(input);
+const records = input[actionIds[0]].records;
+
+const overdue = records.filter(r => {
+  const dueDate = new Date(r.fields.fldDueDate);
+  return dueDate < new Date() && r.fields.fldStatus !== "Done";
+});
+
+output.set("overdueRecords", overdue);
+output.set("overdueCount", overdue.length);
+```
+
+## Parse and transform JSON
+
+**When to use:** You receive a JSON string from a webhook, an API response, or a text field, and need to extract or restructure the data.
+
+```javascript
+const actionIds = Object.keys(input);
+const rawJson = input[actionIds[0]].record.fields.fldJsonData;
+
+try {
+  const parsed = JSON.parse(rawJson);
+
+  // Extract specific nested values
+  const items = parsed.order?.items || [];
+  const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+  const simplified = items.map(item => ({
+    name: item.product_name,
+    qty: item.quantity,
+    subtotal: item.price * item.quantity
+  }));
+
+  output.set("items", simplified);
+  output.set("itemCount", items.length);
+  output.set("orderTotal", total);
+  output.set("success", true);
+} catch (error) {
+  output.set("success", false);
+  output.set("error", "Invalid JSON: " + error.message);
+}
+```
+
+## Date formatting and calculations
+
+**When to use:** You need to calculate due dates, format dates for display, find the difference between dates, or check if a date falls within a range.
+
+```javascript
+const actionIds = Object.keys(input);
+const record = input[actionIds[0]].record;
+
+const createdDate = new Date(record.fields.fldCreatedDate);
+const now = new Date();
+
+// Calculate days since creation
+const diffMs = now - createdDate;
+const daysSinceCreation = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+// Calculate a due date (14 days from creation)
+const dueDate = new Date(createdDate);
+dueDate.setDate(dueDate.getDate() + 14);
+
+// Format dates as YYYY-MM-DD
+const formatDate = (d) => d.toISOString().split("T")[0];
+
+// Check if overdue
+const isOverdue = now > dueDate;
+
+// Get the start of the current week (Monday)
+const startOfWeek = new Date(now);
+startOfWeek.setDate(now.getDate() - now.getDay() + 1);
+
+output.set("daysSinceCreation", daysSinceCreation);
+output.set("dueDate", formatDate(dueDate));
+output.set("isOverdue", isOverdue);
+output.set("formattedToday", formatDate(now));
+output.set("weekStart", formatDate(startOfWeek));
+```
+
+## Conditional processing
+
+**When to use:** You need to apply different logic based on the data — routing records to different categories, applying different calculations, or choosing different actions based on field values.
+
+```javascript
+const actionIds = Object.keys(input);
+const record = input[actionIds[0]].record;
+
+const amount = record.fields.fldAmount || 0;
+const region = record.fields.fldRegion || "Unknown";
+const customerType = record.fields.fldCustomerType || "Standard";
+
+// Determine discount based on customer type and amount
+let discount = 0;
+if (customerType === "Enterprise") {
+  discount = amount > 10000 ? 0.15 : 0.10;
+} else if (customerType === "Premium") {
+  discount = amount > 5000 ? 0.10 : 0.05;
+} else {
+  discount = amount > 10000 ? 0.05 : 0;
+}
+
+// Determine shipping method based on region
+const shippingMethods = {
+  "US": "Ground (3-5 days)",
+  "EU": "International Standard (7-10 days)",
+  "APAC": "International Express (5-7 days)"
+};
+const shipping = shippingMethods[region] || "International Standard (10-14 days)";
+
+// Determine approval requirement
+const needsApproval = amount > 5000 || discount > 0.10;
+
+const finalAmount = amount * (1 - discount);
+
+output.set("discount", discount);
+output.set("discountPercent", (discount * 100) + "%");
+output.set("finalAmount", Math.round(finalAmount * 100) / 100);
+output.set("shipping", shipping);
+output.set("needsApproval", needsApproval);
+```
+
+## Send a Slack message
+
+**When to use:** You want to send a formatted notification to a Slack channel as part of your automation. This gives you more control over formatting than the HTTP Request action.
+
+```javascript
+const webhook = "https://hooks.slack.com/services/XXX/YYY/ZZZ";
+const actionIds = Object.keys(input);
+const record = input[actionIds[0]].record;
+
+const taskName = record.fields.fldTitle || "Untitled";
+const priority = record.fields.fldPriority || "Normal";
+const assignee = record.fields.fldAssignee || "Unassigned";
+
+// Use Slack Block Kit for richer formatting
+const payload = {
+  blocks: [
+    {
+      type: "header",
+      text: { type: "plain_text", text: "New Task Created" }
+    },
+    {
+      type: "section",
+      fields: [
+        { type: "mrkdwn", text: `*Task:* ${taskName}` },
+        { type: "mrkdwn", text: `*Priority:* ${priority}` },
+        { type: "mrkdwn", text: `*Assignee:* ${assignee}` }
+      ]
+    }
+  ]
+};
+
+const res = await fetch(webhook, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(payload)
+});
+
+output.set("sent", res.ok);
+if (!res.ok) {
+  output.set("error", `Slack returned ${res.status}`);
+}
+```
+
+## Aggregate and summarize records
+
+**When to use:** You have an array of records and need to compute totals, averages, counts by category, or other aggregate statistics.
+
+```javascript
+const actionIds = Object.keys(input);
+const records = input[actionIds[0]].records;
+
+// Count by status
+const statusCounts = {};
+records.forEach(r => {
+  const status = r.fields.fldStatus || "Unknown";
+  statusCounts[status] = (statusCounts[status] || 0) + 1;
+});
+
+// Calculate totals and averages
+const amounts = records
+  .map(r => r.fields.fldAmount || 0)
+  .filter(a => a > 0);
+
+const totalAmount = amounts.reduce((sum, a) => sum + a, 0);
+const avgAmount = amounts.length > 0 ? totalAmount / amounts.length : 0;
+const maxAmount = amounts.length > 0 ? Math.max(...amounts) : 0;
+
+// Build a text summary
+const summaryLines = Object.entries(statusCounts)
+  .map(([status, count]) => `- ${status}: ${count}`)
+  .join("\n");
+
+const summaryText = `Total records: ${records.length}
+Total amount: $${totalAmount.toFixed(2)}
+Average amount: $${avgAmount.toFixed(2)}
+Highest amount: $${maxAmount.toFixed(2)}
+
+By status:
+${summaryLines}`;
+
+output.set("statusCounts", statusCounts);
+output.set("totalAmount", totalAmount);
+output.set("avgAmount", Math.round(avgAmount * 100) / 100);
+output.set("summaryText", summaryText);
+output.set("recordCount", records.length);
+```
+
+## Tips for all scripts
+
+- **Always handle errors.** Wrap API calls and JSON parsing in try/catch blocks.
+- **Log during development.** Use `console.log()` to inspect data structures. Logs appear in the test panel.
+- **Keep scripts under 60 seconds.** The sandbox enforces a timeout. For large datasets, process in batches.
+- **Use `output.set()` for every value** you need in later steps. Data not set via `output.set()` is not accessible to subsequent actions.
+- **Test with real data.** Click the Test button to run your script against actual automation data.
+
+## Related
+
+- [AI script guide](ai-script-guide) — full reference for the scripting environment
+- [HTTP request](/basic/automation/actions/logic/http-request) — for simple API calls without scripting
+- [Loop (batch)](/basic/automation/actions/logic/loop-run) — for iterating without code

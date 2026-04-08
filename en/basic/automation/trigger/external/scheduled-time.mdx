@@ -1,0 +1,97 @@
+---
+title: "At scheduled time"
+description: "Run a workflow on a recurring or one-time schedule"
+---
+
+<Tip>Just tell AI what you want the workflow to do. AI will automatically pick the right trigger and set up the workflow for you.</Tip>
+
+This trigger runs on a schedule you define — from every few minutes to once a month, or a single one-time run.
+
+## Build with AI
+
+Open the AI Chat in your table's right sidebar and describe what you want.
+
+AI handles everything: it chooses the right trigger, maps the relevant fields, and sets up all actions automatically.
+
+Describe the goal once, and the workflow is ready — no manual setup needed.
+
+**Example:** *"Every Monday at 9am, email me a list of overdue tasks."*
+
+## Configuration
+
+| Setting | Required | Description |
+|---|---|---|
+| Start Time | Yes | When the schedule begins |
+| End Time | No | When the schedule stops (leave blank to run indefinitely) |
+| Time Zone | Yes | Defaults to your current time zone. All times are interpreted in this zone |
+| Frequency | Yes | How often the trigger fires — see options below |
+
+## Frequency options
+
+| Frequency | Interval | Extra Settings |
+|---|---|---|
+| Minutes | Every 1–60 min | — |
+| Hours | Every 1–24 h | — |
+| Days | Every 1–31 days | Trigger time (hour + minute) |
+| Weeks | Every 1–52 weeks | Weekdays (Mon–Sun) + trigger time |
+| Months | Every 1–12 months | Days of month + trigger time |
+| One-time | — | Fires once at the specified time, then auto-deactivates |
+
+Use **-1** as the day of month to target the last day of the month, regardless of whether it has 28, 30, or 31 days.
+
+## How to set it up
+
+1. Open your automation and add a new trigger.
+2. Select **At scheduled time**.
+3. Set the **Time Zone**. This is especially important if your team spans multiple time zones — the schedule runs in whichever zone you select here.
+4. Choose a **Frequency**. For example, to run every Monday at 9:00 AM:
+   - Set Frequency to **Weeks**.
+   - Set interval to **1** (every 1 week).
+   - Check **Monday** in the weekday selector.
+   - Set the trigger time to **09:00**.
+5. Set a **Start Time** (when the schedule becomes active).
+6. (Optional) Set an **End Time** if you want the schedule to expire.
+7. Save and activate the automation.
+8. Since there is no record data, your first action will typically be a **Get Records** step to load the data you need.
+
+## Concrete example: weekly Monday morning report
+
+Goal: Every Monday at 9:00 AM, get all tasks due this week and send a summary email.
+
+1. **Trigger:** At scheduled time — Weeks, every 1 week, Monday, 09:00, your time zone.
+2. **Action 1:** Get Records — from the Tasks table, filter: Due Date is within this week.
+3. **Action 2:** Send Email — to your team, with the retrieved tasks listed in the body.
+
+## One-time schedules
+
+When you select **One-time** frequency, the automation fires once at the specified date and time and then automatically deactivates itself. This is useful for:
+
+- A reminder to follow up on a specific date.
+- A delayed action that needs to happen once (e.g., send a launch announcement at a future date).
+- A time-limited campaign that triggers only once.
+
+After a one-time trigger fires, you will see the automation marked as inactive. You can reactivate it with a new time if needed.
+
+## When to use
+
+- **Generate a daily summary report.** Run every day at 8:00 AM, get all records updated yesterday, and email a digest.
+- **Create recurring tasks every Monday.** Run weekly and create records in your task table for the new week.
+- **Send monthly invoice reminders.** Run on the 1st of each month, find unpaid invoices, and send reminder emails.
+- **Clean up stale records.** Run daily, find records older than 90 days with a "Draft" status, and archive or delete them.
+- **Sync data on a schedule.** Run every hour to push updated records to an external API.
+
+<Warning>Schedule triggers are not linked to any record, so there is no record data available to subsequent steps. If you need to process records, add a Get Records action as your first step and use filters to select the records you need.</Warning>
+
+## Tips
+
+- Since schedule triggers have no "current record," you cannot reference trigger data in actions the way you would with record-based triggers. Always start with a **Get Records** action if you need data.
+- Be mindful of time zones, especially for teams that work across regions. The time zone setting on the trigger determines when it fires — not the viewer's local time.
+- For high-frequency schedules (every few minutes), keep your workflow lightweight to avoid overlapping runs.
+- If your automation is time-sensitive (e.g., must run before a daily meeting), set it a few minutes early to allow for processing time.
+- The **-1** day-of-month trick is useful for month-end reports or processes. Using -1 means "last day of the month", so it correctly fires on January 31, February 28 (or 29), March 31, etc.
+
+## Related
+
+- [Get records action](/basic/automation/actions/records/get-records) — typically the first step after a schedule trigger
+- [Send email action](/basic/automation/actions/communication/send-email) — commonly paired with schedules for periodic notifications
+- [Loop (batch) action](/basic/automation/actions/logic/loop-run) — useful for processing the array of records returned by Get Records

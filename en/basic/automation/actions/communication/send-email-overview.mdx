@@ -1,0 +1,111 @@
+---
+title: "Send email overview"
+description: "Send customized emails from a workflow"
+---
+
+<Tip>Just tell AI what you want the workflow to do. AI will automatically set up the Run Script action and write the code for you. If you add actions manually, AI may not be able to recognize or modify them later.</Tip>
+
+## Build with AI
+
+Open the AI Chat in your table's right sidebar and describe what you want.
+
+AI handles everything: it picks the right trigger, chooses the appropriate actions, maps the fields, and configures the entire workflow automatically.
+
+Describe the goal once, and the workflow is ready — no manual setup needed.
+
+This action sends an email to one or more recipients. You can customize every part of the email — recipients, subject, body, attachments — and use dynamic values from previous steps to personalize each message.
+
+By default, emails are sent from Teable's built-in mail service. If you need to send from your own domain, configure a [custom SMTP server](smtp-sender).
+
+## Configuration
+
+| Setting | Required | Description |
+|---|---|---|
+| To | Yes* | Recipient email address(es). Separate multiple addresses with commas |
+| Subject | Yes | The subject line. Supports dynamic variables via **+** |
+| Body | Yes | The email body. Supports Markdown, HTML, and dynamic variables |
+| Sender Name | No | The display name shown in the recipient's inbox (e.g., "Acme Support") |
+| CC | No | Carbon copy recipients |
+| BCC | No | Blind carbon copy recipients |
+| Reply-To | No | The address recipients reply to (if different from the sender) |
+| Attachments | No | File attachments from previous steps or attachment fields |
+
+\* At least one of **To** or **BCC** is required.
+
+**Rate limit:** 5 emails / second / base.
+
+## How to set it up
+
+1. Add a **Send Email** action to your workflow.
+2. In the **To** field, enter a static email address or click **+** to insert a dynamic value (e.g., the Email field from the trigger record).
+3. Write the **Subject**. Click **+** to include dynamic values like the record's name or a status. Example: `New order from {{Customer Name}} — #{{Order ID}}`.
+4. Write the **Body**. You can use:
+   - **Plain text** — just type your message.
+   - **Markdown** — use `**bold**`, `*italic*`, `- lists`, `[links](url)`, etc.
+   - **HTML** — for full control over formatting, write HTML tags directly.
+   - **Dynamic variables** — click **+** anywhere in the body to insert values from previous steps.
+5. (Optional) Set **Sender Name**, **CC**, **BCC**, or **Reply-To** as needed.
+6. (Optional) Add **Attachments** by referencing attachment fields from previous steps.
+7. Save the action.
+
+## Using variables in subject and body
+
+Variables let you personalize each email. Click the **+** button in any text field to open the variable picker. You can reference:
+
+- **Trigger data:** fields from the record that triggered the automation (e.g., customer name, email, order amount).
+- **Previous action output:** data from earlier steps, like a newly created Record ID or AI-generated text.
+
+Example body with variables:
+
+```
+Hi {{Customer Name}},
+
+Your order #{{Order ID}} has been confirmed.
+
+**Total:** ${{Order Amount}}
+**Estimated delivery:** {{Delivery Date}}
+
+Thank you for your purchase!
+```
+
+## Body formatting options
+
+| Format | How to use | Best for |
+|---|---|---|
+| Plain text | Just type your message | Simple notifications |
+| Markdown | Use Markdown syntax (`**bold**`, `# heading`, etc.) | Structured messages with formatting |
+| HTML | Write HTML tags (`<h1>`, `<p>`, `<table>`, etc.) | Fully designed emails with custom layouts |
+
+You can mix Markdown and dynamic variables in the same body. For complex email designs, HTML gives you the most control.
+
+## Attachment handling
+
+To include attachments:
+
+- Reference an **attachment field** from a previous step (e.g., a file uploaded to a record).
+- The attachment is included as a file in the outgoing email.
+- Multiple attachments are supported.
+
+Note that attachments increase email size. Large attachments may cause delivery issues depending on the recipient's mail server limits.
+
+## When to use
+
+- **Send order confirmations.** When a new order is created, send an email with the order details and a thank-you message.
+- **Notify team members of status changes.** When a task moves to "Blocked", email the assignee and their manager.
+- **Deliver scheduled reports.** Combine with a scheduled trigger and Get Records to email a weekly summary.
+- **Send personalized outreach.** Use record data to customize subject and body for each recipient.
+- **Confirm form submissions.** After a form is submitted, send the submitter a confirmation with their responses.
+
+## Deliverability tips
+
+- **Use a custom SMTP** if you are sending high-volume or business-critical emails. Teable's built-in service works for basic notifications, but emails from your own domain are more likely to land in the recipient's inbox.
+- **Avoid spammy content** in your subject and body — excessive capitalization, exclamation marks, or link-heavy messages can trigger spam filters.
+- **Set a Reply-To address** so recipients can respond to a real inbox rather than a no-reply address.
+- **Keep attachments small.** If you need to share large files, include a download link instead.
+- **Test your emails** before activating the automation in production. Run the automation manually with test data to verify formatting and delivery.
+
+## Related
+
+- [Set up SMTP and sender](smtp-sender) — send emails from your own domain
+- [Loop (batch)](../logic/loop-run) — send emails in bulk by looping through a list of records
+- [AI generate](/basic/automation/actions/ai/ai-generate) — generate personalized email content with AI

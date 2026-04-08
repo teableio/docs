@@ -1,0 +1,32 @@
+---
+title: "Generate and send a daily email digest with AI"
+description: "Use a scheduled trigger + AI Generate to summarize the day's activity and email it to your team"
+---
+
+**Goal:** Every evening, summarize all tasks completed today and email the digest to the team.
+
+## Steps
+
+1. **Create a workflow** with trigger **At Scheduled Time** — daily at 18:00.
+2. **Add an action** → **Get Records**.
+   - Table: **Tasks**
+   - Filter: `Status` **is** `Completed` AND `Completed At` **is** `today`
+3. **Add an action** → **AI Generate**.
+   - Prompt:
+     ```
+     Summarize these completed tasks into a brief daily report.
+     Group by category if applicable. Keep it under 200 words.
+
+     Tasks: <insert Get Records output via +>
+     ```
+   - Output Type: **Text**
+4. **Add an action** → **Send Email**.
+   - To: `team@yourcompany.com`
+   - Subject: `Daily Task Report`
+   - Body: insert the AI Generate output (via **+**)
+5. Test each step, then **enable**.
+
+## Variations
+
+- **Weekly digest:** change the schedule to Fridays and the filter to "past 7 days".
+- **Customer activity digest:** query a CRM table for new interactions and summarize.

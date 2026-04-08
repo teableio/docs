@@ -1,0 +1,32 @@
+---
+title: "Auto-classify new form entries with AI"
+description: "Use AI Generate to automatically categorize form submissions"
+---
+
+**Goal:** When someone submits a feedback form, use AI to classify the feedback as "Bug Report", "Feature Request", or "General Feedback" and write the result back.
+
+## Steps
+
+1. **Create a workflow** with trigger **When Form Submitted**.
+2. Select your **Feedback** table and form.
+3. Click **Test**.
+4. **Add an action** → **AI Generate**.
+   - Prompt:
+     ```
+     Classify this feedback into exactly one category:
+     Bug Report, Feature Request, or General Feedback.
+
+     Reply with only the category name.
+
+     Feedback: <insert the feedback field via +>
+     ```
+   - Output Type: **Text**
+5. **Add an action** → **Update Record**.
+   - Record ID: the trigger record's ID (via **+**)
+   - Category field → the AI Generate output (via **+**)
+6. Test each step, then **enable**.
+
+## Tips
+
+- For more nuanced classification, increase the number of categories in the prompt.
+- Use **JSON** output type if you want the AI to return multiple fields (e.g. category + sentiment + summary) in one call.

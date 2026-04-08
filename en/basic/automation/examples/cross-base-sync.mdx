@@ -1,0 +1,28 @@
+---
+title: "Keep records in sync across multiple bases"
+description: "Automatically replicate new or updated records to another base using Cross-Base Access"
+---
+
+**Goal:** When a new order is created in the Sales base, automatically create a matching record in the Fulfillment base.
+
+## Steps
+
+1. **Create a workflow** in the **Sales** base with trigger **When Record Created**.
+2. Select your **Orders** table.
+3. Click **Test**.
+4. **Add an action** → **Create Record**.
+5. Click **Cross-Base Access** next to the table selector.
+6. Navigate to the **Fulfillment** base and select the **Orders** table.
+7. Map fields:
+   - Order ID → trigger's Order ID (via **+**)
+   - Customer → trigger's Customer
+   - Amount → trigger's Amount
+   - Status → `Pending Fulfillment`
+8. Click **Test**, then **enable**.
+
+## Two-Way Sync
+
+To sync updates in both directions:
+1. Create a second workflow in the **Fulfillment** base.
+2. Use **When Record Updated** → **Update Record** with Cross-Base Access pointing back to the Sales base.
+3. Use a filter to avoid infinite loops — e.g. only trigger when specific fields change, and check that the value actually differs before updating.
