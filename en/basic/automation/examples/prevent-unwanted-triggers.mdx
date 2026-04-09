@@ -1,0 +1,45 @@
+---
+title: "Avoid unwanted triggers with filters and watch fields"
+description: "Prevent your automations from running when they shouldn't"
+---
+
+<Tip>We recommend building automation examples directly in AI chat. Just describe the workflow you want, and AI will handle the full setup for you, including the trigger, actions, script, and configuration.</Tip>
+
+## Build with AI
+
+Open the AI Chat in your table's right sidebar and tell AI what you want. For example, you can say:
+
+*"When the Status field changes to Approved, send a notification email to the assignee. Only trigger on Status changes, ignore other field edits"*
+
+AI will create the complete workflow automatically. You can review the generated script, test it with real data, and enable the workflow when ready.
+
+A workflow that triggers too often wastes runs, sends unwanted emails, and creates noise. Here's how to keep triggers precise.
+
+## Use Watch Fields
+
+When using **When Record Updated**, always select specific fields instead of "All Fields".
+
+**Problem:** A workflow sends a notification when the Status field changes. With "All Fields" selected, it also triggers when someone edits the Description or adds a comment.
+
+**Fix:** Set Watch Fields to **Status** only. Now the workflow ignores all other changes.
+
+## Use Filters
+
+Add a filter to any record trigger to narrow which records activate the workflow.
+
+**Problem:** A workflow processes all new records, but some are test entries.
+
+**Fix:** Add a filter: `Type` **is not** `Test`. Only real records trigger the workflow.
+
+## Combine Both
+
+For maximum control, use watch fields **and** a filter together:
+
+- Watch Fields: `Status`
+- Filter: `Status` **is** `Approved`
+
+This means: only trigger when the Status field changes **and** the new value is "Approved".
+
+## Use "When Record Matches Conditions" for State Changes
+
+If you want to trigger **only on the transition** (e.g. from "Pending" to "Approved"), use the **When Record Matches Conditions** trigger instead. It fires once at the moment the record begins to match — not on every subsequent edit.

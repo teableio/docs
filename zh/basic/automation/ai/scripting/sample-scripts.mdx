@@ -1,0 +1,339 @@
+---
+title: "示例脚本"
+description: "常用自动化脚本示例，可直接复制使用或按需修改"
+---
+
+以下是一些常用的自动化脚本示例，覆盖了日常工作中最常见的场景。每个示例都包含上下文说明，帮助你理解何时以及如何使用。
+
+## 调用外部 API
+
+从外部服务获取数据，用于丰富记录信息或获取实时数据。
+
+```javascript
+const res = await fetch("https://api.example.com/data");
+const data = await res.json();
+output.set("apiData", data);
+```
+
+## 调用 Teable API 创建记录
+
+在脚本中直接调用 Teable API 创建新记录，适合需要在一个脚本中完成多步操作的场景。
+
+```javascript
+const base = process.env.PUBLIC_ORIGIN + "/api";
+const token = process.env.AUTOMATION_TOKEN;
+
+const res = await fetch(`${base}/table/tblXXXXXX/record`, {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    records: [{ fields: { fldName: "新记录", fldStatus: "待处理" } }]
+  })
+});
+const result = await res.json();
+output.set("created", result);
+```
+
+## 批量创建多条记录
+
+当需要一次性创建多条记录时（如根据模板初始化项目任务），可以在一个 API 调用中批量完成。
+
+```javascript
+const base = process.env.PUBLIC_ORIGIN + "/api";
+const token = process.env.AUTOMATION_TOKEN;
+const tableId = "tblXXXXXX";
+
+const newRecords = [
+  { fields: { fldTask: "需求分析", fldPhase: "第一阶段", fldDays: 5 } },
+  { fields: { fldTask: "设计评审", fldPhase: "第一阶段", fldDays: 3 } },
+  { fields: { fldTask: "开发实现", fldPhase: "第二阶段", fldDays: 10 } },
+  { fields: { fldTask: "测试验收", fldPhase: "第三阶段", fldDays: 5 } }
+];
+
+const res = await fetch(`${base}/table/${tableId}/record`, {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({ records: newRecords })
+});
+const result = await res.json();
+output.set("createdCount", result.records?.length || 0);
+```
+
+## 调用外部 API 并写回数据
+
+从外部 API 获取数据后，更新当前触发记录的字段。适用于汇率查询、物流状态查询等场景。
+
+```javascript
+const actionIds = Object.keys(input);
+const data = input[actionIds[0]];
+const recordId = data.record.id;
+
+// 调用外部 API 获取汇率
+const res = await fetch("https://api.exchangerate-api.com/v4/latest/USD");
+const rates = await res.json();
+const cnyRate = rates.rates.CNY;
+
+// 更新 Teable 记录
+const base = process.env.PUBLIC_ORIGIN + "/api";
+const token = process.env.AUTOMATION_TOKEN;
+const tableId = "tblXXXXXX";
+
+await fetch(`${base}/table/${tableId}/record/${recordId}`, {
+  method: "PATCH",
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    record: { fields: { fldExchangeRate: cnyRate } }
+  })
+});
+
+output.set("rate", cnyRate);
+```
+
+## 解析 JSON 字符串
+
+将存储在文本字段中的 JSON 字符串解析为对象，方便后续引用其中的具体字段。常见于从 Webhook 或 API 获取的原始数据。
+
+```javascript
+const actionIds = Object.keys(input);
+const data = input[actionIds[0]];
+const jsonStr = data.record.fields.fldJsonData;
+
+try {
+  const parsed = JSON.parse(jsonStr);
+  output.set("parsed", parsed);
+  output.set("success", true);
+} catch (e) {
+  output.set("parsed", null);
+  output.set("success", false);
+  output.set("error", `JSON 解析失败: ${e.message}`);
+}
+```
+
+## 日期计算
+
+计算两个日期之间的天数差、生成未来日期等。适用于截止日期提醒、工期计算等场景。
+
+```javascript
+const actionIds = Object.keys(input);
+const data = input[actionIds[0]];
+
+// 计算距离截止日期还有多少天
+const dueDate = new Date(data.record.fields.fldDueDate);
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+dueDate.setHours(0, 0, 0, 0);
+
+const diffDays = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+
+let status;
+if (diffDays < 0) {
+  status = `已逾期 ${Math.abs(diffDays)} 天`;
+} else if (diffDays === 0) {
+  status = "今天到期";
+} else if (diffDays <= 3) {
+  status = `还剩 ${diffDays} 天，即将到期`;
+} else {
+  status = `还剩 ${diffDays} 天`;
+}
+
+output.set("diffDays", diffDays);
+output.set("status", status);
+
+// 生成未来日期（例如 7 天后）
+const futureDate = new Date(today);
+futureDate.setDate(futureDate.getDate() + 7);
+const futureDateStr = futureDate.toISOString().split("T")[0];
+output.set("followUpDate", futureDateStr);
+```
+
+## 格式化日期
+
+将日期字段转换为指定格式的字符串，用于邮件正文、报告内容等。
+
+```javascript
+const actionIds = Object.keys(input);
+const data = input[actionIds[0]];
+const dateStr = data.record.fields.fldDate;
+
+const date = new Date(dateStr);
+const year = date.getFullYear();
+const month = String(date.getMonth() + 1).padStart(2, "0");
+const day = String(date.getDate()).padStart(2, "0");
+
+// 多种格式
+output.set("iso", `${year}-${month}-${day}`);
+output.set("chinese", `${year}年${parseInt(month)}月${parseInt(day)}日`);
+output.set("slash", `${year}/${month}/${day}`);
+```
+
+## 条件分支处理
+
+根据记录的字段值执行不同逻辑。例如，根据订单金额决定审批流程。
+
+```javascript
+const actionIds = Object.keys(input);
+const data = input[actionIds[0]];
+const fields = data.record.fields;
+
+const amount = Number(fields.fldAmount) || 0;
+const category = fields.fldCategory;
+
+let approver;
+let needsReview;
+
+// 根据金额和类别决定审批人
+if (amount >= 100000) {
+  approver = "总经理";
+  needsReview = true;
+} else if (amount >= 10000) {
+  approver = "部门经理";
+  needsReview = true;
+} else {
+  approver = "自动通过";
+  needsReview = false;
+}
+
+// 特殊类别额外处理
+if (category === "固定资产") {
+  approver = "财务总监";
+  needsReview = true;
+}
+
+output.set("approver", approver);
+output.set("needsReview", needsReview);
+output.set("amount", amount);
+```
+
+## 合并多个字段
+
+将多个字段值拼接为一个字符串，用于生成摘要、通知内容等。
+
+```javascript
+const actionIds = Object.keys(input);
+const data = input[actionIds[0]];
+const fields = data.record.fields;
+
+const fullName = `${fields.fldLastName}${fields.fldFirstName}`;
+const summary = `${fullName} - ${fields.fldDepartment} - ${fields.fldTitle}`;
+
+output.set("fullName", fullName);
+output.set("summary", summary);
+```
+
+## 数据筛选和统计
+
+对查询结果进行筛选、分组和统计，用于生成报告或数据分析。
+
+```javascript
+const actionIds = Object.keys(input);
+const records = input[actionIds[0]].records;
+
+// 筛选逾期记录
+const overdue = records.filter(r => {
+  const dueDate = new Date(r.fields.fldDueDate);
+  return dueDate < new Date() && r.fields.fldStatus !== "已完成";
+});
+
+// 按状态统计
+const statusCount = {};
+records.forEach(r => {
+  const status = r.fields.fldStatus || "未设置";
+  statusCount[status] = (statusCount[status] || 0) + 1;
+});
+
+// 计算数字字段总和
+const totalAmount = records.reduce((sum, r) => {
+  return sum + (Number(r.fields.fldAmount) || 0);
+}, 0);
+
+output.set("overdueRecords", overdue);
+output.set("overdueCount", overdue.length);
+output.set("statusCount", statusCount);
+output.set("totalAmount", totalAmount);
+output.set("totalRecords", records.length);
+```
+
+## 批量生成编号
+
+为一组记录生成带前缀的序列编号，用于订单号、工单号等场景。
+
+```javascript
+const actionIds = Object.keys(input);
+const records = input[actionIds[0]].records;
+const prefix = "ORD";
+const startNum = 1001;
+
+const numbered = records.map((r, i) => ({
+  id: r.id,
+  code: `${prefix}-${String(startNum + i).padStart(6, "0")}`
+}));
+
+output.set("numberedRecords", numbered);
+// 示例输出: [{id: "recXXX", code: "ORD-001001"}, {id: "recYYY", code: "ORD-001002"}, ...]
+```
+
+## 发送格式化的 Webhook 通知
+
+将记录数据格式化后发送到 Slack、企业微信或钉钉等平台。
+
+```javascript
+const actionIds = Object.keys(input);
+const data = input[actionIds[0]];
+const fields = data.record.fields;
+
+// Slack 通知
+const slackPayload = {
+  text: `新任务创建通知`,
+  blocks: [
+    { type: "header", text: { type: "plain_text", text: fields.fldTitle } },
+    { type: "section", text: { type: "mrkdwn", text: `*负责人:* ${fields.fldAssignee}\n*优先级:* ${fields.fldPriority}\n*截止日期:* ${fields.fldDueDate}` } }
+  ]
+};
+
+const res = await fetch("https://hooks.slack.com/services/YOUR/WEBHOOK/URL", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(slackPayload)
+});
+
+output.set("status", res.status);
+output.set("success", res.ok);
+```
+
+## 企业微信 Webhook 通知
+
+```javascript
+const actionIds = Object.keys(input);
+const data = input[actionIds[0]];
+const fields = data.record.fields;
+
+const payload = {
+  msgtype: "markdown",
+  markdown: {
+    content: `### 新工单通知\n> **标题**: ${fields.fldTitle}\n> **提交人**: ${fields.fldSubmitter}\n> **优先级**: <font color="warning">${fields.fldPriority}</font>\n> **描述**: ${fields.fldDescription}\n\n请及时处理。`
+  }
+};
+
+const res = await fetch("https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=YOUR-KEY", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(payload)
+});
+
+output.set("sent", res.ok);
+```
+
+## 相关文档
+
+- [AI 脚本指南](/zh/basic/automation/ai/scripting/ai-script-guide)
+- [HTTP 请求](/zh/basic/automation/actions/logic/http-request)
+- [循环执行](/zh/basic/automation/actions/logic/loop-run)

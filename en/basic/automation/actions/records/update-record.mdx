@@ -1,0 +1,102 @@
+---
+title: "Update record"
+description: "Modify fields in an existing record as part of a workflow"
+---
+
+<Tip>
+We strongly recommend using Run Script to build automations, because it can cover all action behaviors, including actions that would otherwise need to be built manually. Just describe your requirements to AI in chat.
+
+Please note: if you add actions manually, AI will not recognize or modify them later.
+</Tip>
+
+## Build with AI
+
+Open the AI Chat in your table's right sidebar and describe what you want.
+
+AI handles everything: it picks the right trigger, chooses the appropriate actions, maps the fields, and configures the entire workflow automatically.
+
+Describe the goal once, and the workflow is ready — no manual setup needed.
+
+Updates one or more fields in an existing record. Only the fields you map will change — everything else stays the same.
+
+## Configuration
+
+| Setting | Required | Description |
+|---|---|---|
+| Table | Yes | The table containing the record to update |
+| Record ID | Yes | Which record to update. Supports dynamic variables and comma-separated IDs for multiple records |
+| Fields | Yes | Map each field to its new value — static or dynamic |
+
+## How to set it up
+
+1. Add an **Update Record** action to your workflow.
+2. Choose the **Table** that contains the record you want to modify.
+3. Set the **Record ID**. Click **+** to insert a dynamic variable:
+   - From a **record trigger** (created, updated, button clicked): the trigger provides the Record ID directly.
+   - From a **Get Records** action: reference the Record ID from the retrieved results.
+   - You can also type a static Record ID or use a comma-separated list to update multiple records at once (e.g., `rec123,rec456,rec789`).
+4. Map the fields you want to change. For each field:
+   - **Static value:** Type the new value directly.
+   - **Dynamic value:** Click **+** to insert a value from a previous step.
+5. Leave fields you do not want to change unmapped — they will keep their current values.
+6. Save the action.
+
+## How to get the Record ID
+
+The Record ID is the key piece of information this action needs. Here is where to find it depending on your trigger:
+
+| Trigger / Previous Step | How to get Record ID |
+|---|---|
+| When record created | Available directly as a trigger output variable |
+| When record updated | Available directly as a trigger output variable |
+| When button clicked | Available directly — it is the row where the button was clicked |
+| When form submitted | Available directly — it is the record created by the submission |
+| Get Records action | Each record in the results has an ID. In a Loop, reference the current item's ID |
+| Webhook received | You must include the Record ID in the webhook payload, or look it up with Get Records |
+
+<Tip>Need to update multiple records at once? You can pass comma-separated Record IDs, or use [Loop (Batch)](../logic/loop-run) with a Get Records result to update records in bulk.</Tip>
+
+## Partial updates
+
+This action performs a partial update. This means:
+
+- **Mapped fields** are overwritten with the new values you specify.
+- **Unmapped fields** are left exactly as they are.
+
+You do not need to re-send all field values — just the ones you want to change. This is safe and efficient.
+
+## Warning: trigger loops
+
+<Warning>If your workflow uses a "When record updated" trigger and a subsequent step updates the same watched fields in the same table, the workflow will fire again, creating an infinite loop.</Warning>
+
+If your automation is triggered by **When record updated** and your Update Record action writes back to the **same table**, you can create an infinite loop:
+
+1. Record changes → trigger fires → automation updates the record → trigger fires again → and so on.
+
+**How to prevent loops:**
+
+- **Watch specific fields** on the trigger that are *different* from the fields you update. For example, watch "Status" but update "Processed Date".
+- **Add a filter** to the trigger. For example, trigger only when `Processed` is not `true`, and set `Processed` to `true` in your action.
+- Consider using [When record matches conditions](/basic/automation/trigger/records/record-matches-conditions) instead, which only fires on state transitions.
+
+## When to use
+
+- **Mark a task as complete after approval.** When a button is clicked, set Status to "Approved" and fill in the approval date.
+- **Update a status field based on external events.** When a webhook reports a payment, find the order record and update its status to "Paid".
+- **Write a timestamp when something changes.** When a record is updated, set a "Last Modified By Automation" date field to the current time.
+- **Sync data back from an external system.** After calling an external API, write the response data (e.g., a tracking number) back into the record.
+- **Batch-update records.** Combine with Get Records and Loop to update multiple records at once — for example, marking all overdue tasks as "Escalated".
+
+## Tips
+
+- Updating a record may trigger other automations watching the same table. Be aware of cascading effects.
+- When updating multiple records with comma-separated IDs, all records receive the same field values. For different values per record, use a [Loop](../logic/loop-run) step instead.
+- If you need to clear a field, map it to an empty value. Simply leaving it unmapped will *not* clear it.
+- Use [Cross-Base Access](cross-base) to update records in a table that lives in a different base.
+
+## Related
+
+- [Create record](create-record) — add new records instead of modifying existing ones
+- [Get records](get-records) — retrieve records to find their IDs before updating
+- [Cross-base access](cross-base) — update records in tables outside the current base
+- [Loop (batch)](../logic/loop-run) — update multiple records with different values

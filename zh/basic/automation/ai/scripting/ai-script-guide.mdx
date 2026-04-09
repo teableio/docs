@@ -1,0 +1,212 @@
+---
+title: "AI 脚本指南"
+description: "在安全沙箱中运行自定义 JavaScript，处理内置操作无法覆盖的逻辑"
+---
+
+脚本操作允许你编写自定义 JavaScript 代码，在安全沙箱环境中运行。当内置操作无法满足你的需求时——比如复杂的数据转换、条件分支逻辑、多步 API 调用——脚本是最灵活的解决方案。
+
+## 何时使用脚本 vs 内置操作
+
+| 场景 | 推荐方式 | 原因 |
+|---|---|---|
+| 创建 / 更新 / 查询记录 | 内置操作 | 配置简单，无需编码 |
+| 发送邮件 | 内置操作 | 可视化配置，支持模板 |
+| 调用单个 API | HTTP 请求操作 | 可视化配置，无需写代码 |
+| 复杂数据转换和计算 | 脚本 | 需要编程逻辑处理 |
+| 多个 API 的串联调用 | 脚本 | 一个脚本中完成多步操作 |
+| 条件分支处理 | 脚本 | 根据不同条件执行不同逻辑 |
+| JSON 解析和重组 | 脚本 | 灵活操作数据结构 |
+| 日期计算和格式化 | 脚本 | JavaScript 原生支持 |
+
+<Tip>尽可能使用内置操作。只在内置操作无法满足需求时才使用脚本。</Tip>
+
+## 运行环境
+
+| 属性 | 值 |
+|---|---|
+| 语言 | JavaScript (ES6+)，支持顶层 `await` |
+| 运行时 | 安全沙箱，60 秒超时限制 |
+| 模块系统 | CommonJS (`require()`)，支持 npm 包 |
+| 网络访问 | 支持 `fetch()` 调用外部 API |
+
+## 如何设置
+
+1. 在工作流中添加**脚本**操作。
+2. 在代码编辑器中编写 JavaScript 代码。
+3. 通过 `input` 对象访问前序步骤的数据。
+4. 通过 `output.set()` 将结果传递给后续步骤。
+5. （可选）在配置面板中声明 npm 依赖。
+6. 点击**测试**运行脚本并查看输出。
+
+## input 对象结构
+
+`input` 对象包含前序所有步骤的输出数据。键为步骤的 Action ID，值为该步骤的输出。
+
+```javascript
+// 查看所有可用的前序步骤
+const actionIds = Object.keys(input);
+console.log("可用步骤:", actionIds);
+
+// 访问第一个步骤的数据
+const data = input[actionIds[0]];
+
+// 如果前序步骤是触发器（如记录创建时），数据结构为：
+// data.record.id       - 记录 ID
+// data.record.fields   - 所有字段的值（以字段 ID 为键）
+const recordId = data.record.id;
+const name = data.record.fields.fldXXXXXX; // 替换为实际字段 ID
+
+// 如果前序步骤是查询记录，数据结构为：
+// data.records - 记录数组
+const records = data.records;
+```
+
+<Note>字段通过字段 ID（如 `fldXXXXXX`）而非字段名称引用。你可以在测试面板中查看实际的数据结构和字段 ID。</Note>
+
+## output.set 详解
+
+使用 `output.set(key, value)` 将数据输出给后续步骤：
+
+```javascript
+// 输出简单值
+output.set("name", "张三");
+output.set("count", 42);
+output.set("isActive", true);
+
+// 输出对象
+output.set("result", {
+  status: "success",
+  data: { id: "123", name: "产品A" }
+});
+
+// 输出数组
+output.set("items", [
+  { id: 1, name: "项目1" },
+  { id: 2, name: "项目2" }
+]);
+
+// 可以多次调用 output.set 输出不同的键
+output.set("total", 1500);
+output.set("average", 750);
+```
+
+后续步骤可以通过 **+** 按钮引用脚本输出的每个键值。
+
+## 内置变量
+
+| 变量 | 说明 |
+|---|---|
+| `process.env.AUTOMATION_TOKEN` | 用于调用 Teable API 的 Bearer Token，自动生成 |
+| `process.env.PUBLIC_ORIGIN` | 当前 Teable 实例的基础 URL |
+
+利用这两个变量，你可以在脚本中直接调用 Teable API：
+
+```javascript
+const base = process.env.PUBLIC_ORIGIN + "/api";
+const token = process.env.AUTOMATION_TOKEN;
+
+// 查询记录
+const res = await fetch(`${base}/table/tblXXXXXX/record?take=10`, {
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json"
+  }
+});
+const data = await res.json();
+output.set("records", data);
+```
+
+## 调用外部 API
+
+```javascript
+// GET 请求
+const res = await fetch("https://api.example.com/data");
+const data = await res.json();
+output.set("apiData", data);
+
+// POST 请求
+const res2 = await fetch("https://api.example.com/submit", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ name: "test", value: 123 })
+});
+const result = await res2.json();
+output.set("submitResult", result);
+```
+
+## npm 依赖
+
+在配置面板的依赖声明区域，以 JSON 格式添加需要的包：
+
+```json
+[{ "name": "lodash", "version": "4.17.21" }]
+```
+
+然后在代码中通过 `require()` 引入：
+
+```javascript
+const _ = require("lodash");
+
+const actionIds = Object.keys(input);
+const records = input[actionIds[0]].records;
+
+// 使用 lodash 进行数据处理
+const grouped = _.groupBy(records, r => r.fields.fldCategory);
+output.set("grouped", grouped);
+```
+
+<Tip>尽可能使用 JavaScript 内置功能（如 `Array.map`、`Array.filter`、`JSON.parse` 等），而非引入 npm 包。内置功能运行更快，也不需要额外配置。</Tip>
+
+## 调试技巧
+
+- **使用 `console.log()`**：在脚本中添加日志，测试运行后可以在输出面板中查看。
+- **先测试数据结构**：在编写复杂逻辑前，先用 `output.set("debug", input)` 查看完整的输入数据结构。
+- **逐步构建**：从简单的代码开始，确认数据获取正确后再添加业务逻辑。
+- **检查字段 ID**：字段使用 ID（如 `fldXXXXXX`）引用，在测试面板中确认实际的 ID。
+
+```javascript
+// 调试：输出完整的输入数据以了解结构
+const actionIds = Object.keys(input);
+output.set("debug_actionIds", actionIds);
+output.set("debug_firstStep", input[actionIds[0]]);
+```
+
+## 错误处理
+
+使用 `try/catch` 捕获错误，避免脚本崩溃导致工作流中断：
+
+```javascript
+try {
+  const res = await fetch("https://api.example.com/data");
+  if (!res.ok) {
+    throw new Error(`API 返回错误: ${res.status} ${res.statusText}`);
+  }
+  const data = await res.json();
+  output.set("success", true);
+  output.set("data", data);
+} catch (error) {
+  output.set("success", false);
+  output.set("error", error.message);
+}
+```
+
+## 安全说明
+
+- 脚本在安全沙箱中运行，与宿主系统隔离，无法访问文件系统或操作系统资源。
+- `AUTOMATION_TOKEN` 是自动生成的临时凭证，仅在当前工作流运行期间有效。
+- 不要在脚本代码中硬编码密码或 API 密钥。建议通过 Webhook 触发器或记录字段传入敏感信息。
+- 脚本有 60 秒的执行时间限制，超时会自动终止。
+
+## 适用场景
+
+- **复杂数据转换**：将多个字段的数据重新组织为特定格式，如生成报告摘要、拼接多语言内容。
+- **多步 API 编排**：先调用 API A 获取 Token，再调用 API B 发送数据，在一个脚本中完成多步操作。
+- **条件分支处理**：根据记录的不同字段值执行不同的处理逻辑，如根据订单金额选择不同的审批流程。
+- **数据校验和清洗**：批量检查数据格式、去重、填充缺失值等。
+
+## 相关文档
+
+- [示例脚本](/zh/basic/automation/ai/scripting/sample-scripts)
+- [HTTP 请求](/zh/basic/automation/actions/logic/http-request)
+- [AI 生成](/zh/basic/automation/actions/ai/ai-generate)
+- [循环执行](/zh/basic/automation/actions/logic/loop-run)

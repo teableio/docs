@@ -1,0 +1,103 @@
+---
+title: "Loop (batch)"
+description: "Process multiple items in one action by iterating over an array"
+---
+
+<Tip>
+We strongly recommend using Run Script to build automations, because it can cover all action behaviors, including actions that would otherwise need to be built manually. Just describe your requirements to AI in chat.
+
+Please note: if you add actions manually, AI will not recognize or modify them later.
+</Tip>
+
+Loop lets you run an action **once per item** in an array. Instead of processing a single record or sending a single email, Loop repeats the action for every item in a list — creating records in bulk, sending personalized emails to a list of contacts, or making API calls for each item.
+
+Items are processed in order, and the results from all iterations are returned as an array that subsequent steps can use.
+
+## Supported actions
+
+| Action | Loop Support |
+|---|---|
+| Create Record | Yes |
+| Update Record | Yes |
+| Send Email | Yes |
+| HTTP Request | Yes |
+| AI Generate | Yes |
+
+## Where arrays come from
+
+To use Loop, you need an array as input. Common sources include:
+
+| Source | What you get |
+|---|---|
+| **Get Records** action | An array of records from a table query |
+| **Webhook received** trigger | The JSON body may contain arrays (e.g., a list of order items) |
+| **AI Generate** action (JSON output) | The AI can return an array of structured items |
+| **HTTP Request** action | An API response that contains an array |
+| **Script** action | A script can output any array via `output.set()` |
+
+## How to set it up
+
+1. Open a supported action (e.g., Create Record, Send Email).
+2. Click **Loop Run** below the table selector (or in the action configuration area).
+3. In the data source picker, select an **array variable** from a previous step. For example, the records array from a Get Records step.
+4. The field mapping area now shows the properties of each individual item (not the full array). Click **+** to reference properties of the **current item** — for example, the current record's Name, Email, or Status.
+5. Save the action. When the workflow runs, the action executes once per item in the array.
+
+## How to reference the current item
+
+When Loop is active, the **+** variable picker shows properties of the current item in the iteration. For example:
+
+- If looping over Get Records output, you can reference `current item → fields → Name`, `current item → fields → Email`, etc.
+- If looping over a webhook array, you can reference `current item → product_name`, `current item → quantity`, etc.
+
+This is different from non-loop mode, where you reference the full array or a specific index.
+
+## Concrete example: send reminder emails to overdue tasks
+
+1. **Trigger:** At scheduled time — every day at 9:00 AM.
+2. **Action 1:** Get Records — from Tasks table, filter: Due Date is before today AND Status is not "Done".
+3. **Action 2:** Send Email with **Loop** enabled, data source = Action 1's records array.
+   - **To:** current item's Assignee Email field.
+   - **Subject:** `Reminder: "{{current item → Task Name}}" is overdue`
+   - **Body:** `Hi {{current item → Assignee Name}}, your task "{{current item → Task Name}}" was due on {{current item → Due Date}}. Please update it.`
+
+Result: one personalized email per overdue task.
+
+## HTTP Array Body
+
+For HTTP Request actions, Loop offers a special **Array Body** mode. Instead of sending one HTTP request per item (which can be slow and hit rate limits), Array Body sends the **entire array as a single JSON array** in one request.
+
+This is useful when the external API supports batch operations — for example, creating multiple records in one API call or sending a batch of events to an analytics service.
+
+To use Array Body:
+1. Enable Loop on an HTTP Request action.
+2. Choose **Array Body** mode instead of the default per-item mode.
+3. The entire array is serialized as a JSON array and sent in the request body.
+
+## Performance considerations
+
+- Loop processes items **sequentially**, not in parallel. A loop over 100 items will take roughly 100 times as long as a single execution.
+- For large arrays (hundreds or thousands of items), consider whether the external action can handle batch input. Use HTTP Array Body when the API supports it.
+- If you are looping over Get Records output and making HTTP requests for each record, be mindful of the external API's rate limits.
+- For very large datasets, consider breaking the work into smaller batches using pagination in Get Records (Skip/Take), with multiple automation runs.
+
+## When to use
+
+- **Bulk-create records.** Get records from one table, loop to create corresponding records in another table.
+- **Send personalized emails to a list.** Get a list of contacts, loop to send each one a customized email.
+- **Update multiple records.** Get records that match a condition, loop to update each one (e.g., mark all overdue tasks as "Escalated").
+- **Make API calls for each record.** Push each record's data to an external system, one at a time.
+- **AI-process a batch of records.** Loop over records and use AI Generate to classify, summarize, or extract data from each one.
+
+## Tips
+
+- Always check the size of your array before enabling Loop. If Get Records returns 1,000 records, your loop will run 1,000 times.
+- If your loop creates or updates records in the same table that triggered the automation, be careful about re-triggering the automation. Use filters on the trigger to avoid loops.
+- The results of all loop iterations are available as an array in subsequent steps, but for very large loops, this array can be large. Reference only what you need.
+
+## Related
+
+- [Get records](/basic/automation/actions/records/get-records) — the most common source of arrays for Loop
+- [Create record](/basic/automation/actions/records/create-record) — commonly used inside a Loop to bulk-create records
+- [HTTP request](http-request) — commonly used inside a Loop for per-item API calls
+- [Send email](/basic/automation/actions/communication/send-email) — commonly used inside a Loop for bulk email sends

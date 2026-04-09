@@ -1,0 +1,174 @@
+---
+title: "HTTP 请求"
+description: "在工作流中调用任意外部 API"
+---
+
+<Tip>
+我们强烈建议使用运行脚本来搭建自动化，因为它可以覆盖所有操作行为，包括原本需要手动搭建的操作。你只需在 AI 对话中描述需求即可。
+
+请注意：如果你手动添加操作，AI 后续将无法识别或修改它们。
+</Tip>
+
+## 用 AI 创建
+
+打开表格右侧边栏的 AI 对话，描述你的需求。
+
+AI 会为你处理一切：选择合适的触发器和操作，映射字段，自动配置整个工作流。
+
+只需描述一次目标，工作流即刻就绪，无需手动配置。
+
+向任意 URL 发送 HTTP 请求并返回响应数据。这是将 Teable 与外部系统集成的核心操作，可以调用任何提供 API 的第三方服务。
+
+## 配置
+
+| 设置 | 必填 | 说明 |
+|---|---|---|
+| URL | 是 | 目标端点地址，支持插入变量动态拼接 |
+| 方法（Method） | 是 | GET、POST、PUT、PATCH、DELETE 或 HEAD |
+| 请求头（Headers） | 否 | 自定义请求头，以键值对形式填写 |
+| Content-Type | 否 | 请求体格式，详见下方说明 |
+| 请求体（Body） | 否 | 请求体内容，格式取决于 Content-Type |
+
+支持[循环执行](loop-run)和数组请求体生成。
+
+## 如何设置
+
+1. 在工作流中添加 **HTTP 请求**操作。
+2. 输入目标 URL。可以点击 **+** 按钮插入变量来动态拼接 URL。
+3. 选择 HTTP 方法（GET 用于获取数据，POST 用于发送数据，PUT/PATCH 用于更新，DELETE 用于删除）。
+4. （可选）添加请求头。例如认证信息、自定义头部等。
+5. （可选）选择 Content-Type 并填写请求体。
+6. 点击**测试**发送请求并查看响应。
+
+## Content-Type 区别
+
+| Content-Type | 用途 | 请求体格式 |
+|---|---|---|
+| `application/json` | 最常用，适合绝大多数 API | JSON 格式的文本，如 `{"key": "value"}` |
+| `x-www-form-urlencoded` | 模拟传统表单提交 | 键值对形式，如 `key1=value1&key2=value2` |
+| `multipart/form-data` | 文件上传 | 键值对，支持文件字段 |
+| `text/plain` | 发送纯文本 | 纯文本内容 |
+
+<Tip>如果不确定用哪种，选 `application/json`。绝大多数现代 API 都使用 JSON 格式。</Tip>
+
+## 认证方式示例
+
+### Bearer Token 认证
+
+在请求头中添加：
+
+| Key | Value |
+|---|---|
+| `Authorization` | `Bearer your-api-token-here` |
+
+### API Key 认证
+
+部分 API 使用自定义请求头传递密钥：
+
+| Key | Value |
+|---|---|
+| `X-API-Key` | `your-api-key-here` |
+
+### Basic 认证
+
+| Key | Value |
+|---|---|
+| `Authorization` | `Basic base64编码的用户名:密码` |
+
+## 响应数据的使用
+
+HTTP 请求执行后，响应数据可供后续步骤引用。通常包括：
+
+- **状态码**：如 200 表示成功，400 表示请求错误，401 表示认证失败
+- **响应体**：API 返回的 JSON 数据
+
+你可以在后续步骤中通过 **+** 按钮引用响应体中的具体字段。例如，API 返回 `{"result": {"id": "123", "name": "测试"}}` 时，可以引用 `result.id` 的值。
+
+## 具体示例
+
+### 发送 Slack 消息
+
+```json
+{
+  "url": "https://hooks.slack.com/services/TXXXXX/BXXXXX/XXXXXXXXXX",
+  "method": "POST",
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "text": "新订单通知：客户 {{客户名称}} 下单 {{订单金额}} 元",
+    "channel": "#sales-notifications"
+  }
+}
+```
+
+### 发送企业微信消息
+
+```json
+{
+  "url": "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=your-webhook-key",
+  "method": "POST",
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "msgtype": "text",
+    "text": {
+      "content": "任务提醒：{{任务名称}} 即将到期，请及时处理。"
+    }
+  }
+}
+```
+
+### 调用外部 API 获取数据
+
+```json
+{
+  "url": "https://api.example.com/products/{{产品ID}}",
+  "method": "GET",
+  "headers": {
+    "Authorization": "Bearer your-api-token",
+    "Content-Type": "application/json"
+  }
+}
+```
+
+### 向外部系统推送数据
+
+```json
+{
+  "url": "https://api.example.com/orders",
+  "method": "POST",
+  "headers": {
+    "Authorization": "Bearer your-api-token",
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "order_id": "{{订单号}}",
+    "customer": "{{客户名称}}",
+    "amount": "{{订单金额}}",
+    "status": "confirmed"
+  }
+}
+```
+
+## 适用场景
+
+- **即时通讯通知**：当记录状态变更时，通过 Webhook 向 Slack、企业微信、钉钉或飞书发送通知消息，让团队第一时间知晓。
+- **数据双向同步**：将 Teable 中的数据通过 API 推送到 CRM、ERP 或电商平台，也可以从外部系统拉取数据更新到 Teable。
+- **支付和物流对接**：调用支付网关 API 查询支付状态，或调用物流 API 查询快递信息并写回记录。
+- **自定义集成**：连接任何提供 REST API 的服务，实现 Teable 与外部系统的深度集成。
+
+## 注意事项
+
+- HTTP 请求有超时限制。如果目标 API 响应时间过长，请求可能会失败。
+- 如果 API 返回错误（4xx 或 5xx 状态码），操作仍然会完成，但后续步骤会看到错误响应。如需条件处理，请在工作流中检查状态码。
+- 将 API 密钥和 Token 等敏感信息只放在请求头中，不要放在 URL 参数中。
+- 使用[循环执行](loop-run)可以批量发送请求。也可以使用**数组请求体**模式将多条数据合并为一次请求发送。
+- 测试时请注意，部分 API 的测试调用可能会产生真实影响（如创建订单、发送消息等）。
+
+## 相关文档
+
+- [循环执行](/zh/basic/automation/actions/logic/loop-run)
+- [Webhook 接收时](/zh/basic/automation/trigger/external/webhook-received)
+- [AI 脚本指南](/zh/basic/automation/ai/scripting/ai-script-guide)

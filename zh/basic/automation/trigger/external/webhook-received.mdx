@@ -1,0 +1,116 @@
+---
+title: "Webhook 接收时"
+description: "通过接收来自任意外部系统的 HTTP 请求来触发工作流"
+---
+
+<Tip>请注意：所有触发器设置都可以在 AI 对话中完成。告诉 AI 你希望工作流做什么，剩下的交给 AI。</Tip>
+
+生成唯一 URL，外部系统发送 HTTP POST 即可触发工作流。
+
+## 用 AI 创建
+
+打开表格右侧边栏的 AI 对话，描述你的需求。
+
+AI 会为你处理一切：选择合适的触发器，映射相关字段，自动设置所有操作。
+
+只需描述一次目标，工作流即刻就绪，无需手动配置。
+
+**示例：** *"收到 Stripe 支付 Webhook 时创建订单记录"*
+
+## 配置
+
+| 设置 | 必填 | 说明 |
+|---|---|---|
+| 鉴权方式 | 否 | **无**（公开访问）或 **Bearer Token**（系统自动生成 Token） |
+
+## 如何设置
+
+1. 新建工作流，选择 **Webhook 接收时**作为触发器。
+2. 从触发器面板复制生成的 Webhook URL。
+3. （推荐）点击**生成 Token** 启用 Bearer Token 鉴权，防止未授权的请求触发工作流。
+4. 将 Webhook URL 配置到外部系统中。
+5. 发送一个测试请求来验证连接。
+6. 添加后续操作步骤。
+7. 开启工作流。
+
+## 测试 Webhook
+
+使用 `curl` 发送测试请求：
+
+```bash
+# 不带鉴权
+curl -X POST https://your-teable-instance.com/api/automation/webhook/xxx \
+  -H "Content-Type: application/json" \
+  -d '{"order_id": "12345", "status": "paid"}'
+```
+
+```bash
+# 带 Bearer Token 鉴权
+curl -X POST https://your-teable-instance.com/api/automation/webhook/xxx \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-generated-token" \
+  -d '{"order_id": "12345", "status": "paid", "amount": 299.00}'
+```
+
+```bash
+# 发送包含数组的请求体
+curl -X POST https://your-teable-instance.com/api/automation/webhook/xxx \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-generated-token" \
+  -d '{"event": "batch_update", "items": [{"id": "001", "name": "产品A"}, {"id": "002", "name": "产品B"}]}'
+```
+
+发送请求后，回到 Teable 的触发器面板，点击**测试**查看接收到的数据结构。
+
+## 触发后可用的数据
+
+触发后，后续步骤可以访问 HTTP 请求体中的所有 JSON 字段。例如，如果请求体为：
+
+```json
+{
+  "order_id": "12345",
+  "customer": "张三",
+  "amount": 299.00,
+  "items": ["产品A", "产品B"]
+}
+```
+
+你可以在后续步骤中通过 **+** 按钮引用 `order_id`、`customer`、`amount` 等字段的值。
+
+## 速率限制
+
+| 范围 | 限制 |
+|---|---|
+| 每个 Base | 50 请求/秒 |
+| 每个工作流 | 2 请求/秒 |
+
+超过限制的请求会返回 HTTP 429 错误。如果外部系统发送频率较高，建议在发送端实现重试和退避机制。
+
+## 适用场景
+
+- **支付回调处理**：接收来自 Stripe、PayPal 或支付宝的支付成功通知，自动更新订单表中对应记录的支付状态和支付时间。
+- **代码部署通知**：接收 GitHub 或 GitLab 的 Webhook 通知，当代码合并到主分支时自动在项目管理表中更新部署状态并通知团队。
+- **网站表单接入**：在自己的网站中嵌入表单，提交后通过 JavaScript 将表单数据 POST 到 Webhook URL，自动在 Teable 中创建记录。
+- **物联网数据采集**：接收来自 IoT 设备或网关的传感器数据，自动存入监控表，用于数据分析和异常告警。
+- **跨系统数据同步**：其他系统在数据变更时向 Webhook 发送通知，Teable 自动同步更新对应记录。
+
+## 安全最佳实践
+
+- **务必启用 Bearer Token 鉴权**：公开的 Webhook URL 任何人都可以调用。启用 Token 后，只有携带正确 `Authorization: Bearer <token>` 头的请求才会被处理。
+- **不要在 URL 中传递敏感数据**：敏感信息应放在请求体中，而非 URL 参数中。
+- **在外部系统中妥善保管 Token**：将 Token 存储在环境变量或密钥管理系统中，不要硬编码在代码里。
+- **使用 HTTPS**：确保 Teable 实例使用 HTTPS，保证数据在传输过程中的安全。
+
+## 注意事项
+
+- Webhook 只接受 POST 方法。GET、PUT 等其他方法的请求会被拒绝。
+- 请求体必须是合法的 JSON 格式，且 `Content-Type` 头设置为 `application/json`。
+- 如果工作流处于关闭状态，收到的 Webhook 请求会被丢弃，不会排队等待。
+- Webhook URL 在工作流删除后会失效。重新创建工作流会生成新的 URL。
+
+## 相关文档
+
+- [创建记录](/zh/basic/automation/actions/records/create-record)
+- [更新记录](/zh/basic/automation/actions/records/update-record)
+- [HTTP 请求](/zh/basic/automation/actions/logic/http-request)
+- [循环执行](/zh/basic/automation/actions/logic/loop-run)

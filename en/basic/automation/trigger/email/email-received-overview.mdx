@@ -1,0 +1,112 @@
+---
+title: "When email received overview"
+description: "Trigger a workflow when a new email arrives in a monitored mailbox"
+---
+
+<Tip>Please note: all trigger setup can be done in AI chat. Tell AI what you want the workflow to do, and it will handle the rest.</Tip>
+
+This trigger runs when a new, unread email arrives in a monitored mailbox.
+
+## Build with AI
+
+Open the AI Chat in your table's right sidebar and describe what you want.
+
+AI handles everything: it chooses the right trigger, maps the relevant fields, and sets up all actions automatically.
+
+Describe the goal once, and the workflow is ready — no manual setup needed.
+
+**Example:** *"When I receive a support email, create a ticket and classify it."*
+
+## Configuration
+
+| Setting | Required | Description |
+|---|---|---|
+| Connection Type | Yes | IMAP, Gmail, or Outlook |
+| Poll Interval | Yes | How often to check for new emails: 1 to 60 minutes (default 10) |
+
+## Connection types in detail
+
+### IMAP
+
+IMAP works with any email provider that supports the IMAP protocol — including self-hosted mail servers, corporate email, and providers like Yahoo or Zoho.
+
+| Setting | Required | Description |
+|---|---|---|
+| Host | Yes | Your IMAP server address (e.g., `imap.gmail.com`, `imap.mail.yahoo.com`) |
+| Port | Yes | Usually 993 (SSL/TLS) or 143 (unencrypted, not recommended) |
+| Username | Yes | Your email address or account username |
+| Password | Yes | Your app password (Please note: not your email password) |
+| Mailbox | No | The folder to monitor (defaults to `INBOX`) |
+
+### Gmail (OAuth)
+
+Connects via Google's OAuth flow. No password is needed — you authorize Teable to access your Gmail account.
+
+| Setting | Required | Description |
+|---|---|---|
+| Google Account | Yes | Authorize via OAuth — Teable requests read-only access |
+| Label | No | Select a Gmail label to monitor (defaults to Inbox) |
+
+### Outlook (OAuth)
+
+Connects via Microsoft's OAuth flow for Outlook and Microsoft 365 mailboxes.
+
+| Setting | Required | Description |
+|---|---|---|
+| Microsoft Account | Yes | Authorize via OAuth — Teable requests read-only access |
+| Folder | No | Select an Outlook folder to monitor (defaults to Inbox) |
+
+## What email data is available to next steps
+
+When the trigger fires, the following data from the email is available as variables in your action steps:
+
+| Data | Description |
+|---|---|
+| **From** | The sender's email address |
+| **Subject** | The email subject line |
+| **Body (text)** | The plain-text version of the email body |
+| **Body (HTML)** | The HTML version of the email body (if available) |
+| **Date** | When the email was sent |
+| **Attachments** | File attachments included in the email |
+
+You can reference any of these by clicking **+** in your action fields.
+
+## How to set it up (IMAP example)
+
+1. Open your automation and add a new trigger.
+2. Select **When email received**.
+3. Choose **IMAP** as the connection type.
+4. Enter your IMAP server details: host, port, username, and password.
+5. (Optional) Change the **Mailbox** if you want to monitor a folder other than INBOX.
+6. Set the **Poll Interval** — how often to check for new emails. A shorter interval means faster responses but more frequent server checks.
+7. Click **Test** to verify the connection. Teable will attempt to connect to your mailbox and report success or failure.
+8. Save and activate the automation.
+9. Add your action steps, using the email data (From, Subject, Body, etc.) as variables.
+
+## When to use
+
+- **Create a record for each incoming support email.** Parse the subject and body to populate fields in a support tickets table automatically.
+- **Extract invoice data from emails with AI.** Use the AI Generate action to read the email body or attachment and pull out amounts, dates, and vendor names.
+- **Route customer inquiries to the right team.** Based on keywords in the subject or body, update a "Team" field or send notifications to specific people.
+- **Archive important emails as records.** Automatically log emails from specific senders or with specific subjects into a Teable table for easy searching and tracking.
+- **Process order confirmations.** When an order confirmation email arrives, extract the order number and details to update your orders table.
+
+## Troubleshooting
+
+- **Connection failed (IMAP):** Double-check your host, port, username, and password. Make sure your email provider allows IMAP access — some providers disable it by default.
+- **Gmail: "Less secure app" error:** Gmail does not allow plain password login. Use an **App Password** instead. See [Set up Gmail IMAP](gmail-imap) for instructions.
+- **Emails not being picked up:** Check the poll interval. Also confirm that the emails are arriving in the monitored folder/label. Emails in subfolders or filtered labels may be missed if the wrong mailbox is selected.
+- **Duplicate processing:** The trigger tracks which emails it has already processed. However, if you deactivate and reactivate the automation, it may reprocess recent emails. Mark emails as read in your inbox if needed.
+- **OAuth token expired:** For Gmail or Outlook, re-authorize the connection if the OAuth token has expired. This typically happens after several months or if you revoke app permissions.
+
+## Tips
+
+- A shorter poll interval means faster response to emails but does not guarantee real-time delivery. For true real-time processing, consider using a webhook-based approach if your email provider supports it.
+- Use filters in your email client to route relevant emails to a specific label or folder, then have Teable monitor only that label. This reduces noise.
+- For high-volume mailboxes, consider increasing the poll interval and processing in batches to avoid overwhelming your workflow.
+
+## Related
+
+- [Set up Gmail IMAP](gmail-imap) — detailed instructions for connecting Gmail
+- [AI generate action](/basic/automation/actions/ai/ai-generate) — useful for extracting structured data from email content
+- [Create record action](/basic/automation/actions/records/create-record) — commonly paired with email triggers to log emails as records

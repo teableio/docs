@@ -1,0 +1,278 @@
+---
+title: "AI script guide"
+description: "Run custom JavaScript in a secure sandbox for logic that goes beyond built-in actions"
+---
+
+The Script action lets you write custom JavaScript to handle logic that built-in actions cannot cover. You can transform data, call external APIs, perform calculations, implement conditional branching, and more — all within a secure sandbox environment.
+
+Scripts receive data from previous steps via the `input` object and pass results to subsequent steps via the `output.set()` function.
+
+## When to use Script vs. built-in actions
+
+| Scenario | Use built-in actions | Use Script |
+|---|---|---|
+| Create, update, or get records | Yes | Only if you need complex logic around it |
+| Send a simple email | Yes | No |
+| Call a single API endpoint | Yes (HTTP Request) | Only if you need to process the response in complex ways |
+| Transform data between steps | Sometimes | Yes — when you need conditional logic, loops, or string manipulation |
+| Parse complex JSON structures | No | Yes |
+| Calculate dates, format numbers | No | Yes |
+| Chain multiple API calls with logic | Awkward with built-in | Yes |
+| Implement business rules with many conditions | Not practical | Yes |
+
+In general, use built-in actions when they fit your needs. Use Script when you need custom logic, data transformation, or complex API interaction.
+
+## Environment
+
+| Property | Value |
+|---|---|
+| Language | JavaScript (ES6+), top-level `await` supported |
+| Runtime | Secure sandbox with a 60-second timeout |
+| Modules | CommonJS (`require()`), npm packages supported |
+| Network | HTTP requests via `fetch()` |
+
+## How to set it up
+
+1. Add an **AI Script** action to your workflow (found under Logic or AI in the action menu).
+2. The script editor opens with a blank canvas. Write your JavaScript code here.
+3. Your script can read data from previous steps using the `input` object (see below).
+4. Use `output.set(key, value)` to pass results to subsequent steps.
+5. (Optional) Add npm dependencies in the configuration panel if your script needs external libraries.
+6. Click **Test** to run the script with real data from the most recent trigger execution.
+7. Check the test output and console logs to verify your script works correctly.
+8. Save the action.
+
+## Reading input data
+
+The `input` object contains data from all previous steps in the workflow. Each step is identified by its action ID.
+
+### Input structure
+
+```javascript
+// input is an object keyed by action IDs
+// Each key contains the output of that step
+
+const actionIds = Object.keys(input);
+// actionIds might be: ["triggerStep1", "actionStep2", "actionStep3"]
+```
+
+### Getting trigger data (record fields)
+
+```javascript
+const actionIds = Object.keys(input);
+const triggerData = input[actionIds[0]]; // First entry is usually the trigger
+
+// For record-based triggers (created, updated, button clicked, form submitted):
+const recordId = triggerData.record.id;
+const fields = triggerData.record.fields;
+
+// Access specific fields by field ID
+const customerName = fields.fldXXXXXXX;  // Replace with actual field ID
+const orderAmount = fields.fldYYYYYYY;
+```
+
+### Getting data from a Get Records step
+
+```javascript
+const actionIds = Object.keys(input);
+const getRecordsData = input[actionIds[1]]; // Second step, for example
+
+const records = getRecordsData.records;
+records.forEach(record => {
+  console.log(record.id, record.fields.fldName);
+});
+```
+
+### Getting data from other action outputs
+
+```javascript
+const actionIds = Object.keys(input);
+const previousOutput = input[actionIds[2]]; // Third step output
+// The structure depends on what that action outputs
+```
+
+<Tip>Use `console.log(JSON.stringify(input, null, 2))` during testing to see the exact structure of your input data. This is the fastest way to understand what is available.</Tip>
+
+## Writing output
+
+Use `output.set(key, value)` to make data available to subsequent steps. You can set multiple keys.
+
+```javascript
+// Set simple values
+output.set("status", "success");
+output.set("count", 42);
+
+// Set objects
+output.set("result", {
+  name: "Alice",
+  score: 95,
+  passed: true
+});
+
+// Set arrays
+output.set("items", [
+  { id: 1, name: "Item A" },
+  { id: 2, name: "Item B" }
+]);
+```
+
+Each key you set becomes a separate variable that subsequent steps can reference via the **+** variable picker. For example, if you call `output.set("status", "success")`, the next step can reference `status` from this script's output.
+
+## Debugging with console.log
+
+During development, use `console.log()` to inspect data and track execution flow. Log output appears in the test panel when you click **Test**.
+
+```javascript
+const actionIds = Object.keys(input);
+console.log("Action IDs:", actionIds);
+
+const data = input[actionIds[0]];
+console.log("Trigger data:", JSON.stringify(data, null, 2));
+
+// Log intermediate results
+const processed = data.record.fields.fldName.toUpperCase();
+console.log("Processed name:", processed);
+
+output.set("name", processed);
+```
+
+Console logs are only visible during testing — they do not appear in production run history. Use them liberally while building your script.
+
+## npm package management
+
+You can use npm packages in your scripts. Declare dependencies in the configuration panel:
+
+```json
+[
+  { "name": "lodash", "version": "4.17.21" },
+  { "name": "dayjs", "version": "1.11.10" }
+]
+```
+
+Then use them in your script with `require()`:
+
+```javascript
+const _ = require("lodash");
+const dayjs = require("dayjs");
+
+const actionIds = Object.keys(input);
+const records = input[actionIds[0]].records;
+
+const grouped = _.groupBy(records, r => r.fields.fldCategory);
+const today = dayjs().format("YYYY-MM-DD");
+
+output.set("grouped", grouped);
+output.set("date", today);
+```
+
+<Tip>Prefer built-in JavaScript features over npm packages when possible. Modern JavaScript has many utilities built in — `Array.map()`, `Array.filter()`, `Object.entries()`, template literals, destructuring, etc. Only add npm packages when they provide significant value.</Tip>
+
+## Built-in variables
+
+| Variable | Description |
+|---|---|
+| `process.env.AUTOMATION_TOKEN` | A Bearer token for calling the Teable API. Scoped to the current automation's permissions |
+| `process.env.PUBLIC_ORIGIN` | The base URL of your Teable instance (e.g., `https://app.teable.io`) |
+
+### Security: AUTOMATION_TOKEN scope
+
+The `AUTOMATION_TOKEN` is automatically generated for each automation run. It has the same permissions as the automation creator and is scoped to the current execution. Key points:
+
+- It can access any table the automation creator has access to.
+- It is valid only for the duration of the script execution (60-second timeout).
+- Do not expose this token to external systems — it is meant for calling the Teable API from within your script.
+
+### Calling the Teable API
+
+```javascript
+const base = process.env.PUBLIC_ORIGIN + "/api";
+const token = process.env.AUTOMATION_TOKEN;
+
+// Example: get records from a table
+const res = await fetch(`${base}/table/tblXXXXXXX/record?take=10`, {
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json"
+  }
+});
+
+const data = await res.json();
+console.log("Fetched records:", data);
+output.set("records", data);
+```
+
+## Error handling
+
+Always wrap risky operations in try/catch blocks so your workflow can handle failures gracefully:
+
+```javascript
+try {
+  const res = await fetch("https://api.example.com/data");
+  
+  if (!res.ok) {
+    throw new Error(`API returned ${res.status}: ${res.statusText}`);
+  }
+  
+  const data = await res.json();
+  output.set("success", true);
+  output.set("data", data);
+} catch (error) {
+  console.log("Error:", error.message);
+  output.set("success", false);
+  output.set("error", error.message);
+}
+```
+
+Without error handling, a failed fetch or unexpected data format will crash the script, and subsequent steps will not receive any output.
+
+## Complete example: process and route support tickets
+
+```javascript
+const actionIds = Object.keys(input);
+const record = input[actionIds[0]].record;
+
+const subject = record.fields.fldSubject || "";
+const body = record.fields.fldBody || "";
+const email = record.fields.fldEmail || "";
+
+// Simple keyword-based routing
+const text = (subject + " " + body).toLowerCase();
+
+let category = "General";
+let priority = "Normal";
+
+if (text.includes("billing") || text.includes("invoice") || text.includes("payment")) {
+  category = "Billing";
+} else if (text.includes("bug") || text.includes("error") || text.includes("crash")) {
+  category = "Technical";
+  priority = "High";
+} else if (text.includes("cancel") || text.includes("refund")) {
+  category = "Account";
+  priority = "High";
+}
+
+// Check for VIP customers
+const vipDomains = ["bigcorp.com", "enterprise.io"];
+const domain = email.split("@")[1] || "";
+if (vipDomains.includes(domain)) {
+  priority = "Urgent";
+}
+
+output.set("category", category);
+output.set("priority", priority);
+output.set("isVIP", vipDomains.includes(domain));
+```
+
+## Tips
+
+- **Start with console.log.** When building a new script, log the entire `input` object first to understand its structure.
+- **Keep scripts focused.** Do one thing well rather than cramming multiple tasks into one script. Chain multiple Script actions if needed.
+- **Mind the 60-second timeout.** Long-running operations (large data processing, many sequential API calls) can hit the timeout. Break large tasks into smaller chunks.
+- **Test with real data.** The test panel uses actual data from the most recent trigger execution, giving you realistic results.
+- **Handle missing data.** Use default values (`||` operator) for fields that might be empty or undefined.
+
+## Related
+
+- [Sample scripts](sample-scripts) — ready-to-use examples for common tasks
+- [AI generate](/basic/automation/actions/ai/ai-generate) — for prompt-based AI tasks that do not need custom code
+- [HTTP request](/basic/automation/actions/logic/http-request) — for simple API calls that do not need scripting

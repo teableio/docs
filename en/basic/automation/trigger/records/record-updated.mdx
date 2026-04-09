@@ -1,0 +1,90 @@
+---
+title: "When record updated"
+description: "Trigger a workflow when an existing record is modified"
+---
+
+<Tip>Please note: all trigger setup can be done in AI chat. Tell AI what you want the workflow to do, and it will handle the rest.</Tip>
+
+This trigger runs when an existing record is modified. It does not fire on creation.
+
+## Build with AI
+
+Open the AI Chat in your table's right sidebar and describe what you want.
+
+AI handles everything: it chooses the right trigger, maps the relevant fields, and sets up all actions automatically.
+
+Describe the goal once, and the workflow is ready — no manual setup needed.
+
+**Example:** *"When the status field changes, send an email to the assignee."*
+
+## Configuration
+
+| Setting | Required | Description |
+|---|---|---|
+| Table | Yes | The table to watch for changes |
+| Watch Fields | Yes | Choose specific fields to monitor, or select "All Fields" to trigger on any change |
+| Filter | No | Only trigger if the updated record matches these conditions after the change |
+
+## How to set it up
+
+1. Open your automation and add a new trigger.
+2. Select **When record updated**.
+3. Choose the **Table** you want to monitor.
+4. In **Watch Fields**, select one or more specific fields. For example, choose only "Status" if you want to react to status changes.
+5. (Optional) Add a **Filter** to further narrow which updates fire the trigger. For example, `Status` equals `Done` will only fire when a record's status is changed to "Done".
+6. Save and activate the automation.
+7. Add your action steps. Click **+** in any action field to insert values from the updated record.
+
+## Understanding Watch Fields
+
+The Watch Fields setting is the most important part of this trigger:
+
+- **Specific fields (recommended):** Select only the fields you care about. The trigger only fires when one of these fields changes. All other edits to the record are ignored.
+- **All Fields:** The trigger fires whenever *any* field in the record changes. This includes computed fields, last-modified timestamps, and minor edits you might not care about.
+
+**Why specific fields are better in most cases:**
+
+- Fewer unnecessary trigger executions, which means fewer wasted automation runs.
+- Prevents accidental loops (see below).
+- Makes your automation's purpose clearer to anyone reading it.
+
+Choose "All Fields" only when you genuinely need to react to every possible change — for example, a full audit log.
+
+<Tip>It is strongly recommended to select specific watch fields. Selecting "All Fields" can cause the workflow to fire on unrelated edits, waste automation runs, and lead to unexpected behavior.</Tip>
+
+## Common pitfall: update loops
+
+<Warning>If your workflow includes an Update Record action that writes to the same table and updates a watched field, the trigger will fire again, creating an infinite loop.</Warning>
+
+If your automation is triggered by updates to a table and also has an **Update Record** action that writes back to the *same table*, you can create an infinite loop:
+
+1. A field changes → trigger fires.
+2. The automation updates another field in the same record → trigger fires again.
+3. Repeat endlessly.
+
+**How to avoid this:**
+
+- Watch only specific fields, and make sure your Update Record action writes to *different* fields than the ones being watched.
+- Use a filter condition to stop the loop. For example, only trigger when `Status` does not equal `Processed`, and have your action set `Status` to `Processed`.
+- If your action must update the same field, consider using the [When record matches conditions](/basic/automation/trigger/records/record-matches-conditions) trigger instead, which fires only on transitions.
+
+## When to use
+
+- **Sync price changes to an external system.** Watch the "Price" field. When it changes, send an HTTP request to update the price in your e-commerce platform.
+- **Send a notification when a task's status changes.** Watch the "Status" field. When a task moves to "Blocked" or "Done", notify the assignee or manager.
+- **Log field changes for auditing.** Watch "All Fields" and create a record in an audit log table with the old and new values.
+- **Update a linked record when a parent changes.** Watch key fields on a project record. When the project deadline changes, update all linked tasks.
+- **Trigger a recalculation in another system.** Watch numeric fields like "Quantity" or "Unit Price". When they change, call an API to recalculate totals.
+
+## Tips
+
+- Start with specific watch fields. You can always add more later if you find you are missing events.
+- The filter is evaluated *after* the update. This means the filter checks the record's new values, not the old ones.
+- This trigger does not tell you what the previous value was — only what the record looks like now. If you need before-and-after comparison, consider maintaining a "Previous Value" field that your automation updates.
+- The trigger fires once per save, even if multiple watched fields change in the same edit.
+
+## Related
+
+- [When record matches conditions](/basic/automation/trigger/records/record-matches-conditions) — fires only on state transitions, not every edit
+- [When record created](/basic/automation/trigger/records/record-created) — fires on new records, not updates
+- [Update record action](/basic/automation/actions/records/update-record) — the action counterpart for modifying records in workflows

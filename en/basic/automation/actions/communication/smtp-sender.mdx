@@ -1,0 +1,81 @@
+---
+title: "Set up SMTP and sender"
+description: "Configure a custom SMTP server and sender identity for automation emails"
+---
+
+By default, automation emails are sent from Teable's built-in mail service. While this works for basic notifications, you may want to send emails from your own domain for branding, deliverability, or compliance reasons. Custom SMTP configuration lets you do exactly that.
+
+When you configure a custom SMTP server, all emails sent by that action come from your own mail server and your own sender address — recipients see your domain, not Teable's.
+
+## When to use custom SMTP
+
+- **Send emails from your company domain** (e.g., `noreply@yourcompany.com` or `support@yourcompany.com`) so recipients recognize the sender.
+- **Improve deliverability.** Emails from your own domain with proper SPF, DKIM, and DMARC records are less likely to land in spam.
+- **Meet compliance requirements.** Some industries require that automated emails originate from an organization-controlled domain.
+- **Use your existing email infrastructure.** Route emails through your company's mail server for logging, archival, or security scanning.
+- **Higher sending limits.** Teable's built-in service has rate limits. Your own SMTP server may support higher throughput.
+
+## Configuration
+
+In the **Send Email** action, click the transport configuration option to set up a custom SMTP server:
+
+| Setting | Required | Description |
+|---|---|---|
+| SMTP Host | Yes | Your mail server address (e.g., `smtp.gmail.com`) |
+| Port | Yes | The SMTP port — usually 465 (SSL) or 587 (STARTTLS) |
+| Username | Yes | SMTP account username (often your email address) |
+| Password | Yes | SMTP account password or app-specific password |
+| From Address | Yes | The sender email address shown to recipients |
+
+## How to set it up
+
+1. Open your automation and go to the **Send Email** action.
+2. Click the **transport configuration** option (gear icon or link near the sender settings).
+3. Enter your SMTP server details:
+   - **Host:** Your email provider's SMTP server address.
+   - **Port:** Use 465 for SSL/TLS or 587 for STARTTLS. If unsure, try 465 first.
+   - **Username:** Your email account or SMTP username.
+   - **Password:** Your email password or, for providers like Gmail, an app-specific password.
+4. Set the **From Address** — this is what recipients see as the sender.
+5. Click **Test** to verify the connection. Teable will attempt to send a test email through your SMTP server.
+6. If the test succeeds, save the configuration. All emails from this action will now use your SMTP server.
+
+## Common SMTP settings by provider
+
+| Provider | Host | Port | Notes |
+|---|---|---|---|
+| **Gmail** | `smtp.gmail.com` | 465 | Requires an App Password (not your account password). See [Set up Gmail IMAP](../../trigger/email/gmail-imap) |
+| **Outlook / Microsoft 365** | `smtp.office365.com` | 587 | Use your Microsoft account credentials |
+| **Amazon SES** | `email-smtp.{region}.amazonaws.com` | 465 | Use SES SMTP credentials (not IAM credentials) |
+| **SendGrid** | `smtp.sendgrid.net` | 465 | Username is `apikey`, password is your API key |
+| **Mailgun** | `smtp.mailgun.org` | 465 | Use the SMTP credentials from your Mailgun domain settings |
+| **Zoho Mail** | `smtp.zoho.com` | 465 | Use your Zoho account credentials |
+| **Yahoo Mail** | `smtp.mail.yahoo.com` | 465 | Requires an App Password |
+| **Postmark** | `smtp.postmarkapp.com` | 587 | Use your Postmark server API token as both username and password |
+| **Custom / Self-hosted** | Your server address | Varies | Check with your IT team for host, port, and credentials |
+
+## Common errors and fixes
+
+| Error | Likely Cause | Fix |
+|---|---|---|
+| **Connection refused** | Wrong host or port | Double-check the SMTP host and port. Try switching between 465 and 587 |
+| **Authentication failed** | Wrong username or password | Verify credentials. For Gmail/Yahoo, use an App Password instead of your account password |
+| **Certificate error / TLS handshake failed** | Port/encryption mismatch | Port 465 expects SSL; port 587 expects STARTTLS. Make sure the port matches your server's encryption |
+| **Sender address rejected** | From Address does not match SMTP account | Some providers require the From Address to match the authenticated account. Check your provider's policy |
+| **Rate limit exceeded** | Too many emails sent too quickly | Reduce sending frequency or upgrade your email plan. Use batch sending with delays if needed |
+| **Timeout** | Firewall or network issue | Ensure your network allows outbound connections on the SMTP port. Self-hosted Teable users: check server firewall rules |
+
+## Tips
+
+- **Test before going live.** Always send a test email after configuring SMTP to confirm everything works.
+- **Use app-specific passwords** for Gmail, Yahoo, and other providers that support two-factor authentication. Your regular account password will not work if 2FA is enabled.
+- **Set up SPF, DKIM, and DMARC** on your domain's DNS records to improve email deliverability and prevent your emails from being flagged as spam.
+- **Keep credentials secure.** SMTP passwords are stored encrypted in Teable, but avoid sharing automation configurations with sensitive credentials.
+- **Monitor delivery.** If emails stop arriving, check your SMTP provider's dashboard for bounced messages, rate limit warnings, or account issues.
+
+<Tip>For Gmail, use an App Password instead of your account password. See [Set up Gmail IMAP](../../trigger/email/gmail-imap) for how to create one.</Tip>
+
+## Related
+
+- [Send email action](send-email) — the action that uses SMTP configuration
+- [Set up Gmail IMAP](../../trigger/email/gmail-imap) — instructions for Gmail App Passwords

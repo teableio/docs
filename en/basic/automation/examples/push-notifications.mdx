@@ -1,0 +1,70 @@
+---
+title: "Push notifications to Slack, Discord, or Teams"
+description: "Send a message to a chat channel when something happens in your table"
+---
+
+<Tip>We recommend building automation examples directly in AI chat. Just describe the workflow you want, and AI will handle the full setup for you, including the trigger, actions, script, and configuration.</Tip>
+
+## Build with AI
+
+Open the AI Chat in your table's right sidebar and tell AI what you want. For example, you can say:
+
+*"When a new high-priority ticket is created, send a Slack message to the #support channel with the ticket title and description"*
+
+AI will create the complete workflow automatically. You can review the generated script, test it with real data, and enable the workflow when ready.
+
+## Prerequisites
+
+You need a webhook URL from your chat platform:
+- **Slack:** Create an [Incoming Webhook](https://api.slack.com/messaging/webhooks)
+- **Discord:** Server Settings → Integrations → Webhooks → New Webhook
+- **Teams:** Channel → Connectors → Incoming Webhook
+
+## Manual setup
+
+1. **Create a workflow** with trigger **When Record Created**.
+2. Select your **Tickets** table.
+3. Add a filter: `Priority` **is** `High`.
+4. Click **Test**.
+5. **Add an action** → **HTTP Request**.
+6. Configure:
+   - Method: **POST**
+   - URL: your webhook URL
+   - Content-Type: `application/json`
+   - Body (for Slack):
+     ```json
+     {
+       "text": "New high-priority ticket: <ticket title>"
+     }
+     ```
+   - Use the **+** button to insert the ticket title dynamically.
+7. Click **Test**, then **enable**.
+
+## Adapting for Discord
+
+Discord uses `"content"` instead of `"text"`:
+
+```json
+{
+  "content": "New high-priority ticket: <ticket title>"
+}
+```
+
+## Adapting for Teams
+
+Teams uses an Adaptive Card format:
+
+```json
+{
+  "type": "message",
+  "attachments": [{
+    "contentType": "application/vnd.microsoft.card.adaptive",
+    "content": {
+      "type": "AdaptiveCard",
+      "body": [{ "type": "TextBlock", "text": "New high-priority ticket: <ticket title>" }],
+      "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+      "version": "1.2"
+    }
+  }]
+}
+```

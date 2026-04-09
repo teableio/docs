@@ -1,0 +1,68 @@
+---
+title: "When record matches conditions"
+description: "Trigger a workflow when a record starts matching specific conditions"
+---
+
+<Tip>Please note: all trigger setup can be done in AI chat. Tell AI what you want the workflow to do, and it will handle the rest.</Tip>
+
+This trigger is used when a workflow should run after a record begins to match certain conditions.
+
+## Build with AI
+
+Open the AI Chat in your table's right sidebar and describe what you want.
+
+AI handles everything: it chooses the right trigger, maps the relevant fields, and sets up all actions automatically.
+
+Describe the goal once, and the workflow is ready — no manual setup needed.
+
+**Example:** *"When a task becomes overdue, send me an email."*
+
+## Configuration
+
+| Setting | Required | Description |
+|---|---|---|
+| Table | Yes | The table to watch for changes |
+| Filter | **Yes** | The conditions the record must match. Uses the same filter builder as views — supports field comparisons, AND/OR groups, and dynamic values |
+
+## How to set it up
+
+1. Open your automation and add a new trigger.
+2. Select **When record matches conditions**.
+3. Choose the **Table** you want to monitor.
+4. Click **Add Filter** to define the conditions. For example: `Status` equals `Overdue`, or `Amount` is greater than `10000`.
+5. You can combine multiple conditions with AND/OR logic, just like view filters.
+6. Save and activate the automation.
+7. Test it by editing a record so that it goes from *not matching* to *matching* your filter. The automation should fire once.
+
+<Tip>After the trigger fires, subsequent steps can use all field data from the matched record, including the latest values at the time of the transition.</Tip>
+
+## How is this different from "When Record Updated"?
+
+These two triggers are easy to confuse. Here is the key difference:
+
+- **When Record Updated** fires every time a watched field changes, regardless of what the new value is. If you watch the "Status" field, it fires whether Status changes to "In Progress", "Done", or anything else.
+- **When Record Matches Conditions** fires only when a record crosses the boundary from "not matching" to "matching" your filter. It does not fire on every edit — only on the transition.
+
+Use **When Record Updated** when you need to react to any change. Use **When Record Matches Conditions** when you only care about a specific state being reached.
+
+<Note>If you want to run an action every time a record is edited, use the [When record updated](/basic/automation/trigger/records/record-updated) trigger. If you only want to run an action once when a record first reaches a specific condition, use this trigger.</Note>
+
+## When to use
+
+- **Alert when an order becomes overdue.** Set the filter to `Due Date` is before today and `Status` is not `Shipped`. The automation fires once when the order first matches.
+- **Escalate a support ticket when priority changes to urgent.** Filter: `Priority` equals `Urgent`. Only fires when a ticket first becomes urgent, not on subsequent edits.
+- **Notify a manager when a deal exceeds a revenue threshold.** Filter: `Deal Value` is greater than `50000`. Fires once when the deal crosses that line.
+- **Flag records that become incomplete.** Filter: `Required Field` is empty. Fires when a previously complete record loses its value.
+- **Trigger onboarding steps when a contact's status changes to "Active".** Filter: `Status` equals `Active`. Only runs once per activation.
+
+## Tips
+
+- You **must** define at least one filter condition. Without it, the trigger has nothing to evaluate.
+- The trigger checks the transition at the moment a record is saved. It does not retroactively fire for records that already matched before the automation was created.
+- If you need to act on records that already match, use a **Get Records** action with the same filter as a separate step.
+- Combine this trigger with a **Send Email** or **Update Record** action to build powerful state-change workflows without writing any code.
+
+## Related
+
+- [When record updated](/basic/automation/trigger/records/record-updated) — fires on any field change, not just transitions
+- [When record created](/basic/automation/trigger/records/record-created) — fires when new records are added

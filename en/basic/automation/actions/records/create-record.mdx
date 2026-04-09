@@ -1,0 +1,79 @@
+---
+title: "Create record"
+description: "Create a new record in any table as part of a workflow"
+---
+
+<Tip>
+We strongly recommend using Run Script to build automations, because it can cover all action behaviors, including actions that would otherwise need to be built manually. Just describe your requirements to AI in chat.
+
+Please note: if you add actions manually, AI will not recognize or modify them later.
+</Tip>
+
+## Build with AI
+
+Open the AI Chat in your table's right sidebar and describe what you want.
+
+AI handles everything: it picks the right trigger, chooses the appropriate actions, maps the fields, and configures the entire workflow automatically.
+
+Describe the goal once, and the workflow is ready — no manual setup needed.
+
+Creates a new record in a specified table. You can map data from previous steps into the new record's fields. After creation, the new Record ID and all field values are available to subsequent steps.
+
+## Configuration
+
+| Setting | Required | Description |
+|---|---|---|
+| Table | Yes | The target table where the new record will be created |
+| Fields | Yes | Map each field to a value — static text/numbers or dynamic variables from previous steps |
+
+## How to set it up
+
+1. Add a **Create Record** action to your workflow.
+2. Choose the **Table** where you want the record created. By default this is a table in the same base, but you can use [Cross-Base Access](cross-base) to target a table in another base.
+3. The field mapping area shows all fields in the target table. For each field you want to fill:
+   - **Static value:** Type a value directly into the field (e.g., type "New" for a Status field).
+   - **Dynamic value:** Click the **+** button next to the field to insert a variable from a previous step. For example, insert the trigger's "Name" field to copy the name from the triggering record.
+4. You can mix static and dynamic values. For example, set Status to the static value "Pending" while setting Customer Name to a dynamic value from the trigger.
+5. Save the action.
+
+<Tip>You can combine multiple variables in a single text field. For example, insert `Trigger record's Customer Name - Trigger record's Order ID` into a "Summary" field.</Tip>
+
+## What happens with required fields
+
+<Warning>If the target table has required fields that are not mapped in this action, the action will fail at runtime.</Warning>
+
+If the target table has fields marked as required and you do not map values to them, the action will **fail** at runtime. Make sure you map all required fields.
+
+To check which fields are required, look at the field configuration in your target table. Required fields are typically marked with an asterisk or a "Required" label.
+
+## Output: using the created record in later steps
+
+After the Create Record action runs, the newly created record is available to all subsequent steps. This includes:
+
+- **Record ID** — the unique identifier assigned to the new record.
+- **All field values** — every field value of the created record, including any auto-calculated or default values.
+
+This is useful when you need to chain actions. For example: create a record, then immediately send an email that includes a link to that record, or update a related record with the new Record ID.
+
+## When to use
+
+- **Log form submissions into a separate table.** When a form is submitted, create a record in a "Submissions Log" table with the submitted data plus a timestamp.
+- **Create follow-up tasks automatically.** When a project is created, create a set of default tasks in a related Tasks table.
+- **Duplicate records across tables.** Copy data from one table to another — for example, moving a lead from "Prospects" to "Active Clients" when a deal closes.
+- **Generate records from external data.** When a webhook delivers order data, create a new record in your Orders table with the order details.
+- **Create audit trail entries.** After any automation runs, create a record in an Audit Log table documenting what happened.
+
+## Tips
+
+- If you are creating records in the same table that has a **When record created** trigger, be careful about infinite loops. Use a filter on the trigger to exclude automation-created records (e.g., check for a "Source" field set to "Automation").
+- You can create records in bulk by combining this action with [Loop (Batch)](../logic/loop-run). For example, get 50 records from one table and create 50 corresponding records in another.
+- Fields you do not map will use the table's default values (if any) or remain empty.
+- Linked record fields expect Record IDs, not display values. If you need to link to a record, make sure you are passing the Record ID, not the record's name.
+- Use [Cross-Base Access](cross-base) when the target table is in a different base than the automation.
+
+## Related
+
+- [Update record](update-record) — modify existing records instead of creating new ones
+- [Get records](get-records) — retrieve records to use as input for creating new ones
+- [Cross-base access](cross-base) — create records in tables outside the current base
+- [Loop (batch)](../logic/loop-run) — create multiple records in a single action step

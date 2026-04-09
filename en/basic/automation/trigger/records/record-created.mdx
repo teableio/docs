@@ -1,0 +1,75 @@
+---
+title: "When record created"
+description: "Trigger a workflow when a new record is added to a table"
+---
+
+<Tip>Please note: all trigger setup can be done in AI chat. Tell AI what you want the workflow to do, and it will handle the rest.</Tip>
+
+This trigger runs when a new record is added to the table, regardless of how it was created.
+
+## Build with AI
+
+Open the AI Chat in your table's right sidebar and describe what you want.
+
+AI handles everything: it chooses the right trigger, maps the relevant fields, and sets up all actions automatically.
+
+Describe the goal once, and the workflow is ready — no manual setup needed.
+
+**Example:** *"When a new order is created, notify the team on Slack."*
+
+## Configuration
+
+| Setting | Required | Description |
+|---|---|---|
+| Table | Yes | The table to watch for new records |
+| Filter | No | Only trigger if the new record matches these conditions. Uses the same filter builder as views |
+
+## How to set it up
+
+1. Open your automation and add a new trigger.
+2. Select **When record created**.
+3. Choose the **Table** you want to monitor.
+4. (Optional) Add a **Filter** if you only want to react to certain new records. For example, `Priority` equals `High` will ignore new records with other priority values.
+5. Save and activate the automation.
+6. Add your action steps. In each action, click the **+** button in any field to insert values from the trigger — you will see every field of the new record listed.
+
+## What data is available to next steps
+
+When this trigger fires, all fields of the newly created record are available as variables in subsequent steps:
+
+- **Record ID** — the unique identifier of the new record
+- **All field values** — every field in the table (text, number, date, attachments, linked records, etc.) can be referenced by clicking **+** in any action's field mapping
+
+This means if your table has fields like Name, Email, Status, and Created Date, all four values are ready to use in your actions without any extra configuration.
+
+## How the filter works
+
+The optional filter lets you narrow which new records actually trigger the automation:
+
+- If **no filter** is set, every new record fires the trigger.
+- If a **filter** is set, the trigger only fires when the new record matches all conditions. Records that do not match are silently ignored.
+
+This is useful when you only want to act on a subset of new records — for example, only high-priority tasks, only records assigned to a specific team, or only orders above a certain amount.
+
+<Note>The filter is evaluated based on the field values at the time the record is created. If a field is empty at creation and filled in later, the automation will not retroactively fire.</Note>
+
+## When to use
+
+- **Send a welcome email to a new contact.** When a contact is added to your CRM table, automatically send a personalized welcome email using the contact's name and email address.
+- **Create a linked task when a new project is added.** When a project record is created, automatically create a default set of tasks in a Tasks table linked to the new project.
+- **Notify your team about new orders.** Post a message to Slack or send an email to the sales team whenever a new order comes in.
+- **Auto-classify incoming records with AI.** When a support ticket is created, use the AI Generate action to categorize it based on the description field.
+- **Log new records to an external system.** Use an HTTP Request action to push new record data to a CRM, ERP, or data warehouse.
+
+## Tips
+
+- This trigger fires for records created by *any* method, including other automations. If you have an automation that creates records in the same table, be careful to avoid infinite loops. Use a filter to exclude records that were created by automation (for example, by checking a flag field).
+- The trigger fires once per record. If 10 records are bulk-imported, it fires 10 separate times.
+- If you need to react only to records created through a specific form, use the [When form submitted](/basic/automation/trigger/forms/form-submitted) trigger instead — it gives you tighter control.
+- Fields that are empty when the record is created will still be available as variables, but their values will be blank. Make sure your actions handle empty values gracefully.
+
+## Related
+
+- [When form submitted](/basic/automation/trigger/forms/form-submitted) — fires only for form submissions, not all record creation methods
+- [When record updated](/basic/automation/trigger/records/record-updated) — fires when existing records change
+- [Create record action](/basic/automation/actions/records/create-record) — the action counterpart for creating records in workflows
