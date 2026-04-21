@@ -47,6 +47,8 @@ mode: "wide"
 | REPLACE                | 用替换文本替换从开始字符开始的指定数量的字符。                                      | `text, whereToStart, count, replacement`           | Text          | `REPLACE("Hello Table", 7, 5, "Teable") => "Hello Teable"`                  |
 | REGEXP\_REPLACE        | 使用替换文本替换匹配正则表达式的所有子字符串。                                      | `text, regular_expression, replacement`            | Text          | `REGEXP_REPLACE("Hello Table", "H.* ", "") => "Teable"`                     |
 | SUBSTITUTE             | 用新文本替换旧文本。可以指定索引号来替换旧文本的特定出现。如果未指定索引号，则将替换旧文本的所有出现。          | `text, oldText, newText, [index]`                  | Text          | `SUBSTITUTE("Hello Table", "Table", "Teable") => "Hello Teable"`            |
+| TEXTBEFORE             | 返回指定分隔符之前的文本内容。                                               | `text, delimiter`                                  | Text          | `TEXTBEFORE("20, 04, 79", ",") => "20"`                                     |
+| TEXTSPLIT              | 按指定分隔符拆分文本，并返回多个文本值。                                          | `text, delimiter`                                  | Array         | `TEXTSPLIT("20, 04, 79", ",") => ["20", " 04", " 79"]`                      |
 | LOWER                  | 将字符串转为小写。                                                    | `text`                                             | Text          | `LOWER("Hello Teable") => "hello teable"`                                   |
 | UPPER                  | 将字符串转为大写。                                                    | `text`                                             | Text          | `UPPER("Hello Teable") => "HELLO TEABLE"`                                   |
 | REPT                   | 将字符串重复指定的次数。                                                 | `text, number`                                     | Text          | `REPT("Hello!") => "Hello!Hello!Hello!"`                                    |
@@ -112,4 +114,3 @@ mode: "wide"
 | ARRAY\_FLATTEN | 通过删除任何数组嵌套来展平数组。所有项目成为单个数组的元素。              | `array`                 | Array  | `ARRAY_FLATTEN([1, 2, " ", 3, true], ["ABC"]) => [1, 2, 3, " ", true, "ABC"]` |
 | ARRAY\_COMPACT | 从数组中删除空字符串和null值。保留"false"和包含一个或多个空白字符的字符串。 | `array`                 | Array  | `ARRAY_COMPACT([1, 2, 3, "", null, "ABC"]) => [1, 2, 3, "ABC"]`               |
 | RECORD\_ID     | 返回当前记录的ID。                                  | `-`                     | String | `RECORD_ID() => "recxxxxxx"`                                                  |
-
