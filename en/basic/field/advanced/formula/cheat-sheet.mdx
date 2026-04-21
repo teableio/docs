@@ -45,6 +45,8 @@ Here you'll find common functions for text processing, such as string operations
 | REPLACE | Replaces a specified number of characters starting at a specified position with replacement text. | `text, whereToStart, count, replacement` | Text | `REPLACE("Hello Table", 7, 5, "Teable") => "Hello Teable"` |
 | REGEXP_REPLACE | Replaces all substrings matching a regular expression with replacement text. | `text, regular_expression, replacement` | Text | `REGEXP_REPLACE("Hello Table", "H.* ", "") => "Teable"` |
 | SUBSTITUTE | Replaces old text with new text. Can specify an index to replace a specific occurrence of old text. If no index specified, replaces all occurrences. | `text, oldText, newText, [index]` | Text | `SUBSTITUTE("Hello Table", "Table", "Teable") => "Hello Teable"` |
+| TEXTBEFORE | Returns the text before the specified delimiter. | `text, delimiter` | Text | `TEXTBEFORE("20, 04, 79", ",") => "20"` |
+| TEXTSPLIT | Splits text by the specified delimiter and returns multiple text values. | `text, delimiter` | Array | `TEXTSPLIT("20, 04, 79", ",") => ["20", " 04", " 79"]` |
 | LOWER | Converts string to lowercase. | `text` | Text | `LOWER("Hello Teable") => "hello teable"` |
 | UPPER | Converts string to uppercase. | `text` | Text | `UPPER("Hello Teable") => "HELLO TEABLE"` |
 | REPT | Repeats text a specified number of times. | `text, number` | Text | `REPT("Hello!", 3) => "Hello!Hello!Hello!"` |
@@ -107,4 +109,3 @@ In addition to the above categories, this section introduces functions for handl
 | ARRAY_FLATTEN | Flattens an array by removing any array nesting. All items become elements of a single array. | `array` | Array | `ARRAY_FLATTEN([1, 2, " ", 3, true], ["ABC"]) => [1, 2, 3, " ", true, "ABC"]` |
 | ARRAY_COMPACT | Removes empty strings and null values from an array. Preserves "false" and strings containing one or more whitespace characters. | `array` | Array | `ARRAY_COMPACT([1, 2, 3, "", null, "ABC"]) => [1, 2, 3, "ABC"]` |
 | RECORD_ID | Returns the ID of the current record. | `-` | String | `RECORD_ID() => "recxxxxxx"` |
-
