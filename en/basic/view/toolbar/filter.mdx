@@ -1,52 +1,41 @@
 ---
 title: "Filter"
-description: "Filtering is a key tool for data management, allowing users to quickly find desired data sets based on specific conditions. This document provides a detailed introduction to the filtering functionality, including explanations of operators, field types, condition grouping, and other aspects to help users fully understand and utilize filtering for data analysis and management."
+description: "Use filters to set conditions and quickly find the records that match what you need."
 ---
 
-### Basic Rules List
+<Note>Sort, filter, and grouping settings are independent in each view. Changes in one view do not affect other views.</Note>
 
-#### Adding Conditions
+## 1. Add Filters
 
-* Users can set filter rules by clicking the "Add condition" button.
-* Each condition consists of three parts: field, operator, and value.
-* Supports direct value input or selection from preset options.
+### 1. Add Filter Conditions
 
-#### Adding Condition Groups
+- Click `Filter` in the toolbar to set filter conditions.
+- When you add multiple conditions, choose how they relate:
+  - **AND**: all conditions must be met
+  - **OR**: any one condition can be met
 
-* Through the "Add group" button, users can "create condition groups" using "AND" or "OR" logic to connect conditions.
-* Groups can be nested with more groups inside to implement complex filtering logic.
+<img alt="Logic operations" style={{ maxWidth: '100%' }} src="/images/2025-12-02-16-12-38.png" />
 
-#### Supported Basic Types and Operators
+### 2. Condition Groups
 
-**Text Type**
+For more complex logic such as “A and B, or C and D,” use **condition groups**.
 
-Equals, Does not equal, Contains, Does not contain, Is empty, Is not empty
+- Click `Add condition group` to create a group and connect conditions with **AND** or **OR**.
+- Groups can contain more groups to build more complex logic.
+- Condition groups support up to **3 levels** of nesting.
 
-**Number Type**
+<img alt="Condition group example" style={{ maxWidth: '100%' }} src="/images/2025-12-02-16-14-04.png" />
 
-=, ≠, >, ≥, \<, ≤, Is empty, Is not empty
+### 3. Invalid Condition Warnings
 
-**Date Type**
+If an existing filter becomes invalid because a field type changed, a field was deleted, or an older setup is no longer compatible, Teable automatically ignores that invalid condition so the view can still open normally.
 
-Before, After, Between, Equals, Does not equal, Is empty, Is not empty
+- The `Filter` button in the toolbar shows a warning icon when there are filter conditions that need attention.
+- After you open the filter panel, the affected condition also shows a warning icon. Hover over it to see the explanation and fix the condition.
 
-**Boolean Field**
+## 2. Field Types and Operators
 
-Is, Is not
-
-**Custom Option Field**
-
-Equals, Does not equal
-
-#### Operators and Their Input Data Types
-
-* Text operators accept string type data.
-* Number operators accept numerical type data.
-* Date operators accept date type data.
-* Boolean operators require no input, direct selection.
-* Custom option operators accept predefined options.
-
-### Field Types and Operator Mapping
+Different field types support different filter logic. Here is a quick reference:
 
 | Field Type | Supported Operators | Input Data |
 | ---- | ---- | ---- |
@@ -58,12 +47,8 @@ Equals, Does not equal
 | Single Select | Equals, Does not equal, Contains any, Does not contain any | Option selection list |
 | Date | Equals, Does not equal, Within, Before, After, On or before, On or after, Is empty, Is not empty | Preset range list, precise date picker |
 | Number | =, ≠, >, ≥, \<, ≤, Is empty, Is not empty | Number |
-| Duration | Equals, Does not equal, Greater than, Greater than or equal to, Less than, Less than or equal to, Is empty, Is not empty | Number |
 | Rating | Equals, Does not equal, Greater than, Greater than or equal to, Less than, Less than or equal to, Is empty, Is not empty | Number |
-| Formula | Operators determined by result type | Text, Number, Date |
-| Rollup | Operators determined by result type | Text, Number, Date |
-| Count | Equals, Does not equal, Greater than, Greater than or equal to, Less than, Less than or equal to, Is empty, Is not empty | Number |
-| Lookup | Equals, Does not equal, Contains, Does not contain, Contains any, Contains all, Exactly matches, Does not contain any, Is empty, Is not empty | Lookup value selector |
+| Link | Equals, Does not equal, Contains, Does not contain, Contains any, Contains all, Exactly matches, Does not contain any, Is empty, Is not empty | Linked value selector |
 | Created Time | Equals, Does not equal, Within, Before, After, On or before, On or after, Is empty, Is not empty | Preset range list, precise date picker |
 | Last Modified Time | Equals, Does not equal, Within, Before, After, On or before, On or after, Is empty, Is not empty | Preset range list, precise date picker |
 | Created By | Equals, Does not equal | User selection list, and current user |
@@ -71,43 +56,4 @@ Equals, Does not equal
 | Auto Number | =, ≠, >, ≥, \<, ≤ | Number |
 | Button | - | - |
 
-
-**Formula and Rollup field operators are determined by their result type, which may include all operators mentioned above.**
-
-### Condition Grouping Functionality
-
-Condition grouping allows users to combine multiple conditions using logical operators (such as "AND/OR"). The core of this functionality lies in its logical flexibility and combinatorial capabilities, enabling users to construct nested logic based on complex requirements for refined data filtering.
-
-#### AND/OR Logic
-
-* **AND Logic**: All conditions within the group must be satisfied simultaneously to select data.
-* **OR Logic**: Any condition within the group being satisfied is sufficient to select data.
-
-#### Combination Operations
-
-* Users can create multi-level nested condition groups, with each level defining its own logical relationship.
-* Groups can be infinitely nested to achieve extremely complex filtering logic.
-
-<img alt="Logic operations" style={{ maxWidth: '50%' }} src="/images/ji-ben-gong-neng/shi-tu/shu-ju-gong-ju/4c1332cabb06d3e1.png" />
-
-<img alt="Condition group combinations, AND/OR combinations" style={{ maxWidth: '50%' }} src="/images/ji-ben-gong-neng/shi-tu/shu-ju-gong-ju/8019afe92de4be1f.png" />
-
-#### Steps for Using Condition Groups
-
-1. **Create Group**: Users create a new condition group through the interface command.
-2. **Add Conditions**: Within the group, users can add multiple filter conditions.
-3. **Select Logic**: For conditions within the group, users need to choose "AND" or "OR" logic.
-4. **Nest Groups**: Users can continue to create new subgroups inside a group and set conditions and logic for them.
-5. **Optimize Logic**: Users can adjust the logical relationships of various conditions and groups as needed to achieve the desired filtering effect.
-
-#### Example
-
-Suppose a user needs to filter a database to find all records that were "created by a specific user" AND "either modified in the past week OR have a rating above 8", they can construct the following condition group logic:
-
-* Main Group (AND)
-  * Condition 1: Created By = Specific User (AND)
-  * Subgroup (OR)
-    * Condition 2: Last Modified Time = Past Week
-    * Condition 3: Rating > 8
-
-Through such group and condition settings, the filtering functionality can precisely output data records that meet all the above conditions.
+Operators for Formula and Rollup fields depend on their result type, which may include any of the operators above.

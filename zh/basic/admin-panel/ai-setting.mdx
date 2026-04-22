@@ -1,130 +1,155 @@
 ---
 title: "AI 配置"
-description: "配置实例内的 AI 模型提供商、模型偏好和能力设置"
+description: "为私有化部署实例配置 AI Chat、AI 字段、AI 自动化和应用构建器。"
 ---
 
 <Tip>私有化部署商业版及以上适用</Tip>
 
 路径：管理面板 → AI 设置
 
-使用页面右上角的开关来启用或禁用实例内的所有 AI 功能。
+**AI 设置** 页用于配置 **AI 对话**、**AI 字段**、**AI 自动化** 和 **应用构建器**。右侧的 **待配置项** 会提示当前还缺少哪些关键配置，建议按顺序逐项完成。
 
----
+## 开始前的准备
 
-## 1. 配置 LLM API
+在进入 AI 设置页之前，先确认下面这些准备项已经就绪。**AI 聊天运行环境** 和 **应用构建器** 都依赖 Vercel。
 
-选择 AI 模型的接入方式，支持以下两种选项：
+| 准备项 | 是否必需 | 说明 |
+|------|------|------|
+| **Vercel 账户** | 必需 | 需要一个可用的 Vercel 账户 |
+| **Vercel API 密钥** | 必需 | 用于 **AI 聊天运行环境** |
+| **Team / Project** | 必需 | 需要一个可用的 Team 和 Project；如果还没有，也可以在 Vercel 中创建 |
+| **AI Gateway API 密钥** | 使用 AI Gateway 时 | 只在选择 **AI Gateway** 作为模型接入方式时需要 |
+| **公网访问** | 必需 | **Teable 实例** 和 **对象存储（MinIO / S3）** 需要被公网访问 |
 
-### AI Gateway（推荐）
+Vercel 相关费用主要分成两部分：
 
-通过 Vercel AI Gateway 接入数百个模型
+| 项目 | 说明 |
+|------|------|
+| **Vercel 基础费用** | 约为 **$20/月**，用于 App 部署和 AI 运行环境相关基础设施 |
+| **AI Gateway 模型调用费用** | 按实际调用量单独计费 |
+<Tip>
+请确认 Vercel 账户已绑定信用卡，`Credit` 状态正常，并已开启自动充值。
+</Tip>
 
-- **AI Gateway API Key**（必填）：从 Vercel AI Gateway 控制台获取。
-- **自定义 Gateway URL**（可选）
+## 配置步骤
 
-### 自定义提供商
+建议按 **待配置项** 的顺序完成配置，先让必填项变绿，再去测试功能。很多“按钮是灰的”或“功能仍不可用”的情况，通常只是前置项还没完成。
 
-接入自托管或私有模型，支持多个提供商（OpenAI、Anthropic、Azure 等）。
+建议按下面四步完成：
 
-- **+ 添加 LLM 提供商** 填写提供商信息、API Key 及模型列表。
-- 点击 **测试** 按钮可验证连通性。
-- 每个模型会显示其支持的能力：**图片**、**PDF**、**网络搜索**、**工具调用**、**推理**、**图片生成**。
-- 对于生成图片而非文本的模型，勾选 **图片生成模型**。
+<Steps>
+  <Step title="配置 LLM API">
+    先完成模型接入和基础验证。
+  </Step>
+  <Step title="配置推荐模型">
+    先给用户一组清晰的主力模型。
+  </Step>
+  <Step title="设置聊天模型">
+    为 AI 对话指定默认模型。
+  </Step>
+  <Step title="配置运行环境与应用构建器">
+    完成 Vercel 相关配置，并确认公网访问准备项已经满足。
+  </Step>
+</Steps>
 
-配置完成后，点击 **测试模型能力** 按钮，系统会自动检测每个模型支持的功能，确保图片和 PDF 处理等能力被正确识别。
+### 1. 配置 LLM API
 
-完成后点击 **保存并继续**。
+先在 **LLM API** 中选择模型接入方式。
 
----
+<Tabs>
+  <Tab title="AI Gateway（推荐）">
+    填写 **AI Gateway API 密钥** 后，点击 **测试**。测试通过后，再继续后面的步骤。
+  </Tab>
+  <Tab title="自定义服务商">
+    添加至少一个自定义服务商，并完成模型测试。
+  </Tab>
+</Tabs>
 
-## 2. 配置推荐模型
+### 2. 配置推荐模型
 
-设置用户在 AI 字段和自动化中可选择的模型。使用 AI Gateway 时需手动选择模型；使用自定义提供商时，模型在第 1 步中管理。
+这一步决定了用户可以选择哪些模型。建议先提供一组清晰的主力模型，方便用户按任务复杂度选择。一个常见的做法是：
 
----
+| 模型 | 适合场景 |
+|------|------|
+| **Opus** | 复杂任务和高质量输出 |
+| **Sonnet** | 日常任务，兼顾效果和成本 |
+| **Haiku** | 轻量任务和快速响应 |
 
-## 3. 设置对话模型
+### 3. 设置聊天模型
 
-手动选择侧边栏 AI 对话功能使用的模型。
+这里要为侧边栏 **AI 对话** 指定默认模型。这个模型需要从推荐模型列表中选择，所以如果这一步是灰的，通常说明前一步还没完成。
 
-- **快捷设置**：点击 **使用推荐** 按钮，一键将推荐模型设为所有对话场景的默认模型。
-- **对话模型**：通过下拉菜单从推荐模型池中手动选择特定模型。
+这里应选择支持工具调用、并且已经过测试的稳定模型，否则 Agent 能力会明显受限。
 
----
+### 4. 配置运行环境与应用构建器
 
-## 应用构建器
+先完成 **AI 聊天运行环境**，再完成 **应用构建器**。
 
-配置相关设置以启用 [应用构建器](/zh/basic/ai/app-builder) 功能，从您的数据生成自定义 Web 应用程序，由 v0 驱动。
+<Steps>
+  <Step title="完成 AI 聊天运行环境">
+    在 **AI 聊天运行环境** 中，先填写并验证 **Vercel API 密钥**，再选择 **Team** 和 **Project**，最后点击 **测试连接**。测试通过后，右侧对应的待配置项会变绿。
+  </Step>
+  <Step title="完成应用构建器基础配置">
+    在 **应用构建器** 中的 **Vercel 部署** 填写 **Vercel 访问令牌**。这是发布应用所需的核心配置。
+  </Step>
+</Steps>
 
-- **v0**：Vercel 的 AI 应用生成平台，负责生成应用 UI 和组件。
-- **Vercel**：应用部署平台，发布时 Teable 通过 Vercel 将应用部署到生产环境。
+如果你还需要自定义域名，或者你的服务器不能直接访问 Vercel API，可以再补充下面这些可选配置：
 
-<Warning>
-请确保 Teable 可被公开访问，因为 v0 和 Vercel 需要访问本实例的 Teable API。可使用 **测试公开访问** 按钮进行验证。
-</Warning>
+| 可选项 | 什么时候需要 |
+|------|------|
+| **自定义域名** | 需要把应用发布到自己的域名下 |
+| **Vercel API 代理地址** | 服务器不能直接访问 Vercel API，或需要通过代理、网关访问 |
 
-### 必需配置
+<Tip>
+点击页面中的 **测试公网访问**，确认 **Teable 实例** 和 **对象存储（MinIO / S3）** 都已经可以从公网访问。
+</Tip>
 
-| 配置项 | 说明 |
-|--------|------|
-| **v0 API 密钥** | 从 [v0.app/chat/settings/keys](https://v0.app/chat/settings/keys) 获取 |
-| **Vercel API 密钥** | 从 [vercel.com/account/settings/tokens](https://vercel.com/account/settings/tokens) 获取 |
+**如何验证配置是否完成**
 
-<Warning>
-v0 API 需要**付费订阅**才能使用。免费额度不足以支持 API 调用。如果创建应用时出现「Internal Server Error」错误，请升级您的 v0 订阅计划。
-</Warning>
+完成配置后，先确认右侧 **待配置项** 的必填项都已变绿。然后依次测试 **AI 对话**、**AI 字段**、**AI 自动化** 和 **应用构建器**。
 
-### 自定义域名（可选）
+## 常见问题
 
-应用构建器构建的应用部署在 Vercel 上。有两种方式使用自定义域名：
+<AccordionGroup>
+<Accordion title="设置聊天模型是灰的">
 
-#### 方式 A：Vercel 域名（自动配置）
+先回到上一步完成 **配置推荐模型**。聊天模型只能从推荐模型列表中选择。
+</Accordion>
 
-从 Vercel 购买的域名会自动完成绑定配置。
+<Accordion title="明明填了 API Key，右侧还是没变绿">
 
-1. 从 [Vercel Domains](https://vercel.com/domains) 购买域名
-2. 在管理员后台的 **自定义域名** 字段中输入域名
+先回看右侧 **待配置项**，确认缺的是哪一项。很多时候不是当前这一步没保存，而是前面的配置还没有补齐。
+</Accordion>
 
-#### 方式 B：外部域名（手动 DNS 配置）
+<Accordion title="提示还缺少 Vercel Sandbox 配置">
 
-如果您已经从其他注册商（如 Cloudflare、GoDaddy）购买了域名：
+这通常表示 **AI 聊天运行环境** 还没完成。请确认下面三项都已经填写完成：
 
-1. 在 Teable 管理员后台，在 **自定义域名** 中输入您的根域名（如 `example.com`）
-2. 添加您的 **Vercel API Token**
-3. 发布应用时，从 URL 中记录 **App ID**（如 `appXXX123`）
-4. 在您的 DNS 服务商中为每个应用添加 CNAME 记录：
+- **Vercel API 密钥**
+- **Team**
+- **Project**
 
-| 字段 | 值 |
-|------|-----|
-| 类型 | CNAME |
-| 名称 | App ID（如 `appXXX123`） |
-| 目标 | `cname.vercel-dns.com` |
-| 代理 | 仅 DNS（如使用 Cloudflare） |
+只填写 Token 还不够。
+</Accordion>
 
-5. 在 Vercel 控制台（项目 → 设置 → 域名）中添加完整域名（如 `appXXX123.example.com`）并点击 **Verify**
-6. 验证通过后，HTTPS 将自动配置
+<Accordion title="出现 credit exceeded 报错">
+
+先检查 Vercel 账户里的 `Credit` 或余额状态，必要时充值，并确认已经开启自动充值。
+</Accordion>
+
+<Accordion title="如果使用 Vercel AI Gateway，AI 模型是否会处理我的数据">
+
+如果你使用的是 **Vercel AI Gateway**，请求数据仍会发送到你选择的模型服务商进行处理，因此可能会涉及第三方服务商。
+
+如果你对数据安全和合规性有要求，可以在 **Vercel AI Gateway** 中开启下面这个选项：
+
+- **Only allow providers with Zero Data Retention (ZDR)**
+
+开启后，可用模型会限制在支持 **Zero Data Retention** 的服务商范围内。
 
 <Note>
-每个应用会获得一个基于 App ID 的唯一子域名。不支持路径形式的 URL（如 `yourdomain.com/app/xxx`）。
+即使开启了 ZDR，请求仍然会发送到所选模型服务商处理；区别在于，范围会限制为支持零数据保留的服务商。
 </Note>
-
-### API 代理（可选）
-
-对于访问 v0/Vercel API 受限的地区，可以配置代理 URL：
-
-| 配置项 | 说明 |
-|--------|------|
-| **v0 Base URL** | v0 API 的代理地址 |
-| **Vercel Base URL** | Vercel API 的代理地址 |
-
-### AI Gateway（可选）
-
-如果您使用 [Vercel AI Gateway](https://vercel.com/docs/ai-gateway)，可以在这里配置 API 密钥以启用：
-
-- AI 请求的集中监控和日志记录
-- 速率限制和成本控制
-- 缓存以降低 API 成本
-
-| 配置项 | 说明 |
-|--------|------|
-| **AI Gateway API Key** | 从 Vercel AI Gateway 设置中获取 |
+</Accordion>
+</AccordionGroup>
