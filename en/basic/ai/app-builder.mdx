@@ -11,7 +11,7 @@ Teable App Builder allows you to turn your data bases into fully functional, cus
 
 The App Builder follows a "Prompt to App" workflow. You describe what you want, and AI builds the application structure, pages, and logic for you. You can then fine-tune every detail using the visual editor or code.
 
-> **When to use App Builder vs AI Chat**: Use App Builder to create custom interfaces and standalone apps. For interactive data analysis and ad-hoc questions within the database, use [AI Chat](/en/basic/ai/ai-chat).
+> **When to use App Builder vs AI Chat**: Use App Builder to create custom interfaces and standalone apps. For interactive data analysis and ad-hoc questions inside the database, use [AI Chat](/en/basic/ai/ai-chat).
 
 ## Creating an App
 
@@ -28,6 +28,7 @@ The App Builder provides a dual-interface for both non-technical users and devel
 The command center for your app.
 - **Natural Language Editing**: Describe changes like *"Make the header blue"* or *"Add a submission form for new records"*.
 - **Auto-Routing**: The AI understands which component or page you are referring to and modifies it directly.
+- **Clear Conversation**: If the current conversation has drifted, click **Clear Chat** in the bottom-right corner of the panel to start a new session. This clears the chat history for the current conversation but does not delete the app itself. The first use shows a confirmation, and you can choose not to show it again next time.
 
 ### 2. Live Preview Panel
 - **Multi-Device Simulation**: Use the switcher at the top to toggle **Desktop**, **Tablet**, and **Mobile** views.
@@ -43,6 +44,7 @@ For infinite customization, you have direct access to the code.
 You can download the entire app as a ZIP archive at any time:
 1. Switch to the **Code** tab in the editor.
 2. Click the **`...`** menu in the tab bar.
+3. Select **Download code** to save a ZIP archive that includes all source files.
 
 #### Import Code
 You can update the app's code by importing a ZIP:
@@ -80,70 +82,12 @@ To delete an app, click the **Settings** (gear icon) button in the header and se
 
 ## Best Practices
 
-- **Start Simple**: Let AI build the basic structure first, then iterate on specific features.
-- **Check Mobile**: Many users access apps on mobile devices, so frequently check the Mobile preview.
-- **Version Control**: You can save versions or reset edits if you want to experiment with different designs.
+For prompt patterns, build tips, rollback advice, and common troubleshooting, see [App Builder Practical Guide](/en/basic/ai/app-builder-practical-guide).
 
 ## Self-Hosted Configuration
 
-If you're running Teable self-hosted, configure App Builder settings in **Admin panel → AI settings → App builder**.
-
-### Required Settings
-
-| Setting | Description |
-|---------|-------------|
-| **Vercel API Token** | Get from [vercel.com/account/settings/tokens](https://vercel.com/account/settings/tokens) |
-
-### Custom Domain (Optional)
-
-Apps built with App Builder are deployed to Vercel. There are two ways to use a custom domain:
-
-#### Option A: Vercel Domains (Automatic)
-
-Domains purchased from Vercel get automatic binding configured for you.
-
-1. Purchase a domain from [Vercel Domains](https://vercel.com/domains)
-2. Enter the domain in **Custom Domain** field in Admin Panel
-
-#### Option B: External Domain (Manual DNS)
-
-If you already own a domain from another registrar (e.g., Cloudflare, GoDaddy):
-
-1. In Teable Admin Panel, enter your root domain in **Custom Domain** (e.g., `example.com`)
-2. Add your **Vercel API Token**
-3. When you publish an app, note the **App ID** from the URL (e.g., `appXXX123`)
-4. In your DNS provider, add a CNAME record for each app:
-
-| Field | Value |
-|-------|-------|
-| Type | CNAME |
-| Name | The app ID (e.g., `appXXX123`) |
-| Target | `cname.vercel-dns.com` |
-| Proxy | DNS only (if using Cloudflare) |
-
-5. In Vercel Dashboard (Project → Settings → Domains), add the full domain (e.g., `appXXX123.example.com`) and click **Verify**
-6. Once verified, HTTPS will be provisioned automatically
+If you are running Teable self-hosted, follow the setup on the [AI Settings](/en/basic/admin-panel/ai-setting) page.
 
 <Note>
-Each app gets a unique subdomain based on its App ID. Path-based URLs (e.g., `yourdomain.com/app/xxx`) are not supported.
+That page is the source of truth for **AI Chat Runtime**, **Vercel deployment settings**, **public access testing**, and the related troubleshooting notes for App Builder. Before publishing, make sure both your Teable instance and object storage (MinIO / S3) are publicly accessible. If you are unsure, use **Test Public Access** on the [AI Settings](/en/basic/admin-panel/ai-setting) page.
 </Note>
-
-### API Proxy (Optional)
-
-For regions with restricted access to Vercel APIs, you can configure a proxy URL:
-
-| Setting | Description |
-|---------|-------------|
-| **Vercel Base URL** | Proxy URL for Vercel API |
-
-### AI Gateway (Optional)
-
-If you use [Vercel AI Gateway](https://vercel.com/docs/ai-gateway), you can configure your API key here to enable:
-
-- Centralized monitoring and logging of AI requests
-- Rate limiting and cost controls
-- Caching to reduce API costs
-
-| Setting | Description |
-|---------|-------------|
-| **AI Gateway API Key** | Get from your Vercel AI Gateway settings |

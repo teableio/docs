@@ -1,130 +1,156 @@
 ---
 title: "AI Settings"
-description: "Configure AI model providers, model preferences, and capability settings for the instance."
+description: "Configure AI Chat, AI fields, AI automation, and App Builder for a self-hosted instance."
 ---
 
 <Tip>Available for self-hosted Business plan and above</Tip>
 
 Path: Admin Panel → AI Settings
 
-Use the toggle in the top-right corner to enable or disable all AI features for the instance. When disabled, a warning banner is shown and users cannot access any AI-related functionality.
+The **AI Settings** page is used to configure **AI Chat**, **AI fields**, **AI automation**, and **App Builder**. The **Pending configuration** panel on the right shows which required items are still missing. Complete them in order.
 
----
+## Before you start
 
-## 1. Configure LLM API
+Before you open the AI Settings page, make sure the following items are ready. Both **AI Chat Runtime** and **App Builder** rely on Vercel.
 
-Choose how to connect your AI models. Two options are available:
+| Requirement | Required? | Notes |
+|------|------|------|
+| **Vercel account** | Required | You need a working Vercel account |
+| **Vercel API key** | Required | Used for **AI Chat Runtime** |
+| **Team / Project** | Required | You need a usable Team and Project. If needed, you can create them in the page |
+| **AI Gateway API key** | When using AI Gateway | Only needed if you choose **AI Gateway** as your model connection method |
+| **Public access** | Required | Your **Teable instance** and **object storage (MinIO / S3)** must be publicly accessible |
 
-### AI Gateway (Recommended)
+Vercel-related costs usually have two parts:
 
-Access hundreds of models via Vercel AI Gateway with best compatibility and reliability.
+| Item | Notes |
+|------|------|
+| **Vercel base cost** | About **$20/month** for App deployment and AI runtime infrastructure |
+| **AI Gateway model usage** | Charged separately based on actual usage |
 
-- **AI Gateway API Key** (Required): Obtain from the Vercel AI Gateway dashboard. First-time use requires adding a credit card in Vercel. BYOK (bring your own provider keys) is supported.
-- **Custom Gateway URL** (Optional): Override the default gateway endpoint (default: `https://ai-gateway.vercel.sh/v1`).
+<Tip>
+Make sure your Vercel account has a credit card attached, that `Credit` status is healthy, and that auto top-up is enabled.
+</Tip>
 
-### Custom Provider
+## Setup steps
 
-Connect to self-hosted or private models. Supports multiple providers (OpenAI, Anthropic, Azure, etc.).
+Follow the **Pending configuration** panel in order. Turn the required items green first, then test the features. If a button is disabled or a feature still does not work, it usually means an earlier requirement has not been completed yet.
 
-- Click **+ Add LLM provider** to add a provider with its API key and models.
-- Use the **Test** button next to a provider or model to verify connectivity.
-- Each model displays its supported capabilities: **Image**, **PDF**, **Web search**, **Tool Call**, **Reasoning**, **Image Generation**.
-- Check **Image Generation Model** for models that generate images rather than text.
+Follow these four steps:
 
-After configuring your providers, click **Test Model Capabilities** to automatically detect what each model supports. This ensures capabilities like image and PDF processing are correctly identified before proceeding.
+<Steps>
+  <Step title="Configure LLM API">
+    Set up your model connection and complete the initial test.
+  </Step>
+  <Step title="Configure Recommended Models">
+    Add a clear set of primary models for users to choose from.
+  </Step>
+  <Step title="Set chat model">
+    Choose the default model for AI Chat.
+  </Step>
+  <Step title="Configure the runtime and App Builder">
+    Complete the Vercel setup and confirm that public access is ready.
+  </Step>
+</Steps>
 
-Click **Save & Continue** when done.
+### 1. Configure LLM API
 
----
+Start by choosing how you want to connect your models in **LLM API**.
 
-## 2. Configure Recommended Models
+<Tabs>
+  <Tab title="AI Gateway (Recommended)">
+    Enter your **AI Gateway API key**, then click **Test**. After the test succeeds, continue to the next step.
+  </Tab>
+  <Tab title="Custom provider">
+    Add at least one custom provider and complete the model test.
+  </Tab>
+</Tabs>
 
-Set which models are available for users to select in AI fields and automation. When using AI Gateway, models are selected here manually; when using a Custom Provider, models are managed in Step 1.
+### 2. Configure Recommended Models
 
----
+This step decides which models users can choose from. Start with a clear primary set so users can choose by task complexity. A common setup is:
 
-## 3. Set Chat Model
+| Model | Best for |
+|------|------|
+| **Opus** | Complex tasks and high-quality output |
+| **Sonnet** | Everyday tasks with a good balance of quality and cost |
+| **Haiku** | Lightweight tasks and fast responses |
 
-Manually select the model used for the sidebar AI chat feature.
+### 3. Set chat model
 
-- **Quick Setup**: Click **Use Recommended** to set the top recommended model as the default for all chat scenarios with one click.
-- **Chat Model**: Use the dropdown to manually select a specific model from your recommended model pool.
+This step sets the default model for sidebar **AI Chat**. The model must come from the recommended model list, so if this step is disabled, the previous step is usually incomplete.
 
----
+You should choose a stable model that supports tool calling and has already been tested. Otherwise, Agent capability will be noticeably limited.
 
-## App Builder
+### 4. Configure the runtime and App Builder
 
-Configure settings to enable the [App Builder](/en/basic/ai/app-builder) feature for generating custom web applications from your data, powered by v0.
+Complete **AI Chat Runtime** first, then complete **App Builder**.
 
-- **v0**: Vercel's AI app generation platform, responsible for generating app UI and components.
-- **Vercel**: App deployment platform. Teable deploys apps to production via Vercel when you publish.
+<Steps>
+  <Step title="Finish AI Chat Runtime">
+    In **AI Chat Runtime**, enter and verify the **Vercel API key**, then select **Team** and **Project**, and finally click **Test Connection**. After the test succeeds, the matching item in the **Pending configuration** panel will turn green.
+  </Step>
+  <Step title="Finish the basic App Builder setup">
+    In **App Builder**, enter the **Vercel access token** under **Vercel Deploy**. This is the core setting required to publish apps.
+  </Step>
+</Steps>
 
-<Warning>
-Please ensure Teable is publicly accessible, as v0 and Vercel need to access the Teable API of this instance. Use the **Test Public Access** button to verify.
-</Warning>
+If you also need a custom domain, or if your server cannot access the Vercel API directly, you can add these optional settings:
 
-### Required Settings
+| Optional item | When you need it |
+|------|------|
+| **Custom domain** | When you want to publish apps under your own domain |
+| **Vercel API proxy URL** | When your server cannot reach the Vercel API directly, or when you use a proxy or gateway |
 
-| Setting | Description |
-|---------|-------------|
-| **v0 API Key** | Get from [v0.app/chat/settings/keys](https://v0.app/chat/settings/keys) |
-| **Vercel API Token** | Get from [vercel.com/account/settings/tokens](https://vercel.com/account/settings/tokens) |
+<Tip>
+Click **Test Public Access** in the page and confirm that both your **Teable instance** and **object storage (MinIO / S3)** are publicly accessible.
+</Tip>
 
-<Warning>
-The v0 API requires a **paid v0 subscription**. Free tier credits are not sufficient. If you see "Internal Server Error" when creating apps, please upgrade your v0 plan.
-</Warning>
+**How to verify the setup is complete**
 
-### Custom Domain (Optional)
+After the setup is done, first confirm that all required items in the **Pending configuration** panel are green. Then test **AI Chat**, **AI fields**, **AI automation**, and **App Builder** one by one.
 
-Apps built with App Builder are deployed to Vercel. There are two ways to use a custom domain:
+## FAQ
 
-#### Option A: Vercel Domains (Automatic)
+<AccordionGroup>
+<Accordion title="The chat model option is disabled">
 
-Domains purchased from Vercel get automatic binding configured for you.
+Go back and finish **Configure recommended models** first. The chat model can only be selected from the recommended model list.
+</Accordion>
 
-1. Purchase a domain from [Vercel Domains](https://vercel.com/domains)
-2. Enter the domain in **Custom Domain** field in Admin Panel
+<Accordion title="I entered the API key, but the right-side status is still not green">
 
-#### Option B: External Domain (Manual DNS)
+Check the **Pending configuration** panel first to see which item is still missing. In many cases, the current step is saved correctly, but an earlier requirement is still incomplete.
+</Accordion>
 
-If you already own a domain from another registrar (e.g., Cloudflare, GoDaddy):
+<Accordion title="The page says Vercel Sandbox configuration is still missing">
 
-1. In Teable Admin Panel, enter your root domain in **Custom Domain** (e.g., `example.com`)
-2. Add your **Vercel API Token**
-3. When you publish an app, note the **App ID** from the URL (e.g., `appXXX123`)
-4. In your DNS provider, add a CNAME record for each app:
+This usually means **AI Chat Runtime** is not fully configured yet. Make sure all three items below are completed:
 
-| Field | Value |
-|-------|-------|
-| Type | CNAME |
-| Name | The app ID (e.g., `appXXX123`) |
-| Target | `cname.vercel-dns.com` |
-| Proxy | DNS only (if using Cloudflare) |
+- **Vercel API key**
+- **Team**
+- **Project**
 
-5. In Vercel Dashboard (Project → Settings → Domains), add the full domain (e.g., `appXXX123.example.com`) and click **Verify**
-6. Once verified, HTTPS will be provisioned automatically
+Entering only the token is not enough.
+</Accordion>
+
+<Accordion title="I get a credit exceeded error">
+
+Check your Vercel account `Credit` or balance first. Top up if needed, and make sure auto top-up is enabled.
+</Accordion>
+
+<Accordion title="If I use Vercel AI Gateway, will AI models process my data?">
+
+If you use **Vercel AI Gateway**, request data will still be sent to the model provider you selected for processing, so third-party providers may be involved.
+
+If you have data security or compliance requirements, enable this option in **Vercel AI Gateway**:
+
+- **Only allow providers with Zero Data Retention (ZDR)**
+
+After you enable it, available models will be limited to providers that support **Zero Data Retention**.
 
 <Note>
-Each app gets a unique subdomain based on its App ID. Path-based URLs (e.g., `yourdomain.com/app/xxx`) are not supported.
+Even with ZDR enabled, requests are still sent to the selected model provider for processing. The difference is that usage is limited to providers that support zero data retention.
 </Note>
-
-### API Proxy (Optional)
-
-For regions with restricted access to v0/Vercel APIs, you can configure proxy URLs:
-
-| Setting | Description |
-|---------|-------------|
-| **v0 Base URL** | Proxy URL for v0 API |
-| **Vercel Base URL** | Proxy URL for Vercel API |
-
-### AI Gateway (Optional)
-
-If you use [Vercel AI Gateway](https://vercel.com/docs/ai-gateway), you can configure your API key here to enable:
-
-- Centralized monitoring and logging of AI requests
-- Rate limiting and cost controls
-- Caching to reduce API costs
-
-| Setting | Description |
-|---------|-------------|
-| **AI Gateway API Key** | Get from your Vercel AI Gateway settings |
+</Accordion>
+</AccordionGroup>

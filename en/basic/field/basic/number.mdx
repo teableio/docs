@@ -1,57 +1,77 @@
 ---
 title: "Number"
-description: "Number fields are used for inputting and storing numerical data. This field type can be applied in various business scenarios such as financial statistics and inventory management."
+description: "Store numeric data such as prices, inventory, quantities, and ratios. Supports decimals, currency, percentage, and visual displays."
 ---
 
-Number fields only accept numerical input, including integers and decimals, such as "12", "3.1415", etc. The field will automatically filter out any non-numeric characters. Number fields can have range restrictions set to only allow input within specified intervals.
+Number fields do more than store raw numbers. They can also be used directly for analysis and presentation.
 
-Number fields can be used for sorting and filtering, quickly finding maximum and minimum values. They can also be referenced in formulas for mathematical operations.
+## Setup
 
-### Formatting
+### Create a Number Field
 
-Number fields support three formatting types, which users can choose according to their needs.
+- **Steps**:
+  1. Click the `+` at the right side of the table header and choose **Number** from the field type list.
+  2. Enter a field name such as "Price" or "Inventory."
+  3. **Format**: Choose how the value should be displayed based on your use case.
+     - **Number**: Plain numeric display, suitable for counts such as `100` or `2.5`
+     - **Currency**: Adds a currency symbol automatically, suitable for amounts such as `$100.00`
+     - **Percentage**: Displays the value as a percentage, suitable for ratios such as `50%`
 
-<AccordionGroup>
-  <Accordion title="Number">
-    Displayed as regular numbers, such as 1, 2.0
-  </Accordion>
+<img alt="Set Formatting" style={{ maxWidth: '65%' }} src="/images/2025-11-26-17-06-08.png" className="mx-auto" />
 
-  <Accordion title="Currency">
-    Displayed with a given currency symbol, such as $1.00
-  </Accordion>
+  4. **Precision**: Set the number of decimal places to keep.
+     - You can choose from **0** to **4** decimal places.
+     - Displayed values are rounded according to the selected precision.
 
-  <Accordion title="Percentage">
-    Displayed in percentage format, such as 1%. Note that the stored value for 1% is 0.01, for 100% is 1, and percentages can exceed 100%
-  </Accordion>
-</AccordionGroup>
+<img alt="Set Precision" style={{ maxWidth: '65%' }} src="/images/2025-11-26-17-10-28.png" className="mx-auto" />
 
-<img alt="Set Formatting" style={{ maxWidth: '50%' }} src="/images/ji-ben-gong-neng/zi-duan/ji-chu-zi-duan/6707e6f0d74b4508.png" />
+  5. **Default value** (Optional): New records can be pre-filled with a number.
 
-### Precision
+### Display Settings
 
-The product provides 6 precision levels for users to choose from, ranging from integers to five decimal places.
+In addition to plain numbers, Number fields can show values visually.
 
-<img alt="Set Precision" style={{ maxWidth: '50%' }} src="/images/ji-ben-gong-neng/zi-duan/ji-chu-zi-duan/dfd15d0ce947ea3b.png" />
+- **Steps**:
+  1. Open the **Display Mode** section in field settings.
+  2. **Default**: Shows the numeric value as text only.
+  3. **Single-value fields**: Can be shown as a **Bar** or **Ring**.
+     - **Target value**: Sets the value that fills the chart completely.
+     - **Color**: Choose the chart color.
+     - **Show number**: Displays the numeric value next to the chart.
+  4. **Multi-value fields**: Can be shown as a **Bar** or **Line**.
 
-### Display Modes
+<img alt="Set Display Mode" style={{ maxWidth: '65%' }} src="/images/2025-11-26-17-12-19.png" className="mx-auto" />
 
-Number fields currently have 3 display modes.
+## Use Cases
 
-<AccordionGroup>
-  <Accordion title="Default">
-    No special display mode, simply presents the number itself in the cell.
-  </Accordion>
+### Scenario 1: Contract Amounts in Finance
 
-  <Accordion title="Ring Chart">
-    Users can choose to display a ring chart, with options to set target value, chart color, and whether to show the number.
-  </Accordion>
+- **Table context**: Contract management table
+- **Scenario**: Record each contract amount with cent-level precision and a currency symbol
+- **Steps**:
+  1. Create a field named "Contract Amount"
+  2. Choose **Currency** and select the `$` symbol
+  3. Set precision to **2 decimal places** (for example: `$1,000.00`)
 
-  <Accordion title="Bar Chart">
-    Users can choose to display a bar chart, with options to set target value, chart color, and whether to show the number.
-  </Accordion>
-</AccordionGroup>
+### Scenario 2: Sales Performance Achievement Rate
 
-<img alt="Set Display Mode" style={{ maxWidth: '50%' }} src="/images/ji-ben-gong-neng/zi-duan/ji-chu-zi-duan/9b9dff4ca1d72ab6.png" />
+- **Table context**: Sales performance table
+- **Scenario**: Show how close each person is to the target
+- **Steps**:
+  1. Create a field named "Achievement Rate"
+  2. Choose **Percentage**
+  3. Set the display mode to **Bar**
+  4. Set the target value to **1** (that is, 100%) and use green as the bar color
 
-Formatting can be used not only in number fields but also in formula fields, rollup fields, and references. For details, please see [Formatting](/en/basic/field/common/formatter)
+## Features
 
+Number fields support the following:
+
+- **Automatic validation**: Only integers and decimals are accepted, such as `12` and `3.14`.
+- **Flexible formatting**: Supports standard number, currency, and percentage display.
+- **Visual display**: Can show values as a bar, ring, or line for faster scanning.
+- **Works with derived values**: If a formula, rollup, or lookup result is numeric, it can use the same formatting options.
+
+## Notes
+
+- Percentages are stored as decimals. For example, entering `100%` stores `1`, and entering `50%` stores `0.5`.
