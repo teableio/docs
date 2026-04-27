@@ -86,6 +86,33 @@ html:not(.dark) #banner a {
   border-color: rgba(255, 255, 255, 0.25);
 }
 
+/* Changelog: make the active right-side table of contents item visible */
+html[data-current-path$="/changelog"] #table-of-contents .toc-item[data-changelog-active="true"] > a,
+html[data-current-path$="/changelog"] #table-of-contents .toc-item[data-active] > a,
+html[data-current-path$="/changelog"] #table-of-contents .toc-item[data-active-deepest] > a {
+  color: rgb(var(--primary)) !important;
+  font-weight: 600;
+}
+
+html[data-current-path$="/changelog"] #table-of-contents .toc-item[data-changelog-active="true"]::before,
+html[data-current-path$="/changelog"] #table-of-contents .toc-item[data-active]::before,
+html[data-current-path$="/changelog"] #table-of-contents .toc-item[data-active-deepest]::before {
+  content: "";
+  position: absolute;
+  left: -12px;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  border-radius: 999px;
+  background: rgb(var(--primary));
+}
+
+html.dark[data-current-path$="/changelog"] #table-of-contents .toc-item[data-changelog-active="true"] > a,
+html.dark[data-current-path$="/changelog"] #table-of-contents .toc-item[data-active] > a,
+html.dark[data-current-path$="/changelog"] #table-of-contents .toc-item[data-active-deepest] > a {
+  color: rgb(var(--primary)) !important;
+}
+
 /* Restore blue informational callouts */
 .callout[data-callout-type="note"] {
   border-color: rgba(96, 165, 250, 0.45) !important;
