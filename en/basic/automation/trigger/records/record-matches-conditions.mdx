@@ -7,6 +7,11 @@ description: "Trigger a workflow when a record starts matching specific conditio
 
 This trigger is used when a workflow should run after a record begins to match certain conditions.
 
+It can fire in two common cases:
+
+- A new record is created and already matches the filter.
+- An existing record is edited and changes from not matching to matching the filter.
+
 ## Build with AI
 
 Open the AI Chat in your table's right sidebar and describe what you want.
@@ -32,7 +37,7 @@ Describe the goal once, and the workflow is ready — no manual setup needed.
 4. Click **Add Filter** to define the conditions. For example: `Status` equals `Overdue`, or `Amount` is greater than `10000`.
 5. You can combine multiple conditions with AND/OR logic, just like view filters.
 6. Save and activate the automation.
-7. Test it by editing a record so that it goes from *not matching* to *matching* your filter. The automation should fire once.
+7. Test it by creating a matching record, or by editing an existing record so that it goes from *not matching* to *matching* your filter. The automation should fire once.
 
 <Tip>After the trigger fires, subsequent steps can use all field data from the matched record, including the latest values at the time of the transition.</Tip>
 
@@ -45,7 +50,7 @@ These two triggers are easy to confuse. Here is the key difference:
 
 Use **When Record Updated** when you need to react to any change. Use **When Record Matches Conditions** when you only care about a specific state being reached.
 
-<Note>If you want to run an action every time a record is edited, use the [When record updated](/basic/automation/trigger/records/record-updated) trigger. If you only want to run an action once when a record first reaches a specific condition, use this trigger.</Note>
+<Note>If you want to run an action every time a record is edited, use the [When record updated](/en/basic/automation/trigger/records/record-updated) trigger. If you only want to run an action once when a record first reaches a specific condition, use this trigger.</Note>
 
 ## When to use
 
@@ -59,10 +64,10 @@ Use **When Record Updated** when you need to react to any change. Use **When Rec
 
 - You **must** define at least one filter condition. Without it, the trigger has nothing to evaluate.
 - The trigger checks the transition at the moment a record is saved. It does not retroactively fire for records that already matched before the automation was created.
-- If you need to act on records that already match, use a **Get Records** action with the same filter as a separate step.
+- Records created after activation are also checked against the filter. If the initial values match, the workflow can trigger immediately.
 - Combine this trigger with a **Send Email** or **Update Record** action to build powerful state-change workflows without writing any code.
 
 ## Related
 
-- [When record updated](/basic/automation/trigger/records/record-updated) — fires on any field change, not just transitions
-- [When record created](/basic/automation/trigger/records/record-created) — fires when new records are added
+- [When record updated](/en/basic/automation/trigger/records/record-updated) — fires on any field change, not just transitions
+- [When record created](/en/basic/automation/trigger/records/record-created) — fires when new records are added
