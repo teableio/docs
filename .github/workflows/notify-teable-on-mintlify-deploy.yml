@@ -61,13 +61,14 @@ jobs:
 
       - name: Notify Teable webhook
         env:
+          TEABLE_WEBHOOK_URL: ${{ secrets.TEABLE_WEBHOOK_URL }}
           TEABLE_WEBHOOK_TOKEN: ${{ secrets.TEABLE_WEBHOOK_TOKEN }}
           DOCS_BRANCH: ${{ github.event.pull_request.head.ref }}
           DOCS_URL: ${{ steps.wait.outputs.docs_url }}
         run: |
           set -euo pipefail
           curl -fsS -X POST \
-            "https://app.teable.ai/api/webhook/base/bseu12nLHShtmzYAUYv/workflow/wflM8nejDTw9ZHob2bv" \
+            "$TEABLE_WEBHOOK_URL" \
             -H "Authorization: Bearer $TEABLE_WEBHOOK_TOKEN" \
             -H "Content-Type: application/json" \
             -d "$(jq -nc --arg b "$DOCS_BRANCH" --arg u "$DOCS_URL" '{docs_branch:$b, docs_url:$u}')"
