@@ -1,0 +1,73 @@
+name: Notify Teable on Mintlify Deploy
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+permissions:
+  deployments: read
+  pull-requests: read
+  contents: read
+
+jobs:
+  notify-teable:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Wait for Mintlify deployment
+        id: wait
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          set -euo pipefail
+          echo "Waiting for Mintlify staging deployment of $SHA"
+          DEADLINE=$(( $(date +%s) + 720 ))
+          while [ "$(date +%s)" -lt "$DEADLINE" ]; do
+            DEPS=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/$REPO/deployments?sha=$SHA&environment=staging&per_page=20")
+            DID=$(echo "$DEPS" | python3 -c "
+          import json,sys
+          for d in json.load(sys.stdin):
+            if d.get('creator',{}).get('login') == 'mintlify[bot]':
+              print(d['id']); break
+          ")
+            if [ -n "$DID" ]; then
+              STATE=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+                "https://api.github.com/repos/$REPO/deployments/$DID/statuses?per_page=1" \
+                | python3 -c "import json,sys;ss=json.load(sys.stdin);print(ss[0]['state'] if ss else '')")
+              echo "deployment=$DID state=$STATE"
+              case "$STATE" in
+                success)
+                  ENV_URL=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+                    "https://api.github.com/repos/$REPO/deployments/$DID/statuses?per_page=1" \
+                    | python3 -c "import json,sys;ss=json.load(sys.stdin);print(ss[0].get('environment_url') or ss[0].get('target_url') or '')")
+                  echo "docs_url=$ENV_URL" >> "$GITHUB_OUTPUT"
+                  exit 0
+                  ;;
+                failure|error)
+                  echo "Mintlify deployment $DID failed: $STATE" >&2
+                  exit 1
+                  ;;
+              esac
+            fi
+            sleep 15
+          done
+          echo "Timed out waiting for Mintlify deployment of $SHA" >&2
+          exit 1
+
+      - name: Notify Teable webhook
+        env:
+          TEABLE_WEBHOOK_TOKEN: ${{ secrets.TEABLE_WEBHOOK_TOKEN }}
+          DOCS_BRANCH: ${{ github.event.pull_request.head.ref }}
+          DOCS_URL: ${{ steps.wait.outputs.docs_url }}
+        run: |
+          set -euo pipefail
+          curl -fsS -X POST \
+            "https://app.teable.ai/api/webhook/base/bseu12nLHShtmzYAUYv/workflow/wflM8nejDTw9ZHob2bv" \
+            -H "Authorization: Bearer $TEABLE_WEBHOOK_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -nc --arg b "$DOCS_BRANCH" --arg u "$DOCS_URL" '{docs_branch:$b, docs_url:$u}')"
