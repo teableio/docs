@@ -1,0 +1,40 @@
+---
+title: "Telemetry"
+description: "Learn how Teable self-hosted telemetry works, what is reported, and how to disable it."
+---
+
+## Overview
+
+License activation can work offline after you obtain and enter a valid License Key.
+
+If a self-hosted instance can reach the Internet, it may send a minimal telemetry report for license compliance, security review, fraud prevention, and investigation of unauthorized distributions.
+
+This telemetry is separate from optional product analytics. It is designed for self-hosted administration and compliance, similar to common service ping, license validation, and anonymous usage reporting practices in self-managed software.
+
+## What May Be Reported
+
+Telemetry reports may include product authorization identifiers such as Instance ID and, when a license is installed, License ID; license plan, seat limit, and expiration dates when available; software edition, application version, build version, image digest, and build channel; aggregated usage counts and buckets; instance last activity time; hashed public origin hostname and hashed machine hostname; platform, CPU architecture, and Node.js version; and compliance risk signals.
+
+Product authorization identifiers such as Instance ID and License ID may be sent in their original form because they are used to validate the deployment and license status.
+
+Customer or host identifying values such as public origin hostname and machine hostname are hashed before transmission.
+
+## What Is Not Reported
+
+Telemetry reports do not include customer workspace content, table records, schema names, field values, SQL queries, application secrets, access credentials, authentication tokens, License Keys, user email lists, user names, or the full public origin URL.
+
+## Transmission and Retention
+
+Telemetry reports are encrypted in transit.
+
+Teable retains raw telemetry events only for as long as reasonably necessary for license compliance, security review, fraud prevention, dispute handling, and audit purposes. Teable may retain aggregated or derived compliance status for the duration of the customer relationship and any legally required retention period.
+
+## Disable Telemetry Reporting
+
+Self-hosted administrators can disable telemetry reporting by setting:
+
+```env
+TELEMETRY_REPORT_DISABLED=true
+```
+
+Disabling telemetry reporting does not by itself prevent offline license activation, but may limit Teable's ability to verify license compliance, detect unauthorized distributions, or investigate license disputes.
