@@ -9,6 +9,12 @@
     return /\/changelog\/?$/.test(currentPath);
   }
 
+  function syncCurrentPath() {
+    if (isChangelogPage() && !document.documentElement.getAttribute("data-current-path")) {
+      document.documentElement.setAttribute("data-current-path", window.location.pathname);
+    }
+  }
+
   function clearActiveState() {
     document.querySelectorAll("#table-of-contents .toc-item[data-changelog-active]").forEach(function (item) {
       item.removeAttribute("data-changelog-active");
@@ -21,6 +27,8 @@
   }
 
   function collectPairs() {
+    syncCurrentPath();
+
     if (!isChangelogPage()) {
       pairs = [];
       clearActiveState();
