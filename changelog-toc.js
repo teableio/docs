@@ -3,6 +3,7 @@
   var activeId = null;
   var scrollScheduled = false;
   var refreshTimer = null;
+  var lazyVideoObserver = null;
 
   function isChangelogPage() {
     var currentPath = document.documentElement.getAttribute("data-current-path") || window.location.pathname;
@@ -35,6 +36,8 @@
       return;
     }
 
+    setupLazyVideos();
+
     var tocItems = Array.prototype.slice.call(document.querySelectorAll("#table-of-contents .toc-item"));
     var tocByHash = new Map();
 
@@ -53,6 +56,65 @@
       .filter(Boolean);
 
     updateActiveState(true);
+  }
+
+  function hydrateLazyVideo(video) {
+    var src = video.getAttribute("data-src");
+
+    if (!src) {
+      return;
+    }
+
+    video.setAttribute("src", src);
+    video.removeAttribute("data-src");
+    video.setAttribute("data-changelog-lazy-loaded", "true");
+    video.load();
+
+    if (video.hasAttribute("autoplay")) {
+      var playPromise = video.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(function () {});
+      }
+    }
+  }
+
+  function setupLazyVideos() {
+    var lazyVideos = Array.prototype.slice.call(
+      document.querySelectorAll("video.changelog-lazy-video[data-src]:not([data-changelog-lazy-bound])")
+    );
+
+    if (!lazyVideos.length) {
+      return;
+    }
+
+    if (!("IntersectionObserver" in window)) {
+      lazyVideos.forEach(hydrateLazyVideo);
+      return;
+    }
+
+    if (!lazyVideoObserver) {
+      lazyVideoObserver = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) {
+              return;
+            }
+
+            hydrateLazyVideo(entry.target);
+            lazyVideoObserver.unobserve(entry.target);
+          });
+        },
+        {
+          rootMargin: "800px 0px",
+          threshold: 0.01,
+        }
+      );
+    }
+
+    lazyVideos.forEach(function (video) {
+      video.setAttribute("data-changelog-lazy-bound", "true");
+      lazyVideoObserver.observe(video);
+    });
   }
 
   function scheduleCollectPairs() {
