@@ -5,62 +5,108 @@ description: Interact with your data using natural language for analysis, visual
 
 <Note>Available on all Cloud plans; Self-Hosted requires Business or higher.</Note>
 
-Teable's AI Chat reads the context of the page you're on and helps turn questions about data into directly usable results. It works well for analyzing tables, generating charts, following up with more questions, and handling more complex agent tasks with context.
+AI Chat helps analyze the current table, explain record content, generate temporary charts, and create or update tables, views, apps, and automations.
+
+AI prioritizes the current page. To reference other tables, views, apps, automations, or folders, type `@` in the input box and select the related node.
 
 ## How to Open
 
-Click the **Cuppy** icon in the top right corner to open AI Chat from any page.
+Open a table or view, then click the **Cuppy** icon in the top right corner to open AI Chat. Describe the question or task in the input box. If the task will modify data or create nodes, ask AI to list the plan first, then confirm before execution.
 
-## Context Scope
+## What AI Can Reference
 
-AI Chat automatically reads the current context, including:
+AI prioritizes information from the current page:
 
-- **Current table and view**: It prioritizes the table, view, and filtered result set you are currently looking at.
-- **Selected records and attachments**: Selected data and uploaded files on the page are included too.
-- **Manually added context**: If you need to ask across tables, you can add related tables into the context first.
+- **Current table and view**: The current table, current view, and the filtered or sorted results in that view.
+- **Selected records**: If records are selected, AI uses them as key context.
+- **Uploaded files**: Add PDFs, Excel files, Word documents, images, and other files to the conversation.
+- **More nodes with `@`**: Type `@` in the input box to add tables, views, apps, automations, or folders from the tree.
 
-## Capabilities
+Files can also be pasted or dropped directly into the input box. They appear as attachment chips first, then become available to AI after the message is sent.
 
-### 1. Deep Data Analysis (Text-to-SQL)
+## Common Uses
 
-Teable's AI Chat does more than guess. It works like a data analyst that can turn your request into a real query.
+<CardGroup cols={2}>
+  <Card title="Create tables and automations" icon="sitemap">
+    Plan a business database, create tables, views, apps, automations, or update existing records.
+  </Card>
+  <Card title="Analyze data" icon="chart-line">
+    Summarize data in the current table or view, or analyze across multiple related nodes.
+  </Card>
+  <Card title="Temporary charts and reports" icon="chart-pie">
+    Generate one-time chart or report previews from queried data.
+  </Card>
+  <Card title="Read files" icon="file-lines">
+    Answer questions using PDFs, Excel files, Word documents, images, and other attachments.
+  </Card>
+</CardGroup>
 
-- **SQL Generation**: It converts your natural language questions into complex, executable SQL queries.
-- **Precision**: Because it executes code against your database, results such as counts, sums, and averages are 100% accurate.
-- **Complex Logic**: It can handle grouping, filtering, and cross-table references.
-  - *"Which product category had the highest growth rate QoverQ?"*
-  - *"List customers who haven't placed an order in the last 6 months but have a balance > 0."*
+### Create Tables and Automations
 
-### 2. Charts and Visualization
+AI Chat can help create, update, and organize data, not only answer questions. For a new business workflow, discuss the data structure first, then ask AI to create the tables, views, apps, and automations.
 
-- Bar, line, pie, scatter, and area charts are all supported.
-- You can keep refining a chart through chat, such as *"Switch to a stacked bar chart"* or *"Group by region"*.
-- For more complex presentation needs, you can first ask AI Chat to shape the data into a chart-ready format.
+Suitable prompts include:
 
-### 3. Smart Agent
+- Help me plan a customer follow-up system. What tables and fields do I need?
+- Based on the plan above, create these tables, views, and fields.
+- Add priority, assignee, due date, and status fields to the task table, then create common views.
+- Change the selected records to Completed.
+- Create a new table from this Excel file and check whether the field types are appropriate.
+- Create a CRM app from this customer table, with customer list, customer detail, and follow-up record pages.
+- When a new order is created, notify the owner and include the order number, customer name, and amount.
 
-AI Chat does not only answer questions. It can also help you move the next step forward.
+For a complete business database, start by asking AI to plan the table structure. After reviewing the plan, continue with table, view, app, and automation creation.
 
-- **App Builder**: Start creating apps directly from the conversation.
-- **Automation**: Describe a workflow and let AI help configure triggers and actions.
-- **Scripts**: Ask AI to generate more specific JavaScript for your use case.
+<Steps>
+  <Step title="Plan first">
+    Describe the business goal, such as building a customer follow-up system, and ask AI to outline the required tables, fields, views, and automations.
+  </Step>
+  <Step title="Confirm the structure">
+    Review the proposed tables, fields, field types, and relationships. Add any missing rules or workflow details.
+  </Step>
+  <Step title="Create next">
+    Ask AI to create the confirmed tables and views, then continue with apps or automations.
+  </Step>
+</Steps>
 
-### 4. Read Files and Web Pages
+For app creation details, see [App Builder](/en/basic/ai/app-builder). For automation details, see [Automation](/en/basic/automation).
 
-If you upload files, or if the selected model supports web search, AI Chat can use that content alongside your data.
+### Analyze Data
 
-- Supports PDFs, Excel files, Word files, images, and other attachments.
-- Can answer by combining document content with table data.
-- If the current model has web search enabled, AI Chat shows web results together with source links.
+Ask questions about data in the current table, for example:
 
-## Good Times to Start a New Chat
+- Count completed tasks this month by assignee.
+- Find the customers with the highest sales in the past 30 days.
+- Analyze unusual records in this view.
 
-- The topic has changed.
-- The current conversation has become too long and the result starts drifting.
-- You want to reduce the extra compute cost caused by too much previous context.
+If the question involves multiple tables, use `@` to add the related tables or views to the conversation.
 
-## Best Practices
+### Generate Temporary Charts or Report Previews
 
-- **State the goal clearly**: Instead of saying "Analyze this," say something like "Analyze weekly sales trends over the past 3 months."
-- **Use field names when possible**: For example, "Sort by `Created Time`."
-- **Start a new chat when the topic changes**: A new chat is usually more stable and uses less compute.
+AI can generate one-time HTML previews from queried data, useful for checking charts or reports quickly:
+
+- Generate a weekly sales trend chart.
+- Turn this query result into a pie chart.
+- Create a summary report from these records.
+
+<Info>
+These previews are not saved as long-term apps and do not refresh data automatically. For dashboards, business pages, or interactive apps that need to be reused, create an app with [App Builder](/en/basic/ai/app-builder).
+</Info>
+
+### Read Files
+
+After uploading files, AI can answer questions using both file content and table data:
+
+- Summarize this PDF and connect it with the current customer record.
+- Read this Excel file and identify the fields that should be imported.
+- Generate a product description from this image.
+
+## Prompting Tips
+
+- **State the goal first**: In the first message, describe what to do, the relevant conditions, and the expected output. For example, analyze weekly sales trends over the past 3 months, grouped by region, and return a trend table with a short conclusion.
+- **Use field names**: For example, sort by `Created Time`, so AI can identify the target column.
+- **Provide several examples**: For fixed-format output, provide 3-5 input -> expected output examples.
+- **Use `@` to select nodes**: When AI needs to reference tables, views, apps, automations, or folders, type `@` and select them directly.
+- **Confirm before execution**: For tasks that modify data, create tables, create apps, or enable automations, ask AI to describe the changes before running them.
+- **Choose the model by task**: If the space supports model selection, use a lighter model for simple queries, cleanup, or rewriting, and a stronger model for complex planning, cross-table analysis, and app building.
+- **Start a new chat when the topic changes**: A new chat is recommended when the topic changes, the conversation becomes too long, or context usage should be reduced.
