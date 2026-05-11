@@ -10,20 +10,32 @@ description: "Configure Azure Entra ID as your SSO authentication provider for T
 1. Navigate to your Teable SSO settings
 2. Create a new authentication provider and name it **Azure Entra ID** and select **OpenID Connect**
 
-![](/images/2025-12-04-18-00-20.png)
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-00-20.png"
+  alt="Azure Entra ID SSO setup step 1"
+  className="docs-screenshot"
+/>
 
 ## Step 2: Access Azure Entra ID
 
 1. Log in to your Azure account
 2. Navigate to **Microsoft Entra ID** (formerly Azure Active Directory)
 
-![](/images/2025-12-04-18-00-27.png)
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-00-27.png"
+  alt="Azure Entra ID SSO setup step 2"
+  className="docs-screenshot"
+/>
 
 ## Step 3: Configure OAuth Endpoints
 
 Fill in the following OAuth endpoints in Teable using your **Tenant ID**:
 
-![](/images/2025-12-04-18-00-51.png)
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-00-51.png"
+  alt="Azure Entra ID SSO setup step 3"
+  className="docs-screenshot"
+/>
 
 - **Authorization URL**: `https://login.microsoftonline.com/_YOUR_TENANT_ID_/oauth2/v2.0/authorize`
 - **Token URL**: `https://login.microsoftonline.com/_YOUR_TENANT_ID_/oauth2/v2.0/token`
@@ -37,14 +49,26 @@ Fill in the following OAuth endpoints in Teable using your **Tenant ID**:
 1. In Azure Entra ID, click **App registrations** in the left menu
 2. Click **+ New registration**
 
-![](/images/2025-12-04-18-03-39.png)
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-step4-option-2-fit-width.png"
+  alt="Azure Entra ID app registration"
+  className="docs-screenshot"
+/>
 
 ## Step 5: Configure Application Registration
 
 Fill in the application registration form:
 
-![](/images/2025-12-04-18-01-11.png)
-![](/images/2025-12-04-18-01-19.png)
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-01-11.png"
+  alt="Azure Entra ID SSO setup step 5"
+  className="docs-screenshot"
+/>
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-01-19.png"
+  alt="Azure Entra ID SSO setup step 6"
+  className="docs-screenshot"
+/>
 
 - **Name**: Teable SSO
 - **Supported account types**: Select based on your needs
@@ -57,27 +81,47 @@ Click **Register** to create the application.
 
 1. Copy the **Application (client) ID** from the application overview page
 
-![](/images/2025-12-04-18-01-27.png)
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-01-27.png"
+  alt="Azure Entra ID SSO setup step 7"
+  className="docs-screenshot"
+/>
 
 2. Paste the Client ID into the Teable SSO configuration
 
-![](/images/2025-12-04-18-01-32.png)
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-01-32.png"
+  alt="Azure Entra ID SSO setup step 8"
+  className="docs-screenshot"
+/>
 
 ## Step 7: Create Client Secret
 
 1. In your application, click **Certificates & secrets** in the left menu
 
-![](/images/2025-12-04-18-01-44.png)
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-01-44.png"
+  alt="Azure Entra ID SSO setup step 9"
+  className="docs-screenshot"
+/>
 
 2. Click **+ Add a certificate or secret**
 
-![](/images/2025-12-04-18-01-50.png)
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-01-50.png"
+  alt="Azure Entra ID SSO setup step 10"
+  className="docs-screenshot"
+/>
 
 3. Add a description and set the expiration period
 4. Click **Add**
 5. **Important**: Copy the secret **Value** immediately and save it as your Client Secret in Teable
 
-![](/images/2025-12-04-18-01-55.png)
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-01-55.png"
+  alt="Azure Entra ID SSO setup step 11"
+  className="docs-screenshot"
+/>
 
 > **Warning**: The secret value is only visible once. Make sure to save it immediately.
 
@@ -86,8 +130,16 @@ Click **Register** to create the application.
 1. Click **API permissions** in the left menu
 2. Click **+ Add a permission**
 
-![](/images/2025-12-04-18-02-00.png)
-![](/images/2025-12-04-18-02-05.png)
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-02-00.png"
+  alt="Azure Entra ID SSO setup step 12"
+  className="docs-screenshot"
+/>
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-02-05.png"
+  alt="Azure Entra ID SSO setup step 13"
+  className="docs-screenshot"
+/>
 
 3. Select **Microsoft Graph**
 4. Choose **Delegated permissions**
@@ -97,7 +149,11 @@ Click **Register** to create the application.
    - `profile`
 6. Click **Add permissions**
 
-![](/images/2025-12-04-18-02-16.png)
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-02-16.png"
+  alt="Azure Entra ID SSO setup step 14"
+  className="docs-screenshot"
+/>
 
 7. Click **Grant admin consent for [Your Directory]** to approve the permissions
 
@@ -105,7 +161,11 @@ Click **Register** to create the application.
 
 You have two options to enable SSO login:
 
-![](/images/2025-12-04-18-34-30.png)
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-34-30.png"
+  alt="Azure Entra ID SSO setup step 15"
+  className="docs-screenshot"
+/>
 
 **Option 1: Direct Authentication URL**
 - Use the authentication URL as your SSO login URL
