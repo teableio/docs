@@ -10,20 +10,32 @@ description: "配置 Azure Entra ID 作为 Teable 的 SSO 认证提供商"
 1. 进入 Teable 的 SSO 设置页面
 2. 创建新的认证提供商，命名为 **Azure Entra ID** 并选择 **OpenID Connect**
 
-![](/images/2025-12-04-18-00-20.png)
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-00-20.png"
+  alt="Azure Entra ID SSO 配置步骤 1"
+  className="docs-screenshot"
+/>
 
 ## 步骤 2：访问 Azure Entra ID
 
 1. 登录你的 Azure 账户
 2. 导航至 **Microsoft Entra ID**（原 Azure Active Directory）
 
-![](/images/2025-12-04-18-00-27.png)
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-00-27.png"
+  alt="Azure Entra ID SSO 配置步骤 2"
+  className="docs-screenshot"
+/>
 
 ## 步骤 3：配置 OAuth 端点
 
 使用你的 **租户 ID** 在 Teable 中填写以下 OAuth 端点：
 
-![](/images/2025-12-04-18-00-51.png)
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-00-51.png"
+  alt="Azure Entra ID SSO 配置步骤 3"
+  className="docs-screenshot"
+/>
 
 - **Authorization URL**（授权 URL）：`https://login.microsoftonline.com/_YOUR_TENANT_ID_/oauth2/v2.0/authorize`
 - **Token URL**（令牌 URL）：`https://login.microsoftonline.com/_YOUR_TENANT_ID_/oauth2/v2.0/token`
@@ -37,14 +49,26 @@ description: "配置 Azure Entra ID 作为 Teable 的 SSO 认证提供商"
 1. 在 Azure Entra ID 中，点击左侧菜单的 **应用注册**
 2. 点击 **+ 新注册**
 
-![](/images/2025-12-04-18-03-39.png)
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-03-39.png"
+  alt="Azure Entra ID SSO 配置步骤 4"
+  className="docs-screenshot"
+/>
 
 ## 步骤 5：配置应用程序注册
 
 填写应用程序注册表单：
 
-![](/images/2025-12-04-18-01-11.png)
-![](/images/2025-12-04-18-01-19.png)
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-01-11.png"
+  alt="Azure Entra ID SSO 配置步骤 5"
+  className="docs-screenshot"
+/>
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-01-19.png"
+  alt="Azure Entra ID SSO 配置步骤 6"
+  className="docs-screenshot"
+/>
 
 - **名称**：Teable SSO
 - **受支持的账户类型**：根据你的需求选择
@@ -57,27 +81,47 @@ description: "配置 Azure Entra ID 作为 Teable 的 SSO 认证提供商"
 
 1. 从应用程序概述页面复制**应用程序（客户端）ID**
 
-![](/images/2025-12-04-18-01-27.png)
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-01-27.png"
+  alt="Azure Entra ID SSO 配置步骤 7"
+  className="docs-screenshot"
+/>
 
 2. 将客户端 ID 粘贴到 Teable 的 SSO 配置中
 
-![](/images/2025-12-04-18-01-32.png)
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-01-32.png"
+  alt="Azure Entra ID SSO 配置步骤 8"
+  className="docs-screenshot"
+/>
 
 ## 步骤 7：创建客户端密钥
 
 1. 在你的应用程序中，点击左侧菜单的**证书和密钥**
 
-![](/images/2025-12-04-18-01-44.png)
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-01-44.png"
+  alt="Azure Entra ID SSO 配置步骤 9"
+  className="docs-screenshot"
+/>
 
 2. 点击 **+ 新客户端密钥**
 
-![](/images/2025-12-04-18-01-50.png)
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-01-50.png"
+  alt="Azure Entra ID SSO 配置步骤 10"
+  className="docs-screenshot"
+/>
 
 3. 添加说明并设置过期时间
 4. 点击**添加**
 5. **重要**：立即复制密钥的**值**并将其保存为 Teable 中的客户端密钥
 
-![](/images/2025-12-04-18-01-55.png)
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-01-55.png"
+  alt="Azure Entra ID SSO 配置步骤 11"
+  className="docs-screenshot"
+/>
 
 > **警告**：密钥值仅显示一次，请务必立即保存。
 
@@ -86,8 +130,16 @@ description: "配置 Azure Entra ID 作为 Teable 的 SSO 认证提供商"
 1. 点击左侧菜单中的 **API 权限**
 2. 点击 **+ 添加权限**
 
-![](/images/2025-12-04-18-02-00.png)
-![](/images/2025-12-04-18-02-05.png)
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-02-00.png"
+  alt="Azure Entra ID SSO 配置步骤 12"
+  className="docs-screenshot"
+/>
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-02-05.png"
+  alt="Azure Entra ID SSO 配置步骤 13"
+  className="docs-screenshot"
+/>
 
 3. 选择 **Microsoft Graph**
 4. 选择**委托的权限**
@@ -97,7 +149,11 @@ description: "配置 Azure Entra ID 作为 Teable 的 SSO 认证提供商"
    - `profile`
 6. 点击**添加权限**
 
-![](/images/2025-12-04-18-02-16.png)
+<img
+  src="/images/staged-sso-preview/2026-05-11-sso-azure-entra-id-2025-12-04-18-02-16.png"
+  alt="Azure Entra ID SSO 配置步骤 14"
+  className="docs-screenshot"
+/>
 
 7. 点击**为 [你的目录] 授予管理员同意**按钮以批准权限
 
