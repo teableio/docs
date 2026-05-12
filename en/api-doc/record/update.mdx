@@ -45,7 +45,7 @@ To clear a field's value, explicitly pass `null`. If a field name is not include
     * When set to "name":
       ```json
       {
-        fields: {
+        "fields": {
           "Name": "John Doe",
           "Age": 30
         }
@@ -54,7 +54,7 @@ To clear a field's value, explicitly pass `null`. If a field name is not include
     * When set to "id":
       ```json
       {
-        fields: {
+        "fields": {
           "fldABCDEFGHIJKLMN": "John Doe",
           "fldOPQRSTUVWXYZ12": 30
         }
@@ -87,6 +87,22 @@ To clear a field's value, explicitly pass `null`. If a field name is not include
       ```
 
 For uploading new files to attachment fields, please refer to the [Upload Attachment](/en/api-doc/record/upload-attachment) section.
+
+* **order (optional)**
+  * Description: After updating the record, move it to a specified position in a specified view.
+  * Type: Object
+  * Properties:
+    * viewId: View ID
+    * anchorId: Anchor record ID
+    * position: Position relative to the anchor record. Possible values: `"before"` or `"after"`
+  * Example:
+    ```json
+    {
+      "viewId": "viwABCDEFGHIJKLMN",
+      "anchorId": "rec123456789ABCDE",
+      "position": "after"
+    }
+    ```
 
 ### Response
 
@@ -191,4 +207,3 @@ For uploading new files to attachment fields, please refer to the [Upload Attach
   print(response.json())
   ```
 </CodeGroup>
-

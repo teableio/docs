@@ -34,8 +34,10 @@ description: "Configure Authentik as your SSO authentication provider for Teable
 ### Redirect URIs
 
 - **Redirect URIs/Origins (RegEx)**: Paste the **Callback URL** from Teable
-  - For exact match: `https://app.teable.ai/api/auth/callback/authentik`
-  - For regex pattern: `https://app\.teable\.ai/api/auth/callback/.*`
+  - For exact match: `https://app.teable.ai/api/auth/authentication/__providerId__/callback`
+  - For regex pattern: `https://app\.teable\.ai/api/auth/authentication/.*/callback`
+
+> **Note**: Replace `__providerId__` in the URL with the providerId shown after creating the authentication provider in Teable, or copy the callback URL directly from the Teable page.
 
 ### Advanced Settings
 
@@ -191,4 +193,3 @@ You have two options to enable SSO login:
 2. Review authentication events and errors
 3. Set up notification rules for important events
 4. Configure event retention policies in **System** → **Settings**
-

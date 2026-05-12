@@ -34,8 +34,10 @@ description: "配置 Authentik 作为 Teable 的 SSO 认证提供商"
 ### 重定向 URI
 
 - **Redirect URIs/Origins (RegEx)**（重定向 URI/来源）：粘贴 Teable 中的**回调 URL**
-  - 精确匹配：`https://app.teable.cn/api/auth/callback/authentik`
-  - 正则表达式模式：`https://app\.teable\.cn/api/auth/callback/.*`
+  - 精确匹配：`https://app.teable.cn/api/auth/authentication/__providerId__/callback`
+  - 正则表达式模式：`https://app\.teable\.cn/api/auth/authentication/.*/callback`
+
+> **注意**：请将 URL 中的 `__providerId__` 替换为 Teable 中创建认证提供商后显示的 providerId，或直接复制 Teable 页面中的回调 URL。
 
 ### 高级设置
 
@@ -191,4 +193,3 @@ description: "配置 Authentik 作为 Teable 的 SSO 认证提供商"
 2. 审查认证事件和错误
 3. 为重要事件设置通知规则
 4. 在 **System** → **Settings** 中配置事件保留策略
-
