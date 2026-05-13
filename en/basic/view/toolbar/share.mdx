@@ -1,37 +1,88 @@
 ---
 title: "Share"
-description: "Publish the current view as a public link so external users can view or embed it."
+description: "Publish the current view as a public link and configure copy, password, login, embed, and theme options."
 ---
 
-## 1. Enable Sharing
+**Share view** is used to publish the current view as a public link. Anyone with the link can access the data in this view, but cannot directly modify the original table records.
 
-Click `Share` in the view toolbar and turn on `Publicly share this view to the web` to generate a share link.
+<Note>
+To share an entire base, a specific table, or a folder instead of only the current view, use base sharing in [Base](/en/basic/base).
+</Note>
 
-- Anyone who visits the share link gets read-only access and cannot directly edit the data.
+## 1. Share View and Share Table
 
-## 2. Settings
+In the table share entry, the current table usually shows both **Share table** and **Share view**:
 
-- `Allow copying view data`: Controls whether visitors can copy data.
-- `Show all fields in expanded records`: This toggle is available only in Grid view.
-- `Set access password`: Adds password protection to the link.
-- `Require login to submit`: This appears only on share pages that support submission, mainly Form view.
+| Share option | Use case |
+|------|------|
+| **Share table** | Share the current table when visitors need broader access to table content. |
+| **Share view** | Share only the current view when you want to publish a filtered, sorted, grouped, hidden-field, or layout-specific result. |
 
-## 3. Link and Embed
+A view share link only allows access to the current view. If you later change the view configuration, such as filters, sorting, grouping, hidden fields, or layout, the shared link reflects those changes.
 
-- `Copy link`
-- `QR code`
-- `Generate new link`
-- `Embed`
-- `Hide toolbar`: This toggle does not appear for Form view.
-- `Theme`: Supports `System`, `Light`, and `Dark`
+## 2. Enable Sharing
 
-### Embed Code
-If you need to embed the view in another webpage, you can use the generated iframe code directly:
+1. Open the view you want to share
+2. Click **Share** in the view toolbar
+3. Switch to **Share view**
+4. Turn on **Share view to web**
+5. Copy the generated share link, or share the QR code
+
+If you do not have permission to share the view, the sharing switch is unavailable.
+
+After **Share view to web** is turned off, existing share links can no longer be accessed.
+
+## 3. Link Management
+
+After sharing is enabled, you can manage the link in the share panel:
+
+- **Copy link**: Copy the current share link.
+- **QR code**: Generate a QR code for the current share link.
+- **Generate new link**: Regenerate the share link. After generation, distribute the new link instead of continuing to use the old one.
+
+<Warning>
+Public links can be forwarded. Before enabling sharing, confirm that the current view does not include fields or records that should not be public.
+</Warning>
+
+## 4. Advanced Options
+
+Different view types show different advanced options.
+
+| Option | Applies to | Description |
+|------|------|------|
+| **Allow viewers to copy data out of this view** | Grid view | Controls whether visitors can copy data from the shared grid view. |
+| **Show all fields in expanded records** | Grid view | Controls whether visitors can see fields hidden from the current view when opening record details. |
+| **Restrict by password** | All view shares | Adds password protection to the share link. Visitors must enter the correct password before opening the share page. |
+| **Require login to submit** | Form view | Requires visitors to log in before submitting the form. |
+
+## 5. Embed in Another Page
+
+Share views can be embedded in other webpages. Click **Embed config** to:
+
+- Preview the embed
+- Copy iframe code
+- Configure whether to hide the toolbar
+- Configure the theme
+
+Example:
+
 ```html
-<iframe 
+<iframe
   src="https://app.teable.ai/share/[share-id]/view?hideToolBar=true&embed=true"
-  width="100%" 
-  height="533" 
+  width="100%"
+  height="533"
   style="border: 0">
 </iframe>
 ```
+
+### Hide Toolbar
+
+**Hide toolbar** adds `hideToolBar=true` to the link and hides the filter, sort, search, and other toolbar controls on the share page. This option does not apply to Form view.
+
+### Theme
+
+Theme is controlled through link parameters:
+
+- **System**
+- **Light**
+- **Dark**
