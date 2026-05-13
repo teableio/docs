@@ -20,9 +20,10 @@ You only need one Vercel account to complete the setup.
 | Requirement | Required? | Notes |
 |------|------|------|
 | **Vercel account** | Required | You need a working Vercel account |
-| **Vercel API key** | Required | Used for **AI Chat Runtime** |
+| **Vercel API Token** | Required | Used for **AI Chat Runtime** |
 | **Team / Project** | Required | You need a usable Team and Project. If needed, you can create them in the page |
 | **AI Gateway API key** | When using AI Gateway | Only needed if you choose **AI Gateway** as your model provider |
+| **OpenAI Realtime API Key** | Optional | Only needed if you want to enable **Voice input** in AI Chat |
 | **Public access** | Required | Your **Teable instance** and **object storage (MinIO / S3)** must be publicly accessible |
 
 Vercel-related costs usually have two parts:
@@ -86,13 +87,19 @@ This step sets the default model for sidebar **AI Chat**. The model must come fr
 
 You should choose a stable model that supports tool calling and has already been tested. Otherwise, Agent capability will be noticeably limited.
 
+### Optional. Configure Voice input
+
+**Voice input** lets users enter messages in AI Chat with a microphone.
+
+You can adjust **Max session duration (seconds)** and **Session creates per minute per user**. After voice input is enabled and saved, users will see the microphone button in the AI Chat input box.
+
 ### 4. Configure the runtime and App Builder
 
 Complete **AI Chat Runtime** first, then complete **App Builder**.
 
 <Steps>
   <Step title="Finish AI Chat Runtime">
-    In **AI Chat Runtime**, enter and verify the **Vercel API key**, then select **Team** and **Project**, and finally click **Test Connection**. After the test succeeds, the matching item in the **Pending configuration** panel will turn green.
+    In **AI Chat Runtime**, enter and verify the **Vercel API Token**, select **Team** and **Project**, click **Save**, then click **Test Connection**. After the connection test succeeds, the matching item in the **Pending configuration** panel will turn green.
   </Step>
   <Step title="Finish the basic App Builder setup">
     In **App Builder**, enter the **Vercel access token** under **Vercel Deploy**. This is the core setting required to publish apps.
@@ -139,11 +146,11 @@ Check the **Pending configuration** panel first to see which item is still missi
 
 This usually means **AI Chat Runtime** is not fully configured yet. Make sure all three items below are completed:
 
-- **Vercel API key**
+- **Vercel API Token**
 - **Team**
 - **Project**
 
-Entering only the token is not enough.
+Entering only the token is not enough. After choosing **Team** and **Project**, save the selection before testing the connection.
 </Accordion>
 
 <Accordion title="I get a credit exceeded error">
