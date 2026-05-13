@@ -34,8 +34,10 @@ description: "Configure Authentik as your SSO authentication provider for Teable
 ### Redirect URIs
 
 - **Redirect URIs/Origins (RegEx)**: Paste the **Callback URL** from Teable
-  - For exact match: `https://app.teable.ai/api/auth/callback/authentik`
-  - For regex pattern: `https://app\.teable\.ai/api/auth/callback/.*`
+  - For exact match: `https://app.teable.ai/api/auth/authentication/__providerId__/callback`
+  - For regex pattern: `https://app\.teable\.ai/api/auth/authentication/.*/callback`
+
+<Note>Replace `__providerId__` in the URL with the providerId shown after creating the authentication provider in Teable, or copy the callback URL directly from the Teable page.</Note>
 
 ### Advanced Settings
 
@@ -56,7 +58,7 @@ After creating the provider:
 2. Copy the **Client Secret** (this is shown only once during creation)
 3. Paste both values into the Teable SSO configuration
 
-> **Warning**: Store the Client Secret securely. You can regenerate it later if needed.
+<Warning>Store the Client Secret securely. You can regenerate it later if needed.</Warning>
 
 ## Step 5: Create an Application
 
@@ -80,7 +82,7 @@ In Teable, fill in the following OAuth endpoints using your Authentik domain:
 - **User Info URL**: `https://{your-authentik-domain}/application/o/userinfo/`
 - **Issuer**: `https://{your-authentik-domain}/application/o/{application-slug}/`
 
-> **Note**: Replace `{your-authentik-domain}` with your actual Authentik instance domain and `{application-slug}` with the slug you configured (e.g., `teable`).
+<Note>Replace `{your-authentik-domain}` with your actual Authentik instance domain and `{application-slug}` with the slug you configured (e.g., `teable`).</Note>
 
 ## Step 7: Configure Application Access
 
@@ -191,4 +193,3 @@ You have two options to enable SSO login:
 2. Review authentication events and errors
 3. Set up notification rules for important events
 4. Configure event retention policies in **System** → **Settings**
-

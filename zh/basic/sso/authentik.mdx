@@ -34,8 +34,10 @@ description: "配置 Authentik 作为 Teable 的 SSO 认证提供商"
 ### 重定向 URI
 
 - **Redirect URIs/Origins (RegEx)**（重定向 URI/来源）：粘贴 Teable 中的**回调 URL**
-  - 精确匹配：`https://app.teable.cn/api/auth/callback/authentik`
-  - 正则表达式模式：`https://app\.teable\.cn/api/auth/callback/.*`
+  - 精确匹配：`https://app.teable.cn/api/auth/authentication/__providerId__/callback`
+  - 正则表达式模式：`https://app\.teable\.cn/api/auth/authentication/.*/callback`
+
+<Note>请将 URL 中的 `__providerId__` 替换为 Teable 中创建认证提供商后显示的 providerId，或直接复制 Teable 页面中的回调 URL。</Note>
 
 ### 高级设置
 
@@ -56,7 +58,7 @@ description: "配置 Authentik 作为 Teable 的 SSO 认证提供商"
 2. 复制 **Client Secret**（客户端密钥，仅在创建时显示一次）
 3. 将这两个值粘贴到 Teable 的 SSO 配置中
 
-> **警告**：请安全地存储客户端密钥。如需要，你可以稍后重新生成。
+<Warning>请安全地存储客户端密钥。如需要，你可以稍后重新生成。</Warning>
 
 ## 步骤 5：创建应用程序
 
@@ -80,7 +82,7 @@ description: "配置 Authentik 作为 Teable 的 SSO 认证提供商"
 - **User Info URL**（用户信息 URL）：`https://{your-authentik-domain}/application/o/userinfo/`
 - **Issuer**（颁发者）：`https://{your-authentik-domain}/application/o/{application-slug}/`
 
-> **注意**：请将 `{your-authentik-domain}` 替换为你的实际 Authentik 实例域名，将 `{application-slug}` 替换为你配置的标识符（例如：`teable`）。
+<Note>请将 `{your-authentik-domain}` 替换为你的实际 Authentik 实例域名，将 `{application-slug}` 替换为你配置的标识符（例如：`teable`）。</Note>
 
 ## 步骤 7：配置应用程序访问
 
@@ -191,4 +193,3 @@ description: "配置 Authentik 作为 Teable 的 SSO 认证提供商"
 2. 审查认证事件和错误
 3. 为重要事件设置通知规则
 4. 在 **System** → **Settings** 中配置事件保留策略
-

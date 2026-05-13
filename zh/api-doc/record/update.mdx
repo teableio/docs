@@ -45,7 +45,7 @@ PATCH /api/table/\{tableId}/record/\{recordId}
     * 当设置为 "name" 时：
       ```json
       {
-        fields: {
+        "fields": {
           "Name": "John Doe",
           "Age": 30
         }
@@ -54,7 +54,7 @@ PATCH /api/table/\{tableId}/record/\{recordId}
     * 当设置为 "id" 时：
       ```json
       {
-        fields: {
+        "fields": {
           "fldABCDEFGHIJKLMN": "John Doe",
           "fldOPQRSTUVWXYZ12": 30
         }
@@ -87,6 +87,22 @@ PATCH /api/table/\{tableId}/record/\{recordId}
       ```
 
 如果需要上传新文件到附件字段，请参阅[上传附件](/zh/api-doc/record/upload-attachment)章节
+
+* **order（可选）**
+  * 描述：更新记录后，将该记录移动到指定视图中的指定位置。
+  * 类型：对象
+  * 包含以下属性：
+    * viewId：视图 ID
+    * anchorId：锚点记录 ID
+    * position：相对于锚点记录的位置，可选值为 `"before"` 或 `"after"`
+  * 示例：
+    ```json
+    {
+      "viewId": "viwABCDEFGHIJKLMN",
+      "anchorId": "rec123456789ABCDE",
+      "position": "after"
+    }
+    ```
 
 ### 响应
 
@@ -191,4 +207,3 @@ PATCH /api/table/\{tableId}/record/\{recordId}
   print(response.json())
   ```
 </CodeGroup>
-
