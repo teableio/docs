@@ -113,6 +113,57 @@ After uploading files, AI can answer questions using both file content and table
 - Read this Excel file and identify the fields that should be imported.
 - Generate a product description from this image.
 
+### Memory
+
+Memory stores information you explicitly ask Cuppy to remember. Memory is scoped by user and Base: each user in each Base has an independent memory context, and memory saved in another Base will not automatically appear in the current one.
+
+#### Save Memory in the Current Base
+
+Say what Cuppy should remember in the conversation:
+
+```text
+Please remember xxx.
+```
+
+#### Reuse Memory from Another Base
+
+Ask Cuppy to read another Base and save the relevant parts into the current Base:
+
+```text
+Cuppy, please read the memory for Base ID bsexxxxxxxxxxxx and save the relevant memory into this current Base.
+```
+
+### Handle Long Tasks
+
+AI Chat is designed for foreground, interactive work in the visible conversation. Do not rely on background tasks or silent execution inside the chat for long-running work.
+
+<Steps>
+  <Step title="Check whether the task is still running in the foreground">
+    If the interface still shows `Thinking`, or progress updates are still being returned, foreground execution is still running. If the task shows `Completed`, the current foreground execution has ended.
+  </Step>
+  <Step title="Do not treat temporary content as persistent storage">
+    After the AI runtime is restarted, only memory files can be read. Background tasks, temporary files, and intermediate results are not preserved.
+  </Step>
+  <Step title="Split work into batches and agree on visible outputs">
+    In the current environment, the conversation environment has idle cleanup and maximum lifetime limits: after foreground execution ends, an idle environment is released after about 30 minutes, and a single conversation environment has an approximate maximum lifetime of 5 hours. Split long-running tasks into smaller batches. Before starting each batch, agree with AI Chat on the visible output for that batch, such as writing results back to Teable, exporting results, or generating a downloadable file. After confirming that output is complete, continue with the next batch.
+  </Step>
+</Steps>
+
+For long-running or repeatable work, use the feature that matches the workflow:
+
+<CardGroup cols={2}>
+  <Card title="AI Fields" icon="sparkles" href="/en/basic/field/ai/ai-field">
+    Use for record-by-record work, such as large table processing, batch classification, content processing, or field filling.
+  </Card>
+  <Card title="Automation" icon="bolt" href="/en/basic/automation">
+    Use for repeatable work after records are created or updated, notifications, or scheduled data processing.
+  </Card>
+</CardGroup>
+
+<Note>
+Teable is improving the experience and runtime capability for long-running tasks. At this stage, plan long-running tasks around the limits above.
+</Note>
+
 ## Prompting Tips
 
 - **State the goal first**: In the first message, describe what to do, the relevant conditions, and the expected output. For example, analyze weekly sales trends over the past 3 months, grouped by region, and return a trend table with a short conclusion.
