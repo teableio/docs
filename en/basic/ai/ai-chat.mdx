@@ -117,7 +117,7 @@ After uploading files, AI can answer questions using both file content and table
 
 Memory stores information you explicitly ask Cuppy to remember. Memory is scoped by user and Base: each user in each Base has an independent memory context, and memory saved in another Base will not automatically appear in the current one.
 
-#### Save Memory in the Current Base
+- Save memory in the current Base
 
 Say what Cuppy should remember in the conversation:
 
@@ -125,7 +125,7 @@ Say what Cuppy should remember in the conversation:
 Please remember xxx.
 ```
 
-#### Reuse Memory from Another Base
+- Reuse memory from another Base
 
 Ask Cuppy to read another Base and save the relevant parts into the current Base:
 
@@ -173,5 +173,36 @@ Teable is improving the experience and runtime capability for long-running tasks
 - **Confirm before execution**: For tasks that modify data, create tables, create apps, or enable automations, ask AI to describe the changes before running them.
 - **Choose the model by task**: If the space supports model selection, use a lighter model for simple queries, cleanup, or rewriting, and a stronger model for complex planning, cross-table analysis, and app building.
 - **Adjust the Intelligence level**: **Intelligence** controls thinking depth; higher levels produce more thorough reasoning.
-- **Wait for active Agents**: Each user can run up to 3 Agents at the same time, including AI Chat and App Builder. If you see `Agent is busy in another conversation. Please wait.`, wait for the previous task to finish before retrying.
 - **Start a new chat when the topic changes**: A new chat is recommended when the topic changes, the conversation becomes too long, or context usage should be reduced.
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="How do I let AI Chat reference another table, view, app, or automation?">
+    Type `@` in the input box and select the node you want AI Chat to reference. For Grid view selections, you can also select rows, columns, or cells, then use **Add to Chat** from the context menu.
+  </Accordion>
+
+  <Accordion title="Are temporary charts or report previews saved?">
+    No. Temporary charts and report previews are one-time HTML previews. They are not saved as apps and do not refresh data automatically. For reusable dashboards or interactive pages, create an app with [App Builder](/en/basic/ai/app-builder).
+  </Accordion>
+
+  <Accordion title="Does memory carry across Bases?">
+    No. Memory is scoped by user and Base. If you want to reuse memory from another Base, ask Cuppy to read that Base's memory and save the relevant parts into the current Base.
+  </Accordion>
+
+  <Accordion title="Can AI Chat keep working in the background after I leave?">
+    Do not use AI Chat as a background task runner. Keep working in the visible conversation, and ask Cuppy to write results back to Teable, export results, or generate a downloadable file.
+  </Accordion>
+
+  <Accordion title="Why does Teable say Cuppy is busy in another conversation?">
+    Each user can run up to 3 Agents at the same time, including AI Chat and App Builder. If you see `Agent is busy in another conversation. Please wait.`, another task is still running. Wait for Cuppy to finish the previous task before continuing.
+  </Accordion>
+
+  <Accordion title="How are credits refunded when an AI run fails?">
+    One AI Chat turn can include multiple processing steps. The conversation and billing page both show the total credits for that turn. Work that Cuppy already completed and saved can still be used. If the final step is interrupted by an unexpected error, credits for that interrupted step are refunded automatically. You can continue working in the same conversation.
+  </Accordion>
+
+  <Accordion title="What happens if I send another message while AI is working?">
+    The new message is queued. You can edit the queued message, remove it, or use **Stop & send now** to interrupt the current run and send the queued message.
+  </Accordion>
+</AccordionGroup>
