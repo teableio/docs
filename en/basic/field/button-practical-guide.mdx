@@ -1,0 +1,109 @@
+---
+title: "Button Practical Guide"
+description: "Use a Button field to trigger automations and turn fixed workflows, such as lead conversion or task reminders, into one click."
+---
+
+Button fields are useful for fixed, repeated workflows that should run after a person confirms the action. Common examples include converting a lead to an opportunity, scheduling approved content, sending task reminders, or syncing the current record to an external system.
+
+This guide uses lead conversion as the main example and shows how to connect a button to an automation.
+
+## Use Cases
+
+| Scenario | What the button can do |
+| --- | --- |
+| Lead conversion | Create a record in the opportunities table and mark the original lead as converted |
+| Content scheduling | Create a publishing schedule and notify the teammate responsible for publishing |
+| Task reminders | Send an email or team message to the assignee |
+| External system sync | Send the current record to another system through an HTTP request |
+
+## Example: Convert a Lead to an Opportunity
+
+In a CRM table, a sales rep clicks the "Convert to opportunity" button after deciding that a lead is ready. The automation completes two actions:
+
+- Create a new record in the opportunities table with key information such as company and contact.
+- Update the original lead status in the leads table to "Converted".
+
+### Prepare the Tables
+
+This example uses two tables:
+
+| Table | Purpose | Example fields |
+| --- | --- | --- |
+| Leads table | Stores leads to follow up. This is where the button field is created | Company name, contact, owner, status |
+| Opportunities table | Stores converted opportunities | Opportunity name, related customer, owner, source lead |
+
+### Create the Button Field
+
+Add a button field in the leads table:
+
+<Steps>
+  <Step title="Choose the field type">
+    Create a field and choose **Button** as the field type.
+  </Step>
+  <Step title="Set the button text">
+    Set the button text to "Convert to opportunity" and choose a color that is easy to recognize.
+  </Step>
+  <Step title="Enable click confirmation">
+    To avoid accidental clicks, enable **Confirm before click** and fill in the dialog title, message, and confirm-button text.
+  </Step>
+</Steps>
+
+### Configure Automation Actions
+
+After creating the button field, configure the automation that runs when the button is clicked.
+
+<Steps>
+  <Step title="Create an automation">
+    In the button field settings, click **Custom automation** and create a workflow.
+  </Step>
+  <Step title="Create an opportunity record">
+    Add a **Create record** action and choose the opportunities table as the target table.
+  </Step>
+  <Step title="Map fields">
+    Write key lead fields into the new opportunity. For example:
+    - `Opportunity name` = `Company name` from the triggering record
+    - `Related customer` = `Contact` from the triggering record
+    - `Owner` = `Owner` from the triggering record
+  </Step>
+  <Step title="Update the original lead status">
+    Add an **Update record** action. Choose the leads table as the target table, use the triggering record ID as the record ID, and update `Status` to "Converted".
+  </Step>
+</Steps>
+
+After saving the automation, the sales rep can click "Convert to opportunity" to create the opportunity and update the original lead status.
+
+### Add Notifications
+
+If a sales manager or opportunity owner needs to be notified after conversion, add a **Send email** action or a team message action to the automation.
+
+Common settings:
+
+- **Recipient**: A fixed email address, or a user field from the current record.
+- **Subject and body**: Insert field values from the triggering record, such as company name, owner, or lead source.
+
+Example email body:
+
+> New opportunity converted: [Company name] was converted by [Owner]. Please follow up.
+
+### Connect External Systems
+
+If converted opportunities also need to be synced to a CRM, finance system, or internal tool, add an HTTP request action to the automation.
+
+HTTP requests work best when the target system has a stable API. Before configuring the action, confirm the endpoint, request method, authentication method, and field format.
+
+### Limit Duplicate Clicks
+
+Lead conversion usually should not happen more than once for the same lead. Enable **Limit number of clicks** in the button field:
+
+| Setting | Recommendation |
+| --- | --- |
+| Max clicks | Set to `1` |
+| Allow reset | Usually keep this off to avoid duplicate opportunities |
+
+After the click limit is reached, the button on that record becomes disabled.
+
+## Notes
+
+- Whether a button click runs successfully depends on whether the linked automation is enabled and working.
+- Each successful automation trigger counts toward the workspace automation run quota.
+- If the button changes important data, enable click confirmation and limit the number of clicks.

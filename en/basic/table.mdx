@@ -4,116 +4,160 @@ description: "Create, import, share, and manage tables in a base."
 ---
 
 {/* mintlify-resync: 2026-05-14 */}
-Each base can contain multiple tables. A table is a structured data storage method used to store collections of related data within a base.
+Each base can contain multiple tables for storing and managing related data. Teable tables are equivalent to database tables — understanding [how they differ from spreadsheets](/en/compare/teable-vs-excel) will help you get the most out of Teable.
 
-Each table typically contains multiple rows and columns, where each column represents a field and its attributes, while each row represents a record or data item. Tables are core components of bases, used for collecting, storing, and processing data for subsequent retrieval, manipulation, and base construction.
-
-Teable's tables are equivalent to tables in a database, a concept that helps understand [the differences between Teable and traditional spreadsheets](/en/compare/teable-vs-excel) for better mastery of Teable.
+## Create and Manage Tables
 
 ### Adding Tables
 
-1. Enter a specific base
-2. Click the + button in the directory
+In a base, click the `+` button in the directory and choose to:
 
-You can choose to:
+<img
+  src="/images/docs/base/2026-05-22-table-create-menu.png"
+  alt="Add table menu"
+  className="docs-screenshot"
+/>
 
-1. Create a new table
-2. Import a table from a CSV file
-3. Import a table from an Excel file
+1. Create a new blank table
+2. Import from a CSV file
+3. Import from an Excel file
 
-For specific import processes, see the [Import section](/en/basic/table/import)
+See the [Import section](/en/basic/table/import) for details.
 
-### Modifying Table Names
+### Renaming & Deleting
 
-1. In the application, double-click the table name in the directory
-2. Modify the table name
-3. Click any area outside the input box
+- **Rename**: Double-click the table name in the directory, edit it, then click anywhere outside to save.
+- **Delete**: Hover over the table in the directory, click `...`, then select **Delete**.
 
-### Deleting Tables
-
-1. Hover over the table in the directory, click the "..." button to open the menu
-2. Click the delete button in the menu
+<img
+  src="/images/docs/base/2026-05-22-table-rename-delete.png"
+  alt="Rename or delete a table"
+  className="docs-screenshot"
+/>
 
 ### Trash
 
-Click the trash button in the upper left of the base to enter the table trash interface and perform the following operations.
+Click the trash icon in the upper left of the base to manage deleted tables.
 
-> Table data in the trash can still be accessed by database connections
+<img
+  src="/images/docs/base/2026-05-22-table-trash.png"
+  alt="Table trash"
+  className="docs-screenshot"
+/>
 
-* Empty trash: Permanently delete all table data
-* Restore: Restore tables back to the base
+- **Restore**: Bring the table back to the base with all data intact
+- **Empty trash**: Permanently delete all trashed tables
 
-### Designing Tables
+## Design Tables
 
-Click the design button in the menu to enter the table design page, where you can view the table's basic properties, including:
+Click **Design** in the table menu to view the table's basic properties:
 
-**Table Related**
+<img
+  src="/images/docs/base/2026-05-22-table-design.png"
+  alt="Table design"
+  className="docs-screenshot"
+/>
 
-* Base Schema the table belongs to
-* Table name and its name in the physical table
-* Table description
-* Modification time
+**Table Information**
 
-**Database Connection**
+Schema, physical table name, description, and last modified time
 
-This shows how to directly access the current database through database connections
+**Field Properties**
 
-* Database connection
-* Number of database connections
+| Property | Description |
+| :--- | :--- |
+| **id** | Field ID |
+| **name** | Field name |
+| **dbFieldName** | Field name in the physical database |
+| **type** | Field type |
+| **description** | Field description |
+| **graph** | View current field dependencies |
+| **cellValueType** | Current field value type |
+| **isLookup** | Whether it's a field looked up from a linked table |
+| **isMultipleCellValue** | Whether it's an [array value field](/en/basic/field/common/is-multiple-value) |
+| **isComputed** | Whether it's a computed field (record values of computed fields cannot be modified) |
+| **isPending** | Whether it's in calculation |
+| **hasError** | Whether there are calculation errors |
+| **notNull** | Whether non-null validation is enabled |
+| **unique** | Whether unique value validation is enabled |
 
-**Field Information**
-
-Detailed field properties
-
-* id: Field ID
-* name: Field name
-* dbFieldName: Field name in the physical database
-* type: Field type
-* description: Field description
-* graph: View current field dependencies
-* cellValueType: Current field value type
-* isLookup: Whether it's a field looked up from a linked table
-* isMultipleCellValue: Whether it's an [array value field](/en/basic/field/common/is-multiple-value)
-* isComputed: Whether it's a computed field (record values of computed fields cannot be modified)
-* isPending: Whether it's in calculation
-* hasError: Whether there are calculation errors
-* notNull: Whether non-null validation is enabled
-* unique: Whether unique value validation is enabled
-
-![](/images/2025-02-14-15-15-36.png)
+## Share and Access Tables
 
 ### Share a Table
 
-In a table, click **Share** in the upper-right corner, switch to **Share table**, and turn on **Share to web** to generate a table share link.
+In a table, click **Share** in the upper-right corner, switch to **Share table**, and turn on **Share to web** to generate a share link.
 
-For table shares, you can configure these link permissions:
+<img
+  src="/images/docs/base/2026-05-22-table-share-entry.png"
+  alt="Table share entry"
+  className="docs-screenshot"
+/>
+<img
+  src="/images/docs/base/2026-05-22-table-share-web.png"
+  alt="Share table to web"
+  className="docs-screenshot"
+/>
 
-- **Can view**: Anyone with the link can view table data.
-- **Can edit**: Logged-in users can edit records in the shared table.
-- **Can save as copy**: Anyone with the link can save a copy to their space.
+<Note>After table sharing is enabled, the **Share** button appears in a gray shared state in every view in that table. This state comes from table sharing; it does not mean each view has been shared separately.</Note>
 
-You can also configure **Allow viewers to copy data**, **Restrict by password**, regenerate the link, delete the share link, and copy the embed config.
+Link permissions:
 
-If you only need to share the current view, switch to **Share view**. For details, see [Share view](/en/basic/view/toolbar/share).
+<img
+  src="/images/docs/base/2026-05-22-table-share-permissions.png"
+  alt="Table share permissions"
+  className="docs-screenshot"
+/>
+
+- **Can view**: Anyone with the link can view table data
+- **Can edit**: Logged-in users can edit records in the shared table
+- **Can save as copy**: Anyone with the link can save a copy to their space
+
+You can also configure **Allow viewers to copy data**, **Restrict by password**, regenerate or delete the link, and copy the embed config.
+
+To share only the current view, switch to **Share view**. For details, see [View toolbar](/en/basic/view/toolbar).
 
 ### Ways to Access Tables
 
-Users can access tables in two ways on Teable Cloud:
+Tables default to a [Grid view](/en/basic/view/grid) and are also accessible via the [API](/en/api-doc/overview). You can create additional views — such as Kanban — to suit different workflow needs.
 
-* [Grid view](/en/basic/view/grid)
-* [API overview](/en/api-doc/overview)
-
-Views are the most intuitive of these methods. Users can search, manipulate, and build complex applications through various views.
-
-Newly added tables will default to include a [Grid View](/en/basic/view/grid) for users to quickly start processing data.
+## Search and Downloads
 
 ### Global Search
 
-* Tables support global search. In addition to text fields, **date fields can also be searched**, so you can look up a specific date value to find matching records.
-* When you search and choose to hide non-matching rows, the visible result set narrows to the matching records.
-* If you bulk-download attachments from an attachment field menu, the download also respects the current search results and includes only attachments from matching records.
-* In the bulk attachment download dialog, use **Attachment name prefix** to choose how files are named in the ZIP. You can keep the default attachment index, choose another field as the prefix, or select **No prefix** to keep original filenames. If duplicate filenames appear, Teable adds a suffix to keep each ZIP entry unique.
+<img
+  src="/images/docs/base/2026-05-22-table-global-search.png"
+  alt="Table global search"
+  className="docs-screenshot"
+/>
 
-### Table Features
+- **Date fields can be searched** in addition to text fields — search a date value to find matching records
+- When hiding non-matching rows, the visible result set narrows to matching records only
 
-Creating Views: Users can create various views to operate on tables, with different views meeting different scenario needs. For example: Grid views have the highest data density and operate similar to spreadsheets, making them the easiest to learn. While Kanban provides better support for project management scenarios.
+### Attachment Downloads
+
+Bulk attachment downloads respect the current search results and include only attachments from matching records.
+
+<img
+  src="/images/docs/base/2026-05-22-table-attachment-download-menu.png"
+  alt="Bulk attachment download entry"
+  className="docs-screenshot"
+/>
+
+In the bulk download dialog, use **Attachment name prefix** to name ZIP files by default index, a chosen field, or **No prefix** to keep original filenames; duplicates get an auto-appended suffix.
+
+<img
+  src="/images/docs/base/2026-05-22-table-attachment-download-options.png"
+  alt="Bulk attachment download options"
+  className="docs-screenshot"
+/>
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Why can't I enter text in a Number column?">
+    Teable is stricter than Excel — each column has a fixed data type, and a Number column only stores numbers. This constraint ensures data integrity and is the foundation for advanced filtering and automation. See [Teable vs Excel](/en/compare/teable-vs-excel) for details.
+  </Accordion>
+  <Accordion title="What should I check before deleting a table?">
+    Check whether the table is referenced by **linked fields** in other tables. Deleting the source table may cause data display issues in linked tables.
+  </Accordion>
+</AccordionGroup>

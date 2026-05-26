@@ -1,0 +1,72 @@
+---
+title: "Rollup"
+description: "Aggregate values from linked records, such as sum, count, average, maximum, and minimum."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+Rollup fields calculate statistics from multiple linked records. A Rollup field usually starts from an existing **Link** field, selects a target field from linked records, and calculates the result with a chosen function.
+
+## Use Cases
+
+| Scenario | Good for |
+| --- | --- |
+| Order amount | Roll up prices from order line items to calculate the order total |
+| Task progress | Count linked tasks, completed tasks, or average ratings |
+| Customer value | Roll up total spend or order count from customer orders |
+| Tag cleanup | Combine tags, participants, or source channels from linked records |
+
+## Create and Configure
+
+<Steps>
+  <Step title="Create a link relationship">
+    Before creating a Rollup field, create a **Link** field.
+  </Step>
+  <Step title="Choose the field type">
+    Click `+` in the table header to add a field and choose **Rollup**.
+  </Step>
+  <Step title="Choose the link field and target field">
+    Choose the link field that provides the data source, then choose the target field to calculate.
+  </Step>
+  <Step title="Choose the rollup function">
+    Choose a function based on the target field type, such as sum, count, average, maximum, or minimum.
+  </Step>
+</Steps>
+
+## Formatting and Display
+
+Rollup results can usually use formatting and interactive display settings:
+
+- **Formatting**: Set decimal precision, currency symbols, or percentages.
+- **Interactive display**: Show number results as bars, rings, or other display styles.
+
+See [formatting](/en/basic/field/common/formatter) and [interactive display](/en/basic/field/common/show-as) for details.
+
+## Common Uses
+
+- **Bookstore order totals**: In an `Orders` table, use the `Selected books` link field to roll up the `Price` field from the `Books` table. Choose **SUM** to calculate the order total.
+- **Project task statistics**: In a `Projects` table, count linked tasks or calculate task completion rate.
+- **Customer spending totals**: In a `Customers` table, roll up related order amounts to see each customer's total spend.
+
+## Supported Rollup Formulas
+
+| Formula name | Explanation |
+| --- | --- |
+| COUNTALL | Counts all values, including text values and blanks |
+| COUNTA | Counts non-empty values |
+| COUNT | Counts numeric items |
+| SUM | Calculates the sum of all numeric values |
+| MAX | Returns the largest numeric value |
+| MIN | Returns the smallest numeric value |
+| AND | Returns true if all values are true |
+| OR | Returns true if any value is true |
+| XOR | Returns true if an odd number of values are true |
+| ARRAY_JOIN | Joins all values in an array into a string |
+| ARRAY_UNIQUE | Removes duplicate values and returns an array with unique values |
+| ARRAY_COMPACT | Removes empty values and returns a new array |
+| CONCATENATE | Joins multiple values into a string |
+
+## Notes
+
+- **Dynamic updates**: Rollup fields calculate in real time. If source data or link relationships change, the rollup result refreshes.
+- **Data type limits**: Some functions only work with specific field types. For example, **SUM** only works with number fields. If you choose a text field, Teable does not offer sum as an option.
+- **Performance**: Many rollup fields can affect performance, especially when they involve many records. Plan link relationships carefully and review rollup settings from time to time.

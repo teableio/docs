@@ -1,0 +1,118 @@
+---
+title: "Conditional Lookup"
+description: "Look up data across tables with filter conditions and return matching record values."
+---
+
+Conditional Lookup can fetch matching data from a target table without creating a link relationship first. It is useful when the lookup needs to change based on field values in the current record, such as finding the top-selling product in the same category or looking up data for a matching period.
+
+## Use Cases
+
+| Scenario | Good for |
+| --- | --- |
+| Category analysis | Find the top-selling product in the same category |
+| Period comparison | Look up the previous period's sales amount for period-over-period calculations |
+| Customer matching | Find customer details by phone number, email, or customer ID |
+| Detail lookup | Return matching detail records based on conditions from the current record |
+
+## Procedure
+
+<Steps>
+  <Step title="Create a conditional lookup field">
+    Click the `+` icon on the right side of a field name, choose **Conditional Lookup**, and enter a field title, such as "Related orders".
+  </Step>
+  <Step title="Choose the target table">
+    In the target table dropdown, choose the table to query.
+  </Step>
+  <Step title="Configure the lookup field">
+    Choose the field to extract and confirm the returned data type.
+  </Step>
+  <Step title="Set filter conditions">
+    Add filter conditions, choose the field, condition type, and comparison value. The comparison value can be a static value or a field from the current table.
+  </Step>
+  <Step title="Configure sorting and limits">
+    Set the sort field, sort direction, and number of records to show when needed.
+  </Step>
+</Steps>
+
+At least one filter condition is required. For multiple conditions, choose "All conditions are met (AND)" or "Any condition is met (OR)".
+
+## Scenario Practice
+
+### Sales Data Period-over-Period Analysis
+
+**Tables**
+
+- Period sales summary table, with fields such as period, start date, end date, and sales amount
+- Sales detail table, with fields such as sales amount and sales date
+
+In the period sales summary table, calculate period-over-period growth for each period. First use Conditional Rollup to calculate current period sales, then use Conditional Lookup to fetch previous period sales, and finally use a Formula field to calculate the growth rate.
+
+**Steps**
+
+**Create a conditional rollup field for current period sales**
+
+1. In the period sales summary table, create a Conditional Rollup field named "Current period sales"
+2. Target table: Sales detail table
+3. Rollup field: Sales amount
+4. Filter conditions:
+   - Field: Sales date -> Condition: Earlier than or equal to -> Value: End date field from the current table
+   - Field: Sales date -> Condition: Later than or equal to -> Value: Start date field from the current table
+5. Aggregate function: Sum
+
+**Create a conditional lookup field for previous period sales**
+
+1. Create a Conditional Lookup field named "Previous period sales"
+2. Target table: Period sales summary table (this table)
+3. Field: Current period sales
+4. Filter condition:
+   - Field: End date -> Condition: Equals -> Value: Previous period end date field from the current table
+5. Aggregate function: Sum
+
+**Create a formula field for period-over-period growth**
+
+1. Create a Formula field named "Period-over-period growth rate"
+2. Set the formula to `(Current period sales - Previous period sales) / Previous period sales * 100`
+3. Format it as a percentage with 2 decimal places
+
+### Sales Data Product Analysis
+
+**Tables**
+
+- Products table, with fields such as category ID, product name, and sales volume
+- Categories table, with fields such as category ID and category name
+
+In the categories table, find the top-selling product for each category to identify the main product in each category.
+
+**Steps**
+
+**Top-selling product**
+
+1. In the categories table, create a Conditional Lookup field named "Top-selling product"
+2. Target table: Products table
+3. Lookup field: Product name
+4. Filter condition:
+   - Field: Category ID -> Condition: Equals -> Value: Category ID field from the current table
+5. Sorting: Sales volume field -> Descending
+6. Limit display: 1 record
+
+**Sales volume**
+
+1. Create another Conditional Lookup field named "Sales volume"
+2. Target table: Products table
+3. Lookup field: Sales volume
+4. Filter condition:
+   - Field: Category ID -> Condition: Equals -> Value: Category ID field from the current table
+5. Sorting: Sales volume field -> Descending
+6. Limit display: 1 record
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Why can't some fields be used as filter conditions?">
+    Some complex field types, such as images and attachments, may not support filter conditions.
+  </Accordion>
+
+  <Accordion title="What is the difference between Conditional Lookup and a regular Lookup field?">
+    A regular Lookup field requires a Link field first. Conditional Lookup can match data in the target table directly with filter conditions.
+  </Accordion>
+</AccordionGroup>

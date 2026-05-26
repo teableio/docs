@@ -3,138 +3,148 @@ title: "AI Fields"
 description: "AI fields can summarize text, classify tags, generate scores, or turn content into images."
 ---
 
-<Note>Available on all Cloud plans; Self-Hosted requires Business or higher.</Note>
+<Note>Available on all Cloud plans. Self-hosted deployments require the Business plan or higher.</Note>
 
 ## Main Use Cases
 
-AI fields work well when you want to turn raw content into a directly usable result. Common examples include:
+AI fields generate the current field value from other fields in the same row. Use them to turn raw content into summaries, translations, extracted details, categories, scores, dates, or images.
 
-- Summarize a paragraph of text
-- Translate content into another language
-- Extract key information from text
-- Rewrite content to be shorter or more polished
-- Automatically classify a single select field or tag a multiple select field
-- Score a rating field or generate a new image from image-related content
+<Columns cols={2}>
+  <Card title="Text" icon="text">
+    Summarize, translate, extract information, improve writing, or customize the output. Best for turning longer text into usable copy.
+  </Card>
+  <Card title="Single select" icon="circle-dot">
+    Smart classify or customize the output. Best for matching content to one existing category.
+  </Card>
+  <Card title="Multiple select" icon="tags">
+    Smart tag or customize the output. Best for matching content to one or more existing tags.
+  </Card>
+  <Card title="Rating / Number" icon="star">
+    Rate or customize the output. Best for generating scores or numeric results from source content.
+  </Card>
+  <Card title="Date" icon="calendar">
+    Extract information or customize the output. Best for extracting dates or times from content.
+  </Card>
+  <Card title="Attachment" icon="image">
+    Generate images or customize the output. Best for creating images from text or attachments.
+  </Card>
+</Columns>
+
+If you are not sure which action to use, start here:
+
+<AccordionGroup>
+  <Accordion title="Summarize, Translate, Extract Information">
+    - **Summarize**: Creates a summary from the source field.
+    - **Translate**: Translates the source field into the target language.
+    - **Extract Information**: Extracts specific information from text. Date fields can also use it to extract dates or times.
+  </Accordion>
+  <Accordion title="Improve Writing, Smart Classify, Smart Tag">
+   - **Improve Writing**: Rewrites content based on your additional requirements.
+   -  **Smart Classify**: Matches a single select field to an existing option.
+   -  **Smart Tag**: Matches a multiple select field to existing options.
+  </Accordion>
+  <Accordion title="Rate, Generate Image">
+    - **Rate**: Generates a score or numeric value from the source content.
+    - **Generate Image**: Creates images in an attachment field. Some models support using an attachment field as a reference image.
+  </Accordion>
+  <Accordion title="Customize">
+    Use a custom prompt when the default actions do not cover your case. Custom prompts can reference fields from the same row.
+  </Accordion>
+</AccordionGroup>
 
 ## Workflow
 
-### 1. Add the Field
-
-- Set the field name and field type first.
-- Then open **AI Configuration** and choose the AI action that fits this field.
-- Add source fields, instructions, and auto-update settings as needed.
+<Steps>
+  <Step title="Add a field">
+    Create a field, choose the field type, then expand **AI Configuration**. Each field type shows the AI actions it supports.
+  </Step>
+  <Step title="Choose an action and model">
+    Choose the **AI Action Type** and **AI Model**. The action controls the task. The model controls which AI model generates the result.
+  </Step>
+  <Step title="Choose source fields">
+    Choose the field AI should read as input. The AI field generates its value from source fields in the same row.
+  </Step>
+  <Step title="Add generation requirements">
+    Depending on the action, fill in **Additional Requirements**, **Target Language**, or a **Custom Prompt**. For image generation in attachment fields, use **Advanced Settings** to adjust image size, quality, count, aspect ratio, resolution, or reference images. Available settings depend on the selected model.
+  </Step>
+</Steps>
 
 <img
-  src="/images/staged-field-preview/2026-05-11-field-22-2025-04-14-18-03-37.png"
-  alt="Screenshot"
+  src="/images/docs/base/2026-05-22-ai-field-create-config.png"
+  alt="Create an AI field"
   className="docs-screenshot"
 />
 
-- Common actions for text fields
-  - Summarize
-  - Translate
-  - Extract Information
-  - Improve Writing
-  - Customize
-- Common actions for single select fields
-  - Smart Classify
-  - Customize
-- Common actions for multiple select fields
-  - Smart Tag
-  - Customize
-- Common actions for rating fields
-  - Rating
-  - Customize
-- Common actions for date fields
-  - Extract Information
-  - Customize
-- Common actions for attachment fields
-  - Generate Image
+When you edit an AI field, you can change the action type, model, source fields, additional requirements, custom prompt, and auto-update setting. After you save, the new configuration applies to future generations. If an existing result is not what you want, regenerate it.
 
 <img
-  src="/images/staged-field-preview/2026-05-11-field-23-2025-04-07-19-18-24.png"
-  alt="Screenshot"
+  src="/images/docs/base/2026-05-22-ai-field-edit-config.png"
+  alt="Edit an AI field"
   className="docs-screenshot"
 />
 
-### 2. Edit the Field
+## Auto-update and Batch Generation
 
-- Select the source fields.
-- Add additional requirements.
-- Choose the AI model.
-- **Auto-update**
-  - When enabled, the result updates when the source content changes.
+When **Auto-update** is enabled, the AI field updates with the current configuration when source field content or the AI configuration changes. Use it when the result should stay in sync with source content, such as categories, summaries, scores, or tags generated from feedback.
+
+After you create a field or change its AI configuration, you can choose whether to process records in the current view right away:
+
+<Columns cols={3}>
+  <Card title="Fill empty cells only" icon="circle">
+    Generate content only for empty cells. Existing values are not overwritten.
+  </Card>
+  <Card title="Generate entire column" icon="rotate">
+    Regenerate results for records in the current view. Existing values are overwritten.
+  </Card>
+  <Card title="Save configuration only" icon="floppy-disk">
+    Save the field configuration without writing values to cells.
+  </Card>
+</Columns>
 
 <img
-  src="/images/staged-field-preview/2026-05-11-field-24-2025-04-09-11-29-08.png"
-  alt="Screenshot"
+  src="/images/docs/base/2026-05-22-ai-field-save-options.png"
+  alt="AI field save options"
   className="docs-screenshot"
 />
 
-After you click save, the AI field is ready to use, as shown below.
+After you choose a generation option, Teable shows the task status while it processes records.
 
 <img
-  src="/images/staged-field-preview/2026-05-11-field-25-2025-04-09-11-10-39.png"
-  alt="Screenshot"
+  src="/images/docs/base/2026-05-22-ai-field-generation-status.png"
+  alt="AI field generation status"
   className="docs-screenshot"
 />
 
-If the result is not what you want, you can regenerate it.
+To run generation later, use the field menu instead of saving the configuration again.
+
+You can also right-click the field and choose **Generate** to run batch generation for the current view. Availability depends on the current view and your permissions.
 
 <img
-  src="/images/staged-field-preview/2026-05-11-field-26-2025-04-09-11-11-40.png"
-  alt="Screenshot"
+  src="/images/docs/base/2026-05-22-ai-field-generate-menu.png"
+  alt="AI field generate menu"
   className="docs-screenshot"
 />
 
-#### Batch Shortcut
+## FAQ
 
-Use **Update entire column** from the right-click menu to update a whole column at once. Whether it is available depends on the current view and permissions.
+<AccordionGroup>
+  <Accordion title="Will AI fields automatically process existing records?">
+    After you create a field or change its AI configuration, you can choose **Fill empty cells only**, **Generate entire column**, or **Save configuration only**. You can also batch generate later from the field right-click menu by choosing **Generate**.
+  </Accordion>
 
-## Action Types
+  <Accordion title="When should I enable auto-update?">
+    Enable **Auto-update** if you want the AI field to update when source field content changes. If you want to control when generation runs, leave it off and use **Generate** when needed.
+  </Accordion>
 
-### Summarize
+  <Accordion title="Why do different field types show different AI actions?">
+    AI actions depend on the field type. Text fields are suited for summarizing, translating, and extracting information. Single select fields are suited for Smart Classify. Multiple select fields are suited for Smart Tag. Attachment fields are suited for image generation.
+  </Accordion>
 
-Creates a summary from the source fields and your additional instructions.
+  <Accordion title="Why don't I see the model I want to use?">
+    The model list comes from models provided by Teable and AI models configured in the current space. To use a third-party model, add a custom AI model in space settings first.
+  </Accordion>
 
-### Translate
-
-Translates content based on the source fields and your additional instructions.
-
-### Extract Information
-
-Extracts specific information from content based on the source fields and your instructions.
-
-<Tip>For image or file input, make sure the target field uses the attachment type.</Tip>
-
-### Improve Writing
-
-Rewrites content based on the source fields and your additional instructions.
-
-### Smart Classify
-
-- Single select fields can use Smart Classify.
-- Multiple select fields can use Smart Tag.
-- Both are useful for turning content into tags that are easy to browse and filter.
-
-<img
-  src="/images/staged-field-preview/2026-05-11-field-27-2025-04-14-18-08-38.png"
-  alt="Screenshot"
-  className="docs-screenshot"
-/>
-
-### Customize
-
-Combine multiple fields and your own prompt to generate the result you want.
-
-<img
-  src="/images/staged-field-preview/2026-05-11-field-28-2025-04-14-18-02-35.png"
-  alt="Screenshot"
-  className="docs-screenshot"
-/>
-
-<Tip>In addition to Teable's built-in models, Teable also supports [third-party model APIs](/en/basic/ai/custom-model), which you can configure in space settings.</Tip>
-
-### Generate Image
-
-Attachment fields can use **Generate Image** to create images from text fields, attachment fields, or a combination of both.
+  <Accordion title="Why do image generation options change?">
+    Image size, quality, count, aspect ratio, resolution, and reference image options depend on the selected model.
+  </Accordion>
+</AccordionGroup>

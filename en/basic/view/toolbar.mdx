@@ -1,0 +1,233 @@
+---
+title: "View Toolbar"
+description: "Use filters, groups, sorting, sharing, and view collaboration settings in the current view."
+---
+
+The view toolbar controls how the current view displays and shares records. Filters, groups, sorts, visible fields, row height, and related settings affect the current view only. They do not delete records or change other views.
+
+<Note>Filter, group, and sort settings are independent in each view. Changes in one view do not affect other views.</Note>
+
+## Toolbar Overview
+
+| Tool | Use it for | Common scenarios |
+| --- | --- | --- |
+| Filter | Show only records that match conditions | Open tasks, your own records, records in a date range |
+| Group | Group records by field values | Workload by owner, progress by status, records by date |
+| Sort | Reorder records by field values | Recently updated records, task priority, sales ranking |
+| Share | Publish the current view as a link | Share a filtered, sorted, grouped, hidden-field, or layout-specific result |
+| View Collaboration | Choose whether view settings sync to everyone or only apply to you | Temporary view changes, or a team view everyone uses |
+
+## Filter
+
+Filters show records that match specific conditions in the current view. They hide records that do not match. They do not delete records.
+
+<Steps>
+  <Step title="Open the filter panel">
+    Click `Filter` in the view toolbar.
+  </Step>
+  <Step title="Add a condition">
+    Choose a field, an operator, and a comparison value.
+  </Step>
+  <Step title="Choose how conditions combine">
+    For multiple conditions, choose **Meeting all conditions** or **Meeting any conditions**.
+  </Step>
+</Steps>
+
+| Relationship | Description |
+| --- | --- |
+| Meeting all conditions | A record appears only when every condition in that level is met |
+| Meeting any conditions | A record appears when any condition in that level is met |
+
+<img
+  src="/images/docs/base/2026-05-26-view-filter-conditions.png"
+  alt="View filter conditions"
+  className="docs-screenshot"
+/>
+
+### Condition Groups
+
+Use **condition groups** for more complex filter logic. For example, "A and B, or C and D" can be expressed as two groups.
+
+- Click `Add condition group` to create a group.
+- Groups can use **Meeting all conditions** or **Meeting any conditions**.
+- A group can contain nested groups.
+- Condition groups support up to **3 levels**.
+
+<img
+  src="/images/docs/base/2026-05-26-view-filter-condition-groups.png"
+  alt="View filter condition groups"
+  className="docs-screenshot"
+/>
+
+### Common Filter Operators
+
+| Field type | Common operators | Input |
+| --- | --- | --- |
+| Single Line Text, Long Text | Equals, Does not equal, Contains, Does not contain, Is empty, Is not empty | Text input |
+| User | Equals, Does not equal, Contains any, Does not contain any, Is empty, Is not empty | User list, current user |
+| Attachment | Is empty, Is not empty | No input |
+| Multiple Select | Contains any, Contains all, Exactly matches, Does not contain any, Is empty, Is not empty | Option list |
+| Single Select | Equals, Does not equal, Contains any, Does not contain any | Option list |
+| Date, Created Time, Last Modified Time | Equals, Does not equal, Within, Before, After, On or before, On or after, Is empty, Is not empty | Preset range or exact date |
+| Number, Rating, Auto Number | `=`, `≠`, `>`, `≥`, `<`, `≤`, Is empty, Is not empty | Number |
+| Link | Equals, Does not equal, Contains, Does not contain, Contains any, Contains all, Exactly matches, Does not contain any, Is empty, Is not empty | Linked record selector |
+| Created By, Last Modified By | Equals, Does not equal | User list, current user |
+
+Formula and Rollup operators depend on the result type.
+
+### Invalid Condition Warnings
+
+If a field type changes, a field is deleted, or an older filter setup is no longer compatible, Teable ignores the invalid condition so the view can still open.
+
+- The `Filter` button in the toolbar shows a warning icon.
+- After you open the filter panel, the invalid condition shows a warning icon.
+- Hover over the icon to see the reason and fix the condition.
+
+## Group
+
+Grouping records by field values helps you review distribution, summaries, and hierarchy.
+
+<Steps>
+  <Step title="Open the group panel">
+    Click `Group` in the view toolbar.
+  </Step>
+  <Step title="Choose a field">
+    Choose the field you want to group by.
+  </Step>
+  <Step title="Add more groups">
+    Click `Add another group` when you need multiple grouping levels.
+  </Step>
+</Steps>
+
+| Field type | Recommended use |
+| --- | --- |
+| Single Select, Multiple Select | Group by fixed options such as status, priority, or type |
+| User | Group by owner, collaborator, or submitter |
+| Date | Group records by time period |
+| Checkbox, Link, Number, Rating | Group by clear values or results |
+
+- Grouping supports up to **3 levels**.
+- You can collapse or expand groups. Records inside each group still follow the current sort order.
+- Each group shows a summary bar at the top so you can review its summary results.
+- Empty values are placed into separate uncategorized, unassigned, or empty groups depending on the field type.
+
+## Sort
+
+Sorting reorders records by field values. It changes the display order in the current view and does not edit record content.
+
+<Steps>
+  <Step title="Open the sort panel">
+    Click `Sort` in the view toolbar.
+  </Step>
+  <Step title="Choose a field">
+    Choose the field you want to sort by.
+  </Step>
+  <Step title="Choose a direction">
+    Choose ascending or descending. Add more sort conditions when you need multi-level sorting.
+  </Step>
+</Steps>
+
+Multi-level sorting follows the order of the conditions. Teable sorts by the first condition first; if records have the same value, it then applies the next condition.
+
+| Field type | Sort behavior |
+| --- | --- |
+| Text, Attachment | Sort alphabetically or in reverse order. Attachments are sorted by filename |
+| Number, Duration, Rating | Sort by value in ascending or descending order |
+| Date, Created Time, Last Modified Time | Sort from earliest to latest, or latest to earliest |
+| Checkbox | Sort from unchecked to checked, or in the reverse order |
+| Single Select, Multiple Select | Sort by the option order in the field configuration, or in the reverse order |
+
+Formula and Rollup fields are sorted according to their result type.
+
+Use the `Auto-sort records` toggle in the sort menu.
+
+| Status | Behavior |
+| --- | --- |
+| On | Records stay sorted by the current rules. When a field value changes, the record moves to its new position. You cannot manually drag records while auto-sort is on |
+| Off | Records are sorted again only after you reapply sorting. You can manually drag records, and data updates do not move them automatically |
+
+## Share View
+
+**Share view** publishes the current view as a link. Visitors see the data and layout in that view. This is not the same as inviting them as base collaborators.
+
+<Note>To share an entire base, a specific table, or a folder, use base sharing in [Base](/en/basic/base).</Note>
+
+| Share option | Best for |
+| --- | --- |
+| Share table | Giving external people broader access to the current table |
+| Share view | Publishing only the current view, such as a filtered, sorted, grouped, hidden-field, or layout-specific result |
+
+A view share link follows the current view configuration. If you later change filters, sorting, grouping, hidden fields, or layout, the shared page changes as well.
+
+<Steps>
+  <Step title="Open the view">
+    Go to the view you want to share.
+  </Step>
+  <Step title="Open sharing">
+    Click **Share** in the view toolbar.
+  </Step>
+  <Step title="Choose Share view">
+    Switch to **Share view**.
+  </Step>
+  <Step title="Turn on public sharing">
+    Turn on **Share view to web**.
+  </Step>
+  <Step title="Copy the link">
+    Copy the generated link, or share the QR code.
+  </Step>
+</Steps>
+
+If you do not have permission to share the view, the sharing switch is unavailable. After **Share view to web** is turned off, existing share links can no longer be opened.
+
+<Warning>Public links can be forwarded. Before enabling sharing, confirm that the current view does not include fields or records that should not be public.</Warning>
+
+Different view types show different advanced options.
+
+| Option | Applies to | Description |
+| --- | --- | --- |
+| Allow viewers to copy data out of this view | Grid view | Controls whether visitors can copy data from the shared grid view |
+| Show all fields in expanded records | Grid view | Controls whether visitors can see hidden fields when opening record details |
+| Restrict by password | All view shares | Adds a password to the share link. Visitors must enter the correct password before opening it |
+| Require login to submit | Form view | Requires visitors to log in before submitting the form |
+
+Share views can be embedded in other webpages. Click **Embed config** to preview the embed, copy iframe code, hide the toolbar, and choose a theme.
+
+```html
+<iframe
+  src="https://app.teable.ai/share/[share-id]/view?hideToolBar=true&embed=true"
+  width="100%"
+  height="533"
+  style="border: 0">
+</iframe>
+```
+
+| Embed option | Description |
+| --- | --- |
+| Hide toolbar | Adds `hideToolBar=true` to the link and hides filter, sort, search, and other toolbar controls. This does not apply to Form view |
+| Theme | Supports system, light, and dark themes |
+
+## View Collaboration
+
+View collaboration controls whether view settings are shared with everyone or kept as your own personal adjustments. It affects filters, sorts, groups, visible fields, row height, and other view settings. It does not affect record data.
+
+| Mode | Use case | Setting behavior |
+| --- | --- | --- |
+| Collaboration mode | The team needs to use the same view setup | View settings are synced to everyone using this view |
+| Personal mode | You want a temporary view setup, or you want to view data in your own way | Filters, sorts, groups, visible fields, and row height apply only to you |
+
+Click `Personal` in the toolbar to switch between collaboration mode and personal mode.
+
+If the view is not locked and you have permission to update the view, turning off personal mode gives you two choices.
+
+| Option | Result |
+| --- | --- |
+| `Exit and sync` | Sync your personal-mode view settings to everyone |
+| `Confirm exit` | Discard your personal-mode view settings and leave personal mode |
+
+If the view is locked, or you do not have permission to edit the view, you can still use personal mode for your own temporary adjustments, but you cannot sync those changes to others.
+
+## Notes
+
+- Changing filters, groups, sorts, visible fields, or row height affects everyone using the current view, unless you are in personal mode.
+- Share view publishes the current view result, not full base permissions. For ongoing collaboration, use member permissions or base sharing.
+- In either mode, edits to cell values are still synced to everyone.

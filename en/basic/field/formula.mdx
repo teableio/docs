@@ -1,0 +1,93 @@
+---
+title: "Formula"
+description: "Reference other fields and calculate text, numbers, dates, and logical conditions with formulas."
+---
+
+Formula fields calculate results from other fields in the same record. They can handle math operations, text joining, date calculations, and conditional logic. Use them to turn repeated calculation rules into fields.
+
+## Use Cases
+
+| Scenario | Good for |
+| --- | --- |
+| Automatic calculation | Calculate total price, profit, or score from quantity, unit price, discount, and other fields |
+| Text processing | Join text, extract content, or parse information by delimiter |
+| Date processing | Calculate date differences, check time ranges, or generate future dates |
+| Conditional logic | Return different results based on conditions, such as status, hints, or categories |
+
+## Formula Basics
+
+### Data Types
+
+Before writing a formula, confirm the types of the fields used in the calculation. Different types support different operations and functions.
+
+| Type | Description | Common uses |
+| --- | --- | --- |
+| Number | Integers or decimals | Arithmetic, rollups, comparisons |
+| Text | String values | Joining, extracting, replacing, splitting |
+| Date | Date or date-time values | Calculating intervals, comparing dates |
+| Boolean | `TRUE` or `FALSE` | Conditions and logical operations |
+
+### Reference Fields
+
+In a formula, reference another field by its field name. Wrap the field name in `{}` and keep it consistent with the actual field name:
+
+```js
+{Unit price} * {Quantity}
+```
+
+### Operators
+
+| Operator | Use |
+| --- | --- |
+| `+` | Calculates the sum of numbers, or joins strings |
+| `-` | Calculates the difference between numbers |
+| `*` | Calculates the product of numbers |
+| `/` | Calculates the quotient of numbers |
+| `%` | Calculates the remainder |
+
+## Functions and Expressions
+
+### Common Functions
+
+Functions perform specific operations. For example, `SUM` calculates a total, `LEFT` extracts characters from the start of text, `TEXTBEFORE` extracts text before a delimiter, and `TEXTSPLIT` splits text by a delimiter.
+
+See the [formula cheat sheet](/en/basic/field/formula/cheat-sheet) for more functions.
+
+### Text Processing
+
+| Operation | Function examples | Description |
+| --- | --- | --- |
+| Join text | `&`, `CONCATENATE` | Joins two or more text values |
+| Extract text | `LEFT`, `RIGHT`, `MID`, `TEXTBEFORE` | Extracts part of a string |
+| Split text | `TEXTSPLIT` | Splits text into multiple values by delimiter |
+
+### Logical Conditions
+
+Use the `IF` function to return different values based on a condition:
+
+```js
+IF(condition, value_if_true, value_if_false)
+```
+
+When checking whether a field is empty, compare it with `BLANK()`. For example, `IF({Weight}=BLANK(), 1, 2)` returns `1` when a number field is empty, and `2` otherwise.
+
+### Complex Expressions
+
+A complex formula can include multiple functions, field references, and operators. Use parentheses to control calculation order:
+
+```js
+({Unit price} * {Quantity}) * (1 - {Discount})
+```
+
+## Result Display and Maintenance
+
+### Formatting and Interactive Display
+
+Formula results can also use [formatting](/en/basic/field/common/formatter) and [interactive display](/en/basic/field/common/show-as) settings, such as percentage, progress bar, or icon styles. Available options depend on the formula result type.
+
+### Debugging and Optimization
+
+- **Check data types**: Confirm that operations and functions use the correct data types.
+- **Verify field references**: Confirm that field names are written correctly.
+- **Test step by step**: Break complex formulas into smaller parts and test them separately.
+- **Avoid repeated calculations**: If the same calculation is used in several places, consider storing the result in a separate field.
