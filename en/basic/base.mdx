@@ -46,7 +46,7 @@ Common operations include:
 
 ### Duplicate a Base to Another Space
 
-Step 1: In the workspace, select the base you want to duplicate;
+Step 1: In the space, select the base you want to duplicate;
 
 Step 2: Click the menu icon and select the Copy Base option;
 
@@ -54,11 +54,17 @@ Step 3: In the popup, choose the target space. You need Creator permissions in t
 
 For larger bases, Teable shows progress in the duplicate dialog while it copies the base structure, records, and attachments. Keep the dialog open until the copy finishes. Revision history and collaborators are not copied.
 
+If the base contains Link, Lookup, Rollup, Conditional Lookup, or Conditional Rollup fields that point to another Space, Teable shows the affected fields before duplication. If you continue, Teable converts those fields to **Single line text** in the duplicated base.
+
 <img
   src="/images/docs/base/2026-05-22-base-duplicate.png"
   alt="Duplicate a base to another space"
   className="docs-screenshot"
 />
+
+### Move a Base Between Spaces
+
+If you have the required Space permissions, you can move a base to another Space. If the move would leave relationship-based fields pointing across Spaces, Teable warns you and lists the affected fields. When you confirm, Teable converts those fields to **Single line text** as part of the move.
 
 ## Import and Export Bases
 
@@ -70,8 +76,8 @@ The `.tea` file format allows you to import a complete base with all its tables,
 - **Template Sharing**: Share complete base structures with other teams
 
 **Steps:**
-1. Enter the workspace
-2. Click the 「···」 button at the top right corner of the workspace to open the menu
+1. Enter the space
+2. Click the 「···」 button at the top right corner of the space to open the menu
 3. Click 「Import」
 4. Upload the `.tea` file to confirm the import
 
@@ -86,7 +92,7 @@ The `.tea` file format allows you to import a complete base with all its tables,
 Export your base to a `.tea` file for backup or migration purposes. The exported file contains all tables, fields, data, views, and configurations.
 
 **Steps:**
-1. Enter the workspace
+1. Enter the space
 2. Hover your mouse over the base you want to export
 3. Click the 「···」 button to open the menu
 4. Click 「Export」
@@ -102,7 +108,8 @@ Export your base to a `.tea` file for backup or migration purposes. The exported
 
 <Note>
 - To migrate data between Teable instances, export your base from the source instance, then import the `.tea` file to the target instance. All data and configurations will be preserved.
-- Teable converts cross-base relation fields to single-line text fields in the exported file.
+- Teable converts cross-base relation fields to **Single line text** fields in the exported file.
+- When you duplicate or move a base across Spaces, cross-Space relationship fields are converted to **Single line text**.
 </Note>
 
 ## Share a Base
