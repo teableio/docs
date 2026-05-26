@@ -1,0 +1,51 @@
+---
+title: "Lookup"
+description: "Reference field values from a linked table through an existing link relationship and keep the data in sync."
+---
+
+Lookup fields are built on **Link** fields. A Lookup field references a selected field from a linked table, so the current table can display data from another table without entering it again.
+
+## Use Cases
+
+| Scenario | Suitable content |
+| --- | --- |
+| Order line items | After linking a product, show its price, SKU, or category |
+| Ticket handling | After linking a customer, show phone number, customer tier, or owner |
+| Book management | In a books table, show the author's birthday, nationality, or bio |
+| Project management | From linked tasks, show assignee, due date, or status |
+
+## Create and Configure
+
+<Steps>
+  <Step title="Create a link relationship">
+    Before using a Lookup field, create a **Link** field between the two tables.
+  </Step>
+  <Step title="Choose the field type">
+    In the table view, click `+` to add a field and choose **Lookup**.
+  </Step>
+  <Step title="Choose the link field">
+    Choose an existing link field in the current table as the lookup path.
+  </Step>
+  <Step title="Choose the target field">
+    Choose the field to read from the source table, such as an author's birth date, a customer's phone number, or a product price.
+  </Step>
+</Steps>
+
+## Automatic Sync
+
+After setup, Teable fills the lookup result based on the existing link relationship:
+
+- If the linked record changes, such as choosing a different author, the lookup value updates.
+- If source data changes, such as editing an author's birthday, the lookup value refreshes.
+
+## Common Uses
+
+- **Book management**: In a `Books` table, use an `Author` link field to look up `Birth date` from an author details table.
+- **Order calculation**: In an `Order line items` table, look up the product price and then use a formula to calculate the total.
+- **Customer information sync**: In a tickets table, link a customer and look up the customer's phone number, email, or tier.
+
+## Notes
+
+- **Read-only field**: Lookup fields are **read-only**. You cannot edit the looked-up value from the current table. To change the value, edit the original field in the source table.
+- **Single value and multiple values**: If the link relationship is one-to-one, the lookup result is a single value. If the relationship is one-to-many, the lookup result becomes a multi-value array and displays values separated by commas.
+- **Data dependencies**: Lookup fields depend on the link field and the source field. If the link field or target field in the source table is deleted, the lookup field stops working.

@@ -1,0 +1,107 @@
+---
+title: "Conditional Rollup"
+description: "Calculate cross-table statistics with filter conditions and return one aggregated value."
+---
+
+Conditional Rollup filters matching records from a target table without creating a link relationship first, then calculates statistics on a selected field. It is useful for calculating counts, sums, averages, and other results based on field values in the current record.
+
+## Use Cases
+
+| Scenario | Suitable content |
+| --- | --- |
+| Employee task statistics | Count in-progress tasks and completed tasks for an assignee |
+| Period sales statistics | Calculate sales amount, order count, or average order value by date range |
+| Duplicate data checks | Count duplicate names, phone numbers, or IDs |
+| Regional reports | Aggregate business data by region, store, or channel |
+
+## Procedure
+
+<Steps>
+  <Step title="Create a conditional rollup field">
+    Click the `+` icon on the right side of a field name, choose **Conditional Rollup**, and enter a field title, such as "Total sales amount".
+  </Step>
+  <Step title="Choose the target table">
+    In the target table dropdown, choose the table to query.
+  </Step>
+  <Step title="Configure the rollup field">
+    Choose the field to calculate and confirm the field type.
+  </Step>
+  <Step title="Set filter conditions">
+    Add filter conditions, choose the field, condition type, and comparison value. The comparison value can be a static value or a field from the current table.
+  </Step>
+  <Step title="Choose an aggregate function">
+    Choose a calculation method based on the data type, such as original value, unique values, unique count, sum, count, average, maximum, or minimum.
+  </Step>
+</Steps>
+
+## Scenario Practice
+
+### Team Task Volume Statistics
+
+<img
+  src="/images/2025-11-21-19-42-20.png"
+  style={{width: "800px", height: "auto"}}
+  alt="Task volume statistics"
+/>
+
+**Tables**
+
+- Tasks table
+- Statistics table
+
+A team admin needs to count tasks in different statuses for each employee, such as in-progress and completed tasks, to understand workload distribution and completion progress.
+
+**In-progress tasks**
+
+1. In the employee information table, create a Conditional Rollup field named "In-progress tasks"
+2. Target table: Task assignments table
+3. Rollup field: Task ID
+4. Filter conditions:
+   - Field: Assignee -> Condition: Equals -> Value: Employee field from the current table
+   - Field: Task status -> Condition: Equals -> Value: "In progress"
+5. Aggregate function: Count all
+
+**Completed tasks**
+
+1. Create another Conditional Rollup field named "Completed tasks"
+2. Target table: Task assignments table
+3. Rollup field: Task ID
+4. Filter conditions:
+   - Field: Assignee -> Condition: Equals -> Value: Employee field from the current table
+   - Field: Task status -> Condition: Equals -> Value: "Completed"
+5. Aggregate function: Count all
+
+### Find Duplicate Values
+
+<img
+  src="/images/2025-11-21-19-44-00.png"
+  style={{width: "500px", height: "auto"}}
+  alt="Find duplicate values"
+/>
+
+**Tables**
+
+- Customers table, with fields such as customer name and phone number
+
+In the customers table, find duplicate customer names before merging customer profiles.
+
+**Steps**
+
+1. In the customers table, create a Conditional Rollup field named "Customer name duplicate count"
+2. Target table: Customers table (this table)
+3. Rollup field: Customer name
+4. Filter condition:
+   - Field: Customer name -> Condition: Equals -> Value: Customer name field from the current table
+5. Aggregate function: Count all
+6. Create a Formula field named "Duplicate flag"
+7. Set the formula to `IF(Customer name duplicate count > 1, "Duplicate", BLANK())`
+
+The customers table shows how many times each customer name appears and marks duplicate records with "Duplicate", so you can filter and handle them later.
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="What is the difference between Conditional Rollup and Conditional Lookup?">
+    Conditional Rollup returns one calculated value, which works well for totals, counts, and averages. Conditional Lookup returns a list of matching raw values, which works well for viewing detail data.
+  </Accordion>
+</AccordionGroup>

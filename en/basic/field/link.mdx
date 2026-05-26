@@ -1,0 +1,60 @@
+---
+title: "Link"
+description: "Create relationships between tables and select records from another table in the current record."
+---
+
+The Link field connects two tables. With a Link field, you can select records from another table in the current table and open the linked records when needed. Link fields are also required before you can use **Lookup** and **Rollup** fields.
+
+## Use Cases
+
+| Scenario | Suitable content |
+| --- | --- |
+| Customers and orders | Link customers in the orders table, and view related orders from the customer table |
+| Projects and tasks | Link a task to its project, and view all tasks under a project |
+| Students and courses | Track course enrollment, project members, or other many-to-many relationships |
+| Line items and parent records | Link order line items to an order, then look up prices or roll up totals |
+
+## Create and Configure
+
+<Steps>
+  <Step title="Choose the field type">
+    In the current table, click add field and choose **Link**.
+  </Step>
+  <Step title="Choose the target table">
+    In the configuration dialog, choose the table to link to, such as linking the orders table to the customers table.
+  </Step>
+  <Step title="Choose the link mode">
+    Choose a one-way or two-way link as needed.
+  </Step>
+  <Step title="Configure relationship rules">
+    Use **Allow multiple selection** and **Allow duplicate values** to configure one-to-one, one-to-many, many-to-one, or many-to-many relationships.
+  </Step>
+</Steps>
+
+## One-Way and Two-Way Links
+
+| Mode | Description | Best for |
+| --- | --- | --- |
+| Two-way link | Enabled by default. When you create a link field, Teable creates a corresponding link field in the target table, and both sides stay in sync | Relationships that need to be viewed from both tables, such as orders and customers or projects and tasks |
+| One-way link | When the two-way option is off, only the current table shows the linked records. The target table does not get a reverse field | Cases where you only need to reference another table and do not want to change the target table structure |
+
+## Relationship Types
+
+Use **Allow multiple selection** and **Allow duplicate values** together to define four common relationship types:
+
+| Relationship | Business example | Configuration |
+| :--- | :--- | :--- |
+| **One-to-one (1:1)** | **Employee - Profile**<br />One employee has one profile, and one profile belongs to one employee | ☐ Allow multiple selection<br />☐ Allow duplicate values<br />*(both options off)* |
+| **One-to-many (1:N)** | **Department - Employee**<br />One department has multiple employees, but each employee belongs to one department | ☑ Allow multiple selection<br />☐ Allow duplicate values<br />*(only allow multiple selection)* |
+| **Many-to-one (N:1)** | **Task - Project**<br />Multiple tasks belong to one project, but each task belongs to only one project | ☐ Allow multiple selection<br />☑ Allow duplicate values<br />*(only allow duplicate values)* |
+| **Many-to-many (N:N)** | **Student - Course**<br />One student can take multiple courses, and one course can have multiple students | ☑ Allow multiple selection<br />☑ Allow duplicate values<br />*(both options on)* |
+
+## Common Uses
+
+- **CRM customer management**: In a `Companies` table, create a link field to a `Contacts` table so one company can link to multiple contacts.
+- **Project task assignment**: In a `Tasks` table, create a link field to a `Projects` table so each task belongs to one project, while the project table can show related tasks.
+- **Order line items**: In an `Orders` table, link to a `Products` table, then use lookup fields to show prices and rollup fields to calculate order totals.
+
+## Notes
+
+- **One-to-many limits**: In a strict one-to-many relationship, when multiple selection is off on the Table B side, a Table B record linked by one Table A record cannot be selected by other Table A records. This works for data that should not be reused, such as ID numbers or employee profiles.
