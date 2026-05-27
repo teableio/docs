@@ -1,66 +1,121 @@
 ---
 title: "Overview"
-description: "Allows administrators to set fine-grained access permissions for team members. Through this approach, precise control over different tables, fields, and operations can be achieved, ensuring each member can only access and modify information within their scope of responsibility. This not only improves team collaboration efficiency but also enhances data security."
+description: "Set access scopes for different teams in the same base, so members only see, edit, or export the data they need."
 ---
 
 <Tip>Available for Business plan and above</Tip>
 
-## Example Use Cases
+When sales, finance, operations, and leadership share the same base,
+permissions decide who can enter the base, which data they can see or edit,
+and whether they can import or export data. The Authority Matrix helps teams
+keep data in one place while separating access by responsibility.
 
-- Data Entry Restrictions: Allow team members to add new records but restrict modification of existing data
-- Project Management: Ensure project members can only access and edit their responsible parts of the project
-- Hierarchical Data Access: Flexibly organize roles so that enterprise management can view all data, while regular employees can only access information related to their responsibilities
+You can assign custom roles to members or departments, then let each role
+access only the tables, apps, and workflows it needs. For tables, you can also
+limit visible views, visible records, editable fields, and import or export
+permissions. For example, sales can maintain their own customers, finance can
+view billing fields, and leadership can view the full dataset.
 
-## Operating the Authority Matrix
+## When to Use It
 
-Users with Creator permissions in a space can enable the authority matrix. When the authority matrix is enabled, the current user automatically becomes an administrator, space managers also become administrators, and all other members are assigned to the default role by default.
+| Scenario | Good for |
+| --- | --- |
+| Department-level access | Sales can maintain customer records, while finance only sees billing fields. |
+| Assignee-based records | Sales reps can view and update only records assigned to them. |
+| Restricted data entry | Members can create new records without editing or deleting existing records. |
+| Sensitive fields in a shared base | Members can view order records without seeing payment or cost fields. |
+| Controlled apps and workflows | Roles can open selected apps or workflows, while unauthorized nodes stay hidden. |
 
-### Creating Roles
+## How Permissions Work
 
-Click the Add Role button in the upper right corner of the interface to start creating a new role
+The Authority Matrix assigns access by role. Users can receive permissions
+from roles assigned directly to them or from department roles. When multiple
+roles apply, Teable combines the permissions allowed by those roles.
 
-![](/images/2025-02-14-15-53-30.png)
+<Info>Space users with the **Manager** permission and Authority Matrix administrators can manage the Authority Matrix and are not restricted by it.</Info>
 
-Enter the role settings interface to see all tables in the current base. Here you can set detailed permissions for each table
+The role list includes an `Administrators` section and a `Custom roles`
+section:
 
-![](/images/2025-02-14-15-54-29.png)
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-role-list-en.png"
+  alt="Authority Matrix role list"
+  className="docs-screenshot"
+/>
 
-Permissions include view permissions, field permissions, and record permissions. By default, all permissions are open, and you can configure them by checking options to restrict permission scope according to requirements.
+Use `Add role` to create a custom role. In the role detail page, assign
+collaborators, write a short description, and configure access for each node in
+the base:
 
-### View Permissions:
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-role-detail-en.png"
+  alt="Authority Matrix role detail page"
+  className="docs-screenshot"
+/>
 
-- Create view
-- Delete view
-- Update view
+## Configure Role Access
 
-### Record (Row) Permissions
+Each table, app, and workflow has its own access setting.
 
-You can use filter condition groups to specify the range of viewable records. For example, adding a condition to select records where product type equals "Parts" will restrict the viewable record range for the current role to records of type "Parts".
+| Node type | Available setting |
+| --- | --- |
+| Table | Choose `Can edit` or `No access`. After a table is set to `Can edit`, configure its detailed permissions. |
+| App | Choose `Can access` or `No access`. This controls whether the role can open the app. |
+| Workflow | Choose `Can access` or `No access`. This controls whether the role can open the workflow. |
+| Folder | Folders are shown for navigation. If none of the child nodes are accessible, the folder is hidden for the role. |
 
-- View record
-- Delete record
-- Update record
-- Comment on record
-- Copy record
+To configure view, record, field, and other detailed table permissions, set the
+table to `Can edit` first. A table with `No access` is hidden from members in
+that role.
 
-### Field (Column) Permissions
+## Table Permissions
 
-You can restrict permissions for each field in the table, including:
+When a table is set to `Can edit`, configure these permission areas:
 
-- View fields related records
-- Delete fields related records
-- Update fields related records
+| Permission area | What it controls |
+| --- | --- |
+| View permissions | Whether the role can create, update, or delete views, and whether it can view `All views` or only `Specific views`. |
+| Record permissions | Whether the role can create, update, delete, comment on, or copy records. Visible records can be `All records` or records that match filter conditions. |
+| Field permissions | Whether the role can view, update, or create values in specific fields. The primary field must remain visible. |
+| Import and export permissions | Whether the role can import data into the table or export table data. |
 
-![](/images/2025-06-04-16-53-42.png)
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-table-permissions-en.png"
+  alt="Authority Matrix table permissions"
+  className="docs-screenshot"
+/>
 
-After modifying table permissions, you must click the switch to the left of the table name to enable the permissions for them to take effect. If not enabled, there will be no permissions by default.
+Record filters work well for access scopes that change by owner, department,
+or similar fields. For example, a condition such as `Sales owner` `is`
+`current user` lets each salesperson see only their own records. Field
+permissions can further hide or lock sensitive field values in records the
+role can access.
 
-## Important Notes
+## Default Role
 
-- Users with management permissions in the space have administrator privileges and can access all data in the base within the space.
-- After enabling the authority matrix, all newly created tables have no permissions by default and require permission configuration before they can be accessed according to role permissions.
-- The user who enables the authority matrix will become an administrator of the current base, and automation features will only be accessible to administrators after enabling the authority matrix.
-- After enabling the authority matrix, the creation, editing, and deletion permissions of fields (columns) themselves are only available to administrators.
-- Once the Authority Matrix is enabled, only users with "Manager" permissions are exempt from its restrictions. For permission levels below "Manager" (such as "Creator" and below), all members except Authority Matrix administrators are subject to the Matrix's unified control.
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-default-role-en.png"
+  alt="Authority Matrix default role setting"
+  className="docs-screenshot"
+/>
 
-<Note>To learn about basic permission levels for spaces and bases, please refer to [Collaboration Permissions](/en/basic/space/space-permission)</Note>
+Use `Default role` for members who have not been assigned any custom role. You
+can select an enabled custom role, or choose `Permission denied` so these
+members cannot access content controlled by the Authority Matrix.
+
+## Notes
+
+- After the Authority Matrix is enabled, users whose Space permission is below
+  `Manager` are restricted by it unless they are added as Authority Matrix
+  administrators.
+- The user who enables the Authority Matrix is automatically added to
+  `Administrators`.
+- New custom roles are enabled when they are created from `Add role`, but each
+  table, app, and workflow still needs its own access setting.
+- A table set to `No access` for a role is hidden from that role, even if its
+  detailed permission options were edited earlier.
+- Assigning a role from `Add user` or `Add from organization` can add selected
+  members or departments as base collaborators. The Authority Matrix then
+  narrows what they can access inside the base.
+
+<Note>To learn about basic Space and base permission levels, see [Collaboration Permissions](/en/basic/space/space-permission).</Note>
