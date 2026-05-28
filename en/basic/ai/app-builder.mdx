@@ -70,8 +70,21 @@ You can update the app's code by importing a ZIP:
 - Include source files only — do not include `node_modules`, `.next`, or other build artifacts.
 - Zip the outermost project folder itself (right-click the folder → compress), not files selected from inside it.
 - Import merges with the existing project and overwrites any files that share the same path.
-- A root `.env` file in the ZIP is read into the app's custom environment variables. Other `.env*` variants, such as `.env.local`, are ignored.
+- A root `.env` file in the ZIP is read into the app's **Secrets**. Other `.env*` variants, such as `.env.local`, are ignored.
 </Note>
+
+#### Secrets
+
+Use **Secrets** for API keys, credentials, and runtime configuration that your app needs at runtime. In the App Builder chat panel, open the **+** menu and choose **Secrets**.
+
+| Detail | Behavior |
+| --- | --- |
+| Availability | App Secrets are available in both preview and published app runtime environments |
+| Code access | Server-side app code can read them from environment variables such as `process.env.MY_API_KEY` |
+| Saved values | Secret values are write-only after saving; enter a new value to update one |
+| Key format | Keys must start with an uppercase letter and can contain uppercase letters, digits, and underscores |
+
+The preview runtime reads the current app Secrets when it starts or restarts. Publish the app again to use updated Secrets in the live app.
 
 ## Publishing & Management
 
@@ -139,14 +152,6 @@ To delete an app, click the **Settings** (gear icon) button in the header and se
 
 For prompt patterns, build tips, rollback advice, and common troubleshooting, see [App Builder Practical Guide](/en/basic/ai/app-builder-practical-guide).
 
-## Self-Hosted Configuration
-
-If you are running Teable self-hosted, follow the setup on the [AI Settings](/en/basic/admin-panel/ai-setting) page.
-
-<Note>
-That page is the source of truth for **AI Chat Runtime**, **Vercel deployment settings**, **public access testing**, and the related troubleshooting notes for App Builder. Before publishing, make sure both your Teable instance and object storage (MinIO / S3) are publicly accessible. If you are unsure, use **Test Public Access** on the [AI Settings](/en/basic/admin-panel/ai-setting) page.
-</Note>
-
 ## FAQ
 
 <AccordionGroup>
@@ -155,7 +160,7 @@ That page is the source of truth for **AI Chat Runtime**, **Vercel deployment se
   </Accordion>
 
   <Accordion title="How do I download or import app code?">
-    Switch to the **Code** tab in the editor, click the **`...`** menu in the tab bar, then choose **Download code** or **Import code**. When importing a ZIP, include source files only. Do not include `node_modules`, `.next`, or other build artifacts.
+    Switch to the **Code** tab in the editor, click the **`...`** menu in the tab bar, then choose **Download code** or **Import code**. When importing a ZIP, include source files only. Do not include `node_modules`, `.next`, or other build artifacts. A root `.env` file is imported into app **Secrets**.
   </Accordion>
 
   <Accordion title="When do login settings apply to the live app?">
@@ -172,5 +177,13 @@ That page is the source of truth for **AI Chat Runtime**, **Vercel deployment se
 
   <Accordion title="How are credits refunded when an App Builder run fails?">
     One App Builder run can include multiple processing steps. The conversation and billing page both show the total credits for that run. Work that Cuppy already completed and saved can still be used. If the final step is interrupted by an unexpected error, credits for that interrupted step are refunded automatically. You can continue working in the same app conversation.
+  </Accordion>
+
+  <Accordion title="Where do I configure App Builder for Self-Hosted?">
+    If you are running Teable self-hosted, follow the setup on the [AI Settings](/en/basic/admin-panel/ai-setting) page. That page is the source of truth for **AI Chat Runtime**, **Vercel deployment settings**, **public access testing**, and the related troubleshooting notes for App Builder.
+
+    <Note>
+    Before publishing, make sure both your Teable instance and object storage (MinIO / S3) are publicly accessible. If you are unsure, use **Test Public Access** on the [AI Settings](/en/basic/admin-panel/ai-setting) page.
+    </Note>
   </Accordion>
 </AccordionGroup>
