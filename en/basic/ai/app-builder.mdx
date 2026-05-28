@@ -75,16 +75,16 @@ You can update the app's code by importing a ZIP:
 
 #### Secrets
 
-Use **Secrets** for API keys, credentials, and runtime configuration that your app needs at runtime. In the App Builder chat panel, open the **+** menu and choose **Secrets**.
+Use **Secrets** for API keys, credentials, and configuration values your app needs while it runs. In the App Builder chat panel, open the **+** menu and choose **Secrets**.
 
 | Detail | Behavior |
 | --- | --- |
-| Availability | App Secrets are available in both preview and published app runtime environments |
+| Availability | App Secrets are available in the app preview environment and the published app |
 | Code access | Server-side app code can read them from environment variables such as `process.env.MY_API_KEY` |
 | Saved values | Secret values are write-only after saving; enter a new value to update one |
 | Key format | Keys must start with an uppercase letter and can contain uppercase letters, digits, and underscores |
 
-The preview runtime reads the current app Secrets when it starts or restarts. Publish the app again to use updated Secrets in the live app.
+After you add, delete, or change a Secret value, the app preview environment uses the new value. The published app uses it only after you republish. Editing only a Secret description does not require republishing.
 
 ## Publishing & Management
 
@@ -92,6 +92,7 @@ The preview runtime reads the current app Secrets when it starts or restarts. Pu
 When your app is ready, click the **Publish** button (arrow icon) in the top right corner.
 - **Public URL**: Teable generates a secure, publicly accessible URL for your app.
 - **Custom Domain**: Map your own domain to the app.
+- **App configuration changes**: If the publish menu shows **App configuration changed — redeploy to apply**, click **Redeploy** to apply pending Secret value or login changes to the live app.
 
 <img
   src="/images/docs/ai/2026-05-21-app-builder-publish-app.png"
@@ -127,7 +128,7 @@ When you enable login:
 2. Choose at least one sign-in method, such as **Email OTP**, **Google**, or **Teable**. Available methods depend on your instance's authentication settings.
 3. Choose an access policy: **Anyone can sign up**, **Allowed email domains**, or **Invite only**.
 
-Login changes appear in the preview after it reloads. Publish the app again to apply those changes to the live app.
+Login changes appear in the app preview environment after it reloads. Publish the app again to apply those changes to the published app.
 
 ### Version History & Rollback
 Teable automatically tracks every deployment.
@@ -164,7 +165,7 @@ For prompt patterns, build tips, rollback advice, and common troubleshooting, se
   </Accordion>
 
   <Accordion title="When do login settings apply to the live app?">
-    Login settings appear in the preview after it reloads. Publish the app again to apply those changes to the live app.
+    Login settings appear in the app preview environment after it reloads. Publish the app again to apply those changes to the published app.
   </Accordion>
 
   <Accordion title="How do I roll back to a previous version?">
