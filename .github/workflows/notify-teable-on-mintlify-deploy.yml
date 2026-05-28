@@ -16,6 +16,30 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      - name: Record GitHub merge
+        env:
+          TEABLE_WEBHOOK_URL: ${{ secrets.TEABLE_WEBHOOK_URL }}
+          TEABLE_WEBHOOK_TOKEN: ${{ secrets.TEABLE_WEBHOOK_TOKEN }}
+          DOCS_BRANCH: ${{ github.event.pull_request.head.ref }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          MERGED_AT: ${{ github.event.pull_request.merged_at }}
+        run: |
+          set -euo pipefail
+          curl -fsS -X POST \
+            "$TEABLE_WEBHOOK_URL" \
+            -H "Authorization: Bearer $TEABLE_WEBHOOK_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -nc \
+              --arg b "$DOCS_BRANCH" \
+              --arg s "pending" \
+              --arg p "$PR_NUMBER" \
+              --arg r "$PR_URL" \
+              --arg m "$MERGE_SHA" \
+              --arg t "$MERGED_AT" \
+              '{docs_branch:$b, mintlify_status:$s, pr_number:$p, pr_url:$r, merge_sha:$m, merged_at:$t}')"
+
       - name: Wait for Mintlify deployment
         id: wait
         env:
@@ -88,6 +112,7 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_URL: ${{ github.event.pull_request.html_url }}
           MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          MERGED_AT: ${{ github.event.pull_request.merged_at }}
         run: |
           set -euo pipefail
           curl -fsS -X POST \
@@ -102,7 +127,8 @@ jobs:
               --arg p "$PR_NUMBER" \
               --arg r "$PR_URL" \
               --arg m "$MERGE_SHA" \
-              '{docs_branch:$b, docs_url:$u, mintlify_status:$s, mintlify_deployment_id:$d, pr_number:$p, pr_url:$r, merge_sha:$m}')"
+              --arg t "$MERGED_AT" \
+              '{docs_branch:$b, docs_url:$u, mintlify_status:$s, mintlify_deployment_id:$d, pr_number:$p, pr_url:$r, merge_sha:$m, merged_at:$t}')"
 
       - name: Fail if Mintlify did not deploy
         if: steps.wait.outputs.mintlify_status != 'success'
