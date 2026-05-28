@@ -16,6 +16,37 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      - name: Detect Mintlify relevance
+        id: relevance
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          FILES="[]"
+          PAGE=1
+          while true; do
+            PAGE_FILES=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/$REPO/pulls/$PR_NUMBER/files?per_page=100&page=$PAGE")
+            COUNT=$(echo "$PAGE_FILES" | python3 -c "import json,sys;print(len(json.load(sys.stdin)))")
+            FILES=$(jq -s 'add' <(echo "$FILES") <(echo "$PAGE_FILES"))
+            if [ "$COUNT" -lt 100 ]; then
+              break
+            fi
+            PAGE=$((PAGE + 1))
+          done
+          NEEDS_DEPLOY=$(echo "$FILES" | python3 -c "
+          import json,sys
+          paths = [f.get('filename','') for f in json.load(sys.stdin)]
+          prefixes = ('en/', 'zh/', 'images/', 'snippets/', 'api-reference/')
+          exact = {'docs.json', 'mint.json', 'swagger.json', 'style.css', 'changelog-toc.js'}
+          needs = any(p in exact or p.startswith(prefixes) for p in paths)
+          print('true' if needs else 'false')
+          ")
+          echo "needs_mintlify_deploy=$NEEDS_DEPLOY" >> "$GITHUB_OUTPUT"
+          echo "needs_mintlify_deploy=$NEEDS_DEPLOY"
+
       - name: Record GitHub merge
         env:
           TEABLE_WEBHOOK_URL: ${{ secrets.TEABLE_WEBHOOK_URL }}
@@ -40,14 +71,24 @@ jobs:
               --arg t "$MERGED_AT" \
               '{docs_branch:$b, mintlify_status:$s, pr_number:$p, pr_url:$r, merge_sha:$m, merged_at:$t}')"
 
-      - name: Wait for Mintlify deployment
-        id: wait
+      - name: Resolve Mintlify deployment status
+        id: mintlify
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          NEEDS_MINTLIFY_DEPLOY: ${{ steps.relevance.outputs.needs_mintlify_deploy }}
         run: |
           set -euo pipefail
+
+          if [ "$NEEDS_MINTLIFY_DEPLOY" != "true" ]; then
+            echo "Mintlify deployment not required for this PR"
+            echo "docs_url=" >> "$GITHUB_OUTPUT"
+            echo "mintlify_status=not_required" >> "$GITHUB_OUTPUT"
+            echo "mintlify_deployment_id=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
           echo "Waiting for Mintlify staging deployment of $SHA"
           DEADLINE=$(( $(date +%s) + 720 ))
           LAST_DEPLOYMENT_ID=""
@@ -106,15 +147,16 @@ jobs:
           TEABLE_WEBHOOK_URL: ${{ secrets.TEABLE_WEBHOOK_URL }}
           TEABLE_WEBHOOK_TOKEN: ${{ secrets.TEABLE_WEBHOOK_TOKEN }}
           DOCS_BRANCH: ${{ github.event.pull_request.head.ref }}
-          DOCS_URL: ${{ steps.wait.outputs.docs_url }}
-          MINTLIFY_STATUS: ${{ steps.wait.outputs.mintlify_status }}
-          MINTLIFY_DEPLOYMENT_ID: ${{ steps.wait.outputs.mintlify_deployment_id }}
+          DOCS_URL: ${{ steps.mintlify.outputs.docs_url }}
+          MINTLIFY_STATUS: ${{ steps.mintlify.outputs.mintlify_status }}
+          MINTLIFY_DEPLOYMENT_ID: ${{ steps.mintlify.outputs.mintlify_deployment_id }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_URL: ${{ github.event.pull_request.html_url }}
           MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
           MERGED_AT: ${{ github.event.pull_request.merged_at }}
         run: |
           set -euo pipefail
+          STATUS="${MINTLIFY_STATUS:-error}"
           curl -fsS -X POST \
             "$TEABLE_WEBHOOK_URL" \
             -H "Authorization: Bearer $TEABLE_WEBHOOK_TOKEN" \
@@ -122,7 +164,7 @@ jobs:
             -d "$(jq -nc \
               --arg b "$DOCS_BRANCH" \
               --arg u "$DOCS_URL" \
-              --arg s "$MINTLIFY_STATUS" \
+              --arg s "$STATUS" \
               --arg d "$MINTLIFY_DEPLOYMENT_ID" \
               --arg p "$PR_NUMBER" \
               --arg r "$PR_URL" \
@@ -131,7 +173,7 @@ jobs:
               '{docs_branch:$b, docs_url:$u, mintlify_status:$s, mintlify_deployment_id:$d, pr_number:$p, pr_url:$r, merge_sha:$m, merged_at:$t}')"
 
       - name: Fail if Mintlify did not deploy
-        if: steps.wait.outputs.mintlify_status != 'success'
+        if: steps.relevance.outputs.needs_mintlify_deploy == 'true' && steps.mintlify.outputs.mintlify_status != 'success'
         run: |
-          echo "Mintlify did not deploy successfully: ${{ steps.wait.outputs.mintlify_status }}" >&2
+          echo "Mintlify did not deploy successfully: ${{ steps.mintlify.outputs.mintlify_status }}" >&2
           exit 1
