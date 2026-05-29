@@ -21,25 +21,29 @@ Open mdx file and press `cmd + option + v` to paste image.
 
 ### Image Assets
 
-Images are shared repo assets. Keep paths boring. Keep names searchable. Keep
-rendering predictable.
+Images are shared repo assets. Keep paths stable, names searchable, and
+rendering consistent.
+
+When a change includes images, ask the agent to read this section first and
+commit only images processed according to these rules.
 
 #### Folder Rules
 
 - Use `images/{top-level-group}/{topic}/`.
 - Top-level groups: `docs`, `selfhosted`, `api`, `security`, `changelog`.
-- `docs` means Help Center Docs tab. Do not flatten `images/docs/{topic}/` into
-  `images/{topic}/`.
-- `{topic}` means real subject folder: `ai`, `base`, `space`, `sso`,
-  `authority-matrix`, `get-id`, `sql-query`, `activate`, etc.
-- No new screenshots in `images/` root.
-- No random staging folders in committed image tree.
-- Unused images go to `images/orphans/YYYY-MM-DD/...`. Do not delete first.
+- `docs` maps to the Help Center Docs tab. Do not flatten
+  `images/docs/{topic}/` into `images/{topic}/`.
+- `{topic}` maps to the navigation name in `docs.json`, such as `ai`, `base`,
+  `space`, `sso`, `authority-matrix`, `get-id`, `sql-query`, or `activate`.
+- Do not put new screenshots in the `images/` root.
+- Do not commit random staging folders.
+- Put unreferenced images in `images/orphans/YYYY-MM-DD/...` first. Do not
+  delete them directly.
 - Docs pages must not reference `images/orphans/...`.
 
 #### Naming
 
-Use this shape:
+Use this format:
 
 ```text
 images/{top-level-group}/{topic}/YYYY-MM-DD-page-slug-purpose.png
@@ -47,22 +51,18 @@ images/{top-level-group}/{topic}/YYYY-MM-DD-page-slug-purpose.webp
 images/{top-level-group}/{topic}/YYYY-MM-DD-page-slug-purpose-zh.png
 ```
 
-- Date = day asset enters docs repo.
-- Page slug = doc page or feature area.
-- Purpose = visible UI/action, not `image1`, not random hash.
+- Date = day the image enters the docs repo.
+- Page slug = docs page or feature area.
+- Purpose = visible UI or action. Do not use `image1` or random hashes.
 - Use `.png` for static UI screenshots.
-- Use `.webp` for baked animations.
-- English-only screenshot = shared asset. No `-en`.
+- Prefer `.webp` for animated screenshots.
+- English-only screenshot = shared asset. Do not add `-en`.
 - Chinese-specific screenshot = add `-zh`.
 
-#### Screenshot Format
+#### Image Handling
 
-- Static UI screenshot -> baked PNG card.
-- Animated UI capture -> baked WebP card.
-- Raw screenshots stay outside repo, for example `/tmp/teable-doc-screenshot-inbox/`.
-- Commit final baked assets only.
-- Logos, icons, external buttons, videos, historical changelog media: do not
-  force into screenshot card style.
+- Logos, inline icons, external button images, videos, and historical changelog
+  media do not need screenshot styling.
 
 #### MDX Usage
 
@@ -76,30 +76,15 @@ Use explicit `<img>` for docs screenshots:
 />
 ```
 
-- Use `className="docs-screenshot"` for new baked PNG/WebP screenshots under
+- Use `className="docs-screenshot"` for new PNG/WebP docs screenshots under
   `images/docs/`, `images/api/`, `images/selfhosted/`, and `images/security/`.
-- Alt must be non-empty.
-- Alt describes visible UI/action. Not `screenshot`. Not file name.
-- Avoid `![](...)` for new docs screenshots.
+- Alt text must be non-empty.
+- Alt text describes the visible UI or action. Do not use `screenshot` or the
+  file name.
+- Do not use `![](...)` for new docs screenshots.
 - Avoid `width="400"`, percentage widths, and one-off image sizing.
-- Changelog images keep historical display. Add useful alt when context exists.
-  Do not add `docs-screenshot` blindly.
-
-#### Before Commit
-
-Run checks that match image work:
-
-```bash
-rg "/images/docs|/images/self-hosted|/images/geng-xin-ri-zhi|/images/ji-ben-gong-neng|/images/kai-fa-zhe|/images/staged-" en zh docs.json
-git diff --check
-mintlify validate
-```
-
-For bigger moves, also audit refs:
-
-- no missing local image files
-- no active unreferenced screenshots
-- no docs page pointing to `images/orphans/...`
+- Changelog images keep their historical display. Add useful alt text when
+  context exists. Do not add `docs-screenshot` blindly.
 
 ### Publishing Changes
 
