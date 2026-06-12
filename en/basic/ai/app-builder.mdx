@@ -66,13 +66,13 @@ If the app uses custom environment variables, the downloaded archive can include
 You can update the app's code by importing a ZIP:
 1. Switch to the **Code** tab in the editor.
 2. Click the **`...`** menu in the tab bar.
-3. Select **Import code** and choose a ZIP file (≤ 5 MB) containing your source files.
+3. Select **Import code** and choose a ZIP file up to 20 MB.
 
 <Note>
-- Include source files only — do not include `node_modules`, `.next`, or other build artifacts.
-- Zip the outermost project folder itself (right-click the folder → compress), not files selected from inside it.
-- If you import only one file from a nested folder, include one unchanged source file from another top-level folder as a path anchor. For example, include both `app/page.tsx` and `components/widgets/chart.tsx` so the component keeps its full `components/widgets/...` path.
-- Import merges with the existing project and overwrites any files that share the same path.
+- Include source files only. `node_modules`, `.next`, and other build artifacts are ignored automatically.
+- The ZIP replaces the existing project. Files you leave out are removed from the new version.
+- If the ZIP contains one wrapper folder, Teable strips that folder. You can compress the outermost project folder directly.
+- The imported project must include `package.json` at the project root.
 - A root `.env` file in the ZIP is read into the app's **Secrets**. Other `.env*` variants, such as `.env.local`, are ignored.
 </Note>
 
@@ -189,7 +189,7 @@ For prompt patterns, build tips, rollback advice, and common troubleshooting, se
   </Accordion>
 
   <Accordion title="How do I download or import app code?">
-    Switch to the **Code** tab in the editor, click the **`...`** menu in the tab bar, then choose **Download code** or **Import code**. When importing a ZIP, include source files only. Do not include `node_modules`, `.next`, or other build artifacts. A root `.env` file is imported into app **Secrets**.
+    Switch to the **Code** tab in the editor, click the **`...`** menu in the tab bar, then choose **Download code** or **Import code**. Imported ZIP files can be up to 20 MB and replace the existing project, so include every source file you want to keep. The imported project must include a root `package.json`. A root `.env` file is imported into app **Secrets**.
   </Accordion>
 
   <Accordion title="When do login settings apply to the live app?">
