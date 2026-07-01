@@ -1,23 +1,19 @@
 ---
 title: Custom AI Model
-description: Enable AI capabilities in a space and add model providers for AI Fields, Automations, AI Chat, and App Builder.
+description: Add custom model providers for AI Fields, Automations, and other supported model calls.
 ---
 
 <Tip>Available for Pro plan and above</Tip>
 
 <Note>
-Custom model configuration applies to all Teable AI features, including **AI Chat**, **AI Fields**, **App Builder**, and **Automations**.
+Custom model configuration applies to features that use model calls, such as **AI Fields** and **Automations**.
 
-Starting April 9, 2026, Teable's agent engine has been upgraded for **AI Chat** and **App Builder**. These agent-based features currently require Anthropic-compatible API endpoints. **Using an incompatible endpoint may cause errors.**
+On June 24, 2026, Teable rebuilt **Agent Computer**, improving Cuppy's processing speed and long-task stability in **AI Chat** and **App Builder**. BYOK compatibility for the Agent Runtime is in progress.
 
-- **Cloud users with BYOK:** Use one of the supported provider and model pairs listed in [**Agent Support Scope**](#agent-support-scope) below.
-- **Self-hosted users:** Please ensure your configured LLM endpoint is Anthropic-compatible. Alternatively, you can wait for our upcoming OpenAI-compatible endpoint support and pull the latest image once it's available.
-- **OpenAI-compatible endpoint support** is on our roadmap and will be added in a future release.
-
-**We recommend using Teable Credits.** Teable Credits are currently offered at cost — no middleman, no markup — giving you access to top-tier AI models at the most competitive pricing with the smoothest experience.
+**We recommend using Teable Credits.** Teable Credits are currently offered at cost, with no middleman and no markup, giving you access to top-tier AI models at competitive pricing with the smoothest experience.
 </Note>
 
-After setup, the models you add can be used by **AI Fields**, **Automations**, **AI Chat**, and **App Builder** in the current space.
+After setup, the models you add can be used by supported model calling features in the current space.
 
 ## Where to Configure It
 
@@ -38,6 +34,8 @@ Under **AI Capabilities**, turn on what you need:
 - **AI Field**
 - **AI Chat**
 
+Enabling **AI Chat** only controls whether the chat feature is available in the space. BYOK compatibility for the Agent Runtime is in progress.
+
 ### Add LLM Provider
 
 Click **Add LLM provider** and fill in the following:
@@ -53,20 +51,6 @@ Click **Add LLM provider** and fill in the following:
   alt="Add LLM provider dialog"
   className="docs-screenshot"
 />
-
-#### Agent Support Scope
-
-To use **AI Chat** and **App Builder** reliably, configure one of the supported models below. Models outside this list may still work for **AI Fields** or **Automations**, but they are not recommended for agent-based features. In **AI Chat** and **App Builder**, unsupported endpoints, providers, or models may produce weaker results, miss tool-use capabilities, or cause runtime errors. Teable does not provide troubleshooting or performance support for configurations outside this scope.
-
-<Note>
-The providers below refer to the model service source. When adding an LLM provider in Teable, select an Anthropic-compatible endpoint, then enter the corresponding Base URL, API key, and model name.
-</Note>
-
-| Model provider | Supported model |
-|----------------|-----------------|
-| [Anthropic](https://platform.claude.com) / [OpenRouter](https://openrouter.ai) | Claude series |
-| [Moonshot AI](https://platform.moonshot.ai) / [OpenRouter](https://openrouter.ai) | Kimi K2.6 |
-| [MiniMax](https://platform.minimax.io) / [OpenRouter](https://openrouter.ai) | MiniMax M2.7 |
 
 ### Test Model Capabilities
 
@@ -84,9 +68,9 @@ If a model is meant for image generation, check **Image Generation Model** befor
 
 <Warning>Use the API endpoint URL, not the provider's website URL. Most OpenAI-compatible endpoints need to end with `/v1`. Unless the provider's documentation explicitly says otherwise, do not add an extra trailing `/`.</Warning>
 
-<Warning>Teable does not support Coding Plan API keys. Please use a standard API key created in your provider dashboard. Coding Plan API keys usually only work inside specific coding tools and cannot be used as a general API key in Teable. If you use this kind of key, it is normal for model testing to fail.</Warning>
+<Warning>Some Coding Plan keys may only work in designated coding tools and may not be standard API keys. Check the provider's terms before using them with third-party services. To connect Teable, use a standard API key created in the provider dashboard.</Warning>
 
-Common Base URL examples:
+Common Base URL examples for supported model calls:
 
 | Provider | Base URL Format |
 |----------|----------------|
@@ -106,7 +90,7 @@ Common Base URL examples:
 
 <Note>Model names must match the provider documentation exactly and are case-sensitive. Separate multiple models with English commas.</Note>
 
-Common model examples:
+Common model examples for supported model calls:
 
 | Provider | Example Models |
 |----------|----------------|
@@ -148,7 +132,7 @@ Make sure the **Models** value matches the provider documentation exactly, inclu
 </Accordion>
 
 <Accordion title="Testing fails when I use a Coding Plan key">
-Teable does not support this kind of key. Create a standard **API Key** in your provider dashboard and test again.
+This kind of key may not support standard API calls, or the provider's terms may not allow third-party service use. Check the provider's Coding Plan terms first. To connect Teable, use a standard **API Key** created in the provider dashboard.
 </Accordion>
 
 <Accordion title="The image generation model test result looks wrong">
