@@ -29,7 +29,7 @@ Enabling **AI Chat** controls whether the chat feature is available in the space
 ### Add LLM Provider
 
 <Note>
-When **AI Chat** or **App Builder** uses a custom model, choose a provider whose type is **OpenAI Compatible** or **Anthropic**. If a task uses images, screenshots, or other visual input, choose a model with vision support. Models without vision support will fail on these multimodal tasks. Other provider types can still be used for supported features such as **AI Fields** and **Automations**.
+When you add a new LLM provider, choose **OpenAI**, **Anthropic**, or **OpenAI Compatible** as the provider type. Use **OpenAI Compatible** for services that expose an OpenAI-compatible API endpoint. If a task uses images, screenshots, or other visual input, choose a model with vision support. Models without vision support will fail on these multimodal tasks.
 </Note>
 
 Click **Add LLM provider** and fill in the following:
@@ -58,51 +58,25 @@ If a model is meant for image generation, check **Image Generation Model** befor
 
 ## Configuration Tips
 
-### Base URL
+### Base URL and Models
 
 <Warning>Some Coding Plan keys may only work in designated coding tools and may not be standard API keys. Check the provider's terms before using them with third-party services. To connect Teable, use a standard API key created in the provider dashboard.</Warning>
 
-Common Base URL examples for supported model calls:
+Common examples:
 
-| Provider | Base URL Format |
-|----------|----------------|
-| Anthropic | `https://api.anthropic.com/v1` |
-| OpenAI | `https://api.openai.com/v1` |
-| Google | `https://generativelanguage.googleapis.com/v1beta` |
-| DeepSeek | `https://api.deepseek.ai/v1` |
-| Azure | `https://{your-resource-name}.openai.azure.com` |
-| Mistral | `https://api.mistral.ai/v1` |
-| Qwen | `https://dashscope.aliyuncs.com/compatible-mode/v1` |
-| Zhipu AI | `https://open.bigmodel.cn/api/paas/v4` |
-| XAI (Grok) | `https://api.x.ai/v1` |
-| OpenRouter | `https://openrouter.ai/api/v1` |
-| TogetherAI | `https://api.together.xyz/v1` |
-
-### Models
+| Provider type | Base URL format | Example models |
+|----------|----------------|----------------|
+| OpenAI | `https://api.openai.com/v1` | `gpt-5.5,o3,gpt-5-mini` |
+| Anthropic | `https://api.anthropic.com/v1` | `claude-opus-4-8,claude-sonnet-5,claude-haiku-4-5` |
+| OpenAI Compatible | The provider's OpenAI-compatible `/v1` endpoint | `gpt-5.5,gpt-5.4,o3,gpt-5-mini` |
 
 <Note>Model names must match the provider documentation exactly and are case-sensitive. Separate multiple models with English commas.</Note>
-
-Common model examples for supported model calls:
-
-| Provider | Example Models |
-|----------|----------------|
-| OpenAI | `gpt-5.4, gpt-5.4-mini, gpt-5` |
-| Anthropic | `claude-opus-4-6, claude-sonnet-4-6, claude-haiku-4-5` |
-| Google | `gemini-3.1-pro-preview, gemini-3-flash, gemini-2.5-flash` |
-| Azure | `gpt-5.4, gpt-5, gpt-5-mini, gpt-4o` |
-| DeepSeek | `deepseek-chat, deepseek-reasoner` |
-| XAI | `grok-4, grok-4.1-fast` |
-| Qwen | `qwen3.5-plus, qwen3-max` |
-| OpenRouter | `anthropic/claude-opus-4-6, google/gemini-3.1-pro-preview` |
-| TogetherAI | `deepseek-ai/DeepSeek-R1, meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8` |
-| Mistral | `mistral-large-latest, mistral-medium-latest, codestral-latest` |
 
 Notes:
 
 - Model names are case-sensitive. Use the exact names from the provider documentation.
-- Some providers require no spaces after commas, for example `gpt-4o,gpt-4-turbo`.
-- OpenRouter uses the format `provider/model-name`, for example `openai/gpt-4o`.
-- For Azure, use the deployment name you created in Azure AI Foundry or Azure OpenAI Studio, not the base model name.
+- Some providers require no spaces after commas, for example `gpt-5.5,o3`.
+- For **OpenAI Compatible** providers, use the model naming format required by that provider. Some services use `provider/model-name`.
 
 ## FAQ
 

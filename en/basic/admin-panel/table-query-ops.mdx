@@ -1,0 +1,45 @@
+---
+title: "Table Query Ops"
+description: "Analyze saved view and relation field query configuration, query risk, and index recommendations in the Admin Panel."
+---
+
+<Tip>Available for self-hosted Business plan and above</Tip>
+
+Path: Admin Panel → Table Query Ops
+
+**Table Query Ops** helps instance administrators inspect query patterns that may affect large tables. It analyzes saved view filters, sorts, grouping, and relation field query configuration, then reports query risk and index recommendations.
+
+This page is for diagnosis. It does not apply index changes by itself.
+
+## Analyze a Scope
+
+Enter one of the following IDs, then click **Analyze**:
+
+| Field | Use it for |
+| --- | --- |
+| **Space ID** | Scan query shapes across one space. |
+| **Base ID** | Focus the analysis on one base. |
+| **Table ID** | Check one table when you already know where the issue is. |
+| **Max** | Limit how many candidate indexes are returned. |
+
+If no scope ID is entered, **Analyze** remains disabled.
+
+## Read the Results
+
+After analysis, the page shows:
+
+| Section | What it means |
+| --- | --- |
+| Summary cards | Number of saved views, relation fields, candidate indexes, validated recommendations, and rejected candidates scanned in the selected scope. |
+| Coverage report | How many sources were parsed, validated, skipped, or rejected. |
+| Query risk | Query shape, risk level, reason codes, execution plan evidence, and the suggested next action. |
+| Final recommended indexes | Candidate indexes that passed validation and are ready for administrator review. |
+| Rejected candidates | Candidate indexes that were considered but not recommended. |
+
+<Info>Analysis results show query configuration, field/index structure, and execution plan summaries. They do not show record contents or cell values.</Info>
+
+## Notes
+
+- Use a narrower scope first when you are investigating one slow base or table.
+- Index recommendations still need administrator review before any database change is made.
+- Results depend on the current saved view and relation field configuration.
