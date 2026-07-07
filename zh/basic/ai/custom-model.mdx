@@ -29,7 +29,7 @@ description: 为 AI 字段、自动化、AI 对话、应用构建器等功能添
 ### 添加模型提供商
 
 <Note>
-**AI 对话** 和 **应用构建器** 使用自定义模型时，请选择 **OpenAI Compatible**（OpenAI 兼容）或 **Anthropic** 类型的提供商。如果任务涉及图片、截图等视觉输入，请选择支持视觉能力的模型；不支持视觉的模型会导致这类多模态任务报错。其他提供商类型仍可用于 **AI 字段**、**自动化** 等支持的功能。
+添加新的 LLM 提供商时，提供商类型请选择 **OpenAI**、**Anthropic** 或 **OpenAI Compatible**（OpenAI 兼容）。如果服务商提供 OpenAI 兼容接口，请选择 **OpenAI Compatible**。如果任务涉及图片、截图等视觉输入，请选择支持视觉能力的模型；不支持视觉的模型会导致这类多模态任务报错。
 </Note>
 
 点击 **添加模型提供商**，填写以下信息：
@@ -58,53 +58,25 @@ description: 为 AI 字段、自动化、AI 对话、应用构建器等功能添
 
 ## 填写提示
 
-### 基础 URL
+### 基础 URL 和模型
 
 <Warning>部分 Coding Plan Key 可能只允许在指定开发工具中使用，并不是标准 API Key。是否可用于第三方服务，请以对应提供商的条款和说明为准；如需接入 Teable，请使用提供商后台创建的标准 API Key。</Warning>
 
-用于已支持的模型调用时，常见基础 URL 示例：
+常见填写示例：
 
-| 提供商 | 基础 URL 格式 |
-|--------|--------------|
-| Anthropic | `https://api.anthropic.com/v1` |
-| OpenAI | `https://api.openai.com/v1` |
-| Google | `https://generativelanguage.googleapis.com/v1beta` |
-| DeepSeek | `https://api.deepseek.ai/v1` |
-| Azure | `https://{您的资源名称}.openai.azure.com` |
-| Mistral | `https://api.mistral.ai/v1` |
-| 通义千问 | `https://dashscope.aliyuncs.com/compatible-mode/v1` |
-| 智谱 AI | `https://open.bigmodel.cn/api/paas/v4` |
-| XAI (Grok) | `https://api.x.ai/v1` |
-| OpenRouter | `https://openrouter.ai/api/v1` |
-| TogetherAI | `https://api.together.xyz/v1` |
-| Ollama（本地） | `http://localhost:11434` |
-
-### 模型
+| 提供商类型 | 基础 URL 格式 | 模型名称示例 |
+|--------|--------------|--------------|
+| OpenAI | `https://api.openai.com/v1` | `gpt-5.5,o3,gpt-5-mini` |
+| Anthropic | `https://api.anthropic.com/v1` | `claude-opus-4-8,claude-sonnet-5,claude-haiku-4-5` |
+| OpenAI Compatible | 对应服务商的 OpenAI 兼容 `/v1` 接口 | `gpt-5.5,gpt-5.4,o3,gpt-5-mini` |
 
 <Note>模型名称必须与服务商文档一致，并区分大小写。多个模型之间使用英文逗号分隔。</Note>
-
-用于已支持的模型调用时，常见模型名称示例：
-
-| 提供商 | 模型名称示例 |
-|--------|--------------|
-| OpenAI | `gpt-5.4, gpt-5.4-mini, gpt-5` |
-| Anthropic | `claude-opus-4-6, claude-sonnet-4-6, claude-haiku-4-5` |
-| Google | `gemini-3.1-pro-preview, gemini-3-flash, gemini-2.5-flash` |
-| Azure | `gpt-5.4, gpt-5, gpt-5-mini, gpt-4o` |
-| DeepSeek | `deepseek-chat, deepseek-reasoner` |
-| XAI | `grok-4, grok-4.1-fast` |
-| 通义千问 | `qwen3.5-plus, qwen3-max` |
-| OpenRouter | `anthropic/claude-opus-4-6, google/gemini-3.1-pro-preview` |
-| TogetherAI | `deepseek-ai/DeepSeek-R1, meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8` |
-| Mistral | `mistral-large-latest, mistral-medium-latest, codestral-latest` |
-| Ollama | `qwen3.5:9b, gemma3:12b, llama3.2:8b` |
 
 注意事项：
 
 - 模型名称区分大小写，请使用服务商文档中的准确名称。
-- 部分服务商要求逗号后不要加空格，例如 `gpt-4o,gpt-4-turbo`。
-- OpenRouter 格式为 `提供商/模型名称`，例如 `openai/gpt-4o`。
-- Azure 请使用您在 Azure AI Foundry 或 Azure OpenAI Studio 中创建的部署名称，而不是基础模型名。
+- 部分服务商要求逗号后不要加空格，例如 `gpt-5.5,o3`。
+- 使用 **OpenAI Compatible** 提供商时，请按对应服务商要求填写模型名称。有些服务会使用 `provider/model-name` 格式。
 
 ## 常见问题
 
