@@ -12,7 +12,7 @@ For production deployments, use **S3-compatible object storage** (such as S3, Mi
 Teable stores different types of files in different buckets:
 
 - **Public bucket**: avatars, form cover images, and other assets that must be publicly accessible.
-- **Private bucket**: attachments and other content that should be protected and accessed via signed URLs.
+- **Private bucket**: attachments, app files, record-history cold parts, and other content that should be protected.
 
 ## Required environment variables
 
@@ -107,7 +107,8 @@ If you use **direct browser uploads** (presigned PUT), you may also need `PUT` i
 ## Private bucket guidance
 
 - Keep the **private bucket** non-public.
-- Teable accesses private objects via **signed URLs**.
+- Teable serves private objects through **signed URLs** or backend reads, depending on the feature.
+- Record-history cold storage writes compressed history parts to the private bucket. Keep bucket backup and retention policies aligned with your record-history requirements.
 - If your provider supports “bucket endpoint” for private access, you can configure:
   - `BACKEND_STORAGE_PRIVATE_BUCKET_ENDPOINT` (optional)
 
@@ -119,4 +120,3 @@ Teable uses **S3 APIs** for object storage. Azure Blob Storage and Google Cloud 
 - Or use an **S3-compatible** storage:
   - MinIO (self-managed) as the S3 endpoint
   - Another managed S3-compatible service (your choice)
-
