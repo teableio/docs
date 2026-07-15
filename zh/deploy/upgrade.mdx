@@ -23,53 +23,42 @@ Teable 应用以**日期型 release tag** 发布,形如
 在进行任何更新操作之前,强烈建议先备份您的数据。
 </Note>
 
-## 基础版:Docker Compose 更新
+## 日常更新:跟着更新日志走
 
-如果您使用 Docker Compose 部署基础版 Teable:
+新功能与修复都发布在[更新日志](/zh/changelog)里,而 Teable 的每个 release tag
+自带构建日期 —— 所以「我有没有这个功能」就是一次日期比较。想用上日志里提到的
+某项更新,把 Teable 镜像升到该条目日期之后(含当日)的任一版本即可:
 
-```bash
-cd teable          # 您的部署目录
-docker compose pull
-docker compose up -d
-```
+- **Docker 部署**直接跟 `latest` 通道就行:
 
-容器将基于新镜像重建;数据存储在 Docker 卷(或外部数据库)中,不受影响。
+  ```bash
+  cd teable          # 您的部署目录
+  docker compose pull
+  docker compose up -d
+  ```
 
-验证:
+  容器基于新镜像重建;数据存储在 Docker 卷(或外部数据库)中,不受影响。
 
-```bash
-docker compose ps
-docker compose logs -f teable
-```
+- **Kubernetes 部署**不要跑浮动 tag:保持 Teable 镜像钉版,**每次更新时主动
+  上调钉定的版本号**。部署仓库自带的 `pin-image.sh` 可解析 `latest` 当前
+  对应的具体版本。
 
-### 钉定特定版本
+## 最佳方式:整个平台一起升
 
-如需运行特定版本而非 `latest` 通道,在 `docker-compose.yaml` 中指定镜像 tag:
+全功能部署有两条版本线 —— Teable 应用与平台本身(见[架构](/zh/deploy/architecture))。
+最可靠的节奏是把两条线绑在一起,以
+[`VERSIONS.md`](https://github.com/teableio/teable-deployment/blob/main/VERSIONS.md)
+为升级清单,每轮:
 
-```yaml
-services:
-  teable:
-    image: ghcr.io/teableio/teable:release.2026-07-14T12-24-39Z.2228
-```
-
-然后执行 `docker compose pull && docker compose up -d`。
-生产环境建议钉版:版本何时变化完全由您掌控。
-
-## 全功能部署(AI 运行平面)
-
-全功能部署(见 [架构](/zh/deploy/architecture))有**两条版本线**:
-
-- **Teable 应用** —— 即上述日期型 tag,按部署仓库的指引升级;
-- **平台本身** ——
-  [teableio/teable-deployment](https://github.com/teableio/teable-deployment)
-  仓库以**平台版本**(`v<年>.<月>.<序号>`)发布:每个 git tag 是全部运行面组件的
-  已验证快照,[`CHANGELOG.md`](https://github.com/teableio/teable-deployment/blob/main/CHANGELOG.md)
-  写明每版变了什么、你需要做什么(多数版本可热切换)。升级时**从 checkout 到
-  对应 tag 的仓库副本操作**,参照
-  [`VERSIONS.md`](https://github.com/teableio/teable-deployment/blob/main/VERSIONS.md)。
-
-任一条线升级后,运行自带的 **doctor** —— 它检查健康状态,并把实际运行的组合与
-平台版本清单比对(兼容 / 需升级 Teable 应用 / 未知组合)。
+1. 把运行平面升到**最新平台版本**(`v<年>.<月>.<序号>`):每个 git tag 都是
+   全部运行面组件的已验证快照,对应的
+   [`CHANGELOG.md`](https://github.com/teableio/teable-deployment/blob/main/CHANGELOG.md)
+   条目写明变了什么、你需要做什么(多数版本可热切换)。操作时从 checkout 到
+   该 tag 的仓库副本进行;
+2. 把 Teable 应用钉到 **`latest` 当前对应的具体版本号**(`pin-image.sh`
+   可解析)—— 用钉定的已验证组合替代浮动通道;
+3. 跑自带的 **doctor** —— 检查健康状态,并把实际运行的组合与平台版本清单
+   比对(兼容 / 需升级 Teable 应用 / 未知组合)。
 
 ## 数据库迁移
 

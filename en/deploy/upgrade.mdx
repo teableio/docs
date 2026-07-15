@@ -24,61 +24,49 @@ All tags are listed on
 Before performing any upgrade, we strongly recommend backing up your data first.
 </Note>
 
-## Standalone: Docker Compose upgrade
+## Routine updates: follow the changelog
 
-If you run standalone Teable with Docker Compose:
+New features and fixes are announced in the [Changelog](/en/changelog), and
+every Teable release tag carries its build date — so "do I have this yet?" is
+just a date comparison. To pick up something you read about, move your Teable
+image to any release dated at or after that entry:
 
-```bash
-cd teable          # your deployment directory
-docker compose pull
-docker compose up -d
-```
+- **Docker deployments** can simply ride the `latest` channel:
 
-Containers are recreated on the new image; your data lives in Docker volumes
-(or your external database) and is not touched.
+  ```bash
+  cd teable          # your deployment directory
+  docker compose pull
+  docker compose up -d
+  ```
 
-Verify:
+  Containers are recreated on the new image; your data lives in Docker volumes
+  (or your external database) and is not touched.
 
-```bash
-docker compose ps
-docker compose logs -f teable
-```
+- **Kubernetes deployments** should not run a floating tag: keep the Teable
+  image pinned and **bump the pinned tag deliberately on each update**. The
+  deployment repository's `pin-image.sh` resolves which concrete release
+  `latest` currently points to.
 
-### Pin a specific version
+## Best practice: upgrade the whole platform together
 
-To run a specific release instead of the `latest` channel, set the image tag in
-`docker-compose.yaml`:
+A full-featured deployment has two version lines — the Teable app and the
+platform itself (see [Architecture](/en/deploy/architecture)). The most
+reliable routine ties them together, with
+[`VERSIONS.md`](https://github.com/teableio/teable-deployment/blob/main/VERSIONS.md)
+as the upgrade sheet. On each round:
 
-```yaml
-services:
-  teable:
-    image: ghcr.io/teableio/teable:release.2026-07-14T12-24-39Z.2228
-```
-
-then `docker compose pull && docker compose up -d`. Pinning is recommended for
-production: you choose exactly when versions change.
-
-## Full-featured deployments (AI runtime plane)
-
-A full-featured deployment (see
-[Architecture](/en/deploy/architecture)) has **two version
-lines**:
-
-- **The Teable app** — the date-based tags above; upgrade it as described in
-  the deployment repository's guides.
-- **The platform** — the
-  [teableio/teable-deployment](https://github.com/teableio/teable-deployment)
-  repository ships **platform releases** (`v<year>.<month>.<seq>`): each git
-  tag is a verified snapshot of every runtime component, with
-  [`CHANGELOG.md`](https://github.com/teableio/teable-deployment/blob/main/CHANGELOG.md)
-  entries stating what changed and what you must do (most releases are
-  hot-swappable). Upgrade **from the repository checked out at the release
-  tag**, following
-  [`VERSIONS.md`](https://github.com/teableio/teable-deployment/blob/main/VERSIONS.md).
-
-After upgrading either line, run the bundled **doctor** — it checks health and
-compares what is actually running against the platform release manifest
-(compatible / upgrade the Teable app / unknown combination).
+1. Upgrade the runtime plane to the **newest platform release**
+   (`v<year>.<month>.<seq>`): each git tag is a verified snapshot of every
+   runtime component, and its
+   [`CHANGELOG.md`](https://github.com/teableio/teable-deployment/blob/main/CHANGELOG.md)
+   entry states what changed and what, if anything, you must do (most releases
+   are hot-swappable). Work from the repository checked out at that tag.
+2. Move the Teable app to the **concrete release tag that `latest` currently
+   corresponds to** (`pin-image.sh` resolves it) — a pinned, verified
+   combination instead of a floating channel.
+3. Run the bundled **doctor** — it checks health and compares what is actually
+   running against the platform release manifest (compatible / upgrade the
+   Teable app / unknown combination).
 
 ## Database migration
 
