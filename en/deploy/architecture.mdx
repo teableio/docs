@@ -4,10 +4,11 @@ description: "What a self-hosted Teable deployment runs: the app, its data servi
 ---
 
 Teable is an AI product: **AI Chat**, **App Builder**, and **app deployments**
-are part of the platform, not bolt-ons. A self-hosted deployment therefore
-runs the Teable app and its data services together with the **runtime plane**
-that powers those AI features. This page explains how the pieces fit
-together. The deployable assets (compose files, Helm chart, values) live in
+are part of the platform, not optional add-ons. A self-hosted deployment
+therefore runs the Teable app and its data services together with the
+**runtime plane** — the set of services that powers those AI features. This
+page explains the pieces and how they work together. The deployable assets
+(compose files, Helm chart, values) live in
 [teableio/teable-deployment](https://github.com/teableio/teable-deployment) and
 are the single source of truth — nothing on this page needs to be copied.
 
@@ -18,16 +19,16 @@ are the single source of truth — nothing on this page needs to be copied.
 | Service | Purpose |
 |---|---|
 | **Teable app** | Web UI, API, automations, AI chat — a single image: `ghcr.io/teableio/teable` |
-| **PostgreSQL** | The system of record: tables, views, metadata |
+| **PostgreSQL** | The main database: all your tables, views, and metadata |
 | **Redis** | Cache, queues, realtime collaboration |
-| **Object storage** | S3-compatible, three buckets: **public** (avatars and public assets), **private** (attachments), **build artifacts** (App Builder output) |
-| **Infra Service** | Console + API — the one door the Teable app talks to; orchestrates builds and app deployments |
-| **Sandbox engine** | Runs every AI session inside an isolated sandbox container |
-| **Git registry** | Source of truth for the apps you build (App Builder pushes here) |
-| **Preview gateway** | Serves sandbox previews and deployed apps in the browser |
+| **Object storage** | S3-compatible file storage with three buckets: **public** (avatars and other public assets), **private** (attachments), **build artifacts** (App Builder output) |
+| **Infra Service** | The single entry point the Teable app connects to; coordinates builds and app deployments, with its own console and API |
+| **Sandbox engine** | Runs every AI session in its own isolated container |
+| **Git registry** | Stores the source code of the apps you build (App Builder pushes here) |
+| **Preview gateway** | Routes browsers to sandbox previews and deployed apps |
 
-The last four services form the **runtime plane**; the deployment assets set
-all of this up as one platform.
+The last four make up the runtime plane. The deployment assets install all of
+this as one platform.
 
 ## How it fits together
 
@@ -66,62 +67,58 @@ graph LR
     style A fill:#F59E0B,stroke:#b45309,color:#fff
 ```
 
-The Teable app reaches the runtime plane through **one connection**: the Infra
-Service (`TEABLE_INFRA_API_URL` / `TEABLE_INFRA_API_KEY`); everything behind it
-is internal. What the plane actually runs is two kinds of workload:
+The Teable app talks to the runtime plane through **one connection**: the
+Infra Service (`TEABLE_INFRA_API_URL` / `TEABLE_INFRA_API_KEY`). Everything
+behind it is internal. Two kinds of workload do the real work — and they are
+what consume your machine:
 
-- **Sandboxes** — every AI chat or App Builder session gets its own isolated
-  container, started on demand and destroyed when the session ends. This is
-  the dominant, bursty load: size your machine by **peak concurrent AI
-  sessions**, not by user count (per-sandbox limits are configurable in the
-  admin panel).
-- **Deployed apps** — every app someone ships runs as its own long-lived
-  container behind `*.app.<domain>`. Sandboxes come and go; deployed apps
-  accumulate and keep serving.
+- **Sandboxes.** Every AI chat or App Builder session gets its own isolated
+  container, started when the session begins and removed when it ends. This
+  is the platform's main load, and it arrives in bursts: size your machine by
+  **peak concurrent AI sessions**, not by user count (per-sandbox resource
+  limits can be set in the admin panel).
+- **Deployed apps.** Every app someone publishes runs as its own long-lived
+  container, served at `*.app.<domain>`. Sandboxes come and go; deployed apps
+  add up and keep running.
 
-The rest is plumbing: building happens inside the session's sandbox, the git
-registry and object storage persist what it produces (source and build
-artifacts), and the gateway routes browsers to the right sandbox or app.
+The other services play supporting roles: building happens inside the
+session's sandbox, the git registry and object storage keep what it produces
+(source code and build artifacts), and the gateway routes each browser
+request to the right sandbox or app.
 
 ## One domain, four DNS records
 
-Everything hangs off **one base domain** — typically a subdomain of yours, such
-as `teable.example.com`:
+Everything is served under **one base domain** — typically a subdomain of
+yours, such as `teable.example.com`:
 
 | Record | Serves |
 |---|---|
 | `<domain>` | The Teable app |
-| `infra.<domain>` | Infra console + API — git (`/git`) and object storage (bucket paths) ride this host as paths |
+| `infra.<domain>` | The Infra Service console and API; git (`/git`) and object storage are also served from paths on this host |
 | `*.app.<domain>` | Apps you built and deployed |
 | `*.sandbox.<domain>` | Sandbox previews in the browser |
 
-Each name is only a default; every hostname can be overridden individually
+Each name is only a default, and every hostname can be overridden individually
 (see the values example in the deployment repository).
-
-## How the agent stays in sync with the app
-
-The sandbox agent image is configured as a **prefix without a tag**. The Teable
-app appends **its own release tag** when launching AI sessions, so the agent
-always matches the app version — and the app preheats that exact image through
-the Infra Service, so the first session doesn't wait on a multi-gigabyte pull.
-You never pull or pin the agent manually.
 
 ## Versioning
 
 The platform ships as **platform releases** (`v<year>.<month>.<seq>`) of the
 deployment repository:
 
-- A **tag** is a verified snapshot: `versions.yaml` pins every component image
-  (with digests), and the repository's `CHANGELOG.md` says what changed and
-  what, if anything, you must do.
-- The repository's `main` is the rolling latest.
-- The bundled **doctor** scripts compare what your deployment actually runs
-  against the release manifest and report one of three states: compatible,
-  upgrade the Teable app, or an unknown (unverified) combination.
+- A release **tag** is a verified snapshot: `versions.yaml` locks the exact
+  version of every component, and the repository's `CHANGELOG.md` says what
+  changed and what, if anything, you must do.
+- The repository's `main` branch is the rolling latest.
+- The bundled **doctor** script compares what your deployment actually runs
+  against the release and reports one of three results: compatible, upgrade
+  the Teable app, or an unknown (unverified) combination.
 
 The Teable app has its own release line (date-based tags; `latest` is the
-stable channel) — see [Version Upgrade](/en/deploy/upgrade). Platform releases
-declare the app compatibility window; the doctor checks it for you.
+stable channel) — see [Version Upgrade](/en/deploy/upgrade). Each platform
+release states which app versions it has been verified with, and the doctor
+checks this for you. The sandbox agent behind AI sessions always follows the
+app's version on its own — there is nothing extra to upgrade or manage.
 
 ## Deploy it
 
@@ -133,26 +130,27 @@ deployment repository:
     Everything on one machine — first full deployment, `local` or `server` mode.
   </Card>
   <Card title="Kubernetes (Helm)" icon="dharmachakra" href="https://github.com/teableio/teable-deployment/blob/main/helm/README.md">
-    One umbrella chart on an existing cluster; only `global.baseDomain` is required.
+    A single Helm chart on an existing cluster; only `global.baseDomain` is required.
   </Card>
 </CardGroup>
 
-Don't need AI? You can run just the app with PostgreSQL, Redis, and storage —
-a **standalone** deployment ([Docker Deployment](/en/deploy/docker)) — and
-attach the runtime plane later with your data in place.
+Don't need AI yet? You can run just the app with PostgreSQL, Redis, and
+storage — a **standalone** deployment ([Docker Deployment](/en/deploy/docker))
+— and attach the runtime plane later with your data in place.
 
 Related topics, all maintained in the deployment repository:
 
-- **Already running standalone Teable?** Your data stays in place — the runtime
-  plane attaches next to it: [migration guide](https://github.com/teableio/teable-deployment/blob/main/migration/2026-07-basic-to-full-featured.md)
-- **Private / corporate CA**: sandboxes must trust the CA your entry serves —
+- **Already running standalone Teable?** Your data stays in place — the
+  runtime plane installs next to it: [migration guide](https://github.com/teableio/teable-deployment/blob/main/migration/2026-07-basic-to-full-featured.md)
+- **Company-internal certificates?** If your domain uses a private or
+  corporate CA, sandboxes need to be told to trust it —
   [private-ca.md](https://github.com/teableio/teable-deployment/blob/main/helm/private-ca.md)
 - **Sizing, versions and mirrors**: [VERSIONS.md](https://github.com/teableio/teable-deployment/blob/main/VERSIONS.md) ·
   [images/README.md](https://github.com/teableio/teable-deployment/blob/main/images/README.md)
 - **When something fails**: run the doctor first, then
   [TROUBLESHOOTING.md](https://github.com/teableio/teable-deployment/blob/main/TROUBLESHOOTING.md)
 
-After deploying, connect your Teable app to the runtime plane with
+After deploying, connect the Teable app to the runtime plane with
 `TEABLE_INFRA_API_URL` / `TEABLE_INFRA_API_KEY` (the deployment guides cover
-this), then configure limits in
+this), then set resource limits in
 [Admin Panel → Sandbox Agent](/en/basic/admin-panel/sandbox-agent).
