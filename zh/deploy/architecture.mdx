@@ -31,6 +31,7 @@ Helm chart、values)全部在
 
 ```mermaid
 graph LR
+    U["浏览器"]
     subgraph "应用与数据"
         T["Teable 应用"]
         P[("PostgreSQL")]
@@ -39,27 +40,42 @@ graph LR
     end
     subgraph "运行平面"
         I["Infra Service"]
-        E["沙箱引擎"]
+        E["沙箱 —— 每个 AI 会话一个"]
+        A["已部署应用 —— 每个一个容器"]
         G["Git 仓库服务"]
         W["预览网关"]
     end
-    U["浏览器"] --> T
+    U --> T
     T --> P
     T --> R
     T -- "附件" --> S
-    T -- "AI 会话" --> I --> E
-    E -- "构建并推送" --> G
-    E -- "构建产物" --> S
-    U -- "预览与已部署应用" --> W
+    T -- "AI 会话" --> I
+    I -- "启动" --> E
+    I -- "部署" --> A
+    E -. "源码" .-> G
+    E -. "构建产物" .-> S
+    U -- "沙箱预览" --> W
+    U -- "已部署应用" --> W
     W --> E
+    W --> A
 
     style T fill:#0D9373,stroke:#0a7a5e,color:#fff
+    style E fill:#F59E0B,stroke:#b45309,color:#fff
+    style A fill:#F59E0B,stroke:#b45309,color:#fff
 ```
 
 Teable 应用只通过**一个连接**触达运行平面:Infra Service
 (`TEABLE_INFRA_API_URL` / `TEABLE_INFRA_API_KEY`),其余全部是平面内部细节。
-AI 对话在沙箱内运行;App Builder 在同一个沙箱里构建,把源码推到 Git 仓库服务、
-把构建产物存入对象存储,部署后的应用经预览网关对外提供访问。
+平面上真正运行的,是两类负载:
+
+- **沙箱** —— 每个 AI 对话、每次 App Builder 构建会话,都按需启动一个独立
+  容器,会话结束即销毁。这是平台最主要且突发性的负载:机器规格要按
+  **AI 会话峰值并发**来估,而不是按用户数(单个沙箱的资源限额可在管理面板配置)。
+- **已部署应用** —— 每个被部署出去的应用都是一个长驻容器,经 `*.app.<domain>`
+  对外服务。沙箱来了又走,已部署应用则不断累积、持续运行。
+
+其余都是配套管线:构建在会话的沙箱内完成,Git 仓库服务与对象存储负责沉淀
+它产出的源码与构建产物,网关把浏览器路由到对应的沙箱或应用。
 
 ## 一个域名,四条 DNS 记录
 

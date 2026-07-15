@@ -33,6 +33,7 @@ all of this up as one platform.
 
 ```mermaid
 graph LR
+    U["Browser"]
     subgraph "App & data"
         T["Teable app"]
         P[("PostgreSQL")]
@@ -41,29 +42,46 @@ graph LR
     end
     subgraph "Runtime plane"
         I["Infra Service"]
-        E["Sandbox engine"]
+        E["Sandboxes — one per AI session"]
+        A["Deployed apps — one container each"]
         G["Git registry"]
         W["Preview gateway"]
     end
-    U["Browser"] --> T
+    U --> T
     T --> P
     T --> R
     T -- "attachments" --> S
-    T -- "AI session" --> I --> E
-    E -- "build & push" --> G
-    E -- "artifacts" --> S
-    U -- "previews & deployed apps" --> W
+    T -- "AI sessions" --> I
+    I -- "starts" --> E
+    I -- "deploys" --> A
+    E -. "source" .-> G
+    E -. "artifacts" .-> S
+    U -- "sandbox previews" --> W
+    U -- "deployed apps" --> W
     W --> E
+    W --> A
 
     style T fill:#0D9373,stroke:#0a7a5e,color:#fff
+    style E fill:#F59E0B,stroke:#b45309,color:#fff
+    style A fill:#F59E0B,stroke:#b45309,color:#fff
 ```
 
 The Teable app reaches the runtime plane through **one connection**: the Infra
 Service (`TEABLE_INFRA_API_URL` / `TEABLE_INFRA_API_KEY`); everything behind it
-is internal. An AI chat session runs inside a sandbox; App Builder builds
-inside the same sandbox, pushes source to the git registry, stores the build
-artifact in object storage, and the deployed app is served through the
-gateway.
+is internal. What the plane actually runs is two kinds of workload:
+
+- **Sandboxes** — every AI chat or App Builder session gets its own isolated
+  container, started on demand and destroyed when the session ends. This is
+  the dominant, bursty load: size your machine by **peak concurrent AI
+  sessions**, not by user count (per-sandbox limits are configurable in the
+  admin panel).
+- **Deployed apps** — every app someone ships runs as its own long-lived
+  container behind `*.app.<domain>`. Sandboxes come and go; deployed apps
+  accumulate and keep serving.
+
+The rest is plumbing: building happens inside the session's sandbox, the git
+registry and object storage persist what it produces (source and build
+artifacts), and the gateway routes browsers to the right sandbox or app.
 
 ## One domain, four DNS records
 
