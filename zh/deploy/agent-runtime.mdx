@@ -1,773 +1,116 @@
 ---
-title: "部署 Agent Runtime"
-description: "使用 Docker Compose 在 Linux 服务器上部署私有化 Teable Agent Runtime。"
+title: "Agent Runtime 架构"
+description: "自部署 AI 运行面的工作原理:沙箱、App Builder、应用部署、域名模型与版本体系。"
 ---
 
-<Tip>私有化部署商业版及以上适用</Tip>
+<Tip>私有化部署 Business 及以上套餐可用</Tip>
 
-Teable Agent Runtime 为 **AI 对话** 和 **应用构建器** 提供沙箱及应用运行时服务。本指南介绍如何使用 Docker Compose，在一台 Linux 服务器上部署完整服务栈。
+Teable 的 AI 能力 —— **AI Chat**、**App Builder** 与**应用部署** —— 运行在一个与
+Teable 应用并列自部署的**运行面**上。本页只讲架构;可部署资产(compose、Helm chart、
+values)全部在 [teableio/teable-deployment](https://github.com/teableio/teable-deployment)
+仓库中维护,那里是唯一事实源 —— 本页没有任何需要复制的内容。
 
-部署内容包括 AI 沙箱引擎、App Runtime、Git 仓库服务、制品存储和 TLS 网关。本文提供全部配置文件，无需 Kubernetes 或额外的代码仓库。
+## 两个平面
 
-<Info>
-Agent Runtime 的私有化部署仍处于早期阶段。本指南面向愿意率先体验的用户，并会根据实际部署反馈持续迭代。当前运行时通过 Teable Infra 使用 OpenSandbox，不再使用 Vercel Sandbox 或 Vercel Snapshot。如需部署协助，请联系 **support@teable.ai**。
-</Info>
+一套全功能部署由两个平面组成:
 
-如需使用应用构建器预览和发布应用，请部署本文提供的完整服务栈。只运行 `opensandbox-server` 无法提供应用构建器所需的应用运行时、Git 仓库、制品存储和网关。
-
-## 架构
-
-对外只暴露 Caddy 网关的 80/443 端口，其余服务均在内部 Docker 网络中：
-
-| 服务 | 说明 | 内部端口 |
-|---|---|---|
-| **caddy** | TLS 终止 + 全部路由（控制台、沙箱/应用预览、S3、git） | 对外 80/443 |
-| **opensandbox-server** | AI 沙箱引擎（Docker 模式），通过宿主 `docker.sock` 按需创建沙箱容器 | 8090 |
-| **infra-service** | 控制台 UI + Infra API + App Runtime Docker 后端 + 内置应用网关 | 8080 |
-| **git-registry** | App Builder 的 git smart-http 服务（与 infra-service 共用镜像） | 8080 |
-| **minio** *(可选)* | 内置 S3 兼容制品存储（可换成外部 S3，请参阅[选择制品存储](#选择制品存储)） | 9000 / 9001 |
-| **minio-init** *(可选)* | 一次性任务：等待 MinIO 就绪并创建制品桶 | 不适用 |
-
-域名路由（均由根域名 `BASE_DOMAIN` 自动拼出）：
-
-| 地址 | 用途 |
+| 平面 | 内容 |
 |---|---|
-| `https://<BASE_DOMAIN>` | 控制台 UI + Infra API + 沙箱引擎 API（`/v1/*`） |
-| `https://{appId}.app.<BASE_DOMAIN>` | 已部署应用的访问入口 |
-| `https://{sandboxId}-{port}.sandbox.<BASE_DOMAIN>` | 沙箱端口预览 |
-| `https://s3.<BASE_DOMAIN>` | 制品存储（内置 MinIO 模式；预签名 URL 指向这里） |
-| `https://git.<BASE_DOMAIN>` | git smart-http（外部手动 clone 用，可选） |
+| **应用平面** | Teable 应用本体,及其 PostgreSQL 与 Redis |
+| **运行平面** | 支撑全部 AI 能力的服务(见下) |
 
-## 开始前的准备
+运行平面包含五个服务:
 
-### 服务器要求
-
-| | 最低 | 推荐 |
-|---|---|---|
-| vCPU | 4 | 8 |
-| 内存 | 8 GB | 16 GB |
-| 磁盘 | 80 GB NVMe | 120+ GB NVMe |
-| 操作系统 | Ubuntu 22.04/24.04（x86_64） | 同左 |
-| 软件 | Docker Engine 24+、Docker Compose v2.24+、OpenSSL | 同左 |
-
-容量背景：每个活跃的构建会话运行一个沙箱容器（上限 2 vCPU / 4 GiB）；每个已部署应用同样上限
-2 vCPU / 4 GiB（实际常用几百 MB）。基础服务共占约 1 到 1.5 GiB 内存。磁盘大头是容器镜像
-（预热后约 15 到 20 GB）加沙箱/应用的可写层，建议监控剩余空间。
-
-### DNS 与防火墙
-
-在 DNS 供应商处添加 **4 条 A 记录**，全部指向云主机公网 IP（通配证书只覆盖一级子域名，
-所以 4 条都需要）：
-
-```
-<BASE_DOMAIN>              A  →  <公网IP>
-*.<BASE_DOMAIN>            A  →  <公网IP>
-*.app.<BASE_DOMAIN>        A  →  <公网IP>
-*.sandbox.<BASE_DOMAIN>    A  →  <公网IP>
-```
-
-<Info>域名托管在 Cloudflare 时，这 4 条记录请设置为**仅 DNS（灰云）**，不要开代理（橙云）。</Info>
-
-防火墙只放行入站 **22（SSH）、80、443**，其余端口一律不对外。
-
-### 容器镜像
-
-本部署默认使用 **GHCR + Docker Hub**。**所有镜像均为公开仓库，无需
-`docker login`**。Teable 镜像中的 `<tag>` 不是固定值；请分别打开对应的 GHCR Package 页面，
-使用该页面 Installation 命令中显示的版本标签。不同镜像的标签需要分别确认，不要假设相同。
-
-#### Docker Compose 管理的镜像
-
-| 用途 | 镜像模板 | Package page |
-|---|---|---|
-| 控制台 + Infra API + App Runtime（**infra-service 与 git-registry 共用**，后者只是换了启动入口） | `ghcr.io/teableio/teable-infra-service:<tag>` | [GHCR](https://github.com/orgs/teableio/packages/container/package/teable-infra-service) |
-| AI 沙箱引擎本体（OpenSandbox，Docker 运行时模式；Teable 构建版） | `ghcr.io/teableio/opensandbox-server:<tag>` | [GHCR](https://github.com/orgs/teableio/packages/container/package/opensandbox-server) |
-| TLS 边缘网关（自备证书模式用官方镜像；Cloudflare 模式本地构建，请参阅[选择 TLS 模式](#选择-tls-模式)） | `caddy:2.9.1` | [Docker Hub](https://hub.docker.com/_/caddy) |
-| 内置制品存储（仅内置 MinIO 模式；生产建议钉 digest） | `minio/minio:latest` | [Docker Hub](https://hub.docker.com/r/minio/minio) |
-| 一次性建桶工具（仅内置 MinIO 模式） | `minio/mc:latest` | [Docker Hub](https://hub.docker.com/r/minio/mc) |
-
-#### 运行时镜像
-
-以下镜像不由 compose 启动，而是由服务在运行期通过宿主 `docker.sock` 按需创建容器时使用。
-均为公开镜像，守护进程可直接匿名拉取；建议按照[预拉取运行时镜像](#预拉取运行时镜像)预拉到本地，避免首次创建沙箱/部署应用时的
-冷启动拉取延迟：
-
-| 用途 | 镜像模板 | Package page |
-|---|---|---|
-| 沙箱基准镜像（每个 AI 构建会话在其中运行） | `ghcr.io/teableio/teable-sandbox-agent:<tag>` | [GHCR](https://github.com/orgs/teableio/packages/container/package/teable-sandbox-agent) |
-| 应用运行基准镜像（每个已部署应用的容器镜像；**不配置则应用无法部署**） | `ghcr.io/teableio/teable-app-runtime:<tag>` | [GHCR](https://github.com/orgs/teableio/packages/container/package/teable-app-runtime) |
-| 沙箱内执行代理 execd（引擎自动注入进每个沙箱容器） | `ghcr.io/teableio/opensandbox-execd:v1.0.19-fix-1064` | [GHCR](https://github.com/orgs/teableio/packages/container/package/opensandbox-execd) |
-| 沙箱出网 sidecar egress（DNS 模式，引擎按需为每个沙箱创建） | `opensandbox/egress:v1.0.12` | [Docker Hub](https://hub.docker.com/r/opensandbox/egress) |
-
-<Warning>execd 必须使用上表中由 Teable 构建的修复版镜像 `opensandbox-execd:v1.0.19-fix-1064`，不要替换为上游的 `opensandbox/execd` 镜像。</Warning>
-
-### 选择制品存储
-
-| 模式 | 配置 | 说明 |
-|---|---|---|
-| **内置 MinIO**（默认） | `.env` 中 `S3_ENDPOINT` 留空、`COMPOSE_PROFILES=minio` | 自动启动 MinIO 并建桶；预签名 URL 统一走 `https://s3.<BASE_DOMAIN>`。 |
-| **外部 S3** | `S3_ENDPOINT` 填供应商 URL、`COMPOSE_PROFILES=`（置空） | 内置 MinIO 不再启动；`S3_ACCESS_KEY` / `S3_SECRET_KEY` / `S3_BUCKET` 须填供应商签发的值，**桶要预建**；供应商若仅支持 virtual-host style 另填 `S3_FORCE_PATH_STYLE=false`。 |
-
-## 创建部署文件
-
-### 部署目录
-
-在服务器上创建一个部署目录（下文以 `teable-runtime/` 为例），[配置文件](#配置文件)部分提供前四个文件的完整内容：
-
-```
-teable-runtime/
-├── .env                     # 根据部署环境修改
-├── compose.yaml             # 服务编排，原样复制
-├── Caddyfile                # 网关路由，按 TLS 模式调整两处
-├── opensandbox.toml         # 沙箱引擎配置，原样复制
-├── compose.override.yaml    # 部署时生成，Git 服务签名密钥
-├── certs/                   # 仅自备证书(static)模式
-│   ├── fullchain.pem
-│   └── privkey.pem
-└── Dockerfile.caddy         # 仅 Cloudflare TLS 模式
-```
-
-含密钥的文件是 `.env` 与 `compose.override.yaml`，请勿外发、勿提交到版本库。
-
-### 配置文件
-
-#### `.env`
-
-```bash .env
-# ============================================================================
-# Teable Agent Runtime 环境配置，唯一需要按部署环境修改的文件。
-# ============================================================================
-
-# === 域名与 TLS ===
-# 部署根域名，app.、sandbox.、s3. 和 git. 子域名由此生成。
-BASE_DOMAIN=teable.example.com
-# 控制台访问 Host，通常与 BASE_DOMAIN 相同，仅在需要单独域名时修改。
-INFRA_HOST=teable.example.com
-# 仅 cloudflare TLS 模式使用(static 模式留空):
-ACME_EMAIL=
-CLOUDFLARE_API_TOKEN=
-
-# === 密钥 ===
-# 整栈共用的一把 API Key(引擎鉴权 / Infra API / 控制台登录 / git 内部)。
-OPENSANDBOX_API_KEY=
-# 控制台会话签名密钥。
-SESSION_SECRET=
-# 内置 MinIO：生成的值将作为 MinIO root 账号。
-# 外部 S3：填写服务商签发的 access key 和 secret key。
-S3_ACCESS_KEY=
-S3_SECRET_KEY=
-
-# === 镜像，均为公开仓库，无需 docker login ===
-# Teable 镜像的 <tag> 请分别从对应 GHCR package 页面的 Installation 命令复制。
-# infra-service 与 git-registry 共用此镜像。
-INFRA_SERVICE_IMAGE=ghcr.io/teableio/teable-infra-service:<tag>
-# 沙箱引擎。
-OPENSANDBOX_SERVER_IMAGE=ghcr.io/teableio/opensandbox-server:<tag>
-# 沙箱基准镜像(每个 AI 构建会话在其中运行)。
-SANDBOX_OPENSANDBOX_IMAGE=ghcr.io/teableio/teable-sandbox-agent:<tag>
-# 应用运行基准镜像(不配置则应用无法部署)。
-APP_RUNTIME_DEFAULT_IMAGE=ghcr.io/teableio/teable-app-runtime:<tag>
-# 允许部署的应用镜像前缀白名单，多个前缀以逗号分隔，必须包含上方默认镜像的前缀。
-APP_RUNTIME_ALLOWED_IMAGE_PREFIXES=ghcr.io/teableio/
-
-# TLS 网关镜像。static 模式使用官方镜像；Cloudflare 模式使用本地构建的 teable-caddy-cloudflare:2.9.1。
-CADDY_IMAGE=caddy:2.9.1
-# 第三方镜像默认使用 :latest。生产环境建议固定 digest，例如：
-# MINIO_IMAGE=minio/minio@sha256:...
-# MINIO_MC_IMAGE=minio/mc@sha256:...
-
-# === 制品存储(S3 / MinIO) ===
-# "minio" 表示启用内置 MinIO。改用外部 S3 时置空。
-COMPOSE_PROFILES=minio
-# 留空 = 内置 MinIO(预签名走 https://s3.<BASE_DOMAIN>)。
-# 填写外部 S3 兼容服务 URL（如 https://s3.your-provider.com）即可改用外部存储。
-# 同时将 COMPOSE_PROFILES 置空，并在服务商侧预先创建存储桶。
-S3_ENDPOINT=
-S3_BUCKET=teable-app-artifacts
-S3_REGION=us-east-1
-# 内置 MinIO 必须设置为 true。外部 S3 仅支持 virtual-host style 时设置为 false。
-S3_FORCE_PATH_STYLE=true
-
-# === Docker 网络(一般不改;SANDBOX_DOCKER_NETWORK 须与 opensandbox.toml
-#     的 network_mode 一致) ===
-APP_RUNTIME_DOCKER_NETWORK=teable-appnet
-SANDBOX_DOCKER_NETWORK=teable-sandbox-net
-```
-
-#### `compose.yaml`
-
-原样复制，无需修改（所有环境相关的值都取自 `.env`）：
-
-```yaml
-# Teable Agent Runtime 单机 Docker 服务栈。
-name: teable-agent-runtime
-
-networks:
-  # 控制面网:infra-service 与它拉起的应用容器同挂,内置网关才能按 IP 直达应用。
-  teable-appnet:
-    name: ${APP_RUNTIME_DOCKER_NETWORK:-teable-appnet}
-    driver: bridge
-  # 沙箱专用网:沙箱起在此网,与控制面隔离;opensandbox-server 同接以按容器 IP 直达。
-  teable-sandbox-net:
-    name: ${SANDBOX_DOCKER_NETWORK:-teable-sandbox-net}
-    driver: bridge
-
-volumes:
-  opensandbox-state:
-  infra-state:
-  git-registry-data:
-  minio-data:
-  caddy-data:          # TLS 证书 + ACME 账号,务必持久化
-  caddy-config:
-  # Agent 共享工作区。external:先手动创建一次
-  #   docker volume create teable-agent-juicefs
-  teable-agent-juicefs:
-    external: true
-
-services:
-  # AI 沙箱引擎(Docker 模式)。
-  opensandbox-server:
-    image: ${OPENSANDBOX_SERVER_IMAGE:?set in .env}
-    container_name: opensandbox-server
-    restart: unless-stopped
-    networks: [teable-appnet, teable-sandbox-net]
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock        # 在宿主上创建沙箱
-      - ./opensandbox.toml:/etc/opensandbox/config.toml:ro
-      - opensandbox-state:/data
-    environment:
-      SANDBOX_CONFIG_PATH: /etc/opensandbox/config.toml
-      # API key 经环境变量注入(不写进 toml)。
-      OPENSANDBOX_SERVER_API_KEY: ${OPENSANDBOX_API_KEY:?set in .env}
-
-  # 控制台 + Infra API + App Runtime Docker 后端 + 内置应用网关。
-  infra-service:
-    image: ${INFRA_SERVICE_IMAGE:?set in .env}
-    container_name: infra-service
-    restart: unless-stopped
-    networks: [teable-appnet]
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock         # 起/管应用容器
-      - infra-state:/var/lib/teable-app-runtime
-      - teable-agent-juicefs:/mnt/juicefs
-    environment:
-      # --- 后端选择 ---
-      APP_RUNTIME_BACKEND: docker
-      K8S_IN_CLUSTER: "false"
-      PORT: "8080"
-      # --- 鉴权 / 会话(整栈共用一把 key) ---
-      AUTH_PROVIDER: api-key
-      SESSION_SECRET: ${SESSION_SECRET:?set in .env}
-      OPENSANDBOX_API_KEY: ${OPENSANDBOX_API_KEY:?set in .env}
-      INFRA_API_KEY: ${OPENSANDBOX_API_KEY}
-      # --- 沙箱引擎 ---
-      OPENSANDBOX_RUNTIME_URL: http://opensandbox-server:8090
-      SANDBOX_OPENSANDBOX_IMAGE: ${SANDBOX_OPENSANDBOX_IMAGE:?set in .env}
-      OPENSANDBOX_PREVIEW_WILDCARD_DOMAIN: "*.sandbox.${BASE_DOMAIN}"
-      # --- App Runtime(Docker 后端) ---
-      APP_RUNTIME_DOCKER_SOCKET_PATH: /var/run/docker.sock
-      APP_RUNTIME_DOCKER_NETWORK: ${APP_RUNTIME_DOCKER_NETWORK:-teable-appnet}
-      APP_RUNTIME_STATE_DIR: /var/lib/teable-app-runtime
-      APP_RUNTIME_INGRESS_MODE: gateway
-      APP_RUNTIME_HOST_MATCH_MODE: suffix
-      APP_RUNTIME_DOMAIN: app.${BASE_DOMAIN:?set in .env}   # 应用跑在 {appId}.app.<域名>
-      APP_RUNTIME_PUBLIC_SCHEME: https
-      APP_RUNTIME_DEFAULT_IMAGE: ${APP_RUNTIME_DEFAULT_IMAGE:-}
-      APP_RUNTIME_ALLOWED_IMAGE_PREFIXES: ${APP_RUNTIME_ALLOWED_IMAGE_PREFIXES:-ghcr.io/teableio/}
-      APP_RUNTIME_ARTIFACT_PUBLIC_ORIGIN: http://infra-service:8080   # 应用容器经内网服务名回源拉制品
-      # --- 制品存储(S3 / 内置 MinIO) ---
-      APP_RUNTIME_ARTIFACT_STORE_PROVIDER: s3
-      APP_RUNTIME_ARTIFACT_S3_ENDPOINT: ${S3_ENDPOINT:-https://s3.${BASE_DOMAIN}}
-      APP_RUNTIME_ARTIFACT_BUCKET: ${S3_BUCKET:-teable-app-artifacts}
-      APP_RUNTIME_ARTIFACT_S3_REGION: ${S3_REGION:-us-east-1}
-      APP_RUNTIME_ARTIFACT_S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY:?set in .env}
-      APP_RUNTIME_ARTIFACT_S3_ACCESS_KEY_SECRET: ${S3_SECRET_KEY:?set in .env}
-      APP_RUNTIME_ARTIFACT_S3_FORCE_PATH_STYLE: ${S3_FORCE_PATH_STYLE:-true}
-      # --- git registry(JWT 密钥经 compose.override.yaml 注入) ---
-      GIT_REGISTRY_ENABLED: "true"
-      GIT_REGISTRY_INTERNAL_URL: http://git-registry:8080
-      GIT_REGISTRY_SANDBOX_URL: http://git-registry:8080   # 沙箱走内网 clone
-      GIT_REGISTRY_PUBLIC_URL: https://git.${BASE_DOMAIN}  # 仅外部/手动 clone
-      # --- 文件页 / S3 兼容接口 ---
-      FILE_BROWSER_ENABLED: "true"
-      FILE_BROWSER_ROOT: /mnt/juicefs
-      S3_COMPAT_ENABLED: "true"
-    healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
-      interval: 30s
-      timeout: 5s
-      retries: 5
-      start_period: 40s
-    depends_on:
-      opensandbox-server:
-        condition: service_started
-      minio-init:                       # 等建好制品桶再启动
-        condition: service_completed_successfully
-        required: false                 # 外部 S3 模式(minio profile 停用)时忽略
-
-  # App Builder 的 git smart-http(与 infra-service 同镜像,换启动入口)。
-  git-registry:
-    image: ${INFRA_SERVICE_IMAGE:?set in .env}
-    container_name: git-registry
-    restart: unless-stopped
-    command: ["node", ".output/git-registry/server.mjs"]
-    networks: [teable-appnet, teable-sandbox-net]   # sandbox-net:沙箱直接内网 clone
-    volumes:
-      - git-registry-data:/data
-    environment:
-      GIT_REGISTRY_PORT: "8080"
-      GIT_REGISTRY_DATA_DIR: /data
-      GIT_REGISTRY_INTERNAL_API_KEY: ${OPENSANDBOX_API_KEY:?set in .env}
-      # GIT_REGISTRY_JWT_PUBLIC_KEY 经 compose.override.yaml 注入
-    healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
-      interval: 30s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-
-  # 内置制品存储(profile "minio";外部 S3 模式停用)。
-  minio:
-    profiles: ["minio"]
-    image: ${MINIO_IMAGE:-minio/minio:latest}
-    container_name: minio
-    restart: unless-stopped
-    networks: [teable-appnet]
-    command: server /data --console-address ":9001"
-    volumes:
-      - minio-data:/data
-    environment:
-      MINIO_ROOT_USER: ${S3_ACCESS_KEY:?set in .env}
-      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:?set in .env}
-      MINIO_REGION: ${S3_REGION:-us-east-1}
-  # 一次性建桶;infra-service 以它作启动门控。
-  minio-init:
-    profiles: ["minio"]
-    image: ${MINIO_MC_IMAGE:-minio/mc:latest}
-    container_name: minio-init
-    restart: "no"
-    networks: [teable-appnet]
-    depends_on:
-      - minio
-    entrypoint: ["/bin/sh", "-c"]
-    command:
-      - >
-        until mc alias set local http://minio:9000 "$$S3_ACCESS_KEY" "$$S3_SECRET_KEY" >/dev/null 2>&1; do
-          echo 'waiting for minio...'; sleep 2;
-        done;
-        mc mb --ignore-existing "local/$$S3_BUCKET";
-        echo "bucket $$S3_BUCKET ready";
-    environment:
-      S3_ACCESS_KEY: ${S3_ACCESS_KEY:?set in .env}
-      S3_SECRET_KEY: ${S3_SECRET_KEY:?set in .env}
-      S3_BUCKET: ${S3_BUCKET:-teable-app-artifacts}
-
-# TLS 边缘网关和路由，唯一对公网开放的服务。
-  caddy:
-    image: ${CADDY_IMAGE:-caddy:2.9.1}
-    container_name: caddy
-    restart: unless-stopped
-    networks:
-      teable-appnet:
-        aliases:
-          - s3.${BASE_DOMAIN}      # 让 infra-service 在容器网内以预签名 host 直达 caddy
-    ports:
-      - "80:80"        # ACME + http->https 跳转
-      - "443:443"
-      - "443:443/udp"  # HTTP/3(QUIC),可选
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - ./certs:/certs:ro          # static TLS 模式的证书;cloudflare 模式空目录无害
-      - caddy-data:/data
-      - caddy-config:/config
-    environment:
-      BASE_DOMAIN: ${BASE_DOMAIN:?set in .env}
-      INFRA_HOST: ${INFRA_HOST:?set in .env}
-      ACME_EMAIL: ${ACME_EMAIL:-}                          # 仅 cloudflare 模式
-      CLOUDFLARE_API_TOKEN: ${CLOUDFLARE_API_TOKEN:-}      # 仅 cloudflare 模式
-      OPENSANDBOX_API_KEY: ${OPENSANDBOX_API_KEY:?set in .env}   # 沙箱预览请求服务端注入
-      SANDBOX_PREVIEW_HOST: sandbox.${BASE_DOMAIN}
-    depends_on:
-      # caddy 不门控在上游健康上:它要先起来跑 ACME,上游未就绪时 reverse_proxy 会自动重试。
-      opensandbox-server:
-        condition: service_started
-      infra-service:
-        condition: service_started
-      minio:
-        condition: service_started
-        required: false            # 外部 S3 模式 minio 停用
-      git-registry:
-        condition: service_started
-```
-
-#### `Caddyfile`
-
-默认按 **static**（自备证书）模式写好；**cloudflare** 模式按照文件顶部注释和[选择 TLS 模式](#选择-tls-模式)调整两处：
-
-```caddyfile Caddyfile
-# Teable Agent Runtime 边缘网关。
-# 默认 TLS 模式 "static"(自备通配证书挂载在 /certs)。
-# 改用 "cloudflare"(DNS-01 自动签发)模式时:
-#   1. 取消下面全局块的注释;
-#   2. 删除 (site_tls) 片段里的 `tls /certs/...` 一行。
-
-# {
-# 	email {$ACME_EMAIL}
-# 	acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-# }
-
-# 站点级 TLS(static 模式)。cloudflare 模式此片段留空。
-(site_tls) {
-	tls /certs/fullchain.pem /certs/privkey.pem
-}
-
-# 控制台 + Infra API + 沙箱端口预览改写。
-#   引擎的端口预览接口(/v1/sandboxes/{id}/endpoints/{port})被改写为根路径子域名
-#   {id}-{port}.sandbox.<域名>(不带 scheme,由消费方自行补全)。
-(infra_and_v1) {
-	@endpoints path_regexp ep ^/v1/sandboxes/([a-z0-9-]+)/endpoints/([0-9]+)/?$
-	handle @endpoints {
-		header Content-Type application/json
-		respond `{"endpoint":"{re.ep.1}-{re.ep.2}.{$SANDBOX_PREVIEW_HOST}"}` 200
-	}
-	# 沙箱引擎 API(鉴权头透传)
-	handle /v1/* {
-		reverse_proxy opensandbox-server:8090
-	}
-	# 控制台 / Infra API;应用预览也落这里(内置网关按 Host 命中)
-	handle {
-		reverse_proxy infra-service:8080
-	}
-}
-
-# 沙箱预览(每个 沙箱+端口 是独立 origin):
-#   Host = {id}-{port}.sandbox.<域名> -> 引擎 server-proxy。
-#   API key 服务端注入(浏览器顶层导航带不了请求头);
-#   Accept-Encoding=identity 关压缩避免多跳解码错;WebSocket 默认透传。
-(sandbox_preview) {
-	@sbx header_regexp sbx Host ^([a-z0-9-]+)-([0-9]+)\.
-	handle @sbx {
-		rewrite * /v1/sandboxes/{re.sbx.1}/proxy/{re.sbx.2}{uri}
-		reverse_proxy opensandbox-server:8090 {
-			header_up OPEN-SANDBOX-API-KEY {env.OPENSANDBOX_API_KEY}
-			header_up Accept-Encoding identity
-		}
-	}
-	handle {
-		respond 404
-	}
-}
-
-# ---- 站点 ----
-
-# 控制台 + Infra API + 引擎 API(Teable 的 TEABLE_INFRA_API_URL 指向这里)
-{$INFRA_HOST} {
-	import site_tls
-	import infra_and_v1
-}
-
-# 已部署应用
-*.app.{$BASE_DOMAIN} {
-	import site_tls
-	reverse_proxy infra-service:8080
-}
-
-# 沙箱预览
-*.sandbox.{$BASE_DOMAIN} {
-	import site_tls
-	import sandbox_preview
-}
-
-# 制品存储(内置 MinIO 模式;预签名 URL 的 host 与此站点一致。
-# 外部 S3 模式下此块闲置,无害。)
-s3.{$BASE_DOMAIN} {
-	import site_tls
-	reverse_proxy minio:9000
-}
-
-# git smart-http(可选,外部手动 clone 用)
-git.{$BASE_DOMAIN} {
-	import site_tls
-	reverse_proxy git-registry:8080
-}
-```
-
-#### `opensandbox.toml`
-
-原样复制：
-
-```toml opensandbox.toml
-# OpenSandbox 引擎配置(Docker 运行时模式)。
-# API key 不写入此文件，由 Compose 环境变量 OPENSANDBOX_SERVER_API_KEY 注入。
-
-[server]
-host = "0.0.0.0"
-port = 8090
-api_key = ""                                 # 经 env 注入,留空即可
-max_sandbox_timeout_seconds = 86400
-
-[runtime]
-type = "docker"
-# execd:注入进每个沙箱容器的执行代理。使用 Teable 构建的修复版,勿换上游官方镜像。
-execd_image = "ghcr.io/teableio/opensandbox-execd:v1.0.19-fix-1064"
-
-[store]
-type = "sqlite"
-path = "/data/opensandbox.db"                # 落在 opensandbox-state 卷
-
-[storage]
-allowed_host_paths = []                      # bind-mount 白名单(空 = 全放;生产建议锁定)
-volume_default_size = "1Gi"
-
-[docker]
-# 须与 .env 的 SANDBOX_DOCKER_NETWORK 一致(compose 创建的沙箱网);
-# 引擎经此网按容器 IP 直达沙箱。
-network_mode = "teable-sandbox-net"
-host_ip = "127.0.0.1"                        # direct 端口映射绑回环;预览统一走 Caddy
-drop_capabilities = ["AUDIT_WRITE", "MKNOD", "NET_ADMIN", "NET_RAW", "SYS_ADMIN", "SYS_MODULE", "SYS_PTRACE", "SYS_TIME", "SYS_TTY_CONFIG"]
-no_new_privileges = false                    # 允许沙箱内 setuid
-pids_limit = 4096                            # 防 fork 炸弹
-
-[ingress]
-mode = "direct"                              # Docker 运行时仅支持 direct
-
-[egress]
-# 沙箱出网 sidecar,引擎按需为每个沙箱创建。
-image = "opensandbox/egress:v1.0.12"
-mode = "dns"
-```
-
-## 部署 Agent Runtime
-
-### 配置 `.env` 并生成密钥
-
-编辑[配置文件](#配置文件)中的 `.env`，填写以下必填项：
-
-- `BASE_DOMAIN` / `INFRA_HOST`：填写根域名，`INFRA_HOST` 通常与 `BASE_DOMAIN` 相同。
-- 镜像：按照[容器镜像](#容器镜像)中的清单填写；每个 Teable 镜像的 `<tag>` 从对应 GHCR package 页面的 Installation 命令复制；
-- 密钥项，用下面的命令生成后填入：
-
-```bash
-openssl rand -hex 32     # → OPENSANDBOX_API_KEY(整栈共用的一把 API Key)
-openssl rand -hex 32     # → SESSION_SECRET(控制台会话签名)
-openssl rand -hex 12     # → S3_ACCESS_KEY(内置 MinIO 模式;外部 S3 填供应商值)
-openssl rand -hex 24     # → S3_SECRET_KEY(同上)
-```
-
-### 选择 TLS 模式
-
-| 模式 | 准备 | 证书续期 |
-|---|---|---|
-| **static**（自备证书，默认） | 把 `fullchain.pem` + `privkey.pem` 放进 `certs/`。须为**单张多 SAN 证书**，覆盖 `<BASE>` / `*.<BASE>` / `*.app.<BASE>` / `*.sandbox.<BASE>` 四个名字（通配符只盖一级）。 | 手动：替换 `certs/` 文件后执行 `docker compose exec caddy caddy reload -c /etc/caddy/Caddyfile` |
-| **cloudflare**（DNS-01 自动签发） | 域名 DNS 托管在 Cloudflare；准备一个 API Token（权限 **Zone:Read + DNS:Edit**）。 | Caddy 全自动 |
-
-**static 模式**：上方配置文件默认使用此模式，放好证书即可，无需其他改动。
-可用以下命令自检证书与私钥是否匹配、SAN 是否覆盖四个名字：
-
-```bash
-openssl x509 -in certs/fullchain.pem -noout -text | grep -A1 'Subject Alternative Name'
-diff <(openssl x509 -in certs/fullchain.pem -noout -pubkey) \
-     <(openssl pkey -in certs/privkey.pem -pubout) && echo "证书与私钥匹配"
-```
-
-**cloudflare 模式**需做 4 处调整：
-
-1. 官方 Caddy 镜像不带 DNS 插件，先把下面内容存为 `Dockerfile.caddy` 并在本机构建一次：
-
-   ```dockerfile Dockerfile.caddy
-   # 带 Cloudflare DNS 插件的 Caddy(通配证书须走 DNS-01,官方镜像无 DNS 插件)。
-   # 请使用 Caddy 2.9.x。2.8.x 的 builder 会因 xcaddy 依赖漂移而编译失败。
-   FROM caddy:2.9.1-builder AS builder
-   RUN xcaddy build --with github.com/caddy-dns/cloudflare
-
-   FROM caddy:2.9.1
-   COPY --from=builder /usr/bin/caddy /usr/bin/caddy
-   ```
-
-   ```bash
-   docker build -t teable-caddy-cloudflare:2.9.1 -f Dockerfile.caddy .
-   ```
-
-2. `.env`：`CADDY_IMAGE=teable-caddy-cloudflare:2.9.1`，并填 `ACME_EMAIL` 与 `CLOUDFLARE_API_TOKEN`；
-3. `Caddyfile`：按文件顶部注释，取消全局块（`email` + `acme_dns cloudflare`）的注释；
-4. `Caddyfile`：删除 `(site_tls)` 片段里的 `tls /certs/...` 一行（证书改由 ACME 全自动管理）。
-
-<Warning>Cloudflare 模式必须持久化 `caddy-data` 卷。该卷用于存储证书和 ACME 账号；如果丢失，Caddy 会在重建后重新申请证书，可能触发 Let's Encrypt 的频率限制。</Warning>
-
-### 生成 Git 服务签名密钥
-
-git 服务使用一对 Ed25519 密钥签发/验证访问令牌。多行 PEM 放不进 `.env`，因此通过
-`compose.override.yaml` 注入（Docker Compose 会自动加载它）。在部署目录执行：
-
-```bash
-openssl genpkey -algorithm ed25519 -out git-jwt.key
-openssl pkey -in git-jwt.key -pubout -out git-jwt.pub
-{
-  echo "services:"
-  echo "  infra-service:"
-  echo "    environment:"
-  echo "      GIT_REGISTRY_JWT_PRIVATE_KEY: |"
-  sed 's/^/        /' git-jwt.key
-  echo "  git-registry:"
-  echo "    environment:"
-  echo "      GIT_REGISTRY_JWT_PUBLIC_KEY: |"
-  sed 's/^/        /' git-jwt.pub
-} > compose.override.yaml
-rm -f git-jwt.key git-jwt.pub
-```
-
-生成的 `compose.override.yaml` 结构如下（PEM 内容为你生成的密钥）：
-
-```yaml compose.override.yaml
-services:
-  infra-service:
-    environment:
-      GIT_REGISTRY_JWT_PRIVATE_KEY: |
-        -----BEGIN PRIVATE KEY-----
-        ...你生成的私钥...
-        -----END PRIVATE KEY-----
-  git-registry:
-    environment:
-      GIT_REGISTRY_JWT_PUBLIC_KEY: |
-        -----BEGIN PUBLIC KEY-----
-        ...你生成的公钥...
-        -----END PUBLIC KEY-----
-```
-
-要轮换密钥，重新执行本节命令即可。
-
-> 若 `openssl genpkey` 报 `Algorithm ed25519 not found`（如 macOS 自带的 LibreSSL），
-> 可改用 Docker 生成密钥对，再执行上面的拼装命令：
->
-> ```bash
-> docker run --rm node:22-slim node -e 'const c=require("crypto");const{privateKey}=c.generateKeyPairSync("ed25519");process.stdout.write(privateKey.export({type:"pkcs8",format:"pem"}))' > git-jwt.key
-> docker run --rm -v "$PWD:/w" node:22-slim node -e 'const c=require("crypto"),fs=require("fs");const k=c.createPrivateKey(fs.readFileSync("/w/git-jwt.key"));fs.writeFileSync("/w/git-jwt.pub",c.createPublicKey(k).export({type:"spki",format:"pem"}))'
-> ```
-
-### 创建共享工作区卷
-
-Agent 共享工作区使用一个外部卷（compose 声明为 `external`，不会自动创建/删除）：
-
-```bash
-docker volume create teable-agent-juicefs
-```
-
-### 预拉取运行时镜像
-
-全部为公开镜像，无需 docker login：
-
-```bash
-set -a; . ./.env; set +a
-docker pull "$OPENSANDBOX_SERVER_IMAGE"
-docker pull "$SANDBOX_OPENSANDBOX_IMAGE"
-docker pull "$APP_RUNTIME_DEFAULT_IMAGE"
-docker pull ghcr.io/teableio/opensandbox-execd:v1.0.19-fix-1064
-docker pull opensandbox/egress:v1.0.12
-```
-
-<Warning>execd 和 egress 的镜像地址必须与 `opensandbox.toml` 中的配置完全一致。</Warning>
-
-### 启动服务
-
-```bash
-docker compose up -d
-docker compose ps          # 全部服务应为 running / healthy，minio-init 为 exited(0)
-
-# cloudflare 模式首次启动看证书签发(约十几秒~1分钟)
-docker compose logs -f caddy
-```
-
-## 验证部署
-
-### 检查服务状态
-
-```bash
-KEY=$(grep '^OPENSANDBOX_API_KEY=' .env | cut -d= -f2)
-
-# 沙箱引擎
-curl -s -H "OPEN-SANDBOX-API-KEY: $KEY" https://<BASE_DOMAIN>/v1/sandboxes; echo
-# Infra API
-curl -s -o /dev/null -w "health -> %{http_code}\n" https://<BASE_DOMAIN>/api/health
-```
-
-控制台 UI：浏览器打开 `https://<BASE_DOMAIN>`（或你填的 `INFRA_HOST`），用 api-key 登录，
-key 即 `.env` 中的 `OPENSANDBOX_API_KEY`。
-
-### 对接 Teable
-
-在 Teable 部署中添加以下环境变量：
-
-```bash
-TEABLE_INFRA_API_URL=https://<BASE_DOMAIN>
-TEABLE_INFRA_API_KEY=<OPENSANDBOX_API_KEY>
-SANDBOX_OPENSANDBOX_IMAGE=ghcr.io/teableio/teable-sandbox-agent:<tag>
-APP_DEPLOY_PROVIDER=docker-runtime
-```
-
-`TEABLE_INFRA_API_KEY` 必须与 Agent Runtime `.env` 中的 `OPENSANDBOX_API_KEY` 使用相同的值。`SANDBOX_OPENSANDBOX_IMAGE` 也必须与 Agent Runtime 配置的沙箱镜像一致。
-
-`TEABLE_INFRA_API_URL` 必须指向 Teable Infra 根地址，不能包含路径。更新环境变量后，重启 Teable。
-
-## 故障排查
-
-| 问题 | 检查项 |
+| 服务 | 职责 |
 |---|---|
-| Teable 提示 Agent Runtime 未配置 | 确认上方 4 个 Teable 环境变量均已设置，然后重启 Teable。 |
-| 沙箱或应用预览出现 DNS、TLS 或 404 错误 | 确认 4 条 DNS 记录均指向服务器，并且证书覆盖所有必需域名。 |
-| 首次创建沙箱或部署应用较慢 | 在首次使用前预拉取全部运行时镜像。 |
-| 服务状态异常 | 运行 `docker compose ps`，再通过 `docker compose logs <service>` 查看对应服务日志。 |
+| **沙箱引擎** | 每个 AI 会话都在独立的沙箱容器中运行 |
+| **Infra Service** | 控制台与 API,Teable 应用的对接点;编排构建与应用部署 |
+| **Git 仓库服务** | 你构建的应用的源码事实源(App Builder 推送至此) |
+| **对象存储** | 附件与构建产物(S3 兼容) |
+| **预览网关** | 在浏览器中提供沙箱预览与已部署应用的访问 |
 
-<Note>
-如需部署协助，请联系 **support@teable.ai**，并提供 `docker compose ps` 的输出和相关服务日志。
-</Note>
+```mermaid
+graph LR
+    subgraph "应用平面"
+        T["Teable 应用"]
+    end
+    subgraph "运行平面"
+        I["Infra Service"]
+        E["沙箱引擎"]
+        G["Git 仓库服务"]
+        S["对象存储"]
+        W["预览网关"]
+    end
+    U["浏览器"] --> T
+    T -- "AI 会话" --> I --> E
+    E -- "构建并推送" --> G
+    E -- "构建产物" --> S
+    U -- "预览与已部署应用" --> W
+    W --> E
 
-## 日常运维
-
-### 查看日志和管理服务
-
-```bash
-docker compose logs -f infra-service     # / opensandbox-server / caddy / git-registry
-docker compose restart infra-service
-docker compose down                       # 停止服务，保留数据卷
+    style T fill:#0D9373,stroke:#0a7a5e,color:#fff
 ```
 
-### 升级
+AI 对话在沙箱内运行;App Builder 在同一个沙箱里构建,把源码推到 Git 仓库服务、
+把构建产物存入对象存储,部署后的应用经预览网关对外提供访问。
 
-修改 `.env` 中的镜像 tag，然后执行 `docker compose pull && docker compose up -d`。
+## 一个域名,四条 DNS 记录
 
-沙箱、应用基准镜像或 execd/egress 更新后，请按照[预拉取运行时镜像](#预拉取运行时镜像)重新拉取。
+一切派生自**一个基础域名** —— 通常是你组织域名的子域,例如 `teable.example.com`:
 
-### 备份数据
-
-建议定期备份以下数据卷，尤其是 `minio-data` 与 `caddy-data`。
-
-| 卷 | 内容 |
+| 记录 | 用途 |
 |---|---|
-| `opensandbox-state` | 沙箱引擎状态（SQLite） |
-| `infra-state` | App Runtime 状态与草稿 |
-| `git-registry-data` | git 仓库数据 |
-| `minio-data` | 制品文件（内置 MinIO 模式） |
-| `teable-agent-juicefs` | Agent 共享工作区（external 卷，部署时创建） |
-| `caddy-data` / `caddy-config` | TLS 证书、ACME 账号、Caddy 配置 |
+| `<domain>` | Teable 应用 |
+| `infra.<domain>` | Infra 控制台与 API —— git(`/git` 路径)与对象存储(桶路径)共用此主机 |
+| `*.app.<domain>` | 你构建并部署的应用 |
+| `*.sandbox.<domain>` | 浏览器中的沙箱预览 |
 
-<Warning>`docker compose down -v` 会同时删除数据卷，包括制品、Git 仓库和证书。请谨慎使用。</Warning>
+每个名字都只是默认值,任何主机名均可单独覆盖(见部署仓库的 values 示例)。
 
-## 安全与限制
+## Agent 如何与应用保持同步
 
-### 安全须知
+沙箱 agent 镜像配置为**不带 tag 的前缀**。Teable 应用启动 AI 会话时会拼上
+**自身的发布版本 tag**,因此 agent 永远与应用版本配对 —— 并且应用会经
+Infra Service 预热这个镜像,首次会话不必现场拉取数 GB 镜像。
+你永远不需要手动拉取或钉定 agent。
 
-- 含密钥的文件只有 `.env` 与 `compose.override.yaml`，**切勿提交到版本库或外发**。
-- 整栈共用一把 `OPENSANDBOX_API_KEY`；如需分权，请分别替换各服务的对应环境变量。
-- `docker.sock` 挂载进 opensandbox-server 与 infra-service（Docker 后端必需），等价于宿主 root
-  权限，请只在专用、可信的主机上部署。
-- 唯一公网面是 Caddy 的 80/443；MinIO 控制台（9001）不对外，需要时用 SSH 隧道访问。
-- 沙箱与宿主共享内核，**不是多租户强隔离边界**；对外开放多租户场景请为沙箱引擎配置
-  gVisor / Kata 等强隔离运行时。
+## 版本体系
 
-### 能力边界
+运行平面以部署仓库的**平台版本**(`v<年>.<月>.<序号>`)形式发布:
 
-**可用**：沙箱引擎全功能；应用主链路（创建 → 激活 → 网关访问 → 删除，含 dashboard、日志、
-S3 制品）；git 推拉；控制台 api-key 登录 + Infra API；文件页与 S3 兼容接口。
+- **tag** 是已验证的快照:`versions.yaml` 钉定每个组件镜像(含 digest),
+  仓库的 `CHANGELOG.md` 写明每版变了什么、你需要做什么;
+- 仓库 `main` 分支是滚动最新;
+- 自带的 **doctor** 脚本会把你实际运行的组合与版本清单比对,给出三态结论:
+  兼容 / 需升级 Teable 应用 / 未知(未经验证的)组合。
 
-**不可用 / 受限**（Docker 模式取舍）：应用 `host-prefix` 改名（返回 501）、`scale-to-zero`
-闲置缩容（no-op）、引擎 key 轮换 / server 滚动升级、控制台 Kubernetes 观测页（显示为空属正常）。
+Teable 应用有自己独立的发版线(日期型 tag;`latest` 为稳定通道)——
+见[版本升级](/zh/deploy/upgrade)。平台版本会声明应用兼容窗口,doctor 替你检查。
+
+## 部署
+
+两条路径安装的是同一套平台,部署仓库内有完整指引:
+
+<CardGroup cols={2}>
+  <Card title="Docker 单机全栈" icon="docker" href="https://github.com/teableio/teable-deployment/blob/main/docker/all-in-one/README.md">
+    一台机器装下一切 —— 首次全功能部署,支持 local / server 两种模式。
+  </Card>
+  <Card title="Kubernetes(Helm)" icon="dharmachakra" href="https://github.com/teableio/teable-deployment/blob/main/helm/README.md">
+    一个伞形 chart 装进现有集群;只需设置 global.baseDomain。
+  </Card>
+</CardGroup>
+
+相关主题(均在部署仓库中维护):
+
+- **已在运行基础版 Teable?** 数据原地不动,运行平面挂在旁边即可:
+  [迁移指南](https://github.com/teableio/teable-deployment/blob/main/migration/2026-07-basic-to-full-featured.md)
+- **私有/企业 CA**:沙箱必须信任你入口的证书 ——
+  [private-ca.md](https://github.com/teableio/teable-deployment/blob/main/helm/private-ca.md)
+- **容量、版本与镜像加速**:[VERSIONS.md](https://github.com/teableio/teable-deployment/blob/main/VERSIONS.md) ·
+  [images/README.md](https://github.com/teableio/teable-deployment/blob/main/images/README.md)
+- **出问题时**:先跑 doctor,再看
+  [TROUBLESHOOTING.md](https://github.com/teableio/teable-deployment/blob/main/TROUBLESHOOTING.md)
+
+部署完成后,用 `TEABLE_INFRA_API_URL` / `TEABLE_INFRA_API_KEY` 把 Teable 应用接到
+运行平面(部署指引中有说明),然后在
+[管理面板 → Sandbox Agent](/zh/basic/admin-panel/sandbox-agent) 配置运行限制。

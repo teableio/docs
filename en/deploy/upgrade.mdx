@@ -2,135 +2,106 @@
 title: "Version Upgrade"
 ---
 
-This document describes how to upgrade your self-hosted Teable deployment.
+This document describes how to upgrade a self-hosted Teable deployment.
 
-## Update Frequency
+## Release channels and version tags
 
-Teable releases updates on an irregular schedule, often at a high frequency. We may ship multiple updates in a week, so the release frequency could be very high. You have full control over when to update your self-hosted Teable instance. You can choose to upgrade weekly or monthly. Whenever a new version is released, you can flexibly decide whether to upgrade. You can view all available versions on [GitHub Packages](https://github.com/teableio/teable-enterprise/pkgs/container/teable-ee).
+The Teable app publishes **date-based release tags** in the form
+`release.<timestamp>.<build>` (for example
+`release.2026-07-14T12-24-39Z.2228`), plus two floating channels:
+
+| Tag | Meaning |
+|---|---|
+| `latest` | The **stable** channel — always points at the most recent stable release |
+| `beta` | The rolling channel — the newest build, ahead of stable |
+| `release.<timestamp>.<build>` | An immutable, specific release |
+
+Releases ship frequently (often several per week); you decide when to upgrade.
+All tags are listed on
+[GitHub Packages](https://github.com/teableio/teable/pkgs/container/teable).
 
 <Note>
 Before performing any upgrade, we strongly recommend backing up your data first.
 </Note>
 
-## Docker Compose Upgrade
+## Standalone: Docker Compose upgrade
 
-If you deployed Teable using Docker Compose, follow these steps to upgrade:
-
-### Backup Data (Recommended)
-
-We recommend backing up your entire cloud server, or backing up the PostgreSQL / Redis / storage volumes you're using.
-
-### Navigate to Deployment Directory
+If you run standalone Teable with Docker Compose:
 
 ```bash
-cd teable  # Navigate to your teable deployment directory
+cd teable          # your deployment directory
+docker compose pull
+docker compose up -d
 ```
 
-### Pull Latest Images
+Containers are recreated on the new image; your data lives in Docker volumes
+(or your external database) and is not touched.
+
+Verify:
 
 ```bash
-docker-compose pull
+docker compose ps
+docker compose logs -f teable
 ```
 
-### Restart Services
+### Pin a specific version
 
-```bash
-docker-compose up -d
-```
-
-The system will automatically recreate containers using the latest images. Your data is stored in Docker volumes and will not be lost.
-
-### Verify Upgrade
-
-```bash
-# Check container status
-docker-compose ps
-
-# View logs to confirm successful startup
-docker-compose logs -f teable
-```
-
-Visit your Teable instance to confirm the service is running properly.
-
-## Upgrade to Specific Version
-
-If you want to upgrade to a specific version instead of the latest, modify the image tag in `docker-compose.yaml`:
+To run a specific release instead of the `latest` channel, set the image tag in
+`docker-compose.yaml`:
 
 ```yaml
 services:
   teable:
-    image: ghcr.io/teableio/teable-ee:0.5.0-alpha-1.x.x-build.xxx  # Specify version
+    image: ghcr.io/teableio/teable:release.2026-07-14T12-24-39Z.2228
 ```
 
-Then execute:
+then `docker compose pull && docker compose up -d`. Pinning is recommended for
+production: you choose exactly when versions change.
+
+## Full-featured deployments (AI runtime plane)
+
+A full-featured deployment (see
+[Agent Runtime Architecture](/en/deploy/agent-runtime)) has **two version
+lines**:
+
+- **The Teable app** — the date-based tags above; upgrade it as described in
+  the deployment repository's guides.
+- **The platform** — the
+  [teableio/teable-deployment](https://github.com/teableio/teable-deployment)
+  repository ships **platform releases** (`v<year>.<month>.<seq>`): each git
+  tag is a verified snapshot of every runtime component, with
+  [`CHANGELOG.md`](https://github.com/teableio/teable-deployment/blob/main/CHANGELOG.md)
+  entries stating what changed and what you must do (most releases are
+  hot-swappable). Upgrade **from the repository checked out at the release
+  tag**, following
+  [`VERSIONS.md`](https://github.com/teableio/teable-deployment/blob/main/VERSIONS.md).
+
+After upgrading either line, run the bundled **doctor** — it checks health and
+compares what is actually running against the platform release manifest
+(compatible / upgrade the Teable app / unknown combination).
+
+## Database migration
+
+Teable executes database migrations automatically on startup; no manual step
+is required. If anything looks wrong after an upgrade, check the logs:
 
 ```bash
-docker-compose pull
-docker-compose up -d
-```
-
-<Tip>
-You can view all available versions on the [GitHub Releases](https://github.com/teableio/teable-enterprise/pkgs/container/teable-ee) page.
-</Tip>
-
-## Kubernetes Upgrade
-
-If you deployed Teable using Kubernetes, follow these steps to upgrade:
-
-### Manual Image Update
-
-If you're using custom Kubernetes configuration, you can directly update the image version in your Deployment:
-
-```bash
-kubectl set image deployment/teable teable=ghcr.io/teableio/teable-ee:0.5.0-alpha-1.x.x-build.xxx -n teable
-```
-
-### Verify Upgrade
-
-```bash
-# Check Pod status
-kubectl get pods -n teable
-
-# Check rollout status
-kubectl rollout status deployment/teable -n teable
-
-# View logs
-kubectl logs -f deployment/teable -n teable
-```
-
-## Database Migration
-
-Teable automatically executes database migrations on startup, no manual intervention required. If you encounter issues after upgrading, check the logs to confirm migration was successful:
-
-```bash
-# Docker Compose
-docker-compose logs teable | grep -i migration
-
-# Kubernetes
-kubectl logs deployment/teable -n teable | grep -i migration
+docker compose logs teable | grep -i migration
 ```
 
 ## Rollback
 
-If you encounter issues after upgrading, you can rollback to the previous version.
+If you hit issues after upgrading:
 
-### Docker Compose Rollback
+1. Set the image tag in `docker-compose.yaml` back to the previous release tag
+   (this is why pinning beats `latest`: the previous version is written down).
+2. `docker compose up -d`
 
-1. Modify the image tag in `docker-compose.yaml` to the previous version
-2. Execute `docker-compose up -d`
-
-### Kubernetes Rollback
-
-```bash
-# View rollout history
-kubectl rollout history deployment/teable -n teable
-
-# Rollback to previous version
-kubectl rollout undo deployment/teable -n teable
-
-# Rollback to specific revision
-kubectl rollout undo deployment/teable -n teable --to-revision=<revision>
-```
+<Warning>
+Rolling back **after** a release that migrated the database schema may not be
+safe — restore from your pre-upgrade backup in that case. This is the main
+reason for the backup recommendation above.
+</Warning>
 
 ## FAQ
 
@@ -147,18 +118,18 @@ Typically, pulling new images takes a few minutes (depending on network speed), 
 </Accordion>
 
 <Accordion title="Will there be service interruption during upgrade?">
-Using `docker-compose up -d` or Kubernetes rolling update, there will be a brief service interruption (usually a few seconds to tens of seconds). For zero-downtime upgrades, we recommend using Kubernetes with appropriate rolling update strategies configured.
+Using `docker compose up -d` there will be a brief service interruption (usually a few seconds to tens of seconds).
 </Accordion>
 
 <Accordion title="How do I check the current running version?">
 You can check the current version by:
 - Viewing the version number at the bottom left of the Teable interface
 - Using an admin account to access the admin panel
-- Running `docker inspect teable-teable-1 --format='{{.Config.Image}}'` to check the image version
+- Running `docker inspect <container> --format='{{.Config.Image}}'` to check the image version. If you run the `latest` channel, the full-featured deployment ships a `pin-image.sh` helper that resolves which release `latest` currently is.
 </Accordion>
 
 <Accordion title="What if the upgrade fails?">
-1. First check container logs to troubleshoot: `docker-compose logs teable`
+1. First check container logs to troubleshoot: `docker compose logs teable`
 2. If it's a database migration issue, try restoring from backup
 3. If the issue persists, rollback to the previous version
 4. Contact support at support@teable.ai

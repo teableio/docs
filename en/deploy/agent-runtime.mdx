@@ -1,778 +1,128 @@
 ---
-title: "Agent Runtime Deployment"
-description: "Deploy a self-hosted Teable Agent Runtime stack on a Linux server with Docker Compose."
+title: "Agent Runtime Architecture"
+description: "How the self-hosted AI runtime plane works: sandboxes, App Builder, deployed apps, domains, and versioning."
 ---
 
 <Tip>Available for self-hosted Business plan and above</Tip>
 
-Teable Agent Runtime provides the sandbox and app runtime services used by **AI Chat** and **App Builder**. This guide deploys the complete stack on a single Linux server with Docker Compose.
+Teable's AI features — **AI Chat**, **App Builder**, and **app deployments** —
+run on a dedicated **runtime plane** that you self-host next to the Teable app.
+This page explains the architecture. The deployable assets (compose files, Helm
+chart, values) live in
+[teableio/teable-deployment](https://github.com/teableio/teable-deployment) and
+are the single source of truth — nothing on this page needs to be copied.
 
-The deployment includes the AI sandbox engine, App Runtime, git repository service, artifact storage, and TLS gateway. Kubernetes and an additional source repository are not required because every configuration file is included below.
+## Two planes
 
-<Info>
-Self-hosted Agent Runtime is still in an early stage. This guide is intended for early adopters and will continue to evolve based on deployment feedback. The current runtime uses OpenSandbox through Teable Infra and does not use Vercel Sandbox or Vercel snapshots. For deployment assistance, contact **support@teable.ai**.
-</Info>
+A full-featured deployment is two planes working together:
 
-Use the complete stack when you need App Builder previews and deployed apps. Running only `opensandbox-server` does not provide the app runtime, git registry, artifact storage, or gateway required by App Builder.
-
-## Architecture
-
-Only the Caddy gateway exposes ports 80 and 443 to the public network. All other services stay inside internal Docker networks.
-
-| Service | Description | Internal port |
-|---|---|---|
-| **caddy** | TLS termination and routing for the console, sandbox and app previews, S3, and git | Public 80/443 |
-| **opensandbox-server** | AI sandbox engine in Docker mode. It uses the host `docker.sock` to create sandbox containers on demand. | 8090 |
-| **infra-service** | Console UI, Infra API, App Runtime Docker backend, and built-in app gateway | 8080 |
-| **git-registry** | Git smart-http service for App Builder. It uses the same image as `infra-service`. | 8080 |
-| **minio** *(optional)* | Built-in S3-compatible artifact storage. Can be replaced with external S3. See [Choose Artifact Storage](#choose-artifact-storage). | 9000 / 9001 |
-| **minio-init** *(optional)* | One-time task that waits for MinIO to become ready and creates the artifact bucket | N/A |
-
-Domain routes are derived from the root `BASE_DOMAIN`.
-
-| Address | Purpose |
+| Plane | What runs there |
 |---|---|
-| `https://<BASE_DOMAIN>` | Console UI, Infra API, and sandbox engine API under `/v1/*` |
-| `https://{appId}.app.<BASE_DOMAIN>` | Entry point for deployed apps |
-| `https://{sandboxId}-{port}.sandbox.<BASE_DOMAIN>` | Sandbox port preview |
-| `https://s3.<BASE_DOMAIN>` | Artifact storage in built-in MinIO mode. Presigned URLs point here. |
-| `https://git.<BASE_DOMAIN>` | Git smart-http endpoint, optional for manual external clone |
+| **App plane** | The Teable app itself, with its PostgreSQL and Redis |
+| **Runtime plane** | Everything that powers the AI features (below) |
 
-## Before You Begin
+The runtime plane consists of five services:
 
-### Server Requirements
-
-| | Minimum | Recommended |
-|---|---|---|
-| vCPU | 4 | 8 |
-| Memory | 8 GB | 16 GB |
-| Disk | 80 GB NVMe | 120+ GB NVMe |
-| OS | Ubuntu 22.04/24.04 (x86_64) | Ubuntu 22.04/24.04 (x86_64) |
-| Software | Docker Engine 24+, Docker Compose v2.24+, OpenSSL | Docker Engine 24+, Docker Compose v2.24+, OpenSSL |
-
-Capacity notes: each active build session runs one sandbox container with a limit of 2 vCPU and 4 GiB. Each deployed app also has a limit of 2 vCPU and 4 GiB, though typical usage is only a few hundred MB. The base services use about 1 to 1.5 GiB of memory. Disk usage mainly comes from container images, about 15 to 20 GB after warm-up, plus writable layers for sandboxes and apps. Monitor free disk space.
-
-### DNS and Firewall
-
-Add **4 A records** at your DNS provider. All records must point to the server public IP. A wildcard certificate only covers one subdomain level, so all 4 records are required.
-
-```text
-<BASE_DOMAIN>              A  ->  <public IP>
-*.<BASE_DOMAIN>            A  ->  <public IP>
-*.app.<BASE_DOMAIN>        A  ->  <public IP>
-*.sandbox.<BASE_DOMAIN>    A  ->  <public IP>
-```
-
-<Info>If the domain is hosted on Cloudflare, set these 4 records to **DNS only (gray cloud)**, not **Proxied (orange cloud)**.</Info>
-
-Only allow inbound **22 (SSH), 80, and 443** in the firewall. Do not expose other ports.
-
-### Container Images
-
-This deployment uses **GHCR + Docker Hub** by default. **All images are public and do not require `docker login`**. For Teable images, `<tag>` is not a fixed value. Open each corresponding GHCR package page and use the release tag shown in that package page's Installation command. Confirm the tag for each image separately. Do not assume the tags are the same across images.
-
-#### Images Managed by Docker Compose
-
-These images are pulled and started by `docker compose up`.
-
-| Purpose | Image template | Package page |
-|---|---|---|
-| Console, Infra API, and App Runtime. `infra-service` and `git-registry` use the same image. The latter only uses a different startup entry point. | `ghcr.io/teableio/teable-infra-service:<tag>` | [GHCR](https://github.com/orgs/teableio/packages/container/package/teable-infra-service) |
-| AI sandbox engine, OpenSandbox in Docker runtime mode, Teable build | `ghcr.io/teableio/opensandbox-server:<tag>` | [GHCR](https://github.com/orgs/teableio/packages/container/package/opensandbox-server) |
-| TLS edge gateway. The official image is used for static certificate mode. Cloudflare mode requires a local build, see [Choose a TLS Mode](#choose-a-tls-mode). | `caddy:2.9.1` | [Docker Hub](https://hub.docker.com/_/caddy) |
-| Built-in artifact storage, only used in built-in MinIO mode. Pinning by digest is recommended for production. | `minio/minio:latest` | [Docker Hub](https://hub.docker.com/r/minio/minio) |
-| One-time bucket creation tool, only used in built-in MinIO mode | `minio/mc:latest` | [Docker Hub](https://hub.docker.com/r/minio/mc) |
-
-#### Runtime Images
-
-These images are not started by compose directly. The services use the host `docker.sock` to create containers from them on demand. They are public images and can be pulled anonymously by the Docker daemon. Pre-pulling them as described in [Pre-pull Runtime Images](#pre-pull-runtime-images) is recommended to avoid first-use latency when creating the first sandbox or deploying the first app.
-
-| Purpose | Image template | Package page |
-|---|---|---|
-| Sandbox base image. Each AI build session runs inside this image. | `ghcr.io/teableio/teable-sandbox-agent:<tag>` | [GHCR](https://github.com/orgs/teableio/packages/container/package/teable-sandbox-agent) |
-| App runtime base image. Each deployed app container uses this image. Apps cannot be deployed if this is not configured. | `ghcr.io/teableio/teable-app-runtime:<tag>` | [GHCR](https://github.com/orgs/teableio/packages/container/package/teable-app-runtime) |
-| Sandbox execution agent `execd`, injected by the engine into each sandbox container | `ghcr.io/teableio/opensandbox-execd:v1.0.19-fix-1064` | [GHCR](https://github.com/orgs/teableio/packages/container/package/opensandbox-execd) |
-| Sandbox outbound network sidecar, egress in DNS mode, created by the engine for each sandbox as needed | `opensandbox/egress:v1.0.12` | [Docker Hub](https://hub.docker.com/r/opensandbox/egress) |
-
-<Warning>Use the Teable-built fixed version of execd shown above, `opensandbox-execd:v1.0.19-fix-1064`. Do not replace it with the upstream `opensandbox/execd` image.</Warning>
-
-### Choose Artifact Storage
-
-| Mode | Configuration | Notes |
-|---|---|---|
-| **Built-in MinIO** (default) | Leave `S3_ENDPOINT` empty in `.env`, keep `COMPOSE_PROFILES=minio` | MinIO starts automatically and the bucket is created. Presigned URLs use `https://s3.<BASE_DOMAIN>`. |
-| **External S3** | Set `S3_ENDPOINT` to the provider URL and set `COMPOSE_PROFILES=` to empty | Built-in MinIO no longer starts. `S3_ACCESS_KEY`, `S3_SECRET_KEY`, and `S3_BUCKET` must use provider-issued values. The bucket must already exist. If the provider only supports virtual-host style, set `S3_FORCE_PATH_STYLE=false`. |
-
-## Create the Deployment Files
-
-### Deployment Directory
-
-Create a deployment directory on the server. This guide uses `teable-runtime/` as the example directory. The [Configuration Files](#configuration-files) section contains the full contents of the first four files.
-
-```text
-teable-runtime/
-|-- .env                     # Edit for your environment
-|-- compose.yaml             # Service composition, copy as is
-|-- Caddyfile                # Gateway routing, adjust two places for the TLS mode
-|-- opensandbox.toml         # Sandbox engine configuration, copy as is
-|-- compose.override.yaml    # Generated during deployment, Git service signing key
-|-- certs/                   # Static certificate mode only
-|   |-- fullchain.pem
-|   `-- privkey.pem
-`-- Dockerfile.caddy         # Cloudflare TLS mode only
-```
-
-The files containing secrets are `.env` and `compose.override.yaml`. Do not share them externally or commit them to a repository.
-
-### Configuration Files
-
-#### `.env`
-
-```bash .env
-# ============================================================================
-# Teable Agent Runtime environment configuration.
-# This is the only file that needs environment-specific changes.
-# Generate secrets with commands such as `openssl rand -hex 32`.
-# ============================================================================
-
-# === Domain and TLS ===
-# Deployment root domain. The `app.`, `sandbox.`, `s3.`, and `git.` subdomains are derived from it.
-BASE_DOMAIN=teable.example.com
-# Console access host. Usually the same as BASE_DOMAIN. Use another host only if needed.
-INFRA_HOST=teable.example.com
-# Only used in Cloudflare TLS mode. Leave empty in static mode.
-ACME_EMAIL=
-CLOUDFLARE_API_TOKEN=
-
-# === Secrets ===
-# Shared API key for engine auth, Infra API, console login, and internal git calls.
-OPENSANDBOX_API_KEY=
-# Console session signing secret.
-SESSION_SECRET=
-# Built-in MinIO: generated values become the MinIO root account.
-# External S3: use the access key and secret key issued by the provider.
-S3_ACCESS_KEY=
-S3_SECRET_KEY=
-
-# === Images, all public, docker login is not required ===
-# Copy each Teable image <tag> from the Installation command on its own GHCR package page.
-# infra-service and git-registry use the same image.
-INFRA_SERVICE_IMAGE=ghcr.io/teableio/teable-infra-service:<tag>
-# Sandbox engine.
-OPENSANDBOX_SERVER_IMAGE=ghcr.io/teableio/opensandbox-server:<tag>
-# Sandbox base image. Each AI build session runs inside this image.
-SANDBOX_OPENSANDBOX_IMAGE=ghcr.io/teableio/teable-sandbox-agent:<tag>
-# App runtime base image. Apps cannot be deployed if this is not configured.
-APP_RUNTIME_DEFAULT_IMAGE=ghcr.io/teableio/teable-app-runtime:<tag>
-# Allowlist of app image prefixes, comma-separated. Must cover the default image prefix above.
-APP_RUNTIME_ALLOWED_IMAGE_PREFIXES=ghcr.io/teableio/
-
-# TLS gateway image. Static mode uses the official image.
-# Cloudflare mode uses the locally built teable-caddy-cloudflare:2.9.1 image.
-# See the TLS instructions below.
-CADDY_IMAGE=caddy:2.9.1
-# Third-party images default to :latest. Pinning by digest is recommended for production, for example:
-# MINIO_IMAGE=minio/minio@sha256:...
-# MINIO_MC_IMAGE=minio/mc@sha256:...
-
-# === Artifact storage, S3 / MinIO ===
-# "minio" enables built-in MinIO. Leave empty when using external S3.
-COMPOSE_PROFILES=minio
-# Empty means built-in MinIO, with presigned URLs served from https://s3.<BASE_DOMAIN>.
-# Set this to an external S3-compatible endpoint URL, for example https://s3.your-provider.com,
-# to use external storage. Also set COMPOSE_PROFILES above to empty and create the bucket
-# on the provider side before deployment.
-S3_ENDPOINT=
-S3_BUCKET=teable-app-artifacts
-S3_REGION=us-east-1
-# Built-in MinIO requires true. Set false only if the external S3 provider supports
-# virtual-host style only.
-S3_FORCE_PATH_STYLE=true
-
-# === Docker networks ===
-# Usually no change is needed. SANDBOX_DOCKER_NETWORK must match network_mode in opensandbox.toml.
-APP_RUNTIME_DOCKER_NETWORK=teable-appnet
-SANDBOX_DOCKER_NETWORK=teable-sandbox-net
-```
-
-#### `compose.yaml`
-
-Copy this file as is. All environment-specific values are loaded from `.env`.
-
-```yaml compose.yaml
-# Teable Agent Runtime, single-node Docker stack.
-name: teable-agent-runtime
-
-networks:
-  # Control-plane network. infra-service and the app containers it starts are attached
-  # to this network so the built-in gateway can reach apps by IP.
-  teable-appnet:
-    name: ${APP_RUNTIME_DOCKER_NETWORK:-teable-appnet}
-    driver: bridge
-  # Sandbox-only network. Sandboxes are created in this network and isolated from
-  # the control plane. opensandbox-server also joins it so it can reach sandboxes by IP.
-  teable-sandbox-net:
-    name: ${SANDBOX_DOCKER_NETWORK:-teable-sandbox-net}
-    driver: bridge
-
-volumes:
-  opensandbox-state:
-  infra-state:
-  git-registry-data:
-  minio-data:
-  caddy-data:          # TLS certificates and ACME account. Must be persistent.
-  caddy-config:
-  # Agent shared workspace. external means it must be created manually first:
-  #   docker volume create teable-agent-juicefs
-  teable-agent-juicefs:
-    external: true
-
-services:
-  # AI sandbox engine in Docker mode.
-  opensandbox-server:
-    image: ${OPENSANDBOX_SERVER_IMAGE:?set in .env}
-    container_name: opensandbox-server
-    restart: unless-stopped
-    networks: [teable-appnet, teable-sandbox-net]
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock        # Create sandboxes on the host.
-      - ./opensandbox.toml:/etc/opensandbox/config.toml:ro
-      - opensandbox-state:/data
-    environment:
-      SANDBOX_CONFIG_PATH: /etc/opensandbox/config.toml
-      # API key is injected through the environment. It is not written into toml.
-      OPENSANDBOX_SERVER_API_KEY: ${OPENSANDBOX_API_KEY:?set in .env}
-
-  # Console UI, Infra API, App Runtime Docker backend, and built-in app gateway.
-  infra-service:
-    image: ${INFRA_SERVICE_IMAGE:?set in .env}
-    container_name: infra-service
-    restart: unless-stopped
-    networks: [teable-appnet]
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock         # Start and manage app containers.
-      - infra-state:/var/lib/teable-app-runtime
-      - teable-agent-juicefs:/mnt/juicefs
-    environment:
-      # --- Backend selection ---
-      APP_RUNTIME_BACKEND: docker
-      K8S_IN_CLUSTER: "false"
-      PORT: "8080"
-      # --- Auth and session, one shared key for the stack ---
-      AUTH_PROVIDER: api-key
-      SESSION_SECRET: ${SESSION_SECRET:?set in .env}
-      OPENSANDBOX_API_KEY: ${OPENSANDBOX_API_KEY:?set in .env}
-      INFRA_API_KEY: ${OPENSANDBOX_API_KEY}
-      # --- Sandbox engine ---
-      OPENSANDBOX_RUNTIME_URL: http://opensandbox-server:8090
-      SANDBOX_OPENSANDBOX_IMAGE: ${SANDBOX_OPENSANDBOX_IMAGE:?set in .env}
-      OPENSANDBOX_PREVIEW_WILDCARD_DOMAIN: "*.sandbox.${BASE_DOMAIN}"
-      # --- App Runtime, Docker backend ---
-      APP_RUNTIME_DOCKER_SOCKET_PATH: /var/run/docker.sock
-      APP_RUNTIME_DOCKER_NETWORK: ${APP_RUNTIME_DOCKER_NETWORK:-teable-appnet}
-      APP_RUNTIME_STATE_DIR: /var/lib/teable-app-runtime
-      APP_RUNTIME_INGRESS_MODE: gateway
-      APP_RUNTIME_HOST_MATCH_MODE: suffix
-      APP_RUNTIME_DOMAIN: app.${BASE_DOMAIN:?set in .env}   # Apps run at {appId}.app.<domain>.
-      APP_RUNTIME_PUBLIC_SCHEME: https
-      APP_RUNTIME_DEFAULT_IMAGE: ${APP_RUNTIME_DEFAULT_IMAGE:-}
-      APP_RUNTIME_ALLOWED_IMAGE_PREFIXES: ${APP_RUNTIME_ALLOWED_IMAGE_PREFIXES:-ghcr.io/teableio/}
-      APP_RUNTIME_ARTIFACT_PUBLIC_ORIGIN: http://infra-service:8080   # App containers fetch artifacts through the internal service name.
-      # --- Artifact storage, S3 / built-in MinIO ---
-      APP_RUNTIME_ARTIFACT_STORE_PROVIDER: s3
-      APP_RUNTIME_ARTIFACT_S3_ENDPOINT: ${S3_ENDPOINT:-https://s3.${BASE_DOMAIN}}
-      APP_RUNTIME_ARTIFACT_BUCKET: ${S3_BUCKET:-teable-app-artifacts}
-      APP_RUNTIME_ARTIFACT_S3_REGION: ${S3_REGION:-us-east-1}
-      APP_RUNTIME_ARTIFACT_S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY:?set in .env}
-      APP_RUNTIME_ARTIFACT_S3_ACCESS_KEY_SECRET: ${S3_SECRET_KEY:?set in .env}
-      APP_RUNTIME_ARTIFACT_S3_FORCE_PATH_STYLE: ${S3_FORCE_PATH_STYLE:-true}
-      # --- Git registry, JWT key injected through compose.override.yaml ---
-      GIT_REGISTRY_ENABLED: "true"
-      GIT_REGISTRY_INTERNAL_URL: http://git-registry:8080
-      GIT_REGISTRY_SANDBOX_URL: http://git-registry:8080   # Sandboxes clone through the internal network.
-      GIT_REGISTRY_PUBLIC_URL: https://git.${BASE_DOMAIN}  # Only for external or manual clone.
-      # --- File browser and S3-compatible API ---
-      FILE_BROWSER_ENABLED: "true"
-      FILE_BROWSER_ROOT: /mnt/juicefs
-      S3_COMPAT_ENABLED: "true"
-    healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
-      interval: 30s
-      timeout: 5s
-      retries: 5
-      start_period: 40s
-    depends_on:
-      opensandbox-server:
-        condition: service_started
-      minio-init:                       # Wait for the artifact bucket to be created.
-        condition: service_completed_successfully
-        required: false                 # Ignored when MinIO profile is disabled in external S3 mode.
-
-  # Git smart-http service for App Builder. It uses the same image as infra-service,
-  # with a different startup entry point.
-  git-registry:
-    image: ${INFRA_SERVICE_IMAGE:?set in .env}
-    container_name: git-registry
-    restart: unless-stopped
-    command: ["node", ".output/git-registry/server.mjs"]
-    networks: [teable-appnet, teable-sandbox-net]   # sandbox-net lets sandboxes clone directly through the internal network.
-    volumes:
-      - git-registry-data:/data
-    environment:
-      GIT_REGISTRY_PORT: "8080"
-      GIT_REGISTRY_DATA_DIR: /data
-      GIT_REGISTRY_INTERNAL_API_KEY: ${OPENSANDBOX_API_KEY:?set in .env}
-      # GIT_REGISTRY_JWT_PUBLIC_KEY is injected through compose.override.yaml.
-    healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
-      interval: 30s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-
-  # Built-in artifact storage, profile "minio". Disabled in external S3 mode.
-  minio:
-    profiles: ["minio"]
-    image: ${MINIO_IMAGE:-minio/minio:latest}
-    container_name: minio
-    restart: unless-stopped
-    networks: [teable-appnet]
-    command: server /data --console-address ":9001"
-    volumes:
-      - minio-data:/data
-    environment:
-      MINIO_ROOT_USER: ${S3_ACCESS_KEY:?set in .env}
-      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:?set in .env}
-      MINIO_REGION: ${S3_REGION:-us-east-1}
-  # One-time bucket creation task. infra-service uses it as a startup gate.
-  minio-init:
-    profiles: ["minio"]
-    image: ${MINIO_MC_IMAGE:-minio/mc:latest}
-    container_name: minio-init
-    restart: "no"
-    networks: [teable-appnet]
-    depends_on:
-      - minio
-    entrypoint: ["/bin/sh", "-c"]
-    command:
-      - >
-        until mc alias set local http://minio:9000 "$$S3_ACCESS_KEY" "$$S3_SECRET_KEY" >/dev/null 2>&1; do
-          echo 'waiting for minio...'; sleep 2;
-        done;
-        mc mb --ignore-existing "local/$$S3_BUCKET";
-        echo "bucket $$S3_BUCKET ready";
-    environment:
-      S3_ACCESS_KEY: ${S3_ACCESS_KEY:?set in .env}
-      S3_SECRET_KEY: ${S3_SECRET_KEY:?set in .env}
-      S3_BUCKET: ${S3_BUCKET:-teable-app-artifacts}
-
-  # TLS edge and routing. This is the only service exposed to the public network.
-  caddy:
-    image: ${CADDY_IMAGE:-caddy:2.9.1}
-    container_name: caddy
-    restart: unless-stopped
-    networks:
-      teable-appnet:
-        aliases:
-          - s3.${BASE_DOMAIN}      # Let infra-service reach Caddy by the presigned URL host inside the container network.
-    ports:
-      - "80:80"        # ACME + http to https redirect
-      - "443:443"
-      - "443:443/udp"  # HTTP/3 QUIC, optional
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - ./certs:/certs:ro          # Certificate files for static TLS mode. Empty directory is harmless in Cloudflare mode.
-      - caddy-data:/data
-      - caddy-config:/config
-    environment:
-      BASE_DOMAIN: ${BASE_DOMAIN:?set in .env}
-      INFRA_HOST: ${INFRA_HOST:?set in .env}
-      ACME_EMAIL: ${ACME_EMAIL:-}                          # Cloudflare mode only
-      CLOUDFLARE_API_TOKEN: ${CLOUDFLARE_API_TOKEN:-}      # Cloudflare mode only
-      OPENSANDBOX_API_KEY: ${OPENSANDBOX_API_KEY:?set in .env}   # Server-side injection for sandbox preview requests
-      SANDBOX_PREVIEW_HOST: sandbox.${BASE_DOMAIN}
-    depends_on:
-      # Caddy is not gated on upstream health. It should start early for ACME.
-      # reverse_proxy retries automatically while upstream services are not ready.
-      opensandbox-server:
-        condition: service_started
-      infra-service:
-        condition: service_started
-      minio:
-        condition: service_started
-        required: false            # MinIO is disabled in external S3 mode.
-      git-registry:
-        condition: service_started
-```
-
-#### `Caddyfile`
-
-The file is written for **static** certificate mode by default. For **cloudflare** mode, make the two changes described in the file header and under [Choose a TLS Mode](#choose-a-tls-mode).
-
-```caddyfile Caddyfile
-# Teable Agent Runtime edge gateway.
-# Default TLS mode: "static", using a self-provided wildcard certificate mounted at /certs.
-# To switch to "cloudflare" mode, DNS-01 automatic issuance:
-#   1. Uncomment the global block below.
-#   2. Delete the `tls /certs/...` line in the (site_tls) snippet.
-
-# {
-# 	email {$ACME_EMAIL}
-# 	acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-# }
-
-# Site-level TLS for static mode. Leave this snippet empty in Cloudflare mode.
-(site_tls) {
-	tls /certs/fullchain.pem /certs/privkey.pem
-}
-
-# Console, Infra API, and sandbox endpoint preview rewrite.
-# The engine endpoint preview API, /v1/sandboxes/{id}/endpoints/{port},
-# is rewritten to a root-path subdomain:
-# {id}-{port}.sandbox.<domain>, without scheme. The consumer adds the scheme.
-(infra_and_v1) {
-	@endpoints path_regexp ep ^/v1/sandboxes/([a-z0-9-]+)/endpoints/([0-9]+)/?$
-	handle @endpoints {
-		header Content-Type application/json
-		respond `{"endpoint":"{re.ep.1}-{re.ep.2}.{$SANDBOX_PREVIEW_HOST}"}` 200
-	}
-	# Sandbox engine API, auth header is passed through.
-	handle /v1/* {
-		reverse_proxy opensandbox-server:8090
-	}
-	# Console / Infra API. App preview also lands here and is routed by the built-in gateway by Host.
-	handle {
-		reverse_proxy infra-service:8080
-	}
-}
-
-# Sandbox preview. Each sandbox + port has a separate origin:
-# Host = {id}-{port}.sandbox.<domain> -> engine server-proxy.
-# The API key is injected server-side because browser top-level navigation cannot send custom headers.
-# Accept-Encoding=identity disables compression to avoid multi-hop decoding issues.
-# WebSocket is passed through by default.
-(sandbox_preview) {
-	@sbx header_regexp sbx Host ^([a-z0-9-]+)-([0-9]+)\.
-	handle @sbx {
-		rewrite * /v1/sandboxes/{re.sbx.1}/proxy/{re.sbx.2}{uri}
-		reverse_proxy opensandbox-server:8090 {
-			header_up OPEN-SANDBOX-API-KEY {env.OPENSANDBOX_API_KEY}
-			header_up Accept-Encoding identity
-		}
-	}
-	handle {
-		respond 404
-	}
-}
-
-# ---- Sites ----
-
-# Console, Infra API, and engine API. Teable's TEABLE_INFRA_API_URL points here.
-{$INFRA_HOST} {
-	import site_tls
-	import infra_and_v1
-}
-
-# Deployed apps
-*.app.{$BASE_DOMAIN} {
-	import site_tls
-	reverse_proxy infra-service:8080
-}
-
-# Sandbox preview
-*.sandbox.{$BASE_DOMAIN} {
-	import site_tls
-	import sandbox_preview
-}
-
-# Artifact storage. Used in built-in MinIO mode. The presigned URL host matches this site.
-# In external S3 mode, this block is idle and harmless.
-s3.{$BASE_DOMAIN} {
-	import site_tls
-	reverse_proxy minio:9000
-}
-
-# Git smart-http. Optional, only for external manual clone.
-git.{$BASE_DOMAIN} {
-	import site_tls
-	reverse_proxy git-registry:8080
-}
-```
-
-#### `opensandbox.toml`
-
-Copy this file as is.
-
-```toml opensandbox.toml
-# OpenSandbox engine configuration, Docker runtime mode.
-# API key is not written in this file. It is injected by compose through
-# OPENSANDBOX_SERVER_API_KEY.
-
-[server]
-host = "0.0.0.0"
-port = 8090
-api_key = ""                                 # Injected from env. Leave empty.
-max_sandbox_timeout_seconds = 86400
-
-[runtime]
-type = "docker"
-# execd is the execution agent injected into each sandbox container.
-# Use the Teable-built fixed image. Do not replace it with the upstream image.
-execd_image = "ghcr.io/teableio/opensandbox-execd:v1.0.19-fix-1064"
-
-[store]
-type = "sqlite"
-path = "/data/opensandbox.db"                # Stored in the opensandbox-state volume.
-
-[storage]
-allowed_host_paths = []                      # Bind-mount allowlist. Empty means allow all. Lock this down for production.
-volume_default_size = "1Gi"
-
-[docker]
-# Must match SANDBOX_DOCKER_NETWORK in .env, the sandbox network created by compose.
-# The engine reaches sandboxes by container IP in this network.
-network_mode = "teable-sandbox-net"
-host_ip = "127.0.0.1"                        # Direct port mapping binds to loopback. Preview always goes through Caddy.
-drop_capabilities = ["AUDIT_WRITE", "MKNOD", "NET_ADMIN", "NET_RAW", "SYS_ADMIN", "SYS_MODULE", "SYS_PTRACE", "SYS_TIME", "SYS_TTY_CONFIG"]
-no_new_privileges = false                    # Allow setuid inside the sandbox.
-pids_limit = 4096                            # Fork-bomb protection.
-
-[ingress]
-mode = "direct"                              # Docker runtime supports direct mode only.
-
-[egress]
-# Sandbox outbound network sidecar. The engine creates it for each sandbox when needed.
-image = "opensandbox/egress:v1.0.12"
-mode = "dns"
-```
-
-## Deploy Agent Runtime
-
-### Configure `.env` and Generate Secrets
-
-Edit the `.env` file from [Configuration Files](#configuration-files). Required items:
-
-- `BASE_DOMAIN` / `INFRA_HOST`: your root domain. `INFRA_HOST` is usually the same as `BASE_DOMAIN`.
-- Images: fill the image list under [Container Images](#container-images). For each Teable image, copy the `<tag>` from the Installation command on that image's GHCR package page.
-- Secrets: generate and fill them with the commands below.
-
-```bash
-openssl rand -hex 32     # -> OPENSANDBOX_API_KEY, one shared API key for the whole stack
-openssl rand -hex 32     # -> SESSION_SECRET, console session signing secret
-openssl rand -hex 12     # -> S3_ACCESS_KEY, generated for built-in MinIO, provider value for external S3
-openssl rand -hex 24     # -> S3_SECRET_KEY, same rule as above
-```
-
-### Choose a TLS Mode
-
-| Mode | Preparation | Certificate renewal |
-|---|---|---|
-| **static** (self-provided certificate, default) | Put `fullchain.pem` and `privkey.pem` into `certs/`. The certificate must be a single multi-SAN certificate covering `<BASE>`, `*.<BASE>`, `*.app.<BASE>`, and `*.sandbox.<BASE>`, and the private key must match it. Wildcards cover only one level. | Manual. Replace files in `certs/`, then run `docker compose exec caddy caddy reload -c /etc/caddy/Caddyfile`. |
-| **cloudflare** (DNS-01 automatic issuance) | DNS must be hosted on Cloudflare. Prepare an API token with **Zone:Read + DNS:Edit** permissions. | Fully automatic through Caddy |
-
-**static mode**: the configuration files above are already written for this mode. Put the certificate files in place. No other change is needed.
-
-Use the following commands to check certificate SAN coverage and whether the certificate matches the private key:
-
-```bash
-openssl x509 -in certs/fullchain.pem -noout -text | grep -A1 'Subject Alternative Name'
-diff <(openssl x509 -in certs/fullchain.pem -noout -pubkey) \
-     <(openssl pkey -in certs/privkey.pem -pubout) && echo "certificate and private key match"
-```
-
-**cloudflare mode** requires 4 changes:
-
-1. The official Caddy image does not include the DNS plugin. Save the following content as `Dockerfile.caddy` and build it locally:
-
-   ```dockerfile Dockerfile.caddy
-   # Caddy with the Cloudflare DNS plugin. Wildcard certificates require DNS-01.
-   # Use caddy 2.9.x. The 2.8.x builder fails because of xcaddy dependency drift.
-   FROM caddy:2.9.1-builder AS builder
-   RUN xcaddy build --with github.com/caddy-dns/cloudflare
-
-   FROM caddy:2.9.1
-   COPY --from=builder /usr/bin/caddy /usr/bin/caddy
-   ```
-
-   ```bash
-   docker build -t teable-caddy-cloudflare:2.9.1 -f Dockerfile.caddy .
-   ```
-
-2. In `.env`, set `CADDY_IMAGE=teable-caddy-cloudflare:2.9.1`, and fill `ACME_EMAIL` and `CLOUDFLARE_API_TOKEN`.
-3. In `Caddyfile`, follow the file header and uncomment the global block, including `email` and `acme_dns cloudflare`.
-4. In `Caddyfile`, delete the `tls /certs/...` line inside the `(site_tls)` snippet. Certificates will be managed automatically by ACME.
-
-<Warning>In Cloudflare mode, the `caddy-data` volume must be persistent. It stores certificates and the ACME account. If it is lost, Caddy will request certificates again after rebuilds, which can trigger Let's Encrypt rate limits.</Warning>
-
-### Generate the Git Service Signing Key
-
-The git service uses an Ed25519 key pair to sign and verify access tokens. Multi-line PEM values cannot be stored cleanly in `.env`, so they are injected through `compose.override.yaml`, which Docker Compose loads automatically.
-
-Run this in the deployment directory:
-
-```bash
-openssl genpkey -algorithm ed25519 -out git-jwt.key
-openssl pkey -in git-jwt.key -pubout -out git-jwt.pub
-{
-  echo "services:"
-  echo "  infra-service:"
-  echo "    environment:"
-  echo "      GIT_REGISTRY_JWT_PRIVATE_KEY: |"
-  sed 's/^/        /' git-jwt.key
-  echo "  git-registry:"
-  echo "    environment:"
-  echo "      GIT_REGISTRY_JWT_PUBLIC_KEY: |"
-  sed 's/^/        /' git-jwt.pub
-} > compose.override.yaml
-rm -f git-jwt.key git-jwt.pub
-```
-
-The generated `compose.override.yaml` will have this structure. The PEM content is your generated key:
-
-```yaml compose.override.yaml
-services:
-  infra-service:
-    environment:
-      GIT_REGISTRY_JWT_PRIVATE_KEY: |
-        -----BEGIN PRIVATE KEY-----
-        ...your generated private key...
-        -----END PRIVATE KEY-----
-  git-registry:
-    environment:
-      GIT_REGISTRY_JWT_PUBLIC_KEY: |
-        -----BEGIN PUBLIC KEY-----
-        ...your generated public key...
-        -----END PUBLIC KEY-----
-```
-
-To rotate the key, run this section again.
-
-> If `openssl genpkey` reports `Algorithm ed25519 not found`, for example on macOS with LibreSSL, use Docker to generate the key pair, then run the same assembly command above:
->
-> ```bash
-> docker run --rm node:22-slim node -e 'const c=require("crypto");const{privateKey}=c.generateKeyPairSync("ed25519");process.stdout.write(privateKey.export({type:"pkcs8",format:"pem"}))' > git-jwt.key
-> docker run --rm -v "$PWD:/w" node:22-slim node -e 'const c=require("crypto"),fs=require("fs");const k=c.createPrivateKey(fs.readFileSync("/w/git-jwt.key"));fs.writeFileSync("/w/git-jwt.pub",c.createPublicKey(k).export({type:"spki",format:"pem"}))'
-> ```
-
-### Create the Shared Workspace Volume
-
-The Agent shared workspace uses an external volume. Since compose declares it as `external`, compose will not create or delete it automatically.
-
-```bash
-docker volume create teable-agent-juicefs
-```
-
-### Pre-pull Runtime Images
-
-All images are public. `docker login` is not required.
-
-```bash
-set -a; . ./.env; set +a
-docker pull "$OPENSANDBOX_SERVER_IMAGE"
-docker pull "$SANDBOX_OPENSANDBOX_IMAGE"
-docker pull "$APP_RUNTIME_DEFAULT_IMAGE"
-docker pull ghcr.io/teableio/opensandbox-execd:v1.0.19-fix-1064
-docker pull opensandbox/egress:v1.0.12
-```
-
-<Warning>The execd and egress image addresses must exactly match the values configured in `opensandbox.toml`.</Warning>
-
-### Start the Services
-
-```bash
-docker compose up -d
-docker compose ps          # All services should be running / healthy. minio-init should be exited(0).
-
-# In cloudflare mode, watch certificate issuance on first startup. It usually takes seconds to about one minute.
-docker compose logs -f caddy
-```
-
-## Verify the Deployment
-
-### Check Service Health
-
-```bash
-KEY=$(grep '^OPENSANDBOX_API_KEY=' .env | cut -d= -f2)
-
-# Sandbox engine
-curl -s -H "OPEN-SANDBOX-API-KEY: $KEY" https://<BASE_DOMAIN>/v1/sandboxes; echo
-# Infra API
-curl -s -o /dev/null -w "health -> %{http_code}\n" https://<BASE_DOMAIN>/api/health
-```
-
-Console UI: open `https://<BASE_DOMAIN>` in a browser, or the host configured in `INFRA_HOST`. Log in with `api-key`. The key is the `OPENSANDBOX_API_KEY` value in `.env`.
-
-### Connect Teable
-
-Add these environment variables to the Teable deployment:
-
-```bash
-TEABLE_INFRA_API_URL=https://<BASE_DOMAIN>
-TEABLE_INFRA_API_KEY=<OPENSANDBOX_API_KEY>
-SANDBOX_OPENSANDBOX_IMAGE=ghcr.io/teableio/teable-sandbox-agent:<tag>
-APP_DEPLOY_PROVIDER=docker-runtime
-```
-
-Use the same value for `TEABLE_INFRA_API_KEY` as `OPENSANDBOX_API_KEY` in the Agent Runtime `.env` file. The `SANDBOX_OPENSANDBOX_IMAGE` value must also match the sandbox image configured for Agent Runtime.
-
-`TEABLE_INFRA_API_URL` must point to the Teable Infra root URL without a path. Restart Teable after updating the variables.
-
-## Troubleshooting
-
-| Problem | What to check |
+| Service | Purpose |
 |---|---|
-| Teable reports that Agent Runtime is not configured | Confirm all four Teable environment variables above are set, then restart Teable. |
-| Sandbox or app previews return DNS, TLS, or 404 errors | Confirm all four DNS records point to the server and the certificate covers every required hostname. |
-| The first sandbox or app deployment is slow | Pre-pull all runtime images before the first use. |
-| A service is unhealthy | Run `docker compose ps`, then inspect the affected service with `docker compose logs <service>`. |
+| **Sandbox engine** | Runs every AI session inside an isolated sandbox container |
+| **Infra Service** | Console + API the Teable app talks to; orchestrates builds and app deployments |
+| **Git registry** | Source of truth for the apps you build (App Builder pushes here) |
+| **Object storage** | Attachments and build artifacts (S3-compatible) |
+| **Preview gateway** | Serves sandbox previews and deployed apps in the browser |
 
-<Note>
-If you need deployment assistance, contact **support@teable.ai** and include the output of `docker compose ps` and the relevant service logs.
-</Note>
+```mermaid
+graph LR
+    subgraph "App plane"
+        T["Teable app"]
+    end
+    subgraph "Runtime plane"
+        I["Infra Service"]
+        E["Sandbox engine"]
+        G["Git registry"]
+        S["Object storage"]
+        W["Preview gateway"]
+    end
+    U["Browser"] --> T
+    T -- "AI session" --> I --> E
+    E -- "build & push" --> G
+    E -- "artifacts" --> S
+    U -- "previews & deployed apps" --> W
+    W --> E
 
-## Operations
-
-### View Logs and Manage Services
-
-```bash
-docker compose logs -f infra-service     # / opensandbox-server / caddy / git-registry
-docker compose restart infra-service
-docker compose down                       # Stop services and keep data volumes.
+    style T fill:#0D9373,stroke:#0a7a5e,color:#fff
 ```
 
-### Upgrade
+An AI chat session runs inside a sandbox; App Builder builds inside the same
+sandbox, pushes source to the git registry, stores the build artifact in object
+storage, and the deployed app is served through the gateway.
 
-Update the image tags in `.env`, then run `docker compose pull && docker compose up -d`.
+## One domain, four DNS records
 
-After updating the sandbox or app base image, or execd / egress, pre-pull the images again as described in [Pre-pull Runtime Images](#pre-pull-runtime-images).
+Everything hangs off **one base domain** — typically a subdomain of yours, such
+as `teable.example.com`:
 
-### Back Up Data
-
-Back up these volumes regularly, especially `minio-data` and `caddy-data`.
-
-| Volume | Content |
+| Record | Serves |
 |---|---|
-| `opensandbox-state` | Sandbox engine state, SQLite |
-| `infra-state` | App Runtime state and drafts |
-| `git-registry-data` | Git repository data |
-| `minio-data` | Artifact files, built-in MinIO mode |
-| `teable-agent-juicefs` | Agent shared workspace, external volume created during deployment |
-| `caddy-data` / `caddy-config` | TLS certificates, ACME account, and Caddy configuration |
+| `<domain>` | The Teable app |
+| `infra.<domain>` | Infra console + API — git (`/git`) and object storage (bucket paths) ride this host as paths |
+| `*.app.<domain>` | Apps you built and deployed |
+| `*.sandbox.<domain>` | Sandbox previews in the browser |
 
-<Warning>`docker compose down -v` deletes data volumes too, including artifacts, Git repositories, and certificates. Use it carefully.</Warning>
+Each name is only a default; every hostname can be overridden individually
+(see the values example in the deployment repository).
 
-## Security and Limitations
+## How the agent stays in sync with the app
 
-### Security
+The sandbox agent image is configured as a **prefix without a tag**. The Teable
+app appends **its own release tag** when launching AI sessions, so the agent
+always matches the app version — and the app preheats that exact image through
+the Infra Service, so the first session doesn't wait on a multi-gigabyte pull.
+You never pull or pin the agent manually.
 
-- The only files containing secrets are `.env` and `compose.override.yaml`. Do not commit them to a repository or share them externally.
-- The whole stack uses one shared `OPENSANDBOX_API_KEY`. If you need separate permissions, replace the corresponding environment variables for each service separately.
-- `docker.sock` is mounted into `opensandbox-server` and `infra-service`. This is required for the Docker backend and is equivalent to host root access. Deploy only on a dedicated and trusted host.
-- The only public entry point is Caddy on ports 80 and 443. The MinIO console on 9001 is not exposed. Use an SSH tunnel if access is needed.
-- Sandboxes share the host kernel. This is **not** a strong multi-tenant isolation boundary. For public multi-tenant scenarios, configure a stronger isolation runtime for the sandbox engine, such as gVisor or Kata.
+## Versioning
 
-### Capability Boundaries
+The runtime plane ships as **platform releases** (`v<year>.<month>.<seq>`) of
+the deployment repository:
 
-**Available**: full sandbox engine functionality; the main app lifecycle, including create, activate, gateway access, delete, dashboard, logs, and S3 artifacts; git push and pull; console `api-key` login and Infra API; file browser and S3-compatible API.
+- A **tag** is a verified snapshot: `versions.yaml` pins every component image
+  (with digests), and the repository's `CHANGELOG.md` says what changed and
+  what, if anything, you must do.
+- The repository's `main` is the rolling latest.
+- The bundled **doctor** scripts compare what your deployment actually runs
+  against the release manifest and report one of three states: compatible,
+  upgrade the Teable app, or an unknown (unverified) combination.
 
-**Unavailable or limited** due to Docker mode tradeoffs: app `host-prefix` rename returns 501; `scale-to-zero` idle scaling is a no-op; engine key rotation and server rolling upgrade are not supported; Kubernetes observability pages in the console are empty, which is expected.
+The Teable app has its own release line (date-based tags; `latest` is the
+stable channel) — see [Version Upgrade](/en/deploy/upgrade). Platform releases
+declare the app compatibility window; the doctor checks it for you.
+
+## Deploy it
+
+Both paths install the same platform and are covered end to end in the
+deployment repository:
+
+<CardGroup cols={2}>
+  <Card title="Docker all-in-one" icon="docker" href="https://github.com/teableio/teable-deployment/blob/main/docker/all-in-one/README.md">
+    Everything on one machine — first full deployment, `local` or `server` mode.
+  </Card>
+  <Card title="Kubernetes (Helm)" icon="dharmachakra" href="https://github.com/teableio/teable-deployment/blob/main/helm/README.md">
+    One umbrella chart on an existing cluster; only `global.baseDomain` is required.
+  </Card>
+</CardGroup>
+
+Related topics, all maintained in the deployment repository:
+
+- **Already running standalone Teable?** Your data stays in place — the runtime
+  plane attaches next to it: [migration guide](https://github.com/teableio/teable-deployment/blob/main/migration/2026-07-basic-to-full-featured.md)
+- **Private / corporate CA**: sandboxes must trust the CA your entry serves —
+  [private-ca.md](https://github.com/teableio/teable-deployment/blob/main/helm/private-ca.md)
+- **Sizing, versions and mirrors**: [VERSIONS.md](https://github.com/teableio/teable-deployment/blob/main/VERSIONS.md) ·
+  [images/README.md](https://github.com/teableio/teable-deployment/blob/main/images/README.md)
+- **When something fails**: run the doctor first, then
+  [TROUBLESHOOTING.md](https://github.com/teableio/teable-deployment/blob/main/TROUBLESHOOTING.md)
+
+After deploying, connect your Teable app to the runtime plane with
+`TEABLE_INFRA_API_URL` / `TEABLE_INFRA_API_KEY` (the deployment guides cover
+this), then configure limits in
+[Admin Panel → Sandbox Agent](/en/basic/admin-panel/sandbox-agent).
