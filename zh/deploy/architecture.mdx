@@ -1,47 +1,52 @@
 ---
-title: "Agent Runtime 架构"
-description: "自部署 AI 运行面的工作原理:沙箱、App Builder、应用部署、域名模型与版本体系。"
+title: "架构"
+description: "私有化部署的 Teable 由什么组成:应用与数据服务,以及支撑 AI 会话、App Builder 与应用部署的运行平面。"
 ---
 
-<Tip>私有化部署 Business 及以上套餐可用</Tip>
-
-Teable 的 AI 能力 —— **AI Chat**、**App Builder** 与**应用部署** —— 运行在一个与
-Teable 应用并列自部署的**运行面**上。本页只讲架构;可部署资产(compose、Helm chart、
-values)全部在 [teableio/teable-deployment](https://github.com/teableio/teable-deployment)
+Teable 本身就是 AI 产品:**AI Chat**、**App Builder** 与**应用部署**是平台的
+一部分,不是外挂。因此一套私有化部署,除了 Teable 应用与它的数据服务,还包括
+支撑这些 AI 能力的**运行平面**。本页讲各部分如何协同;可部署资产(compose、
+Helm chart、values)全部在
+[teableio/teable-deployment](https://github.com/teableio/teable-deployment)
 仓库中维护,那里是唯一事实源 —— 本页没有任何需要复制的内容。
 
-## 两个平面
+<Tip>AI 能力面向私有化部署 Business 及以上套餐提供。</Tip>
 
-一套全功能部署由两个平面组成:
-
-| 平面 | 内容 |
-|---|---|
-| **应用平面** | Teable 应用本体,及其 PostgreSQL 与 Redis |
-| **运行平面** | 支撑全部 AI 能力的服务(见下) |
-
-运行平面包含五个服务:
+## 一套部署包含什么
 
 | 服务 | 职责 |
 |---|---|
+| **Teable 应用** | Web 界面、API、自动化、AI 对话 —— 单一镜像:`ghcr.io/teableio/teable` |
+| **PostgreSQL** | 数据事实源:表、视图、元数据 |
+| **Redis** | 缓存、队列、实时协作 |
+| **对象存储** | S3 兼容,三个桶:**public**(头像与公开资源)、**private**(附件)、**build artifacts**(App Builder 构建产物) |
+| **Infra Service** | 控制台与 API —— Teable 应用唯一的对接点;编排构建与应用部署 |
 | **沙箱引擎** | 每个 AI 会话都在独立的沙箱容器中运行 |
-| **Infra Service** | 控制台与 API,Teable 应用的对接点;编排构建与应用部署 |
 | **Git 仓库服务** | 你构建的应用的源码事实源(App Builder 推送至此) |
-| **对象存储** | 附件与构建产物(S3 兼容) |
 | **预览网关** | 在浏览器中提供沙箱预览与已部署应用的访问 |
+
+后四个服务构成**运行平面**;部署资产会把以上全部作为一个平台一次装好。
+
+## 如何协同
 
 ```mermaid
 graph LR
-    subgraph "应用平面"
+    subgraph "应用与数据"
         T["Teable 应用"]
+        P[("PostgreSQL")]
+        R[("Redis")]
+        S[("对象存储")]
     end
     subgraph "运行平面"
         I["Infra Service"]
         E["沙箱引擎"]
         G["Git 仓库服务"]
-        S["对象存储"]
         W["预览网关"]
     end
     U["浏览器"] --> T
+    T --> P
+    T --> R
+    T -- "附件" --> S
     T -- "AI 会话" --> I --> E
     E -- "构建并推送" --> G
     E -- "构建产物" --> S
@@ -51,6 +56,8 @@ graph LR
     style T fill:#0D9373,stroke:#0a7a5e,color:#fff
 ```
 
+Teable 应用只通过**一个连接**触达运行平面:Infra Service
+(`TEABLE_INFRA_API_URL` / `TEABLE_INFRA_API_KEY`),其余全部是平面内部细节。
 AI 对话在沙箱内运行;App Builder 在同一个沙箱里构建,把源码推到 Git 仓库服务、
 把构建产物存入对象存储,部署后的应用经预览网关对外提供访问。
 
@@ -76,7 +83,7 @@ Infra Service 预热这个镜像,首次会话不必现场拉取数 GB 镜像。
 
 ## 版本体系
 
-运行平面以部署仓库的**平台版本**(`v<年>.<月>.<序号>`)形式发布:
+平台以部署仓库的**平台版本**(`v<年>.<月>.<序号>`)形式发布:
 
 - **tag** 是已验证的快照:`versions.yaml` 钉定每个组件镜像(含 digest),
   仓库的 `CHANGELOG.md` 写明每版变了什么、你需要做什么;
@@ -89,7 +96,7 @@ Teable 应用有自己独立的发版线(日期型 tag;`latest` 为稳定通道)
 
 ## 部署
 
-两条路径安装的是同一套平台,部署仓库内有完整指引:
+两条路径安装的是同一套完整平台,部署仓库内有完整指引:
 
 <CardGroup cols={2}>
   <Card title="Docker 单机全栈" icon="docker" href="https://github.com/teableio/teable-deployment/blob/main/docker/all-in-one/README.md">
@@ -99,6 +106,10 @@ Teable 应用有自己独立的发版线(日期型 tag;`latest` 为稳定通道)
     一个伞形 chart 装进现有集群;只需设置 global.baseDomain。
   </Card>
 </CardGroup>
+
+暂时不需要 AI?也可以只运行应用与 PostgreSQL、Redis、存储 ——
+即**基础版**部署([Docker 部署](/zh/deploy/docker)),之后随时把运行平面
+挂到旁边,数据原地不动。
 
 相关主题(均在部署仓库中维护):
 

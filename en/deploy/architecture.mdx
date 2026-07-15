@@ -1,49 +1,54 @@
 ---
-title: "Agent Runtime Architecture"
-description: "How the self-hosted AI runtime plane works: sandboxes, App Builder, deployed apps, domains, and versioning."
+title: "Architecture"
+description: "What a self-hosted Teable deployment runs: the app, its data services, and the runtime plane behind AI sessions, App Builder, and deployed apps."
 ---
 
-<Tip>Available for self-hosted Business plan and above</Tip>
-
-Teable's AI features — **AI Chat**, **App Builder**, and **app deployments** —
-run on a dedicated **runtime plane** that you self-host next to the Teable app.
-This page explains the architecture. The deployable assets (compose files, Helm
-chart, values) live in
+Teable is an AI product: **AI Chat**, **App Builder**, and **app deployments**
+are part of the platform, not bolt-ons. A self-hosted deployment therefore
+runs the Teable app and its data services together with the **runtime plane**
+that powers those AI features. This page explains how the pieces fit
+together. The deployable assets (compose files, Helm chart, values) live in
 [teableio/teable-deployment](https://github.com/teableio/teable-deployment) and
 are the single source of truth — nothing on this page needs to be copied.
 
-## Two planes
+<Tip>AI features are available for self-hosted Business plan and above.</Tip>
 
-A full-featured deployment is two planes working together:
-
-| Plane | What runs there |
-|---|---|
-| **App plane** | The Teable app itself, with its PostgreSQL and Redis |
-| **Runtime plane** | Everything that powers the AI features (below) |
-
-The runtime plane consists of five services:
+## What a deployment runs
 
 | Service | Purpose |
 |---|---|
+| **Teable app** | Web UI, API, automations, AI chat — a single image: `ghcr.io/teableio/teable` |
+| **PostgreSQL** | The system of record: tables, views, metadata |
+| **Redis** | Cache, queues, realtime collaboration |
+| **Object storage** | S3-compatible, three buckets: **public** (avatars and public assets), **private** (attachments), **build artifacts** (App Builder output) |
+| **Infra Service** | Console + API — the one door the Teable app talks to; orchestrates builds and app deployments |
 | **Sandbox engine** | Runs every AI session inside an isolated sandbox container |
-| **Infra Service** | Console + API the Teable app talks to; orchestrates builds and app deployments |
 | **Git registry** | Source of truth for the apps you build (App Builder pushes here) |
-| **Object storage** | Attachments and build artifacts (S3-compatible) |
 | **Preview gateway** | Serves sandbox previews and deployed apps in the browser |
+
+The last four services form the **runtime plane**; the deployment assets set
+all of this up as one platform.
+
+## How it fits together
 
 ```mermaid
 graph LR
-    subgraph "App plane"
+    subgraph "App & data"
         T["Teable app"]
+        P[("PostgreSQL")]
+        R[("Redis")]
+        S[("Object storage")]
     end
     subgraph "Runtime plane"
         I["Infra Service"]
         E["Sandbox engine"]
         G["Git registry"]
-        S["Object storage"]
         W["Preview gateway"]
     end
     U["Browser"] --> T
+    T --> P
+    T --> R
+    T -- "attachments" --> S
     T -- "AI session" --> I --> E
     E -- "build & push" --> G
     E -- "artifacts" --> S
@@ -53,9 +58,12 @@ graph LR
     style T fill:#0D9373,stroke:#0a7a5e,color:#fff
 ```
 
-An AI chat session runs inside a sandbox; App Builder builds inside the same
-sandbox, pushes source to the git registry, stores the build artifact in object
-storage, and the deployed app is served through the gateway.
+The Teable app reaches the runtime plane through **one connection**: the Infra
+Service (`TEABLE_INFRA_API_URL` / `TEABLE_INFRA_API_KEY`); everything behind it
+is internal. An AI chat session runs inside a sandbox; App Builder builds
+inside the same sandbox, pushes source to the git registry, stores the build
+artifact in object storage, and the deployed app is served through the
+gateway.
 
 ## One domain, four DNS records
 
@@ -82,8 +90,8 @@ You never pull or pin the agent manually.
 
 ## Versioning
 
-The runtime plane ships as **platform releases** (`v<year>.<month>.<seq>`) of
-the deployment repository:
+The platform ships as **platform releases** (`v<year>.<month>.<seq>`) of the
+deployment repository:
 
 - A **tag** is a verified snapshot: `versions.yaml` pins every component image
   (with digests), and the repository's `CHANGELOG.md` says what changed and
@@ -99,7 +107,7 @@ declare the app compatibility window; the doctor checks it for you.
 
 ## Deploy it
 
-Both paths install the same platform and are covered end to end in the
+Both paths install the whole platform and are covered end to end in the
 deployment repository:
 
 <CardGroup cols={2}>
@@ -110,6 +118,10 @@ deployment repository:
     One umbrella chart on an existing cluster; only `global.baseDomain` is required.
   </Card>
 </CardGroup>
+
+Don't need AI? You can run just the app with PostgreSQL, Redis, and storage —
+a **standalone** deployment ([Docker Deployment](/en/deploy/docker)) — and
+attach the runtime plane later with your data in place.
 
 Related topics, all maintained in the deployment repository:
 
