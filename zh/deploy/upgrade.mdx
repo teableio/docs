@@ -4,162 +4,111 @@ title: "版本更新"
 
 本文档介绍如何更新您的 Teable 私有化部署版本。
 
-## 更新频率
+## 发布通道与版本号
 
-Teable 的更新发布频率较高且不固定，一周内可能会发布多个更新版本。Teable 私有化版本的更新完全由您自主决定，您可以选择每周或每月进行一次升级。只要有新版本发布，您都可以灵活决定是否更新。您可以在 [GitHub Packages](https://github.com/teableio/teable-enterprise/pkgs/container/teable-ee) 查看所有可用版本。
+Teable 应用以**日期型 release tag** 发布,形如
+`release.<时间戳>.<构建号>`(例如 `release.2026-07-14T12-24-39Z.2228`),
+另有两个浮动通道:
+
+| Tag | 含义 |
+|---|---|
+| `latest` | **稳定**通道 —— 始终指向最新的稳定版本 |
+| `beta` | 滚动通道 —— 最新构建,先于稳定版 |
+| `release.<时间戳>.<构建号>` | 不可变的具体版本 |
+
+发布频率较高(常常一周多个版本),何时升级由您自主决定。
+全部版本可在 [GitHub Packages](https://github.com/teableio/teable/pkgs/container/teable) 查看。
 
 <Note>
-在进行任何更新操作之前，强烈建议先备份您的数据。
+在进行任何更新操作之前,强烈建议先备份您的数据。
 </Note>
 
-## Docker Compose 更新
+## 日常更新:跟着更新日志走
 
-如果您使用 Docker Compose 部署 Teable，请按以下步骤更新：
+新功能与修复都发布在[更新日志](/zh/changelog)里,而 Teable 的每个 release tag
+自带构建日期 —— 所以「我有没有这个功能」就是一次日期比较。想用上日志里提到的
+某项更新,把 Teable 镜像升到该条目日期之后(含当日)的任一版本即可:
 
-### 备份数据（推荐）
+- **Docker 部署**直接跟 `latest` 通道就行:
 
-我们建议直接备份整个云主机，或者备份使用到的 PostgreSQL / Redis / 存储卷。
+  ```bash
+  cd teable          # 您的部署目录
+  docker compose pull
+  docker compose up -d
+  ```
 
-### 进入部署目录
+  容器基于新镜像重建;数据存储在 Docker 卷(或外部数据库)中,不受影响。
 
-```bash
-cd teable  # 进入您的 teable 部署目录
-```
+- **Kubernetes 部署**不要跑浮动 tag:保持 Teable 镜像钉版,**每次更新时主动
+  上调钉定的版本号**。部署仓库自带的 `pin-image.sh` 可解析 `latest` 当前
+  对应的具体版本。
 
-### 拉取最新镜像
+## 最佳方式:整个平台一起升
 
-```bash
-docker-compose pull
-```
+全功能部署有两条版本线 —— Teable 应用与平台本身(见[架构](/zh/deploy/architecture))。
+最可靠的节奏是把两条线绑在一起,以
+[`VERSIONS.md`](https://github.com/teableio/teable-deployment/blob/main/VERSIONS.md)
+为升级清单,每轮:
 
-### 重启服务
-
-```bash
-docker-compose up -d
-```
-
-系统会自动使用最新的镜像重新创建容器。您的数据保存在 Docker 卷中，不会丢失。
-
-### 验证更新
-
-```bash
-# 查看容器状态
-docker-compose ps
-
-# 查看日志确认启动正常
-docker-compose logs -f teable
-```
-
-访问您的 Teable 实例，确认服务正常运行。
-
-## 更新到指定版本
-
-如果您希望更新到特定版本而不是最新版本，可以修改 `docker-compose.yaml` 中的镜像标签：
-
-```yaml
-services:
-  teable:
-    image: registry.cn-shenzhen.aliyuncs.com/teable/teable:0.5.0-alpha-1.x.x-build.xxx  # 指定版本号
-```
-
-然后执行：
-
-```bash
-docker-compose pull
-docker-compose up -d
-```
-
-<Tip>
-您可以在 [GitHub Releases](https://github.com/teableio/teable-enterprise/pkgs/container/teable-ee) 页面查看所有可用版本。
-</Tip>
-
-## Kubernetes 更新
-
-如果您使用 Kubernetes 部署 Teable，请按以下步骤更新：
-
-### 手动更新镜像
-
-如果您使用自定义的 Kubernetes 配置，可以直接更新 Deployment 中的镜像版本：
-
-```bash
-kubectl set image deployment/teable teable=registry.cn-shenzhen.aliyuncs.com/teable/teable:0.5.0-alpha-1.x.x-build.xxx -n teable
-```
-
-### 验证更新
-
-```bash
-# 查看 Pod 状态
-kubectl get pods -n teable
-
-# 查看滚动更新状态
-kubectl rollout status deployment/teable -n teable
-
-# 查看日志
-kubectl logs -f deployment/teable -n teable
-```
+1. 把运行平面升到**最新平台版本**(`v<年>.<月>.<序号>`):每个 git tag 都是
+   全部运行面组件的已验证快照,对应的
+   [`CHANGELOG.md`](https://github.com/teableio/teable-deployment/blob/main/CHANGELOG.md)
+   条目写明变了什么、你需要做什么(多数版本可热切换)。操作时从 checkout 到
+   该 tag 的仓库副本进行;
+2. 把 Teable 应用钉到 **`latest` 当前对应的具体版本号**(`pin-image.sh`
+   可解析)—— 用钉定的已验证组合替代浮动通道;
+3. 跑自带的 **doctor** —— 检查健康状态,并把实际运行的组合与平台版本清单
+   比对(兼容 / 需升级 Teable 应用 / 未知组合)。
 
 ## 数据库迁移
 
-Teable 在启动时会自动执行数据库迁移，无需手动干预。如果您在更新后遇到问题，可以查看日志确认迁移是否成功：
+Teable 启动时自动执行数据库迁移,无需人工干预。如升级后出现异常,先查日志:
 
 ```bash
-# Docker Compose
-docker-compose logs teable | grep -i migration
-
-# Kubernetes
-kubectl logs deployment/teable -n teable | grep -i migration
+docker compose logs teable | grep -i migration
 ```
 
-## 回滚版本
+## 回滚
 
-如果更新后遇到问题，您可以回滚到之前的版本。
+如果升级后遇到问题:
 
-### Docker Compose 回滚
+1. 将 `docker-compose.yaml` 中的镜像 tag 改回上一个版本号
+   (这正是钉版优于 `latest` 的原因:上一个版本是白纸黑字记着的);
+2. `docker compose up -d`
 
-1. 修改 `docker-compose.yaml` 中的镜像标签为之前的版本
-2. 执行 `docker-compose up -d`
-
-### Kubernetes 回滚
-
-```bash
-# 查看历史版本
-kubectl rollout history deployment/teable -n teable
-
-# 回滚到上一个版本
-kubectl rollout undo deployment/teable -n teable
-
-# 回滚到指定版本
-kubectl rollout undo deployment/teable -n teable --to-revision=<revision>
-```
+<Warning>
+若某次升级执行过数据库结构迁移,直接回滚可能不安全 —— 此时应从升级前的备份恢复。
+这也是上文强烈建议备份的主要原因。
+</Warning>
 
 ## 常见问题
 
-<Accordion title="更新后数据会丢失吗？">
-不会。您的数据存储在 Docker 卷或外部数据库中，更新容器不会影响数据。但仍建议在更新前进行备份。
+<Accordion title="更新后会丢失数据吗?">
+不会。您的数据存储在 Docker 卷或外部数据库中,更新容器不会影响数据。但仍建议在更新前备份。
 </Accordion>
 
-<Accordion title="实例 ID 会随着更新而变化吗？">
-不会。您的实例 ID 在应用更新过程中保持不变，它是您自托管安装的永久标识符。
+<Accordion title="更新后 Instance ID 会变化吗?">
+不会。应用更新期间 Instance ID 保持不变,它是您私有化安装的永久标识。
 </Accordion>
 
-<Accordion title="更新需要多长时间？">
-通常情况下，拉取新镜像需要几分钟（取决于网络速度），容器重启只需要几秒钟。整个过程通常在 5-10 分钟内完成。
+<Accordion title="更新需要多长时间?">
+通常拉取新镜像需要几分钟(取决于网速),容器重启只需几秒。整个过程一般在 5-10 分钟内完成。
 </Accordion>
 
-<Accordion title="更新时服务会中断吗？">
-使用 `docker-compose up -d` 或 Kubernetes 滚动更新时，会有短暂的服务中断（通常几秒到几十秒）。如果需要零停机更新，建议使用 Kubernetes 并配置适当的滚动更新策略。
+<Accordion title="更新期间服务会中断吗?">
+使用 `docker compose up -d` 会有短暂的服务中断(通常几秒到几十秒)。
 </Accordion>
 
-<Accordion title="如何查看当前运行的版本？">
-您可以通过以下方式查看当前版本：
-- 在 Teable 界面左下角查看版本号
-- 使用管理员账号进入管理面板查看
-- 执行 `docker inspect teable-teable-1 --format='{{.Config.Image}}'` 查看镜像版本
+<Accordion title="如何查看当前运行的版本?">
+您可以通过以下方式查看当前版本:
+- 查看 Teable 界面左下角的版本号
+- 使用管理员账号访问管理面板
+- 运行 `docker inspect <容器名> --format='{{.Config.Image}}'` 查看镜像版本。若您运行的是 `latest` 通道,全功能部署自带 `pin-image.sh` 工具可解析 `latest` 当前对应的具体版本。
 </Accordion>
 
-<Accordion title="更新失败怎么办？">
-1. 首先查看容器日志排查问题：`docker-compose logs teable`
-2. 如果是数据库迁移问题，尝试从备份恢复数据
-3. 如果问题持续，可以回滚到之前的版本
-4. 联系支持团队 support@teable.ai
+<Accordion title="更新失败怎么办?">
+1. 先查看容器日志排查:`docker compose logs teable`
+2. 如果是数据库迁移问题,尝试从备份恢复
+3. 问题持续存在时,回滚到上一版本
+4. 联系支持:support@teable.ai
 </Accordion>

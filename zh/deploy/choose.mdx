@@ -1,0 +1,42 @@
+---
+title: "部署"
+description: "在 Teable Cloud、基础版自部署与全功能自部署之间做选择。"
+---
+
+运行 Teable 有三种方式,按需选择:
+
+| | **Teable Cloud** | **全功能自部署** | **基础版自部署** |
+|---|---|---|---|
+| 表格、协作、API、自动化 | ✅ | ✅ | ✅ |
+| AI 能力(对话、智能体) | ✅ | ✅ | ❌ |
+| App Builder(构建并部署应用) | ✅ | ✅ | ❌ |
+| 沙箱 / 预览 | ✅ | ✅ | ❌ |
+| 运行位置 | [teable.ai](https://teable.ai) —— 无需部署 | 一台机器(Docker)或 Kubernetes 集群 | 一台机器:应用 + PostgreSQL |
+| 从这里开始 | [teable.ai](https://teable.ai) | [架构](/zh/deploy/architecture) → [teableio/teable-deployment](https://github.com/teableio/teable-deployment) | [Docker 部署](/zh/deploy/docker) |
+
+<Note>
+基础版与全功能不是二选一的岔路:全功能平台是**在你现有基础版 Teable 旁边挂载一个
+运行平面** —— 业务数据原地不动。今天先跑基础版,以后随时加 AI:
+[迁移指南](https://github.com/teableio/teable-deployment/blob/main/migration/2026-07-basic-to-full-featured.md)。
+</Note>
+
+## 交给 AI agent 部署
+
+部署仓库本身就是按「可由 AI agent 驱动」来写的。把
+[teableio/teable-deployment](https://github.com/teableio/teable-deployment)
+交给你的 agent harness(Claude Code、Codex 等),说明你要部署到什么环境,
+它就能端到端完成部署。只需准备三样东西:
+
+1. **一个域名** —— 一切派生自一个基础域名,例如 `teable.example.com`;
+2. **DNS 平台 token** —— 域名托管平台(阿里云解析、DNSPod、Cloudflare 等)的
+   API token,用于自动创建解析记录与签发 TLS 证书,建议只授权这一个 zone;
+3. **部署目标的访问权限:**
+
+| 目标 | 交给 agent 的权限 |
+|---|---|
+| 本机 —— Docker 单机全栈 `local` 模式 | 本机装好 Docker 即可 —— 无需域名与 DNS token(全部走 `*.localhost`) |
+| 一台云服务器 —— Docker 单机全栈 | 机器的 SSH 访问 |
+| 托管集群 —— 阿里云(ACK)/ 腾讯云(TKE) | 创建一个集群,把它的 `kubeconfig` 交给 agent |
+| 任何现有 Kubernetes 集群 | 一份能安装 Helm release 的 `kubeconfig` |
+
+准备好这些就够了 —— 仓库内的指引、doctor 脚本与版本清单会带着 agent 走完其余全部。

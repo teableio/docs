@@ -1,0 +1,47 @@
+---
+title: "Deployment"
+description: "Pick between Teable Cloud, standalone self-hosting, and the full-featured self-hosted platform."
+---
+
+Three ways to run Teable — pick by what you need:
+
+| | **Teable Cloud** | **Full-featured self-host** | **Standalone self-host** |
+|---|---|---|---|
+| Tables, collaboration, API, automation | ✅ | ✅ | ✅ |
+| AI features (chat, agents) | ✅ | ✅ | ❌ |
+| App Builder (build & deploy apps) | ✅ | ✅ | ❌ |
+| Sandboxes / previews | ✅ | ✅ | ❌ |
+| Runs on | [teable.ai](https://teable.ai) — nothing to deploy | one machine (Docker) or a Kubernetes cluster | one machine: app + PostgreSQL |
+| Start here | [teable.ai](https://teable.ai) | [Architecture](/en/deploy/architecture) → [teableio/teable-deployment](https://github.com/teableio/teable-deployment) | [Docker Deployment](/en/deploy/docker) |
+
+<Note>
+Standalone and full-featured are not a fork in the road: the full-featured
+platform **attaches a runtime plane next to your existing standalone Teable** —
+your data stays in place. Start standalone today, add AI later:
+[migration guide](https://github.com/teableio/teable-deployment/blob/main/migration/2026-07-basic-to-full-featured.md).
+</Note>
+
+## Let an AI agent deploy it
+
+The deployment repository is written to be driven by AI agents. Point your
+agent harness (Claude Code, Codex, …) at
+[teableio/teable-deployment](https://github.com/teableio/teable-deployment),
+tell it which environment you're deploying to, and it can take the deployment
+end to end. Prepare three things:
+
+1. **A domain** — everything derives from one base domain, e.g.
+   `teable.example.com`.
+2. **A DNS token** — an API token for the platform hosting your DNS
+   (Cloudflare, Route 53, …), so DNS records and TLS certificates can be set
+   up automatically. Scope it to that one zone.
+3. **Access to the deployment target:**
+
+| Target | What to hand the agent |
+|---|---|
+| Your own machine — Docker all-in-one, `local` mode | Just Docker on the machine — no domain or DNS token needed (everything runs on `*.localhost`) |
+| A cloud server — Docker all-in-one | SSH access to the machine |
+| A managed cluster on AWS (EKS) / GCP (GKE) / Azure (AKS) | Create the cluster, then hand over its `kubeconfig` |
+| Any existing Kubernetes cluster | A `kubeconfig` that can install Helm releases |
+
+That's all it takes — the repository's guides, doctor scripts, and version
+manifests carry the agent through the rest.
