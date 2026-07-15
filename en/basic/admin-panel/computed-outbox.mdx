@@ -1,0 +1,50 @@
+---
+title: "Computed Outbox"
+description: "Monitor BullMQ delivery and computed task backlog in the Admin Panel."
+---
+
+Path: Admin Panel → Computed Outbox
+
+Use **Computed Outbox** when formula, lookup, or other computed field values stop updating or take much longer than expected. It helps instance administrators determine whether the delay comes from Redis and BullMQ, missing workers, queue failures, or database backlog before checking service logs.
+
+The page samples the BullMQ queue and database task ledger. It is read-only and does not execute or retry tasks.
+
+## Read the Health Status
+
+The status beside the page title summarizes the latest sample:
+
+| Status | Meaning |
+| --- | --- |
+| **Healthy** | BullMQ is reachable, a consumer is available, and no backlog condition needs attention. |
+| **Degraded** | Tasks are still being monitored, but the sample found failed queue jobs, dead letters, stale work, overdue tasks, or an unavailable data database. |
+| **Critical** | BullMQ is unavailable or no consumer is connected. |
+
+When the status needs attention, the page lists the specific reasons below the header.
+
+## Review Queue and Backlog
+
+| Section | What it shows |
+| --- | --- |
+| Summary cards | Trigger roles, BullMQ availability and workers, due tasks, running tasks, stale work, and dead letters. |
+| Live BullMQ queue | Current waiting, active, delayed, failed, paused, prioritized, and retained completed job counts. |
+| Recently completed BullMQ jobs | Recent task IDs, Base IDs, completion times, processing times, and attempts. |
+| Database task ledger | Tasks still tracked in each data database, including pending, scheduled, running, stale, and dead tasks. |
+| This process activity | The latest publish and consume activity observed by the application process serving the page. |
+
+Click **Refresh** to request a new sample. The page also refreshes using the configured monitoring interval, which is 30 seconds by default.
+
+## Use the Result
+
+| What you see | What to check next |
+| --- | --- |
+| **Critical** status | Check the Redis connection and confirm that at least one consumer process is running. |
+| Failed queue jobs, dead letters, or stale work | Check backend logs for task errors and confirm that application processes are healthy. |
+| Due tasks and the longest wait keep increasing | Compare the worker count and active jobs, then check consumer capacity and concurrency settings. |
+| Unavailable data database | Check whether the application can connect to the affected data database. |
+
+## Notes
+
+- **Completed (retained)** is the number of completed jobs currently retained in Redis, not a lifetime total.
+- **This process activity** resets when that application process restarts and is not aggregated across replicas.
+- For historical rates, errors, latency, queue depth, and backlog, use the OpenTelemetry metrics exported by your deployment.
+- Configure the required Redis connection through [Environment Variables](/en/deploy/env).
