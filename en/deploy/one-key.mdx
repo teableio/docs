@@ -1,0 +1,55 @@
+---
+title: "One-Click Platform Deployment"
+description: "Running Teable from a one-click template (Railway and similar)? Two ways to the full platform: attach a runtime plane, or migrate to the standard deployment."
+---
+
+One-click templates on platforms like Railway or Zeabur give you a
+**standalone** Teable in minutes: the app with PostgreSQL and Redis — tables,
+collaboration, API, and automations, but no AI features. These platforms
+cannot host the runtime plane: sandboxes and deployed apps run as containers,
+which one-click platforms don't let you start (see
+[Architecture](/en/deploy/architecture)).
+
+You have two ways to the full platform from here.
+
+## Option 1 — keep your platform, attach a runtime plane
+
+The Teable app talks to the runtime plane over a single HTTPS connection, so
+the two don't need to share a machine:
+
+1. **Deploy the runtime plane** on a machine you control — a cloud server or
+   a Kubernetes cluster — following the
+   [migration guide](https://github.com/teableio/teable-deployment/blob/main/migration/2026-07-basic-to-full-featured.md)
+   in the deployment repository. You'll need a domain for it; the "Let an AI
+   agent deploy it" guide on the [Deployment](/en/deploy/choose) page applies
+   here too.
+2. **Connect your app**: check that your Teable image is recent enough (the
+   guide states the minimum release), add the connection environment
+   variables from the guide in your platform's service settings, and
+   redeploy.
+3. **Verify** in
+   [Admin Panel → Sandbox Agent](/en/basic/admin-panel/sandbox-agent).
+
+Your data stays where it is throughout, and rollback is just removing those
+variables again.
+
+## Option 2 — migrate to the standard deployment
+
+Consolidate everything onto the full-featured platform (Docker all-in-one or
+Kubernetes — see [Deployment](/en/deploy/choose)):
+
+1. Back up your platform deployment: a PostgreSQL dump plus your uploaded
+   files.
+2. Deploy the full-featured platform, then restore the dump and the files.
+3. Point your domain at the new deployment and retire the platform project.
+
+## Which one?
+
+**Option 1** is the fastest and fully reversible — pick it if you like your
+platform's workflow. **Option 2** puts everything in one place you control.
+
+## Licensing
+
+AI features require a self-hosted Business plan or above: copy your
+**Instance ID** from the admin panel, subscribe, and activate — see
+[Subscribe and Activate License](/en/deploy/activate).

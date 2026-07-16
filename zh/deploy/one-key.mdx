@@ -1,0 +1,44 @@
+---
+title: "一键平台部署"
+description: "在 Railway、Zeabur 这类一键平台上跑 Teable?通往全功能平台有两条路:外挂一套运行平面,或迁移到标准部署。"
+---
+
+在 Railway、Zeabur 这类平台上,一键模板几分钟就能拉起一套**基础版** Teable:
+应用加 PostgreSQL 与 Redis —— 表格、协作、API、自动化都有,但没有 AI 能力。
+这类平台托管不了运行平面:沙箱与已部署应用都要以容器方式运行,而一键平台
+不允许你启动容器(见[架构](/zh/deploy/architecture))。
+
+从这里通往全功能平台,有两条路。
+
+## 路线一:平台不动,外挂一套运行平面
+
+Teable 应用与运行平面之间只有一条 HTTPS 连接,两者不需要在同一台机器上:
+
+1. **部署运行平面**:在一台你掌控的机器上(云服务器或 Kubernetes 集群),
+   按部署仓库的[迁移指南](https://github.com/teableio/teable-deployment/blob/main/migration/2026-07-basic-to-full-featured.md)
+   操作。需要为它准备一个域名;[部署](/zh/deploy/choose)页「交给 AI agent
+   部署」的方式在这里同样适用。
+2. **接上应用**:确认 Teable 镜像版本达到指南标注的最低版本,在平台的服务
+   设置里按指南补上连接用的环境变量,重新部署;
+3. **验证**:到[管理面板 → Sandbox Agent](/zh/basic/admin-panel/sandbox-agent)
+   确认沙箱可用。
+
+数据全程原地不动;回滚就是把那几个环境变量再删掉。
+
+## 路线二:迁移到标准部署
+
+把一切收拢到全功能平台上(Docker 单机全栈或 Kubernetes,见[部署](/zh/deploy/choose)):
+
+1. 在平台侧做好备份:PostgreSQL dump 加已上传的文件;
+2. 部署全功能平台,恢复数据与文件;
+3. 把域名指向新部署,下线平台上的项目。
+
+## 怎么选?
+
+**路线一**最快且完全可逆 —— 喜欢现有平台的工作流就选它。**路线二**把一切
+收在一处,完全由你掌控。
+
+## 授权
+
+AI 能力需要私有化部署 Business 及以上套餐:在管理面板复制 **Instance ID**,
+订阅并激活 —— 见[订阅与激活 License](/zh/deploy/activate)。
