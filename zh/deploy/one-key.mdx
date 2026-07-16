@@ -1,44 +1,49 @@
 ---
-title: "一键平台部署"
-description: "在 Railway、Zeabur 这类一键平台上跑 Teable?通往全功能平台有两条路:外挂一套运行平面,或迁移到标准部署。"
+title: "一键云部署"
+description: "通过云服务商模板快速部署 Teable,然后订阅解锁付费功能并激活许可证。"
 ---
 
-在 Railway、Zeabur 这类平台上,一键模板几分钟就能拉起一套**基础版** Teable:
-应用加 PostgreSQL 与 Redis —— 表格、协作、API、自动化都有,但没有 AI 能力。
-这类平台托管不了运行平面:沙箱与已部署应用都要以容器方式运行,而一键平台
-不允许你启动容器(见[架构](/zh/deploy/architecture))。
+<Note>
+**这些模板部署的是什么 —— 以及它们做不到什么。** 一键模板拉起的是**基础版**
+Teable(应用 + PostgreSQL + Redis):表格、协作、API、自动化都有,但没有 AI
+能力。一键平台无法启动容器,因此支撑 AI 会话、App Builder 与应用部署的
+[运行平面](/zh/deploy/architecture)住不进去。通往全功能平台有两条路:
 
-从这里通往全功能平台,有两条路。
+1. **平台不动,外挂一套运行平面**:在一台你掌控的机器上按
+   [迁移指南](https://github.com/teableio/teable-deployment/blob/main/migration/2026-07-basic-to-full-featured.md)
+   部署运行平面,然后在平台的服务设置里按指南补上连接用的环境变量并重新部署。
+   数据原地不动;回滚就是把变量再删掉。
+2. **迁移到[标准部署](/zh/deploy/choose)**:备份 PostgreSQL dump 与已上传的
+   文件,恢复进 Docker 单机全栈或 Kubernetes,再把域名指过去。
+</Note>
 
-## 路线一:平台不动,外挂一套运行平面
+| 优点          | 缺点     |
+| ----------- | ------ |
+| 无需任何配置，一键启动 | 依赖云服务商 |
+| 可以弹性伸缩      |        |
+| 运维简单        |        |
 
-Teable 应用与运行平面之间只有一条 HTTPS 连接,两者不需要在同一台机器上:
+**系统要求**：
 
-1. **部署运行平面**:在一台你掌控的机器上(云服务器或 Kubernetes 集群),
-   按部署仓库的[迁移指南](https://github.com/teableio/teable-deployment/blob/main/migration/2026-07-basic-to-full-featured.md)
-   操作。需要为它准备一个域名;[部署](/zh/deploy/choose)页「交给 AI agent
-   部署」的方式在这里同样适用。
-2. **接上应用**:确认 Teable 镜像版本达到指南标注的最低版本,在平台的服务
-   设置里按指南补上连接用的环境变量,重新部署;
-3. **验证**:到[管理面板 → Sandbox Agent](/zh/basic/admin-panel/sandbox-agent)
-   确认沙箱可用。
+* 应用节点最低 1c/2g
+* 数据库最低 1c/2g
 
-数据全程原地不动;回滚就是把那几个环境变量再删掉。
+#### Sealos
 
-## 路线二:迁移到标准部署
+有免费额度，对国内支持友好，按量计费
 
-把一切收拢到全功能平台上(Docker 单机全栈或 Kubernetes,见[部署](/zh/deploy/choose)):
+[**一键部署**](https://cloud.sealos.io/?openapp=system-template%3FtemplateName%3Dteable)
 
-1. 在平台侧做好备份:PostgreSQL dump 加已上传的文件;
-2. 部署全功能平台,恢复数据与文件;
-3. 把域名指向新部署,下线平台上的项目。
+### 订阅与激活（付费功能）
 
-## 怎么选?
+如果你是**自托管部署**并需要付费功能，请在部署完成后进行订阅并激活许可证：
 
-**路线一**最快且完全可逆 —— 喜欢现有平台的工作流就选它。**路线二**把一切
-收在一处,完全由你掌控。
+1. 在你部署好的 Teable 实例中进入管理员后台，复制 **Instance ID（实例 ID）**
+2. 打开自托管订阅页面完成订阅：`https://app.teable.ai/public/pricing?host=self-hosted`
+3. 订阅成功后会获得 **License Key（许可证密钥）**，回到实例中完成激活
 
-## 授权
+详情请见：[订阅和激活许可证](/zh/deploy/activate)
 
-AI 能力需要私有化部署 Business 及以上套餐:在管理面板复制 **Instance ID**,
-订阅并激活 —— 见[订阅与激活 License](/zh/deploy/activate)。
+### 下一步
+
+[配置邮件服务](/zh/deploy/email)
