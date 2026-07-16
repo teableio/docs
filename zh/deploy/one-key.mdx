@@ -1,0 +1,50 @@
+---
+title: "一键云部署(已弃用)"
+description: "通过云服务商模板快速部署 Teable,然后订阅解锁付费功能并激活许可证。"
+---
+
+<Warning>
+**已弃用。** 一键模板不再是推荐的 Teable 部署方式 —— 请从[部署](/zh/deploy/choose)
+开始。如果你已经在用这类模板运行 Teable,先了解现状与去向:一键模板拉起的是
+**基础版** Teable(应用 + PostgreSQL + Redis):表格、协作、API、自动化都有,
+但没有 AI 能力。一键平台无法启动容器,因此支撑 AI 会话、App Builder 与应用部署的
+[运行平面](/zh/deploy/architecture)住不进去。通往全功能平台有两条路:
+
+1. **平台不动,外挂一套运行平面**:在一台你掌控的机器上按
+   [迁移指南](https://github.com/teableio/teable-deployment/blob/main/migration/2026-07-basic-to-full-featured.md)
+   部署运行平面,然后在平台的服务设置里按指南补上连接用的环境变量并重新部署。
+   数据原地不动;回滚就是把变量再删掉。
+2. **迁移到[标准部署](/zh/deploy/choose)**:备份 PostgreSQL dump 与已上传的
+   文件,恢复进 Docker 单机全栈或 Kubernetes,再把域名指过去。
+</Warning>
+
+| 优点          | 缺点     |
+| ----------- | ------ |
+| 无需任何配置，一键启动 | 依赖云服务商 |
+| 可以弹性伸缩      |        |
+| 运维简单        |        |
+
+**系统要求**：
+
+* 应用节点最低 1c/2g
+* 数据库最低 1c/2g
+
+#### Sealos
+
+有免费额度，对国内支持友好，按量计费
+
+[**一键部署**](https://cloud.sealos.io/?openapp=system-template%3FtemplateName%3Dteable)
+
+### 订阅与激活（付费功能）
+
+如果你是**自托管部署**并需要付费功能，请在部署完成后进行订阅并激活许可证：
+
+1. 在你部署好的 Teable 实例中进入管理员后台，复制 **Instance ID（实例 ID）**
+2. 打开自托管订阅页面完成订阅：`https://app.teable.ai/public/pricing?host=self-hosted`
+3. 订阅成功后会获得 **License Key（许可证密钥）**，回到实例中完成激活
+
+详情请见：[订阅和激活许可证](/zh/deploy/activate)
+
+### 下一步
+
+[配置邮件服务](/zh/deploy/email)
