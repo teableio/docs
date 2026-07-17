@@ -8,11 +8,11 @@ description: "Configure AI Chat, AI fields, AI automation, and App Builder for a
 
 Path: Admin Panel → AI Settings
 
-The **AI Settings** page is used to configure **AI Chat**, **AI fields**, **AI automation**, and **App Builder**. The **Pending configuration** panel on the right shows which required items are still missing. Complete them in order.
+The **AI Settings** page is used to configure **AI Chat**, **AI fields**, **AI automation**, and **App Builder**. The **Pending configuration** panel on the right shows which required items are still missing.
 
 ## Before you start
 
-Before you open the AI Settings page, make sure the following items are ready. For self-hosted AI Chat and App Builder, first deploy the runtime plane — see [Architecture](/en/deploy/architecture).
+Before you open the AI Settings page, make sure the following items are ready.
 
 | Requirement | Required? | Notes |
 |------|------|------|
@@ -23,28 +23,30 @@ Before you open the AI Settings page, make sure the following items are ready. F
 
 ## Setup steps
 
-Follow the **Pending configuration** panel in order. Turn the required items green first, then test the features. If a button is disabled or a feature still does not work, it usually means an earlier requirement has not been completed yet.
-
-Follow these four steps:
+Start with the AI Chat runtime, app deployment, and model setup:
 
 <Steps>
+  <Step title="Configure the AI Chat runtime and app deployment">
+    Choose a [deployment option](/en/deploy/choose) and complete the deployment, then click **Run test** and **Test Connection**.
+  </Step>
   <Step title="Configure LLM API">
     Set up your model connection and complete the initial test.
   </Step>
   <Step title="Configure Recommended Models">
-    Add a clear set of primary models for users to choose from.
+    Choose the recommended models for AI fields and AI automation.
   </Step>
   <Step title="Set chat model">
     Choose the default model for AI Chat.
   </Step>
-  <Step title="Configure Agent Runtime and App Builder">
-    Confirm the Agent Runtime configuration status, then complete the App Builder access checks.
-  </Step>
 </Steps>
+
+### Configure the runtime
+
+Click **Run test** to verify the AI Chat runtime.
 
 ### Configure LLM API
 
-In **LLM API**, add or verify the model provider used by supported model calls. If **AI Chat** or **App Builder** uses your own key (BYOK), choose **OpenAI Compatible** or **Anthropic** as the provider type, add the models it supports, and complete the model test.
+In **LLM API**, add a model provider and test its models. If you use your own key (BYOK), choose **OpenAI Compatible** or **Anthropic** as the provider type.
 
 Open **Model Settings** for a model when you need to review or override these values:
 
@@ -55,38 +57,19 @@ Open **Model Settings** for a model when you need to review or override these va
 
 ### Configure Recommended Models
 
-This step decides which models users can choose from. Start with a clear primary set so users can choose by task complexity. A common setup is:
-
-| Model | Best for |
-|------|------|
-| **Opus** | Complex tasks and high-quality output |
-| **Sonnet** | Everyday tasks with a good balance of quality and cost |
-| **Haiku** | Lightweight tasks and fast responses |
+Choose the recommended models users can select in **AI fields** and **AI automation**.
 
 ### Set chat model
 
-This step sets the default model for sidebar **AI Chat**. The model must come from the recommended model list, so if this step is disabled, the previous step is usually incomplete. If **AI Chat** or **App Builder** uses your own key (BYOK), choose a tested **OpenAI Compatible** or **Anthropic** model.
+Choose the default model for sidebar **AI Chat**. The chat model must come from the recommended model list.
 
-Choose a tested, stable model here.
+### Enable AI features
 
-### Optional. Configure Voice input
+In **AI Capabilities**, enable **AI Field** and **AI Chat** as needed. Configure the runtime before using **AI Chat**.
 
-**Voice input** lets users enter messages in AI Chat with a microphone.
+### Configure App Builder
 
-To let users use the microphone in AI Chat, enable voice input and enter the **OpenAI API Key**. Teable uses the default OpenAI transcription endpoint automatically; only change **Transcription Endpoint** when your deployment uses a custom transcription service. You can also adjust **Max recording duration (seconds)** and **Transcription requests per minute per user**. After the setting is saved, users will see the microphone button in the AI Chat input box.
-
-### Configure Agent Runtime and App Builder
-
-Self-hosted **AI Chat** and **App Builder** require Agent Runtime setup and a compatible chat model. When you use your own key (BYOK), the chat model must come from an **OpenAI Compatible** or **Anthropic** provider. Deploy the runtime plane first — see [Architecture](/en/deploy/architecture) and the [teable-deployment](https://github.com/teableio/teable-deployment) repository. For assistance, contact **support@teable.ai**.
-
-<Steps>
-  <Step title="Confirm Agent Runtime status">
-    Confirm that the current deployment includes the required Agent Runtime configuration.
-  </Step>
-  <Step title="Finish the App Builder setup">
-    Confirm **Test Public Access**, then configure optional App Builder settings such as custom domain and app sign-in if you need them.
-  </Step>
-</Steps>
+Configure the **Deployment Engine**, then click **Test Connection**.
 
 You can add these optional App Builder settings when needed:
 
@@ -106,28 +89,17 @@ In **App Auth**, you can configure sign-in providers for generated apps:
 Click **Test Public Access** in the page and confirm that both your **Teable instance** and **object storage (MinIO / S3)** are publicly accessible.
 </Tip>
 
-**How to verify the setup is complete**
+### Optional. Configure Voice input
+
+To use voice input in AI Chat, enable the feature and enter an **OpenAI API Key**. Configure the **Transcription Endpoint** only when using a custom transcription service. You can also limit the recording length and requests per minute.
+
+### Verify the setup
 
 After the setup is done, first confirm that all required items in the **Pending configuration** panel are green. Then test **AI Chat**, **AI fields**, **AI automation**, and **App Builder** one by one.
 
 ## FAQ
 
 <AccordionGroup>
-<Accordion title="The chat model option is disabled">
-
-Go back and finish **Configure recommended models** first. The chat model can only be selected from the recommended model list.
-</Accordion>
-
-<Accordion title="I entered the API key, but the right-side status is still not green">
-
-Check the **Pending configuration** panel first to see which item is still missing. In many cases, the current step is saved correctly, but an earlier requirement is still incomplete.
-</Accordion>
-
-<Accordion title="The page says Agent Runtime configuration is still missing">
-
-Check whether the runtime plane is deployed and connected (see [Architecture](/en/deploy/architecture)), including the required Teable environment variables — the deployment's doctor script verifies the whole chain. For assistance, contact **support@teable.ai**.
-</Accordion>
-
 <Accordion title="I get a credit exceeded error">
 
 Check the account or provider used by your configured model service. Top up or change the model configuration if needed.

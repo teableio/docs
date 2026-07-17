@@ -7,7 +7,7 @@ Path: Admin Panel → Computed Outbox
 
 Use **Computed Outbox** when formula, lookup, or other computed field values stop updating or take much longer than expected. It helps instance administrators determine whether the delay comes from Redis and BullMQ, missing workers, queue failures, or database backlog before checking service logs.
 
-The page samples the BullMQ queue and database task ledger. It is read-only and does not execute or retry tasks.
+The page samples the BullMQ queue and database task ledger. It also lets you recover individual dead-letter or timed-out tasks.
 
 ## Read the Health Status
 
@@ -32,6 +32,10 @@ When the status needs attention, the page lists the specific reasons below the h
 | This process activity | The latest publish and consume activity observed by the application process serving the page. |
 
 Click **Refresh** to request a new sample. The page also refreshes using the configured monitoring interval, which is 30 seconds by default.
+
+## Recover an Anomalous Task
+
+The **Anomaly maintenance** section lists dead-letter and timed-out tasks. Fix the cause, click **Recover**, then click **Recover task**. Teable delivers the task when BullMQ is available or keeps it in the database ledger until BullMQ recovers.
 
 ## Use the Result
 
