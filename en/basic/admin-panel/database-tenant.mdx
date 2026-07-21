@@ -1,0 +1,31 @@
+---
+title: "Database Tenant"
+description: "Host Teable Space data in a customer-managed PostgreSQL database."
+---
+
+<Tip>Available for self-hosted Business plan and above</Tip>
+
+Path: Admin Panel → BYODB
+
+A database tenant is useful when a specific customer or business Space needs separately managed data storage. The Space's business data is stored in a designated PostgreSQL database instead of sharing the instance's default data database with other Spaces, reducing the impact of one tenant's database load or failure on other Spaces. Your organization can also manage the database's deployment location, database access controls, backups, and monitoring.
+
+## What You Can Do
+
+From **Admin Panel** → **BYODB**, an instance administrator can:
+
+- Create a new Space that uses a customer-managed PostgreSQL database.
+- Move an existing Space to the target database.
+- Check the connection, migration status, and recent errors.
+
+<Info>For an existing Space, Teable tests the migration without switching databases by default. After validation, the administrator decides whether to switch. Plan the final switch for a suitable maintenance window because writes may be paused.</Info>
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Does tenant mean a PostgreSQL user account?">
+    No. It refers to the Teable Space whose data is stored in that database.
+  </Accordion>
+  <Accordion title="Does a database tenant connect an existing business database to Teable?">
+    No. It changes where Teable stores and manages its own Space data. You provide a PostgreSQL database hosted elsewhere, and Teable creates and manages its own data there. Existing tables and records in that database are not connected to Teable or automatically imported as Bases.
+  </Accordion>
+</AccordionGroup>
