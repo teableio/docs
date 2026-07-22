@@ -19,7 +19,7 @@ Before you open the AI Settings page, make sure the following items are ready.
 | **Agent Runtime setup** | Required for AI Chat and App Builder | Used by AI Chat and App Builder |
 | **Custom provider** | Required when AI Chat or App Builder uses your own key (BYOK) | Use an **OpenAI Compatible** or **Anthropic** provider |
 | **OpenAI API Key** | Optional | Only needed if you want to enable **Voice input** in AI Chat |
-| **Public access** | Required for App Builder publishing and attachment access | Your **Teable instance** and **object storage (MinIO / S3)** must be publicly accessible |
+| **Public access** | Required when the **Vercel** deployment engine is selected | Your **Teable instance** and **object storage (MinIO / S3)** must be publicly accessible to Vercel |
 
 ## Setup steps
 
@@ -69,7 +69,12 @@ In **AI Capabilities**, enable **AI Field** and **AI Chat** as needed. Configure
 
 ### Configure App Builder
 
-Configure the **Deployment Engine**, then click **Test Connection**.
+In **Deployment Engine**, choose how apps are deployed:
+
+| Deployment engine | Setup requirements |
+|------|------|
+| **Vercel** | Enter a Vercel access token, click **Test Connection**, and use **Test Public Access** to confirm that Vercel can reach your Teable instance and object storage. |
+| **Teable Infra** | Uses the configured Teable Infra container runtime. No additional credentials or public access test is required here. |
 
 You can add these optional App Builder settings when needed:
 
@@ -84,10 +89,6 @@ In **App Auth**, you can configure sign-in providers for generated apps:
 - **Google OAuth** requires a Client ID and Client Secret. Add the redirect URI shown on this page to the authorized redirect URI list in Google Cloud Console.
 
 **Teable** sign-in is available by default. **Email OTP** appears in App Builder only after the SMTP settings are complete, and **Google** appears only after both OAuth credentials are configured.
-
-<Tip>
-Click **Test Public Access** in the page and confirm that both your **Teable instance** and **object storage (MinIO / S3)** are publicly accessible.
-</Tip>
 
 ### Optional. Configure Voice input
 
