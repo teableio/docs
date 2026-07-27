@@ -1,0 +1,110 @@
+---
+title: "Organization Panel Settings"
+description: "Rename an organization, configure automatic space access for new users, and control department visibility."
+hidden: true
+noindex: true
+---
+
+<Tip>Available for self-hosted Enterprise plan</Tip>
+
+Use **Instance settings** in the Organization Panel to change the organization name, automatic Space access, and department scope.
+
+## Open Instance Settings
+
+1. Open the space switcher in the upper-left corner.
+2. Select **Organization Panel**.
+3. Open **Instance settings** from the left navigation.
+
+Only organization administrators can open the Organization Panel and change these settings.
+
+<Info>**Instance settings** in the Organization Panel apply only to the current organization. They do not change the entire Teable instance or other organizations.</Info>
+
+To create, assign administrators to, or delete organization tenants in an instance, see [Organization Tenant Management](/en/basic/admin-panel/multitenancy).
+
+## Settings Overview
+
+| Setting | Purpose | Main effect |
+| --- | --- | --- |
+| **Organization name** | Change the name displayed for the current organization | Changes the display name without changing spaces, members, or permissions |
+| **Auto join space** | Choose which spaces new organization users join automatically | Applies when a user joins the organization and does not update existing members |
+| **Department scope** | Control which departments members can browse and search | Affects the organization tree and department selectors |
+
+## Organization Name
+
+The current name appears under **Organization name**. To rename it:
+
+1. Select **Rename**.
+2. Enter the new organization name.
+3. Select **Rename** again to confirm.
+
+The new name appears in the Organization Panel and organization switchers. Members, departments, spaces, and data in the organization are unchanged.
+
+## Auto Join Space
+
+**Auto join space** determines which spaces a user automatically becomes a member of when they join the current organization.
+
+| Setting | Result when a user joins the organization | Typical use |
+| --- | --- |
+| **All** | Join every space currently in the organization | Every organization space is available to all members |
+| **Selected** | Join only the spaces selected by an administrator | Shared workspaces, employee handbooks, or common resources |
+| **None** | Do not join any space automatically | Each space requires a separate invitation or approval |
+
+Automatically added users join the space as **Editors**.
+
+### Select Specific Spaces
+
+1. Select **Selected**.
+2. Select **Select spaces**.
+3. Search for and choose the spaces that new users should join.
+4. Select **Save**.
+
+Selected spaces appear below the setting. Use the remove button beside a space name to remove it from the auto-join list.
+
+<Info>This setting applies only to users who join the organization afterward. It does not change Space access for existing members or add them to Spaces created later. Manage existing members from the member settings of each Space.</Info>
+
+## Department Scope
+
+**Department scope** controls which departments regular members can view. Organization administrators can always manage the full department structure and are not restricted by this setting.
+
+| Setting | Browse the department structure | Search departments |
+| --- | --- |
+| **All departments** | Browse the full department tree | Search all departments |
+| **Related departments** | Browse only related department branches | Search related departments by default |
+
+Select **All departments** when every member can view the full organization structure. Select **Related departments** to keep department branches separate between business units.
+
+### Allow Search Across All Departments
+
+When **Related departments** is selected, the **Allow search across all departments** switch becomes available.
+
+When enabled, members can find unrelated departments by entering a search term. This supports cross-department selection without exposing the full organization tree. The setting expands search results but does not expand browsing access:
+
+| Action | Result when enabled |
+| --- | --- |
+| Expand or browse the department tree | Only related departments remain visible |
+| Search by department name | Other departments in the current organization can appear |
+| Open an unrelated department from a search result | Not allowed; the department does not become a browsable branch |
+
+<Note>“Search” here refers to department search and department selectors in Teable, not help-center or browser search.</Note>
+
+## Configuration Examples
+
+| Organization requirement | Recommended setting |
+| --- | --- |
+| Every member can view the complete organization structure | **All departments** |
+| Members can view only their own department structure | **Related departments**, with **Allow search across all departments** off |
+| Hide the full structure but allow cross-department selection | **Related departments**, with **Allow search across all departments** on |
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Why is “Allow search across all departments” not available?">
+    The switch appears only when **Related departments** is selected. With **All departments**, members can already browse and search every department.
+  </Accordion>
+  <Accordion title="Can members see the full organization structure after search across all departments is enabled?">
+    No. Members can find other departments only by entering a search term. Normal browsing remains limited to related departments.
+  </Accordion>
+  <Accordion title="Why did existing members not change after I updated auto join space?">
+    The auto-join rule runs when a user joins the organization. It does not apply retroactively to existing organization members. Add or remove those members from the member settings of the relevant space.
+  </Accordion>
+</AccordionGroup>
