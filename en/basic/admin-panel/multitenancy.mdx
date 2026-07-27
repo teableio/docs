@@ -1,12 +1,54 @@
 ---
-title: "Organizations"
-description: "Teable supports organizations, allowing multiple organizations to be managed within a single instance, providing enterprise-level organization management and role-based access control."
+title: "Organization Tenant Management"
+description: "Create and manage multiple organization tenants in one Teable instance and assign an administrator to each tenant."
+hidden: true
+noindex: true
 ---
 
 {/* mintlify-resync: 2026-05-14 */}
 <Tip>Available for self-hosted Enterprise plan</Tip>
 
-Instance administrators access the organization management panel via `Admin Panel` > `Organizations`
+A Teable instance can contain multiple organization tenants, each with separate members, departments, Spaces, and settings for a customer, business unit, or team.
+
+## Organization Tenant Hierarchy
+
+```text
+Teable instance
+├── Organization tenant A
+│   ├── Organization administrators, members, and departments
+│   └── Spaces, Bases, and organization-level settings
+├── Organization tenant B
+│   ├── Organization administrators, members, and departments
+│   └── Spaces, Bases, and organization-level settings
+└── Organization tenant C
+```
+
+Organization tenants share the same Teable deployment and instance configuration while managing the following items separately:
+
+| Scope | Description |
+| --- | --- |
+| **Members and departments** | Each organization maintains its own organization members, organization administrators, and department structure |
+| **Spaces** | Each organization manages the spaces associated with it |
+| **Authentication and security** | Each organization can configure its authentication providers and verified email domains |
+| **Organization settings** | Organization name, automatic space access, and department scope are configured separately |
+| **Instance configuration** | Licenses, system settings, and organization tenant creation and deletion remain under instance administrator control |
+
+<Info>Organization tenants do not give each organization a separate PostgreSQL database. To store a Space's data in a separate PostgreSQL database, see [Database Tenant](/en/basic/admin-panel/database-tenant).</Info>
+
+## Two Management Entry Points
+
+| Entry point | Management role | Purpose |
+| --- | --- | --- |
+| **Admin Panel → Organizations** | Instance administrator | Create, view, and delete organization tenants and assign organization administrators |
+| **Organization Panel** | Organization administrator | Manage users, departments, spaces, authentication, security, and settings inside the current tenant |
+
+Organization administrators can manage only their assigned organization. They cannot create or delete other organization tenants or change system-wide instance settings.
+
+## Open Organizations
+
+1. Sign in to Teable as an instance administrator.
+2. Select **Admin Panel** in the upper-left corner.
+3. Open **Organizations** from the left navigation.
 
 <img
   src="/images/selfhosted/admin-panel/2026-05-29-admin-panel-organizations-entry-en.png"
@@ -14,33 +56,27 @@ Instance administrators access the organization management panel via `Admin Pane
   className="docs-screenshot"
 />
 
-<Tip>The first user registered in the instance becomes an instance administrator</Tip>
+<Tip>The first user registered in an instance automatically becomes an instance administrator.</Tip>
 
-## Organization Management
+## Create an Organization Tenant
 
-In the organization management interface, you can manage multiple organizations within a single Teable instance, with each organization's data being independent.
+1. Select **Create organization**.
+2. Enter the **Organization name**.
+3. Select **Create**.
 
-### Creating an Organization
+The new organization appears in the organization list. After you assign an organization administrator, that administrator can configure members, departments, and Spaces from the Organization Panel.
 
-1. Click the `+ New Organization`
-2. Enter the organization name
-3. Click confirm to create
+## View the Organization List
 
-### Organization List
+The list can be searched by name and includes:
 
-The organization management interface displays detailed information for all organizations, including:
-
-- **Organization Name**: The name of the organization
-- **User Count**: Total number of users in the current organization
-- **Space Count**: Total number of spaces created in the organization
-- **Admins**: Administrators assigned within the organization
-- **Created Time**: When the organization was created
-- **Search**: Support for quick organization search by name
-
-### Organization Operations
-
-- **Administrator Settings**: Add or remove administrators for this organization. All users can be selected as administrators except deleted users
-- **Delete Organization**: The organization and its related settings will be deleted and this operation cannot be undone - proceed with caution
+| Column | Description |
+| --- | --- |
+| **Organization name** | The organization tenant name and ID |
+| **User count** | Total users in the organization |
+| **Space count** | Total spaces associated with the organization |
+| **Admins** | Assigned organization administrators |
+| **Created time** | When the organization tenant was created |
 
 <img
   src="/images/selfhosted/admin-panel/2026-05-29-admin-panel-organizations-list-en.png"
@@ -48,42 +84,62 @@ The organization management interface displays detailed information for all orga
   className="docs-screenshot"
 />
 
-## Tiered Administrator System
+## Assign Organization Administrators
 
-Teable adopts a tiered administrator design, providing two different administrator roles: instance administrators have management privileges for the entire Teable instance, while organization administrators focus on managing specific organizations.
+1. Open the action menu for the target organization.
+2. Select **Manage admins**.
+3. Search for a user in the instance.
+4. Select **Set as admin** or **Remove admin**.
 
-### Instance Administrator
+Any instance user except a deleted user can be assigned as an organization administrator. The user gains management access to the current organization but does not become an instance administrator.
 
-**Scope of Authority**: Entire Teable instance
-- Manage all organizations
-- Configure system-level settings
-- Set/remove organization administrator permissions
+| Role | Manage all organization tenants | Manage instance settings | Manage the current organization | Manage Spaces in the current organization |
+| --- | --- | --- | --- | --- |
+| **Instance administrator** | Yes | Yes | Yes | Yes |
+| **Organization administrator** | No | No | Yes | Yes |
+| **Regular member** | No | No | No | Depends on the Space role |
 
-### Organization Administrator
+## Manage a Tenant Internally
 
-**Scope of Authority**: Limited to specified organization
-- Manage users and spaces within the organization
-- View organization data statistics
+From the space switcher, an organization administrator can open the **Organization Panel** and manage:
 
-### Administrator Permissions
+| Page | Management capabilities |
+| --- | --- |
+| **Users** | View and manage users in the current organization |
+| **Organization** | Create, move, rename, and delete departments and manage department members |
+| **Space manage** | Add Spaces to or remove them from the organization and view Space and Base counts |
+| **Authentication settings** | Configure third-party authentication providers for the organization |
+| **Security settings** | Verify email domains so new users with those domains automatically join the organization |
+| **Instance settings** | Change the organization name, automatic Space access, and department scope |
 
-| Role | Manage Organizations | Manage All Users | Manage Organization Users | Manage Spaces |
-|------|---------------------|------------------|---------------------------|---------------|
-| **Instance Administrator** | ✅ All | ✅ All | ✅ All | ✅ All |
-| **Organization Administrator** | ❌ None | ❌ None | ✅ This organization only | ✅ This organization only |
-| **Regular Member** | ❌ None | ❌ None | ❌ None | ❌ None |
+For detailed **Instance settings** instructions, see [Organization Panel Settings](/en/basic/organization-panel/settings).
 
-## Use Cases
+## Delete an Organization Tenant
 
-Organization functionality is suitable for various scenarios that require managing multiple independent teams within one system. Here are typical application cases:
+1. Open the action menu for the target organization.
+2. Select **Delete**.
+3. Review the confirmation and confirm the deletion.
 
-### Enterprise Department Management
+<Warning>Deleting an organization permanently removes the organization and all its data. Verify the target organization, associated Spaces, and backups before continuing.</Warning>
 
-Suitable for data isolation and independent management between different departments within large enterprises. Each department can have its own organizational space with data that doesn't interfere with other departments, while being maintained by a unified enterprise IT team.
+## Common Tenant Models
 
-```
-Teable Instance
-├── R&D Department Organization
-├── Marketing Department Organization
-└── Sales Department Organization
-```
+| Scenario | Organization tenant model |
+| --- | --- |
+| Provide one Teable service to multiple customers | Create a separate organization tenant for each customer |
+| Maintain one group deployment with independent subsidiaries | Create an organization tenant for each subsidiary |
+| Isolate business units in a large enterprise | Create an organization tenant for each unit that needs independent membership, Spaces, and management policies |
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="What is the difference between an organization tenant and a database tenant?">
+    An organization tenant separates members, departments, Spaces, and management permissions. A database tenant controls which PostgreSQL database stores the data for a specific Space. One organization tenant can contain multiple Spaces, and the data database used by each Space is configured separately.
+  </Accordion>
+  <Accordion title="Why assign an organization administrator after creating an organization?">
+    The instance administrator creates and deletes tenants and manages the instance. The organization administrator handles day-to-day management inside a tenant. Assigning an organization administrator delegates member, department, Space, and authentication management without granting instance-level access.
+  </Accordion>
+  <Accordion title="Can one instance serve multiple customers?">
+    Yes. Create a separate organization tenant for each customer. The instance administrator maintains the shared deployment and system settings, while each customer receives its own organization administrators.
+  </Accordion>
+</AccordionGroup>
