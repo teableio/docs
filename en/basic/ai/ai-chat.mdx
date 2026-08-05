@@ -141,17 +141,17 @@ Cuppy, please read the memory for Base ID bsexxxxxxxxxxxx and save the relevant 
 
 ### Handle Long Tasks
 
-AI Chat is designed for foreground, interactive work in the visible conversation. Do not rely on background tasks or silent execution inside the chat for long-running work.
+AI Chat can keep a single conversation environment available for about 24 hours, which is enough for most data analysis, file processing, and app-building tasks. Keep long-running work in the current conversation so you can follow its progress and provide input when needed.
 
 <Steps>
-  <Step title="Check whether the task is still running in the foreground">
-    If the interface still shows `Thinking`, or progress updates are still being returned, foreground execution is still running. If the task shows `Completed`, the current foreground execution has ended.
+  <Step title="Follow progress in the current conversation">
+    If the interface shows `Thinking` or continues to return progress updates, the task is still running. If it shows `Completed`, the current run has finished.
   </Step>
-  <Step title="Do not treat temporary content as persistent storage">
-    After the AI runtime is restarted, only memory files can be read. Background tasks, temporary files, and intermediate results are not preserved.
+  <Step title="Save results at useful checkpoints">
+    For work with multiple stages, ask Cuppy to write results back to Teable, export them, or generate a downloadable file at key checkpoints. Saved work remains available even if the conversation environment is released later.
   </Step>
-  <Step title="Split work into batches and agree on visible outputs">
-    In the current environment, the conversation environment has idle cleanup and maximum lifetime limits: after foreground execution ends, an idle environment is released after about 30 minutes, and a single conversation environment has an approximate maximum lifetime of 5 hours. Split long-running tasks into smaller batches. Before starting each batch, agree with AI Chat on the visible output for that batch, such as writing results back to Teable, exporting results, or generating a downloadable file. After confirming that output is complete, continue with the next batch.
+  <Step title="Know when the environment is released">
+    A single conversation environment has an approximate maximum lifetime of 24 hours. After foreground execution ends, an idle environment is released after about 30 minutes. Temporary files and unsaved intermediate results are not preserved if the environment restarts.
   </Step>
 </Steps>
 
@@ -165,10 +165,6 @@ For long-running or repeatable work, use the feature that matches the workflow:
     Use for repeatable work after records are created or updated, notifications, or scheduled data processing.
   </Card>
 </CardGroup>
-
-<Note>
-Teable is improving the experience and runtime capability for long-running tasks. At this stage, plan long-running tasks around the limits above.
-</Note>
 
 ## Prompting Tips
 
