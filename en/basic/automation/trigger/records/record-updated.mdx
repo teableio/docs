@@ -52,6 +52,12 @@ Choose "All Fields" only when you genuinely need to react to every possible chan
 
 <Tip>It is strongly recommended to select specific watch fields. Selecting "All Fields" can cause the workflow to fire on unrelated edits, waste automation runs, and lead to unexpected behavior.</Tip>
 
+### Computed fields
+
+[Formula](/en/basic/field/formula), [Lookup](/en/basic/field/lookup), [Rollup](/en/basic/field/rollup), [Conditional Lookup](/en/basic/field/conditional-lookup), and [Conditional Rollup](/en/basic/field/conditional-rollup) values come from Teable's own calculation rather than from typing, and a recalculation only fires this trigger when you name the computed field in **Watch Fields**. All five behave the same way.
+
+This lets you react to a derived result instead of to the raw inputs behind it. Watch a `Total amount` Formula field and the workflow runs whenever the total actually changes, no matter which of the underlying fields moved. Watch a Rollup of linked tasks and the workflow runs when the rolled-up value changes, including when the change came from an edit in the linked table.
+
 ## Common pitfall: update loops
 
 <Warning>If your workflow includes an Update Record action that writes to the same table and updates a watched field, the trigger will fire again, creating an infinite loop.</Warning>
