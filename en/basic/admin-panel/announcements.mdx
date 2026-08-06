@@ -1,0 +1,62 @@
+---
+title: "Announcements"
+description: "Publish in-app announcements to everyone, to selected spaces, or to selected users, and withdraw them when they no longer apply."
+---
+
+<Tip>Available for self-hosted Business plan and above</Tip>
+
+Path: Admin Panel → Announcements
+
+**Announcements** lets administrators put a message in front of signed-in users without sending email: planned maintenance, an incident and its resolution, a policy change, or a new feature you want people to find. Each announcement runs inside a scheduled window and can be aimed at the whole instance or at a specific group.
+
+## Publish an Announcement
+
+Click **Publish announcement** and fill in the form. The preview on the side shows the announcement as users will see it.
+
+| Setting | What it controls |
+| --- | --- |
+| **Form** | Where the announcement appears: **Banner** across the top of the app, **Toast** as a transient notification, **Modal** as a dialog that interrupts, or **Sidebar card** in the space and base sidebars. |
+| **Level** | The tone users see: **Info**, **Maintenance**, **Critical**, or **Resolved**. |
+| Title and **Body** | The announcement text. |
+| **Starts at** / **Ends at** | The window during which the announcement is delivered. The end time must be after the start time. |
+| **Link text** / **Link URL** | An optional destination. A sidebar card is itself a link, so it always offers the URL field; the other forms show it once the body uses the `{link}` placeholder. |
+| **Audience** | **Everyone**, **Specific spaces**, or **Specific users**. |
+
+Choose the strongest form the message deserves. A banner and a sidebar card sit alongside the user's work; a modal blocks it. Users can dismiss an announcement themselves, and when several are active at once, banners collapse behind a **N more announcements** toggle.
+
+### Target Specific Spaces or Users
+
+For **Specific spaces** or **Specific users**, paste identifiers into the audience box (space IDs or names, or user IDs, names, or emails, separated by commas), then click **Match**. Matched entries become chips, and anything Teable could not resolve stays in the box under **Not matched:** so you can correct and retry.
+
+Space membership is evaluated when the announcement is delivered, so collaborators added later still receive a space-targeted announcement.
+
+### Insert Live Values
+
+Use **Insert placeholder** in the body to add values that Teable fills in at display time, so one message stays accurate for every reader:
+
+| Placeholder | Renders as |
+| --- | --- |
+| `{startTime}` / `{endTime}` | The window's start or end, in the reader's language and time zone |
+| `{time:…}` | A specific instant you choose |
+| `{duration}` | How long the window lasts |
+| `{countdown}` | A live countdown to the start |
+| `{link}` | The link, shown with your **Link text** |
+
+`{link}` is unavailable for the sidebar card, because the whole card is already the link.
+
+### Translate the Content
+
+Write the announcement in one language, then use **AI translate** to fill the other shipped interface languages. Choose **Fill blanks only** to keep translations you already wrote, or **Overwrite all** to re-translate everything. Review each language tab afterwards: the translation is a draft, not a final proofread. Readers see the language that matches their interface, falling back to English.
+
+## Manage Published Announcements
+
+The list shows every announcement with its **Status**, **Title**, **Form**, **Level**, **Audience**, **Window**, and **Created by**. Open a row to inspect its full content.
+
+| Status | Meaning |
+| --- | --- |
+| **Scheduled** | The start time has not arrived yet. |
+| **Active** | Currently being delivered. |
+| **Expired** | The end time has passed. |
+| **Withdrawn** | Stopped early by an administrator. |
+
+Click **Withdraw** on an active announcement to stop delivering it immediately. An announcement that has already expired cannot be withdrawn, and its record stays as it was.
