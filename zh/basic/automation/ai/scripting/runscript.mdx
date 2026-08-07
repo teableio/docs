@@ -123,6 +123,12 @@ const data = await res.json();
 output.set("records", data);
 ```
 
+## 在脚本中调用 AI
+
+用 `POST /api/automation/runtime/ai` 把提示词交给当前 Base 的 AI 模型。Base 由自动化上下文决定，不需要传 Base ID。请求体必填 `prompt`，可选 `attachments`、`modelKey`、`temperature` 和 `outputType`，响应为 `{ "message": ... }`。
+
+附件按 `{ url, mimetype, name }` 传，最多 10 项，单个文件需在 20MB、30 秒内下载完成，支持图片、PDF 和 Office 文档。默认对话模型未必能读取图片这类附件，发送文件时建议用 `modelKey` 指定合适的模型。每次调用都会消耗算力。
+
 ## 调用外部 API
 
 ```javascript

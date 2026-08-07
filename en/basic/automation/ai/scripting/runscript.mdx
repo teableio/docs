@@ -208,6 +208,12 @@ console.log("Fetched records:", data);
 output.set("records", data);
 ```
 
+### Calling AI from a script
+
+`POST /api/automation/runtime/ai` sends a prompt to your base's AI model. The base comes from the automation's context, so no base ID is needed. The body takes `prompt`, plus optional `attachments`, `modelKey`, `temperature`, and `outputType`; the response is `{ "message": ... }`.
+
+Attachments are `{ url, mimetype, name }` items, up to 10 per call, each under 20MB and 30 seconds to download, covering images, PDFs, and Office documents. The default chat model may not read images and similar attachments, so pass `modelKey` when you send files. Each call consumes credits.
+
 ## Error handling
 
 Always wrap risky operations in try/catch blocks so your workflow can handle failures gracefully:
