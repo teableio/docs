@@ -9,89 +9,87 @@ rss: true
 
 ## Feature Updates
 
-* **Targeted in-app announcements**: Admins can schedule localized announcements for selected users via banners, Toasts, modals, or sidebar cards, with retraction support.
+* **Targeted in-app announcements**: Schedule, localize, and withdraw multilingual announcements for specific users via banners, Toasts, modals, or sidebar cards.
 
-* **Recycle Bin record snapshots**: View deleted records read-only and filter by resource type, operator, deletion time, creator, or creation time.
+* **Recycle Bin snapshots**: View complete deleted-record snapshots and filter by resource type, operator, deletion time, creator, or creation time.
 
-* **Record archiving for Business**: Browse, restore, permanently delete, and export archived records to CSV, with longer retention periods.
+* **Business record archiving**: Browse, restore, permanently delete, or export archived records to CSV, with longer retention and lower active-table load.
 
-* **Improved published app management**: Quickly open apps, identify unpublished changes, and manage version history and rollbacks more intuitively.
+* **Improved published app management**: Adds prominent quick access, clearer unpublished-change alerts, and better version history and rollback.
 
-## Fixes & Improvements
+## Bug Fixes & Improvements
 
-* **Improved table filtering stability**: Fixed errors when removing or clearing filters and opening views with incomplete date filter configurations.
+* **More stable table filtering**: Fixes errors when deleting the last filter, clearing filters, or opening views with incomplete date filters.
 
-* **Improved filter synchronization**: Toolbar summaries update immediately, while filter changes sync more reliably across connected clients.
+* **Improved filter synchronization**: Toolbar summaries update immediately, and filter changes sync more reliably across connected clients.
 
-* **Improved AI generation cancellation**: Stopping generation in chat, App Builder, or Agent workflows no longer causes server errors elsewhere.
+* **Improved AI generation cancellation**: Stopping chat, App Builder, or Agent generation is handled normally, preventing errors in other windows.
 
-* **Improved checkpoint generation stability**: Enhanced reliability under heavy loads, reducing state-saving failures in busy databases.
+* **More reliable checkpoint generation**: Improves checkpoint reliability under high load, reducing state-save failures on busy databases.
 
-* **Improved large-table calculation performance**: Reduced write stalls, memory pressure, and 503 errors in large, highly connected tables.
+* **Faster large-table calculations**: Improves calculated field processing in highly linked tables, reducing write stalls, memory pressure, and 503 errors.
 
-* **Improved calculated field accuracy**: Fixed dependency propagation across comparisons, linked records, Lookup, Rollup, circular dependencies, and partial recalculations.
+* **More accurate calculated fields**: Fixes dependency propagation across comparisons, linked records, Lookup, Rollup, circular dependencies, and partial recalculations.
 
-* **Faster Lookup updates**: Reduced Lookup propagation time after record updates, displaying linked data results sooner.
+* **Faster Lookup updates**: Shortens Lookup propagation after single-record updates, displaying linked data sooner.
 
-* **Optimized conditional Rollup calculations**: Avoided unnecessary broad recalculations in complex dependencies, improving responsiveness and reducing resource usage.
+* **Optimized conditional Rollup calculations**: Avoids unnecessary large-scale recalculations in complex dependencies, improving responsiveness and reducing resource usage.
 
-* **Improved field type conversion stability**: Fixed prolonged stalls when changing field types in tables containing calculated fields.
+* **More stable field type conversion**: Fixes prolonged freezes when changing field types in tables containing calculated fields.
 
-* **Consistent time handling**: Fixed time offsets in scheduled tasks, metadata updates, and database workflows for non-UTC deployments.
+* **Consistent time handling**: Fixes time offsets in scheduled tasks, metadata updates, and database workflows across non-UTC deployments.
 
-* **Improved AI workflow creation**: Generated nodes now appear near source nodes, and creation commands support folder selection.
+* **Improved AI workflow creation**: Places generated nodes near source nodes and lets creation commands specify folders.
 
-* **Stronger sharing permissions**: Sharing controls now follow user and access token permissions, disabling unavailable options with explanations.
+* **Stronger sharing permission controls**: Sharing controls honor user and access token permissions, disabling unavailable options with explanations.
 
-* **Enhanced field creation audits**: Field creation logs now include field names, types, and options for clearer schema tracking.
+* **Improved field creation auditing**: Field creation logs now include field names, types, and options for clearer schema auditing.
 
 * **Fixed orphaned linked field deletion**: Linked fields can now be deleted after their referenced tables are removed.
 
-* **Improved core data compatibility**: Enhanced reliability across formulas, Lookup, Rollup, filtering, sorting, grouping, search, aggregation, links, fields, and Base duplication.
+* **Broader core data compatibility**: Improves formulas, Lookup, Rollup, filtering, sorting, grouping, search, aggregation, link validation, field lifecycles, and Base duplication.
 
-* **Consistent empty-value writes**: Cleared supported fields now save as empty values, while required fields remain reliably validated.
+* **Consistent null writes**: Cleared text, checkbox, attachment, user, link, and multi-value fields save as null, with reliable required-field validation.
 
-* **Improved linked record write compatibility**: Link updates now accept single-link and multi-link formats across integrations, imports, and cardinality changes.
+* **Improved linked-record writes**: Link updates accept single-link and multi-link inputs, supporting integrations, imports, and cardinality changes.
 
-* **Improved date write validation**: Strict writes reject invalid dates, while type conversions save them as empty values.
+* **Stricter date validation**: Strict writes reject invalid dates; conversions save them as null instead of silently changing them.
 
-* **Improved date field conversion**: Text-to-date and formula-to-date conversions skip invalid dates instead of blocking the entire conversion.
+* **Improved date field conversion**: Text-to-date and formula-to-date conversions skip invalid dates, preventing isolated errors from blocking entire conversions.
 
-* **Fixed Rating field conversion**: Prevented invalid fragmented values and standardized decimal rounding for consistent ratings.
+* **Fixed Rating field conversion**: Prevents invalid stray values and standardizes decimal rounding for consistent ratings.
 
-* **Stronger record and field permissions**: Table, row, and field permissions now apply consistently across record reads, updates, and deletions.
+* **Stronger record and field permissions**: Enforces table, row, and field permissions for record operations, including masked fields and disabled grants.
 
-* **Fixed user avatar compatibility**: Updating users without custom avatars no longer fails, and initial-based default avatars display correctly.
+* **Fixed user avatar compatibility**: Updating records for users without custom avatars no longer fails; initial-based default avatars remain available.
 
-* **Fixed grouped view loading**: Added required field information to prevent some grouped views from failing to open.
+* **Fixed grouped view loading**: Adds required grouping field data, preventing some grouped views from failing to open.
 
-* **Improved view stability**: Enhanced reliability for creating, updating, sharing, importing, duplicating, live-updating, and collaboratively editing views.
+* **Improved view stability**: Improves reliability for creation, updates, sharing, imports, duplication, real-time updates, plugin views, and concurrent editing.
 
-* **Improved self-hosted user registration**: New users reliably join eligible auto-join Spaces as Viewers, including Spaces using SSO enrollment.
+* **Improved self-hosted registration**: New users reliably join eligible auto-join Spaces as Viewers, including Spaces with SSO enrollment.
 
-* **Improved unsubscribe page usability**: The page remains usable after preferences update successfully, even if subsequent refreshes fail.
+* **Improved unsubscribe page usability**: Pages remain usable after preferences update successfully, even if a later refresh fails.
 
-* **Fixed duplicate automation execution**: Prevented action chains from running repeatedly and duplicating messages, Webhooks, or emails.
+* **Fixed duplicate automation runs**: Prevents repeated action chains and duplicate messages, Webhooks, or emails.
 
-* **Improved formula field automation triggers**: Formula result changes now trigger automations correctly without duplicate runs or execution loops.
+* **Improved Formula automation triggers**: Source-field changes updating Formula results now trigger automations correctly without duplicates or loops.
 
-* **Improved bulk deletion undo and redo**: Large deletions can be restored or repeated more reliably, reducing errors and timeouts.
+* **More reliable bulk deletion undo and redo**: Reliably restores or repeats large deletions, reducing recovery errors and unexpected timeouts.
 
-* **Optimized large imports and table duplication**: Reduced unnecessary initial history and database load without affecting regular editing history.
+* **Optimized large imports and table duplication**: Reduces unnecessary initial history and database load without affecting routine edit history.
 
-* **Improved mobile attachment previews**: Expanded spreadsheet viewing, improved horizontal scrolling, prevented control overlap, and correctly handled rotated images.
+* **Improved mobile attachment previews**: Widens spreadsheet viewing, improves horizontal scrolling, prevents navigation overlap, and correctly fits rotated images.
 
-* **Faster Base loading and navigation**: Reduced duplicate requests and safely reopened eligible recent, pinned, or first-visit Bases directly.
+* **Faster Base loading and navigation**: Reduces duplicate requests and safely opens previously visited, pinned, or eligible default Bases.
 
-* **Fixed invalid Base link navigation**: Invalid direct links now return to the standard entry flow without redirect loops or unnecessary errors.
+* **Fixed invalid Base links**: Invalid direct links return to the standard entry flow, avoiding redirect loops and unnecessary errors.
 
-* **Improved field validation messages**: Enhanced localized errors and identified duplicate fields during bulk and selection-based operations.
+* **Improved field validation messages**: Improves localized required and unique-field errors, identifying duplicate fields in bulk and selection-based operations.
 
-* **Stronger secret management**: Improved secret handling and secure credential rotation, reducing risks from long-lived credentials.
+* **Stronger secret management**: Improves secret handling and secure credential rotation, reducing risks from long-lived credentials.
 
-* **Optimized real-time grid loading and updates**: Reduced synchronization bandwidth and improved loading and responsiveness on slower networks.
-
-* **Unified pricing information**: Removed outdated in-app pricing and FAQs, directing users to the official pricing page for current plan details.
+* **Improved real-time grid loading and updates**: Reduces synchronization bandwidth and improves loading and responsiveness on slower networks.
 
 </Update>
 
