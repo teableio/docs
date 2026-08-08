@@ -7,7 +7,7 @@ description: "Monitor BullMQ delivery and computed task backlog in the Admin Pan
 
 Path: Admin Panel → Computed Outbox
 
-Use **Computed Outbox** when formula, lookup, or other computed field values stop updating or take much longer than expected. The page shows the overall task health, recent failures, tasks that may need recovery, and any space whose computed tasks are currently paused.
+Use **Computed Outbox** when formula, lookup, or other computed field values stop updating or take much longer than expected. The page shows the overall task health, the jobs moving through the queue, tasks that may need recovery, and any space whose computed tasks are currently paused.
 
 ## Read the Health Status
 
@@ -19,7 +19,25 @@ The status beside the page title shows whether computed tasks need attention:
 | **Degraded** | Teable found failures, timed-out tasks, or a growing backlog. |
 | **Critical** | BullMQ is unavailable or no worker is available to process tasks. |
 
-When the status needs attention, the page lists the reason. Click the **Failed** count to view recent failed tasks and their failure reasons.
+When the status needs attention, the page lists the reason.
+
+## Find a Task in the Queue
+
+**Live BullMQ queue** lists the jobs Teable still retains, so you can follow one computed task or look for slow ones.
+
+Each row is one task by default, and it moves through states in place as Teable retries it. Switch to **Deliveries** when you need the full attempt history of a task or want to hunt for slow runs.
+
+To narrow the list:
+
+- Click the state tiles above the table to filter by state: **Waiting**, **Active**, **Delayed**, **Failed**, **Completed (retained)**, and so on. You can select several at once, and hovering a tile explains what that state means.
+- Filter by **Space**, **Base**, or **Cause**, search for a task, Base, Space, or error, or set a minimum processing time to surface slow tasks.
+- Click a row to open its detail: queue timestamps, delivery lag, processing time, and, for failed deliveries, the full failure reason with the redacted SQL.
+
+<Info>**Completed** does not mean the task did work. The outcome badge says what the delivery actually did: **Processed** ran the task, **No-op** found nothing left to do, **Deferred** rescheduled it for later, and **Parked** means its scope is paused.</Info>
+
+A failed row is the history of one delivery attempt, not a stuck task. The durable task keeps retrying on its own, so read the **Ledger state** column to decide whether to act: **Settled** means a later retry already succeeded, and **Dead letter** links to anomaly maintenance. Settled failures are hidden by default; a banner shows how many there are and lets you reveal them.
+
+**Clear failed history** removes the retained failed-job records from the queue only. It repairs nothing, and dead letters remain in **Anomaly maintenance**.
 
 ## Handle Anomalous Tasks
 
@@ -31,10 +49,10 @@ Each group offers one action, depending on its type:
 
 | Anomaly type | Action | What happens |
 | --- | --- | --- |
-| **Dead letter** | **Recover up to 10 oldest** | Restores the 10 oldest failures in that group and redelivers them. Newer failures in the same group, and every other group, stay untouched. |
+| **Dead letter** | **Recover entire group** | Restores every dead letter currently in that group to the durable queue and redelivers them. Every other group stays untouched. |
 | **Timed out** | **Re-arm latest timeout** | Wakes the queue for the newest task in the group so a worker can take it over. |
 
-After a batch recovery, Teable reports how many tasks it recovered, delivered, deferred, or found in conflict, and how many are still waiting. Run the action again to work through a large group.
+After a group recovery, Teable reports how many tasks it restored, how many were newly queued or already queued, and how many were delivered or deferred. Workers then consume the group under the current concurrency and task-splitting limits.
 
 ## Pause Computed Tasks for a Space
 
@@ -43,10 +61,17 @@ When one space's computed tasks are making an incident worse, pause that space i
 <Steps>
   <Step title="Open the pause dialog">Click **Pause a space**.</Step>
   <Step title="Find the space">Search by space ID or name, then select it from the results.</Step>
+  <Step title="Choose how long">Set **Pause duration** to 15, 30, 60, or 120 minutes.</Step>
   <Step title="Record why (optional)">Note the incident or maintenance window in **Reason**.</Step>
   <Step title="Confirm">Click **Confirm pause**.</Step>
 </Steps>
 
-A pause only stops workers from claiming new computed tasks for that space. Tasks already running are not interrupted, and matching tasks wait until you resume rather than being dropped.
+A pause only stops workers from claiming new computed tasks for that space. Tasks already running are not interrupted, and matching tasks wait until the pause ends rather than being dropped.
 
-The list shows every active pause with who created it, why, and when it auto-resumes. To release one, click **Resume** on its row and confirm. Workers can then claim that space's computed tasks again.
+A pause always expires on its own, and two hours is the longest you can set. If the incident outlasts it, pause the space again from this page. The list shows every active pause with who created it, why, and when it auto-resumes, along with how many pending tasks the active pauses are holding, so you can judge the backlog a resume will release. To lift one early, click **Resume** on its row and confirm.
+
+## Adjust Worker Concurrency
+
+**Per-process concurrency** in the queue section shows how many computed tasks each worker process handles at once. Click it to set a cluster-wide override; every worker picks it up within about 15 seconds, with no restart. **Reset to default** removes the override and returns each process to its own environment setting.
+
+<Warning>Higher concurrency puts more load on your database. Each Base is separately limited to 2 concurrent tasks across the cluster, so raising this value mainly helps when many Bases are waiting at the same time.</Warning>
