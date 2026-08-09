@@ -30,10 +30,10 @@ Each row is one task by default, and it moves through states in place as Teable 
 To narrow the list:
 
 - Click the state tiles above the table to filter by state: **Waiting**, **Active**, **Delayed**, **Failed**, **Completed (retained)**, and so on. You can select several at once, and hovering a tile explains what that state means.
-- Filter by **Space**, **Base**, or **Cause**, search for a task, Base, Space, or error, or set a minimum processing time to surface slow tasks.
+- Filter by **Space**, **Base**, **Cause**, or **Outcome**, search for a task, Base, Space, or error, or set a minimum processing time to surface slow tasks.
 - Click a row to open its detail: queue timestamps, delivery lag, processing time, and, for failed deliveries, the full failure reason with the redacted SQL.
 
-<Info>**Completed** does not mean the task did work. The outcome badge says what the delivery actually did: **Processed** ran the task, **No-op** found nothing left to do, **Deferred** rescheduled it for later, and **Parked** means its scope is paused.</Info>
+<Info>**Completed** does not mean the task did work. The outcome badge says what the delivery actually did: **Processed** ran the task, **No-op** found nothing left to do, **Deferred** rescheduled it for later, and **Parked** means its scope is paused. The **Outcome** filter narrows the list by that result and shows how many deliveries each one covers, so pairing **Completed (retained)** with **Processed** leaves only the deliveries that really ran the task.</Info>
 
 A failed row is the history of one delivery attempt, not a stuck task. The durable task keeps retrying on its own, so read the **Ledger state** column to decide whether to act: **Settled** means a later retry already succeeded, and **Dead letter** links to anomaly maintenance. Settled failures are hidden by default; a banner shows how many there are and lets you reveal them.
 
