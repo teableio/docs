@@ -55,12 +55,28 @@ This allows users to log in via GitHub, Google, or your OIDC provider.
 
 ---
 
+## Identity Provider Security Requirements
+
+Teable trusts the email address returned by your IdP and uses it to automatically link OIDC logins to existing accounts with the same email. The identity provider you connect **must guarantee that user email addresses are verified**.
+
+<Warning>
+Do not connect identity providers that let users set arbitrary, unverified email addresses (for example, multi-tenant IdPs with open registration). On such providers, an attacker can register an account using the email address of an existing user on your instance and take over that account by signing in via OIDC. This risk is especially acute when local password login is also enabled on the same instance.
+</Warning>
+
+Recommendations:
+
+- Only connect enterprise-grade IdPs under your control (such as Okta, Azure Entra ID, Google Workspace, or Keycloak) with email verification enabled.
+- If your instance uses SSO exclusively, set [`PASSWORD_LOGIN_DISABLED=true`](/en/deploy/env) to disable local password login and further reduce the attack surface.
+
+---
+
 ## Important Notes
 
 1. **HTTPS Required**: All URLs must use HTTPS in production
 2. **Callback URL Must Match**: The callback URL in Teable must exactly match what's configured in your IdP
 3. **Restart Required**: After changing environment variables, restart Teable for changes to take effect
 4. **Secure Storage**: Never commit secrets to version control; use environment variables or secret managers
+5. **IdP Must Verify Emails**: See [Identity Provider Security Requirements](#identity-provider-security-requirements) above
 
 ---
 
