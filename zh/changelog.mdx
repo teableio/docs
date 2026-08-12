@@ -5,45 +5,35 @@ rss: true
 
 <Update label="2026-08-11">
 
-# 数据归档上线：无限行数成为可能
+# 品牌自定义与稳定性提升
 
-> 暂时不需要的数据，又不想直接删除？现在可以将它们归档。归档后仍可随时查看，并且不占用 Row Limit。
+## 功能更新
 
-## 1. 不用删除，直接归档
+* **新增 App Builder 品牌自定义功能**：已发布的 App Builder 应用现支持设置自定义 favicon、页面标题和描述，可用于浏览器标签页、页面元数据及分享预览，帮助用户打造更统一的品牌体验。未自定义 favicon 时，将使用新的默认 Teable Build favicon。
 
-选中记录，右键并选择**归档**。适合长期未转化的销售线索、课程结束超过 90 天的学员数据、超过 90 天的 API 请求记录，以及其他以后可能还会用到的数据。
+* **延长 Automation Script 运行时间**：Automation Script 节点最长可运行 180 秒，支持处理更复杂、耗时更长的自动化任务，减少因执行超时导致的任务失败。
 
-<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
-  "@context": "https://schema.org",
-  "@type": "VideoObject",
-  "name": "不用删除，直接归档",
-  "description": "选中记录并将其归档，保留数据且不占用 Row Limit。",
-  "thumbnailUrl": ["https://teable.ai/assets/images/og-image.png"],
-  "uploadDate": "2026-08-11T00:00:00+08:00",
-  "contentUrl": "https://dxshyegpql0u3hra.public.blob.vercel-storage.com/b3b2d75b607cd2fd89f61262fe568ff6.mp4"
-}) }} />
-<video autoplay loop muted playsinline controls preload="auto" className="w-full aspect-video" src="https://dxshyegpql0u3hra.public.blob.vercel-storage.com/b3b2d75b607cd2fd89f61262fe568ff6.mp4" />
+## 问题修复&优化
 
-## 2. 随时查看归档数据
+* **提升 Grid 视图分组与排序的可靠性**：保存分组或排序设置后，变更会立即同步到视图设置、当前页面和协作者端；连续快速修改时也能准确应用最新配置。
 
-打开表格右上角菜单，进入**历史 → 归档区**，即可查看归档记录。
+* **优化 AI 创建表失败后的侧边栏显示**：修复创建失败后侧边栏出现无法访问条目的问题，无效条目会在下次刷新时自动清理，避免造成误解或操作干扰。
 
-<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
-  "@context": "https://schema.org",
-  "@type": "VideoObject",
-  "name": "随时查看归档数据",
-  "description": "从表格菜单进入历史和归档区，随时查看归档记录。",
-  "thumbnailUrl": ["https://teable.ai/assets/images/og-image.png"],
-  "uploadDate": "2026-08-11T00:00:00+08:00",
-  "contentUrl": "https://dxshyegpql0u3hra.public.blob.vercel-storage.com/93e70e1761bf633662e268f01aa8e679.mp4"
-}) }} />
-<video autoplay loop muted playsinline controls preload="metadata" className="w-full aspect-video" src="https://dxshyegpql0u3hra.public.blob.vercel-storage.com/93e70e1761bf633662e268f01aa8e679.mp4" />
+* **优化 Grid 关联记录标签显示**：修复过长标签被截断后溢出到相邻单元格的问题，并统一省略号样式，让表格内容更整洁、易读。
 
-## 3. 归档记录不占用 Row Limit
+* **修复按用户分组时的记录显示异常**：解决重复出现“添加记录”行、行号重新计数及记录位置错误等问题；协作者和多用户字段现在能保持一致的分组结果。
 
-如果当前空间使用了 50 万行，归档 10 万行后，只按 40 万行计算。
+* **优化用户字段名称显示**：Last Modified By 和 Editor 字段将优先显示可读的用户名称，而非内部用户 ID，并在记录视图、API 和协作者字段中保持一致。
 
-你可以继续添加新记录，同时保留历史数据。
+* **提升 AI Chat 连接恢复能力**：当网络出现短暂中断时，AI Chat 能更可靠地恢复响应，减少流式回复意外中断或失败的情况。
+
+* **提升多级 Lookup 数据更新可靠性**：修复并发更新关联记录时，链式 Lookup 字段未及时更新的问题，确保多级 Lookup 结果更准确地同步至最新值。
+
+* **优化用户字段解析与校验**：恢复对受权限范围限制的协作者、电话号码及 Enterprise 部门成员的正确识别，并拒绝无关或已删除的用户，提升用户数据的准确性与安全性。
+
+* **优化高负载场景下的计算性能**：提升数据库繁忙时的计算任务处理能力，降低大量关联更新导致写入变慢或卡住的风险。
+
+* **修复 AI Chat 重复消息问题**：解决停止响应后立即发送新消息时出现重复助手消息行的问题，确保实时回复、停止、重新发送和恢复等场景下的消息状态保持一致。
 
 </Update>
 
