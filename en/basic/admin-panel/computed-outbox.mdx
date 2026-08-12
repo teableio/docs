@@ -39,20 +39,25 @@ A failed row is the history of one delivery attempt, not a stuck task. The durab
 
 **Clear failed history** removes the retained failed-job records from the queue only. It repairs nothing, and dead letters remain in **Anomaly maintenance**.
 
+A state tile can also count entries whose job data no longer exists in Redis, usually left behind after eviction or data loss. The list cannot show them, so the page explains the gap under the table. Teable sweeps such leftovers out of the failed state on its own; **Clear failed history** removes them right away.
+
 ## Handle Anomalous Tasks
 
 <Info>The **Failed** count and **Anomaly maintenance** show different types of problems, so their numbers may differ.</Info>
 
 **Anomaly maintenance** collects anomalies into problem groups, one per Base, source table, and error, so a single root cause is easy to spot. Review the failure reason and fix the underlying problem before you recover anything. Expand a group to read its error details and the tasks it covers; those rows are for inspection, and recovery always runs on the group as a whole.
 
-Each group offers one action, depending on its type:
+The actions a group offers depend on its type:
 
 | Anomaly type | Action | What happens |
 | --- | --- | --- |
 | **Dead letter** | **Recover entire group** | Restores every dead letter currently in that group to the durable queue and redelivers them. Every other group stays untouched. |
+| **Dead letter** | **Discard group** | Permanently deletes the dead letters in that group. They cannot be recovered or replayed afterwards, so use it only when a replay is pointless. |
 | **Timed out** | **Re-arm latest timeout** | Wakes the queue for the newest task in the group so a worker can take it over. |
 
 After a group recovery, Teable reports how many tasks it restored, how many were newly queued or already queued, and how many were delivered or deferred. Workers then consume the group under the current concurrency and task-splitting limits.
+
+A group marked **Base deleted** belongs to a Base that no longer exists. Recovering it would fail again immediately, so **Discard group** is the only action offered.
 
 ## Pause Computed Tasks for a Space
 
@@ -70,8 +75,15 @@ A pause only stops workers from claiming new computed tasks for that space. Task
 
 A pause always expires on its own, and two hours is the longest you can set. If the incident outlasts it, pause the space again from this page. The list shows every active pause with who created it, why, and when it auto-resumes, along with how many pending tasks the active pauses are holding, so you can judge the backlog a resume will release. To lift one early, click **Resume** on its row and confirm.
 
-## Adjust Worker Concurrency
+## Adjust Concurrency
 
-**Per-process concurrency** in the queue section shows how many computed tasks each worker process handles at once. Click it to set a cluster-wide override; every worker picks it up within about 15 seconds, with no restart. **Reset to default** removes the override and returns each process to its own environment setting.
+The queue section has two concurrency controls. Each one writes a cluster-wide override that every process picks up within about 15 seconds, with no restart, and each can be reset so processes return to their own environment setting. An **Overridden** badge marks a control that is no longer on its default.
 
-<Warning>Higher concurrency puts more load on your database. Each Base is separately limited to 2 concurrent tasks across the cluster, so raising this value mainly helps when many Bases are waiting at the same time.</Warning>
+| Control | What it limits |
+| --- | --- |
+| **Per-process concurrency** | How many computed tasks each worker process handles at once. |
+| **Per-base claim caps** | How many computed tasks run at the same time for one Base (**Per base**) and for one source table within it (**Per seed table**). Both default to 2 and accept values from 1 to 16. |
+
+Raise the claim caps when one busy Base is the bottleneck, and per-process concurrency when many Bases are queued at the same time.
+
+<Warning>Higher concurrency puts more load on your database. Spaces that store their data in a [database tenant](/en/basic/admin-panel/database-tenant) keep the environment defaults for the claim caps, because their connection pools are sized for those values.</Warning>
