@@ -34,7 +34,8 @@ When you paste a long block of plain text, Teable converts it to a Markdown atta
 - **Intelligence**: Choose the **Intelligence** level separately in the model menu. It controls thinking depth; higher levels produce more thorough reasoning.
 - **Secrets**: Open the **+** menu and choose **Secrets** to store API keys or other credentials for AI Chat. AI Chat can read these values as environment variables. Saved values are write-only; enter a new value to update a secret.
 - **Integrations**: When AI needs access to a third-party account, it can show a card such as **Connect Slack** in the conversation. Click **Connect** to authorize with OAuth. Click **Skip** to cancel this authorization; AI continues with the parts it can complete without that connection.
-- **Skills**: Open the **+** menu and choose **Skills** to import, enable, disable, or try skills in the current chat context. Personal skills are only available to you. Current base skills are shared with collaborators in the current base. Type `/` in the input box to choose an enabled skill. To connect or migrate an external system, see [Connect & Migrate Everything](/en/basic/ai/connect-everything).
+- **Skills**: Open the **+** menu and choose **Skills** to import, enable, disable, or try skills in the current chat. When you import one, choose who can use it: **Personal** keeps it to yourself, **Base** gives it to collaborators in this base, and **Space** gives it to everyone in this space. Type `/` in the input box to choose an enabled skill. To connect or migrate an external system, see [Connect & Migrate Everything](/en/basic/ai/connect-everything).
+- **Context usage**: The ring next to the input box shows how much of the model's context window the conversation currently uses. Click it for the percentage and token counts. When the context fills up, Teable compacts the conversation; start a new chat if you want a clean context instead.
 - **Manage files**: Open **+** → **More** → **Manage files** to view files in the current chat sandbox. You can preview supported files, download files, or delete files and folders you no longer need. A conversation must exist before its files can be managed.
 - **Queued messages**: If you send another message while AI is still working, the message is queued. Queued items show the same table, view, attachment, and selection chips as the chat input. Use **Edit** to move a queued item back into the input, **Send follow-up without interrupting** to add a text follow-up to the current run when that action is available, or **Remove** to delete it from the queue. Items that cannot be sent as follow-ups stay queued until the current run finishes.
 
@@ -118,6 +119,8 @@ After uploading files, AI can answer questions using both file content and table
 - Generate a product description from this image.
 
 Files uploaded to the conversation and files generated during the conversation are saved in the current chat sandbox. Use **Manage files** to inspect them later.
+
+When a reply presents several files at once, use **Download all** below the file cards to save them as one zip.
 
 ### Memory
 
@@ -209,7 +212,17 @@ For long-running or repeatable work, use the feature that matches the workflow:
   </Accordion>
 
   <Accordion title="How do I use Skills in AI Chat?">
-    Open the **+** menu and choose **Skills** to import or manage skills, or type `/` in the input box to choose an enabled skill. Use personal skills for your own chats, and current base skills when collaborators in the same base should be able to use the skill. Users who can manage the base can add current base skills. If AI Chat presents a `.skill` file, use **Install** on the file card to add it.
+    Open the **+** menu and choose **Skills** to import or manage skills, or type `/` in the input box to choose an enabled skill. Choose who can use the skill when you import it: personal for your own chats, base when collaborators in the same base need it, and space when everyone in the space does. Users who can manage the base can add base skills, and space owners and creators can add space skills. If AI Chat presents a `.skill` file, use **Install** on the file card to add it.
+  </Accordion>
+
+  <Accordion title="Which skill applies when two of them share a name?">
+    Only one version is ever in effect, and the shared team version wins over a personal copy: a base skill beats a space skill, and a space skill beats a personal one. In an app or bot conversation, the skill added for that app or bot comes first. To move everyone to a new version, update the copy in the base or space.
+  </Accordion>
+
+  <Accordion title="Which files stay in Manage files?">
+    **Manage files** holds two folders: `uploads` for the files you added, and `outputs` for the files produced in the conversation. Both use their own storage, so they survive the sandbox being released or rebuilt and you can come back later to preview, download, or delete them.
+
+    Anything Cuppy writes outside those two folders is temporary, such as intermediate results from a script. It does not appear in **Manage files** and is gone after the sandbox restarts. For results you need to keep, ask Cuppy to write them into `outputs` or back into Teable, or download them while the conversation is open, using **Download all** when a reply produced several files.
   </Accordion>
 
   <Accordion title="What happens when I copy a message with chips?">
