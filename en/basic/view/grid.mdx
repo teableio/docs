@@ -111,6 +111,12 @@ When a computed field is waiting, calculating, or has failed, click the calculat
 | **Waiting** | Fields queued for calculation |
 | **Failed** | The latest calculation error |
 
+If a calculated value grows past the size a cell can hold, the field reports `Computed cell value is too large` with the attempted and maximum size. The limit is 256 KB per computed cell. The rest of the table keeps calculating and the cell keeps its previous value, so the field recalculates on the next write once the value fits.
+
+A single piece of text or a number rarely reaches 256 KB. The limit is usually hit when a record links to many other records and a Lookup or Rollup pulls all of their long text into one cell. For example, a customer with 500 follow-up records, each holding a few hundred words of notes, exceeds the limit once every note is looked up.
+
+The fix is to keep the details out of the cell: use a Rollup to count or sum the linked records, or look up a shorter field such as a status or a number. Open the linked table when you need to read the full content.
+
 ## Notes
 
 - Hidden fields, sorting, filtering, grouping, and similar settings apply only to the current view.
