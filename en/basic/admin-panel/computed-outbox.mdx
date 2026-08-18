@@ -59,6 +59,8 @@ After a group recovery, Teable reports how many tasks it restored, how many were
 
 A group marked **Base deleted** belongs to a Base that no longer exists. Recovering it would fail again immediately, so **Discard group** is the only action offered.
 
+A task whose source table is in the trash waits for that table to come back. Once the task is more than about a day old, Teable stops waiting and turns it into a dead letter of kind `obsolete_plan`. Restore the table before you recover the group: while it is still in the trash, a recovered task dead-letters the same way again. Discard the group when the table is not coming back.
+
 Recovery is also unavailable when the data itself caused the failure, such as a value that exceeds a size limit or breaks a field constraint. Replaying the same task would fail the same way, so discard the group and fix the source data or the field definition instead; later writes recompute those fields automatically.
 
 ## Pause Computed Tasks for a Space
