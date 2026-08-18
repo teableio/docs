@@ -114,6 +114,75 @@ You can tell App Builder what you want, such as: "Add an AI reply assistant for 
 After App Builder adds the AI feature, the app preview uses the new version. The published app uses it only after you republish.
 </Info>
 
+## Sync Code with GitHub
+
+<Note>Available on Cloud Business plans and above.</Note>
+
+Link an app to a private GitHub repository when you want to review code in pull requests, keep a copy outside Teable, or work on the app in your local editor. Once linked, the app and the repository sync in both directions: every new app version is pushed to GitHub, and commits you push to GitHub become new app versions.
+
+### Connect an Account and Create the Repository
+
+Generate the app at least once first. Until the app has code, the GitHub button shows **Generate the app first to connect GitHub** and does nothing.
+
+<Steps>
+  <Step title="Open the GitHub panel">Click the GitHub icon in the app header to open **GitHub sync**. You need edit access to the app.</Step>
+  <Step title="Connect an account">Click **Connect GitHub** and complete the installation in the popup window. Choose your personal account or an organization you administer. Allow popups if your browser blocks the window.</Step>
+  <Step title="Pick the account">Select the connected account under **GitHub account**. Click **+** to connect another one.</Step>
+  <Step title="Name the repository">**Repository name** is prefilled from the app name. Names may contain letters, digits, `.`, `-`, and `_`, up to 100 characters.</Step>
+  <Step title="Create and link">Click **Create repository & link**. For a personal account, GitHub asks you to authorize the creation in one more popup.</Step>
+</Steps>
+
+Teable creates a new private repository and commits the current app code to the `main` branch, along with a README that points back to the app and explains how the two stay in sync. You cannot link an app to a repository that already exists.
+
+By default a connection belongs to whoever created it. To let collaborators build on the same organization account, select the connection and turn on **Allow other members to use this connection**. Other members with app editing access can then create repositories for their own apps under that organization. Personal connections cannot be shared, because GitHub requires the account owner's own authorization to create a repository.
+
+### How Syncing Works
+
+| Direction | What happens |
+| --- | --- |
+| App → GitHub | Each new app version is pushed to the `main` branch of the repository. |
+| GitHub → app | Commits pushed to `main` become a new app version. A message in the chat panel reports what was synced, and an open preview reloads on the new code. |
+
+Environment files are never pushed. See **Environment Variables and Local Development** below.
+
+The panel shows the current state next to the repository name:
+
+| Status | Meaning | What to do |
+| --- | --- | --- |
+| **Synced** | The repository matches the latest app version. | No action needed. |
+| **Syncing** | A push is in flight. | Wait; the panel updates on its own. |
+| **Conflict** | The `main` branch has commits Teable did not produce, and they cannot be combined automatically. | Merge the `teable-sync` branch on GitHub. See below. |
+| **Paused** | Teable stopped syncing because the GitHub App was uninstalled or suspended. | The panel says which. Lifting a suspension resumes syncing on its own. |
+| **Error** | The last sync attempt failed. | Read the reason in the panel and click **Retry**. |
+
+### Resolve a Conflict
+
+Teable never force-pushes your branch. When the histories diverge, it parks the latest app version on a branch named `teable-sync` and marks the link **Conflict**. Merge `teable-sync` into `main` on GitHub; the merge comes back as a new app version and the link returns to **Synced**. While the conflict lasts, later app versions keep moving the `teable-sync` branch forward, so merging it always brings in the newest work.
+
+### Environment Variables and Local Development
+
+The repository holds source only. Teable never pushes a file whose name starts with `.env`: not at the project root, not in a subfolder, and not in the commit history. Environment values live in the app's **Secrets** and never enter git. The repository's `.gitignore` already lists `.env*`, so a local clone will not commit one by accident.
+
+To run the app on your own machine:
+
+<Steps>
+  <Step title="Clone and install">Clone the repository and run `pnpm install`.</Step>
+  <Step title="Copy the variables">In the GitHub panel, click **Copy local env variables**, then paste the clipboard into a `.env` file at the project root.</Step>
+  <Step title="Start the app">Run `pnpm dev`.</Step>
+</Steps>
+
+The copied content matches what the app receives in Teable's own sandbox: your Secrets, plus the variables the platform injects for the app's API endpoint, access token, and AI access.
+
+<Warning>
+The `TEABLE_APP_TOKEN` line in that file grants access to the app's data, which is why only members with edit access to the app can copy it. Never commit the file, and never paste it into an issue or a pull request.
+</Warning>
+
+To add or change a secret, edit **Secrets** in Teable rather than the local file. A `.env` committed to GitHub does not create or update a Secret. After changing a secret, copy the variables again to refresh your local `.env`.
+
+### Unlink the Repository
+
+Click the delete icon next to the repository name and confirm. Syncing stops, and the repository and its code stay on GitHub. Linking the same app again later creates a new repository rather than reconnecting to the old one.
+
 ## Publishing & Management
 
 ### Publishing Your App
