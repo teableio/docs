@@ -52,14 +52,14 @@ The actions a group offers depend on its type:
 | Anomaly type | Action | What happens |
 | --- | --- | --- |
 | **Dead letter** | **Recover entire group** | Restores every dead letter currently in that group to the durable queue and redelivers them. Every other group stays untouched. |
-| **Dead letter** | **Discard group** | Permanently deletes the dead letters in that group. They cannot be recovered or replayed afterwards, so use it only when a replay is pointless. |
+| **Dead letter** | **Discard group** (in the **More actions** menu) | Permanently deletes the dead letters in that group. They cannot be recovered or replayed afterwards, so use it only when a replay is pointless. |
 | **Timed out** | **Re-arm latest timeout** | Wakes the queue for the newest task in the group so a worker can take it over. |
 
 After a group recovery, Teable reports how many tasks it restored, how many were newly queued or already queued, and how many were delivered or deferred. Workers then consume the group under the current concurrency and task-splitting limits.
 
 A group marked **Base deleted** belongs to a Base that no longer exists. Recovering it would fail again immediately, so **Discard group** is the only action offered.
 
-A task whose source table is in the trash waits for that table to come back. Once the task is more than about a day old, Teable stops waiting and turns it into a dead letter of kind `obsolete_plan`. Restore the table before you recover the group: while it is still in the trash, a recovered task dead-letters the same way again. Discard the group when the table is not coming back.
+Moving a table to the trash no longer creates anomalies here. A computed task that still references a trashed table skips the steps that read it, finishes the steps that target live tables, and completes.
 
 Recovery is also unavailable when the data itself caused the failure, such as a value that exceeds a size limit or breaks a field constraint. Replaying the same task would fail the same way, so discard the group and fix the source data or the field definition instead; later writes recompute those fields automatically.
 
