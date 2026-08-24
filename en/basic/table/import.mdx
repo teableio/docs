@@ -25,7 +25,7 @@ Excel files are limited to **5MB**. If you need to import a larger dataset, save
     Review the preview after upload. When creating a new table, you can adjust field types. When appending to an existing table, confirm how file columns map to target fields.
   </Step>
   <Step title="Start the import">
-    Click **Import**. Teable processes the data in the background and notifies you when the import succeeds or fails.
+    Click **Import** and keep the dialog open until the import finishes. It shows how many rows have been imported, and for a multi-sheet Excel file, which sheet is running.
   </Step>
 </Steps>
 
@@ -35,7 +35,7 @@ Before the completion notification arrives, do not delete the table being genera
 
 ## Import Flow
 
-Click `+` at the top of the left directory and select **CSV file** or **Excel file** according to your file type.
+Click `+` at the top of the left directory, or `+` on the folder that should hold the new table, and select **CSV file** or **Excel file** according to your file type.
 
 <img
   src="/images/docs/base/2026-05-22-table-create-menu.png"
@@ -88,8 +88,22 @@ When **Import view filters, sorts and grouping** is enabled, Teable asks for a r
 
 During import, Teable shows progress by table. If some fields, views, or values need to be adjusted, the import log lists the changes before showing **Import completed**.
 
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Why did only part of a sheet import?">
+    The table reached its row limit. That sheet keeps the rows that fit and skips the rest, and the other sheets in the file still import. The result list in the dialog marks which sheet was cut. Import the remaining rows into another table, or raise the row limit for your plan or instance.
+  </Accordion>
+  <Accordion title="The column names are wrong after importing. What should I do?">
+    A column in the header row is probably missing its name, so Teable used a record as the header instead. Name every column in the header row, remove stray notes from the cells beside the table, then import again.
+  </Accordion>
+  <Accordion title="Why did the import fail?">
+    When a sheet fails, the result list in the dialog shows the reason for that sheet. Before the import starts, Teable also blocks the file when the format does not match the option you chose, when an Excel file is larger than 5MB, or when a field name in the preview is empty or duplicated. Fix the file or the field names, then import again.
+  </Accordion>
+</AccordionGroup>
+
 ## Notes
 
-- **First row detection**: Teable treats the first row as the header row by default. Make sure the first row contains clear column names, not data.
+- **Header row detection**: A CSV file uses the first row as the header. In an Excel file, Teable skips titles and blank rows above the table to find the header row, as long as the header sits on its own row and every column has a name. Check the column names in the preview before importing.
 - **Date format**: Teable can recognize common date formats such as `YYYY-MM-DD`. For unusual formats, standardize them before import, or import them as text and convert the field type later.
 - **Airtable select options**: If Airtable select options have names that become identical after trimming spaces, Teable keeps the first option and maps matching record values to it. This prevents duplicate option names during import.
