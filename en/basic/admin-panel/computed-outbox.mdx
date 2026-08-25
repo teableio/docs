@@ -31,7 +31,7 @@ To narrow the list:
 
 - Click the state tiles above the table to filter by state: **Waiting**, **Active**, **Delayed**, **Failed**, **Completed (retained)**, and so on. You can select several at once, and hovering a tile explains what that state means.
 - Filter by **Space**, **Base**, **Cause**, or **Outcome**, search for a task, Base, Space, or error, or set a minimum processing time to surface slow tasks.
-- Click a row to open its detail: queue timestamps, delivery lag, processing time, and, for failed deliveries, the full failure reason with the redacted SQL.
+- Click a row to open **Computed lineage**: queue timestamps, delivery lag, processing time, the full failure reason with the redacted SQL for a failed delivery, and the propagation detail described below.
 
 <Info>**Completed** does not mean the task did work. The outcome badge says what the delivery actually did: **Processed** ran the task, **No-op** found nothing left to do, **Deferred** rescheduled it for later, and **Parked** means its scope is paused. The **Outcome** filter narrows the list by that result and shows how many deliveries each one covers, so pairing **Completed (retained)** with **Processed** leaves only the deliveries that really ran the task.</Info>
 
@@ -40,6 +40,19 @@ A failed row is the history of one delivery attempt, not a stuck task. The durab
 **Clear failed history** removes the retained failed-job records from the queue only. It repairs nothing, and dead letters remain in **Anomaly maintenance**.
 
 A state tile can also count entries whose job data no longer exists in Redis, usually left behind after eviction or data loss. The list cannot show them, so the page explains the gap under the table. Teable sweeps such leftovers out of the failed state on its own; **Clear failed history** removes them right away.
+
+## Trace How a Value Propagated
+
+When a computed value looks wrong or arrived late, open **Computed lineage** to see the whole chain behind it. Click any queue row, or click **Lineage** beside a task ID in anomaly detail.
+
+| Section | What it answers |
+| --- | --- |
+| Summary | End-to-end latency, when the source changed, when the value converged, and which table and fields triggered the run. A **Computing** badge means the chain is still running. |
+| **Timeline** | When the run was enqueued, started, and completed or failed. |
+| **Task chain** | Every task in the cascade, with its state, plan steps, cascade depth, enqueue time, and duration. |
+| **Field propagation** | Which fields the run read and wrote, and how the change traveled between them. Dashed blue is the field that changed, gray is an input that was not written this run, green is written this run, and the arrows are field dependencies or link hops rather than step order. |
+
+<Info>The lineage ledger only records tasks created after this feature shipped and keeps 7 days of history. An older task shows its queue facts without a propagation graph. A seed task the worker has not planned yet shows only its trigger fields.</Info>
 
 ## Handle Anomalous Tasks
 

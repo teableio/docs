@@ -5,10 +5,11 @@ description: "Build integrations that allow users to authorize access to their T
 
 OAuth Apps allow third-party applications to access Teable on behalf of users. This guide explains how to create and configure an OAuth App, implement the OAuth 2.0 authorization flow, and use access tokens to interact with the Teable API.
 
-Teable supports two OAuth 2.0 authorization modes:
+Teable supports three OAuth 2.0 authorization modes:
 
 - **Authorization Code + Client Secret**: For web applications with a backend server
 - **Authorization Code + PKCE**: For native apps, CLI tools, SPAs, and other public clients that cannot securely store a client secret
+- **Device Authorization Grant**: For clients that cannot receive a browser redirect at all, such as a CLI running over SSH, in a container, or in a cloud IDE
 
 ## Creating an OAuth App
 
@@ -19,6 +20,7 @@ Teable supports two OAuth 2.0 authorization modes:
    - **Homepage URL**: The full URL to your application's website
    - **Callback URL**: The URL where users will be redirected after authorization
    - **Scopes**: The permissions your application needs
+   - **Enable device flow**: Off by default. Turn it on only if your application signs users in with a device code
 
 4. After creating the app, generate a **Client Secret**. Make sure to copy and store it securely - you won't be able to see it again.
 
@@ -242,6 +244,49 @@ curl -X POST https://app.teable.ai/api/oauth/access_token \
 
 The response format is the same as the standard authorization code flow.
 
+## Device Authorization Flow
+
+The Device Authorization Grant ([RFC 8628](https://datatracker.ietf.org/doc/html/rfc8628)) is for clients that cannot receive a browser redirect: a CLI running over SSH, inside a container, or in a cloud IDE. Your client shows a URL and a short code, the user approves in any browser, and nothing is typed back into the terminal.
+
+Teable follows RFC 8628, so most OAuth client libraries can drive this flow without custom code. What follows is what is specific to Teable.
+
+<Warning>Device flow is off by default. Turn on **Enable device flow** in your OAuth App settings before using it. Anyone who knows your Client ID can start this flow in your app's name, so enable it only if your app needs it. Turning it off again also stops requests that are already waiting for approval.</Warning>
+
+### Request a Device Code
+
+`POST /api/oauth/device/code` with your `client_id` and an optional `scope`. The endpoint is anonymous and rate limited to 30 requests per 15 minutes per IP address.
+
+```json
+{
+  "device_code": "xxxxxxxxxxxx",
+  "user_code": "BCDF-GHJK",
+  "verification_uri": "https://app.teable.ai/oauth/device",
+  "expires_in": 900,
+  "interval": 5
+}
+```
+
+Both codes expire after 15 minutes (`BACKEND_OAUTH_DEVICE_CODE_EXPIRE_IN`), and `interval` is the minimum seconds to wait between polls.
+
+Print the `verification_uri` and the `user_code`. On that page the user signs in, enters the code, and reviews your app's name, homepage, and requested scopes before approving or denying. The page warns them not to approve a code they did not start themselves. Each code can be used once.
+
+<Note>Teable does not return `verification_uri_complete`, and your client should not build one. An approved code signs the approver into their own Teable account, so a link that already carries the code is exactly what device-code phishing relies on.</Note>
+
+### Poll for Tokens
+
+`POST /api/oauth/access_token` with `grant_type=urn:ietf:params:oauth:grant-type:device_code`, the `device_code`, and your `client_id`. Public clients send no `client_secret`; confidential clients add it as in the other flows.
+
+Until someone approves the code, the endpoint answers with an error instead of tokens:
+
+| Error | What your client should do |
+|-------|----------------------------|
+| `authorization_pending` | Nobody has approved yet. Keep polling at `interval` |
+| `slow_down` | You polled too fast. Wait longer before the next poll |
+| `access_denied` | The user denied the request. Stop polling |
+| `expired_token` | The code expired or was already used. Start over |
+
+Once the user approves, the response is the same token payload as the other flows.
+
 ## Using Access Tokens
 
 Include the access token in the `Authorization` header for API requests:
@@ -331,6 +376,7 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 | Token Type | Default Expiration | Configurable Via |
 |------------|-------------------|------------------|
 | Authorization Code | 5 minutes | `BACKEND_OAUTH_CODE_EXPIRE_IN` |
+| Device Code | 15 minutes | `BACKEND_OAUTH_DEVICE_CODE_EXPIRE_IN` |
 | Access Token | 10 minutes | `BACKEND_OAUTH_ACCESS_TOKEN_EXPIRE_IN` |
 | Refresh Token | 30 days | `BACKEND_OAUTH_REFRESH_TOKEN_EXPIRE_IN` |
 | Authorization Memory | 7 days | `BACKEND_OAUTH_AUTHORIZED_EXPIRE_IN` |
@@ -346,11 +392,12 @@ Common error responses:
 | `invalid_scope` | Requested scope not allowed for this OAuth App |
 | `access_denied` | User denied the authorization request |
 | `redirect_uri_mismatch` | Redirect URI doesn't match registered URLs |
-| `too_many_requests` | Token request rate limit exceeded (default: 30 per 15 minutes) |
+| `unauthorized_client` | The OAuth App has not enabled the device flow |
+| `too_many_requests` | Rate limit exceeded. Token requests default to 30 per 15 minutes, and device code requests to 30 per 15 minutes per IP address |
 
 ## Best Practices
 
-1. **Choose the right mode**: Use client secret mode for web apps with a backend, PKCE mode for native apps/CLI/SPA
+1. **Choose the right mode**: Use client secret mode for web apps with a backend, PKCE mode for native apps/CLI/SPA, and device flow when the client cannot receive a browser redirect
 2. **Store secrets securely**: Never expose your Client Secret in client-side code
 3. **Use state parameter**: Always include a random `state` parameter to prevent CSRF attacks
 4. **Request minimal scopes**: Only request permissions your application actually needs
