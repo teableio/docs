@@ -1,24 +1,58 @@
 ---
 title: "Table Query Ops"
-description: "Analyze slow table queries and review possible database improvements."
+description: "Review query risk recommendations for slow tables and confirm database improvements."
 ---
 
 <Tip>Available for self-hosted Business plan and above</Tip>
 
 Path: Admin Panel → Table Query Ops
 
-Use **Table Query Ops** when views, filters, relations, or searches on a large table become slow. It helps instance administrators analyze a Table, Base, or Space and identify possible improvements.
+Use **Table Query Ops** when views, filters, relations, or searches on a large table become slow. A background analyzer watches the query workload and turns what it observes into recommendations. The page lists them so instance administrators can review the evidence, analyze a specific table in more depth, and confirm any database change.
 
-## Choose an Analysis
+The counters above the list summarize the current picture: observation windows, requests, slow queries, timeouts, open and accepted recommendations, running and failed tasks, and how many search access paths are ready or degraded.
+
+## Review Recommendations
+
+The page opens on **Recommendations**, ordered by priority. The analyzer weighs the risk of a query against how heavily the table is used, so the entries most worth acting on come first.
+
+Search by table, Base, or Space ID to filter across all recommendations; any other text filters what is already on screen. The status and risk filters narrow the list further.
+
+Expand a row to read why the recommendation was raised, the system decision, the execution plan evidence, and the SQL diagnostics. **Deep analysis** opens the analysis workspace with that table already filled in.
+
+Two more tabs sit beside it:
+
+| Tab | What it shows |
+| --- | --- |
+| **Hot tables** | The busiest tables, with requests, slow queries, timeouts, and longest query duration. |
+| **Tasks** | Remediation tasks Teable created, with status, attempts, worker, and the last error. |
+
+A banner appears above the list when a configuration problem is holding the process up: search access paths are configured while the runtime flag is off, some tables have a stale or rebuild-pending access path and their search has silently fallen back to the slower `ILIKE` scan, or the oldest queued task has waited long enough to suggest no worker is consuming it. Fix what the banner reports before acting on the recommendations below it.
+
+### Read the Decision Badge
+
+Each recommendation carries the latest decision the system made about it:
+
+| Badge | Meaning |
+| --- | --- |
+| **Needs manual confirmation** | Only an administrator can apply this one. |
+| **Shadow · would auto-run** | The recommendation meets the acceptance criteria, but automatic execution is not enabled, so nothing changed. |
+| **Auto-executing** / **Auto-executed** | Automatic execution accepted the recommendation and applied it. |
+| **Post-verify failed · backing off** | An automatic change did not pass verification. Teable waits longer before trying that table again. |
+| **Cooling down** | The same scope was changed recently, so the system is holding off. |
+| **On hold** / **Auto-execution not applied** | The plan evidence or the table size did not meet the bar for automatic execution. |
+
+<Info>By default Teable only records decisions and creates recommendation and task records; it does not change your database on its own. Automatic execution is opt-in through `V2_TABLE_QUERY_OPS_AUTO_ACCEPT=auto`, and even then it applies only to small tables whose execution plan shows a clear cost improvement. Everything else waits for an administrator.</Info>
+
+## Run a Deep Analysis
+
+Open **Analysis workspace** to analyze a scope on demand, for example when a user reports a slow table that has no recommendation yet.
 
 | Analysis type | Use it for |
 | --- | --- |
 | **Queries & indexes** | Find query risks and possible index improvements. |
 | **Substring search** | Check whether a substring search access path could speed up contains searches without changing their matching behavior. |
 
-## Run an Analysis
-
-Choose **Table**, **Base**, or **Space**, then enter the corresponding ID and select an analysis type. Start with **Table** when you already know which table is slow.
+Choose **Table**, **Base**, or **Space**, enter the corresponding ID, and select an analysis type. Start with **Table** when you already know which table is slow.
 
 Click **Generate query report** or **Generate search report**. The report summarizes detected risks and recommended next actions. For a search report, **EXPLAIN sample search** is optional. Add a sample to check result compatibility, query plans, and repeated query timing for the proposed substring search access path. Teable does not save the sample value.
 
