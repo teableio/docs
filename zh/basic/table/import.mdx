@@ -1,10 +1,10 @@
 ---
 title: "导入"
-description: "将 CSV、Excel 或 Airtable 数据导入 Teable。"
+description: "将 CSV、Excel、Airtable 或 Google Sheets 数据导入 Teable。"
 ---
 
 {/* mintlify-resync: 2026-05-14 */}
-导入可用于快速初始化新表格，将新数据追加到已有表格，也可以把 Airtable 中的表导入到 Teable 数据库。也可以在导入数据库中选择 **从 Airtable 导入**。
+导入可用于快速初始化新表格，将新数据追加到已有表格，也可以把 Airtable 或 Google Sheets 中的表导入到 Teable 数据库。导入整个数据库时，同样可以选择 Airtable 和 Google Sheets 作为来源。
 
 <Card title="从 Airtable 或其他平台迁移" icon="sparkles" href="/zh/basic/ai/connect-everything">
   在 AI 对话中使用 Connect Everything，将 Airtable、Baserow、NocoDB、SmartSuite 等系统迁移到 Teable。
@@ -88,6 +88,34 @@ Excel 文件大小限制为 **5MB**。如果您需要导入更大规模的数据
 
 导入过程中，Teable 会按表显示进度。如果字段、视图或值在导入时需要调整，导入日志会列出这些变化，然后显示 **导入完成**。
 
+## 从 Google Sheets 导入
+
+两个入口都可以发起导入：
+
+- 要创建新的 Teable 数据库，打开目标空间菜单，点击 **导入**，然后选择 **从 Google Sheets 导入**。
+- 要把工作表导入到正在查看的数据库，点击左侧目录栏顶部的 `+`，在 **从第三方资源导入** 下选择 **Google Sheets**。
+
+<Steps>
+  <Step title="连接 Google 账号">
+    首次导入时点击 **连接 Google 账号**，在弹窗中完成授权。之后再导入不需要重复连接。
+  </Step>
+  <Step title="选择表格">
+    点击 **从 Google Drive 选择表格**，在 Google 文件选择器中选中一个文件，Teable 会读取它的结构。要换一个文件，点击 **更换**。
+  </Step>
+  <Step title="选择工作表">
+    每张工作表以卡片形式列出，并标注行数和列数。选中要导入的工作表；如果只需要字段结构、不需要数据，取消勾选 **导入记录数据**。
+  </Step>
+  <Step title="开始导入">
+    点击 **开始导入**，并保持弹窗打开。弹窗会按表显示进度，结束后列出每张表导入了多少条记录。新建数据库的导入完成后，可以直接点 **打开 base** 查看结果。
+  </Step>
+</Steps>
+
+<Info>
+Teable 只能读取你在 Google 文件选择器中选中的表格，不会访问整个 Google Drive。之后要导入别的文件，再打开一次选择器选中它即可。
+</Info>
+
+如果有值或列在导入时做了调整，弹窗会逐条列出：空工作表会被跳过，单张工作表超出 300 列上限的部分不会导入，与 Teable 推断出的列类型不匹配的值会被丢弃。导入中途失败时，已经完整导入的表会保留下来，弹窗也会说明保留了几张。
+
 ## 常见问题
 
 <AccordionGroup>
@@ -106,4 +134,5 @@ Excel 文件大小限制为 **5MB**。如果您需要导入更大规模的数据
 
 - **表头识别**：CSV 文件以 **第一行** 作为表头。Excel 文件会自动跳过表格上方的标题和空行去找表头那一行，前提是表头单独占一行、每列都写了列名。导入前在预览里确认一遍列名是否正确
 - **日期格式**：系统能识别常见的日期格式（如 `YYYY-MM-DD`），但如果格式过于特殊，建议在导入前统一规范化，或者先作为“文本”导入，后续再转换类型
+- **Google Sheets 字段类型**：Teable 会读取每一列单元格的格式来决定字段类型，因此在 Google Sheets 中设为日期、数字格式的值，导入后是日期和数字字段。表格上方的空行和横幅在找表头时会被跳过。导入后建议再确认一遍字段类型
 - **Airtable 选项去重**：如果 Airtable 的单选或多选选项在去掉首尾空格后名称相同，Teable 会保留第一个选项，并把对应记录值映射到该选项，避免导入时出现重复选项名称。

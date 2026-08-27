@@ -1,10 +1,10 @@
 ---
 title: "Import"
-description: "Import CSV, Excel, or Airtable data into Teable."
+description: "Import CSV, Excel, Airtable, or Google Sheets data into Teable."
 ---
 
 {/* mintlify-resync: 2026-05-14 */}
-Use import to initialize a new table, append new data to an existing table, or bring tables from Airtable into a Teable base. You can also choose **Import from Airtable** when importing a base.
+Use import to initialize a new table, append new data to an existing table, or bring tables from Airtable or Google Sheets into a Teable base. Airtable and Google Sheets are also available when you import a whole base.
 
 <Card title="Migrate from Airtable or another platform" icon="sparkles" href="/en/basic/ai/connect-everything">
   Use Connect Everything in AI Chat to migrate Airtable, Baserow, NocoDB, SmartSuite, and other systems into Teable.
@@ -88,6 +88,34 @@ When **Import view filters, sorts and grouping** is enabled, Teable asks for a r
 
 During import, Teable shows progress by table. If some fields, views, or values need to be adjusted, the import log lists the changes before showing **Import completed**.
 
+## Import from Google Sheets
+
+Start from either entry point:
+
+- To create a new Teable base, open the target space menu, click **Import**, then choose **Import from Google Sheets**.
+- To add tables to the base you are viewing, click `+` at the top of the left directory and choose **Google Sheets** under **Add from other sources**.
+
+<Steps>
+  <Step title="Connect your Google account">
+    The first time you import, click **Connect Google account** and finish authorizing in the popup. Teable remembers the connection for later imports.
+  </Step>
+  <Step title="Pick a spreadsheet">
+    Click **Select a spreadsheet from Google Drive** and choose one file in Google's file picker. Teable then reads its structure. Use **Change** to switch to a different spreadsheet.
+  </Step>
+  <Step title="Choose the tabs">
+    Each tab is shown as a card with its row and column count. Select the tabs you want. Clear **Import records** if you only want the field structure without the data.
+  </Step>
+  <Step title="Start the import">
+    Click **Start import** and keep the dialog open. It reports progress table by table and, when it finishes, how many records each table received. After a new-base import, use **Open base** to go straight to the result.
+  </Step>
+</Steps>
+
+<Info>
+Teable can only read the spreadsheets you select in Google's file picker, not your whole Drive. To import another file later, open the picker again and select it.
+</Info>
+
+When values or columns need adjusting, the dialog lists each case: an empty tab is skipped, columns beyond the 300-column limit for one tab are not imported, and a value that does not fit the type Teable inferred for its column is dropped. If the import fails partway, the tables that already finished are kept, and the dialog says how many.
+
 ## FAQ
 
 <AccordionGroup>
@@ -106,4 +134,5 @@ During import, Teable shows progress by table. If some fields, views, or values 
 
 - **Header row detection**: A CSV file uses the first row as the header. In an Excel file, Teable skips titles and blank rows above the table to find the header row, as long as the header sits on its own row and every column has a name. Check the column names in the preview before importing.
 - **Date format**: Teable can recognize common date formats such as `YYYY-MM-DD`. For unusual formats, standardize them before import, or import them as text and convert the field type later.
+- **Google Sheets field types**: Teable reads each column's cell formats to choose a field type, so values formatted as dates or numbers in Google Sheets arrive as Date and Number fields. Leading blank rows and banners above the table are skipped when Teable looks for the header row. Check the field types after importing.
 - **Airtable select options**: If Airtable select options have names that become identical after trimming spaces, Teable keeps the first option and maps matching record values to it. This prevents duplicate option names during import.

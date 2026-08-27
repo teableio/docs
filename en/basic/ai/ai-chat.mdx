@@ -6,7 +6,7 @@ description: Interact with your data using natural language for analysis, visual
 {/* mintlify-resync: 2026-05-14 */}
 <Note>Available on all Cloud plans; Self-Hosted requires Business or higher.</Note>
 
-AI Chat helps analyze the current table, explain record content, generate temporary charts, and create or update tables, views, apps, and automations.
+AI Chat helps analyze the current table, explain record content, generate charts and reports, and create or update tables, views, apps, and automations.
 
 AI prioritizes the current page. To reference other tables, views, apps, automations, or folders, type `@` in the input box and select the related node.
 
@@ -48,8 +48,8 @@ When you paste a long block of plain text, Teable converts it to a Markdown atta
   <Card title="Analyze data" icon="chart-line">
     Summarize data in the current table or view, or analyze across multiple related nodes.
   </Card>
-  <Card title="Temporary charts and reports" icon="chart-pie">
-    Generate one-time chart or report previews from queried data.
+  <Card title="Charts and reports" icon="chart-pie">
+    Turn queried data into a chart, report, or small interactive page you can reopen and share.
   </Card>
   <Card title="Read files" icon="file-lines">
     Answer questions using PDFs, Excel files, Word documents, images, and other attachments.
@@ -98,16 +98,18 @@ If the question involves multiple tables, use `@` to add the related tables or v
 
 In Grid view, you can also select rows, columns, a single cell, or a cell range, then use **Add to Chat** from the context menu. The selection appears as a chip in the input box, and clicking the chip highlights the related grid area again. Column chips use field names when available and shorten long selections after the first few names.
 
-### Generate Temporary Charts or Report Previews
+### Create Charts and Reports
 
-AI can generate one-time HTML previews from queried data, useful for checking charts or reports quickly:
+Ask AI to turn queried data into a chart, a written report, or a small interactive page:
 
 - Generate a weekly sales trend chart.
 - Turn this query result into a pie chart.
 - Create a summary report from these records.
 
+AI builds these as **artifacts**: they appear as a card in the conversation, open in their own viewer, and stay available after the conversation ends. See [Artifacts](#artifacts) for what you can do with one.
+
 <Info>
-These previews are not saved as long-term apps and do not refresh data automatically. For dashboards, business pages, or interactive apps that need to be reused, create an app with [App Builder](/en/basic/ai/app-builder).
+An artifact holds the data AI put into it when it was created, so it does not refresh on its own. For a page that keeps reading live table data, or that collects input and stores state, create an app with [App Builder](/en/basic/ai/app-builder).
 </Info>
 
 ### Read Files
@@ -169,6 +171,42 @@ For long-running or repeatable work, use the feature that matches the workflow:
   </Card>
 </CardGroup>
 
+## Artifacts
+
+When AI builds a chart, report, dashboard-style page, or small interactive tool, it saves the result as an **artifact**: a self-contained page that renders outside the conversation. Artifacts appear as a card in the chat and stay available afterwards. Each one is either an interactive HTML page or a Markdown report.
+
+Click the card to open the artifact. From the viewer you can:
+
+- **Fullscreen** or **Open in new page** to give the artifact more room.
+- **Download** the current version as a file.
+- Open the version list to look at an earlier version and **Restore this version** to make it current again.
+- **Delete** the artifact. Its cards in the conversation turn into a deleted placeholder, so delete only when you no longer need the result.
+
+To change an artifact, ask AI in the same conversation. Each revision becomes a new version of the same artifact rather than a separate one, so the share link keeps working and you can still go back. If the page fails to run, the viewer shows the error and offers **Fix with AI**, which sends the error back to the chat so AI can correct it.
+
+### Share an Artifact
+
+Artifacts are private to the person who created them, so use a share link to let anyone else open one.
+
+<Steps>
+  <Step title="Turn on sharing">
+    Click **Share** in the viewer and enable **Enable sharing**. Teable generates the link.
+  </Step>
+  <Step title="Choose who can view">
+    Set **Who can view** to **Anyone with the link**, or to **Space members** so only signed-in members of the space can open it.
+  </Step>
+  <Step title="Add a password (optional)">
+    Under the advanced settings, turn on **Password protection** and set a password. Viewers must enter it before the artifact loads.
+  </Step>
+  <Step title="Send the link">
+    Use **Copy link** to copy it. If the link has spread too far, **Reset link** issues a new one and stops the old link from working.
+  </Step>
+</Steps>
+
+### Find Artifacts Later
+
+Open **+** → **More** → **Manage artifacts** to browse everything you have created across your chats. Search by name, then open one to view or reshare it.
+
 ## Prompting Tips
 
 - **State the goal first**: In the first message, describe what to do, the relevant conditions, and the expected output. For example, analyze weekly sales trends over the past 3 months, grouped by region, and return a trend table with a short conclusion.
@@ -187,8 +225,11 @@ For long-running or repeatable work, use the feature that matches the workflow:
     Type `@` in the input box and select the node you want AI Chat to reference. For Grid view selections, you can also select rows, columns, a single cell, or a cell range, then use **Add to Chat** from the context menu.
   </Accordion>
 
-  <Accordion title="Are temporary charts or report previews saved?">
-    No. Temporary charts and report previews are one-time HTML previews. They are not saved as apps and do not refresh data automatically. For reusable dashboards or interactive pages, create an app with [App Builder](/en/basic/ai/app-builder).
+  <Accordion title="Are the charts and reports AI creates saved?">
+    Yes. They are saved as artifacts, with version history and an optional share link, and you can reopen them from **+** → **More** → **Manage artifacts**. An artifact keeps the data it was built with and does not refresh on its own. For a page that reads live table data, create an app with [App Builder](/en/basic/ai/app-builder).
+  </Accordion>
+  <Accordion title="Can my teammates open an artifact I created?">
+    Not by default. Only you can open your own artifacts. Turn on **Enable sharing** in the viewer and send the link, choosing **Space members** if the artifact should stay inside the space.
   </Accordion>
 
   <Accordion title="Does memory carry across Bases?">
