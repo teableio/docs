@@ -17,7 +17,17 @@ The page opens on **Recommendations**, ordered by priority. The analyzer weighs 
 
 Search by table, Base, or Space ID to filter across all recommendations; any other text filters what is already on screen. The status and risk filters narrow the list further.
 
-Expand a row to read why the recommendation was raised, the system decision, the execution plan evidence, and the SQL diagnostics. **Deep analysis** opens the analysis workspace with that table already filled in.
+Each entry names the space, base, and table it belongs to. Expand a row to read the evidence behind the recommendation, the system decision, and the SQL diagnostics:
+
+| Section | What it tells you |
+| --- | --- |
+| **Trigger** | Where the recommendation came from: observed query traffic, a saved view configuration, or a relation field configuration. A saved-view trigger means no slow query was observed yet; the configuration alone is what raised the risk. |
+| **Access path** | How often this table was reached by sequential scan versus index scan. |
+| **Reasons** | Readable causes such as a large table, no useful index on the filter or sort fields, expensive sorting, or observed timeouts. |
+| **Query shape** | The specific fields being filtered and sorted, with the kind of match each one uses. |
+| **Proposed index** | The fields the recommendation would index, and why. |
+
+**Deep analysis** opens the analysis workspace with that table already filled in.
 
 Two more tabs sit beside it:
 
@@ -42,6 +52,14 @@ Each recommendation carries the latest decision the system made about it:
 | **On hold** / **Auto-execution not applied** | The plan evidence or the table size did not meet the bar for automatic execution. |
 
 <Info>By default Teable only records decisions and creates recommendation and task records; it does not change your database on its own. Automatic execution is opt-in through `V2_TABLE_QUERY_OPS_AUTO_ACCEPT=auto`, and even then it applies only to small tables whose execution plan shows a clear cost improvement. Everything else waits for an administrator.</Info>
+
+### Add the Proposed Index
+
+When a recommendation proposes an index you agree with, click **Add index** on the row. Confirming accepts the recommendation and runs `CREATE INDEX CONCURRENTLY` on the underlying PostgreSQL table; if plan validation was skipped, Teable still builds the index from the recommended fields. The dialog repeats the evidence so you can check it one last time.
+
+For a table estimated at 50,000 rows or more, the dialog asks you to confirm that a maintenance window is in place before the button becomes available. A concurrent build on a large table takes time and adds load while it runs.
+
+Teable then reports either **Index created** or **Recommendation accepted and queued**. In the second case, follow the task under **Tasks**. If the recommendation has no executable physical column behind it, **Add index** stays disabled and says so; use the analysis workspace to look further instead.
 
 ## Run a Deep Analysis
 
