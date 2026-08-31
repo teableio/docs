@@ -29,6 +29,8 @@ Each entry names the space, base, and table it belongs to. Expand a row to read 
 
 **Deep analysis** opens the analysis workspace with that table already filled in.
 
+When the analyzer sees heavy substring searching across a table, it raises one **generated-text GIN** recommendation for that whole table instead of a per-field index. Such a row offers **Create search path** in place of **Deep analysis**, and **Add index** does not appear, because a search access path is applied from the analysis workspace and needs an **EXPLAIN sample search** first. The recommendation closes on its own once the table has the path.
+
 Two more tabs sit beside it:
 
 | Tab | What it shows |

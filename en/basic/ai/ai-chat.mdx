@@ -37,7 +37,7 @@ When you paste a long block of plain text, Teable converts it to a Markdown atta
 - **Skills**: Open the **+** menu and choose **Skills** to import, enable, disable, or try skills in the current chat. When you import one, choose who can use it: **Personal** keeps it to yourself, **Base** gives it to collaborators in this base, and **Space** gives it to everyone in this space. Type `/` in the input box to choose an enabled skill. To connect or migrate an external system, see [Connect & Migrate Everything](/en/basic/ai/connect-everything).
 - **Context usage**: The ring next to the input box shows how much of the model's context window the conversation currently uses. Click it for the percentage and token counts. When the context fills up, Teable compacts the conversation; start a new chat if you want a clean context instead.
 - **Manage files**: Open **+** → **More** → **Manage files** to view files in the current chat sandbox. You can preview supported files, download files, or delete files and folders you no longer need. A conversation must exist before its files can be managed.
-- **Queued messages**: If you send another message while AI is still working, the message is queued. Queued items show the same table, view, attachment, and selection chips as the chat input. Use **Edit** to move a queued item back into the input, **Send follow-up without interrupting** to add a text follow-up to the current run when that action is available, or **Remove** to delete it from the queue. Items that cannot be sent as follow-ups stay queued until the current run finishes.
+- **Message queue**: Sending another message while AI is working does not interrupt it. The message waits in a queue above the input box and goes out when the current run ends. Queued items keep the same table, view, attachment, and selection chips as the chat input; **Remove** drops one, **...** → **Edit message** puts it back in the input box, and a text-only item also offers **Steer** to hand its text to the running turn instead of waiting.
 
 ## Common Uses
 
@@ -249,7 +249,15 @@ Open **+** → **More** → **Manage artifacts** to browse everything you have c
   </Accordion>
 
   <Accordion title="What happens if I send another message while AI is working?">
-    The new message is queued. You can edit the queued message, remove it, or, when the action is available, use **Send follow-up without interrupting** to add a text follow-up to the current run.
+    It joins the send queue above the input box rather than interrupting the run, and Teable sends the whole queue as one message when the run ends. The queue lives on the server, so it survives a refresh and looks the same in every tab or device where that conversation is open.
+
+    While an item waits you can **Remove** it or use **Edit message** to bring it back into the input box. A text-only item can also be steered: **Steer** hands it to the running turn right away, and it then appears in the conversation labelled **Steered conversation**.
+
+    A conversation holds up to 30 queued messages. Past that, the message is not queued and Teable replies `The send queue is full. Wait for Cuppy to catch up.`
+  </Accordion>
+
+  <Accordion title="Why does the queue say it is paused?">
+    Stopping a run also holds the queue, so nothing you queued is sent by a stop you meant for the current answer. The queue header then reads `Queue paused because you interrupted`. Click **Resume** to release it, or just send your next message: starting a new run releases the queue as well.
   </Accordion>
 
   <Accordion title="How do I use Skills in AI Chat?">
