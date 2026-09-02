@@ -23,6 +23,7 @@ Describe the goal once, and the workflow is ready — no manual setup needed.
 | Setting | Required | Description |
 |---|---|---|
 | Authorization | No | **None** (public — anyone with the URL can trigger it) or **Bearer Token** (auto-generated token required in the request header) |
+| Response | No | **Default** (Teable returns its own acknowledgement) or **Custom** (you decide the status code, content type, and body) |
 
 ## How to set it up
 
@@ -51,14 +52,38 @@ Then in your actions, you can reference `order_id`, `customer`, and `amount` ind
 
 Teable automatically parses the JSON and creates named variables for each top-level key. Nested objects are also accessible.
 
+## Customize the response
+
+By default, Teable replies to every incoming request with its own acknowledgement. Some platforms will not accept that: they verify a subscription URL by sending a probe and requiring your endpoint to echo one field of it back. Slack works this way, so its events can only reach an automation once the webhook answers the handshake.
+
+In the trigger panel, switch **Response** from **Default** to **Custom**:
+
+| Field | Description |
+|---|---|
+| **Status code** | Any code from 200 to 299. Defaults to 200. |
+| **Content type** | **JSON** or **raw text**. Defaults to JSON. |
+| **Response body** | The text to return. Use `{{body.<path>}}` to insert values from the incoming request. |
+
+Switching to **Custom** pre-fills the body with the handshake reply most callers need:
+
+```json
+{"challenge":"{{body.challenge}}"}
+```
+
+The paths inside `{{ }}` are the same ones the trigger exposes as output variables, so you can copy a path straight from a payload you have already seen in a test run. Nested values work too, for example `{{body.event.type}}`. In a JSON body, a path the request does not contain is rendered as `null`, so the response stays valid JSON.
+
+<Info>Slack cannot send an `Authorization` header, so keep **Authorization** set to **None** when you connect it. The trigger panel shows a warning if both are on at once.</Info>
+
+Switch **Response** back to **Default** at any time to return to Teable's own acknowledgement. Automations that never touch this setting are unaffected.
+
 ## Testing your webhook
 
-The easiest way to test is with `curl` from the command line:
+The easiest way to test is with `curl` from the command line. Copy the real URL from the trigger panel rather than typing it out; it carries the base and workflow ids.
 
 **Without authorization:**
 
 ```bash
-curl -X POST https://your-teable-instance.com/api/automation/webhook/abc123 \
+curl -X POST https://your-teable-instance.com/api/webhook/base/bseXXXXXXXXXXXX/workflow/wflXXXXXXXXXXXX \
   -H "Content-Type: application/json" \
   -d '{"test": true, "message": "Hello from curl"}'
 ```
@@ -66,7 +91,7 @@ curl -X POST https://your-teable-instance.com/api/automation/webhook/abc123 \
 **With Bearer Token authorization:**
 
 ```bash
-curl -X POST https://your-teable-instance.com/api/automation/webhook/abc123 \
+curl -X POST https://your-teable-instance.com/api/webhook/base/bseXXXXXXXXXXXX/workflow/wflXXXXXXXXXXXX \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer your-generated-token" \
   -d '{"order_id": "12345", "status": "paid"}'
@@ -75,7 +100,7 @@ curl -X POST https://your-teable-instance.com/api/automation/webhook/abc123 \
 **Sending more complex data:**
 
 ```bash
-curl -X POST https://your-teable-instance.com/api/automation/webhook/abc123 \
+curl -X POST https://your-teable-instance.com/api/webhook/base/bseXXXXXXXXXXXX/workflow/wflXXXXXXXXXXXX \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer your-generated-token" \
   -d '{

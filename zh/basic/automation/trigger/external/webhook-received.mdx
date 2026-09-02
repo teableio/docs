@@ -22,6 +22,7 @@ AI 会为你处理一切：选择合适的触发器，映射相关字段，自�
 | 设置 | 必填 | 说明 |
 |---|---|---|
 | 鉴权方式 | 否 | **无**（公开访问）或 **Bearer Token**（系统自动生成 Token） |
+| 响应 | 否 | **默认**（由 Teable 返回固定的确认信息）或 **自定义**（自行指定状态码、内容类型和响应内容） |
 
 ## 如何设置
 
@@ -35,18 +36,18 @@ AI 会为你处理一切：选择合适的触发器，映射相关字段，自�
 
 ## 测试 Webhook
 
-使用 `curl` 发送测试请求：
+使用 `curl` 发送测试请求。URL 中包含 Base 和工作流的 ID，请直接从触发器面板复制，不要手写：
 
 ```bash
 # 不带鉴权
-curl -X POST https://your-teable-instance.com/api/automation/webhook/xxx \
+curl -X POST https://your-teable-instance.com/api/webhook/base/bseXXXXXXXXXXXX/workflow/wflXXXXXXXXXXXX \
   -H "Content-Type: application/json" \
   -d '{"order_id": "12345", "status": "paid"}'
 ```
 
 ```bash
 # 带 Bearer Token 鉴权
-curl -X POST https://your-teable-instance.com/api/automation/webhook/xxx \
+curl -X POST https://your-teable-instance.com/api/webhook/base/bseXXXXXXXXXXXX/workflow/wflXXXXXXXXXXXX \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer your-generated-token" \
   -d '{"order_id": "12345", "status": "paid", "amount": 299.00}'
@@ -54,7 +55,7 @@ curl -X POST https://your-teable-instance.com/api/automation/webhook/xxx \
 
 ```bash
 # 发送包含数组的请求体
-curl -X POST https://your-teable-instance.com/api/automation/webhook/xxx \
+curl -X POST https://your-teable-instance.com/api/webhook/base/bseXXXXXXXXXXXX/workflow/wflXXXXXXXXXXXX \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer your-generated-token" \
   -d '{"event": "batch_update", "items": [{"id": "001", "name": "产品A"}, {"id": "002", "name": "产品B"}]}'
@@ -76,6 +77,30 @@ curl -X POST https://your-teable-instance.com/api/automation/webhook/xxx \
 ```
 
 你可以在后续步骤中通过 **+** 按钮引用 `order_id`、`customer`、`amount` 等字段的值。
+
+## 自定义响应
+
+默认情况下，Teable 会用一段固定的确认信息回复每个请求。有些平台不接受这种回复：它们会先发一个探测请求，要求你的接口把其中某个字段原样返回，以此验证订阅地址。Slack 就是这样，只有 Webhook 正确应答这次握手，它的事件才能进入自动化。
+
+在触发器面板中，把**响应**从**默认**切换为**自定义**：
+
+| 字段 | 说明 |
+|---|---|
+| **状态码** | 200 到 299 之间的任意状态码，默认 200 |
+| **内容类型** | **JSON** 或 **raw text**（纯文本），默认 JSON |
+| **响应内容** | 返回给调用方的内容。用 `{{body.<路径>}}` 插入请求中的值 |
+
+切换到**自定义**时，响应内容会预填成大多数平台需要的握手回复：
+
+```json
+{"challenge":"{{body.challenge}}"}
+```
+
+`{{ }}` 中的路径与触发器输出变量的路径一致，可以直接从测试运行看到的请求内容里照抄，嵌套路径同样可用，例如 `{{body.event.type}}`。如果请求里没有这个路径，JSON 响应中会渲染为 `null`，响应仍是合法 JSON。
+
+<Info>Slack 无法发送 `Authorization` 请求头，接入时请把**鉴权方式**保持为**无**。两者同时开启时，触发器面板会给出提示。</Info>
+
+把**响应**切回**默认**即可恢复 Teable 原本的确认信息。没有改过这项设置的自动化不受影响。
 
 ## 速率限制
 
