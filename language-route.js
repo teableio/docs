@@ -1,8 +1,14 @@
 (function () {
+  if (window.__teableDocsLanguageRouteInitialized) {
+    return;
+  }
+  window.__teableDocsLanguageRouteInitialized = true;
+
   var locales = ["en", "zh", "ru", "de", "fr", "es", "it", "ja", "tr", "uk", "ar"];
   var localeCookie = "TEABLE_DOCS_LOCALE";
   var routerPath = "/en/locale-router";
   var overviewPath = "/basic/ai/overview";
+  var lastObservedPath = window.location.pathname;
 
   function localeFromPath(pathname) {
     var firstSegment = pathname.split("/")[1].toLowerCase();
@@ -74,7 +80,26 @@
     }
   }
 
+  function rememberCurrentPageLocale() {
+    var currentPath = window.location.pathname;
+    if (currentPath === lastObservedPath) {
+      return;
+    }
+
+    lastObservedPath = currentPath;
+    if (currentPath.replace(/\/$/, "") === routerPath) {
+      return;
+    }
+
+    var locale = localeFromPath(currentPath);
+    if (locale) {
+      writeLocaleCookie(locale);
+    }
+  }
+
   document.addEventListener("click", rememberLanguageSwitcherChoice, true);
+  window.addEventListener("popstate", rememberCurrentPageLocale);
+  window.setInterval(rememberCurrentPageLocale, 250);
 
   if (window.location.pathname.replace(/\/$/, "") !== routerPath) {
     return;
