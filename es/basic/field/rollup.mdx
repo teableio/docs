@@ -1,0 +1,72 @@
+---
+title: "Acumulación"
+description: "Agrega valores de Registros enlazados, como la suma, el recuento, el promedio, el máximo y el mínimo."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+Los Campos Acumulación calculan estadísticas a partir de varios Registros enlazados. Un Campo Acumulación suele partir de un Campo **Enlace a Registro** existente, selecciona un Campo de destino de los Registros enlazados y calcula el resultado con la función elegida.
+
+## Casos de uso
+
+| Escenario | Adecuado para |
+| --- | --- |
+| Importe de un pedido | Acumular los precios de las líneas de pedido para calcular el total del pedido |
+| Progreso de las tareas | Contar tareas enlazadas, tareas completadas o valoraciones promedio |
+| Valor del cliente | Acumular el gasto total o el número de pedidos a partir de los pedidos de los clientes |
+| Depuración de etiquetas | Combinar etiquetas, participantes o canales de origen de Registros enlazados |
+
+## Crear y configurar
+
+<Steps>
+  <Step title="Crear una relación de enlace">
+    Antes de crear un Campo Acumulación, crea un Campo **Enlace a Registro**.
+  </Step>
+  <Step title="Elegir el tipo de Campo">
+    Haz clic en `+` en el encabezado de la Tabla para añadir un Campo y elige **Acumulación**.
+  </Step>
+  <Step title="Elegir el Campo de enlace y el Campo de destino">
+    Elige el Campo de enlace que proporciona el origen de datos y, después, el Campo de destino que quieres calcular.
+  </Step>
+  <Step title="Elegir la función de acumulación">
+    Elige una función según el tipo del Campo de destino, como suma, recuento, promedio, máximo o mínimo.
+  </Step>
+</Steps>
+
+## Formato y visualización
+
+Por lo general, los resultados de Acumulación pueden utilizar opciones de formato y visualización interactiva:
+
+- **Formato**: define la precisión decimal, los símbolos de moneda o los porcentajes.
+- **Visualización interactiva**: muestra los resultados numéricos como barras, anillos u otros estilos de visualización.
+
+Consulta [formato](/es/basic/field/common/formatter) y [visualización interactiva](/es/basic/field/common/show-as) para obtener más información.
+
+## Usos habituales
+
+- **Totales de pedidos de una librería**: en una Tabla `Pedidos`, usa el Campo de enlace `Libros seleccionados` para acumular el Campo `Precio` de la Tabla `Libros`. Elige **SUM** para calcular el total del pedido.
+- **Estadísticas de tareas de proyectos**: en una Tabla `Proyectos`, cuenta las tareas enlazadas o calcula su tasa de finalización.
+- **Gasto total de clientes**: en una Tabla `Clientes`, acumula los importes de los pedidos relacionados para ver el gasto total de cada cliente.
+
+## Fórmulas de Acumulación compatibles
+
+| Nombre de la fórmula | Explicación |
+| --- | --- |
+| COUNTALL | Cuenta todos los valores, incluidos los valores de texto y los vacíos |
+| COUNTA | Cuenta los valores no vacíos |
+| COUNT | Cuenta los elementos numéricos |
+| SUM | Calcula la suma de todos los valores numéricos |
+| MAX | Devuelve el valor numérico más grande |
+| MIN | Devuelve el valor numérico más pequeño |
+| AND | Devuelve verdadero si todos los valores son verdaderos |
+| OR | Devuelve verdadero si algún valor es verdadero |
+| XOR | Devuelve verdadero si un número impar de valores son verdaderos |
+| ARRAY_JOIN | Une todos los valores de una matriz en una cadena |
+| ARRAY_UNIQUE | Elimina los valores duplicados y devuelve una matriz con valores únicos |
+| ARRAY_COMPACT | Elimina los valores vacíos y devuelve una matriz nueva |
+| CONCATENATE | Une varios valores en una cadena |
+
+## Notas
+
+- **Actualizaciones dinámicas**: los Campos Acumulación calculan los resultados en tiempo real. Si cambian los datos de origen o las relaciones de enlace, el resultado de la acumulación se actualiza.
+- **Límites de los tipos de datos**: algunas funciones solo funcionan con determinados tipos de Campo. Por ejemplo, **SUM** solo funciona con Campos Número. Si eliges un Campo de texto, Teable no ofrece la suma como opción.
+- **Rendimiento**: una gran cantidad de Campos Acumulación puede afectar al rendimiento, especialmente si abarcan muchos Registros. Planifica con cuidado las relaciones de enlace y revisa periódicamente la configuración de las acumulaciones.

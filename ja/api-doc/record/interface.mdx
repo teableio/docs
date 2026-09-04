@@ -1,0 +1,449 @@
+---
+title: "レコードフィールドインターフェース"
+---
+
+<Note>ルックアップフィールドは、特定のフィールド型ではありません。リンクされたベースから、任意の型のフィールドを参照できます。ルックアップフィールドの型はリンク先ベースの元フィールドによって決まり、isLookupプロパティを持ちます。ルックアップフィールドは編集できません。</Note>
+
+<Note>
+特定の状況では、すべてのフィールドの戻り値に`isMultipleCellValue: true`が設定される場合があります。
+
+1. フィールドがルックアップフィールドの場合に発生します。リンク先の値が複数選択を許可している場合、ルックアップフィールドの値は必ず配列になります。
+
+2. フィールドは設定を変更できます。たとえば、ユーザーフィールドやリンクフィールドは、単一選択または複数選択に設定できます。コードでは、`field.isMultipleCellValue`を使用して、フィールドが複数の値を受け入れるかどうかを判定できます。
+</Note>
+
+<Note>
+書き込み権限の判定にフィールド型を使用しないでください。代わりに、フィールドのisComputedプロパティを使用してください。
+</Note>
+
+### 1. 数値フィールド
+* type: number
+* 書き込み型: `number`
+* 戻り値の型:
+  * `isMultipleCellValue: false`: `number`
+  * `isMultipleCellValue: true`: `number[]`
+
+例:
+```js
+// 書き込み値
+42
+
+// 戻り値 (isMultipleCellValue: false)
+42
+
+// 戻り値 (isMultipleCellValue: true)
+[42, 17, 99]
+```
+
+### 2. 一行テキストフィールド
+* type: singleLineText
+* 書き込み型: `string`
+* 戻り値の型:
+  * `isMultipleCellValue: false`: `string`
+  * `isMultipleCellValue: true`: `string[]`
+
+例:
+```js
+// 書き込み値
+"こんにちは、Teable！"
+
+// 戻り値 (isMultipleCellValue: false)
+"こんにちは、Teable！"
+
+// 戻り値 (isMultipleCellValue: true)
+["こんにちは、Teable！", "ようこそ", "こんにちは"]
+```
+
+### 3. 長文テキストフィールド
+* type: longText
+* 書き込み型: `string`
+* 戻り値の型:
+  * `isMultipleCellValue: false`: `string`
+  * `isMultipleCellValue: true`: `string[]`
+
+例:
+```js
+// 書き込み値
+"これは複数の段落を含められる長いテキストフィールドです..."
+
+// 戻り値 (isMultipleCellValue: false)
+"これは複数の段落を含められる長いテキストフィールドです..."
+
+// 戻り値 (isMultipleCellValue: true)
+["これは長いテキストです...", "別の長いテキストです...", "さらに別の長いテキストです..."]
+```
+
+### 4. 単一選択フィールド
+* type: singleSelect
+* 書き込み型: `string`（選択肢の値）
+* 戻り値の型:
+  * `isMultipleCellValue: false`: `string`
+  * `isMultipleCellValue: true`: `string[]`
+
+例:
+```js
+// 書き込み値
+"選択肢A"
+
+// 戻り値 (isMultipleCellValue: false)
+"選択肢A"
+
+// 戻り値 (isMultipleCellValue: true)
+["選択肢A", "選択肢B", "選択肢C"]
+```
+
+### 5. 複数選択フィールド
+* type: multipleSelect
+* 書き込み型: `string[]`（選択肢の値の配列）
+* 戻り値の型: `string[]`
+
+例:
+```js
+// 書き込み値
+["赤", "青", "緑"]
+
+// 戻り値
+["赤", "青", "緑"]
+```
+
+### 6. リンクフィールド
+* type: link
+* 書き込み型:
+  * `isMultipleCellValue: false`: `{ id: string }`
+  * `isMultipleCellValue: true`: `{ id: string }[]`
+* 戻り値の型:
+  * `isMultipleCellValue: false`: `{ id: string, title?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title?: string }[]`
+
+例:
+```js
+// 書き込み値 (isMultipleCellValue: false)
+{ id: "rec123456" }
+
+// 書き込み値 (isMultipleCellValue: true)
+[{ id: "rec123456" }, { id: "rec789012" }]
+
+// 戻り値 (isMultipleCellValue: false)
+{ id: "rec123456", title: "関連レコード1" }
+
+// 戻り値 (isMultipleCellValue: true)
+[
+  { id: "rec123456", title: "関連レコード1" },
+  { id: "rec789012", title: "関連レコード2" }
+]
+```
+
+### 7. 数式フィールド
+* type: formula
+* 書き込み型: 直接書き込みできません
+* 戻り値の型: 数式の結果によって異なり、`string | number | boolean`またはそれぞれの配列形式になります
+
+例:
+```js
+// 戻り値 (isMultipleCellValue: false)
+42 // または "結果" または true
+
+// 戻り値 (isMultipleCellValue: true)
+[42, 17, 99] // または ["結果1", "結果2"] または [true, false, true]
+```
+
+### 8. 添付ファイルフィールド
+添付ファイルフィールドへ添付ファイルをアップロードするには、専用APIを使用します。詳しくは、[添付ファイルをアップロード](/ja/api-doc/record/upload-attachment)セクションをご覧ください。
+* type: attachment
+* 書き込み型:
+  ```ts
+  {
+    id: string;
+    name: string;
+    path: string;
+    token: string; // 一意の識別子
+    size: number; // ファイルサイズ（バイト）
+    mimetype: string; // ファイル形式
+    presignedUrl?: string; // ファイルのプレビュー／ダウンロードURL
+    width?: number; // 画像の幅
+    height?: number; // 画像の高さ
+  }[]
+  ```
+
+* 戻り値の型:
+```ts
+{
+  id: string;
+  name: string;
+  path: string;
+  token: string; // 一意の識別子
+  size: number; // ファイルサイズ（バイト）
+  mimetype: string; // ファイル形式
+  presignedUrl?: string; // ファイルのプレビュー／ダウンロードURL
+  width?: number; // 画像の幅
+  height?: number; // 画像の高さ
+}[]
+```
+
+例:
+```js
+// 書き込み値
+[
+  {
+    name: "document.pdf",
+    type: "application/pdf",
+    token: "abc123",
+    size: 1024000
+  }
+]
+
+// 戻り値
+[
+  {
+    id: "att123",
+    name: "document.pdf",
+    path: "/uploads/document.pdf",
+    token: "abc123",
+    size: 1024000,
+    mimetype: "application/pdf",
+    presignedUrl: "https://app.teable.ai/preview/document.pdf",
+  },
+  {
+    id: "att456",
+    name: "image.jpg",
+    path: "/uploads/image.jpg",
+    token: "def456",
+    size: 2048000,
+    mimetype: "image/jpeg",
+    presignedUrl: "https://app.teable.ai/preview/image.jpg",
+    width: 1920,
+    height: 1080
+  }
+]
+```
+
+### 9. 日付フィールド
+* type: date
+* 書き込み型: `string`（ISO 8601形式）
+* 戻り値の型:
+  * `isMultipleCellValue: false`: `string`（ISO 8601形式）
+  * `isMultipleCellValue: true`: `string[]`（ISO 8601形式）
+ISO 8601形式の時刻は、`new Date().toISOString()`で取得できます
+
+例:
+```js
+// 書き込み値
+"2024-09-02T02:51:03.875Z"
+
+// 戻り値 (isMultipleCellValue: false)
+"2024-09-02T02:51:03.875Z"
+
+// 戻り値 (isMultipleCellValue: true)
+["2024-09-02T02:51:03.875Z", "2024-09-02T02:51:03.875Z"]
+```
+
+### 10. 作成日時フィールド
+* type: createdTime
+* 書き込み型: 直接書き込みできません
+* 戻り値の型:
+  * `isMultipleCellValue: false`: `string`（ISO 8601形式）
+  * `isMultipleCellValue: true`: `string[]`（ISO 8601形式）
+
+例:
+```js
+// 戻り値 (isMultipleCellValue: false)
+"2024-09-02T02:51:03.875Z"
+
+// 戻り値 (isMultipleCellValue: true)
+["2024-09-02T02:51:03.875Z", "2024-09-02T02:51:03.875Z"]
+```
+
+### 11. 最終更新日時フィールド
+* type: lastModifiedTime
+* 書き込み型: 直接書き込みできません
+* 戻り値の型:
+  * `isMultipleCellValue: false`: `string`（ISO 8601形式）
+  * `isMultipleCellValue: true`: `string[]`（ISO 8601形式）
+
+例:
+```js
+// 戻り値 (isMultipleCellValue: false)
+"2023-04-15T10:30:00Z"
+
+// 戻り値 (isMultipleCellValue: true)
+["2023-04-15T10:30:00Z", "2023-04-16T14:45:00Z"]
+```
+
+### 12. チェックボックスフィールド
+* type: checkbox
+* 書き込み型: `boolean`
+* 戻り値の型:
+  * `isMultipleCellValue: false`: `boolean`
+  * `isMultipleCellValue: true`: `boolean[]`
+
+例:
+```js
+// 書き込み値
+true
+
+// 戻り値 (isMultipleCellValue: false)
+true
+
+// 戻り値 (isMultipleCellValue: true)
+[true, false, true]
+```
+
+### 13. ロールアップフィールド
+* type: rollup
+* 書き込み型: 直接書き込みできません
+* 戻り値の型: ロールアップの設定によって異なり、`number | string`またはそれぞれの配列形式になります
+
+例:
+```js
+// 戻り値 (isMultipleCellValue: false)
+42 // または "集計結果"
+
+// 戻り値 (isMultipleCellValue: true)
+[42, 17, 99] // または ["集計1", "集計2"]
+```
+
+### 14. 評価フィールド
+* type: rating
+* 書き込み型: `number`
+* 戻り値の型:
+  * `isMultipleCellValue: false`: `number`
+  * `isMultipleCellValue: true`: `number[]`
+
+例:
+```js
+// 書き込み値
+4
+
+// 戻り値 (isMultipleCellValue: false)
+4
+
+// 戻り値 (isMultipleCellValue: true)
+[4, 3, 5]
+```
+
+### 15. 自動採番フィールド
+* type: autoNumber
+* 書き込み型: 直接書き込みできません
+* 戻り値の型:
+  * `isMultipleCellValue: false`: `number`
+  * `isMultipleCellValue: true`: `number[]`
+
+例:
+```js
+// 戻り値 (isMultipleCellValue: false)
+42
+
+// 戻り値 (isMultipleCellValue: true)
+[42, 43, 44]
+```
+
+### 16. ユーザーフィールド
+
+* type: user
+* 書き込み型:
+  * `isMultipleCellValue: false`: `{ id: string, title: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string }[]`
+* 戻り値の型:
+  * `isMultipleCellValue: false`: `{ id: string, title: string, email?: string, avatar?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string, email?: string, avatar?: string }[]`
+
+例:
+```js
+// 書き込み値 (isMultipleCellValue: false)
+{ id: "user123", title: "John Doe" }
+
+// 書き込み値 (isMultipleCellValue: true)
+[
+  { id: "user123", title: "John Doe" },
+  { id: "user456", title: "Jane Smith" }
+]
+
+// 戻り値 (isMultipleCellValue: false)
+{
+  id: "user123",
+  title: "John Doe",
+  email: "john@example.com",
+  avatar: "https://example.com/avatar.jpg"
+}
+
+// 戻り値 (isMultipleCellValue: true)
+[
+  {
+    id: "user123",
+    title: "John Doe",
+    email: "john@example.com",
+    avatar: "https://example.com/avatar1.jpg"
+  },
+  {
+    id: "user456",
+    title: "Jane Smith",
+    email: "jane@example.com",
+    avatar: "https://example.com/avatar2.jpg"
+  }
+]
+```
+
+### 17. 作成者フィールド
+* 書き込み型: 直接書き込みできません
+* 戻り値の型:
+  * `isMultipleCellValue: false`: `{ id: string, title: string, email?: string, avatar?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string, email?: string, avatar?: string }[]`
+例:
+```js
+// 戻り値 (isMultipleCellValue: false)
+{
+  id: "user123",
+  title: "John Doe",
+  email: "john@example.com",
+  avatar: "https://example.com/avatar.jpg"
+}
+
+// 戻り値 (isMultipleCellValue: true)
+[
+  {
+    id: "user123",
+    title: "John Doe",
+    email: "john@example.com",
+    avatar: "https://example.com/avatar1.jpg"
+  },
+  {
+    id: "user456",
+    title: "Jane Smith",
+    email: "jane@example.com",
+    avatar: "https://example.com/avatar2.jpg"
+  }
+]
+```
+
+### 18. 最終更新者フィールド
+* 書き込み型: 直接書き込みできません
+* 戻り値の型:
+  * `isMultipleCellValue: false`: `{ id: string, title: string, email?: string, avatar?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string, email?: string, avatar?: string }[]`
+
+例:
+```js
+// 戻り値 (isMultipleCellValue: false)
+{
+  id: "user123",
+  title: "John Doe",
+  email: "john@example.com",
+  avatar: "https://example.com/avatar.jpg"
+}
+
+// 戻り値 (isMultipleCellValue: true)
+[
+  {
+    id: "user123",
+    title: "John Doe",
+    email: "john@example.com",
+    avatar: "https://example.com/avatar1.jpg"
+  },
+  {
+    id: "user456",
+    title: "Jane Smith",
+    email: "jane@example.com",
+    avatar: "https://example.com/avatar2.jpg"
+  }
+]
+```

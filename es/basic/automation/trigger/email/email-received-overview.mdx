@@ -1,0 +1,114 @@
+---
+title: "Descripción general de Cuando se recibe un correo electrónico"
+description: "Activa un flujo de trabajo cuando llega un correo nuevo a un buzón supervisado"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Ten en cuenta que toda la configuración del disparador puede realizarse en el Chat de IA. Dile a la IA qué quieres que haga el flujo de trabajo y se encargará del resto.</Tip>
+
+Este disparador se ejecuta cuando llega un correo electrónico nuevo y no leído a un buzón supervisado.
+
+## Crear con IA
+
+Abre el Chat de IA en la barra lateral derecha de tu Tabla y describe lo que quieres.
+
+La IA se encarga de todo: elige el disparador adecuado, asigna los Campos pertinentes y configura automáticamente todas las acciones.
+
+Describe el objetivo una sola vez y el flujo de trabajo estará listo, sin necesidad de configuración manual.
+
+**Ejemplo:** *"Cuando reciba un correo de soporte, crea un ticket y clasifícalo".*
+
+## Configuración
+
+| Ajuste | Obligatorio | Descripción |
+|---|---|---|
+| Tipo de conexión | Sí | IMAP, Gmail u Outlook |
+| Intervalo de consulta | Sí | Frecuencia con la que se comprueban los correos nuevos: de 10 a 60 minutos (10 de forma predeterminada) |
+
+## Tipos de conexión en detalle
+
+### IMAP
+
+IMAP funciona con cualquier proveedor de correo electrónico compatible con el protocolo IMAP, incluidos servidores de correo autoalojados, correo corporativo y proveedores como Yahoo o Zoho.
+
+| Ajuste | Obligatorio | Descripción |
+|---|---|---|
+| Host | Sí | Dirección de tu servidor IMAP (p. ej., `imap.gmail.com`, `imap.mail.yahoo.com`) |
+| Puerto | Sí | Normalmente 993 (SSL/TLS) o 143 (sin cifrar, no recomendado) |
+| Nombre de usuario | Sí | Tu dirección de correo electrónico o nombre de usuario de la cuenta |
+| Contraseña | Sí | Tu contraseña de aplicación (ten en cuenta que no es la contraseña de tu correo electrónico) |
+| Buzón | No | Carpeta que se supervisará (`INBOX` de forma predeterminada) |
+
+### Gmail (OAuth)
+
+Se conecta mediante el flujo OAuth de Google. No se necesita contraseña: autorizas a Teable a acceder a tu cuenta de Gmail.
+
+| Ajuste | Obligatorio | Descripción |
+|---|---|---|
+| Cuenta de Google | Sí | Autoriza mediante OAuth; Teable solicita acceso de solo lectura |
+| Etiqueta | No | Selecciona una etiqueta de Gmail para supervisarla (Recibidos de forma predeterminada) |
+
+### Outlook (OAuth)
+
+Se conecta mediante el flujo OAuth de Microsoft para buzones de Outlook y Microsoft 365.
+
+| Ajuste | Obligatorio | Descripción |
+|---|---|---|
+| Cuenta de Microsoft | Sí | Autoriza mediante OAuth; Teable solicita acceso de solo lectura |
+| Carpeta | No | Selecciona una carpeta de Outlook para supervisarla (Recibidos de forma predeterminada) |
+
+## Datos del correo electrónico disponibles para los pasos siguientes
+
+Cuando se activa el disparador, los siguientes datos del correo electrónico están disponibles como variables en los pasos de acción:
+
+| Datos | Descripción |
+|---|---|
+| **De** | Dirección de correo electrónico del remitente |
+| **Asunto** | Línea de asunto del correo electrónico |
+| **Cuerpo (texto)** | Versión en texto sin formato del cuerpo del correo electrónico |
+| **Cuerpo (HTML)** | Versión HTML del cuerpo del correo electrónico (si está disponible) |
+| **Fecha** | Momento en que se envió el correo electrónico |
+| **Archivos adjuntos** | Archivos adjuntos incluidos en el correo electrónico |
+
+Puedes hacer referencia a cualquiera de ellos haciendo clic en **+** en los Campos de tus acciones.
+
+## Cómo configurarlo (ejemplo con IMAP)
+
+1. Abre tu Automatización y añade un disparador nuevo.
+2. Selecciona **Cuando se recibe un correo electrónico**.
+3. Elige **IMAP** como tipo de conexión.
+4. Introduce los datos de tu servidor IMAP: host, puerto, nombre de usuario y contraseña.
+5. (Opcional) Cambia el **Buzón** si quieres supervisar una carpeta distinta de INBOX.
+6. Establece el **Intervalo de consulta**, es decir, la frecuencia con la que se comprobarán los correos nuevos. Un intervalo más corto ofrece respuestas más rápidas, pero realiza comprobaciones más frecuentes en el servidor.
+7. Haz clic en **Probar** para verificar la conexión. Teable intentará conectarse a tu buzón e indicará si la operación se realizó correctamente o falló.
+8. Guarda y activa la Automatización.
+9. Añade los pasos de acción y usa los datos del correo electrónico (De, Asunto, Cuerpo, etc.) como variables.
+
+## Cuándo usarlo
+
+- **Crear un Registro por cada correo de soporte entrante.** Analiza el asunto y el cuerpo para rellenar automáticamente los Campos de una Tabla de tickets de soporte.
+- **Extraer datos de facturas de los correos con IA.** Usa la acción Generar con IA para leer el cuerpo o el archivo adjunto del correo y extraer importes, fechas y nombres de proveedores.
+- **Dirigir las consultas de clientes al equipo adecuado.** Según las palabras clave del asunto o del cuerpo, actualiza un Campo «Equipo» o envía notificaciones a personas concretas.
+- **Archivar correos importantes como Registros.** Registra automáticamente en una Tabla de Teable los correos de determinados remitentes o con asuntos específicos para facilitar su búsqueda y seguimiento.
+- **Procesar confirmaciones de pedidos.** Cuando llegue un correo de confirmación de pedido, extrae el número y los detalles del pedido para actualizar tu Tabla de pedidos.
+
+## Solución de problemas
+
+- **Error de conexión (IMAP):** vuelve a comprobar el host, el puerto, el nombre de usuario y la contraseña. Asegúrate de que tu proveedor de correo permite el acceso IMAP; algunos proveedores lo deshabilitan de forma predeterminada.
+- **Gmail: error de «aplicación menos segura»:** Gmail no permite iniciar sesión con una contraseña normal. Usa una **Contraseña de aplicación**. Consulta [Configurar IMAP de Gmail](/es/basic/automation/trigger/email/gmail-imap) para ver las instrucciones.
+- **No se recogen los correos:** comprueba el intervalo de consulta. Confirma también que los correos llegan a la carpeta o etiqueta supervisada. Los correos de subcarpetas o etiquetas filtradas pueden omitirse si se selecciona el buzón equivocado.
+- **Procesamiento duplicado:** el disparador registra qué correos ya ha procesado. Sin embargo, si desactivas y vuelves a activar la Automatización, es posible que procese de nuevo correos recientes. Marca los correos como leídos en tu bandeja de entrada si es necesario.
+- **Token OAuth caducado:** en Gmail u Outlook, vuelve a autorizar la conexión si el token OAuth ha caducado. Esto suele ocurrir después de varios meses o si revocas los permisos de la aplicación.
+
+## Consejos
+
+- Un intervalo de consulta más corto ofrece respuestas más rápidas a los correos, pero no garantiza la entrega en tiempo real. Para un procesamiento realmente en tiempo real, considera un enfoque basado en webhooks si tu proveedor de correo lo admite.
+- Usa filtros en tu cliente de correo para dirigir los mensajes pertinentes a una etiqueta o carpeta específica y configura Teable para supervisar únicamente esa etiqueta. Así se reduce el ruido.
+- Para buzones con un volumen elevado, considera aumentar el intervalo de consulta y procesar los mensajes por lotes para no sobrecargar el flujo de trabajo.
+
+## Contenido relacionado
+
+- [Configurar IMAP de Gmail](/es/basic/automation/trigger/email/gmail-imap) — instrucciones detalladas para conectar Gmail
+- [Acción Generar con IA](/es/basic/automation/actions/ai/ai-generate) — útil para extraer datos estructurados del contenido de los correos
+- [Acción Crear Registro](/es/basic/automation/actions/records/create-record) — suele combinarse con disparadores de correo para registrar correos como Registros
+- [Enviar correo electrónico](/es/basic/automation/actions/communication/send-email-overview)

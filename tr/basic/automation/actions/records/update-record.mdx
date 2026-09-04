@@ -1,0 +1,103 @@
+---
+title: "Kaydı güncelle"
+description: "Bir iş akışının parçası olarak mevcut kaydın alanlarını değiştirin"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Otomasyon oluşturmak için Komut dosyası çalıştır'ı kullanmanızı kesinlikle öneririz; bu özellik, aksi hâlde elle oluşturulması gerekecek eylemler dahil tüm eylem davranışlarını kapsayabilir. Gereksinimlerinizi sohbette AI'a açıklamanız yeterlidir.
+
+Lütfen unutmayın: eylemleri elle eklerseniz AI daha sonra bunları tanıyamaz veya değiştiremez.
+</Tip>
+
+## AI ile oluşturma
+
+Tablonuzun sağ kenar çubuğunda AI Chat'i açın ve ne istediğinizi açıklayın.
+
+AI her şeyi halleder: doğru tetikleyiciyi belirler, uygun eylemleri seçer, alanları eşler ve iş akışının tamamını otomatik olarak yapılandırır.
+
+Hedefinizi bir kez açıklayın; iş akışınız elle yapılandırma gerektirmeden hazır olur.
+
+Mevcut bir kayıttaki bir veya daha fazla alanı günceller. Yalnızca eşlediğiniz alanlar değişir; diğer tüm değerler aynı kalır.
+
+## Yapılandırma
+
+| Ayar | Zorunlu | Açıklama |
+|---|---|---|
+| Tablo | Evet | Güncellenecek kaydı içeren tablo |
+| Kayıt Kimliği | Evet | Güncellenecek kayıt. Birden fazla kayıt için dinamik değişkenleri ve virgülle ayrılmış kimlikleri destekler |
+| Alanlar | Evet | Her alanı sabit veya dinamik yeni değeriyle eşleyin |
+
+## Nasıl yapılandırılır?
+
+1. İş akışınıza bir **Kaydı Güncelle** eylemi ekleyin.
+2. Değiştirmek istediğiniz kaydı içeren **Tabloyu** seçin.
+3. **Kayıt Kimliğini** ayarlayın. Dinamik bir değişken eklemek için **+** simgesine tıklayın:
+   - Bir **kayıt tetikleyicisinden** (oluşturuldu, güncellendi, düğmeye tıklandı): tetikleyici Kayıt Kimliğini doğrudan sağlar.
+   - Bir **Kayıtları Getir** eyleminden: alınan sonuçlardaki Kayıt Kimliğine başvurun.
+   - Sabit bir Kayıt Kimliği de yazabilir veya birden fazla kaydı aynı anda güncellemek için virgülle ayrılmış bir liste kullanabilirsiniz (ör. `rec123,rec456,rec789`).
+4. Değiştirmek istediğiniz alanları eşleyin. Her alan için:
+   - **Sabit değer:** Yeni değeri doğrudan yazın.
+   - **Dinamik değer:** Önceki bir adımdan değer eklemek için **+** simgesine tıklayın.
+5. Değiştirmek istemediğiniz alanları eşlemeden bırakın; geçerli değerlerini korurlar.
+6. Eylemi kaydedin.
+
+## Kayıt Kimliği nasıl alınır?
+
+Kayıt Kimliği, bu eylemin ihtiyaç duyduğu temel bilgidir. Tetikleyicinize göre nereden alınacağı aşağıda gösterilmiştir:
+
+| Tetikleyici / Önceki Adım | Kayıt Kimliği nasıl alınır? |
+|---|---|
+| Kayıt oluşturulduğunda | Tetikleyici çıktı değişkeni olarak doğrudan kullanılabilir |
+| Kayıt güncellendiğinde | Tetikleyici çıktı değişkeni olarak doğrudan kullanılabilir |
+| Düğmeye tıklandığında | Doğrudan kullanılabilir; düğmeye tıklanan satırdır |
+| Form gönderildiğinde | Doğrudan kullanılabilir; gönderimle oluşturulan kayıttır |
+| Kayıtları Getir eylemi | Sonuçlardaki her kaydın bir kimliği vardır. Döngü içinde geçerli öğenin kimliğine başvurun |
+| Webhook alındığında | Kayıt Kimliğini webhook yüküne eklemeli veya Kayıtları Getir ile aramalısınız |
+
+<Tip>Aynı anda birden fazla kaydı mı güncellemeniz gerekiyor? Virgülle ayrılmış Kayıt Kimlikleri iletebilir veya kayıtları toplu güncellemek için Kayıtları Getir sonucuyla [Döngü (Toplu)](../logic/loop-run) kullanabilirsiniz.</Tip>
+
+## Kısmi güncellemeler
+
+Bu eylem kısmi güncelleme gerçekleştirir. Bunun anlamı şudur:
+
+- **Eşlenen alanların** üzerine belirttiğiniz yeni değerler yazılır.
+- **Eşlenmeyen alanlar** aynen bırakılır.
+
+Tüm alan değerlerini yeniden göndermeniz gerekmez; yalnızca değiştirmek istediklerinizi gönderin. Bu yöntem güvenli ve verimlidir.
+
+## Uyarı: tetikleyici döngüleri
+
+<Warning>İş akışınızda "Kayıt güncellendiğinde" tetikleyicisi varsa ve sonraki bir adım aynı tablodaki izlenen alanları güncelliyorsa iş akışı yeniden tetiklenerek sonsuz döngü oluşturur.</Warning>
+
+Otomasyonunuz **Kayıt güncellendiğinde** tetikleyicisiyle başlatılıyor ve Kaydı Güncelle eyleminiz **aynı tabloya** geri yazıyorsa sonsuz döngü oluşturabilirsiniz:
+
+1. Kayıt değişir → tetikleyici çalışır → otomasyon kaydı günceller → tetikleyici yeniden çalışır → bu böyle devam eder.
+
+**Döngüler nasıl önlenir?**
+
+- Tetikleyicide, güncellediğiniz alanlardan *farklı* olan **belirli alanları izleyin**. Örneğin "Durum" alanını izleyip "İşlenme Tarihi" alanını güncelleyin.
+- Tetikleyiciye **filtre ekleyin**. Örneğin yalnızca `İşlendi`, `true` değilken tetikleyin ve eyleminizde `İşlendi` değerini `true` olarak ayarlayın.
+- Bunun yerine yalnızca durum geçişlerinde çalışan [Kayıt koşullarla eşleştiğinde](/tr/basic/automation/trigger/records/record-matches-conditions) seçeneğini kullanmayı değerlendirin.
+
+## Ne zaman kullanılır?
+
+- **Onaydan sonra bir görevi tamamlandı olarak işaretleyin.** Bir düğmeye tıklandığında Durum'u "Onaylandı" olarak ayarlayın ve onay tarihini doldurun.
+- **Harici olaylara göre durum alanını güncelleyin.** Bir webhook ödeme bildirdiğinde sipariş kaydını bulun ve durumunu "Ödendi" olarak güncelleyin.
+- **Bir şey değiştiğinde zaman damgası yazın.** Kayıt güncellendiğinde "Otomasyon Tarafından Son Değiştirilme" tarih alanını geçerli zamana ayarlayın.
+- **Harici sistemden gelen verileri geri eşitleyin.** Harici bir API'yi çağırdıktan sonra yanıt verilerini (ör. takip numarası) kayda geri yazın.
+- **Kayıtları toplu güncelleyin.** Birden fazla kaydı aynı anda güncellemek için Kayıtları Getir ve Döngüyü birlikte kullanın; örneğin vadesi geçmiş tüm görevleri "Üst Birime Aktarıldı" olarak işaretleyin.
+
+## İpuçları
+
+- Bir kaydı güncellemek aynı tabloyu izleyen diğer otomasyonları tetikleyebilir. Zincirleme etkileri göz önünde bulundurun.
+- Birden fazla kaydı virgülle ayrılmış kimliklerle güncellediğinizde tüm kayıtlar aynı alan değerlerini alır. Her kayıtta farklı değerler kullanmak için bunun yerine bir [Döngü](../logic/loop-run) adımı kullanın.
+- Bir alanı temizlemek istiyorsanız alanı boş bir değerle eşleyin. Yalnızca eşlemeden bırakmak alanı *temizlemez*.
+- Farklı bir Veritabanındaki tabloda bulunan kayıtları güncellemek için [Veritabanları Arası Erişim](/tr/basic/automation/actions/records/cross-base) özelliğini kullanın.
+
+## İlgili konular
+
+- [Kayıt oluştur](/tr/basic/automation/actions/records/create-record) — mevcut kayıtları değiştirmek yerine yeni kayıtlar ekleyin
+- [Kayıtları getir](/tr/basic/automation/actions/records/get-records) — güncellemeden önce kimliklerini bulmak için kayıtları alın
+- [Veritabanları arası erişim](/tr/basic/automation/actions/records/cross-base) — geçerli Veritabanının dışındaki tablolarda bulunan kayıtları güncelleyin
+- [Döngü (toplu)](../logic/loop-run) — birden fazla kaydı farklı değerlerle güncelleyin

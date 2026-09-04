@@ -1,0 +1,33 @@
+---
+title: "Procesar Registros en lote con Bucle"
+description: "Usa Obtener Registros + Bucle para procesar varios Registros en una sola ejecución del flujo de trabajo"
+---
+
+<Tip>Recomendamos crear los ejemplos de Automatización directamente en el Chat de IA. Solo tienes que describir el flujo de trabajo que quieres y la IA se encargará de toda la configuración, incluidos el desencadenador, las acciones, el script y la configuración.</Tip>
+
+## Crear con IA
+
+Abre el Chat de IA en la barra lateral derecha de tu Tabla e indica a la IA lo que quieres. Por ejemplo, puedes decir:
+
+*«Todos los días a las 8:00, busca todas las tareas cuya fecha de vencimiento haya pasado y cuyo estado no sea Vencida, y cambia su estado a Vencida»*
+
+La IA creará automáticamente el flujo de trabajo completo. Puedes revisar el script generado, probarlo con datos reales y activar el flujo de trabajo cuando esté listo.
+
+## Configuración manual
+
+1. **Crea un flujo de trabajo** con el desencadenador **A la hora programada**, todos los días a las 08:00.
+2. **Añade una acción** → **Obtener Registros**.
+   - Tabla: **Tareas**
+   - Filtro: `Fecha de vencimiento` **es anterior a** `hoy` AND `Estado` **no es** `Vencida`
+3. Haz clic en **Probar** para ver los Registros que coinciden.
+4. **Añade una acción** → **Actualizar Registro**.
+5. Haz clic en **Ejecutar en bucle** debajo del selector de Tabla.
+6. Selecciona la salida de matriz del paso Obtener Registros.
+7. Asigna:
+   - ID de Registro → el ID de Registro del elemento actual (mediante **+**)
+   - Estado → `Vencida`
+8. Haz clic en **Probar** y luego en **activar**.
+
+## Cómo funciona
+
+El paso Obtener Registros devuelve una matriz. El paso Actualizar Registro con Bucle activado recorre cada elemento y lo actualiza individualmente y en orden.

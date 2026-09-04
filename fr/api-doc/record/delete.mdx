@@ -1,0 +1,82 @@
+---
+title: "Supprimer des Enregistrements"
+---
+
+### Chemin
+
+DELETE /api/table/\{tableId\}/record
+
+### Requête
+
+**Paramètres de chemin**
+
+* tableId (string) : L’identifiant unique de la Table [(comment l’obtenir)](/fr/api-doc/get-id#tableid).
+
+**Paramètres de requête**
+
+* **recordIds (obligatoire)** [(comment l’obtenir)](/fr/api-doc/get-id#recordid)
+  * Description : Tableau des ID d’Enregistrement à supprimer
+  * Type : Tableau
+  * Exemple : `["rec123456", "rec789012"]`
+  * Remarque : Chaque élément est une chaîne représentant l’ID d’un Enregistrement à supprimer.
+
+#### Réponse
+
+**Réponse réussie**
+
+* Code d’état : 200 OK
+* Corps de la réponse : Aucun contenu
+
+#### Réponses d’erreur
+
+* Code d’état : 400 Bad Request : erreur de format des paramètres de requête ou paramètres obligatoires manquants.
+* Code d’état : 404 Not Found : le tableId spécifié n’existe pas ou certains ID d’Enregistrement n’existent pas.
+
+#### Exemple de code
+
+<CodeGroup>
+  ```bash CURL
+  curl -X DELETE 'https://app.teable.ai/api/table/__tableId__/record?recordIds[]=rec123456&recordIds[]=rec789012' \
+    -H 'Authorization: Bearer __token__'
+  ```
+
+  ```js JS SDK
+  import { configApi, deleteRecords } from '@teable/openapi';
+
+  configApi({
+    endpoint: 'https://app.teable.ai',
+    token: '__token__',
+  });
+
+  await deleteRecords('__tableId__', ['rec123456', 'rec789012']);
+  ```
+
+  ```ts TypeScript
+  const response = await fetch('https://app.teable.ai/api/table/__tableId__/record?recordIds[]=rec123456&recordIds[]=rec789012', {
+    method: 'DELETE',
+    headers: {
+      'Authorization': 'Bearer __token__'
+    }
+  });
+
+  console.log(response.status); // 200 if successful
+  ```
+
+  ```python Python
+  import requests
+
+  response = requests.delete(
+      'https://app.teable.ai/api/table/__tableId__/record',
+      headers={
+          'Authorization': 'Bearer __token__'
+      },
+      params={
+          'recordIds': ['rec123456', 'rec789012']
+      }
+  )
+
+  print(response.status_code) # 200 if successful
+  ```
+</CodeGroup>
+
+

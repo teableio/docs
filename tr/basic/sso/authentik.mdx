@@ -1,0 +1,196 @@
+---
+title: "Authentik SSO"
+description: "Authentik'i Teable için SSO kimlik doğrulama sağlayıcınız olarak yapılandırın"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Business planı ve üzerindeki planlarda kullanılabilir</Tip>
+
+## 1. Adım: Teable'da Kimlik Doğrulama Sağlayıcısı Oluşturma
+
+1. Teable SSO ayarlarınıza gidin
+2. Yeni bir kimlik doğrulama sağlayıcısı oluşturun, adını **Authentik** olarak belirleyin ve **OpenID Connect**'i seçin
+
+## 2. Adım: Authentik Yönetici Arayüzüne Erişme
+
+1. Authentik örneğinizin yönetici arayüzünde oturum açın
+2. Varsayılan URL genellikle `https://your-authentik-domain/if/admin/` biçimindedir
+3. Oturum açmak için yönetici kimlik bilgilerinizi kullanın
+
+## 3. Adım: Yeni Bir Sağlayıcı Oluşturma
+
+1. Sol menüden **Uygulamalar** → **Sağlayıcılar** bölümüne gidin
+2. **Oluştur** düğmesine tıklayın
+3. **OAuth2/OpenID Sağlayıcısı**'nı seçin
+4. Sağlayıcı ayarlarını yapılandırın:
+
+### Temel Ayarlar
+
+- **Ad**: Teable SSO Sağlayıcısı
+- **Yetkilendirme akışı**: Tercih ettiğiniz akışı seçin (genellikle **default-authentication-flow**)
+- **İstemci türü**: **Gizli**
+- **İstemci Kimliği**: (Otomatik oluşturulur; gerekirse özelleştirebilirsiniz)
+- **İstemci Gizli Anahtarı**: (Otomatik oluşturulur; bu değeri kopyalayın)
+
+### Yönlendirme URI'leri
+
+- **Yönlendirme URI'leri/Kaynakları (RegEx)**: Teable'daki **Geri Çağırma URL'sini** yapıştırın
+  - Tam eşleşme için: `https://app.teable.ai/api/auth/authentication/__providerId__/callback`
+  - Regex deseni için: `https://app\.teable\.ai/api/auth/authentication/.*/callback`
+
+<Note>URL'deki `__providerId__` değerini Teable'da kimlik doğrulama sağlayıcısını oluşturduktan sonra gösterilen providerId ile değiştirin veya geri çağırma URL'sini doğrudan Teable sayfasından kopyalayın.</Note>
+
+### Gelişmiş Ayarlar
+
+- **Kapsamlar**: Aşağıdaki kapsamların kullanılabilir olduğundan emin olun:
+  - `openid`
+  - `email`
+  - `profile`
+- **Konu modu**: **Kullanıcının karma kimliğini temel alır**
+- **Talepleri id_token'a ekle**: Bu seçeneği işaretleyin
+
+Sağlayıcıyı oluşturmak için **Bitir**'e tıklayın.
+
+## 4. Adım: İstemci Kimlik Bilgilerini Kaydetme
+
+Sağlayıcıyı oluşturduktan sonra:
+
+1. Sağlayıcı ayrıntılarındaki **İstemci Kimliğini** kopyalayın
+2. **İstemci Gizli Anahtarını** kopyalayın (bu değer oluşturma sırasında yalnızca bir kez gösterilir)
+3. Her iki değeri de Teable SSO yapılandırmasına yapıştırın
+
+<Warning>İstemci Gizli Anahtarını güvenli biçimde saklayın. Gerekirse daha sonra yeniden oluşturabilirsiniz.</Warning>
+
+## 5. Adım: Uygulama Oluşturma
+
+1. Sol menüden **Uygulamalar** → **Uygulamalar** bölümüne gidin
+2. **Oluştur** düğmesine tıklayın
+3. Uygulamayı yapılandırın:
+   - **Ad**: Teable
+   - **Kısa ad**: `teable` (veya tercih ettiğiniz kısa ad)
+   - **Sağlayıcı**: 3. Adımda oluşturduğunuz **Teable SSO Sağlayıcısı**'nı seçin
+   - **Başlatma URL'si**: (İsteğe bağlı) `https://app.teable.ai`
+   - **Kullanıcı arayüzü ayarları**: (İsteğe bağlı) Teable logosunu yükleyin ve görünümü özelleştirin
+
+Tamamlamak için **Oluştur**'a tıklayın.
+
+## 6. Adım: OAuth Uç Noktalarını Yapılandırma
+
+Teable'da Authentik alan adınızı kullanarak aşağıdaki OAuth uç noktalarını doldurun:
+
+- **Yetkilendirme URL'si**: `https://{your-authentik-domain}/application/o/authorize/`
+- **Belirteç URL'si**: `https://{your-authentik-domain}/application/o/token/`
+- **Kullanıcı Bilgileri URL'si**: `https://{your-authentik-domain}/application/o/userinfo/`
+- **Veren**: `https://{your-authentik-domain}/application/o/{application-slug}/`
+
+<Note>`{your-authentik-domain}` değerini gerçek Authentik örneğinizin alan adıyla, `{application-slug}` değerini ise yapılandırdığınız kısa adla (ör. `teable`) değiştirin.</Note>
+
+## 7. Adım: Uygulama Erişimini Yapılandırma
+
+### Akış Oluşturma veya Mevcut Akışı Kullanma
+
+1. **Akışlar ve Aşamalar** → **Akışlar** bölümüne gidin
+2. Varsayılan akışları kullanabilir veya özel akışlar oluşturabilirsiniz
+3. Genellikle gereken akışlar:
+   - **Kimlik doğrulama akışı**: Kullanıcı oturumu açmak için
+   - **Yetkilendirme akışı**: OAuth2/OIDC yetkilendirmesi için
+
+### Erişim İlkesi Atama (İsteğe Bağlı)
+
+1. Uygulama ayarlarınıza geri dönün
+2. **İlke / Grup / Kullanıcı Bağlamaları** bölümüne ilerleyin
+3. Erişimi aşağıdakilere göre kısıtlamak için **Mevcut ilkeyi bağla**'ya tıklayın:
+   - **Gruplar**: Yalnızca belirli gruplara izin verin
+   - **Kullanıcılar**: Yalnızca belirli kullanıcılara izin verin
+   - **Özel ilkeler**: Karmaşık erişim kuralları oluşturun
+
+## 8. Adım: Kapsamları ve Talepleri Yapılandırma (İsteğe Bağlı)
+
+### Kapsamları İnceleme
+
+1. **Özelleştirme** → **Özellik Eşlemeleri** bölümüne gidin
+2. OAuth2/OIDC için **Kapsam Eşlemeleri**'ni inceleyin
+3. Aşağıdaki kapsamların doğru talepleri içerdiğinden emin olun:
+   - `openid`: `sub` talebini içerir
+   - `email`: `email` ve `email_verified` taleplerini içerir
+   - `profile`: `name`, `given_name`, `family_name` vb. talepleri içerir
+
+### Özel Talepler Ekleme
+
+Özel kullanıcı özniteliklerine ihtiyacınız varsa:
+
+1. **Özelleştirme** → **Özellik Eşlemeleri** bölümüne gidin
+2. **Oluştur** → **Kapsam Eşlemesi**'ne tıklayın
+3. Özel taleplerinizi tanımlayın:
+   - **Ad**: Özel talep adı
+   - **Kapsam adı**: Kapsam tanımlayıcısı (ör. `custom_claims`)
+   - **İfade**: Kullanıcı verilerini ayıklayan Python ifadesi
+4. Kapsamı sağlayıcınıza ekleyin
+
+## 9. Adım: SSO ile Oturum Açmayı Test Etme
+
+SSO ile oturum açmayı etkinleştirmek için iki seçeneğiniz vardır:
+
+**1. Seçenek: Doğrudan Kimlik Doğrulama URL'si**
+- Yetkilendirme URL'sini SSO oturum açma URL'niz olarak kullanın
+- Kullanıcılar kimlik doğrulaması için Authentik'e yönlendirilir
+
+**2. Seçenek: Alan Adı Doğrulaması**
+1. Teable'da alan adı doğrulamasını yapılandırın
+2. Özel alan adınızı doğrulayın
+3. https://app.teable.ai adresini ziyaret edin
+4. SSO ile oturum açma düğmesine tıklayın
+5. Oturum açmak için doğrulanmış alan adındaki e-posta adresinizi girin
+
+## Ek Yapılandırma (İsteğe Bağlı)
+
+### Çok Faktörlü Kimlik Doğrulamayı Yapılandırma
+
+1. **Akışlar ve Aşamalar** → **Aşamalar** bölümüne gidin
+2. MFA aşamaları oluşturun (ör. TOTP, WebAuthn, SMS)
+3. **Akışlar ve Aşamalar** → **Akışlar** bölümüne gidin
+4. Kimlik doğrulama akışınızı düzenleyin
+5. Akışa MFA aşamalarını ekleyin
+6. MFA ilkelerini ve bağlamalarını yapılandırın
+
+### Kullanıcı Kaydını Ayarlama
+
+1. **Akışlar ve Aşamalar** → **Akışlar** bölümüne gidin
+2. Bir kayıt akışı oluşturun veya mevcut akışı düzenleyin
+3. Şunlara yönelik aşamalar ekleyin:
+   - Kullanıcı ayrıntılarını toplama
+   - E-posta doğrulaması
+   - Parola ayarlama
+4. Kayıt akışını uygulamanıza bağlayın
+
+### Parola İlkelerini Yapılandırma
+
+1. **Akışlar ve Aşamalar** → **İlkeler** bölümüne gidin
+2. Aşağıdaki gibi gereksinimler içeren parola ilkeleri oluşturun:
+   - En az uzunluk
+   - Karmaşıklık gereksinimleri
+   - Parola geçmişi
+   - Süre sonu kuralları
+
+### Oturum Yönetimini Etkinleştirme
+
+1. **Olaylar** → **Oturumlar** bölümüne gidin
+2. Etkin kullanıcı oturumlarını izleyin
+3. **Sistem** → **Ayarlar** bölümünde oturum zaman aşımı ayarlarını yapılandırın
+
+### Özel Markalama
+
+1. **Özelleştirme** → **Kiracılar** bölümüne gidin
+2. Kiracı ayarlarınızı düzenleyin
+3. Şunları özelleştirin:
+   - Logo ve site simgesi
+   - Tema renkleri
+   - Alt bilgi metni ve bağlantıları
+4. Kullanıcılar Authentik üzerinden oturum açarken markanızı görür
+
+### Denetim Günlüğünü Etkinleştirme
+
+1. **Olaylar** → **Günlükler** bölümüne gidin
+2. Kimlik doğrulama olaylarını ve hatalarını inceleyin
+3. Önemli olaylar için bildirim kuralları ayarlayın
+4. **Sistem** → **Ayarlar** bölümünde olay saklama ilkelerini yapılandırın

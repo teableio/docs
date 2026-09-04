@@ -1,0 +1,70 @@
+---
+title: "Slack, Discord veya Teams'e anlık bildirim gönderme"
+description: "Tablonuzda bir olay gerçekleştiğinde sohbet kanalına ileti gönderin"
+---
+
+<Tip>Otomasyon örneklerini doğrudan AI Chat'te oluşturmanızı öneririz. İstediğiniz iş akışını açıklamanız yeterlidir; AI tetikleyici, eylemler, komut dosyası ve yapılandırma dahil tüm kurulumu sizin için tamamlar.</Tip>
+
+## AI ile oluşturma
+
+Tablonuzun sağ kenar çubuğunda AI Chat'i açın ve AI'a ne istediğinizi söyleyin. Örneğin şöyle diyebilirsiniz:
+
+*"Yüksek öncelikli yeni bir talep oluşturulduğunda talep başlığını ve açıklamasını içeren bir Slack iletisini #support kanalına gönder"*
+
+AI, iş akışının tamamını otomatik olarak oluşturur. Oluşturulan komut dosyasını inceleyebilir, gerçek verilerle test edebilir ve hazır olduğunuzda iş akışını etkinleştirebilirsiniz.
+
+## Ön koşullar
+
+Sohbet platformunuzdan bir webhook URL'si gerekir:
+- **Slack:** Bir [Gelen Webhook](https://api.slack.com/messaging/webhooks) oluşturun
+- **Discord:** Sunucu Ayarları → Entegrasyonlar → Webhook'lar → Yeni Webhook
+- **Teams:** Kanal → Bağlayıcılar → Gelen Webhook
+
+## Elle yapılandırma
+
+1. **Kayıt Oluşturulduğunda** tetikleyicisiyle bir **iş akışı oluşturun**.
+2. **Talepler** tablonuzu seçin.
+3. Şu filtreyi ekleyin: `Öncelik` **eşittir** `Yüksek`.
+4. **Test et**'e tıklayın.
+5. **Eylem ekleyin** → **HTTP İsteği**.
+6. Yapılandırın:
+   - Yöntem: **POST**
+   - URL: webhook URL'niz
+   - Content-Type: `application/json`
+   - Gövde (Slack için):
+     ```json
+     {
+       "text": "Yeni yüksek öncelikli talep: <talep başlığı>"
+     }
+     ```
+   - Talep başlığını dinamik olarak eklemek için **+** düğmesini kullanın.
+7. **Test et**'e, ardından **etkinleştir**'e tıklayın.
+
+## Discord'a Uyarlama
+
+Discord, `"text"` yerine `"content"` kullanır:
+
+```json
+{
+  "content": "Yeni yüksek öncelikli talep: <talep başlığı>"
+}
+```
+
+## Teams'e Uyarlama
+
+Teams, Uyarlanabilir Kart biçimini kullanır:
+
+```json
+{
+  "type": "message",
+  "attachments": [{
+    "contentType": "application/vnd.microsoft.card.adaptive",
+    "content": {
+      "type": "AdaptiveCard",
+      "body": [{ "type": "TextBlock", "text": "Yeni yüksek öncelikli talep: <talep başlığı>" }],
+      "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+      "version": "1.2"
+    }
+  }]
+}
+```

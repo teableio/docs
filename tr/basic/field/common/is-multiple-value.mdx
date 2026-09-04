@@ -1,0 +1,62 @@
+---
+title: "Tek Değer ve Çoklu Değerler"
+description: "Bir alan hücresinin tek bir değer mi yoksa bir değer grubu mu sakladığını açıklar."
+---
+
+Tek değer ve çoklu değerler, bir hücrenin tek bir değer mi yoksa bir değer grubu mu sakladığını açıklar. Bu kavramı anladıktan sonra bağlantıların, aramaların, toplamaların ve formüllerin neden birden fazla sonuç döndürebildiğini görmek kolaylaşır.
+
+## Temel Kavramlar
+
+| Tür | Açıklama | Örnek |
+| --- | --- | --- |
+| Tek değer | Kesin bir bilgi parçası | "bugünün tarihi", "John'un telefon numarası" |
+| Çoklu değerler | Dizi olarak da anlaşılabilen bir değer grubu | "bu ayki tüm tarihler", "John'un tüm telefon numaraları" |
+
+## Varsayılan Tek ve Çoklu Değer Durumları
+
+| Alan türü | Varsayılan durum |
+| --- | --- |
+| Tek satırlı metin, uzun metin | Tek |
+| Tekli seçim, onay kutusu, tarih, sayı, derecelendirme | Tek |
+| Oluşturulma zamanı, son değiştirilme zamanı, oluşturan, son değiştiren, otomatik numara, düğme | Tek |
+| Çoklu seçim, ek | Çoklu |
+| Kullanıcı | İsteğe bağlı |
+| Bağlantı | İsteğe bağlı |
+| Formül, toplama | Dinamik |
+
+Burada "varsayılan durum", alanın kendi başına yaygın durumunu ifade eder. **İsteğe bağlı**, alan ayarları aracılığıyla alanın tek değerli mi yoksa çok değerli mi olacağına karar verebileceğiniz anlamına gelir. **Dinamik**, sonucun formül mantığına, toplama işlevlerine ve başvurulan alanların çok değerli olup olmadığına bağlı olduğu anlamına gelir. Bir değer bağlantı, arama, toplama veya formül başvurusu üzerinden geçtikten sonra durumu değişebilir.
+
+## Bağlantı ve Başvurulardan Kaynaklanan Durum Değişiklikleri
+
+- **Bağlantı alanları**: Bir bağlantı alanı çok değerliyse bu bağlantı üzerinden başvurulan alanlar da çok değerli hâle gelebilir. Örneğin bir görev birden fazla çalışana atanabiliyorsa bu bağlantı üzerinden çalışanların telefon numaralarını aramak birden fazla telefon numarası döndürebilir.
+- **Formüller ve toplamalar**: Formüller ve toplamalar çoğu zaman tek değerlidir, ancak çok değerli alanlara başvurduklarında çok değerli hâle gelebilirler.
+
+### Örnek
+
+Teable'da iki tabloyla bir şirket yönettiğinizi varsayalım: `Çalışan Bilgileri` ve `Proje Görevleri`.
+
+**Çalışan Bilgileri tablosu**
+
+| Ad | Telefon | E-posta | Görevler |
+| --- | --- | --- | --- |
+| John | 123456 | john@company.com | Görev 1, Görev 2 |
+| Mary | 789012 | mary@company.com | Görev 3 |
+
+**Proje Görevleri tablosu**
+
+| Görev adı | Atanan kişi | Son tarih | İlerleme |
+| --- | --- | --- | --- |
+| Görev 1 | John | 2023-11-20 | 50% |
+| Görev 2 | John | 2023-12-01 | 30% |
+| Görev 3 | Mary | 2023-11-15 | 80% |
+
+Bu örnekte:
+
+- Bir çalışan birden fazla görevden sorumlu olabileceği için **Çalışan Bilgileri** tablosundaki "Görevler" alanı çok değerlidir.
+- Her görevin bir atanan kişisi olduğu için **Proje Görevleri** tablosundaki "Atanan kişi" alanı tek değerlidir.
+
+"Proje Görevleri" tablosunda yeni bir görev oluşturup bunu bir çalışana atadığınızda, söz konusu çalışanın "Çalışan Bilgileri" tablosundaki "Görevler" alanı atanmış tüm görevleri içerecek şekilde güncellenir.
+
+### Sayı Mini Grafikleri
+
+Sayı alanları bazen tek bir sayı yerine birden fazla çizgi veya çubuk gösterir. Bu genellikle alanın çoğunlukla bir bağlantı, arama, toplama veya formül başvurusu üzerinden çok değerli hâle geldiği anlamına gelir.

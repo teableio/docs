@@ -1,0 +1,155 @@
+---
+title: "Wenn Webhook empfangen wird"
+description: "Lösen Sie einen Workflow aus, indem Sie eine HTTP-Anfrage von einem beliebigen externen System empfangen"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Bitte beachten Sie: Die gesamte Einrichtung von Auslösern kann im KI-Chat erfolgen. Teilen Sie der KI mit, was der Workflow tun soll, und sie übernimmt den Rest.</Tip>
+
+Dieser Auslöser erzeugt eine eindeutige URL. Wenn ein externes System eine HTTP-POST-Anfrage dorthin sendet, wird der Workflow ausgeführt.
+
+## Mit KI erstellen
+
+Öffnen Sie den KI-Chat in der rechten Seitenleiste Ihrer Tabelle und beschreiben Sie, was Sie möchten.
+
+Die KI übernimmt alles: Sie wählt den richtigen Auslöser aus, ordnet die relevanten Felder zu und richtet automatisch alle Aktionen ein.
+
+Beschreiben Sie Ihr Ziel einmal, und der Workflow ist bereit – eine manuelle Einrichtung ist nicht erforderlich.
+
+**Beispiel:** *„Wenn ich einen Stripe-Zahlungs-Webhook erhalte, erstelle einen Bestelldatensatz.“*
+
+## Konfiguration
+
+| Einstellung | Erforderlich | Beschreibung |
+|---|---|---|
+| Autorisierung | Nein | **Keine** (öffentlich – jeder mit der URL kann den Auslöser aktivieren) oder **Bearer-Token** (automatisch erzeugtes Token im Anfrage-Header erforderlich) |
+| Antwort | Nein | **Standard** (Teable gibt eine eigene Bestätigung zurück) oder **Benutzerdefiniert** (Sie bestimmen Statuscode, Inhaltstyp und Text) |
+
+## Einrichtung
+
+1. Öffnen Sie Ihre Automatisierung und fügen Sie einen neuen Auslöser hinzu.
+2. Wählen Sie **Wenn Webhook empfangen wird** aus.
+3. Der Auslöser erzeugt sofort eine eindeutige **Webhook-URL**. Kopieren Sie diese URL – Sie benötigen sie für das externe System.
+4. (Optional, aber empfohlen) Klicken Sie auf **Token generieren**, um die Autorisierung per Bearer-Token zu aktivieren. Dadurch wird ein Token erzeugt, das im Header `Authorization` eingehender Anfragen enthalten sein muss.
+5. Speichern und aktivieren Sie die Automatisierung.
+6. Konfigurieren Sie Ihr externes System so, dass es eine POST-Anfrage an die Webhook-URL sendet. Fügen Sie das Token in den Header ein, falls Sie die Autorisierung aktiviert haben.
+7. Senden Sie eine Testanfrage (siehe Beispiele unten). Prüfen Sie den Ausführungsverlauf der Automatisierung, um sicherzustellen, dass die Daten korrekt empfangen wurden.
+8. Fügen Sie Ihre Aktionsschritte hinzu. Klicken Sie in einem beliebigen Aktionsfeld auf **+**, um auf Werte aus dem JSON-Text des Webhooks zu verweisen.
+
+## Welche Daten für nachfolgende Schritte verfügbar sind
+
+Der gesamte JSON-Text der eingehenden POST-Anfrage steht als Variablen zur Verfügung. Wenn Sie beispielsweise Folgendes senden:
+
+```json
+{
+  "order_id": "12345",
+  "customer": "Alice",
+  "amount": 99.95
+}
+```
+
+Dann können Sie in Ihren Aktionen einzeln auf `order_id`, `customer` und `amount` verweisen, indem Sie auf **+** klicken und zu den Ausgabefeldern des Auslösers navigieren.
+
+Teable analysiert das JSON automatisch und erstellt benannte Variablen für jeden Schlüssel der obersten Ebene. Auf verschachtelte Objekte kann ebenfalls zugegriffen werden.
+
+## Antwort anpassen
+
+Standardmäßig beantwortet Teable jede eingehende Anfrage mit einer eigenen Bestätigung. Einige Plattformen akzeptieren dies nicht: Sie überprüfen eine Abonnement-URL, indem sie eine Testanfrage senden und verlangen, dass Ihr Endpunkt eines der Felder zurückgibt. Slack funktioniert auf diese Weise. Daher erreichen dessen Ereignisse eine Automatisierung erst, wenn der Webhook den Handshake beantwortet.
+
+Stellen Sie im Auslöserbereich **Antwort** von **Standard** auf **Benutzerdefiniert** um:
+
+| Feld | Beschreibung |
+|---|---|
+| **Statuscode** | Ein beliebiger Code von 200 bis 299. Standardmäßig 200. |
+| **Inhaltstyp** | **JSON** oder **Nur-Text**. Standardmäßig JSON. |
+| **Antworttext** | Der zurückzugebende Text. Verwenden Sie `{{body.<path>}}`, um Werte aus der eingehenden Anfrage einzufügen. |
+
+Beim Umschalten auf **Benutzerdefiniert** wird der Text mit der Handshake-Antwort vorausgefüllt, die die meisten Aufrufer benötigen:
+
+```json
+{"challenge":"{{body.challenge}}"}
+```
+
+Die Pfade innerhalb von `{{ }}` entsprechen den Pfaden, die der Auslöser als Ausgabevariablen bereitstellt. Sie können daher einen Pfad direkt aus einer Nutzlast kopieren, die Sie bereits in einer Testausführung gesehen haben. Auch verschachtelte Werte funktionieren, beispielsweise `{{body.event.type}}`. Wenn ein Pfad in einem JSON-Text nicht in der Anfrage vorhanden ist, wird er als `null` dargestellt, sodass die Antwort gültiges JSON bleibt.
+
+<Info>Slack kann keinen `Authorization`-Header senden. Belassen Sie **Autorisierung** daher auf **Keine**, wenn Sie Slack verbinden. Der Auslöserbereich zeigt eine Warnung an, wenn beides gleichzeitig aktiviert ist.</Info>
+
+Stellen Sie **Antwort** jederzeit wieder auf **Standard** um, um zu Teables eigener Bestätigung zurückzukehren. Automatisierungen, bei denen diese Einstellung nie geändert wird, sind davon nicht betroffen.
+
+## Webhook testen
+
+Am einfachsten testen Sie den Webhook mit `curl` über die Befehlszeile. Kopieren Sie die echte URL aus dem Auslöserbereich, anstatt sie einzutippen; sie enthält die Base- und Workflow-IDs.
+
+**Ohne Autorisierung:**
+
+```bash
+curl -X POST https://your-teable-instance.com/api/webhook/base/bseXXXXXXXXXXXX/workflow/wflXXXXXXXXXXXX \
+  -H "Content-Type: application/json" \
+  -d '{"test": true, "message": "Hallo von curl"}'
+```
+
+**Mit Autorisierung per Bearer-Token:**
+
+```bash
+curl -X POST https://your-teable-instance.com/api/webhook/base/bseXXXXXXXXXXXX/workflow/wflXXXXXXXXXXXX \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-generated-token" \
+  -d '{"order_id": "12345", "status": "paid"}'
+```
+
+**Komplexere Daten senden:**
+
+```bash
+curl -X POST https://your-teable-instance.com/api/webhook/base/bseXXXXXXXXXXXX/workflow/wflXXXXXXXXXXXX \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-generated-token" \
+  -d '{
+    "event": "invoice.paid",
+    "data": {
+      "invoice_id": "INV-001",
+      "amount": 250.00,
+      "currency": "USD",
+      "customer_email": "alice@example.com"
+    }
+  }'
+```
+
+Prüfen Sie nach dem Senden einer Testanfrage den Ausführungsverlauf der Automatisierung, um sicherzustellen, dass die Daten korrekt empfangen und analysiert wurden.
+
+## Ratenbegrenzungen
+
+| Umfang | Begrenzung |
+|---|---|
+| Pro Base | 50 Anfragen/Sekunde |
+| Pro Workflow | 2 Anfragen/Sekunde |
+
+Anfragen, die die Ratenbegrenzung überschreiten, erhalten eine HTTP-429-Antwort. Wenn Ihr externes System viele Anfragen in kurzer Zeit sendet, sollten Sie eine Wiederholungslogik mit exponentiellem Backoff implementieren.
+
+## Bewährte Sicherheitspraktiken
+
+- **Verwenden Sie für produktive Webhooks immer die Autorisierung per Bearer-Token.** Eine öffentliche Webhook-URL kann von jedem ausgelöst werden, der die URL kennt.
+- **Halten Sie Ihre Webhook-URL geheim.** Behandeln Sie sie wie ein Passwort. Übertragen Sie sie nicht in öffentliche Repositorys und teilen Sie sie nicht in offenen Kanälen.
+- **Erzeugen Sie das Token neu**, wenn Sie vermuten, dass es kompromittiert wurde. Sie können jederzeit im Auslöserbereich ein neues Token erzeugen.
+- **Validieren Sie Daten in Ihrem Workflow.** Gehen Sie nicht davon aus, dass eingehende Daten korrekt formatiert sind. Verwenden Sie Filter oder Skriptschritte, um vor der Verarbeitung zu prüfen, ob erforderliche Felder vorhanden sind.
+- **Überwachen Sie den Ausführungsverlauf.** Prüfen Sie regelmäßig die Ausführungsprotokolle Ihrer Automatisierung, um unerwartete oder nicht autorisierte Anfragen zu erkennen.
+
+## Anwendungsfälle
+
+- **Zahlungsereignisse von Stripe oder PayPal empfangen.** Konfigurieren Sie einen Stripe-Webhook so, dass er `invoice.paid`-Ereignisse an Ihre Teable-Automatisierung sendet und automatisch Bestelldatensätze erstellt oder aktualisiert.
+- **Formularübermittlungen von Ihrer Website empfangen.** Richten Sie das Kontakt- oder Registrierungsformular Ihrer Website auf die Webhook-URL aus, um Datensätze direkt in Teable zu erstellen.
+- **Daten von IoT-Geräten erfassen.** Sensoren oder Geräte, die HTTP-Anfragen senden können, können Daten zur Überwachung und Alarmierung an Teable übertragen.
+- **CI/CD-Pipelines verbinden.** Lösen Sie Workflows aus, wenn ein Build erfolgreich ist oder fehlschlägt – erstellen Sie Datensätze, senden Sie Benachrichtigungen oder aktualisieren Sie den Projektstatus.
+- **Ereignisse von einem beliebigen SaaS-Tool empfangen.** Viele Tools (GitHub, Jira, Shopify, Twilio usw.) unterstützen Webhook-Benachrichtigungen. Richten Sie sie auf Ihren Teable-Webhook aus, um toolübergreifende Workflows zu automatisieren.
+
+## Tipps
+
+- Der Webhook akzeptiert ausschließlich **POST**-Anfragen. GET, PUT und andere Methoden lösen die Automatisierung nicht aus.
+- Senden Sie immer einen Header `Content-Type: application/json`. Wenn der Text kein gültiges JSON ist, kann der Auslöser die Daten möglicherweise nicht korrekt analysieren.
+- Wenn Sie Daten aus einem System senden müssen, das keine benutzerdefinierten Header unterstützt (für die Bearer-Autorisierung), können Sie den öffentlichen Modus verwenden und einen geheimen Schlüssel zum JSON-Text hinzufügen, den Ihr Workflow mit einem Filter oder Skript validiert.
+- Zur Fehlerdiagnose können Sie Dienste wie [webhook.site](https://webhook.site) verwenden, um zu prüfen, was Ihr externes System tatsächlich sendet, bevor Sie es auf Teable ausrichten.
+
+## Verwandte Themen
+
+- [Aktion „HTTP-Anfrage“](/de/basic/automation/actions/logic/http-request) – das ausgehende Gegenstück: externe APIs aus Ihrem Workflow aufrufen
+- [Skript ausführen](/de/basic/automation/ai/scripting/runscript) – für die erweiterte Verarbeitung von Webhook-Nutzlasten
+- [Aktion „Schleife (Stapel)“](/de/basic/automation/actions/logic/loop-run) – Arrays in Webhook-Nutzlasten verarbeiten

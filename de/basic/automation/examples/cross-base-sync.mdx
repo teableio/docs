@@ -1,0 +1,36 @@
+---
+title: "Datensätze über mehrere Bases hinweg synchron halten"
+description: "Replizieren Sie neue oder aktualisierte Datensätze mithilfe des Base-übergreifenden Zugriffs automatisch in eine andere Base"
+---
+
+<Tip>Wir empfehlen, Automatisierungsbeispiele direkt im KI-Chat zu erstellen. Beschreiben Sie einfach den gewünschten Workflow, und die KI übernimmt die vollständige Einrichtung für Sie – einschließlich Auslöser, Aktionen, Skript und Konfiguration.</Tip>
+
+## Mit KI erstellen
+
+Öffnen Sie den KI-Chat in der rechten Seitenleiste Ihrer Tabelle und teilen Sie der KI mit, was Sie möchten. Sie können zum Beispiel sagen:
+
+*„Wenn in der Base Vertrieb eine neue Bestellung erstellt wird, erstelle in der Base Auftragsabwicklung einen entsprechenden Datensatz mit Bestell-ID, Kundenname, Betrag und dem Status Ausstehend.“*
+
+Die KI erstellt automatisch den vollständigen Workflow. Sie können das erzeugte Skript überprüfen, mit echten Daten testen und den Workflow aktivieren, sobald er bereit ist.
+
+## Manuelle Einrichtung
+
+1. **Erstellen Sie einen Workflow** in der Base **Vertrieb** mit dem Auslöser **Wenn Datensatz erstellt wird**.
+2. Wählen Sie Ihre Tabelle **Bestellungen** aus.
+3. Klicken Sie auf **Testen**.
+4. **Fügen Sie eine Aktion hinzu** → **Datensatz erstellen**.
+5. Klicken Sie neben der Tabellenauswahl auf **Base-übergreifender Zugriff**.
+6. Navigieren Sie zur Base **Auftragsabwicklung** und wählen Sie die Tabelle **Bestellungen** aus.
+7. Ordnen Sie die Felder zu:
+   - Bestell-ID → Bestell-ID des Auslösers (über **+**)
+   - Kunde → Kunde des Auslösers
+   - Betrag → Betrag des Auslösers
+   - Status → `Auftragsabwicklung ausstehend`
+8. Klicken Sie auf **Testen** und anschließend auf **Aktivieren**.
+
+## Bidirektionale Synchronisierung
+
+So synchronisieren Sie Aktualisierungen in beide Richtungen:
+1. Erstellen Sie einen zweiten Workflow in der Base **Auftragsabwicklung**.
+2. Verwenden Sie **Wenn Datensatz aktualisiert wird** → **Datensatz aktualisieren** mit Base-übergreifendem Zugriff zurück auf die Base Vertrieb.
+3. Verwenden Sie einen Filter, um Endlosschleifen zu vermeiden – lösen Sie den Workflow z. B. nur aus, wenn sich bestimmte Felder ändern, und prüfen Sie vor der Aktualisierung, ob der Wert tatsächlich abweicht.

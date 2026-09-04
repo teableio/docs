@@ -1,0 +1,71 @@
+---
+title: "Slack、Discord、Teamsへ通知を送る"
+description: "テーブルでイベントが発生したとき、チャットチャンネルへメッセージを送信します"
+---
+
+<Tip>オートメーションの例は、AIチャットで直接構築することを推奨します。目的のワークフローを説明するだけで、トリガー、アクション、スクリプト、設定を含むすべての構築をAIが行います。</Tip>
+
+## AIで構築する
+
+テーブル右側のサイドバーでAIチャットを開き、実行したい内容を伝えます。たとえば、次のように入力します。
+
+*「優先度の高い新しいチケットが作成されたら、チケットのタイトルと説明を含む Slack メッセージを #support チャンネルへ送ってください」*
+
+AIがワークフロー全体を自動作成します。生成されたスクリプトを確認し、実際のデータでテストして、準備ができたらワークフローを有効にします。
+
+## 前提条件
+
+チャットプラットフォームの Webhook URL が必要です。
+- **Slack：** [受信Webhook](https://api.slack.com/messaging/webhooks)を作成します
+- **Discord：** サーバー設定 → 連携 → Webhook → 新しいWebhook
+- **Teams：** チャンネル → コネクタ → 受信Webhook
+
+## 手動設定
+
+1. **レコードが作成されたとき**をトリガーとする**ワークフローを作成**します。
+2. **チケット**テーブルを選択します。
+3. `優先度` **が等しい** `高` というフィルターを追加します。
+4. **テスト**をクリックします。
+5. **アクションを追加** → **HTTP リクエスト**を選択します。
+6. 次のように設定します。
+   - メソッド：**POST**
+   - URL：Webhook URL
+   - Content-Type：`application/json`
+   - 本文（Slack の場合）：
+     ```json
+     {
+       "text": "優先度の高い新しいチケット：<チケットタイトル>"
+     }
+     ```
+   - **+** ボタンを使用して、チケットタイトルを動的に挿入します。
+7. **テスト**をクリックしてから**有効化**します。
+
+## Discord向けに変更する
+
+Discord では `"text"` の代わりに `"content"` を使用します。
+
+```json
+{
+  "content": "優先度の高い新しいチケット：<チケットタイトル>"
+}
+```
+
+## Teams向けに変更する
+
+Teams では Adaptive Card 形式を使用します。
+
+```json
+{
+  "type": "message",
+  "attachments": [{
+    "contentType": "application/vnd.microsoft.card.adaptive",
+    "content": {
+      "type": "AdaptiveCard",
+      "body": [{ "type": "TextBlock", "text": "優先度の高い新しいチケット：<チケットタイトル>" }],
+      "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+      "version": "1.2"
+    }
+  }]
+}
+```
+

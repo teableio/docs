@@ -1,0 +1,83 @@
+---
+title: "Acceso entre Bases"
+description: "Lee y escribe datos de distintas Bases en un mismo flujo de trabajo"
+---
+
+{/* mintlify-resync: 2026-05-26 */}
+<Tip>
+Recomendamos encarecidamente usar Ejecutar script para crear automatizaciones, ya que permite cubrir el comportamiento de todas las acciones, incluidas aquellas que, de otro modo, tendrían que crearse manualmente. Solo tienes que describir tus requisitos a la IA en el chat.
+
+Ten en cuenta que, si añades acciones manualmente, la IA no podrá reconocerlas ni modificarlas más adelante.
+</Tip>
+
+De forma predeterminada, las acciones de Automatización operan en las Tablas de la propia Base del flujo de trabajo. Acceso entre Bases permite que un flujo de trabajo lea y escriba en otra Base. Úsalo para flujos de trabajo que abarcan departamentos, proyectos o conjuntos de datos.
+
+Por ejemplo, una Automatización de una Base Ventas puede crear un Registro de logística en una Base Operaciones independiente, o un flujo de informes puede reunir datos de varias Bases de proyectos en un único resumen.
+
+## Acciones compatibles
+
+| Acción | Compatible con el acceso entre Bases |
+|---|---|
+| Crear Registro | Sí |
+| Actualizar Registro | Sí |
+| Obtener Registros | Sí |
+
+Estas son las tres acciones orientadas a Registros. Las demás acciones (Enviar correo electrónico, Solicitud HTTP, etc.) no necesitan acceso entre Bases porque no apuntan a una Tabla concreta.
+
+## Cómo configurarlo
+
+1. Abre una acción compatible (Crear Registro, Actualizar Registro u Obtener Registros) en tu flujo de trabajo.
+2. Junto al selector de **Tabla**, haz clic en **Acceso entre Bases**.
+3. Se abrirá un panel que muestra todos los Espacios y Bases a los que puede acceder tu cuenta. Selecciona el **Espacio** de destino y después la **Base** de destino.
+4. Elige la **Tabla** de esa Base. Si la acción lo permite, también puedes seleccionar una **Vista** concreta.
+5. Asigna los Campos y configura la acción como de costumbre. La lista de Campos reflejará ahora los Campos de la Tabla de destino, no los de la Base actual.
+6. Guarda la acción.
+
+## Ejemplo concreto: de Ventas a Logística
+
+Imagina que tienes dos Bases:
+
+- **Base Ventas** — contiene una Tabla «Acuerdos» en la que el equipo de ventas realiza el seguimiento de los acuerdos cerrados.
+- **Base Operaciones** — contiene una Tabla «Logística» en la que el equipo de operaciones gestiona los envíos.
+
+Quieres crear automáticamente un Registro de logística cuando se cierre un acuerdo:
+
+1. **Desencadenador:** en la Base Ventas, utiliza «Cuando el Registro cumple las condiciones» con el filtro: `Etapa` es igual a `Cerrado ganado`.
+2. **Acción:** Crear Registro con Acceso entre Bases dirigido a Base Operaciones > Tabla Logística.
+3. **Asignación de Campos:** asigna el Nombre del cliente, Producto, Cantidad y Dirección de envío del acuerdo a los Campos correspondientes de la Tabla Logística.
+
+A partir de ahora, cada vez que se cierre un acuerdo se creará automáticamente un Registro de logística en la Base Operaciones, sin necesidad de una transferencia manual.
+
+## Modelo de permisos
+
+Cuando creas, editas o aplicas actualizaciones del flujo de trabajo, Teable comprueba cada acción entre Bases en función de los permisos del editor actual:
+
+| Acción | Permiso necesario en la Base de destino |
+|---|---|
+| Obtener Registros | Leer Campos y Registros |
+| Crear Registro | Leer Campos y Registros, además de crear Registros |
+| Actualizar Registro | Leer Campos y Registros, además de actualizar Registros |
+
+Las ejecuciones activas del flujo de trabajo utilizan la identidad de tiempo de ejecución de Automatización de Teable para la Base de destino. Los Registros creados o actualizados por una acción entre Bases aparecen como **Robot de Automatización** en los metadatos del Registro y las superficies de auditoría.
+
+### Qué ocurre cuando cambia el acceso
+
+Si el editor actual no tiene el permiso necesario en la Base de destino, Teable le impide añadir o cambiar acciones entre Bases que apunten a esa Base. Si un borrador ya contiene acciones entre Bases a las que el editor no puede acceder, Teable también impide que aplique ese borrador. La versión que ya está activa sigue ejecutándose; Teable volverá a comprobar los permisos la próxima vez que alguien edite o aplique el flujo de trabajo.
+
+Para corregir un error de permisos mientras editas o aplicas un flujo de trabajo:
+
+1. Pide a alguien con acceso a ambas Bases que edite y aplique el flujo de trabajo.
+2. O bien restablece los permisos necesarios en la Base de destino y vuelve a aplicar el flujo de trabajo.
+
+## Consejos
+
+- El acceso entre Bases puede llegar a Bases de diferentes **Espacios**. El editor que configure o aplique el flujo de trabajo debe tener los permisos necesarios en la Base de destino.
+- Al asignar Campos entre Bases, los tipos de Campo deben ser compatibles. Por ejemplo, no puedes asignar un Campo de texto a uno de archivos adjuntos.
+- Si reestructuras una Base de destino (cambias el nombre de Tablas o eliminas Campos), las acciones entre Bases que hacen referencia a esas Tablas y Campos dejarán de funcionar. Actualiza el flujo de trabajo después de realizar cambios estructurales.
+- En los flujos complejos entre Bases, considera centralizar las automatizaciones en una Base «central» para mantenerlas organizadas.
+
+## Contenido relacionado
+
+- [Crear Registro](/es/basic/automation/actions/records/create-record) — crea Registros en la Base actual o en otra
+- [Actualizar Registro](/es/basic/automation/actions/records/update-record) — actualiza Registros en la Base actual o en otra
+- [Obtener Registros](/es/basic/automation/actions/records/get-records) — recupera Registros de la Base actual o de otra

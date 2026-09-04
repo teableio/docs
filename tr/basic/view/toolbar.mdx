@@ -1,0 +1,244 @@
+---
+title: "Görünüm Araç Çubuğu"
+description: "Geçerli görünümde filtreleri, grupları, sıralamayı, paylaşımı ve görünüm iş birliği ayarlarını kullanın."
+---
+
+Görünüm araç çubuğu, geçerli görünümde kayıtların nasıl gösterileceğini ve paylaşılacağını denetler. Filtreler, gruplar, sıralamalar, görünür alanlar, satır yüksekliği ve ilgili ayarlar yalnızca geçerli görünümü etkiler. Kayıtları silmez veya diğer görünümleri değiştirmez.
+
+<Note>Filtre, grup ve sıralama ayarları her görünümde birbirinden bağımsızdır. Bir görünümdeki değişiklikler diğer görünümleri etkilemez.</Note>
+
+## Araç Çubuğuna Genel Bakış
+
+| Araç | Kullanım amacı | Yaygın senaryolar |
+| --- | --- | --- |
+| Filtre | Yalnızca koşullarla eşleşen kayıtları gösterme | Açık görevler, kendi kayıtlarınız, belirli bir tarih aralığındaki kayıtlar |
+| Grup | Kayıtları alan değerlerine göre gruplama | Sorumluya göre iş yükü, duruma göre ilerleme, tarihe göre kayıtlar |
+| Sırala | Kayıtları alan değerlerine göre yeniden sıralama | Yakın zamanda güncellenen kayıtlar, görev önceliği, satış sıralaması |
+| Paylaş | Geçerli görünümü bağlantı olarak yayımlama | Filtrelenmiş, sıralanmış, gruplanmış, alanları gizlenmiş veya belirli bir düzene sahip sonucu paylaşma |
+| Görünüm İş Birliği | Görünüm ayarlarının herkesle mi eşitleneceğini, yoksa yalnızca size mi uygulanacağını seçme | Geçici görünüm değişiklikleri veya herkesin kullandığı bir ekip görünümü |
+
+## Filtre
+
+Filtreler, geçerli görünümde belirli koşullarla eşleşen kayıtları gösterir. Eşleşmeyen kayıtları gizler, ancak silmez.
+
+<Steps>
+  <Step title="Filtre panelini açın">
+    Görünüm araç çubuğunda `Filtre`'ye tıklayın.
+  </Step>
+  <Step title="Bir koşul ekleyin">
+    Bir alan, işleç ve karşılaştırma değeri seçin.
+  </Step>
+  <Step title="Koşulların nasıl birleştirileceğini seçin">
+    Birden fazla koşul için **Tüm koşulları karşılayan** veya **Herhangi bir koşulu karşılayan** seçeneğini belirleyin.
+  </Step>
+</Steps>
+
+| İlişki | Açıklama |
+| --- | --- |
+| Tüm koşulları karşılayan | Bir kayıt yalnızca o düzeydeki tüm koşullar karşılandığında görünür |
+| Herhangi bir koşulu karşılayan | Bir kayıt o düzeydeki koşullardan herhangi biri karşılandığında görünür |
+
+<img
+  src="/images/docs/base/2026-05-26-view-filter-conditions.png"
+  alt="Görünüm filtre koşulları"
+  className="docs-screenshot"
+/>
+
+### Koşul Grupları
+
+Daha karmaşık filtre mantığı için **koşul grupları** kullanın. Örneğin, "A ve B ya da C ve D" ifadesi iki grup halinde tanımlanabilir.
+
+- Bir grup oluşturmak için `Koşul grubu ekle`'ye tıklayın.
+- Gruplarda **Tüm koşulları karşılayan** veya **Herhangi bir koşulu karşılayan** kullanılabilir.
+- Bir grup, iç içe gruplar içerebilir.
+- Koşul grupları en fazla **3 düzeyi** destekler.
+
+<img
+  src="/images/docs/base/2026-05-26-view-filter-condition-groups.png"
+  alt="Görünüm filtre koşulu grupları"
+  className="docs-screenshot"
+/>
+
+### Yaygın Filtre İşleçleri
+
+| Alan türü | Yaygın işleçler | Girdi |
+| --- | --- | --- |
+| Tek Satırlı Metin, Uzun Metin | Eşittir, Eşit değildir, İçerir, İçermez, Boş, Boş değil | Metin girdisi |
+| Kullanıcı | Eşittir, Eşit değildir, Herhangi birini içerir, Hiçbirini içermez, Boş, Boş değil | Kullanıcı listesi, geçerli kullanıcı |
+| Ek | Boş, Boş değil | Girdi yok |
+| Çoklu Seçim | Herhangi birini içerir, Tümünü içerir, Tam olarak eşleşir, Hiçbirini içermez, Boş, Boş değil | Seçenek listesi |
+| Tekli Seçim | Eşittir, Eşit değildir, Herhangi birini içerir, Hiçbirini içermez | Seçenek listesi |
+| Tarih, Oluşturulma Zamanı, Son Değiştirilme Zamanı | Eşittir, Eşit değildir, Aralığında, Önce, Sonra, Tarihinde veya öncesinde, Tarihinde veya sonrasında, Boş, Boş değil | Hazır aralık veya kesin tarih |
+| Sayı, Derecelendirme, Otomatik Numara | `=`, `≠`, `>`, `≥`, `<`, `≤`, Boş, Boş değil | Sayı |
+| Bağlantı | Eşittir, Eşit değildir, İçerir, İçermez, Herhangi birini içerir, Tümünü içerir, Tam olarak eşleşir, Hiçbirini içermez, Boş, Boş değil | Bağlı kayıt seçici |
+| Oluşturan, Son Değiştiren | Eşittir, Eşit değildir | Kullanıcı listesi, geçerli kullanıcı |
+
+Formül ve Toplama işleçleri sonuç türüne bağlıdır.
+
+### Geçersiz Koşul Uyarıları
+
+Bir alan türü değişirse, alan silinirse veya eski bir filtre yapılandırması artık uyumlu değilse Teable, görünümün açılabilmesi için geçersiz koşulu yok sayar.
+
+- Araç çubuğundaki `Filtre` düğmesinde bir uyarı simgesi görünür.
+- Filtre panelini açtığınızda geçersiz koşulda bir uyarı simgesi gösterilir.
+- Nedeni görmek ve koşulu düzeltmek için imleci simgenin üzerine getirin.
+
+## Grup
+
+Kayıtları alan değerlerine göre gruplamak; dağılımı, özetleri ve hiyerarşiyi incelemenize yardımcı olur.
+
+<Steps>
+  <Step title="Grup panelini açın">
+    Görünüm araç çubuğunda `Grup`'a tıklayın.
+  </Step>
+  <Step title="Bir alan seçin">
+    Gruplamak istediğiniz alanı seçin.
+  </Step>
+  <Step title="Başka gruplar ekleyin">
+    Birden fazla gruplama düzeyine ihtiyaç duyduğunuzda `Başka bir grup ekle`'ye tıklayın.
+  </Step>
+</Steps>
+
+| Alan türü | Önerilen kullanım |
+| --- | --- |
+| Tekli Seçim, Çoklu Seçim | Durum, öncelik veya tür gibi sabit seçeneklere göre gruplama |
+| Kullanıcı | Sorumlu, ortak çalışan veya gönderen kişiye göre gruplama |
+| Tarih | Kayıtları zaman aralığına göre gruplama |
+| Onay Kutusu, Bağlantı, Sayı, Derecelendirme | Açık değerlere veya sonuçlara göre gruplama |
+
+- Gruplama en fazla **3 düzeyi** destekler.
+- Grupları daraltabilir veya genişletebilirsiniz. Her gruptaki kayıtlar geçerli sıralamayı izlemeye devam eder.
+- Her grubun üst kısmında, özet sonuçlarını inceleyebileceğiniz bir özet çubuğu bulunur.
+- Boş değerler, alan türüne bağlı olarak ayrı kategorisiz, atanmamış veya boş gruplara yerleştirilir.
+
+## Sırala
+
+Sıralama, kayıtları alan değerlerine göre yeniden düzenler. Geçerli görünümdeki görüntülenme sırasını değiştirir ve kayıt içeriğini düzenlemez.
+
+<Steps>
+  <Step title="Sıralama panelini açın">
+    Görünüm araç çubuğunda `Sırala`'ya tıklayın.
+  </Step>
+  <Step title="Bir alan seçin">
+    Sıralamak istediğiniz alanı seçin.
+  </Step>
+  <Step title="Bir yön seçin">
+    Artan veya azalan sıralamayı seçin. Çok düzeyli sıralamaya ihtiyaç duyduğunuzda başka sıralama koşulları ekleyin.
+  </Step>
+</Steps>
+
+Çok düzeyli sıralama, koşulların sırasını izler. Teable önce ilk koşula göre sıralar; kayıtlar aynı değere sahipse bir sonraki koşulu uygular.
+
+| Alan türü | Sıralama davranışı |
+| --- | --- |
+| Metin, Ek | Alfabetik veya ters sırada sıralar. Ekler dosya adına göre sıralanır |
+| Sayı, Süre, Derecelendirme | Değere göre artan veya azalan sırada sıralar |
+| Tarih, Oluşturulma Zamanı, Son Değiştirilme Zamanı | En eskiden en yeniye veya en yeniden en eskiye sıralar |
+| Onay Kutusu | İşaretlenmemişten işaretlenmişe veya ters sırada sıralar |
+| Tekli Seçim, Çoklu Seçim | Alan yapılandırmasındaki seçenek sırasına veya ters sıraya göre sıralar |
+
+Formül ve Toplama alanları, sonuç türlerine göre sıralanır.
+
+Sıralama menüsündeki `Kayıtları otomatik sırala` seçeneğini kullanın.
+
+| Durum | Davranış |
+| --- | --- |
+| Açık | Kayıtlar geçerli kurallara göre sıralı kalır. Bir alan değeri değiştiğinde kayıt yeni konumuna taşınır. Otomatik sıralama açıkken kayıtları elle sürükleyemezsiniz |
+| Kapalı | Kayıtlar yalnızca sıralamayı yeniden uyguladığınızda tekrar sıralanır. Kayıtları elle sürükleyebilirsiniz ve veri güncellemeleri kayıtları otomatik olarak taşımaz |
+
+## Görünümü Paylaşma
+
+**Görünümü paylaş**, geçerli görünümü bağlantı olarak yayımlar. Ziyaretçiler bu görünümdeki verileri ve düzeni görür. Bu işlem, onları veritabanı ortak çalışanı olarak davet etmekle aynı değildir.
+
+<Note>Bir veritabanının tamamını, belirli bir tabloyu veya klasörü paylaşmak için [Veritabanı](/tr/basic/base) sayfasındaki veritabanı paylaşımını kullanın.</Note>
+
+| Paylaşım seçeneği | En uygun kullanım |
+| --- | --- |
+| Tabloyu paylaş | Harici kişilere geçerli tabloya daha geniş erişim verme |
+| Görünümü paylaş | Yalnızca filtrelenmiş, sıralanmış, gruplanmış, alanları gizlenmiş veya belirli bir düzene sahip geçerli görünümü yayımlama |
+
+Bir görünüm paylaşım bağlantısı, geçerli görünüm yapılandırmasını izler. Daha sonra filtreleri, sıralamayı, gruplamayı, gizli alanları veya düzeni değiştirirseniz paylaşılan sayfa da değişir.
+
+<Steps>
+  <Step title="Görünümü açın">
+    Paylaşmak istediğiniz görünüme gidin.
+  </Step>
+  <Step title="Paylaşımı açın">
+    Görünüm araç çubuğunda **Paylaş**'a tıklayın.
+  </Step>
+  <Step title="Görünümü paylaş'ı seçin">
+    **Görünümü paylaş** seçeneğine geçin.
+  </Step>
+  <Step title="Herkese açık paylaşımı etkinleştirin">
+    **Görünümü web'de paylaş** seçeneğini etkinleştirin.
+  </Step>
+  <Step title="Bağlantıyı kopyalayın">
+    Oluşturulan bağlantıyı kopyalayın veya QR kodunu paylaşın.
+  </Step>
+</Steps>
+
+Görünümü paylaşma izniniz yoksa paylaşım anahtarı kullanılamaz. **Görünümü web'de paylaş** kapatıldıktan sonra mevcut paylaşım bağlantıları artık açılamaz.
+
+<Warning>Herkese açık bağlantılar başkalarına iletilebilir. Paylaşımı etkinleştirmeden önce geçerli görünümde herkese açık olmaması gereken alan veya kayıt bulunmadığını doğrulayın.</Warning>
+
+Farklı görünüm türlerinde farklı gelişmiş seçenekler gösterilir.
+
+| Seçenek | Uygulandığı görünüm | Açıklama |
+| --- | --- | --- |
+| Görüntüleyenlerin bu görünümden veri kopyalamasına izin ver | Izgara görünümü | Ziyaretçilerin paylaşılan ızgara görünümünden veri kopyalayıp kopyalayamayacağını belirler |
+| Genişletilmiş kayıtlarda tüm alanları göster | Izgara görünümü | Ziyaretçilerin kayıt ayrıntılarını açarken gizli alanları görüp göremeyeceğini belirler |
+| Oturum açmış görüntüleyenlerin görünür verileri düzenlemesine izin ver | Tüm görünümler | Oturum açmış ziyaretçilerin paylaşılan görünümün kapsamındaki kayıtları ve alanları düzenlemesine olanak tanır |
+| Parolayla kısıtla | Tüm görünüm paylaşımları | Paylaşım bağlantısına parola ekler. Ziyaretçilerin bağlantıyı açmadan önce doğru parolayı girmesi gerekir |
+| Göndermek için oturum açmayı zorunlu kıl | Form görünümü | Ziyaretçilerin formu göndermeden önce oturum açmasını gerektirir |
+
+**Oturum açmış görüntüleyenlerin görünür verileri düzenlemesine izin ver** etkinleştirildiğinde anonim ziyaretçiler salt okunur erişime sahip olmaya devam eder ve bir oturum açma istemi görür. Oturum açmış ziyaretçiler yalnızca paylaşılan görünümdeki görünür veriler kapsamında kayıt oluşturabilir, güncelleyebilir veya silebilir. Geçerli görünüm filtresinin dışındaki kayıtlar ve görünümde gizlenen alanlar paylaşım bağlantısı üzerinden düzenlenemez.
+
+Paylaşılan görünümler diğer web sayfalarına gömülebilir. Gömmeyi önizlemek, iframe kodunu kopyalamak, araç çubuğunu gizlemek ve bir tema seçmek için **Gömme yapılandırması**'na tıklayın.
+
+```html
+<iframe
+  src="https://app.teable.ai/share/[share-id]/view?hideToolBar=true&embed=true"
+  width="100%"
+  height="533"
+  style="border: 0">
+</iframe>
+```
+
+| Gömme seçeneği | Açıklama |
+| --- | --- |
+| Araç çubuğunu gizle | Bağlantıya `hideToolBar=true` ekler ve filtre, sıralama, arama ile diğer araç çubuğu denetimlerini gizler. Bu, Form görünümüne uygulanmaz |
+| Tema | Sistem, açık ve koyu temaları destekler |
+
+## Görünüm İş Birliği
+
+Görünüm iş birliği, görünüm ayarlarının herkesle paylaşılıp paylaşılmayacağını veya yalnızca kişisel ayarlarınız olarak tutulup tutulmayacağını belirler. Filtreleri, sıralamaları, grupları, görünür alanları, satır yüksekliğini ve diğer görünüm ayarlarını etkiler. Kayıt verilerini etkilemez.
+
+| Mod | Kullanım alanı | Ayar davranışı |
+| --- | --- | --- |
+| İş birliği modu | Ekibin aynı görünüm yapılandırmasını kullanması gerekir | Görünüm ayarları, bu görünümü kullanan herkesle eşitlenir |
+| Kişisel mod | Geçici bir görünüm yapılandırması kullanmak veya verileri kendi yönteminizle görüntülemek istersiniz | Filtreler, sıralamalar, gruplar, görünür alanlar ve satır yüksekliği yalnızca size uygulanır |
+
+İş birliği modu ile kişisel mod arasında geçiş yapmak için araç çubuğundaki `Kişisel` seçeneğine tıklayın.
+
+Görünüm kilitli değilse ve görünümü güncelleme izniniz varsa kişisel modu kapattığınızda iki seçeneğiniz bulunur.
+
+| Seçenek | Sonuç |
+| --- | --- |
+| `Çık ve eşitle` | Kişisel moddaki görünüm ayarlarınızı herkesle eşitler |
+| `Çıkışı onayla` | Kişisel moddaki görünüm ayarlarınızı atar ve kişisel moddan çıkar |
+
+Görünüm kilitliyse veya görünümü düzenleme izniniz yoksa kendi geçici ayarlarınız için kişisel modu yine kullanabilirsiniz, ancak bu değişiklikleri başkalarıyla eşitleyemezsiniz.
+
+## SSS
+
+<AccordionGroup>
+  <Accordion title="Paylaşılan bir görünümde bağlantı alanları için Kapsamı kısıtla nasıl çalışır?">
+    Paylaşılan görünüm bağlantı alanları içeriyorsa ziyaretçilerin bu bağlantı alanlarında hangi bağlı kayıtları ve alanları görebileceğini veya seçebileceğini sınırlamak için paylaşım panelindeki **Kapsamı kısıtla** seçeneğini kullanın.
+  </Accordion>
+</AccordionGroup>
+
+## Notlar
+
+- Kişisel modda olmadığınız sürece filtreleri, grupları, sıralamaları, görünür alanları veya satır yüksekliğini değiştirmek geçerli görünümü kullanan herkesi etkiler.
+- Görünümü paylaş, tam veritabanı izinlerini değil geçerli görünümün sonucunu yayımlar. Sürekli iş birliği için üye izinlerini veya veritabanı paylaşımını kullanın.
+- Her iki modda da hücre değerlerinde yapılan düzenlemeler herkesle eşitlenmeye devam eder.

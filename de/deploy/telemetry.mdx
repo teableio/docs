@@ -1,0 +1,40 @@
+---
+title: "Telemetrie"
+description: "Erfahren Sie, wie die Telemetrie in selbstgehostetem Teable funktioniert, welche Daten übermittelt werden und wie Sie sie deaktivieren."
+---
+
+## Überblick
+
+Die Lizenzaktivierung kann offline erfolgen, nachdem Sie einen gültigen Lizenzschlüssel erhalten und eingegeben haben.
+
+Wenn eine selbstgehostete Instanz das Internet erreichen kann, sendet sie möglicherweise einen minimalen Telemetriebericht zur Lizenzkonformität, Sicherheitsprüfung, Betrugsprävention und Untersuchung unautorisierter Distributionen.
+
+Diese Telemetrie ist von optionalen Produktanalysen getrennt. Sie ist für die selbstgehostete Administration und Konformität konzipiert, ähnlich den gängigen Praktiken für Service-Pings, Lizenzvalidierung und anonyme Nutzungsberichte in selbstverwalteter Software.
+
+## Möglicherweise übermittelte Daten
+
+Telemetrieberichte können Produktautorisierungskennungen wie Instance ID und, wenn eine Lizenz installiert ist, License ID enthalten; Lizenzplan, Benutzerlimit und Ablaufdaten, sofern verfügbar; Softwareedition, Anwendungsversion, Build-Version, Image-Digest und Build-Kanal; aggregierte Nutzungszahlen und -kategorien; Zeitpunkt der letzten Instanzaktivität; gehashter Hostname des öffentlichen Ursprungs und gehashter Maschinen-Hostname; Plattform, CPU-Architektur und Node.js-Version; sowie Signale für Konformitätsrisiken.
+
+Produktautorisierungskennungen wie Instance ID und License ID können in ihrer ursprünglichen Form übermittelt werden, da sie zur Validierung des Bereitstellungs- und Lizenzstatus verwendet werden.
+
+Kunden- oder Host-identifizierende Werte wie der Hostname des öffentlichen Ursprungs und der Maschinen-Hostname werden vor der Übertragung gehasht.
+
+## Nicht übermittelte Daten
+
+Telemetrieberichte enthalten keine Inhalte von Kunden-Workspaces, Tabellendatensätze, Schemanamen, Feldwerte, SQL-Abfragen, Anwendungsgeheimnisse, Zugangsberechtigungen, Authentifizierungstoken, Lizenzschlüssel, Listen mit Nutzer-E-Mail-Adressen, Nutzernamen oder die vollständige URL des öffentlichen Ursprungs.
+
+## Übertragung und Aufbewahrung
+
+Telemetrieberichte werden während der Übertragung verschlüsselt.
+
+Teable bewahrt rohe Telemetrieereignisse nur so lange auf, wie dies vernünftigerweise für Lizenzkonformität, Sicherheitsprüfung, Betrugsprävention, Streitbeilegung und Prüfzwecke erforderlich ist. Teable kann aggregierten oder abgeleiteten Konformitätsstatus für die Dauer der Kundenbeziehung und gesetzlich vorgeschriebener Aufbewahrungsfristen speichern.
+
+## Telemetrieberichterstattung deaktivieren
+
+Administratoren selbstgehosteter Instanzen können die Telemetrieberichterstattung durch folgende Einstellung deaktivieren:
+
+```env
+TELEMETRY_REPORT_DISABLED=true
+```
+
+Das Deaktivieren der Telemetrieberichterstattung verhindert nicht automatisch die Offline-Lizenzaktivierung, kann jedoch die Fähigkeit von Teable einschränken, die Lizenzkonformität zu überprüfen, unautorisierte Distributionen zu erkennen oder Lizenzstreitigkeiten zu untersuchen.

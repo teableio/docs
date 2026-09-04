@@ -1,0 +1,103 @@
+---
+title: "Impostazioni dell'istanza"
+description: "Gestisci le opzioni a livello di istanza, le impostazioni email e gli elementi di sistema in sospeso."
+---
+
+<Tip>Disponibile per il piano Business Self-hosted e versioni successive</Tip>
+
+Percorso: Amministrazione di sistema → Impostazioni dell'istanza
+
+La pagina **Impostazioni dell'istanza** consente di gestire le impostazioni principali dell'intera istanza, incluse **Impostazioni generali**, **Email** e le verifiche di sistema mostrate nel pannello **Configurazione in sospeso**.
+
+## Panoramica
+
+Questa pagina riguarda principalmente gli elementi di base a livello di istanza. Le impostazioni principali sono raggruppate come segue:
+
+| Tipo di impostazione | Descrizione |
+|------|------|
+| **Impostazioni generali** | Include **Consenti la creazione di nuovi account**, **Domini email vietati**, **Consenti l'invio di inviti agli Spazi**, **Consenti a tutti di creare nuovi Spazi** e **Abilita verifica email** |
+| **Email** | Include **Email di notifica** ed **Email delle Automazioni** per reimpostazione della password, verifica email, email di notifica ed email di invito |
+| **Limiti di sistema** | Mostra i limiti effettivi dell'istanza per dati delle Tabelle, Campi, Viste e testo |
+
+Per abilitare le email di sistema, completa la configurazione in **Email**.
+
+Usa **Domini email vietati** per impedire la registrazione di indirizzi email appartenenti ai domini elencati. Teable rifiuta tali domini prima di inviare i codici di verifica della registrazione e non invia email di invito che li coinvolgono.
+
+<Tip>
+Se l'email non è configurata completamente, l'elemento **Email** nel pannello **Configurazione in sospeso** non diventerà verde.
+</Tip>
+
+## Limiti di sistema
+
+**Limiti di sistema** mostra i limiti correnti a livello di istanza per i dati delle Tabelle e la relativa configurazione. Se devi modificare un limite, usa la variabile di ambiente indicata in quella pagina.
+
+<Note>
+Dopo aver modificato una variabile di ambiente, riavvia il servizio affinché il nuovo valore abbia effetto.
+</Note>
+
+## Configurazione in sospeso
+
+Il pannello **Configurazione in sospeso** a destra è un elenco di controllo del sistema. Mostra quali impostazioni importanti mancano ancora per l'istanza.
+
+Le verifiche comuni in questa pagina includono:
+
+| Elemento | Impatto |
+|------|------|
+| **Variabile di ambiente PUBLIC_ORIGIN** | Influisce sulle funzionalità che dipendono da un URL di accesso esterno, come allegati e importazioni |
+| **Abilita HTTPS** | Influisce sulle funzionalità che dipendono da HTTPS, come copia e incolla |
+| **Email** | Influisce su reimpostazione della password, verifica email, notifiche e funzionalità analoghe |
+
+Se questi elementi non vengono completati, l'istanza può comunque aprirsi normalmente, ma alcune funzionalità potrebbero rimanere non disponibili.
+
+## Relazione con Impostazioni IA
+
+**Impostazioni dell'istanza** mostra una parte delle verifiche a livello di sistema, ma non consente di configurare i **modelli IA**, il **runtime di AI Chat** o **App Builder**.
+
+Per queste impostazioni, vai a:
+
+- [Impostazioni IA](/it/basic/admin-panel/ai-setting)
+
+Puoi considerare la suddivisione in questo modo:
+
+- **Impostazioni dell'istanza**: riguarda le funzionalità principali dell'istanza stessa
+- **Impostazioni IA**: riguarda AI Chat, Campi IA, Automazione IA e App Builder
+
+## Ordine dei controlli
+
+Se stai preparando una nuova distribuzione Self-hosted o la stai rendendo operativa per la prima volta, controlla questi elementi nell'ordine indicato:
+
+<Steps>
+  <Step title="Controlla l'URL di accesso">
+    Assicurati che **PUBLIC_ORIGIN** sia configurato correttamente.
+  </Step>
+  <Step title="Controlla HTTPS">
+    Assicurati che nell'istanza sia già abilitato **HTTPS**.
+  </Step>
+  <Step title="Controlla l'email">
+    Assicurati che **SMTP** sia configurato e possa inviare correttamente le email.
+  </Step>
+  <Step title="Continua con Impostazioni IA">
+    Dopo aver verificato gli elementi di base, continua con [Impostazioni IA](/it/basic/admin-panel/ai-setting).
+  </Step>
+</Steps>
+
+Ciò semplifica l'attivazione in sequenza degli elementi di **Configurazione in sospeso** e agevola la risoluzione dei problemi.
+
+## Domande frequenti
+
+<AccordionGroup>
+<Accordion title="L'istanza si apre normalmente, ma a destra sono ancora presenti elementi non completati">
+
+In genere, ciò significa che l'istanza è raggiungibile, ma mancano ancora uno o più requisiti importanti del runtime. Segui le indicazioni nel pannello a destra e completale una alla volta, senza basarti soltanto sull'apertura della pagina.
+</Accordion>
+
+<Accordion title="L'email a volte funziona, ma non è ancora contrassegnata come completata">
+
+Controlla che le impostazioni SMTP salvate siano complete, che corrispondano allo scopo di invio previsto e che le email di verifica o notifica possano essere inviate in modo affidabile.
+</Accordion>
+
+<Accordion title="Perché PUBLIC_ORIGIN è importante?">
+
+Molte funzionalità che dipendono da un URL di accesso esterno si basano su questa impostazione. Se il valore configurato non corrisponde all'URL di accesso effettivo, funzionalità come importazioni, allegati o reindirizzamenti potrebbero non funzionare correttamente.
+</Accordion>
+</AccordionGroup>

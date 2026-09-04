@@ -1,0 +1,132 @@
+---
+title: "Nginx (Ters Proxy)"
+description: "Teable için önerilen Nginx ters proxy yapılandırması: HTTPS (sertifikalar), WebSocket, Docker ipuçları ve Nginx Proxy Manager."
+---
+
+Teable'a bir alan adı üzerinden erişmek, HTTPS'yi (SSL sonlandırma) etkinleştirmek veya Teable'ı tek bir ağ geçidinin arkasındaki özel bir ağda tutmak istiyorsanız Teable'ın önüne Nginx yerleştirmek yaygın bir çözümdür.
+
+<Callout type="info">
+Önemli noktalar:
+- `PUBLIC_ORIGIN`, kullanıcılarınızın eriştiği nihai genel URL ile eşleşmelidir (ör. sonunda `/` olmadan `https://teable.example.com`)
+- **HTTPS + sertifikaları** varsayılan olarak kullanmanızı kesinlikle öneririz (üretim trafiğini düz HTTP üzerinden çalıştırmayın)
+- WebSocket özelliklerini kullanıyorsanız ters proxy'niz `Upgrade/Connection` üstbilgilerini iletmelidir
+</Callout>
+
+<Tip>
+Teable, **işbirliğine dayalı / gerçek zamanlı** iş akışlarında yaygın olarak kullanıldığından WebSocket desteğini etkin tutmak genellikle en güvenilir yapılandırmadır. Çoğunlukla tek kullanıcılı kullanımda bile bu WebSocket ayarlarını korumak normal erişimi etkilemez.
+</Tip>
+
+## Önerilen: HTTPS (varsayılan / üretim)
+
+HTTPS'yi varsayılan olarak kullanın: **son kullanıcılara 443 üzerinden hizmet verin**; 80 numaralı bağlantı noktasını yalnızca 443'e yönlendirme (veya ACME HTTP-01 sınamaları) için açık tutun.
+
+Aşağıda üretim tarzı bir örnek yer alır (HTTPS + WebSocket + HTTP→HTTPS yönlendirmesi). Alan adını ve sertifika yollarını değiştirin:
+
+```nginx
+upstream teable {
+  server 127.0.0.1:3000;
+  # Nginx, Teable ile aynı Docker ağında çalışıyorsa:
+  # server teable:3000;
+}
+
+map $http_upgrade $connection_upgrade {
+  default upgrade;
+  '' close;
+}
+
+# 80 numaralı bağlantı noktası yalnızca yönlendirme yapar (veya ACME sınamaları için kullanılır)
+server {
+  listen 80;
+  server_name teable.example.com;
+  return 301 https://$host$request_uri;
+}
+
+server {
+  listen 443 ssl http2;
+  server_name teable.example.com;
+
+  ssl_certificate     /etc/letsencrypt/live/teable.example.com/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/teable.example.com/privkey.pem;
+
+  # Alan adının her zaman HTTPS kullanması gerektiğinden eminseniz HSTS'yi etkinleştirebilirsiniz (dikkatli kullanın)
+  # add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+
+  location / {
+    proxy_pass http://teable;
+
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto https;
+
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+    proxy_set_header Host $host;
+
+    proxy_http_version 1.1;
+  }
+}
+```
+
+### Sertifikalar (verme / yenileme)
+
+- **Let’s Encrypt (önerilen)**: otomatik sertifika verme ve yenileme için Certbot veya acme.sh kullanın
+- **Grafik arayüz araçları**: Nginx Proxy Manager, arayüzünden sertifika isteyebilir ve sertifikaları otomatik olarak yenileyebilir
+
+## Örnek 1: En sade `location /` (hızlı başlangıç)
+
+> Not: Bu, dahili ağlar veya hızlı doğrulama için **yalnızca HTTP** kullanan bir örnektir. Üretimde yukarıdaki HTTPS yapılandırmasını tercih edin.
+
+```nginx
+upstream teable {
+  server 127.0.0.1:3000;
+  # Nginx, Teable ile aynı Docker ağında çalışıyorsa:
+  # server teable:3000;
+}
+
+map $http_upgrade $connection_upgrade {
+  default upgrade;
+  '' close;
+}
+
+server {
+  listen 80;
+  server_name teable.example.com;
+
+  location / {
+    proxy_pass http://teable;
+
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+    proxy_set_header Host $host;
+
+    proxy_http_version 1.1;
+  }
+}
+```
+
+## Docker ipuçları
+
+- **Nginx ana bilgisayarda, Teable kapsayıcılarda çalışıyorsa**: genellikle `proxy_pass http://127.0.0.1:3000;` kullanın (`3000:3000` bağlantı noktası yayımlanmışsa)
+- **Nginx ve Teable aynı Docker ağındaysa**: hizmet/kapsayıcı adı üzerinden yönlendirebilirsiniz; ör. `proxy_pass http://teable:3000;`
+
+## Yaygın sorunlar
+
+- **Yol yeniden yazımlarından kaçının**: ne yaptığınızı tam olarak bilmiyorsanız yeniden yazımlar Teable'ın dahili yönlendirmesini bozabilir.
+- **`PUBLIC_ORIGIN` değerinin doğru olduğundan emin olun**: bu değer oluşturulan URL'leri, yönlendirmeleri, içe aktarma/yükleme akışlarını, geri çağırmaları vb. etkiler.
+
+## Nginx Proxy Manager (NPM)
+
+Nginx yapılandırmasını elle yazmak istemiyorsanız grafik arayüz araçları alan adlarını, sertifikaları ve proxy ana bilgisayarlarını yönetmenize yardımcı olabilir:
+
+- **Nginx Proxy Manager (NPM)**: Docker tabanlı yapılandırmalarda yaygın olarak kullanılır
+
+**Nginx Proxy Manager** için tipik bir yapılandırma şöyledir:
+
+- **Proxy Ana Bilgisayarı Oluşturun**: `Alan Adları` değerini `teable.example.com`, `Şema` değerini `http`, `Yönlendirilecek Ana Bilgisayar Adı / IP` değerini `127.0.0.1` (veya Docker ağı içinde `teable`) ve `Yönlendirilecek Bağlantı Noktası` değerini `3000` olarak ayarlayın
+- **WebSocket desteğini etkinleştirin**: Proxy Ana Bilgisayarı seçeneklerinden WebSocket desteğini açın (etiket sürüme göre değişebilir)
+- **SSL sağlayın/bağlayın**: bir Let's Encrypt sertifikası isteyin veya seçin ve isteğe bağlı olarak HTTPS yönlendirmesini zorunlu kılın
+- **Teable ortam değişkenini unutmayın**: `PUBLIC_ORIGIN` değerini nihai genel URL olarak ayarlayın (ör. `https://teable.example.com`)

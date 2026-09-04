@@ -1,0 +1,290 @@
+---
+title: "Exécuter un script"
+description: "Exécutez du JavaScript personnalisé dans un bac à sable sécurisé pour une logique qui dépasse les actions intégrées"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Nous vous recommandons vivement d’utiliser Exécuter un script pour créer des automatisations, car cette action peut couvrir tous les comportements, y compris ceux qui devraient autrement être configurés manuellement. Décrivez simplement vos besoins à l’IA dans le chat.
+
+Remarque : si vous ajoutez des actions manuellement, l’IA ne pourra ni les reconnaître ni les modifier par la suite.
+</Tip>
+
+L’action Exécuter un script vous permet d’écrire du JavaScript personnalisé pour gérer une logique que les actions intégrées ne peuvent pas couvrir. Vous pouvez transformer des données, appeler des API externes, effectuer des calculs, mettre en œuvre des branches conditionnelles et bien plus encore, le tout dans un environnement de bac à sable sécurisé.
+
+Les scripts reçoivent les données des étapes précédentes via l’objet `input` et transmettent leurs résultats aux étapes suivantes via la fonction `output.set()`.
+
+## Quand utiliser Exécuter un script plutôt que les actions intégrées
+
+| Scénario | Utiliser les actions intégrées | Utiliser Exécuter un script |
+|---|---|---|
+| Créer, mettre à jour ou obtenir des enregistrements | Oui | Uniquement si une logique complexe est nécessaire autour de l’opération |
+| Envoyer un e-mail simple | Oui | Non |
+| Appeler un seul point de terminaison d’API | Oui (Requête HTTP) | Uniquement si la réponse nécessite un traitement complexe |
+| Transformer des données entre des étapes | Parfois | Oui, si vous avez besoin de logique conditionnelle, de boucles ou de manipulation de chaînes |
+| Analyser des structures JSON complexes | Non | Oui |
+| Calculer des dates, mettre en forme des nombres | Non | Oui |
+| Enchaîner plusieurs appels d’API avec une logique | Peu pratique avec les actions intégrées | Oui |
+| Mettre en œuvre des règles métier avec de nombreuses conditions | Peu pratique | Oui |
+
+En général, utilisez les actions intégrées lorsqu’elles répondent à vos besoins. Utilisez Exécuter un script lorsque vous avez besoin d’une logique personnalisée, d’une transformation de données ou d’une interaction complexe avec une API.
+
+## Environnement
+
+| Propriété | Valeur |
+|---|---|
+| Langage | JavaScript (ES6+), `await` pris en charge au niveau supérieur |
+| Environnement d’exécution | Bac à sable sécurisé avec un délai d’attente de 60 secondes |
+| Modules | CommonJS (`require()`), paquets npm pris en charge |
+| Réseau | Requêtes HTTP via `fetch()` |
+
+## Configuration
+
+1. Ajoutez une action **Exécuter un script** à votre workflow.
+2. L’éditeur de script s’ouvre sur une zone vide. Écrivez-y votre code JavaScript.
+3. Votre script peut lire les données des étapes précédentes à l’aide de l’objet `input` (voir ci-dessous).
+4. Utilisez `output.set(key, value)` pour transmettre des résultats aux étapes suivantes.
+5. (Facultatif) Ajoutez des dépendances npm dans le panneau de configuration si votre script nécessite des bibliothèques externes.
+6. Cliquez sur **Tester** pour exécuter le script avec des données réelles provenant de la dernière exécution du déclencheur.
+7. Consultez le résultat du test et les journaux de la console afin de vérifier que votre script fonctionne correctement.
+8. Enregistrez l’action.
+
+## Lire les données d’entrée
+
+L’objet `input` contient les données de toutes les étapes précédentes du workflow. Chaque étape est identifiée par son ID d’action.
+
+### Structure des données d’entrée
+
+```javascript
+// input est un objet dont les clés sont des ID d’action
+// Chaque clé contient le résultat de l’étape correspondante
+
+const actionIds = Object.keys(input);
+// actionIds peut être : ["triggerStep1", "actionStep2", "actionStep3"]
+```
+
+### Obtenir les données du déclencheur (champs d’un enregistrement)
+
+```javascript
+const actionIds = Object.keys(input);
+const triggerData = input[actionIds[0]]; // La première entrée est généralement le déclencheur
+
+// Pour les déclencheurs basés sur un enregistrement (création, mise à jour, clic sur un bouton, envoi de formulaire) :
+const recordId = triggerData.record.id;
+const fields = triggerData.record.fields;
+
+// Accéder à des champs précis à l’aide de leur ID
+const customerName = fields.fldXXXXXXX;  // Remplacer par l’ID réel du champ
+const orderAmount = fields.fldYYYYYYY;
+```
+
+### Obtenir les données d’une étape Obtenir des enregistrements
+
+```javascript
+const actionIds = Object.keys(input);
+const getRecordsData = input[actionIds[1]]; // Deuxième étape, par exemple
+
+const records = getRecordsData.records;
+records.forEach(record => {
+  console.log(record.id, record.fields.fldName);
+});
+```
+
+### Obtenir les données des résultats d’autres actions
+
+```javascript
+const actionIds = Object.keys(input);
+const previousOutput = input[actionIds[2]]; // Résultat de la troisième étape
+// La structure dépend du résultat produit par cette action
+```
+
+<Tip>Utilisez `console.log(JSON.stringify(input, null, 2))` pendant les tests afin d’afficher la structure exacte de vos données d’entrée. C’est le moyen le plus rapide de comprendre les données disponibles.</Tip>
+
+## Écrire des données de sortie
+
+Utilisez `output.set(key, value)` pour rendre des données accessibles aux étapes suivantes. Vous pouvez définir plusieurs clés.
+
+```javascript
+// Définir des valeurs simples
+output.set("status", "success");
+output.set("count", 42);
+
+// Définir des objets
+output.set("result", {
+  name: "Alice",
+  score: 95,
+  passed: true
+});
+
+// Définir des tableaux
+output.set("items", [
+  { id: 1, name: "Élément A" },
+  { id: 2, name: "Élément B" }
+]);
+```
+
+Chaque clé définie devient une variable distincte que les étapes suivantes peuvent référencer avec le sélecteur de variables **+**. Par exemple, si vous appelez `output.set("status", "success")`, l’étape suivante peut référencer `status` dans le résultat de ce script.
+
+## Débogage avec console.log
+
+Pendant le développement, utilisez `console.log()` pour inspecter les données et suivre le déroulement de l’exécution. La sortie du journal apparaît dans le panneau de test lorsque vous cliquez sur **Tester**.
+
+```javascript
+const actionIds = Object.keys(input);
+console.log("ID des actions :", actionIds);
+
+const data = input[actionIds[0]];
+console.log("Données du déclencheur :", JSON.stringify(data, null, 2));
+
+// Journaliser les résultats intermédiaires
+const processed = data.record.fields.fldName.toUpperCase();
+console.log("Nom traité :", processed);
+
+output.set("name", processed);
+```
+
+Les journaux de la console ne sont visibles que pendant les tests : ils n’apparaissent pas dans l’historique des exécutions en production. N’hésitez pas à les utiliser lors de la création de votre script.
+
+## Gestion des paquets npm
+
+Vous pouvez utiliser des paquets npm dans vos scripts. Déclarez les dépendances dans le panneau de configuration :
+
+```json
+[
+  { "name": "lodash", "version": "4.17.21" },
+  { "name": "dayjs", "version": "1.11.10" }
+]
+```
+
+Utilisez-les ensuite dans votre script avec `require()` :
+
+```javascript
+const _ = require("lodash");
+const dayjs = require("dayjs");
+
+const actionIds = Object.keys(input);
+const records = input[actionIds[0]].records;
+
+const grouped = _.groupBy(records, r => r.fields.fldCategory);
+const today = dayjs().format("YYYY-MM-DD");
+
+output.set("grouped", grouped);
+output.set("date", today);
+```
+
+<Tip>Privilégiez les fonctionnalités JavaScript intégrées aux paquets npm lorsque c’est possible. Le JavaScript moderne propose de nombreux utilitaires natifs : `Array.map()`, `Array.filter()`, `Object.entries()`, littéraux de gabarit, déstructuration, etc. N’ajoutez des paquets npm que s’ils apportent une réelle valeur ajoutée.</Tip>
+
+## Variables intégrées
+
+| Variable | Description |
+|---|---|
+| `process.env.AUTOMATION_TOKEN` | Jeton Bearer permettant d’appeler l’API Teable. Sa portée correspond aux autorisations de l’automatisation actuelle |
+| `process.env.PUBLIC_ORIGIN` | URL de base de votre instance Teable (par exemple, `https://app.teable.io`) |
+
+### Sécurité : portée d’AUTOMATION_TOKEN
+
+Le jeton `AUTOMATION_TOKEN` est généré automatiquement pour chaque exécution d’automatisation. Il dispose des mêmes autorisations que le créateur de l’automatisation et sa portée est limitée à l’exécution actuelle. Points essentiels :
+
+- Il peut accéder à toutes les tables auxquelles le créateur de l’automatisation a accès.
+- Il n’est valide que pendant l’exécution du script (délai d’attente de 60 secondes).
+- N’exposez pas ce jeton à des systèmes externes : il est destiné aux appels de l’API Teable depuis votre script.
+
+### Appeler l’API Teable
+
+```javascript
+const base = process.env.PUBLIC_ORIGIN + "/api";
+const token = process.env.AUTOMATION_TOKEN;
+
+// Exemple : obtenir des enregistrements d’une table
+const res = await fetch(`${base}/table/tblXXXXXXX/record?take=10`, {
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json"
+  }
+});
+
+const data = await res.json();
+console.log("Enregistrements récupérés :", data);
+output.set("records", data);
+```
+
+### Appeler l’IA depuis un script
+
+`POST /api/automation/runtime/ai` envoie un prompt au modèle d’IA de votre base. La base est déterminée par le contexte de l’automatisation ; aucun ID de base n’est donc nécessaire. Le corps accepte `prompt`, ainsi que les paramètres facultatifs `attachments`, `modelKey`, `temperature` et `outputType` ; la réponse est `{ "message": ... }`.
+
+Les pièces jointes sont des éléments `{ url, mimetype, name }`, dans la limite de 10 par appel, chacun inférieur à 20 Mo et téléchargeable en moins de 30 secondes. Elles peuvent être des images, des PDF ou des documents Office. Le modèle de chat par défaut peut ne pas lire les images et pièces jointes similaires ; transmettez donc `modelKey` lorsque vous envoyez des fichiers. Chaque appel consomme des crédits.
+
+## Gestion des erreurs
+
+Encadrez toujours les opérations risquées de blocs try/catch afin que votre workflow puisse gérer correctement les échecs :
+
+```javascript
+try {
+  const res = await fetch("https://api.example.com/data");
+  
+  if (!res.ok) {
+    throw new Error(`L’API a renvoyé ${res.status} : ${res.statusText}`);
+  }
+  
+  const data = await res.json();
+  output.set("success", true);
+  output.set("data", data);
+} catch (error) {
+  console.log("Erreur :", error.message);
+  output.set("success", false);
+  output.set("error", error.message);
+}
+```
+
+Sans gestion des erreurs, un appel fetch échoué ou un format de données inattendu provoque l’arrêt du script, et les étapes suivantes ne reçoivent aucun résultat.
+
+## Exemple complet : traiter et acheminer des tickets d’assistance
+
+```javascript
+const actionIds = Object.keys(input);
+const record = input[actionIds[0]].record;
+
+const subject = record.fields.fldSubject || "";
+const body = record.fields.fldBody || "";
+const email = record.fields.fldEmail || "";
+
+// Acheminement simple fondé sur des mots-clés
+const text = (subject + " " + body).toLowerCase();
+
+let category = "Général";
+let priority = "Normale";
+
+if (text.includes("facturation") || text.includes("facture") || text.includes("paiement")) {
+  category = "Facturation";
+} else if (text.includes("bug") || text.includes("erreur") || text.includes("plantage")) {
+  category = "Technique";
+  priority = "Élevée";
+} else if (text.includes("annuler") || text.includes("remboursement")) {
+  category = "Compte";
+  priority = "Élevée";
+}
+
+// Rechercher les clients VIP
+const vipDomains = ["bigcorp.com", "enterprise.io"];
+const domain = email.split("@")[1] || "";
+if (vipDomains.includes(domain)) {
+  priority = "Urgente";
+}
+
+output.set("category", category);
+output.set("priority", priority);
+output.set("isVIP", vipDomains.includes(domain));
+```
+
+## Conseils
+
+- **Commencez par console.log.** Lorsque vous créez un script, journalisez d’abord l’objet `input` entier afin d’en comprendre la structure.
+- **Gardez des scripts ciblés.** Réalisez correctement une seule tâche plutôt que de regrouper de nombreuses opérations dans un même script. Enchaînez plusieurs actions Exécuter un script si nécessaire.
+- **Tenez compte du délai d’attente de 60 secondes.** Les opérations longues, comme le traitement de grandes quantités de données ou de nombreux appels d’API séquentiels, peuvent atteindre cette limite. Divisez les tâches volumineuses en blocs plus petits.
+- **Testez avec des données réelles.** Le panneau de test utilise les données réelles de la dernière exécution du déclencheur afin de produire des résultats réalistes.
+- **Gérez les données manquantes.** Utilisez des valeurs par défaut (opérateur `||`) pour les champs susceptibles d’être vides ou non définis.
+
+## Pages connexes
+
+- [Générer avec l’IA](/fr/basic/automation/actions/ai/ai-generate) — pour les tâches d’IA fondées sur des prompts qui ne nécessitent pas de code personnalisé
+- [Requête HTTP](/fr/basic/automation/actions/logic/http-request) — pour les appels d’API simples qui ne nécessitent pas de script

@@ -1,0 +1,40 @@
+---
+title: "Telemetría"
+description: "Descubre cómo funciona la telemetría de Teable autoalojado, qué información se comunica y cómo desactivarla."
+---
+
+## Descripción general
+
+La activación de la licencia puede funcionar sin conexión después de obtener e introducir una Clave de licencia válida.
+
+Si una instancia autoalojada puede acceder a Internet, es posible que envíe un informe de telemetría mínimo para comprobar el cumplimiento de la licencia, realizar revisiones de seguridad, prevenir el fraude e investigar distribuciones no autorizadas.
+
+Esta telemetría es independiente de los análisis opcionales del producto. Está diseñada para la administración y el cumplimiento en instalaciones autoalojadas, de forma similar a las prácticas habituales de señales de servicio, validación de licencias e informes anónimos de uso del software autogestionado.
+
+## Información que se puede comunicar
+
+Los informes de telemetría pueden incluir identificadores de autorización del producto, como el ID de la instancia y, cuando hay una licencia instalada, el ID de la licencia; el plan de la licencia, el límite de asientos y las fechas de vencimiento cuando estén disponibles; la edición del software, la versión de la aplicación, la versión de compilación, el resumen de la imagen y el canal de compilación; recuentos y grupos de uso agregados; la hora de la última actividad de la instancia; el nombre de host de origen público y el nombre de host de la máquina, ambos con hash; la plataforma, la arquitectura de la CPU y la versión de Node.js; además de señales de riesgo de incumplimiento.
+
+Los identificadores de autorización del producto, como el ID de la instancia y el ID de la licencia, pueden enviarse en su formato original porque se utilizan para validar el despliegue y el estado de la licencia.
+
+Los valores que identifican al cliente o al host, como el nombre de host de origen público y el nombre de host de la máquina, se procesan mediante hash antes de transmitirse.
+
+## Información que no se comunica
+
+Los informes de telemetría no incluyen el contenido de los espacios de trabajo de los clientes, los Registros de las Tablas, los nombres de esquemas, los valores de Campos, las consultas SQL, los secretos de las aplicaciones, las credenciales de acceso, los tokens de autenticación, las Claves de licencia, las listas de correos electrónicos de usuarios, los nombres de usuario ni la URL completa del origen público.
+
+## Transmisión y conservación
+
+Los informes de telemetría se cifran durante la transmisión.
+
+Teable conserva los eventos de telemetría sin procesar únicamente durante el tiempo razonablemente necesario para comprobar el cumplimiento de licencias, realizar revisiones de seguridad, prevenir el fraude, gestionar disputas y llevar a cabo auditorías. Teable puede conservar estados de cumplimiento agregados o derivados durante la relación con el cliente y cualquier periodo de conservación exigido por ley.
+
+## Desactivar el envío de telemetría
+
+Los administradores de instalaciones autoalojadas pueden desactivar el envío de telemetría estableciendo:
+
+```env
+TELEMETRY_REPORT_DISABLED=true
+```
+
+Desactivar el envío de telemetría no impide por sí solo activar una licencia sin conexión, pero puede limitar la capacidad de Teable para verificar el cumplimiento de la licencia, detectar distribuciones no autorizadas o investigar disputas relacionadas con licencias.

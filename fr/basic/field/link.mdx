@@ -1,0 +1,63 @@
+---
+title: "Lien"
+description: "Créez des relations entre les Tables et sélectionnez, dans l’Enregistrement actuel, des Enregistrements provenant d’une autre Table."
+---
+
+{/* mintlify-resync: 2026-05-26 */}
+Le Champ Lien relie deux Tables. Il permet de sélectionner dans la Table actuelle des Enregistrements provenant d’une autre Table et d’ouvrir les Enregistrements liés lorsque nécessaire. Les Champs Lien sont également indispensables pour utiliser les Champs **Recherche** et **Agrégation**.
+
+## Cas d’utilisation
+
+| Scénario | Utilité |
+| --- | --- |
+| Clients et commandes | Lier les clients dans la Table des commandes et afficher les commandes associées depuis la Table des clients |
+| Projets et tâches | Lier une tâche à son projet et afficher toutes les tâches d’un projet |
+| Étudiants et cours | Suivre les inscriptions aux cours, les membres d’un projet ou d’autres relations plusieurs-à-plusieurs |
+| Lignes de commande et Enregistrements parents | Lier les lignes d’une commande à celle-ci, puis rechercher les prix ou agréger les totaux |
+
+## Création et configuration
+
+<Steps>
+  <Step title="Choisir le type de Champ">
+    Dans la Table actuelle, cliquez sur Ajouter un Champ et choisissez **Lien**.
+  </Step>
+  <Step title="Choisir la Table cible">
+    Dans la boîte de dialogue de configuration, choisissez la Table à laquelle établir un lien, par exemple en reliant la Table des commandes à celle des clients.
+  </Step>
+  <Step title="Choisir le mode de liaison">
+    Choisissez un lien unidirectionnel ou bidirectionnel selon vos besoins.
+  </Step>
+  <Step title="Configurer les règles de relation">
+    Utilisez **Autoriser la sélection multiple** et **Autoriser les valeurs en double** pour configurer des relations un-à-un, un-à-plusieurs, plusieurs-à-un ou plusieurs-à-plusieurs.
+  </Step>
+</Steps>
+
+## Liens unidirectionnels et bidirectionnels
+
+| Mode | Description | Utilité |
+| --- | --- | --- |
+| Lien bidirectionnel | Activé par défaut. Lorsque vous créez un Champ Lien, Teable crée un Champ Lien correspondant dans la Table cible et maintient les deux côtés synchronisés | Relations qui doivent être consultées depuis les deux Tables, comme celles entre commandes et clients ou entre projets et tâches |
+| Lien unidirectionnel | Lorsque l’option bidirectionnelle est désactivée, seule la Table actuelle affiche les Enregistrements liés. Aucun Champ inverse n’est créé dans la Table cible | Cas où vous souhaitez uniquement référencer une autre Table sans modifier la structure de la Table cible |
+
+## Types de relations
+
+Utilisez conjointement **Autoriser la sélection multiple** et **Autoriser les valeurs en double** pour définir quatre types de relations courants :
+
+| Relation | Exemple métier | Configuration |
+| :--- | :--- | :--- |
+| **Un-à-un (1:1)** | **Employé - Profil**<br />Un employé possède un profil et un profil appartient à un employé | ☐ Autoriser la sélection multiple<br />☐ Autoriser les valeurs en double<br />*(les deux options sont désactivées)* |
+| **Un-à-plusieurs (1:N)** | **Département - Employé**<br />Un département compte plusieurs employés, mais chaque employé appartient à un seul département | ☑ Autoriser la sélection multiple<br />☐ Autoriser les valeurs en double<br />*(seule la sélection multiple est autorisée)* |
+| **Plusieurs-à-un (N:1)** | **Tâche - Projet**<br />Plusieurs tâches appartiennent à un projet, mais chaque tâche n’appartient qu’à un seul projet | ☐ Autoriser la sélection multiple<br />☑ Autoriser les valeurs en double<br />*(seules les valeurs en double sont autorisées)* |
+| **Plusieurs-à-plusieurs (N:N)** | **Étudiant - Cours**<br />Un étudiant peut suivre plusieurs cours et un cours peut accueillir plusieurs étudiants | ☑ Autoriser la sélection multiple<br />☑ Autoriser les valeurs en double<br />*(les deux options sont activées)* |
+
+## Utilisations courantes
+
+- **Gestion des clients dans un CRM** : dans une Table `Entreprises`, créez un Champ Lien vers une Table `Contacts` afin qu’une entreprise puisse être liée à plusieurs contacts.
+- **Affectation des tâches de projet** : dans une Table `Tâches`, créez un Champ Lien vers une Table `Projets` afin que chaque tâche appartienne à un projet, tandis que la Table des projets peut afficher les tâches associées.
+- **Lignes de commande** : dans une Table `Commandes`, établissez un lien vers une Table `Produits`, puis utilisez des Champs Recherche pour afficher les prix et des Champs Agrégation pour calculer les totaux des commandes.
+
+## Remarques
+
+- **Limites des relations un-à-plusieurs** : dans une relation un-à-plusieurs stricte, lorsque la sélection multiple est désactivée du côté de la Table B, un Enregistrement de la Table B lié par un Enregistrement de la Table A ne peut pas être sélectionné par d’autres Enregistrements de la Table A. Cela convient aux données qui ne doivent pas être réutilisées, comme les numéros d’identification ou les profils d’employés.
+
+<Info>Les Champs Lien peuvent uniquement relier des Tables appartenant au même Espace. Les Champs Recherche, Agrégation, Recherche conditionnelle et Agrégation conditionnelle exigent également que les données sources appartiennent au même Espace.</Info>

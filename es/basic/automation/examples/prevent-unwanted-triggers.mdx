@@ -1,0 +1,45 @@
+---
+title: "Evitar disparadores no deseados con filtros y Campos supervisados"
+description: "Evita que tus Automatizaciones se ejecuten cuando no deben"
+---
+
+<Tip>Recomendamos crear los ejemplos de Automatización directamente en el Chat de IA. Describe el flujo de trabajo que quieres y la IA se encargará de configurarlo por completo, incluidos el disparador, las acciones, el script y la configuración.</Tip>
+
+## Crear con IA
+
+Abre el Chat de IA en la barra lateral derecha de tu Tabla y dile a la IA lo que quieres. Por ejemplo, puedes decir:
+
+*"Cuando el Campo Estado cambie a Aprobado, envía una notificación por correo electrónico al responsable. Activa el flujo solo cuando cambie Estado e ignora las modificaciones de otros Campos"*
+
+La IA creará automáticamente el flujo de trabajo completo. Puedes revisar el script generado, probarlo con datos reales y habilitar el flujo de trabajo cuando esté listo.
+
+Un flujo de trabajo que se activa con demasiada frecuencia desperdicia ejecuciones, envía correos no deseados y genera ruido. A continuación se explica cómo mantener la precisión de los disparadores.
+
+## Usar Campos supervisados
+
+Cuando uses **Cuando se actualiza un Registro**, selecciona siempre Campos específicos en lugar de «Todos los Campos».
+
+**Problema:** Un flujo de trabajo envía una notificación cuando cambia el Campo Estado. Si se selecciona «Todos los Campos», también se activa cuando alguien modifica la Descripción o añade un comentario.
+
+**Solución:** Establece únicamente **Estado** como Campo supervisado. Ahora el flujo de trabajo ignora todos los demás cambios.
+
+## Usar filtros
+
+Añade un filtro a cualquier disparador de Registros para limitar qué Registros activan el flujo de trabajo.
+
+**Problema:** Un flujo de trabajo procesa todos los Registros nuevos, pero algunos son entradas de prueba.
+
+**Solución:** Añade un filtro: `Tipo` **no es** `Prueba`. Solo los Registros reales activarán el flujo de trabajo.
+
+## Combinar ambos
+
+Para obtener el máximo control, usa conjuntamente Campos supervisados **y** un filtro:
+
+- Campos supervisados: `Estado`
+- Filtro: `Estado` **es** `Aprobado`
+
+Esto significa que el flujo solo se activa cuando cambia el Campo Estado **y** el valor nuevo es «Aprobado».
+
+## Usar «Cuando el Registro cumple las condiciones» para cambios de estado
+
+Si quieres activar el flujo **solo en la transición** (por ejemplo, de «Pendiente» a «Aprobado»), usa en su lugar el disparador **Cuando el Registro cumple las condiciones**. Se activa una sola vez, en el momento en que el Registro empieza a cumplirlas, no con cada modificación posterior.

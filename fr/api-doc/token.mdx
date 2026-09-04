@@ -1,0 +1,31 @@
+---
+title: "Jeton d’accès"
+description: "Les jetons d’accès personnels sont utilisés pour l’authentification et l’autorisation."
+---
+
+Les jetons d’accès personnels sont particulièrement adaptés aux scripts, aux outils internes et aux intégrations côté serveur.
+
+Si vous créez une intégration multi-locataire destinée à des utilisateurs externes, utilisez plutôt OAuth : consultez [Application OAuth](/fr/api-doc/oauth).
+
+## Créer un jeton
+
+1. Accédez à la [page de gestion des jetons](https://app.teable.ai/setting/personal-access-token) et cliquez sur le bouton « Créer un jeton » pour créer un nouveau jeton d’accès personnel.
+
+2. Choisissez une durée d’expiration pour votre jeton. Notez que cette durée ne peut pas être modifiée une fois définie.
+
+3. Ajoutez les périmètres d’autorisation appropriés à votre jeton.
+
+4. Indiquez les Bases et les Espaces auxquels le jeton peut accéder.
+
+<Note>Une fois votre jeton créé, il ne sera affiché qu’une seule fois. Nous vous recommandons de le copier et de le conserver dans un emplacement sécurisé.</Note>
+
+## Utiliser le jeton
+
+Envoyez le jeton dans l’en-tête `Authorization` :
+
+```bash
+curl -H 'Authorization: Bearer __token__' \
+  'https://app.teable.ai/api/table/__tableId__/record'
+```
+
+Vous avez besoin d’aide pour trouver des ID tels que `tbl...` ? Consultez [Obtenir des ID](/fr/api-doc/get-id).

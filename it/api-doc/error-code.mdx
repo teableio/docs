@@ -1,0 +1,59 @@
+---
+title: "Codici di errore"
+---
+
+<Note>L'API Web di Teable segue la semantica dei codici di stato HTTP.</Note>
+
+* 2xx
+  Indica un esito positivo
+* 4xx
+  Errori del client
+* 5xx
+  Errori del server
+
+Le risposte di errore restituiscono un corpo codificato in JSON contenente i campi relativi all'errore e alle informazioni. Ecco un esempio di corpo di una risposta di errore:
+
+```json
+{
+  "message": "not allowed to operate space|read on spcxxxxxx",
+  "status": 403,
+  "code": "restricted_resource"
+}
+```
+
+## Codici di stato di successo
+
+### 200 OK
+
+La richiesta è stata completata correttamente.
+
+### 201 Created
+
+La richiesta è stata completata correttamente ed è stata creata una nuova risorsa.
+
+## Codici di errore
+
+### 400 Bad Request
+
+Il corpo della richiesta non può essere analizzato come `JSON` oppure i parametri del corpo di input non soddisfano i requisiti della specifica.
+
+### 401 Unauthorized
+
+Accesso non autorizzato all'API.
+
+### 403 Forbidden
+
+Tentativo di accedere a una risorsa protetta con credenziali API prive delle autorizzazioni necessarie.
+
+### 404 Not Found
+
+Percorso o risorsa non trovato. Questo errore viene restituito quando si accede al percorso di una risorsa inesistente o quando il metodo della richiesta non corrisponde.
+
+### 500 Internal Server Error
+
+Il server ha riscontrato una condizione imprevista.
+
+### 503 Service Unavailable
+
+Il servizio è temporaneamente non disponibile, probabilmente a causa di un timeout di elaborazione o di un errore di connessione al database.
+

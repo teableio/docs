@@ -1,0 +1,244 @@
+---
+title: "Ansichtswerkzeugleiste"
+description: "Verwenden Sie in der aktuellen Ansicht Filter, Gruppen, Sortierung, Freigaben und Einstellungen für die Zusammenarbeit."
+---
+
+Die Ansichtswerkzeugleiste steuert, wie die aktuelle Ansicht Datensätze darstellt und freigibt. Filter, Gruppen, Sortierungen, sichtbare Felder, Zeilenhöhe und zugehörige Einstellungen wirken sich nur auf die aktuelle Ansicht aus. Sie löschen keine Datensätze und ändern keine anderen Ansichten.
+
+<Note>Filter-, Gruppen- und Sortiereinstellungen sind in jeder Ansicht unabhängig. Änderungen in einer Ansicht wirken sich nicht auf andere Ansichten aus.</Note>
+
+## Übersicht über die Werkzeugleiste
+
+| Werkzeug | Verwendung | Häufige Szenarien |
+| --- | --- | --- |
+| Filter | Nur Datensätze anzeigen, die Bedingungen erfüllen | Offene Aufgaben, eigene Datensätze, Datensätze in einem Datumsbereich |
+| Gruppe | Datensätze nach Feldwerten gruppieren | Arbeitslast nach verantwortlicher Person, Fortschritt nach Status, Datensätze nach Datum |
+| Sortierung | Datensätze nach Feldwerten neu anordnen | Kürzlich aktualisierte Datensätze, Aufgabenpriorität, Vertriebsrangliste |
+| Teilen | Die aktuelle Ansicht als Link veröffentlichen | Ein gefiltertes, sortiertes, gruppiertes Ergebnis oder ein Ergebnis mit ausgeblendeten Feldern bzw. einem bestimmten Layout teilen |
+| Zusammenarbeit in der Ansicht | Auswählen, ob Ansichtseinstellungen für alle synchronisiert werden oder nur für Sie gelten | Vorübergehende Ansichtsänderungen oder eine von allen verwendete Teamansicht |
+
+## Filter
+
+Filter zeigen in der aktuellen Ansicht Datensätze an, die bestimmte Bedingungen erfüllen. Datensätze, die nicht übereinstimmen, werden ausgeblendet, aber nicht gelöscht.
+
+<Steps>
+  <Step title="Filterbereich öffnen">
+    Klicken Sie in der Ansichtswerkzeugleiste auf `Filter`.
+  </Step>
+  <Step title="Bedingung hinzufügen">
+    Wählen Sie ein Feld, einen Operator und einen Vergleichswert aus.
+  </Step>
+  <Step title="Verknüpfung der Bedingungen auswählen">
+    Wählen Sie bei mehreren Bedingungen **Alle Bedingungen erfüllen** oder **Eine beliebige Bedingung erfüllen** aus.
+  </Step>
+</Steps>
+
+| Beziehung | Beschreibung |
+| --- | --- |
+| Alle Bedingungen erfüllen | Ein Datensatz wird nur angezeigt, wenn jede Bedingung dieser Ebene erfüllt ist |
+| Eine beliebige Bedingung erfüllen | Ein Datensatz wird angezeigt, wenn eine beliebige Bedingung dieser Ebene erfüllt ist |
+
+<img
+  src="/images/docs/base/2026-05-26-view-filter-conditions.png"
+  alt="Filterbedingungen der Ansicht"
+  className="docs-screenshot"
+/>
+
+### Bedingungsgruppen
+
+Verwenden Sie **Bedingungsgruppen** für komplexere Filterlogik. Beispielsweise lässt sich „A und B oder C und D“ als zwei Gruppen ausdrücken.
+
+- Klicken Sie auf `Bedingungsgruppe hinzufügen`, um eine Gruppe zu erstellen.
+- Gruppen können **Alle Bedingungen erfüllen** oder **Eine beliebige Bedingung erfüllen** verwenden.
+- Eine Gruppe kann verschachtelte Gruppen enthalten.
+- Bedingungsgruppen unterstützen bis zu **3 Ebenen**.
+
+<img
+  src="/images/docs/base/2026-05-26-view-filter-condition-groups.png"
+  alt="Gruppen von Filterbedingungen der Ansicht"
+  className="docs-screenshot"
+/>
+
+### Häufige Filteroperatoren
+
+| Feldtyp | Häufige Operatoren | Eingabe |
+| --- | --- | --- |
+| Einzeiliger Text, Langtext | Ist gleich, Ist nicht gleich, Enthält, Enthält nicht, Ist leer, Ist nicht leer | Texteingabe |
+| Benutzer | Ist gleich, Ist nicht gleich, Enthält beliebige, Enthält keine, Ist leer, Ist nicht leer | Benutzerliste, aktueller Benutzer |
+| Anhang | Ist leer, Ist nicht leer | Keine Eingabe |
+| Mehrfachauswahl | Enthält beliebige, Enthält alle, Stimmt genau überein, Enthält keine, Ist leer, Ist nicht leer | Optionsliste |
+| Einfachauswahl | Ist gleich, Ist nicht gleich, Enthält beliebige, Enthält keine | Optionsliste |
+| Datum, Erstellungszeit, Zeitpunkt der letzten Änderung | Ist gleich, Ist nicht gleich, Innerhalb, Vor, Nach, Am oder vor, Am oder nach, Ist leer, Ist nicht leer | Vordefinierter Zeitraum oder genaues Datum |
+| Zahl, Bewertung, Automatische Nummer | `=`, `≠`, `>`, `≥`, `<`, `≤`, Ist leer, Ist nicht leer | Zahl |
+| Verknüpfung | Ist gleich, Ist nicht gleich, Enthält, Enthält nicht, Enthält beliebige, Enthält alle, Stimmt genau überein, Enthält keine, Ist leer, Ist nicht leer | Auswahl verknüpfter Datensätze |
+| Erstellt von, Zuletzt geändert von | Ist gleich, Ist nicht gleich | Benutzerliste, aktueller Benutzer |
+
+Operatoren für Formel- und Rollup-Felder hängen vom Ergebnistyp ab.
+
+### Warnungen bei ungültigen Bedingungen
+
+Wenn sich ein Feldtyp ändert, ein Feld gelöscht wird oder eine ältere Filterkonfiguration nicht mehr kompatibel ist, ignoriert Teable die ungültige Bedingung, damit die Ansicht weiterhin geöffnet werden kann.
+
+- Die Schaltfläche `Filter` in der Werkzeugleiste zeigt ein Warnsymbol an.
+- Nach dem Öffnen des Filterbereichs zeigt die ungültige Bedingung ein Warnsymbol an.
+- Bewegen Sie den Mauszeiger über das Symbol, um den Grund zu sehen und die Bedingung zu korrigieren.
+
+## Gruppe
+
+Das Gruppieren von Datensätzen nach Feldwerten hilft Ihnen, Verteilungen, Zusammenfassungen und Hierarchien zu prüfen.
+
+<Steps>
+  <Step title="Gruppenbereich öffnen">
+    Klicken Sie in der Ansichtswerkzeugleiste auf `Gruppe`.
+  </Step>
+  <Step title="Feld auswählen">
+    Wählen Sie das Feld aus, nach dem Sie gruppieren möchten.
+  </Step>
+  <Step title="Weitere Gruppen hinzufügen">
+    Klicken Sie auf `Weitere Gruppe hinzufügen`, wenn Sie mehrere Gruppierungsebenen benötigen.
+  </Step>
+</Steps>
+
+| Feldtyp | Empfohlene Verwendung |
+| --- | --- |
+| Einfachauswahl, Mehrfachauswahl | Nach festen Optionen wie Status, Priorität oder Typ gruppieren |
+| Benutzer | Nach verantwortlicher Person, mitwirkender oder einreichender Person gruppieren |
+| Datum | Datensätze nach Zeitraum gruppieren |
+| Kontrollkästchen, Verknüpfung, Zahl, Bewertung | Nach eindeutigen Werten oder Ergebnissen gruppieren |
+
+- Die Gruppierung unterstützt bis zu **3 Ebenen**.
+- Sie können Gruppen ein- oder ausklappen. Datensätze innerhalb jeder Gruppe folgen weiterhin der aktuellen Sortierreihenfolge.
+- Jede Gruppe zeigt oben eine Zusammenfassungsleiste an, in der Sie die zusammengefassten Ergebnisse prüfen können.
+- Leere Werte werden je nach Feldtyp in separate nicht kategorisierte, nicht zugewiesene oder leere Gruppen eingeordnet.
+
+## Sortierung
+
+Die Sortierung ordnet Datensätze nach Feldwerten neu an. Sie ändert die Anzeigereihenfolge in der aktuellen Ansicht, nicht jedoch den Inhalt der Datensätze.
+
+<Steps>
+  <Step title="Sortierbereich öffnen">
+    Klicken Sie in der Ansichtswerkzeugleiste auf `Sortierung`.
+  </Step>
+  <Step title="Feld auswählen">
+    Wählen Sie das Feld aus, nach dem Sie sortieren möchten.
+  </Step>
+  <Step title="Richtung auswählen">
+    Wählen Sie aufsteigend oder absteigend aus. Fügen Sie weitere Sortierbedingungen hinzu, wenn Sie eine mehrstufige Sortierung benötigen.
+  </Step>
+</Steps>
+
+Bei einer mehrstufigen Sortierung gilt die Reihenfolge der Bedingungen. Teable sortiert zuerst nach der ersten Bedingung. Haben Datensätze denselben Wert, wird anschließend die nächste Bedingung angewendet.
+
+| Feldtyp | Sortierverhalten |
+| --- | --- |
+| Text, Anhang | Alphabetisch oder in umgekehrter Reihenfolge sortieren. Anhänge werden nach Dateinamen sortiert |
+| Zahl, Dauer, Bewertung | Nach Wert aufsteigend oder absteigend sortieren |
+| Datum, Erstellungszeit, Zeitpunkt der letzten Änderung | Vom frühesten zum spätesten oder vom spätesten zum frühesten Zeitpunkt sortieren |
+| Kontrollkästchen | Von deaktiviert zu aktiviert oder in umgekehrter Reihenfolge sortieren |
+| Einfachauswahl, Mehrfachauswahl | Nach der Optionsreihenfolge in der Feldkonfiguration oder in umgekehrter Reihenfolge sortieren |
+
+Formel- und Rollup-Felder werden entsprechend ihrem Ergebnistyp sortiert.
+
+Verwenden Sie im Sortiermenü den Schalter `Datensätze automatisch sortieren`.
+
+| Status | Verhalten |
+| --- | --- |
+| Ein | Datensätze bleiben nach den aktuellen Regeln sortiert. Ändert sich ein Feldwert, wird der Datensatz an seine neue Position verschoben. Bei aktivierter automatischer Sortierung können Sie Datensätze nicht manuell ziehen |
+| Aus | Datensätze werden erst dann erneut sortiert, wenn Sie die Sortierung wieder anwenden. Sie können Datensätze manuell ziehen, und Datenaktualisierungen verschieben sie nicht automatisch |
+
+## Ansicht teilen
+
+Mit **Ansicht teilen** wird die aktuelle Ansicht als Link veröffentlicht. Besucher sehen die Daten und das Layout dieser Ansicht. Dies ist nicht dasselbe, wie sie als Mitwirkende zu einer Base einzuladen.
+
+<Note>Um eine gesamte Base, eine bestimmte Tabelle oder einen Ordner zu teilen, verwenden Sie die Base-Freigabe unter [Base](/de/basic/base).</Note>
+
+| Freigabeoption | Am besten geeignet für |
+| --- | --- |
+| Tabelle teilen | Externen Personen umfassenderen Zugriff auf die aktuelle Tabelle gewähren |
+| Ansicht teilen | Nur die aktuelle Ansicht veröffentlichen, etwa ein gefiltertes, sortiertes, gruppiertes Ergebnis oder ein Ergebnis mit ausgeblendeten Feldern bzw. einem bestimmten Layout |
+
+Ein Freigabelink für eine Ansicht folgt der aktuellen Ansichtskonfiguration. Wenn Sie Filter, Sortierung, Gruppierung, ausgeblendete Felder oder das Layout später ändern, ändert sich auch die freigegebene Seite.
+
+<Steps>
+  <Step title="Ansicht öffnen">
+    Wechseln Sie zu der Ansicht, die Sie teilen möchten.
+  </Step>
+  <Step title="Freigabe öffnen">
+    Klicken Sie in der Ansichtswerkzeugleiste auf **Teilen**.
+  </Step>
+  <Step title="Ansicht teilen auswählen">
+    Wechseln Sie zu **Ansicht teilen**.
+  </Step>
+  <Step title="Öffentliche Freigabe aktivieren">
+    Aktivieren Sie **Ansicht im Web teilen**.
+  </Step>
+  <Step title="Link kopieren">
+    Kopieren Sie den generierten Link oder teilen Sie den QR-Code.
+  </Step>
+</Steps>
+
+Wenn Sie nicht berechtigt sind, die Ansicht zu teilen, ist der Freigabeschalter nicht verfügbar. Nachdem **Ansicht im Web teilen** deaktiviert wurde, können vorhandene Freigabelinks nicht mehr geöffnet werden.
+
+<Warning>Öffentliche Links können weitergeleitet werden. Vergewissern Sie sich vor dem Aktivieren der Freigabe, dass die aktuelle Ansicht keine Felder oder Datensätze enthält, die nicht öffentlich sein sollten.</Warning>
+
+Unterschiedliche Ansichtstypen bieten unterschiedliche erweiterte Optionen.
+
+| Option | Gilt für | Beschreibung |
+| --- | --- | --- |
+| Betrachtern das Kopieren von Daten aus dieser Ansicht erlauben | Rasteransicht | Legt fest, ob Besucher Daten aus der freigegebenen Rasteransicht kopieren können |
+| Alle Felder in erweiterten Datensätzen anzeigen | Rasteransicht | Legt fest, ob Besucher beim Öffnen von Datensatzdetails ausgeblendete Felder sehen können |
+| Angemeldeten Betrachtern das Bearbeiten sichtbarer Daten erlauben | Alle Ansichten | Ermöglicht angemeldeten Besuchern, Datensätze und Felder im Umfang der freigegebenen Ansicht zu bearbeiten |
+| Mit Passwort schützen | Alle Ansichtsfreigaben | Fügt dem Freigabelink ein Passwort hinzu. Besucher müssen das richtige Passwort eingeben, bevor sie ihn öffnen können |
+| Anmeldung zum Einreichen erforderlich | Formularansicht | Besucher müssen sich anmelden, bevor sie das Formular einreichen können |
+
+Wenn **Angemeldeten Betrachtern das Bearbeiten sichtbarer Daten erlauben** aktiviert ist, bleibt der Zugriff für anonyme Besucher schreibgeschützt und sie sehen eine Anmeldeaufforderung. Angemeldete Besucher können Datensätze nur innerhalb der sichtbaren Daten der freigegebenen Ansicht erstellen, aktualisieren oder löschen. Datensätze außerhalb des aktuellen Ansichtsfilters und in der Ansicht ausgeblendete Felder können über den Freigabelink nicht bearbeitet werden.
+
+Freigegebene Ansichten können in andere Webseiten eingebettet werden. Klicken Sie auf **Einbettung konfigurieren**, um eine Vorschau der Einbettung anzuzeigen, den iframe-Code zu kopieren, die Werkzeugleiste auszublenden und ein Design auszuwählen.
+
+```html
+<iframe
+  src="https://app.teable.ai/share/[share-id]/view?hideToolBar=true&embed=true"
+  width="100%"
+  height="533"
+  style="border: 0">
+</iframe>
+```
+
+| Einbettungsoption | Beschreibung |
+| --- | --- |
+| Werkzeugleiste ausblenden | Fügt dem Link `hideToolBar=true` hinzu und blendet Filter, Sortierung, Suche und andere Steuerelemente der Werkzeugleiste aus. Dies gilt nicht für die Formularansicht |
+| Design | Unterstützt die Designs „System“, „Hell“ und „Dunkel“ |
+
+## Zusammenarbeit in der Ansicht
+
+Die Zusammenarbeit in der Ansicht legt fest, ob Ansichtseinstellungen mit allen geteilt oder als Ihre persönlichen Anpassungen beibehalten werden. Dies betrifft Filter, Sortierungen, Gruppen, sichtbare Felder, Zeilenhöhe und andere Ansichtseinstellungen. Datensatzdaten sind davon nicht betroffen.
+
+| Modus | Anwendungsfall | Einstellungsverhalten |
+| --- | --- | --- |
+| Zusammenarbeitsmodus | Das Team muss dieselbe Ansichtskonfiguration verwenden | Ansichtseinstellungen werden für alle Benutzer dieser Ansicht synchronisiert |
+| Persönlicher Modus | Sie benötigen vorübergehend eine andere Ansichtskonfiguration oder möchten Daten auf Ihre eigene Weise betrachten | Filter, Sortierungen, Gruppen, sichtbare Felder und Zeilenhöhe gelten nur für Sie |
+
+Klicken Sie in der Werkzeugleiste auf `Persönlich`, um zwischen dem Zusammenarbeitsmodus und dem persönlichen Modus zu wechseln.
+
+Wenn die Ansicht nicht gesperrt ist und Sie berechtigt sind, sie zu aktualisieren, stehen Ihnen beim Deaktivieren des persönlichen Modus zwei Optionen zur Verfügung.
+
+| Option | Ergebnis |
+| --- | --- |
+| `Beenden und synchronisieren` | Ihre Ansichtseinstellungen aus dem persönlichen Modus für alle synchronisieren |
+| `Beenden bestätigen` | Ihre Ansichtseinstellungen aus dem persönlichen Modus verwerfen und den persönlichen Modus verlassen |
+
+Wenn die Ansicht gesperrt ist oder Sie nicht berechtigt sind, sie zu bearbeiten, können Sie den persönlichen Modus weiterhin für eigene vorübergehende Anpassungen verwenden, diese Änderungen jedoch nicht mit anderen synchronisieren.
+
+## Häufig gestellte Fragen
+
+<AccordionGroup>
+  <Accordion title="Wie funktioniert „Umfang beschränken“ für Verknüpfungsfelder in einer freigegebenen Ansicht?">
+    Wenn die freigegebene Ansicht Verknüpfungsfelder enthält, verwenden Sie im Freigabebereich **Umfang beschränken**, um festzulegen, welche verknüpften Datensätze und Felder Besucher in diesen Verknüpfungsfeldern sehen oder auswählen können.
+  </Accordion>
+</AccordionGroup>
+
+## Hinweise
+
+- Änderungen an Filtern, Gruppen, Sortierungen, sichtbaren Feldern oder der Zeilenhöhe wirken sich auf alle Benutzer der aktuellen Ansicht aus, sofern Sie sich nicht im persönlichen Modus befinden.
+- „Ansicht teilen“ veröffentlicht das Ergebnis der aktuellen Ansicht, nicht die vollständigen Base-Berechtigungen. Verwenden Sie für eine dauerhafte Zusammenarbeit Mitgliederberechtigungen oder die Base-Freigabe.
+- Änderungen an Zellwerten werden in beiden Modi weiterhin für alle synchronisiert.

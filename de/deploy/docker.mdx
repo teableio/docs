@@ -1,0 +1,467 @@
+---
+title: "Docker-Bereitstellung"
+---
+
+<Callout type="info">
+**Docker Compose wird für kleine Teams und zur Evaluierung empfohlen** (&lt; 50 Benutzer).
+Nicht sicher, ob dies der richtige Weg ist? Beginnen Sie bei [Bereitstellung](/de/deploy/choose). Benötigen Sie KI-Funktionen oder den App Builder? Bei einer neuen Bereitstellung verwenden Sie die [Plattform mit vollem Funktionsumfang](/de/deploy/architecture); wenn dieses eigenständige Setup bereits läuft, folgen Sie dem [Migrationsleitfaden](https://github.com/teableio/teable-deployment/blob/main/migration/2026-07-basic-to-full-featured.md) — Ihre Daten bleiben erhalten.
+</Callout>
+
+## Docker-Compose-Bereitstellung
+
+**Empfohlene Größenordnung**: 0–50 Benutzer
+
+| Vorteile | Nachteile |
+| ---------- | ------------- |
+| Einfache Bereitstellung | Bereitstellung auf einem einzelnen Rechner, komplexe Skalierung |
+| Volle Kontrolle | |
+| Flexible Konfiguration | |
+
+**Serveranforderungen**
+
+Stellen Sie sicher, dass Ihr Server diese grundlegenden Anforderungen erfüllt:
+
+* Betriebssystem: Empfohlene Linux-Distribution, z. B. Ubuntu 20.04 LTS
+* Arbeitsspeicher: Mindestens 4 GB RAM
+* CPU: Mindestens 2 Kerne
+* Speicherplatz: Mindestens 40 GB verfügbarer Speicherplatz
+* Netzwerk: Stabile Internetverbindung mit erforderlichem Portzugriff
+
+#### Voraussetzungen
+
+Stellen Sie vor dem Start sicher, dass Folgendes vorhanden ist:
+
+* Grundlegendes Verständnis von Docker und den Prinzipien der Containerisierung
+* Docker und Docker Compose sind auf Ihrem Rechner installiert. Installationsanleitungen finden Sie in der offiziellen Docker-Dokumentation.
+
+### **Docker installieren**
+
+```bash
+# Laden Sie die neueste Docker-Version herunter
+curl -fsSL https://get.docker.com | bash -s docker
+
+# Überprüfen Sie die Installation
+docker --version
+docker-compose --version
+```
+
+### Anwendung installieren
+
+#### Datei docker-compose.yaml erstellen
+
+Greifen Sie auf Ihren Server zu, erstellen Sie den Ordner `teable` und wechseln Sie in ihn:
+
+```bash
+mkdir teable
+
+cd teable
+```
+
+Erstellen Sie eine `docker-compose.yaml`- und eine `.env`-Datei und fügen Sie anschließend den folgenden Inhalt ein:
+
+```bash
+vim docker-compose.yaml
+```
+
+#### **Minimale Bereitstellung:**
+
+```yaml docker-compose.yaml
+services:
+  teable:
+    image: ghcr.io/teableio/teable:latest
+    restart: always
+    ports:
+      - '3000:3000'
+    volumes:
+      - teable-data:/app/.assets:rw
+    env_file:
+      - .env
+    environment:
+      - NEXT_ENV_IMAGES_ALL_REMOTE=true
+    networks:
+      - teable
+    depends_on:
+      teable-db:
+        condition: service_healthy
+      teable-cache:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      start_period: 5s
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  teable-db:
+    image: postgres:15.4
+    restart: always
+    ports:
+      - '42345:5432'
+    volumes:
+      - teable-db:/var/lib/postgresql/data:rw
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    networks:
+      - teable
+    healthcheck:
+      test: ['CMD-SHELL', "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  teable-cache:
+    image: redis:7.2.4
+    restart: always
+    expose:
+      - '6379'
+    volumes:
+      - teable-cache:/data:rw
+    networks:
+      - teable
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    healthcheck:
+      test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+networks:
+  teable:
+    name: teable-network
+
+volumes:
+  teable-db: {}
+  teable-data: {}
+  teable-cache: {}
+```
+
+```bash .env
+# Ersetzen Sie das unten stehende Standardpasswort durch ein starkes Passwort (ASCII) mit mindestens 8 Zeichen.
+POSTGRES_PASSWORD=replace_this_password
+REDIS_PASSWORD=replace_this_password
+SECRET_KEY=replace_this_secret_key
+
+# Ersetzen Sie Folgendes durch eine öffentlich erreichbare Adresse
+PUBLIC_ORIGIN=http://127.0.0.1:3000
+
+# ---------------------
+
+# Postgres
+POSTGRES_HOST=teable-db
+POSTGRES_PORT=5432
+POSTGRES_DB=teable
+POSTGRES_USER=teable
+
+# Redis
+REDIS_HOST=teable-cache
+REDIS_PORT=6379
+REDIS_DB=0
+
+# Anwendung
+PRISMA_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+BACKEND_CACHE_PROVIDER=redis
+BACKEND_CACHE_REDIS_URI=redis://default:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB}
+```
+
+
+#### **Speicherdienst hinzufügen (optional)**
+
+Für Produktionsbereitstellungen verwenden Sie **S3-kompatiblen Objektspeicher** (z. B. S3, MinIO, OSS/OBS/COS mit S3-kompatiblen Endpunkten oder einen anderen S3-kompatiblen Dienst), um eine höhere Ausfallsicherheit und bessere Skalierung zu erreichen.
+
+<Tabs>
+<Tab title="MinIO zu docker-compose hinzufügen">
+MinIO bietet eine zusätzliche Speicherverwaltungsoberfläche (Port 9001) sowie einen leistungsfähigeren und stabileren Dateidienst.
+
+```yaml docker-compose.yaml
+services:
+  # ...vorheriger Inhalt
+  teable-storage:
+    image: minio/minio:RELEASE.2024-02-17T01-15-57Z
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+    volumes:
+      - teable-storage:/data:rw
+    networks:
+      - teable
+    command: server /data --console-address ":9001"
+  createbuckets:
+    image: minio/mc
+    networks:
+      - teable
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set teable-storage http://teable-storage:9000 ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY};
+      /usr/bin/mc mb teable-storage/public;
+      /usr/bin/mc anonymous set public teable-storage/public;
+      /usr/bin/mc mb teable-storage/private;
+      exit 0;
+      "
+    depends_on:
+      teable-storage:
+        condition: service_started
+
+networks:
+  teable:
+    name: teable-network
+
+volumes:
+  teable-db: {}
+  teable-cache: {}
+  # Fügen Sie ein neues Volume hinzu
+  teable-storage: {}
+
+```
+
+```bash .env
+# Ersetzen Sie die unten stehenden Standardpasswörter durch starke Passwörter (ASCII) mit mindestens 8 Zeichen.
+POSTGRES_PASSWORD=replace_this_password
+REDIS_PASSWORD=replace_this_password
+SECRET_KEY=replace_this_secret_key
+
+# Wenn Sie HTTPS aktivieren, setzen Sie PROTOCOL auf https.
+PROTOCOL=http
+# Setzen Sie PUBLIC_HOST auf die IP-Adresse oder den Domainnamen Ihrer Bereitstellung. localhost oder 127.0.0.1 sind nicht zulässig.
+PUBLIC_HOST=192.168.x.x
+# Passen Sie den letzten Port an Ihren Zugriffsport an oder entfernen Sie :port bei Verwendung der Standardports (80/443).
+PUBLIC_ORIGIN=${PROTOCOL}://${PUBLIC_HOST}:3000
+
+# ---------------------
+
+# Postgres
+POSTGRES_HOST=teable-db
+POSTGRES_PORT=5432
+POSTGRES_DB=teable
+POSTGRES_USER=teable
+
+# Redis
+REDIS_HOST=teable-cache
+REDIS_PORT=6379
+REDIS_DB=0
+
+# MinIO
+MINIO_ACCESS_KEY=teable_minio_access
+MINIO_SECRET_KEY=${SECRET_KEY}
+
+# Anwendung
+PRISMA_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+BACKEND_CACHE_PROVIDER=redis
+BACKEND_CACHE_REDIS_URI=redis://default:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB}
+BACKEND_STORAGE_PROVIDER=minio
+BACKEND_STORAGE_PUBLIC_BUCKET=public
+BACKEND_STORAGE_PRIVATE_BUCKET=private
+BACKEND_STORAGE_MINIO_USE_SSL=false # Wenn Sie HTTPS aktivieren, ändern Sie diesen Wert in true
+BACKEND_STORAGE_MINIO_ENDPOINT=${PUBLIC_HOST}
+BACKEND_STORAGE_MINIO_PORT=9000
+BACKEND_STORAGE_MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+BACKEND_STORAGE_MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+STORAGE_PREFIX=${PROTOCOL}://${PUBLIC_HOST}:${BACKEND_STORAGE_MINIO_PORT}
+```
+</Tab>
+
+<Tab title="Mit externem MinIO verbinden">
+Bevor Sie beginnen, müssen Sie zwei Buckets in MinIO erstellen. Ein öffentlicher Bucket speichert Profilbilder und Formularüberschriften, ein privater Bucket speichert Anhangsinhalte.
+
+```sh .env
+# ...vorheriger Inhalt
+# Verwenden Sie den MinIO-Anbieter
+BACKEND_STORAGE_PROVIDER=minio
+# Name des öffentlichen Buckets
+BACKEND_STORAGE_PUBLIC_BUCKET=public
+# Name des privaten Buckets
+BACKEND_STORAGE_PRIVATE_BUCKET=private
+# IP-Adresse oder Domainname des MinIO-Dienstendpunkts
+BACKEND_STORAGE_MINIO_ENDPOINT=minio.example.com
+# MinIO-Port
+BACKEND_STORAGE_MINIO_PORT=443
+# Gibt an, ob HTTPS aktiviert ist
+BACKEND_STORAGE_MINIO_USE_SSL=true
+# MinIO-Zugriffsschlüssel
+BACKEND_STORAGE_MINIO_ACCESS_KEY=_minio_access_key_
+# Geheimer MinIO-Schlüssel
+BACKEND_STORAGE_MINIO_SECRET_KEY=_minio_secret_key_
+# Vollständige Zugriffsadresse
+STORAGE_PREFIX=https://minio.example.com
+
+# ---Interne Netzwerkkonfiguration (optional)---
+# Interne IP-Adresse oder Domainname des MinIO-Dienstendpunkts (nicht für HTTPS unterstützt)
+BACKEND_STORAGE_MINIO_INTERNAL_ENDPOINT=teable-storage.internal
+# Interner MinIO-Port
+BACKEND_STORAGE_MINIO_INTERNAL_PORT=9000
+# ---Regionskonfiguration (optional)---
+# Regionsname
+BACKEND_STORAGE_MINIO_REGION=us-east-1
+
+```
+</Tab>
+
+<Tab title="Mit AWS S3 verbinden">
+<Note>
+Hinweis: Sie müssen **zwei Buckets** (öffentlich/privat) konfigurieren. Der **öffentliche Bucket** muss **öffentlich lesbar** sein und **CORS für jede Origin** zulassen, andernfalls kann der Browserzugriff fehlschlagen.
+</Note>
+Bevor Sie beginnen, müssen Sie zwei Buckets in AWS S3 erstellen. Ein öffentlicher Bucket dient zum Speichern von Avataren und Formularüberschriften, ein privater Bucket zum Speichern von Anhangsinhalten.
+
+```sh .env
+# ...vorheriger Inhalt
+# Verwenden Sie den standardmäßigen S3-Anbieter
+BACKEND_STORAGE_PROVIDER=s3
+# Regionsname
+BACKEND_STORAGE_S3_REGION=us-west-2
+# Endpunkt; muss das Protokoll enthalten (normalerweise https)
+BACKEND_STORAGE_S3_ENDPOINT=https://s3.us-west-2.amazonaws.com
+# Zugriffsschlüssel
+BACKEND_STORAGE_S3_ACCESS_KEY=access_key
+# Geheimer Schlüssel
+BACKEND_STORAGE_S3_SECRET_KEY=secret_key
+# Öffentlicher Bucket
+BACKEND_STORAGE_PUBLIC_BUCKET=your-public-bucket
+# Privater Bucket
+BACKEND_STORAGE_PRIVATE_BUCKET=your-private-bucket
+# Vollständige Zugriffsadresse, also die Zugriffsadresse Ihres öffentlichen Buckets
+STORAGE_PREFIX=https://your-public-bucket.s3.us-west-2.amazonaws.com
+
+```
+
+Dieser Ablauf gilt für die meisten Cloud-Anbieter, nicht nur für AWS S3.
+
+</Tab>
+</Tabs>
+
+
+
+#### Anwendung starten
+
+Führen Sie im aktuellen Verzeichnis die folgenden Befehle aus, um die Anwendung zu starten. Nach dem Start können Sie die Anwendung unter 127.0.0.1:3000 aufrufen.
+
+<Note>
+Für umfangreiche Datenkopiervorgänge ist eine HTTPS-Umgebung erforderlich, da andernfalls kein asynchroner Zwischenablagezugriff möglich ist.
+</Note>
+
+```bash
+docker-compose pull
+
+docker-compose up -d
+```
+
+#### Verwaltete Datenbanken verwenden (optional)
+
+Wenn Sie lieber verwaltete Datenbanken verwenden möchten, können Sie den Bereitstellungsprozess weiter vereinfachen:
+
+1. Entfernen Sie services.teable-db
+2. Entfernen Sie volumes.teable-db
+3. Aktualisieren Sie .env mit Ihrer verwalteten Datenbankkonfiguration
+
+Tragen Sie die Datenbankparameter mit den Verbindungsparametern Ihrer verwalteten Datenbank ein:
+
+```sh .env
+POSTGRES_HOST=your-database.com
+POSTGRES_PORT=5432
+POSTGRES_DB=teable
+POSTGRES_USER=teable
+```
+
+<Note>
+Beachten Sie, dass `127.0.0.1` das interne Netzwerk des Containers ist. Wenn Sie eine lokal bereitgestellte Datenbank verbinden möchten, verwenden Sie statt `127.0.0.1` `host.docker.internal` als Hostadresse, da die Verbindung andernfalls fehlschlägt.
+</Note>
+
+**Entsprechend für extern verwaltetes Redis:**
+
+* Entfernen Sie service.teable-cache
+* Entfernen Sie service.teable.depends_on.teable-cache
+* Entfernen Sie volumes.teable-cache
+* Aktualisieren Sie .env mit Ihrer verwalteten Redis-Konfiguration
+
+### Nächste Schritte
+
+[Maildienst konfigurieren](/de/deploy/email)
+
+## Support und Feedback
+
+Falls während der Bereitstellung Probleme auftreten, kontaktieren Sie bitte unser Support-Team unter support@teable.ai oder [erstellen Sie ein Issue](https://github.com/teableio/teable/issues).
+
+## Lizenz
+
+Teable umfasst Open-Source-Community-Funktionen unter der AGPL-3.0-Lizenz. Um kostenpflichtige Funktionen in Self-hosted-Bereitstellungen freizuschalten, schließen Sie bitte auf unserer [Preisseite](https://app.teable.ai/public/pricing?host=self-hosted&billing=year) ein Abonnement ab.
+
+<Note>
+Das Image `ghcr.io/teableio/teable:latest` enthält den vollständigen Funktionsumfang. Für die Aktivierung kostenpflichtiger Funktionen ist eine gültige Abonnementlizenz erforderlich.
+
+Wenn Sie nur den Open-Source-Community-Funktionsumfang benötigen, können Sie das Image `ghcr.io/teableio/teable-community:latest` wählen.
+</Note>
+
+
+## Häufige Probleme
+
+<Accordion title="Wie melde ich mich nach der ersten Bereitstellung an?">
+Nachdem die Instanz gestartet ist, öffnen Sie die URL Ihrer Instanz und erstellen dort ein Konto. Teable wird nicht mit einem vorkonfigurierten Administratorkonto ausgeliefert, und Ihre Self-hosted-Instanz verwendet nicht Ihr teable.ai-Cloud-Konto.
+
+Der erste Benutzer, der sich bei der Instanz registriert, wird Instanzadministrator.
+</Accordion>
+
+<Accordion title="Warum kann ich nach der Installation keine CSV/xlsx-Dateien importieren oder Bilder hochladen?">
+Probleme beim Dateiimport sind in der Regel auf eine falsche Konfiguration der Umgebungsvariable PUBLIC_ORIGIN zurückzuführen. Sie müssen PUBLIC_ORIGIN auf die aktuell erreichbare Adresse setzen:
+```bash
+# Für die lokale Entwicklung
+PUBLIC_ORIGIN=http://127.0.0.1:3000
+
+# Für den Zugriff im lokalen Netzwerk
+PUBLIC_ORIGIN=http://192.168.1.100:3000
+
+# Für den Zugriff über einen Domainnamen
+PUBLIC_ORIGIN=https://teable.example.com
+```
+<Callout type="warning">
+Wichtig: Fügen Sie am Ende der URL keinen abschließenden Schrägstrich ("/") hinzu.
+</Callout>
+Nachdem Sie diese Konfiguration geändert haben, müssen Sie Ihre Teable-Instanz neu starten, damit die Änderungen wirksam werden.
+</Accordion>
+
+<Accordion title="Wie aktiviere ich HTTPS?">
+Zum Aktivieren von HTTPS sind die folgenden Schritte erforderlich:
+- Besorgen Sie sich ein gültiges SSL-Zertifikat
+- Setzen Sie `PROTOCOL=https` (oder setzen Sie je nach Setup `PUBLIC_ORIGIN=https://teable.example.com`)
+- Falls Sie MinIO verwenden, setzen Sie `BACKEND_STORAGE_MINIO_USE_SSL=true`
+<Tip>
+Es wird empfohlen, einen Reverse Proxy (z. B. Nginx oder Traefik) für die SSL-Terminierung zu verwenden.
+</Tip>
+<Tip>
+Wenn Sie nicht sicher sind, wie Nginx konfiguriert wird (HTTPS/Zertifikate, WebSocket, Docker-Netzwerk, Nginx Proxy Manager usw.), siehe: [Nginx (Reverse Proxy)](/de/deploy/nginx).
+</Tip>
+</Accordion>
+
+<Accordion title="Wie sichere ich meine Daten?">
+Für Docker-Compose-Bereitstellungen stehen Ihnen mehrere Sicherungsoptionen zur Verfügung:
+
+**Option 1: Vollständige Sicherung der virtuellen Maschine** (aus Gründen der Einfachheit empfohlen)
+- Sichern Sie regelmäßig die gesamte virtuelle Maschine, auf der Teable gehostet wird.
+- Ermöglicht die vollständige Wiederherstellung des Systems
+
+**Option 2: Sicherung von Docker-Volumes**
+- Sichern Sie alle in Ihrer `docker-compose.yaml` definierten Docker-Volumes.
+- Volumes auflisten: `docker volume ls`
+- Ein Volume sichern:
+  ```bash
+  docker run --rm -v <volume_name>:/data -v $(pwd):/backup alpine tar czf /backup/<volume_name>.tar.gz /data
+  ```
+
+**Option 3: Sicherung auf Komponentenebene** (für granulare Kontrolle empfohlen)
+- **PostgreSQL-Datenbank**: Enthält alle Tabellendaten
+  ```bash
+  docker exec teable-db pg_dump -U teable teable > backup.sql
+  ```
+- **Redis-Datenbank**: Enthält Daten der Automatisierungswarteschlange
+  ```bash
+  docker exec teable-cache redis-cli --rdb /data/dump.rdb
+  ```
+- **Datenverzeichnis**: Sichern Sie das Volume `teable-data` (enthält alle Anhangsdateien)
+  ```bash
+  docker run --rm -v teable-data:/data -v $(pwd):/backup alpine tar czf /backup/teable-data.tar.gz /data
+  ```
+
+Für Produktionsumgebungen empfehlen wir die Einrichtung automatisierter täglicher Sicherungen mit Aufbewahrungsrichtlinien.
+</Accordion>

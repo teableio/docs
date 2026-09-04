@@ -1,0 +1,146 @@
+---
+title: "Gestion des locataires d’organisation"
+description: "Créez et gérez plusieurs locataires d’organisation dans une instance Teable et attribuez un administrateur à chaque locataire."
+hidden: true
+noindex: true
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Disponible avec le plan Enterprise auto-hébergé</Tip>
+
+Une instance Teable peut contenir plusieurs locataires d’organisation, chacun avec ses propres membres, services, Espaces et paramètres pour un client, une unité commerciale ou une équipe.
+
+## Hiérarchie des locataires d’organisation
+
+```text
+Instance Teable
+├── Locataire d’organisation A
+│   ├── Administrateurs, membres et services de l’organisation
+│   └── Espaces, Bases et paramètres au niveau de l’organisation
+├── Locataire d’organisation B
+│   ├── Administrateurs, membres et services de l’organisation
+│   └── Espaces, Bases et paramètres au niveau de l’organisation
+└── Locataire d’organisation C
+```
+
+Les locataires d’organisation partagent le même déploiement Teable et la même configuration d’instance tout en gérant séparément les éléments suivants :
+
+| Périmètre | Description |
+| --- | --- |
+| **Membres et services** | Chaque organisation gère ses propres membres d’organisation, administrateurs d’organisation et structure de services |
+| **Espaces** | Chaque organisation gère les Espaces qui lui sont associés |
+| **Authentification et sécurité** | Chaque organisation peut configurer ses fournisseurs d’authentification et ses domaines d’e-mail vérifiés |
+| **Paramètres de l’organisation** | Le nom de l’organisation, l’accès automatique aux Espaces et le périmètre des services sont configurés séparément |
+| **Configuration de l’instance** | Les licences, paramètres système et la création et suppression de locataires d’organisation restent sous le contrôle de l’administrateur de l’instance |
+
+<Info>Les locataires d’organisation ne fournissent pas à chaque organisation une base de données PostgreSQL distincte. Pour stocker les données d’un Espace dans une base de données PostgreSQL distincte, consultez [Locataire de base de données](/fr/basic/admin-panel/database-tenant).</Info>
+
+## Deux points d’entrée de gestion
+
+| Point d’entrée | Rôle de gestion | Objectif |
+| --- | --- | --- |
+| **Administration système → Organisations** | Administrateur de l’instance | Créer, afficher et supprimer des locataires d’organisation, et attribuer des administrateurs d’organisation |
+| **Panneau de l’organisation** | Administrateur de l’organisation | Gérer les utilisateurs, services, Espaces, authentification, sécurité et paramètres dans le locataire actuel |
+
+Les administrateurs d’organisation peuvent gérer uniquement l’organisation qui leur est attribuée. Ils ne peuvent pas créer ou supprimer d’autres locataires d’organisation ni modifier les paramètres de l’instance à l’échelle du système.
+
+## Ouvrir Organisations
+
+1. Connectez-vous à Teable en tant qu’administrateur de l’instance.
+2. Sélectionnez **Administration système** dans l’angle supérieur gauche.
+3. Ouvrez **Organisations** dans la navigation de gauche.
+
+<img
+  src="/images/selfhosted/admin-panel/2026-05-29-admin-panel-organizations-entry-en.png"
+  alt="Entrée Organisations dans l’Administration système"
+  className="docs-screenshot"
+/>
+
+<Tip>Le premier utilisateur inscrit dans une instance devient automatiquement administrateur de l’instance.</Tip>
+
+## Créer un locataire d’organisation
+
+1. Sélectionnez **Créer une organisation**.
+2. Saisissez le **Nom de l’organisation**.
+3. Sélectionnez **Créer**.
+
+La nouvelle organisation apparaît dans la liste des organisations. Après avoir attribué un administrateur d’organisation, celui-ci peut configurer les membres, les services et les Espaces depuis le Panneau de l’organisation.
+
+## Afficher la liste des organisations
+
+La liste peut être recherchée par nom et comprend :
+
+| Colonne | Description |
+| --- | --- |
+| **Nom de l’organisation** | Le nom et l’ID du locataire d’organisation |
+| **Nombre d’utilisateurs** | Nombre total d’utilisateurs dans l’organisation |
+| **Nombre d’Espaces** | Nombre total d’Espaces associés à l’organisation |
+| **Administrateurs** | Administrateurs d’organisation attribués |
+| **Date de création** | Date de création du locataire d’organisation |
+
+<img
+  src="/images/selfhosted/admin-panel/2026-05-29-admin-panel-organizations-list-en.png"
+  alt="Liste des organisations dans l’Administration système"
+  className="docs-screenshot"
+/>
+
+## Attribuer des administrateurs d’organisation
+
+1. Ouvrez le menu d’actions de l’organisation cible.
+2. Sélectionnez **Gérer les administrateurs**.
+3. Recherchez un utilisateur dans l’instance.
+4. Sélectionnez **Définir comme administrateur** ou **Retirer l’administrateur**.
+
+Tout utilisateur de l’instance, à l’exception d’un utilisateur supprimé, peut être attribué comme administrateur d’organisation. L’utilisateur obtient un accès de gestion à l’organisation actuelle, mais ne devient pas administrateur de l’instance.
+
+| Rôle | Gérer tous les locataires d’organisation | Gérer les paramètres de l’instance | Gérer l’organisation actuelle | Gérer les Espaces de l’organisation actuelle |
+| --- | --- | --- | --- | --- |
+| **Administrateur de l’instance** | Oui | Oui | Oui | Oui |
+| **Administrateur de l’organisation** | Non | Non | Oui | Oui |
+| **Membre standard** | Non | Non | Non | Dépend du rôle dans l’Espace |
+
+## Gérer un locataire en interne
+
+Depuis le sélecteur d’Espace, un administrateur d’organisation peut ouvrir le **Panneau de l’organisation** et gérer :
+
+| Page | Capacités de gestion |
+| --- | --- |
+| **Utilisateurs** | Afficher et gérer les utilisateurs de l’organisation actuelle |
+| **Organisation** | Créer, déplacer, renommer et supprimer des services, et gérer les membres des services |
+| **Gestion des Espaces** | Ajouter des Espaces à l’organisation ou les en retirer, et afficher les nombres d’Espaces et de Bases |
+| **Paramètres d’authentification** | Configurer les fournisseurs d’authentification tiers pour l’organisation |
+| **Paramètres de sécurité** | Vérifier les domaines d’e-mail afin que les nouveaux utilisateurs utilisant ces domaines rejoignent automatiquement l’organisation |
+| **Paramètres de l’instance** | Modifier le nom de l’organisation, l’accès automatique aux Espaces et le périmètre des services |
+
+Pour obtenir des instructions détaillées sur les **Paramètres de l’instance**, consultez [Paramètres du Panneau de l’organisation](/fr/basic/organization-panel/settings).
+
+## Supprimer un locataire d’organisation
+
+1. Ouvrez le menu d’actions de l’organisation cible.
+2. Sélectionnez **Supprimer**.
+3. Vérifiez la confirmation et confirmez la suppression.
+
+<Warning>La suppression d’une organisation supprime définitivement l’organisation et toutes ses données. Vérifiez l’organisation cible, les Espaces associés et les sauvegardes avant de continuer.</Warning>
+
+## Modèles courants de locataires
+
+| Scénario | Modèle de locataire d’organisation |
+| --- | --- |
+| Fournir un service Teable à plusieurs clients | Créez un locataire d’organisation distinct pour chaque client |
+| Maintenir un déploiement de groupe unique avec des filiales indépendantes | Créez un locataire d’organisation pour chaque filiale |
+| Isoler les unités commerciales dans une grande entreprise | Créez un locataire d’organisation pour chaque unité nécessitant une gestion indépendante des membres, des Espaces et des politiques |
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Quelle est la différence entre un locataire d’organisation et un locataire de base de données ?">
+    Un locataire d’organisation sépare les membres, les services, les Espaces et les autorisations de gestion. Un locataire de base de données contrôle quelle base de données PostgreSQL stocke les données d’un Espace spécifique. Un locataire d’organisation peut contenir plusieurs Espaces, et la base de données de données utilisée par chaque Espace est configurée séparément.
+  </Accordion>
+  <Accordion title="Pourquoi attribuer un administrateur d’organisation après avoir créé une organisation ?">
+    L’administrateur de l’instance crée et supprime les locataires et gère l’instance. L’administrateur de l’organisation s’occupe de la gestion quotidienne au sein d’un locataire. L’attribution d’un administrateur d’organisation délègue la gestion des membres, des services, des Espaces et de l’authentification sans accorder d’accès au niveau de l’instance.
+  </Accordion>
+  <Accordion title="Une instance peut-elle servir plusieurs clients ?">
+    Oui. Créez un locataire d’organisation distinct pour chaque client. L’administrateur de l’instance maintient le déploiement partagé et les paramètres système, tandis que chaque client dispose de ses propres administrateurs d’organisation.
+  </Accordion>
+</AccordionGroup>
+

@@ -1,0 +1,62 @@
+---
+title: "Valore singolo e valori multipli"
+description: "Spiega se la cella di un Campo archivia un solo valore o un gruppo di valori."
+---
+
+I concetti di valore singolo e valori multipli descrivono se una cella archivia un solo valore oppure un gruppo di valori. Comprendere questo concetto aiuta a capire perché Collegamenti, Lookup, Rollup e formule possono restituire più risultati.
+
+## Concetti di base
+
+| Tipo | Descrizione | Esempio |
+| --- | --- | --- |
+| Valore singolo | Un'unica informazione ben definita | "la data odierna", "il numero di telefono di John" |
+| Valori multipli | Un gruppo di valori, interpretabile anche come array | "tutte le date di questo mese", "tutti i numeri di telefono di John" |
+
+## Stati predefiniti per valori singoli e multipli
+
+| Tipo di Campo | Stato predefinito |
+| --- | --- |
+| Testo su una riga, testo lungo | Singolo |
+| Selezione singola, casella di controllo, data, numero, valutazione | Singolo |
+| Data di creazione, data dell'ultima modifica, creato da, autore dell'ultima modifica, numerazione automatica, pulsante | Singolo |
+| Selezione multipla, allegato | Multiplo |
+| Utente | Facoltativo |
+| Collegamento | Facoltativo |
+| Formula, Rollup | Dinamico |
+
+In questo contesto, "stato predefinito" indica lo stato comune del Campo quando viene usato da solo. **Facoltativo** significa che puoi scegliere tramite le impostazioni del Campo se questo accetta un valore singolo o valori multipli. **Dinamico** significa che il risultato dipende dalla logica della formula, dalle funzioni di Rollup e dall'eventuale presenza di valori multipli nei Campi referenziati. Quando un valore passa attraverso un Collegamento, un Lookup, un Rollup o un riferimento di formula, il suo stato può cambiare.
+
+## Variazioni di stato dovute a collegamenti e riferimenti
+
+- **Campi Collegamento**: se un Campo Collegamento accetta valori multipli, anche i Campi referenziati tramite tale collegamento possono diventare a valori multipli. Ad esempio, se una singola attività può essere assegnata a più dipendenti, la ricerca dei loro numeri di telefono tramite il collegamento può restituire diversi numeri.
+- **Formule e Rollup**: formule e Rollup spesso restituiscono un valore singolo, ma possono diventare a valori multipli quando fanno riferimento a Campi con valori multipli.
+
+### Esempio
+
+Supponiamo di gestire un'azienda in Teable con due Tabelle: `Informazioni dipendenti` e `Attività di progetto`.
+
+**Tabella Informazioni dipendenti**
+
+| Nome | Telefono | Email | Attività |
+| --- | --- | --- | --- |
+| John | 123456 | john@company.com | Attività 1, Attività 2 |
+| Mary | 789012 | mary@company.com | Attività 3 |
+
+**Tabella Attività di progetto**
+
+| Nome attività | Assegnatario | Data di scadenza | Avanzamento |
+| --- | --- | --- | --- |
+| Attività 1 | John | 2023-11-20 | 50% |
+| Attività 2 | John | 2023-12-01 | 30% |
+| Attività 3 | Mary | 2023-11-15 | 80% |
+
+In questo esempio:
+
+- Il Campo "Attività" nella Tabella **Informazioni dipendenti** accetta valori multipli, perché un dipendente può essere responsabile di più attività.
+- Il Campo "Assegnatario" nella Tabella **Attività di progetto** accetta un valore singolo, perché ogni attività ha un solo assegnatario.
+
+Quando crei una nuova attività nella Tabella "Attività di progetto" e la assegni a un dipendente, il Campo "Attività" di quel dipendente nella Tabella "Informazioni dipendenti" viene aggiornato con tutte le attività assegnate.
+
+### Mini grafici numerici
+
+A volte i Campi Numero mostrano più linee o barre invece di un solo numero. In genere, ciò significa che il Campo è diventato a valori multipli, spesso tramite un Collegamento, un Lookup, un Rollup o un riferimento di formula.

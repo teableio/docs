@@ -1,0 +1,156 @@
+---
+title: "OneLogin SSO"
+description: "Konfigurieren Sie OneLogin als Ihren SSO-Authentifizierungsanbieter für Teable"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Verfügbar ab dem Business-Plan</Tip>
+
+## Schritt 1: Authentifizierungsanbieter in Teable erstellen
+
+1. Navigieren Sie zu Ihren Teable-SSO-Einstellungen.
+2. Erstellen Sie einen neuen Authentifizierungsanbieter, nennen Sie ihn **OneLogin**, und wählen Sie **OpenID Connect** aus.
+
+## Schritt 2: OneLogin-Admin-Portal aufrufen
+
+1. Melden Sie sich bei Ihrem [OneLogin Admin Portal](https://app.onelogin.com/login) an.
+2. Stellen Sie sicher, dass Sie über Administratorberechtigungen verfügen.
+3. Navigieren Sie im oberen Menü zu **Applications**.
+
+## Schritt 3: Eine neue Anwendung hinzufügen
+
+1. Klicken Sie im Menü auf **Applications** → **Applications**.
+2. Klicken Sie auf die Schaltfläche **Add App**.
+3. Suchen Sie im Suchfeld nach **OpenId Connect (OIDC)**.
+4. Wählen Sie **OpenId Connect (OIDC)** aus den Ergebnissen aus.
+5. Klicken Sie auf **Save**.
+
+## Schritt 4: Anwendungseinstellungen konfigurieren
+
+### Anzeigeinformationen
+
+Auf der Registerkarte **Configuration**:
+
+1. **Display Name**: Teable SSO
+2. **Description**: (Optional) SSO-Integration für Teable
+3. **Logo**: (Optional) Teable-Logo hochladen
+4. Klicken Sie auf **Save**.
+
+### Konfigurationseinstellungen
+
+Rufen Sie die Registerkarte **Configuration** auf und konfigurieren Sie Folgendes:
+
+1. **Redirect URIs**: Fügen Sie die **Callback-URL** aus Teable ein.
+2. **Login Url**: (Optional) `https://app.teable.ai`
+3. **Application Type**: Web
+4. Klicken Sie auf **Save**.
+
+## Schritt 5: Client-Anmeldedaten abrufen
+
+Rufen Sie die Registerkarte **SSO** auf:
+
+1. Suchen Sie das Feld **Client ID** und kopieren Sie den Wert.
+2. Suchen Sie das Feld **Client Secret** und kopieren Sie den Wert (möglicherweise müssen Sie zuvor auf "Show" klicken).
+3. Fügen Sie beide Werte in die Teable-SSO-Konfiguration ein.
+
+<Warning>Bewahren Sie Ihr Client Secret sicher auf. Sie können es bei Bedarf auf dieser Seite neu generieren.</Warning>
+
+## Schritt 6: OAuth-Endpunkte konfigurieren
+
+Auf der Registerkarte **SSO** finden Sie Ihre OneLogin-Subdomain. Verwenden Sie diese, um die Endpunkte in Teable zu konfigurieren:
+
+- **Authorization URL**: `https://{subdomain}.onelogin.com/oidc/2/auth`
+- **Token URL**: `https://{subdomain}.onelogin.com/oidc/2/token`
+- **User Info URL**: `https://{subdomain}.onelogin.com/oidc/2/me`
+- **Issuer**: `https://{subdomain}.onelogin.com/oidc/2`
+
+<Note>Ersetzen Sie `{subdomain}` durch Ihre tatsächliche OneLogin-Subdomain (z. B. `mycompany.onelogin.com`). Sie finden diese in der URL Ihres OneLogin-Portals.</Note>
+
+## Schritt 7: Anwendungszugriff konfigurieren
+
+### Rollen zuweisen
+
+Rufen Sie die Registerkarte **Access** auf:
+
+1. **Roles**: Wählen Sie aus, welche Rollen Zugriff auf diese Anwendung haben sollen.
+2. Sie können Folgendes auswählen:
+   - Bestimmte Rollen
+   - Alle Benutzer
+   - Benutzerdefinierte Bedingungen
+3. Klicken Sie auf **Save**.
+
+### Benutzer zuweisen
+
+Rufen Sie die Registerkarte **Users** auf:
+
+1. Klicken Sie auf **Add Users** oder **Add Users by Role**.
+2. Wählen Sie die Benutzer aus, die über SSO auf Teable zugreifen sollen.
+3. Klicken Sie auf **Continue** und **Save**.
+
+## Schritt 8: Parameter konfigurieren (optional)
+
+Rufen Sie die Registerkarte **Parameters** auf, um Benutzerattribute zuzuordnen:
+
+1. Klicken Sie auf **Add parameter**, um benutzerdefinierte Claims zu erstellen.
+2. Konfigurieren Sie die Standard-OIDC-Claims:
+   - **email**: E-Mail-Adresse des Benutzers
+   - **name**: Vollständiger Name des Benutzers
+   - **given_name**: Vorname des Benutzers
+   - **family_name**: Nachname des Benutzers
+3. Ordnen Sie jeden Parameter dem entsprechenden OneLogin-Benutzerfeld zu.
+4. Klicken Sie auf **Save**.
+
+## Schritt 9: Anwendung aktivieren
+
+1. Stellen Sie sicher, dass alle Konfigurationen gespeichert sind.
+2. Die Anwendung sollte jetzt aktiviert und für zugewiesene Benutzer sichtbar sein.
+3. Benutzer sehen die Teable-App in ihrem OneLogin-Portal.
+
+## Schritt 10: SSO-Anmeldung testen
+
+Sie haben drei Möglichkeiten, die SSO-Anmeldung zu aktivieren:
+
+**Option 1: Direkte Authentifizierungs-URL**
+- Verwenden Sie die Autorisierungs-URL als Ihre SSO-Anmelde-URL.
+
+**Option 2: OneLogin-Portal**
+- Benutzer können sich bei ihrem OneLogin-Portal anmelden und auf das Teable-Anwendungssymbol klicken.
+
+**Option 3: Domainverifizierung**
+1. Konfigurieren Sie in Teable die Domainverifizierung.
+2. Verifizieren Sie Ihre benutzerdefinierte Domain.
+3. Rufen Sie https://app.teable.ai auf.
+4. Klicken Sie auf die Schaltfläche für die SSO-Anmeldung.
+5. Geben Sie Ihre E-Mail-Adresse unter der verifizierten Domain ein, um sich anzumelden.
+
+## Zusätzliche Konfiguration (optional)
+
+### MFA konfigurieren
+
+1. Navigieren Sie im OneLogin Admin Portal zu **Security** → **Multi-Factor Authentication**.
+2. Aktivieren Sie MFA-Richtlinien für Ihre Organisation oder bestimmte Benutzer.
+3. Konfigurieren Sie MFA-Anforderungen (z. B. immer erforderlich, für neue Geräte erforderlich).
+
+### Provisionierung einrichten (SCIM)
+
+Wenn Sie Benutzer automatisch von OneLogin zu Teable provisionieren möchten:
+
+1. Rufen Sie in Ihrer Teable-Anwendung die Registerkarte **Provisioning** auf.
+2. Aktivieren Sie die Provisionierung.
+3. Konfigurieren Sie den SCIM-Endpunkt (sofern Teable SCIM unterstützt).
+4. Ordnen Sie Benutzerattribute zu.
+5. Aktivieren Sie die Erstellung, Aktualisierung und Löschung von Benutzern.
+
+### Sitzungsdauer konfigurieren
+
+1. Navigieren Sie in OneLogin zu **Settings** → **Sessions**.
+2. Konfigurieren Sie die Einstellungen für das Sitzungs-Timeout.
+3. Legen Sie das Inaktivitäts-Timeout und die maximale Sitzungsdauer fest.
+
+### Benutzerdefiniertes Branding
+
+1. Navigieren Sie in OneLogin zu **Customization** → **Portal**.
+2. Passen Sie das Erscheinungsbild des OneLogin-Portals an.
+3. Fügen Sie Ihr Unternehmenslogo, Farben und benutzerdefiniertes CSS hinzu.
+4. Dies beeinflusst, was Benutzer sehen, wenn sie sich bei OneLogin anmelden.
+

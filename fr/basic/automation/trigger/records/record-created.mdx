@@ -1,0 +1,77 @@
+---
+title: "Lorsqu’un enregistrement est créé"
+description: "Déclenchez un flux de travail lorsqu’un nouvel enregistrement est ajouté à une table"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Remarque : vous pouvez configurer tous les déclencheurs dans le Chat IA. Indiquez à l’IA ce que le flux de travail doit accomplir et elle se chargera du reste.</Tip>
+
+Ce déclencheur s’exécute lorsqu’un nouvel enregistrement est ajouté à la table, quel que soit son mode de création.
+
+## Créer avec l’IA
+
+Ouvrez le Chat IA dans la barre latérale droite de votre table et décrivez ce que vous souhaitez.
+
+L’IA s’occupe de tout : elle choisit le bon déclencheur, associe les champs pertinents et configure automatiquement toutes les actions.
+
+Décrivez une seule fois votre objectif et le flux de travail est prêt, sans aucune configuration manuelle.
+
+**Exemple :** *"Lorsqu’une nouvelle commande est créée, informe l’équipe sur Slack."*
+
+## Configuration
+
+| Paramètre | Obligatoire | Description |
+|---|---|---|
+| Table | Oui | Table dans laquelle les nouveaux enregistrements doivent être surveillés |
+| Filtre | Non | Déclenche le flux uniquement si le nouvel enregistrement remplit ces conditions. Utilise le même générateur de filtres que les vues |
+
+## Procédure de configuration
+
+1. Ouvrez votre automatisation et ajoutez un nouveau déclencheur.
+2. Sélectionnez **Lorsqu’un enregistrement est créé**.
+3. Choisissez la **Table** à surveiller.
+4. (Facultatif) Ajoutez un **Filtre** si vous souhaitez réagir uniquement à certains nouveaux enregistrements. Par exemple, si `Priorité` est égal à `Élevée`, les nouveaux enregistrements associés à d’autres niveaux de priorité seront ignorés.
+5. Enregistrez et activez l’automatisation.
+6. Ajoutez vos étapes d’action. Dans chaque action, cliquez sur le bouton **+** de n’importe quel champ afin d’insérer les valeurs provenant du déclencheur : tous les champs du nouvel enregistrement sont répertoriés.
+
+## Données accessibles aux étapes suivantes
+
+Lorsque ce déclencheur s’exécute, tous les champs du nouvel enregistrement sont disponibles sous forme de variables dans les étapes suivantes :
+
+- **ID de l’enregistrement** — identifiant unique du nouvel enregistrement
+- **Toutes les valeurs de champ** — chaque champ de la table (texte, nombre, date, pièces jointes, enregistrements liés, etc.) peut être référencé en cliquant sur **+** dans l’association des champs de n’importe quelle action
+
+Ainsi, si votre table contient les champs Nom, E-mail, Statut et Date de création, ces quatre valeurs peuvent être utilisées immédiatement dans vos actions, sans configuration supplémentaire.
+
+## Fonctionnement du filtre
+
+Le filtre facultatif vous permet de limiter les nouveaux enregistrements qui déclenchent réellement l’automatisation :
+
+- Si **aucun filtre** n’est défini, chaque nouvel enregistrement exécute le déclencheur.
+- Si un **filtre** est défini, le déclencheur ne s’exécute que lorsque le nouvel enregistrement remplit toutes les conditions. Les enregistrements qui ne les remplissent pas sont ignorés sans notification.
+
+Cette fonction est utile si vous ne souhaitez agir que sur une partie des nouveaux enregistrements, par exemple uniquement les tâches de priorité élevée, les enregistrements affectés à une équipe précise ou les commandes supérieures à un certain montant.
+
+<Note>Le filtre est évalué à partir des valeurs des champs au moment de la création de l’enregistrement. Si un champ est vide lors de la création et renseigné ultérieurement, l’automatisation ne se déclenche pas rétroactivement.</Note>
+
+## Cas d’utilisation
+
+- **Envoyer un e-mail de bienvenue à un nouveau contact.** Lorsqu’un contact est ajouté à votre table CRM, envoyez-lui automatiquement un e-mail de bienvenue personnalisé utilisant son nom et son adresse e-mail.
+- **Créer une tâche liée lors de l’ajout d’un nouveau projet.** Lorsqu’un enregistrement de projet est créé, créez automatiquement un ensemble de tâches par défaut dans une table Tâches liée au nouveau projet.
+- **Informer votre équipe des nouvelles commandes.** Publiez un message sur Slack ou envoyez un e-mail à l’équipe commerciale chaque fois qu’une nouvelle commande arrive.
+- **Classer automatiquement les enregistrements entrants avec l’IA.** Lorsqu’un ticket d’assistance est créé, utilisez l’action Générer avec l’IA pour le classer en fonction du champ Description.
+- **Consigner les nouveaux enregistrements dans un système externe.** Utilisez une action Requête HTTP pour transmettre les données des nouveaux enregistrements à un CRM, un ERP ou un entrepôt de données.
+
+## Conseils
+
+- Ce déclencheur s’exécute pour les enregistrements créés par *n’importe quelle* méthode, y compris par d’autres automatisations. Si une automatisation crée des enregistrements dans la même table, veillez à éviter les boucles infinies. Utilisez un filtre pour exclure les enregistrements créés par une automatisation (par exemple, en vérifiant un champ indicateur).
+- Le déclencheur s’exécute une fois par enregistrement. Si 10 enregistrements sont importés en bloc, il s’exécute 10 fois séparément.
+- Si vous devez réagir uniquement aux enregistrements créés au moyen d’un formulaire précis, utilisez plutôt le déclencheur [Lorsqu’un formulaire est soumis](/fr/basic/automation/trigger/forms/form-submitted), qui permet un contrôle plus fin.
+- Les champs vides lors de la création de l’enregistrement restent disponibles sous forme de variables, mais leur valeur est vide. Assurez-vous que vos actions gèrent correctement les valeurs vides.
+
+## Pages associées
+
+- [Lorsqu’un formulaire est soumis](/fr/basic/automation/trigger/forms/form-submitted) — s’exécute uniquement lors de la soumission d’un formulaire, et non pour toutes les méthodes de création d’enregistrements
+- [Lorsqu’un enregistrement est mis à jour](/fr/basic/automation/trigger/records/record-updated) — s’exécute lorsque des enregistrements existants sont modifiés
+- [Action Créer un enregistrement](/fr/basic/automation/actions/records/create-record) — action correspondante permettant de créer des enregistrements dans les flux de travail
+- [Envoyer un e-mail](/fr/basic/automation/actions/communication/send-email-overview)

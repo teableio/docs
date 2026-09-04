@@ -1,0 +1,144 @@
+---
+title: "E-posta Hizmetini Yapılandırma"
+description: "Uygulama içi e-posta bildirimlerini, kullanıcı tarafından parola sıfırlamayı, davet e-postalarını ve diğer özellikleri etkinleştirmek için e-posta hizmetini açın."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+## Yapılandırma Yöntemleri
+
+Teable, e-posta hizmetini yapılandırmak için iki yöntemi destekler:
+
+<CardGroup cols={2}>
+  <Card title="Yönetici Paneli (Önerilen)" icon="sliders" href="#option-1-admin-panel-recommended">
+    Canlı test içeren görsel yapılandırma. Yeniden başlatma gerekmez.
+  </Card>
+  <Card title="Ortam Değişkenleri" icon="code" href="#option-2-environment-variables">
+    `.env` dosyası üzerinden geleneksel yapılandırma. Kapsayıcının yeniden başlatılması gerekir.
+  </Card>
+</CardGroup>
+
+---
+
+## 1. Seçenek: Yönetici Paneli (Önerilen) {#option-1-admin-panel-recommended}
+
+E-postayı yapılandırmanın en kolay yolu Yönetici Panelini kullanmaktır:
+
+1. Yönetici olarak oturum açın (ilk kaydolan kullanıcı)
+2. **Yönetici Paneli** → **Örnek ayarları** bölümüne gidin
+3. **E-posta** bölümünü bulun
+4. Gerektiği şekilde **Bildirim e-postası** ve **Otomasyon e-postası** seçeneklerini yapılandırın
+
+<Tip>
+Yönetici Paneli yapılandırması **canlı testi** destekler; SMTP ayarlarınızın kaydetmeden önce çalıştığını doğrulayabilirsiniz.
+</Tip>
+
+- **Bildirim e-postası**: Kullanıcı doğrulama, parola sıfırlama, davetler, sistem bildirimleri ve benzer e-postalar için kullanılır.
+- **Otomasyon e-postası**: Otomasyondaki E-posta Gönder eylemlerinin varsayılan posta hizmeti olarak kullanılır. Tek bir E-posta Gönder eylemi kendi [özel SMTP sunucusunu](/tr/basic/automation/actions/communication/smtp-sender) da yapılandırabilir.
+
+### Yapılandırma kaynakları ve öncelik
+
+Posta hizmetini önce **Yönetici Paneli → Örnek ayarları → E-posta** bölümünde yapılandırmanızı öneririz. Geçerli öncelik sırası şöyledir:
+
+1. **E-posta Gönder eylemindeki özel posta sunucusu**: Yalnızca mevcut otomasyondaki ilgili E-posta Gönder eylemine uygulanır.
+2. **Yönetici Paneli → Örnek ayarları → E-posta → Otomasyon e-postası**: E-posta Gönder eyleminde kendi posta sunucusu yapılandırılmadığında otomasyon e-postaları tarafından kullanılır.
+3. **Yönetici Paneli → Örnek ayarları → E-posta → Bildirim e-postası**: Kullanıcı doğrulama, parola sıfırlama, davetler, sistem bildirimleri ve benzer e-postalar için kullanılır. Otomasyon e-postası yapılandırılmamışsa otomasyon e-postalarının yedeği olarak da kullanılır.
+4. **`BACKEND_MAIL_*` ortam değişkenleri**: Dağıtım düzeyindeki varsayılan posta yapılandırmasıdır. Yalnızca karşılık gelen posta kutusu Yönetici Panelinde yapılandırılmadığında yedek olarak kullanılır.
+
+### Yapılandırma Alanları
+
+| Alan | Açıklama | Örnek |
+|-------|-------------|---------|
+| Sunucu adresi | SMTP sunucu adresi | `smtp.gmail.com` |
+| Bağlantı noktası | SMTP bağlantı noktası | `465` (SSL) veya `587` (TLS) |
+| SSL/TLS | SSL/TLS kullanılıp kullanılmayacağı | `true` |
+| Kullanıcı adı | SMTP kimlik doğrulama kullanıcısı | `noreply@company.com` |
+| Parola | SMTP parolası veya uygulama parolası | `xxxxxxxxxxxxxx` |
+| Gönderen adresi | Kimden adresi | `noreply@company.com` |
+| Gönderen adı | Görünen ad | `Teable Notification` |
+
+---
+
+## 2. Seçenek: Ortam Değişkenleri {#option-2-environment-variables}
+
+Dosya tabanlı yapılandırmayı tercih ettiğiniz dağıtımlarda ortam değişkenlerini kullanın:
+
+<Note>
+Önce **Yönetici Paneli → Örnek ayarları → E-posta** bölümündeki Bildirim e-postası ve Otomasyon e-postasını yapılandırmanızı öneririz. Ortam değişkenleri temel olarak dağıtım düzeyindeki varsayılanlar ve yedek yapılandırma için kullanılır.
+</Note>
+
+```sh
+BACKEND_MAIL_HOST=smtp.example.com
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=noreply@company.com
+BACKEND_MAIL_SENDER_NAME=Teable
+BACKEND_MAIL_AUTH_USER=username
+BACKEND_MAIL_AUTH_PASS=your_password
+```
+
+<Note>
+Ortam değişkenlerini değiştirdikten sonra değişikliklerin geçerli olması için Teable kapsayıcısını **yeniden başlatmanız** gerekir.
+</Note>
+
+---
+
+## SMTP Sağlayıcısı Örnekleri
+
+<Accordion title="AWS SES">
+```sh
+# Alma yolu: AWS Konsolu → Basit E-posta Hizmeti → SMTP Ayarları → SMTP Kimlik Bilgileri Oluştur
+BACKEND_MAIL_HOST=email-smtp.us-east-1.amazonaws.com  # Kendi bölgenizle değiştirin
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=noreply@yourdomain.com  # Doğrulanmış bir gönderen adresi olmalıdır
+BACKEND_MAIL_SENDER_NAME=Teable Bildirimi
+BACKEND_MAIL_AUTH_USER=your_smtp_username   # AWS SMTP kullanıcı adı
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx       # AWS SMTP parolası
+```
+</Accordion>
+
+<Accordion title="Gmail">
+```sh
+# Alma yolu: Google Hesabı → Güvenlik → 2 Adımlı Doğrulama → Uygulama Parolaları
+BACKEND_MAIL_HOST=smtp.gmail.com
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=you@gmail.com
+BACKEND_MAIL_SENDER_NAME=Teable Bildirimi
+BACKEND_MAIL_AUTH_USER=you@gmail.com
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # 16 haneli uygulama parolası
+```
+</Accordion>
+
+<Accordion title="Microsoft 365 / Outlook">
+```sh
+# Alma yolu: Microsoft 365 yönetim merkezi → Güvenlik → İlkeler ve kurallar → E-posta kimlik doğrulaması
+BACKEND_MAIL_HOST=smtp.office365.com
+BACKEND_MAIL_PORT=587
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=your.name@yourdomain.com
+BACKEND_MAIL_SENDER_NAME=Teable Bildirimi
+BACKEND_MAIL_AUTH_USER=your.name@yourdomain.com
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # Microsoft 365 parolanız veya uygulama parolanız
+```
+</Accordion>
+
+<Accordion title="SendGrid">
+```sh
+# Alma yolu: SendGrid Panosu → Ayarlar → API Anahtarları → API Anahtarı Oluştur
+BACKEND_MAIL_HOST=smtp.sendgrid.net
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=noreply@yourdomain.com
+BACKEND_MAIL_SENDER_NAME=Teable Bildirimi
+BACKEND_MAIL_AUTH_USER=apikey
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # SendGrid API Anahtarınız
+```
+</Accordion>
+
+---
+
+## İlgili Belgeler
+
+- [Ortam Değişkenleri Referansı](/tr/deploy/env)
+- [Yönetici Paneline Genel Bakış](/tr/basic/admin-panel/overview)

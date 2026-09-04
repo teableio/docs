@@ -1,0 +1,41 @@
+---
+title: "Abilitare la Dashboard autonoma"
+description: "Come abilitare la funzionalità Dashboard autonoma nelle installazioni self-hosted"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+La funzionalità Dashboard autonoma è stata sostituita da App Builder. **Consigliamo vivamente di utilizzare App Builder per creare dashboard più potenti e personalizzabili e ottenere un'esperienza migliore.**
+
+Se devi ancora utilizzare il nodo Dashboard precedente, puoi seguire i passaggi di configurazione riportati di seguito per abilitare la Dashboard autonoma. Tieni presente che al momento non prevediamo ulteriori sviluppi per questa funzionalità.
+</Tip>
+
+## Panoramica
+
+Nelle istanze self-hosted di Teable, la funzionalità Dashboard autonoma è disabilitata per impostazione predefinita. Segui i passaggi riportati di seguito per abilitarla.
+
+## Procedura
+
+### Passaggio 1: eseguire l'istruzione SQL
+
+Collegati al database PostgreSQL utilizzato da Teable ed esegui la seguente istruzione SQL per impostare `disallowDashboard` su `false`:
+
+```sql
+UPDATE setting SET content = 'false' WHERE name = 'disallowDashboard';
+```
+
+### Passaggio 2: svuotare la cache della Tabella setting
+
+Dopo aver eseguito l'istruzione SQL, devi svuotare la cache della Tabella `setting` affinché la configurazione abbia effetto.
+
+Poiché non esiste un punto di accesso diretto per svuotare la cache, puoi attivarne l'aggiornamento **modificando una qualsiasi opzione delle impostazioni dell'istanza**. Ad esempio:
+
+1. Vai ad **Amministrazione di sistema** > **Impostazioni istanza**
+2. **Abilita** l'opzione di verifica dell'email
+3. **Disabilita** nuovamente l'opzione di verifica dell'email
+
+<Callout type="info">
+Lo scopo di questo passaggio è attivare l'aggiornamento della cache della Tabella setting. È sufficiente modificare una qualsiasi opzione: non devi cambiare in modo permanente alcuna configurazione.
+</Callout>
+
+Dopo aver completato entrambi i passaggi, aggiorna la pagina: la funzionalità Dashboard autonoma sarà abilitata.

@@ -1,0 +1,290 @@
+---
+title: "تشغيل برنامج نصي"
+description: "شغّل JavaScript مخصصًا في بيئة اختبار معزولة وآمنة لتنفيذ منطق يتجاوز الإجراءات المدمجة"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+نوصي بشدة باستخدام «تشغيل برنامج نصي» لإنشاء عمليات الأتمتة، لأنه يستطيع تغطية جميع سلوكيات الإجراءات، بما فيها الإجراءات التي كان يلزم إنشاؤها يدويًا لولا ذلك. ما عليك سوى وصف متطلباتك للذكاء الاصطناعي في الدردشة.
+
+يُرجى ملاحظة أنه إذا أضفت إجراءات يدويًا، فلن يتعرف عليها الذكاء الاصطناعي أو يعدّلها لاحقًا.
+</Tip>
+
+يتيح لك إجراء «تشغيل برنامج نصي» كتابة JavaScript مخصص لمعالجة منطق لا تستطيع الإجراءات المدمجة تغطيته. يمكنك تحويل البيانات، واستدعاء واجهات API خارجية، وإجراء الحسابات، وتنفيذ التفرع الشرطي، وغير ذلك، وكل هذا داخل بيئة اختبار معزولة وآمنة.
+
+تستقبل البرامج النصية بيانات الخطوات السابقة عبر كائن `input`، وتمرر النتائج إلى الخطوات اللاحقة عبر الدالة `output.set()`.
+
+## متى تستخدم «تشغيل برنامج نصي» بدلًا من الإجراءات المدمجة
+
+| السيناريو | استخدام الإجراءات المدمجة | استخدام «تشغيل برنامج نصي» |
+|---|---|---|
+| إنشاء السجلات أو تحديثها أو جلبها | نعم | فقط إذا احتجت إلى منطق معقد حولها |
+| إرسال رسالة بسيطة | نعم | لا |
+| استدعاء نقطة نهاية API واحدة | نعم (طلب HTTP) | فقط إذا احتجت إلى معالجة الاستجابة بطرق معقدة |
+| تحويل البيانات بين الخطوات | أحيانًا | نعم — عندما تحتاج إلى منطق شرطي أو حلقات أو معالجة سلاسل نصية |
+| تحليل بنى JSON معقدة | لا | نعم |
+| حساب التواريخ وتنسيق الأرقام | لا | نعم |
+| تسلسل عدة استدعاءات API مع منطق | غير عملي بالإجراءات المدمجة | نعم |
+| تنفيذ قواعد أعمال بشروط كثيرة | غير عملي | نعم |
+
+عمومًا، استخدم الإجراءات المدمجة عندما تلبي احتياجاتك. واستخدم «تشغيل برنامج نصي» عندما تحتاج إلى منطق مخصص أو تحويل بيانات أو تفاعل معقد مع واجهات API.
+
+## البيئة
+
+| الخاصية | القيمة |
+|---|---|
+| اللغة | JavaScript ‏(ES6+)، مع دعم `await` في المستوى الأعلى |
+| وقت التشغيل | بيئة اختبار معزولة وآمنة بمهلة 60 ثانية |
+| الوحدات | CommonJS ‏(`require()`)، مع دعم حزم npm |
+| الشبكة | طلبات HTTP عبر `fetch()` |
+
+## كيفية الإعداد
+
+1. أضف إجراء **تشغيل برنامج نصي** إلى سير العمل.
+2. يفتح محرر البرنامج النصي بمساحة فارغة. اكتب شيفرة JavaScript هنا.
+3. يستطيع البرنامج النصي قراءة بيانات الخطوات السابقة باستخدام كائن `input` (راجع أدناه).
+4. استخدم `output.set(key, value)` لتمرير النتائج إلى الخطوات اللاحقة.
+5. (اختياري) أضف تبعيات npm في لوحة التهيئة إذا كان البرنامج النصي يحتاج إلى مكتبات خارجية.
+6. انقر على **اختبار** لتشغيل البرنامج النصي ببيانات حقيقية من أحدث تنفيذ للمشغّل.
+7. تحقق من مخرجات الاختبار وسجلات وحدة التحكم للتأكد من عمل البرنامج النصي بصورة صحيحة.
+8. احفظ الإجراء.
+
+## قراءة بيانات الإدخال
+
+يحتوي كائن `input` على بيانات جميع الخطوات السابقة في سير العمل. تُحدد كل خطوة بمعرّف الإجراء الخاص بها.
+
+### بنية الإدخال
+
+```javascript
+// input كائن مفهرس بمعرّفات الإجراءات
+// يحتوي كل مفتاح على مخرجات تلك الخطوة
+
+const actionIds = Object.keys(input);
+// قد تكون actionIds: ["triggerStep1", "actionStep2", "actionStep3"]
+```
+
+### الحصول على بيانات المشغّل (حقول السجل)
+
+```javascript
+const actionIds = Object.keys(input);
+const triggerData = input[actionIds[0]]; // الإدخال الأول هو المشغّل عادةً
+
+// للمشغّلات المستندة إلى السجلات (إنشاء، تحديث، نقر زر، إرسال نموذج):
+const recordId = triggerData.record.id;
+const fields = triggerData.record.fields;
+
+// الوصول إلى حقول محددة بواسطة معرّف الحقل
+const customerName = fields.fldXXXXXXX;  // استبدله بمعرّف الحقل الفعلي
+const orderAmount = fields.fldYYYYYYY;
+```
+
+### الحصول على بيانات من خطوة جلب السجلات
+
+```javascript
+const actionIds = Object.keys(input);
+const getRecordsData = input[actionIds[1]]; // الخطوة الثانية، على سبيل المثال
+
+const records = getRecordsData.records;
+records.forEach(record => {
+  console.log(record.id, record.fields.fldName);
+});
+```
+
+### الحصول على بيانات من مخرجات إجراءات أخرى
+
+```javascript
+const actionIds = Object.keys(input);
+const previousOutput = input[actionIds[2]]; // مخرجات الخطوة الثالثة
+// تعتمد البنية على مخرجات ذلك الإجراء
+```
+
+<Tip>استخدم `console.log(JSON.stringify(input, null, 2))` أثناء الاختبار لرؤية البنية الدقيقة لبيانات الإدخال. وهذه أسرع طريقة لفهم ما هو متاح.</Tip>
+
+## كتابة المخرجات
+
+استخدم `output.set(key, value)` لإتاحة البيانات للخطوات اللاحقة. ويمكنك تعيين عدة مفاتيح.
+
+```javascript
+// تعيين قيم بسيطة
+output.set("status", "success");
+output.set("count", 42);
+
+// تعيين كائنات
+output.set("result", {
+  name: "أليس",
+  score: 95,
+  passed: true
+});
+
+// تعيين مصفوفات
+output.set("items", [
+  { id: 1, name: "العنصر أ" },
+  { id: 2, name: "العنصر ب" }
+]);
+```
+
+يصبح كل مفتاح تعيّنه متغيرًا مستقلًا يمكن للخطوات اللاحقة الإشارة إليه عبر منتقي المتغيرات **+**. على سبيل المثال، إذا استدعيت `output.set("status", "success")`، فيمكن للخطوة التالية الإشارة إلى `status` في مخرجات هذا البرنامج النصي.
+
+## تصحيح الأخطاء باستخدام console.log
+
+أثناء التطوير، استخدم `console.log()` لفحص البيانات وتتبع تدفق التنفيذ. تظهر مخرجات السجل في لوحة الاختبار عند النقر على **اختبار**.
+
+```javascript
+const actionIds = Object.keys(input);
+console.log("معرّفات الإجراءات:", actionIds);
+
+const data = input[actionIds[0]];
+console.log("بيانات المشغّل:", JSON.stringify(data, null, 2));
+
+// تسجيل النتائج الوسيطة
+const processed = data.record.fields.fldName.toUpperCase();
+console.log("الاسم المعالَج:", processed);
+
+output.set("name", processed);
+```
+
+لا تظهر سجلات وحدة التحكم إلا أثناء الاختبار، ولا تظهر في سجل تشغيل الإنتاج. استخدمها بحرية أثناء إنشاء برنامجك النصي.
+
+## إدارة حزم npm
+
+يمكنك استخدام حزم npm في برامجك النصية. أعلن عن التبعيات في لوحة التهيئة:
+
+```json
+[
+  { "name": "lodash", "version": "4.17.21" },
+  { "name": "dayjs", "version": "1.11.10" }
+]
+```
+
+ثم استخدمها في البرنامج النصي بواسطة `require()`:
+
+```javascript
+const _ = require("lodash");
+const dayjs = require("dayjs");
+
+const actionIds = Object.keys(input);
+const records = input[actionIds[0]].records;
+
+const grouped = _.groupBy(records, r => r.fields.fldCategory);
+const today = dayjs().format("YYYY-MM-DD");
+
+output.set("grouped", grouped);
+output.set("date", today);
+```
+
+<Tip>فضّل ميزات JavaScript المدمجة على حزم npm متى أمكن. تتضمن JavaScript الحديثة أدوات كثيرة، مثل `Array.map()` و`Array.filter()` و`Object.entries()` والقوالب النصية والتفكيك، وغيرها. لا تضف حزم npm إلا عندما تقدم قيمة ملموسة.</Tip>
+
+## المتغيرات المدمجة
+
+| المتغير | الوصف |
+|---|---|
+| `process.env.AUTOMATION_TOKEN` | رمز Bearer لاستدعاء واجهة Teable API. يقتصر نطاقه على صلاحيات الأتمتة الحالية |
+| `process.env.PUBLIC_ORIGIN` | عنوان URL الأساسي لنسخة Teable (مثل `https://app.teable.io`) |
+
+### الأمان: نطاق AUTOMATION_TOKEN
+
+يُنشأ `AUTOMATION_TOKEN` تلقائيًا لكل تشغيل للأتمتة. ويحمل صلاحيات منشئ الأتمتة نفسها، ويقتصر نطاقه على التنفيذ الحالي. النقاط الأساسية:
+
+- يستطيع الوصول إلى أي جدول يمكن لمنشئ الأتمتة الوصول إليه.
+- يظل صالحًا طوال مدة تنفيذ البرنامج النصي فقط (مهلة 60 ثانية).
+- لا تكشف هذا الرمز للأنظمة الخارجية؛ فهو مخصص لاستدعاء واجهة Teable API من داخل برنامجك النصي.
+
+### استدعاء واجهة Teable API
+
+```javascript
+const base = process.env.PUBLIC_ORIGIN + "/api";
+const token = process.env.AUTOMATION_TOKEN;
+
+// مثال: جلب سجلات من جدول
+const res = await fetch(`${base}/table/tblXXXXXXX/record?take=10`, {
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json"
+  }
+});
+
+const data = await res.json();
+console.log("السجلات المجلوبة:", data);
+output.set("records", data);
+```
+
+### استدعاء الذكاء الاصطناعي من برنامج نصي
+
+يرسل `POST /api/automation/runtime/ai` مطالبة إلى نموذج الذكاء الاصطناعي في قاعدة بياناتك. تُستمد قاعدة البيانات من سياق الأتمتة، ولذلك لا يلزم معرّف قاعدة بيانات. يتلقى النص `prompt`، بالإضافة إلى `attachments` و`modelKey` و`temperature` و`outputType` الاختيارية؛ وتكون الاستجابة `{ "message": ... }`.
+
+المرفقات هي عناصر `{ url, mimetype, name }`، بحد أقصى 10 عناصر لكل استدعاء، وحجم أقل من 20MB لكل عنصر، ومدة تنزيل لا تتجاوز 30 ثانية، وتشمل الصور وملفات PDF ومستندات Office. قد لا يتمكن نموذج الدردشة الافتراضي من قراءة الصور والمرفقات المشابهة، لذا مرر `modelKey` عند إرسال الملفات. يستهلك كل استدعاء رصيدًا.
+
+## معالجة الأخطاء
+
+ضع دائمًا العمليات المحفوفة بالمخاطر داخل كتل try/catch حتى يتمكن سير العمل من معالجة حالات الفشل بسلاسة:
+
+```javascript
+try {
+  const res = await fetch("https://api.example.com/data");
+  
+  if (!res.ok) {
+    throw new Error(`أعادت واجهة API الحالة ${res.status}: ${res.statusText}`);
+  }
+  
+  const data = await res.json();
+  output.set("success", true);
+  output.set("data", data);
+} catch (error) {
+  console.log("خطأ:", error.message);
+  output.set("success", false);
+  output.set("error", error.message);
+}
+```
+
+دون معالجة الأخطاء، سيؤدي فشل طلب fetch أو ورود تنسيق بيانات غير متوقع إلى تعطل البرنامج النصي، ولن تتلقى الخطوات اللاحقة أي مخرجات.
+
+## مثال كامل: معالجة تذاكر الدعم وتوجيهها
+
+```javascript
+const actionIds = Object.keys(input);
+const record = input[actionIds[0]].record;
+
+const subject = record.fields.fldSubject || "";
+const body = record.fields.fldBody || "";
+const email = record.fields.fldEmail || "";
+
+// توجيه بسيط مستند إلى الكلمات المفتاحية
+const text = (subject + " " + body).toLowerCase();
+
+let category = "عام";
+let priority = "عادية";
+
+if (text.includes("فوترة") || text.includes("فاتورة") || text.includes("دفعة")) {
+  category = "الفوترة";
+} else if (text.includes("خلل") || text.includes("خطأ") || text.includes("تعطل")) {
+  category = "تقنية";
+  priority = "عالية";
+} else if (text.includes("إلغاء") || text.includes("استرداد")) {
+  category = "الحساب";
+  priority = "عالية";
+}
+
+// التحقق من عملاء VIP
+const vipDomains = ["bigcorp.com", "enterprise.io"];
+const domain = email.split("@")[1] || "";
+if (vipDomains.includes(domain)) {
+  priority = "عاجلة";
+}
+
+output.set("category", category);
+output.set("priority", priority);
+output.set("isVIP", vipDomains.includes(domain));
+```
+
+## نصائح
+
+- **ابدأ باستخدام console.log.** عند إنشاء برنامج نصي جديد، سجّل كائن `input` بالكامل أولًا لفهم بنيته.
+- **حافظ على تركيز البرامج النصية.** نفّذ مهمة واحدة بإتقان بدلًا من حشر عدة مهام في برنامج واحد. ويمكنك تسلسل عدة إجراءات لتشغيل برنامج نصي عند الحاجة.
+- **انتبه إلى مهلة 60 ثانية.** قد تبلغ العمليات الطويلة (معالجة بيانات كثيرة أو استدعاءات API متسلسلة عديدة) حد المهلة. قسّم المهام الكبيرة إلى أجزاء أصغر.
+- **اختبر باستخدام بيانات حقيقية.** تستخدم لوحة الاختبار بيانات فعلية من أحدث تنفيذ للمشغّل، مما يمنحك نتائج واقعية.
+- **عالج البيانات المفقودة.** استخدم القيم الافتراضية (العامل `||`) للحقول التي قد تكون فارغة أو غير معرّفة.
+
+## موضوعات ذات صلة
+
+- [الإنشاء بالذكاء الاصطناعي](/ar/basic/automation/actions/ai/ai-generate) — لمهام الذكاء الاصطناعي المستندة إلى المطالبات التي لا تحتاج إلى شيفرة مخصصة
+- [طلب HTTP](/ar/basic/automation/actions/logic/http-request) — لاستدعاءات API البسيطة التي لا تحتاج إلى برمجة نصية

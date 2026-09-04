@@ -1,0 +1,51 @@
+---
+title: "Arama"
+description: "Mevcut bir bağlantı ilişkisi üzerinden bağlantılı tablodaki alan değerlerine başvurun ve verileri eşitlenmiş durumda tutun."
+---
+
+Arama alanları **Bağlantı** alanlarını temel alır. Bir Arama alanı, bağlantılı tablodan seçilen bir alana başvurur; böylece geçerli tablo, verileri yeniden girmeden başka bir tablodaki verileri görüntüleyebilir.
+
+## Kullanım Alanları
+
+| Senaryo | Uygun olduğu durumlar |
+| --- | --- |
+| Sipariş satır kalemleri | Bir ürünü bağladıktan sonra fiyatını, SKU'sunu veya kategorisini gösterme |
+| Destek kaydı yönetimi | Bir müşteriyi bağladıktan sonra telefon numarasını, müşteri seviyesini veya sorumlusunu gösterme |
+| Kitap yönetimi | Kitaplar tablosunda yazarın doğum gününü, uyruğunu veya biyografisini gösterme |
+| Proje yönetimi | Bağlantılı görevlerden atanan kişiyi, son tarihi veya durumu gösterme |
+
+## Oluşturma ve Yapılandırma
+
+<Steps>
+  <Step title="Bir bağlantı ilişkisi oluşturun">
+    Arama alanını kullanmadan önce iki tablo arasında bir **Bağlantı** alanı oluşturun.
+  </Step>
+  <Step title="Alan türünü seçin">
+    Tablo görünümünde alan eklemek için `+` simgesine tıklayın ve **Arama**'yı seçin.
+  </Step>
+  <Step title="Bağlantı alanını seçin">
+    Arama yolu olarak geçerli tablodaki mevcut bir bağlantı alanını seçin.
+  </Step>
+  <Step title="Hedef alanı seçin">
+    Kaynak tablodan okunacak alanı seçin; örneğin yazarın doğum tarihi, müşterinin telefon numarası veya ürünün fiyatı.
+  </Step>
+</Steps>
+
+## Otomatik Eşitleme
+
+Kurulumdan sonra Teable, mevcut bağlantı ilişkisine göre arama sonucunu doldurur:
+
+- Farklı bir yazar seçilmesi gibi bağlantılı kaydın değiştiği durumlarda arama değeri güncellenir.
+- Yazarın doğum gününün düzenlenmesi gibi kaynak verinin değiştiği durumlarda arama değeri yenilenir.
+
+## Yaygın Kullanımlar
+
+- **Kitap yönetimi**: `Kitaplar` tablosunda, yazar ayrıntıları tablosundaki `Doğum tarihi` alanını aramak için `Yazar` bağlantı alanını kullanın.
+- **Sipariş hesaplama**: `Sipariş satır kalemleri` tablosunda ürün fiyatını arayın ve ardından toplamı hesaplamak için bir formül kullanın.
+- **Müşteri bilgilerini eşitleme**: Destek kayıtları tablosunda bir müşteriyi bağlayın ve müşterinin telefon numarasını, e-posta adresini veya seviyesini arayın.
+
+## Notlar
+
+- **Salt okunur alan**: Arama alanları **salt okunurdur**. Aranan değeri geçerli tablodan düzenleyemezsiniz. Değeri değiştirmek için kaynak tablodaki özgün alanı düzenleyin.
+- **Tek değer ve birden çok değer**: Bağlantı ilişkisi bire bir ise arama sonucu tek bir değerdir. İlişki bire çok ise arama sonucu çok değerli bir diziye dönüşür ve değerleri virgülle ayrılmış şekilde gösterir.
+- **Veri bağımlılıkları**: Arama alanları, bağlantı alanına ve kaynak alana bağlıdır. Bağlantı alanı veya kaynak tablodaki hedef alan silinirse Arama alanı çalışmayı durdurur.

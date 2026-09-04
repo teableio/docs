@@ -1,0 +1,72 @@
+---
+title: "Toplama"
+description: "Bağlantılı kayıtlardaki değerleri toplam, adet, ortalama, en yüksek ve en düşük gibi işlemlerle birleştirin."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+Toplama alanları, birden çok bağlantılı kayıttan istatistik hesaplar. Bir Toplama alanı genellikle mevcut bir **Bağlantı** alanından başlar, bağlantılı kayıtlardan bir hedef alan seçer ve belirlenen işlevle sonucu hesaplar.
+
+## Kullanım Alanları
+
+| Senaryo | Uygun olduğu durumlar |
+| --- | --- |
+| Sipariş tutarı | Sipariş toplamını hesaplamak için sipariş satır kalemlerindeki fiyatları toplama |
+| Görev ilerlemesi | Bağlantılı görevleri veya tamamlanan görevleri sayma ya da ortalama derecelendirmeleri hesaplama |
+| Müşteri değeri | Müşteri siparişlerindeki toplam harcamayı veya sipariş adedini toplama |
+| Etiket temizliği | Bağlantılı kayıtlardaki etiketleri, katılımcıları veya kaynak kanalları birleştirme |
+
+## Oluşturma ve Yapılandırma
+
+<Steps>
+  <Step title="Bir bağlantı ilişkisi oluşturun">
+    Toplama alanı oluşturmadan önce bir **Bağlantı** alanı oluşturun.
+  </Step>
+  <Step title="Alan türünü seçin">
+    Bir alan eklemek için tablo başlığındaki `+` simgesine tıklayın ve **Toplama**'yı seçin.
+  </Step>
+  <Step title="Bağlantı alanını ve hedef alanı seçin">
+    Veri kaynağını sağlayan bağlantı alanını, ardından hesaplanacak hedef alanı seçin.
+  </Step>
+  <Step title="Toplama işlevini seçin">
+    Hedef alan türüne göre toplam, adet, ortalama, en yüksek veya en düşük gibi bir işlev seçin.
+  </Step>
+</Steps>
+
+## Biçimlendirme ve Görüntüleme
+
+Toplama sonuçları genellikle biçimlendirme ve etkileşimli görüntüleme ayarlarını kullanabilir:
+
+- **Biçimlendirme**: Ondalık hassasiyetini, para birimi simgelerini veya yüzdeleri ayarlayın.
+- **Etkileşimli görüntüleme**: Sayısal sonuçları çubuk, halka veya diğer görüntüleme stilleriyle gösterin.
+
+Ayrıntılar için [biçimlendirme](/tr/basic/field/common/formatter) ve [etkileşimli görüntüleme](/tr/basic/field/common/show-as) sayfalarına bakın.
+
+## Yaygın Kullanımlar
+
+- **Kitapçı sipariş toplamları**: `Siparişler` tablosunda, `Kitaplar` tablosundaki `Fiyat` alanını toplamak için `Seçili kitaplar` bağlantı alanını kullanın. Sipariş toplamını hesaplamak için **SUM** işlevini seçin.
+- **Proje görevi istatistikleri**: `Projeler` tablosunda bağlantılı görevleri sayın veya görev tamamlama oranını hesaplayın.
+- **Müşteri harcama toplamları**: Her müşterinin toplam harcamasını görmek için `Müşteriler` tablosunda ilgili sipariş tutarlarını toplayın.
+
+## Desteklenen Toplama Formülleri
+
+| Formül adı | Açıklama |
+| --- | --- |
+| COUNTALL | Metin değerleri ve boşluklar dahil tüm değerleri sayar |
+| COUNTA | Boş olmayan değerleri sayar |
+| COUNT | Sayısal öğeleri sayar |
+| SUM | Tüm sayısal değerlerin toplamını hesaplar |
+| MAX | En büyük sayısal değeri döndürür |
+| MIN | En küçük sayısal değeri döndürür |
+| AND | Tüm değerler doğruysa true döndürür |
+| OR | Herhangi bir değer doğruysa true döndürür |
+| XOR | Tek sayıda değer doğruysa true döndürür |
+| ARRAY_JOIN | Bir dizideki tüm değerleri bir dizede birleştirir |
+| ARRAY_UNIQUE | Yinelenen değerleri kaldırır ve benzersiz değerlerden oluşan bir dizi döndürür |
+| ARRAY_COMPACT | Boş değerleri kaldırır ve yeni bir dizi döndürür |
+| CONCATENATE | Birden çok değeri bir dizede birleştirir |
+
+## Notlar
+
+- **Dinamik güncellemeler**: Toplama alanları gerçek zamanlı hesaplama yapar. Kaynak veriler veya bağlantı ilişkileri değişirse toplama sonucu yenilenir.
+- **Veri türü sınırları**: Bazı işlevler yalnızca belirli alan türleriyle çalışır. Örneğin **SUM** yalnızca sayı alanlarıyla çalışır. Bir metin alanı seçerseniz Teable, toplam işlevini seçenek olarak sunmaz.
+- **Performans**: Çok sayıda Toplama alanı, özellikle çok sayıda kayıt içeriyorsa performansı etkileyebilir. Bağlantı ilişkilerini dikkatle planlayın ve Toplama ayarlarını zaman zaman gözden geçirin.

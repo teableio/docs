@@ -1,0 +1,155 @@
+---
+title: "Webhook alındığında"
+description: "Herhangi bir harici sistemden HTTP isteği alarak iş akışını tetikleyin"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Lütfen unutmayın: tüm tetikleyici yapılandırması AI Chat'te yapılabilir. İş akışının ne yapmasını istediğinizi AI'a söyleyin; gerisini o halleder.</Tip>
+
+Bu tetikleyici benzersiz bir URL oluşturur. Harici bir sistem bu URL'ye HTTP POST isteği gönderdiğinde iş akışı çalışır.
+
+## AI ile oluşturma
+
+Tablonuzun sağ kenar çubuğunda AI Chat'i açın ve ne istediğinizi açıklayın.
+
+AI her şeyi halleder: doğru tetikleyiciyi seçer, ilgili alanları eşler ve tüm eylemleri otomatik olarak yapılandırır.
+
+Hedefinizi bir kez açıklayın; iş akışınız elle yapılandırma gerektirmeden hazır olur.
+
+**Örnek:** *"Bir Stripe ödeme webhook'u aldığımda sipariş kaydı oluştur."*
+
+## Yapılandırma
+
+| Ayar | Zorunlu | Açıklama |
+|---|---|---|
+| Yetkilendirme | Hayır | **Yok** (herkese açık; URL'yi bilen herkes tetikleyebilir) veya **Taşıyıcı Belirteci** (istek üstbilgisinde otomatik oluşturulan belirteç gerekir) |
+| Yanıt | Hayır | **Varsayılan** (Teable kendi alındı bildirimini döndürür) veya **Özel** (durum koduna, içerik türüne ve gövdeye siz karar verirsiniz) |
+
+## Nasıl yapılandırılır?
+
+1. Otomasyonunuzu açıp yeni bir tetikleyici ekleyin.
+2. **Webhook alındığında** seçeneğini belirleyin.
+3. Tetikleyici hemen benzersiz bir **webhook URL'si** oluşturur. Harici sistemde kullanmak üzere bu URL'yi kopyalayın.
+4. (İsteğe bağlı ancak önerilir) Taşıyıcı Belirteci yetkilendirmesini etkinleştirmek için **Belirteç Oluştur**'a tıklayın. Böylece gelen isteklerin `Authorization` üstbilgisinde bulunması gereken bir belirteç oluşturulur.
+5. Otomasyonu kaydedip etkinleştirin.
+6. Harici sisteminizi webhook URL'sine POST isteği gönderecek şekilde yapılandırın. Yetkilendirmeyi etkinleştirdiyseniz belirteci üstbilgiye ekleyin.
+7. Bir test isteği gönderin (aşağıdaki örneklere bakın). Verilerin doğru alındığını doğrulamak için otomasyonun çalıştırma geçmişini denetleyin.
+8. Eylem adımlarınızı ekleyin. Webhook'un JSON gövdesindeki değerlere başvurmak için herhangi bir eylem alanında **+** simgesine tıklayın.
+
+## Sonraki adımlarda kullanılabilen veriler
+
+Gelen POST isteğinin tüm JSON gövdesi değişken olarak kullanılabilir. Örneğin şunu gönderirseniz:
+
+```json
+{
+  "order_id": "12345",
+  "customer": "Ayşe",
+  "amount": 99.95
+}
+```
+
+Eylemlerinizde **+** simgesine tıklayıp tetikleyicinin çıktı alanlarına giderek `order_id`, `customer` ve `amount` değerlerine ayrı ayrı başvurabilirsiniz.
+
+Teable, JSON'u otomatik olarak ayrıştırır ve üst düzey her anahtar için adlandırılmış bir değişken oluşturur. İç içe nesnelere de erişilebilir.
+
+## Yanıtı özelleştirme
+
+Teable varsayılan olarak gelen her isteğe kendi alındı bildirimiyle yanıt verir. Bazı platformlar bunu kabul etmez: bir yoklama göndererek abonelik URL'sini doğrular ve uç noktanızın istekteki bir alanı aynen geri döndürmesini ister. Slack bu yöntemi kullandığından olayları ancak webhook el sıkışmasına yanıt verdikten sonra otomasyona ulaşabilir.
+
+Tetikleyici panelinde **Yanıt** ayarını **Varsayılan** yerine **Özel** yapın:
+
+| Alan | Açıklama |
+|---|---|
+| **Durum kodu** | 200 ile 299 arasında herhangi bir kod. Varsayılan 200'dür. |
+| **İçerik türü** | **JSON** veya **ham metin**. Varsayılan JSON'dur. |
+| **Yanıt gövdesi** | Döndürülecek metin. Gelen istekteki değerleri eklemek için `{{body.<path>}}` kullanın. |
+
+**Özel** seçildiğinde gövde, çoğu çağıranın ihtiyaç duyduğu el sıkışması yanıtıyla önceden doldurulur:
+
+```json
+{"challenge":"{{body.challenge}}"}
+```
+
+`{{ }}` içindeki yollar, tetikleyicinin çıktı değişkeni olarak sunduğu yollarla aynıdır; bu nedenle daha önce bir test çalıştırmasında gördüğünüz yükteki yolu doğrudan kopyalayabilirsiniz. `{{body.event.type}}` gibi iç içe değerler de çalışır. JSON gövdesinde isteğin içermediği bir yol `null` olarak oluşturulur; böylece yanıt geçerli JSON olarak kalır.
+
+<Info>Slack `Authorization` üstbilgisi gönderemez; bu nedenle bağlarken **Yetkilendirme** ayarını **Yok** olarak bırakın. İkisi de aynı anda açıksa tetikleyici paneli bir uyarı gösterir.</Info>
+
+Teable'ın kendi alındı bildirimine dönmek için **Yanıt** ayarını istediğiniz zaman yeniden **Varsayılan** yapın. Bu ayarı hiç değiştirmeyen otomasyonlar etkilenmez.
+
+## Webhook'unuzu test etme
+
+Test etmenin en kolay yolu komut satırından `curl` kullanmaktır. Veritabanı ve iş akışı kimliklerini içerdiğinden URL'yi elle yazmak yerine tetikleyici panelindeki gerçek URL'yi kopyalayın.
+
+**Yetkilendirme olmadan:**
+
+```bash
+curl -X POST https://your-teable-instance.com/api/webhook/base/bseXXXXXXXXXXXX/workflow/wflXXXXXXXXXXXX \
+  -H "Content-Type: application/json" \
+  -d '{"test": true, "message": "curl tarafından merhaba"}'
+```
+
+**Taşıyıcı Belirteci yetkilendirmesiyle:**
+
+```bash
+curl -X POST https://your-teable-instance.com/api/webhook/base/bseXXXXXXXXXXXX/workflow/wflXXXXXXXXXXXX \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-generated-token" \
+  -d '{"order_id": "12345", "status": "paid"}'
+```
+
+**Daha karmaşık veri gönderme:**
+
+```bash
+curl -X POST https://your-teable-instance.com/api/webhook/base/bseXXXXXXXXXXXX/workflow/wflXXXXXXXXXXXX \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-generated-token" \
+  -d '{
+    "event": "invoice.paid",
+    "data": {
+      "invoice_id": "INV-001",
+      "amount": 250.00,
+      "currency": "USD",
+      "customer_email": "alice@example.com"
+    }
+  }'
+```
+
+Test isteğini gönderdikten sonra verilerin alınıp doğru ayrıştırıldığını doğrulamak için otomasyonun çalıştırma geçmişini denetleyin.
+
+## Hız sınırları
+
+| Kapsam | Sınır |
+|---|---|
+| Veritabanı başına | Saniyede 50 istek |
+| İş akışı başına | Saniyede 2 istek |
+
+Hız sınırını aşan istekler HTTP 429 yanıtı alır. Harici sisteminiz kısa süreli istek yoğunlukları gönderiyorsa üstel geri çekilmeli yeniden deneme mantığı uygulamayı değerlendirin.
+
+## Güvenlikle ilgili en iyi uygulamalar
+
+- Üretim webhook'larında **her zaman Taşıyıcı Belirteci yetkilendirmesi kullanın**. Herkese açık bir webhook URL'si, URL'yi bulan herkes tarafından tetiklenebilir.
+- **Webhook URL'nizi gizli tutun.** Parola gibi değerlendirin. Herkese açık depolara göndermeyin veya açık kanallarda paylaşmayın.
+- Belirtecin ele geçirildiğinden şüpheleniyorsanız **belirteci yeniden oluşturun**. Tetikleyici panelinden istediğiniz zaman yeni bir belirteç oluşturabilirsiniz.
+- **İş akışınızdaki verileri doğrulayın.** Gelen verilerin düzgün biçimlendirildiğini varsaymayın. İşlemeden önce zorunlu alanların bulunduğunu doğrulamak için filtreler veya komut dosyası adımları kullanın.
+- **Çalıştırma geçmişini izleyin.** Beklenmeyen veya yetkisiz istekleri fark etmek için otomasyonunuzun çalıştırma günlüklerini düzenli olarak denetleyin.
+
+## Ne zaman kullanılır?
+
+- **Stripe veya PayPal'dan ödeme olayları alın.** `invoice.paid` olaylarını Teable otomasyonunuza gönderecek bir Stripe webhook'u yapılandırarak sipariş kayıtlarını otomatik oluşturun veya güncelleyin.
+- **Web sitenizden form gönderimlerini kabul edin.** Doğrudan Teable'da kayıt oluşturmak için web sitenizin iletişim veya kayıt formunu webhook URL'sine yönlendirin.
+- **IoT cihazlarından veri alın.** HTTP isteği gönderebilen sensörler veya cihazlar, izleme ve uyarılar için Teable'a veri aktarabilir.
+- **CI/CD işlem hatlarını bağlayın.** Bir derleme başarılı veya başarısız olduğunda iş akışlarını tetikleyin; kayıt oluşturun, bildirim gönderin veya proje durumunu güncelleyin.
+- **Herhangi bir SaaS aracından olay alın.** Birçok araç (GitHub, Jira, Shopify, Twilio vb.) webhook bildirimlerini destekler. Araçlar arası iş akışlarını otomatikleştirmek için bunları Teable webhook'unuza yönlendirin.
+
+## İpuçları
+
+- Webhook yalnızca **POST** isteklerini kabul eder. GET, PUT ve diğer yöntemler otomasyonu tetiklemez.
+- Her zaman `Content-Type: application/json` üstbilgisi gönderin. Gövde geçerli JSON değilse tetikleyici verileri doğru ayrıştıramayabilir.
+- Taşıyıcı kimlik doğrulaması için özel üstbilgileri desteklemeyen bir sistemden veri göndermeniz gerekiyorsa herkese açık modu kullanabilir ancak JSON gövdesine iş akışınızın bir filtre veya komut dosyasıyla doğrulayacağı gizli anahtar ekleyebilirsiniz.
+- Hata ayıklama için harici sisteminizin gerçekten ne gönderdiğini Teable'a yönlendirmeden önce incelemek üzere [webhook.site](https://webhook.site) gibi hizmetleri kullanabilirsiniz.
+
+## İlgili konular
+
+- [HTTP isteği eylemi](/tr/basic/automation/actions/logic/http-request) — giden karşılığıdır: iş akışınızdan harici API'leri çağırın
+- [Komut dosyası çalıştır](/tr/basic/automation/ai/scripting/runscript) — gelişmiş webhook yükü işleme için
+- [Döngü (toplu) eylemi](/tr/basic/automation/actions/logic/loop-run) — webhook yüklerindeki dizileri işleyin

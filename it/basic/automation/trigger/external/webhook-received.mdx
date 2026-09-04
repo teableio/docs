@@ -1,0 +1,155 @@
+---
+title: "Quando viene ricevuto un webhook"
+description: "Attiva un workflow ricevendo una richiesta HTTP da qualsiasi sistema esterno"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Nota: puoi configurare tutti i trigger in AI Chat. Spiega all'IA cosa deve fare il workflow e si occuperà del resto.</Tip>
+
+Questo trigger genera un URL univoco. Quando un sistema esterno gli invia una richiesta HTTP POST, il workflow viene eseguito.
+
+## Creare con l'IA
+
+Apri AI Chat nella barra laterale destra della Tabella e descrivi ciò che desideri.
+
+L'IA si occupa di tutto: sceglie il trigger corretto, mappa i Campi pertinenti e configura automaticamente tutte le azioni.
+
+Descrivi l'obiettivo una sola volta e il workflow è pronto, senza alcuna configurazione manuale.
+
+**Esempio:** *"Quando ricevo un webhook di pagamento Stripe, crea un Record dell'ordine."*
+
+## Configurazione
+
+| Impostazione | Obbligatoria | Descrizione |
+|---|---|---|
+| Autorizzazione | No | **Nessuna** (pubblico: chiunque disponga dell'URL può attivarlo) oppure **Token Bearer** (nella richiesta è obbligatorio il token generato automaticamente) |
+| Risposta | No | **Predefinita** (Teable restituisce una propria conferma) oppure **Personalizzata** (sei tu a scegliere il codice di stato, il tipo di contenuto e il corpo) |
+
+## Come configurarlo
+
+1. Apri l'Automazione e aggiungi un nuovo trigger.
+2. Seleziona **Quando viene ricevuto un webhook**.
+3. Il trigger genera immediatamente un **URL webhook** univoco. Copialo: ti servirà per il sistema esterno.
+4. (Facoltativo ma consigliato) Fai clic su **Genera token** per abilitare l'autorizzazione con Token Bearer. Viene prodotto un token che deve essere incluso nell'intestazione `Authorization` delle richieste in arrivo.
+5. Salva e attiva l'Automazione.
+6. Configura il sistema esterno affinché invii una richiesta POST all'URL webhook. Se hai abilitato l'autorizzazione, includi il token nell'intestazione.
+7. Invia una richiesta di prova (consulta gli esempi seguenti). Controlla la cronologia delle esecuzioni dell'Automazione per verificare che i dati siano stati ricevuti correttamente.
+8. Aggiungi i passaggi delle azioni. Fai clic su **+** in qualsiasi Campo di un'azione per fare riferimento ai valori del corpo JSON del webhook.
+
+## Dati disponibili per i passaggi successivi
+
+L'intero corpo JSON della richiesta POST in arrivo è disponibile come variabili. Ad esempio, se invii:
+
+```json
+{
+  "order_id": "12345",
+  "customer": "Alice",
+  "amount": 99.95
+}
+```
+
+Nelle azioni puoi quindi fare riferimento singolarmente a `order_id`, `customer` e `amount` facendo clic su **+** e passando ai Campi di output del trigger.
+
+Teable analizza automaticamente il JSON e crea variabili denominate per ogni chiave di primo livello. Sono accessibili anche gli oggetti annidati.
+
+## Personalizzare la risposta
+
+Per impostazione predefinita, Teable risponde a ogni richiesta in arrivo con una propria conferma. Alcune piattaforme non la accettano: verificano un URL di sottoscrizione inviando una richiesta di prova e richiedono che l'endpoint restituisca il valore di un Campo della richiesta. Slack funziona in questo modo, quindi i relativi eventi possono raggiungere un'Automazione soltanto dopo che il webhook ha risposto all'handshake.
+
+Nel pannello del trigger, cambia **Risposta** da **Predefinita** a **Personalizzata**:
+
+| Campo | Descrizione |
+|---|---|
+| **Codice di stato** | Qualsiasi codice compreso tra 200 e 299. Il valore predefinito è 200. |
+| **Tipo di contenuto** | **JSON** o **testo non elaborato**. Il valore predefinito è JSON. |
+| **Corpo della risposta** | Testo da restituire. Usa `{{body.<path>}}` per inserire valori provenienti dalla richiesta in arrivo. |
+
+Selezionando **Personalizzata**, il corpo viene precompilato con la risposta di handshake richiesta dalla maggior parte dei chiamanti:
+
+```json
+{"challenge":"{{body.challenge}}"}
+```
+
+I percorsi all'interno di `{{ }}` sono gli stessi che il trigger espone come variabili di output, quindi puoi copiare un percorso direttamente da un payload già visualizzato in un'esecuzione di prova. Sono supportati anche i valori annidati, ad esempio `{{body.event.type}}`. In un corpo JSON, un percorso non presente nella richiesta viene restituito come `null`, mantenendo così la validità del JSON.
+
+<Info>Slack non può inviare un'intestazione `Authorization`, quindi quando lo colleghi mantieni **Autorizzazione** impostata su **Nessuna**. Il pannello del trigger mostra un avviso se entrambe le opzioni sono attive contemporaneamente.</Info>
+
+Puoi riportare **Risposta** su **Predefinita** in qualsiasi momento per ripristinare la conferma di Teable. Le Automazioni che non modificano mai questa impostazione non subiscono cambiamenti.
+
+## Provare il webhook
+
+Il modo più semplice per eseguire una prova consiste nell'usare `curl` dalla riga di comando. Copia l'URL effettivo dal pannello del trigger anziché digitarlo: contiene gli ID della Base e del workflow.
+
+**Senza autorizzazione:**
+
+```bash
+curl -X POST https://your-teable-instance.com/api/webhook/base/bseXXXXXXXXXXXX/workflow/wflXXXXXXXXXXXX \
+  -H "Content-Type: application/json" \
+  -d '{"test": true, "message": "Ciao da curl"}'
+```
+
+**Con autorizzazione tramite Token Bearer:**
+
+```bash
+curl -X POST https://your-teable-instance.com/api/webhook/base/bseXXXXXXXXXXXX/workflow/wflXXXXXXXXXXXX \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-generated-token" \
+  -d '{"order_id": "12345", "status": "paid"}'
+```
+
+**Invio di dati più complessi:**
+
+```bash
+curl -X POST https://your-teable-instance.com/api/webhook/base/bseXXXXXXXXXXXX/workflow/wflXXXXXXXXXXXX \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-generated-token" \
+  -d '{
+    "event": "invoice.paid",
+    "data": {
+      "invoice_id": "INV-001",
+      "amount": 250.00,
+      "currency": "USD",
+      "customer_email": "alice@example.com"
+    }
+  }'
+```
+
+Dopo aver inviato una richiesta di prova, controlla la cronologia delle esecuzioni dell'Automazione per confermare che i dati siano stati ricevuti e analizzati correttamente.
+
+## Limiti di frequenza
+
+| Ambito | Limite |
+|---|---|
+| Per Base | 50 richieste al secondo |
+| Per workflow | 2 richieste al secondo |
+
+Le richieste che superano il limite di frequenza ricevono una risposta HTTP 429. Se il sistema esterno invia raffiche di richieste, valuta l'implementazione di una logica di nuovi tentativi con backoff esponenziale.
+
+## Procedure consigliate per la sicurezza
+
+- **Usa sempre l'autorizzazione tramite Token Bearer** per i webhook di produzione. Chiunque scopra un URL webhook pubblico può attivarlo.
+- **Mantieni privato l'URL webhook.** Trattalo come una password. Non eseguirne il commit in repository pubblici e non condividerlo in canali aperti.
+- **Rigenera il token** se sospetti che sia stato compromesso. Puoi generare un nuovo token dal pannello del trigger in qualsiasi momento.
+- **Convalida i dati nel workflow.** Non presumere che i dati in arrivo siano ben formati. Usa filtri o passaggi di script per verificare la presenza dei Campi obbligatori prima dell'elaborazione.
+- **Monitora la cronologia delle esecuzioni.** Controlla regolarmente i log di esecuzione dell'Automazione per individuare richieste impreviste o non autorizzate.
+
+## Quando utilizzarlo
+
+- **Ricevere eventi di pagamento da Stripe o PayPal.** Configura un webhook Stripe affinché invii eventi `invoice.paid` all'Automazione Teable, creando o aggiornando automaticamente i Record degli ordini.
+- **Accettare gli invii dei moduli dal tuo sito web.** Indirizza il modulo di contatto o di registrazione del sito all'URL webhook per creare Record direttamente in Teable.
+- **Acquisire dati da dispositivi IoT.** Sensori o dispositivi in grado di inviare richieste HTTP possono trasmettere i dati a Teable per il monitoraggio e gli avvisi.
+- **Collegare pipeline CI/CD.** Attiva workflow quando una build riesce o non riesce: crea Record, invia notifiche o aggiorna lo stato del progetto.
+- **Ricevere eventi da qualsiasi strumento SaaS.** Molti strumenti (GitHub, Jira, Shopify, Twilio e altri) supportano le notifiche webhook. Indirizzale al webhook Teable per automatizzare workflow tra strumenti diversi.
+
+## Suggerimenti
+
+- Il webhook accetta soltanto richieste **POST**. GET, PUT e gli altri metodi non attivano l'Automazione.
+- Invia sempre un'intestazione `Content-Type: application/json`. Se il corpo non contiene JSON valido, il trigger potrebbe non analizzare correttamente i dati.
+- Se devi inviare dati da un sistema che non supporta intestazioni personalizzate (per l'autorizzazione Bearer), valuta la modalità pubblica aggiungendo però nel corpo JSON una chiave segreta che il workflow convalidi tramite un filtro o uno script.
+- Per il debug, puoi usare servizi come [webhook.site](https://webhook.site) per esaminare ciò che il sistema esterno invia effettivamente prima di indirizzarlo a Teable.
+
+## Contenuti correlati
+
+- [Azione Richiesta HTTP](/it/basic/automation/actions/logic/http-request) — la controparte in uscita: chiama API esterne dal workflow
+- [Esegui script](/it/basic/automation/ai/scripting/runscript) — per l'elaborazione avanzata dei payload webhook
+- [Azione Ciclo (batch)](/it/basic/automation/actions/logic/loop-run) — elabora gli array nei payload webhook

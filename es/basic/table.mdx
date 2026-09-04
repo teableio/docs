@@ -1,0 +1,170 @@
+---
+title: "Descripción general"
+description: "Crea, importa, comparte y administra Tablas en una Base."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+Cada Base puede contener varias Tablas para almacenar y administrar datos relacionados. Las Tablas de Teable equivalen a las tablas de una base de datos; comprender [en qué se diferencian de las hojas de cálculo](/es/compare/teable-vs-excel) te ayudará a aprovechar Teable al máximo.
+
+## Crear y administrar Tablas
+
+### Añadir Tablas
+
+En una Base, haz clic en el botón `+` del directorio y elige una opción:
+
+<img
+  src="/images/docs/base/2026-05-22-table-create-menu.png"
+  alt="Menú para añadir una Tabla"
+  className="docs-screenshot"
+/>
+
+1. Crear una Tabla en blanco
+2. Importar desde un archivo CSV
+3. Importar desde un archivo de Excel
+4. Importar desde Airtable, si la integración con Airtable está configurada
+
+Consulta la sección [Importar](/es/basic/table/import) para obtener más información.
+
+### Cambiar el nombre y eliminar
+
+- **Renombrar**: haz doble clic en el nombre de la Tabla en el directorio, edítalo y haz clic en cualquier parte fuera de él para guardar.
+- **Eliminar**: pasa el cursor sobre la Tabla en el directorio, haz clic en `...` y selecciona **Eliminar**.
+
+<img
+  src="/images/docs/base/2026-05-22-table-rename-delete.png"
+  alt="Cambiar el nombre de una Tabla o eliminarla"
+  className="docs-screenshot"
+/>
+
+Cuando otras Tablas enlazan con la Tabla que estás eliminando, el cuadro de diálogo de confirmación enumera los Campos afectados y la Base y la Tabla a las que pertenece cada uno. Al eliminar la Tabla, esos Campos de enlace se convierten en Campos de texto de una línea que conservan los títulos de los Registros enlazados; los Campos de búsqueda o acumulación creados a partir de ellos dejan de funcionar.
+
+### Papelera
+
+Haz clic en el icono de la Papelera situado en la esquina superior izquierda de la Base para administrar las Tablas eliminadas.
+
+<img
+  src="/images/docs/base/2026-05-22-table-trash.png"
+  alt="Papelera de Tablas"
+  className="docs-screenshot"
+/>
+
+- **Restaurar**: devuelve la Tabla a la Base con todos sus datos intactos
+- **Vaciar Papelera**: elimina permanentemente todas las Tablas de la Papelera
+
+<Note>Restaurar una Tabla no deshace la conversión de los enlaces. Los Campos de enlace de otras Tablas siguen siendo Campos de texto, por lo que deberás volver a crearlos si quieres recuperar la conexión.</Note>
+
+## Diseñar Tablas
+
+Haz clic en **Diseño** en el menú de la Tabla para consultar sus propiedades básicas:
+
+<img
+  src="/images/docs/base/2026-05-22-table-design.png"
+  alt="Diseño de una Tabla"
+  className="docs-screenshot"
+/>
+
+**Información de la Tabla**
+
+Esquema, nombre físico de la Tabla, descripción y fecha de última modificación
+
+**Propiedades de los Campos**
+
+| Propiedad | Descripción |
+| :--- | :--- |
+| **id** | ID del Campo |
+| **name** | Nombre del Campo |
+| **dbFieldName** | Nombre del Campo en la base de datos física |
+| **type** | Tipo de Campo |
+| **description** | Descripción del Campo |
+| **graph** | Muestra las dependencias actuales del Campo |
+| **cellValueType** | Tipo de valor actual del Campo |
+| **isLookup** | Indica si es un Campo obtenido mediante una búsqueda en una Tabla enlazada |
+| **isMultipleCellValue** | Indica si es un [Campo con valor de matriz](/es/basic/field/common/is-multiple-value) |
+| **isComputed** | Indica si es un Campo calculado (los valores de Registro de los Campos calculados no se pueden modificar) |
+| **isPending** | Indica si está en proceso de cálculo |
+| **hasError** | Indica si hay errores de cálculo |
+| **notNull** | Indica si está activada la validación de valores no nulos |
+| **unique** | Indica si está activada la validación de valores únicos |
+
+## Compartir Tablas y acceder a ellas
+
+### Compartir una Tabla
+
+En una Tabla, haz clic en **Compartir** en la esquina superior derecha, cambia a **Compartir tabla** y activa **Compartir en la web** para generar un enlace compartido.
+
+<img
+  src="/images/docs/base/2026-05-22-table-share-entry.png"
+  alt="Acceso para compartir una Tabla"
+  className="docs-screenshot"
+/>
+<img
+  src="/images/docs/base/2026-05-22-table-share-web.png"
+  alt="Compartir una Tabla en la web"
+  className="docs-screenshot"
+/>
+
+<Note>Cuando se activa el uso compartido de una Tabla, el botón **Compartir** aparece en estado compartido de color gris en todas las Vistas de esa Tabla. Este estado procede del uso compartido de la Tabla; no significa que cada Vista se haya compartido por separado.</Note>
+
+Permisos del enlace:
+
+<img
+  src="/images/docs/base/2026-05-22-table-share-permissions.png"
+  alt="Permisos para compartir una Tabla"
+  className="docs-screenshot"
+/>
+
+- **Puede ver**: cualquier persona que tenga el enlace puede ver los datos de la Tabla
+- **Puede editar**: los usuarios que hayan iniciado sesión pueden editar los Registros de la Tabla compartida
+- **Puede guardar como copia**: cualquier persona que tenga el enlace puede guardar una copia en su Espacio
+
+También puedes configurar **Permitir a los espectadores copiar datos** y **Restringir con contraseña**, regenerar o eliminar el enlace y copiar la configuración para insertarlo.
+
+Para compartir únicamente la Vista actual, cambia a **Compartir vista**. Para obtener más información, consulta la [barra de herramientas de la Vista](/es/basic/view/toolbar).
+
+### Formas de acceder a las Tablas
+
+Las Tablas incluyen de forma predeterminada una [Vista de cuadrícula](/es/basic/view/grid) y también se puede acceder a ellas mediante la [API](/es/api-doc/overview). Puedes crear Vistas adicionales, como Kanban, para adaptarlas a las distintas necesidades de tu flujo de trabajo.
+
+## Búsqueda y descargas
+
+### Búsqueda global
+
+<img
+  src="/images/docs/base/2026-05-22-table-global-search.png"
+  alt="Búsqueda global en una Tabla"
+  className="docs-screenshot"
+/>
+
+- Activa **Buscar por Campo** para elegir en qué Campos buscar. Este modo admite Campos de fecha, además de Campos de texto.
+- Desactiva **Buscar por Campo** para realizar una búsqueda aproximada en todos los Campos compatibles. La búsqueda global no incluye Campos de fecha, casilla de verificación ni botón. Tu instancia también puede limitar el número de Campos que abarca la búsqueda global.
+- Activa **Ocultar filas sin coincidencia** para mostrar únicamente los Registros coincidentes. Desactívala para mantener visibles todas las filas y resaltar las coincidencias.
+- En Tablas grandes, los editores pueden activar **Índice** para acelerar la búsqueda. Crear o actualizar el índice puede afectar temporalmente al rendimiento de lectura y escritura.
+
+### Descargar archivos adjuntos
+
+Las descargas de adjuntos en bloque respetan los resultados de búsqueda actuales e incluyen únicamente los adjuntos de los Registros coincidentes.
+
+<img
+  src="/images/docs/base/2026-05-22-table-attachment-download-menu.png"
+  alt="Acceso para descargar archivos adjuntos en bloque"
+  className="docs-screenshot"
+/>
+
+En el cuadro de diálogo de descarga en bloque, usa **Prefijo del nombre del adjunto** para asignar nombres a los archivos ZIP mediante el índice predeterminado o un Campo elegido, o selecciona **Sin prefijo** para conservar los nombres de archivo originales; a los duplicados se les añade un sufijo automáticamente.
+
+<img
+  src="/images/docs/base/2026-05-22-table-attachment-download-options.png"
+  alt="Opciones para descargar archivos adjuntos en bloque"
+  className="docs-screenshot"
+/>
+
+## Preguntas frecuentes
+
+<AccordionGroup>
+  <Accordion title="¿Por qué no puedo introducir texto en una columna de tipo Número?">
+    Teable es más estricto que Excel: cada columna tiene un tipo de datos fijo y una columna de tipo Número solo almacena números. Esta restricción garantiza la integridad de los datos y constituye la base de los filtros y las Automatizaciones avanzadas. Consulta [Teable frente a Excel](/es/compare/teable-vs-excel) para obtener más información.
+  </Accordion>
+  <Accordion title="¿Qué debo comprobar antes de eliminar una Tabla?">
+    Comprueba si otras Tablas hacen referencia a ella mediante **Campos enlazados**. Eliminar la Tabla de origen puede causar problemas de visualización de datos en las Tablas enlazadas.
+  </Accordion>
+</AccordionGroup>

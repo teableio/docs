@@ -1,0 +1,98 @@
+---
+title: "All'orario pianificato"
+description: "Esegui un workflow in base a una pianificazione ricorrente o una tantum"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Nota: puoi configurare tutti i trigger in AI Chat. Spiega all'IA cosa deve fare il workflow e si occuperà del resto.</Tip>
+
+Questo trigger viene eseguito in base a una pianificazione definita da te: ogni pochi minuti, una volta al mese oppure una sola volta.
+
+## Creare con l'IA
+
+Apri AI Chat nella barra laterale destra della Tabella e descrivi ciò che desideri.
+
+L'IA si occupa di tutto: sceglie il trigger corretto, mappa i Campi pertinenti e configura automaticamente tutte le azioni.
+
+Descrivi l'obiettivo una sola volta e il workflow è pronto, senza alcuna configurazione manuale.
+
+**Esempio:** *"Ogni lunedì alle 9:00, inviami via email un elenco delle attività scadute."*
+
+## Configurazione
+
+| Impostazione | Obbligatoria | Descrizione |
+|---|---|---|
+| Ora di inizio | Sì | Quando inizia la pianificazione |
+| Ora di fine | No | Quando termina la pianificazione (lascia vuoto per eseguirla senza scadenza) |
+| Fuso orario | Sì | Il valore predefinito è il fuso orario corrente. Tutti gli orari vengono interpretati in questo fuso |
+| Frequenza | Sì | Frequenza di attivazione del trigger; consulta le opzioni seguenti |
+
+## Opzioni di frequenza
+
+| Frequenza | Intervallo | Impostazioni aggiuntive |
+|---|---|---|
+| Minuti | Ogni 10–60 min | — |
+| Ore | Ogni 1–24 ore | — |
+| Giorni | Ogni 1–31 giorni | Ora di attivazione (ora + minuto) |
+| Settimane | Ogni 1–52 settimane | Giorni della settimana (lun–dom) + ora di attivazione |
+| Mesi | Ogni 1–12 mesi | Giorni del mese + ora di attivazione |
+| Una tantum | — | Si attiva una volta all'orario specificato, quindi si disattiva automaticamente |
+
+Usa **-1** come giorno del mese per indicare l'ultimo giorno del mese, indipendentemente dal fatto che abbia 28, 30 o 31 giorni.
+
+## Come configurarlo
+
+1. Apri l'Automazione e aggiungi un nuovo trigger.
+2. Seleziona **All'orario pianificato**.
+3. Imposta il **Fuso orario**. È particolarmente importante se il team opera in fusi orari diversi: la pianificazione viene eseguita nel fuso selezionato qui.
+4. Scegli una **Frequenza**. Ad esempio, per eseguire il workflow ogni lunedì alle 9:00:
+   - Imposta Frequenza su **Settimane**.
+   - Imposta l'intervallo su **1** (ogni settimana).
+   - Seleziona **Lunedì** nel selettore dei giorni della settimana.
+   - Imposta l'ora di attivazione su **09:00**.
+5. Imposta un'**Ora di inizio** (il momento in cui la pianificazione diventa attiva).
+6. (Facoltativo) Imposta un'**Ora di fine** se vuoi che la pianificazione scada.
+7. Salva e attiva l'Automazione.
+8. Poiché non sono disponibili dati di alcun Record, la prima azione sarà in genere un passaggio **Ottieni Record** per caricare i dati necessari.
+
+## Esempio concreto: report settimanale del lunedì mattina
+
+Obiettivo: ogni lunedì alle 9:00, ottenere tutte le attività in scadenza durante la settimana e inviare un'email di riepilogo.
+
+1. **Trigger:** All'orario pianificato — Settimane, ogni settimana, lunedì, 09:00, nel tuo fuso orario.
+2. **Azione 1:** Ottieni Record — dalla Tabella Attività, filtro: Data di scadenza rientra nella settimana corrente.
+3. **Azione 2:** Invia email — al team, elencando nel corpo le attività recuperate.
+
+## Pianificazioni una tantum
+
+Quando selezioni la frequenza **Una tantum**, l'Automazione si attiva una volta alla data e all'ora specificate, quindi si disattiva automaticamente. È utile per:
+
+- Un promemoria per ricontattare qualcuno in una data specifica.
+- Un'azione ritardata che deve essere eseguita una sola volta (ad esempio, inviare l'annuncio di un lancio in una data futura).
+- Una campagna a tempo limitato che si attiva una sola volta.
+
+Dopo l'attivazione di un trigger una tantum, l'Automazione viene contrassegnata come inattiva. Se necessario, puoi riattivarla impostando un nuovo orario.
+
+## Quando utilizzarlo
+
+- **Generare un report di riepilogo giornaliero.** Esegui il workflow ogni giorno alle 8:00, recupera tutti i Record aggiornati il giorno precedente e invia un riepilogo via email.
+- **Creare attività ricorrenti ogni lunedì.** Esegui il workflow ogni settimana e crea nella Tabella delle attività i Record per la nuova settimana.
+- **Inviare promemoria mensili per le fatture.** Esegui il workflow il primo giorno di ogni mese, trova le fatture non pagate e invia email di promemoria.
+- **Eliminare i Record obsoleti.** Esegui il workflow ogni giorno, trova i Record più vecchi di 90 giorni con stato "Bozza" e archiviali o eliminali.
+- **Sincronizzare i dati in base a una pianificazione.** Esegui il workflow ogni ora per inviare i Record aggiornati a un'API esterna.
+
+<Warning>I trigger pianificati non sono collegati ad alcun Record, pertanto i passaggi successivi non dispongono di dati di Record. Se devi elaborare Record, aggiungi un'azione Ottieni Record come primo passaggio e usa i filtri per selezionare quelli necessari.</Warning>
+
+## Suggerimenti
+
+- Poiché i trigger pianificati non hanno un "Record corrente", nelle azioni non puoi fare riferimento ai dati del trigger come avviene per i trigger basati sui Record. Se ti servono dati, inizia sempre con un'azione **Ottieni Record**.
+- Presta attenzione ai fusi orari, soprattutto se il team opera in regioni diverse. L'impostazione del fuso orario del trigger determina quando viene eseguito, non l'ora locale di chi lo visualizza.
+- Per pianificazioni ad alta frequenza (ogni pochi minuti), mantieni il workflow leggero per evitare sovrapposizioni tra le esecuzioni.
+- Se l'Automazione è sensibile agli orari (ad esempio, deve essere eseguita prima di una riunione giornaliera), pianificala qualche minuto prima per lasciare il tempo necessario all'elaborazione.
+- Il valore **-1** per il giorno del mese è utile per report o processi di fine mese. Usare -1 significa "ultimo giorno del mese", quindi il trigger verrà eseguito correttamente il 31 gennaio, il 28 (o 29) febbraio, il 31 marzo e così via.
+
+## Contenuti correlati
+
+- [Azione Ottieni Record](/it/basic/automation/actions/records/get-records) — in genere il primo passaggio dopo un trigger pianificato
+- [Azione Invia email](/it/basic/automation/actions/communication/send-email-overview) — spesso abbinata alle pianificazioni per le notifiche periodiche
+- [Azione Ciclo (batch)](/it/basic/automation/actions/logic/loop-run) — utile per elaborare l'array di Record restituito da Ottieni Record

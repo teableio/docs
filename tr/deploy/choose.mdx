@@ -1,0 +1,48 @@
+---
+title: "Dağıtım"
+description: "Teable Cloud, bağımsız kendi sunucunuzda barındırma ve tüm özelliklere sahip kendi sunucunuzda barındırma platformu arasından seçim yapın."
+---
+
+Teable'ı çalıştırmanın üç yolu vardır; ihtiyacınıza uygun olanı seçin:
+
+| | **Teable Cloud** | **Tüm özelliklere sahip kendi sunucunuzda barındırma** | **Bağımsız kendi sunucunuzda barındırma** |
+|---|---|---|---|
+| Tablolar, işbirliği, API, otomasyon | ✅ | ✅ | ✅ |
+| AI özellikleri (sohbet, aracılar) | ✅ | ✅ | ❌ |
+| App Builder (uygulama oluşturma ve dağıtma) | ✅ | ✅ | ❌ |
+| Korumalı alanlar / önizlemeler | ✅ | ✅ | ❌ |
+| Çalıştığı yer | [teable.ai](https://teable.ai) — dağıtım gerekmez | tek makine (Docker) veya Kubernetes kümesi | tek makine: uygulama + PostgreSQL |
+| Başlangıç noktası | [teable.ai](https://teable.ai) | [Mimari](/tr/deploy/architecture) → [teableio/teable-deployment](https://github.com/teableio/teable-deployment) | [Docker Dağıtımı](/tr/deploy/docker) |
+
+<Note>
+**Teable zaten çalışıyor mu?** Mevcut bir dağıtımın tüm özelliklere sahip
+platforma yükseltilmesi, dağıtım deposundaki
+[taşıma kılavuzunda](https://github.com/teableio/teable-deployment/blob/main/migration/2026-07-basic-to-full-featured.md)
+adım adım açıklanır: Çalışma zamanı düzlemi mevcut Teable kurulumunuzun yanına
+yüklenir ve verileriniz yerinde kalır.
+</Note>
+
+## Bir AI Aracısının Dağıtım Yapmasını Sağlama
+
+Dağıtım deposu AI aracıları tarafından kullanılacak şekilde yazılmıştır. Aracı
+çalıştırıcınızı (Claude Code, Codex, …)
+[teableio/teable-deployment](https://github.com/teableio/teable-deployment) deposuna yönlendirin,
+hangi ortama dağıtım yaptığınızı belirtin; dağıtımı baştan sona tamamlayabilir.
+Üç şey hazırlayın:
+
+1. **Bir alan adı** — her şey tek bir temel alan adından türetilir; örneğin
+   `teable.example.com`.
+2. **Bir DNS token'ı** — DNS'inizi barındıran platform için bir API token'ı
+   (Cloudflare, Route 53, …); böylece DNS Kayıtları ve TLS sertifikaları otomatik
+   olarak ayarlanabilir. Token'ın kapsamını yalnızca bu bölgeyle sınırlayın.
+3. **Dağıtım hedefine erişim:**
+
+| Hedef | Aracıya verilecekler |
+|---|---|
+| Kendi makineniz — hepsi bir arada Docker, `local` modu | Makinede yalnızca Docker; alan adı veya DNS token'ı gerekmez (her şey `*.localhost` üzerinde çalışır) |
+| Bir bulut sunucusu — hepsi bir arada Docker | Makineye SSH erişimi |
+| AWS (EKS) / GCP (GKE) / Azure (AKS) üzerinde yönetilen küme | Kümeyi oluşturup `kubeconfig` dosyasını verin |
+| Mevcut herhangi bir Kubernetes kümesi | Helm sürümlerini yükleyebilecek bir `kubeconfig` |
+
+Gerekenler bunlardır; deponun kılavuzları, doctor komut dosyaları ve sürüm
+bildirimleri geri kalan süreçte aracıya yol gösterir.

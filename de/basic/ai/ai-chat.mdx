@@ -1,0 +1,289 @@
+---
+title: KI-Chat
+description: Interagieren Sie mit Ihren Daten in natürlicher Sprache für Analysen, Visualisierungen und die Erstellung von Inhalten.
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Note>In allen Cloud-Plänen verfügbar; Self-Hosted erfordert Business oder höher.</Note>
+
+KI-Chat hilft dabei, die aktuelle Tabelle zu analysieren, Datensatzinhalte zu erläutern, Diagramme und Berichte zu erstellen sowie Tabellen, Ansichten, Apps und Automatisierungen zu erstellen oder zu aktualisieren.
+
+Die KI priorisiert die aktuelle Seite. Um auf andere Tabellen, Ansichten, Apps, Automatisierungen oder Ordner zu verweisen, geben Sie `@` in das Eingabefeld ein und wählen Sie den zugehörigen Knoten aus.
+
+## So öffnen Sie den KI-Chat
+
+Öffnen Sie eine Tabelle oder Ansicht und klicken Sie dann oben rechts auf <img src="/images/docs/ai/cuppy-icon.svg" alt="Cuppy" className="docs-inline-icon" />, um den KI-Chat zu öffnen. Beschreiben Sie die Frage oder Aufgabe im Eingabefeld. Wenn die Aufgabe Daten ändern oder Knoten erstellen wird, bitten Sie die KI zunächst, den Plan aufzulisten, und bestätigen Sie ihn dann vor der Ausführung.
+
+## Worauf die KI verweisen kann
+
+Die KI priorisiert Informationen von der aktuellen Seite:
+
+- **Aktuelle Tabelle und Ansicht**: Die aktuelle Tabelle, die aktuelle Ansicht sowie die gefilterten oder sortierten Ergebnisse in dieser Ansicht.
+- **Ausgewählte Zeilen, Spalten und Zellen**: Wenn in der Rasteransicht Zeilen, Spalten, eine einzelne Zelle oder ein Zellbereich ausgewählt sind, verwendet die KI diese Auswahl als wichtigen Kontext.
+- **Hochgeladene Dateien**: Fügen Sie PDFs, Excel-Dateien, Word-Dokumente, Bilder und andere Dateien zur Unterhaltung hinzu.
+- **Weitere Knoten mit `@`**: Geben Sie `@` in das Eingabefeld ein, um Tabellen, Ansichten, Apps, Automatisierungen oder Ordner aus der Struktur hinzuzufügen.
+
+Dateien können auch direkt in das Eingabefeld eingefügt oder hineingezogen werden. Sie erscheinen zunächst als Anhang-Chips und stehen der KI nach dem Senden der Nachricht zur Verfügung.
+
+Wenn Sie einen langen Block mit Klartext einfügen, wandelt Teable ihn in einen Markdown-Anhang um, damit die Nachrichteneingabe übersichtlich bleibt. Text- und Markdown-Anhänge können über ihre Anhang-Chips in der Vorschau angezeigt werden.
+
+## Eingabesteuerung
+
+- **Spracheingabe**: Klicken Sie im Eingabefeld auf die Mikrofontaste und erlauben Sie den Mikrofonzugriff, um die Aufnahme zu starten. Wählen Sie während der Aufnahme **Spracheingabe beenden** oder **Spracheingabe verwerfen**. Nach dem Beenden transkribiert Teable die Aufnahme in das Eingabefeld.
+- **Modell**: Verwenden Sie das Modellmenü, um das Modell für die Unterhaltung auszuwählen. Nutzen Sie ein leichteres Modell für einfache Abfragen, Bereinigung oder Überarbeitungen und ein leistungsstärkeres Modell für komplexe Planung, tabellenübergreifende Analysen und App-Erstellung.
+- **Intelligenz**: Wählen Sie die Stufe **Intelligenz** separat im Modellmenü. Sie steuert die Denktiefe; höhere Stufen liefern gründlichere Überlegungen.
+- **Geheimnisse**: Öffnen Sie das Menü **+** und wählen Sie **Geheimnisse**, um API-Schlüssel oder andere Anmeldedaten für den KI-Chat zu speichern. Der KI-Chat kann diese Werte als Umgebungsvariablen lesen. Gespeicherte Werte sind nur schreibbar; geben Sie einen neuen Wert ein, um ein Geheimnis zu aktualisieren.
+- **Integrationen**: Wenn die KI Zugriff auf ein Drittanbieterkonto benötigt, kann sie in der Unterhaltung eine Karte wie **Slack verbinden** anzeigen. Klicken Sie auf **Verbinden**, um die Autorisierung über OAuth durchzuführen. Klicken Sie auf **Überspringen**, um diese Autorisierung abzubrechen; die KI fährt mit den Teilen fort, die sie ohne diese Verbindung erledigen kann.
+- **Skills**: Öffnen Sie das Menü **+** und wählen Sie **Skills**, um Skills im aktuellen Chat zu importieren, zu aktivieren, zu deaktivieren oder auszuprobieren. Wählen Sie beim Import aus, wer ihn verwenden kann: **Persönlich** beschränkt ihn auf Sie selbst, **Base** gibt ihn Mitarbeitenden in dieser Base und **Space** allen Personen in diesem Space. Geben Sie `/` im Eingabefeld ein, um einen aktivierten Skill auszuwählen. Informationen zum Verbinden oder Migrieren eines externen Systems finden Sie unter [Alles verbinden und migrieren](/de/basic/ai/connect-everything).
+- **Kontextnutzung**: Der Ring neben dem Eingabefeld zeigt, wie viel des Kontextfensters des Modells die Unterhaltung derzeit nutzt. Klicken Sie darauf, um den Prozentsatz und die Token-Anzahlen anzuzeigen. Wenn der Kontext voll ist, verdichtet Teable die Unterhaltung; starten Sie stattdessen einen neuen Chat, wenn Sie einen sauberen Kontext wünschen.
+- **Dateien verwalten**: Öffnen Sie **+** → **Mehr** → **Dateien verwalten**, um Dateien in der Sandbox des aktuellen Chats anzuzeigen. Sie können unterstützte Dateien in der Vorschau anzeigen, Dateien herunterladen oder nicht mehr benötigte Dateien und Ordner löschen. Eine Unterhaltung muss bestehen, bevor ihre Dateien verwaltet werden können.
+- **Nachrichtenwarteschlange**: Das Senden einer weiteren Nachricht, während die KI arbeitet, unterbricht sie nicht. Die Nachricht wartet in einer Warteschlange über dem Eingabefeld und wird gesendet, wenn der aktuelle Durchlauf endet. Elemente in der Warteschlange behalten dieselben Chips für Tabelle, Ansicht, Anhang und Auswahl wie die Chat-Eingabe; **Entfernen** verwirft eines, **...** → **Nachricht bearbeiten** legt es zurück in das Eingabefeld, und ein reines Textelement bietet zusätzlich **Steuern**, um seinen Text an den laufenden Durchlauf zu übergeben, statt zu warten.
+
+## Häufige Anwendungen
+
+<CardGroup cols={2}>
+  <Card title="Tabellen und Automatisierungen erstellen" icon="sitemap">
+    Planen Sie eine Geschäftsdatenbank, erstellen Sie Tabellen, Ansichten, Apps und Automatisierungen oder aktualisieren Sie bestehende Datensätze.
+  </Card>
+  <Card title="Daten analysieren" icon="chart-line">
+    Fassen Sie Daten in der aktuellen Tabelle oder Ansicht zusammen oder analysieren Sie mehrere zusammenhängende Knoten.
+  </Card>
+  <Card title="Diagramme und Berichte" icon="chart-pie">
+    Wandeln Sie abgefragte Daten in ein Diagramm, einen Bericht oder eine kleine interaktive Seite um, die Sie erneut öffnen und teilen können.
+  </Card>
+  <Card title="Dateien lesen" icon="file-lines">
+    Beantworten Sie Fragen anhand von PDFs, Excel-Dateien, Word-Dokumenten, Bildern und anderen Anhängen.
+  </Card>
+</CardGroup>
+
+### Tabellen und Automatisierungen erstellen
+
+KI-Chat kann helfen, Daten zu erstellen, zu aktualisieren und zu organisieren, und beantwortet nicht nur Fragen. Besprechen Sie bei einem neuen Geschäftsablauf zunächst die Datenstruktur und bitten Sie die KI dann, die Tabellen, Ansichten, Apps und Automatisierungen zu erstellen.
+
+Geeignete Eingabeaufforderungen sind:
+
+- Helfen Sie mir, ein System zur Kunden-Nachverfolgung zu planen. Welche Tabellen und Felder benötige ich?
+- Erstellen Sie anhand des obigen Plans diese Tabellen, Ansichten und Felder.
+- Fügen Sie der Aufgabentabelle Felder für Priorität, Zuständige Person, Fälligkeitsdatum und Status hinzu und erstellen Sie dann gängige Ansichten.
+- Ändern Sie die ausgewählten Datensätze in Abgeschlossen.
+- Erstellen Sie aus dieser Excel-Datei eine neue Tabelle und prüfen Sie, ob die Feldtypen geeignet sind.
+- Erstellen Sie aus dieser Kundentabelle eine CRM-App mit Seiten für Kundenliste, Kundendetails und Nachverfolgungsdatensätze.
+- Benachrichtigen Sie die verantwortliche Person, wenn eine neue Bestellung erstellt wird, und schließen Sie Bestellnummer, Kundenname und Betrag ein.
+
+Beginnen Sie bei einer vollständigen Geschäftsdatenbank damit, die KI zu bitten, die Tabellenstruktur zu planen. Fahren Sie nach der Prüfung des Plans mit der Erstellung von Tabellen, Ansichten, Apps und Automatisierungen fort.
+
+<Steps>
+  <Step title="Zuerst planen">
+    Beschreiben Sie das Geschäftsziel, etwa den Aufbau eines Systems zur Kunden-Nachverfolgung, und bitten Sie die KI, die erforderlichen Tabellen, Felder, Ansichten und Automatisierungen zu skizzieren.
+  </Step>
+  <Step title="Die Struktur bestätigen">
+    Prüfen Sie die vorgeschlagenen Tabellen, Felder, Feldtypen und Beziehungen. Ergänzen Sie fehlende Regeln oder Details zum Arbeitsablauf.
+  </Step>
+  <Step title="Als Nächstes erstellen">
+    Bitten Sie die KI, die bestätigten Tabellen und Ansichten zu erstellen, und fahren Sie dann mit Apps oder Automatisierungen fort.
+  </Step>
+</Steps>
+
+Details zur App-Erstellung finden Sie unter [App Builder](/de/basic/ai/app-builder). Details zu Automatisierungen finden Sie unter [Automatisierung](/de/basic/automation).
+
+### Daten analysieren
+
+Stellen Sie Fragen zu Daten in der aktuellen Tabelle, zum Beispiel:
+
+- Zählen Sie die in diesem Monat abgeschlossenen Aufgaben nach zuständiger Person.
+- Finden Sie die Kunden mit dem höchsten Umsatz in den letzten 30 Tagen.
+- Analysieren Sie ungewöhnliche Datensätze in dieser Ansicht.
+
+Wenn die Frage mehrere Tabellen betrifft, verwenden Sie `@`, um die zugehörigen Tabellen oder Ansichten zur Unterhaltung hinzuzufügen.
+
+In der Rasteransicht können Sie auch Zeilen, Spalten, eine einzelne Zelle oder einen Zellbereich auswählen und dann im Kontextmenü **Zum Chat hinzufügen** verwenden. Die Auswahl erscheint als Chip im Eingabefeld; durch Klicken auf den Chip wird der zugehörige Rasterbereich erneut hervorgehoben. Spalten-Chips verwenden Feldnamen, sofern verfügbar, und kürzen lange Auswahlen nach den ersten wenigen Namen.
+
+### Diagramme und Berichte erstellen
+
+Bitten Sie die KI, abgefragte Daten in ein Diagramm, einen schriftlichen Bericht oder eine kleine interaktive Seite umzuwandeln:
+
+- Erstellen Sie ein Diagramm zum wöchentlichen Verkaufstrend.
+- Wandeln Sie dieses Abfrageergebnis in ein Kreisdiagramm um.
+- Erstellen Sie aus diesen Datensätzen einen zusammenfassenden Bericht.
+
+Die KI erstellt diese als **Artefakte**: Sie erscheinen als Karte in der Unterhaltung, öffnen sich in ihrer eigenen Ansicht und bleiben nach Ende der Unterhaltung verfügbar. Unter [Artefakte](#artifacts) erfahren Sie, was Sie damit tun können.
+
+<Info>
+Ein Artefakt enthält die Daten, die die KI beim Erstellen eingefügt hat, und wird daher nicht selbstständig aktualisiert. Erstellen Sie mit [App Builder](/de/basic/ai/app-builder) eine App für eine Seite, die Live-Tabellendaten fortlaufend liest oder Eingaben sammelt und Status speichert.
+</Info>
+
+### Dateien lesen
+
+Nach dem Hochladen von Dateien kann die KI Fragen sowohl anhand der Dateiinhalte als auch der Tabellendaten beantworten:
+
+- Fassen Sie dieses PDF zusammen und verknüpfen Sie es mit dem aktuellen Kundendatensatz.
+- Lesen Sie diese Excel-Datei und identifizieren Sie die Felder, die importiert werden sollten.
+- Erstellen Sie aus diesem Bild eine Produktbeschreibung.
+
+In die Unterhaltung hochgeladene Dateien und während der Unterhaltung erzeugte Dateien werden in der Sandbox des aktuellen Chats gespeichert. Verwenden Sie **Dateien verwalten**, um sie später zu prüfen.
+
+Wenn eine Antwort mehrere Dateien gleichzeitig enthält, verwenden Sie unter den Dateikarten **Alle herunterladen**, um sie als eine ZIP-Datei zu speichern.
+
+### Erinnerung
+
+Die Erinnerung speichert Informationen, an deren Speicherung Sie Cuppy ausdrücklich bitten. Die Erinnerung ist nach Benutzer und Base abgegrenzt: Jede Person hat in jeder Base einen unabhängigen Erinnerungskontext, und eine in einer anderen Base gespeicherte Erinnerung erscheint nicht automatisch in der aktuellen.
+
+- Erinnerung in der aktuellen Base speichern
+
+Sagen Sie in der Unterhaltung, woran Cuppy sich erinnern soll:
+
+```text
+Bitte merke dir xxx.
+```
+
+- Erinnerung aus einer anderen Base wiederverwenden
+
+Bitten Sie Cuppy, eine andere Base zu lesen und die relevanten Teile in der aktuellen Base zu speichern:
+
+```text
+Cuppy, bitte lies die Erinnerung für die Base-ID bsexxxxxxxxxxxx und speichere die relevante Erinnerung in dieser aktuellen Base.
+```
+
+### Lange Aufgaben bearbeiten
+
+KI-Chat kann eine einzelne Unterhaltungsumgebung etwa 24 Stunden lang verfügbar halten, was für die meisten Aufgaben zur Datenanalyse, Dateiverarbeitung und App-Erstellung ausreicht. Behalten Sie lang laufende Arbeiten in der aktuellen Unterhaltung, damit Sie ihren Fortschritt verfolgen und bei Bedarf Eingaben machen können.
+
+<Steps>
+  <Step title="Den Fortschritt in der aktuellen Unterhaltung verfolgen">
+    Wenn die Oberfläche `Denkt nach` anzeigt oder weiterhin Fortschrittsaktualisierungen zurückgibt, läuft die Aufgabe noch. Wenn sie `Abgeschlossen` anzeigt, ist der aktuelle Durchlauf beendet.
+  </Step>
+  <Step title="Ergebnisse an sinnvollen Zwischenständen speichern">
+    Bitten Sie Cuppy bei Arbeiten mit mehreren Phasen, Ergebnisse an wichtigen Zwischenständen zurück in Teable zu schreiben, sie zu exportieren oder eine herunterladbare Datei zu erzeugen. Gespeicherte Arbeit bleibt verfügbar, auch wenn die Unterhaltungsumgebung später freigegeben wird.
+  </Step>
+  <Step title="Wissen, wann die Umgebung freigegeben wird">
+    Eine einzelne Unterhaltungsumgebung hat eine ungefähre maximale Lebensdauer von 24 Stunden. Nach Ende der Ausführung im Vordergrund wird eine inaktive Umgebung nach etwa 30 Minuten freigegeben. Temporäre Dateien und nicht gespeicherte Zwischenergebnisse bleiben nicht erhalten, wenn die Umgebung neu startet.
+  </Step>
+</Steps>
+
+Verwenden Sie für lang laufende oder wiederholbare Arbeiten die Funktion, die zum Arbeitsablauf passt:
+
+<CardGroup cols={2}>
+  <Card title="KI-Felder" icon="sparkles" href="/de/basic/field/ai/ai-field">
+    Verwenden Sie dies für datensatzweise Arbeiten wie die Verarbeitung großer Tabellen, Stapelklassifizierung, Inhaltsverarbeitung oder das Ausfüllen von Feldern.
+  </Card>
+  <Card title="Automatisierung" icon="bolt" href="/de/basic/automation">
+    Verwenden Sie dies für wiederholbare Arbeiten nach dem Erstellen oder Aktualisieren von Datensätzen, für Benachrichtigungen oder geplante Datenverarbeitung.
+  </Card>
+</CardGroup>
+
+## Artefakte {#artifacts}
+
+Wenn die KI ein Diagramm, einen Bericht, eine Seite im Dashboard-Stil oder ein kleines interaktives Tool erstellt, speichert sie das Ergebnis als **Artefakt**: eine eigenständige Seite, die außerhalb der Unterhaltung gerendert wird. Artefakte erscheinen als Karte im Chat und bleiben anschließend verfügbar. Jedes Artefakt ist entweder eine interaktive HTML-Seite oder ein Markdown-Bericht.
+
+Klicken Sie auf die Karte, um das Artefakt zu öffnen. In der Ansicht können Sie:
+
+- **Vollbild** oder **In neuer Seite öffnen** wählen, um dem Artefakt mehr Platz zu geben.
+- Die aktuelle Version als Datei **herunterladen**.
+- Die Versionsliste öffnen, eine frühere Version ansehen und mit **Diese Version wiederherstellen** wieder zur aktuellen machen.
+- Das Artefakt **löschen**. Seine Karten in der Unterhaltung werden zu einem Platzhalter für gelöschte Inhalte; löschen Sie es daher nur, wenn Sie das Ergebnis nicht mehr benötigen.
+
+Um ein Artefakt zu ändern, bitten Sie die KI in derselben Unterhaltung darum. Jede Überarbeitung wird eine neue Version desselben Artefakts statt eines separaten Artefakts, sodass der Freigabelink weiterhin funktioniert und Sie weiterhin zurückgehen können. Falls die Seite nicht ausgeführt werden kann, zeigt die Ansicht den Fehler an und bietet **Mit KI beheben** an, wodurch der Fehler an den Chat zurückgesendet wird, damit die KI ihn korrigieren kann.
+
+### Ein Artefakt teilen
+
+Artefakte sind für die Person, die sie erstellt hat, privat. Verwenden Sie daher einen Freigabelink, damit andere Personen eines öffnen können.
+
+<Steps>
+  <Step title="Freigabe aktivieren">
+    Klicken Sie in der Ansicht auf **Teilen** und aktivieren Sie **Freigabe aktivieren**. Teable generiert den Link.
+  </Step>
+  <Step title="Festlegen, wer es ansehen kann">
+    Setzen Sie **Wer kann ansehen** auf **Jeder mit dem Link** oder auf **Space-Mitglieder**, damit nur angemeldete Mitglieder des Space es öffnen können.
+  </Step>
+  <Step title="Ein Passwort hinzufügen (optional)">
+    Aktivieren Sie unter den erweiterten Einstellungen **Passwortschutz** und legen Sie ein Passwort fest. Betrachter müssen es eingeben, bevor das Artefakt geladen wird.
+  </Step>
+  <Step title="Den Link senden">
+    Verwenden Sie **Link kopieren**, um ihn zu kopieren. Wenn der Link zu weit verbreitet wurde, erstellt **Link zurücksetzen** einen neuen und lässt den alten Link nicht mehr funktionieren.
+  </Step>
+</Steps>
+
+### Artefakte später finden
+
+Öffnen Sie **+** → **Mehr** → **Artefakte verwalten**, um alles zu durchsuchen, was Sie in Ihren Chats erstellt haben. Suchen Sie nach Namen und öffnen Sie dann ein Artefakt, um es anzuzeigen oder erneut zu teilen.
+
+## Tipps für Eingabeaufforderungen
+
+- **Nennen Sie zuerst das Ziel**: Beschreiben Sie in der ersten Nachricht, was zu tun ist, die relevanten Bedingungen und die erwartete Ausgabe. Analysieren Sie beispielsweise die wöchentlichen Verkaufstrends der letzten 3 Monate, gruppiert nach Region, und geben Sie eine Trendtabelle mit einer kurzen Schlussfolgerung zurück.
+- **Verwenden Sie Feldnamen**: Sortieren Sie zum Beispiel nach `Erstellungszeit`, damit die KI die Zielspalte identifizieren kann.
+- **Geben Sie mehrere Beispiele an**: Stellen Sie für Ausgaben mit festem Format 3-5 Beispiele im Format Eingabe -> erwartete Ausgabe bereit.
+- **Verwenden Sie `@`, um Knoten auszuwählen**: Wenn die KI auf Tabellen, Ansichten, Apps, Automatisierungen oder Ordner verweisen muss, geben Sie `@` ein und wählen Sie diese direkt aus.
+- **Vor der Ausführung bestätigen**: Bitten Sie die KI bei Aufgaben, die Daten ändern, Tabellen erstellen, Apps erstellen oder Automatisierungen aktivieren, die Änderungen vor der Ausführung zu beschreiben.
+- **Das Modell nach Aufgabe wählen**: Wenn der Space die Modellauswahl unterstützt, verwenden Sie ein leichteres Modell für einfache Abfragen, Bereinigung oder Überarbeitungen und ein leistungsstärkeres Modell für komplexe Planung, tabellenübergreifende Analysen und App-Erstellung.
+- **Die Intelligenzstufe anpassen**: **Intelligenz** steuert die Denktiefe; höhere Stufen liefern gründlichere Überlegungen.
+- **Bei Themenwechsel einen neuen Chat starten**: Ein neuer Chat wird empfohlen, wenn sich das Thema ändert, die Unterhaltung zu lang wird oder die Kontextnutzung reduziert werden soll.
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Wie lasse ich den KI-Chat auf eine andere Tabelle, Ansicht, App oder Automatisierung verweisen?">
+    Geben Sie `@` in das Eingabefeld ein und wählen Sie den Knoten aus, auf den der KI-Chat verweisen soll. Bei Auswahlen in der Rasteransicht können Sie auch Zeilen, Spalten, eine einzelne Zelle oder einen Zellbereich auswählen und dann im Kontextmenü **Zum Chat hinzufügen** verwenden.
+  </Accordion>
+
+  <Accordion title="Kann der KI-Chat in einer anderen Base arbeiten?">
+    Ja. Die KI ist nicht auf die Base beschränkt, zu der der Chat gehört; sie kann andere Bases, auf die Sie Zugriff haben, suchen und darin arbeiten. Nennen Sie die Base in Ihrer Anfrage, zum Beispiel „Vergleiche diese Tabelle mit der Bestelltabelle in der Sales-Base“. `@` listet nur Knoten in der aktuellen Base auf, und alles, worauf Sie nicht anders verweisen, geschieht weiterhin in der eigenen Base des Chats.
+  </Accordion>
+
+  <Accordion title="Werden die von der KI erstellten Diagramme und Berichte gespeichert?">
+    Ja. Sie werden als Artefakte mit Versionsverlauf und optionalem Freigabelink gespeichert und können über **+** → **Mehr** → **Artefakte verwalten** erneut geöffnet werden. Ein Artefakt behält die Daten, mit denen es erstellt wurde, und aktualisiert sich nicht selbstständig. Erstellen Sie mit [App Builder](/de/basic/ai/app-builder) eine App für eine Seite, die Live-Tabellendaten liest.
+  </Accordion>
+  <Accordion title="Können meine Teammitglieder ein von mir erstelltes Artefakt öffnen?">
+    Standardmäßig nicht. Nur Sie können Ihre eigenen Artefakte öffnen. Aktivieren Sie in der Ansicht **Freigabe aktivieren** und senden Sie den Link. Wählen Sie **Space-Mitglieder**, wenn das Artefakt innerhalb des Space bleiben soll.
+  </Accordion>
+
+  <Accordion title="Wird die Erinnerung zwischen Bases übernommen?">
+    Nein. Die Erinnerung ist nach Benutzer und Base abgegrenzt. Wenn Sie eine Erinnerung aus einer anderen Base wiederverwenden möchten, bitten Sie Cuppy, die Erinnerung dieser Base zu lesen und die relevanten Teile in der aktuellen Base zu speichern.
+  </Accordion>
+
+  <Accordion title="Kann der KI-Chat im Hintergrund weiterarbeiten, nachdem ich ihn verlassen habe?">
+    Verwenden Sie den KI-Chat nicht als Ausführer von Hintergrundaufgaben. Arbeiten Sie weiter in der sichtbaren Unterhaltung und bitten Sie Cuppy, Ergebnisse zurück in Teable zu schreiben, Ergebnisse zu exportieren oder eine herunterladbare Datei zu erzeugen.
+  </Accordion>
+
+  <Accordion title="Warum sagt Teable, dass Cuppy in einer anderen Unterhaltung beschäftigt ist?">
+    Jede Person kann bis zu 3 Agents gleichzeitig ausführen, einschließlich KI-Chat und App Builder. Wenn Sie `Agent ist in einer anderen Unterhaltung beschäftigt. Bitte warten.` sehen, läuft noch eine andere Aufgabe. Warten Sie, bis Cuppy die vorherige Aufgabe abgeschlossen hat, bevor Sie fortfahren.
+  </Accordion>
+
+  <Accordion title="Wie werden Credits erstattet, wenn ein KI-Durchlauf fehlschlägt?">
+    Ein KI-Chat-Durchlauf kann mehrere Verarbeitungsschritte enthalten. Sowohl die Unterhaltung als auch die Abrechnungsseite zeigen die gesamten Credits für diesen Durchlauf. Arbeit, die Cuppy bereits abgeschlossen und gespeichert hat, kann weiterhin verwendet werden. Falls der letzte Schritt durch einen unerwarteten Fehler unterbrochen wird, werden die Credits für diesen unterbrochenen Schritt automatisch erstattet. Sie können in derselben Unterhaltung weiterarbeiten.
+  </Accordion>
+
+  <Accordion title="Was passiert, wenn ich eine weitere Nachricht sende, während die KI arbeitet?">
+    Sie wird der Sendewarteschlange über dem Eingabefeld hinzugefügt, statt den Durchlauf zu unterbrechen, und Teable sendet die gesamte Warteschlange als eine Nachricht, wenn der Durchlauf endet. Die Warteschlange liegt auf dem Server, übersteht daher eine Aktualisierung und sieht auf jedem Tab oder Gerät, auf dem diese Unterhaltung geöffnet ist, gleich aus.
+
+    Während ein Element wartet, können Sie es **Entfernen** oder mit **Nachricht bearbeiten** zurück in das Eingabefeld legen. Ein reines Textelement kann auch gesteuert werden: **Steuern** übergibt es sofort an den laufenden Durchlauf, woraufhin es in der Unterhaltung mit **Gesteuerte Unterhaltung** gekennzeichnet erscheint.
+
+    Eine Unterhaltung kann bis zu 30 Nachrichten in der Warteschlange enthalten. Danach wird die Nachricht nicht in die Warteschlange aufgenommen und Teable antwortet `Die Sendewarteschlange ist voll. Warten Sie, bis Cuppy aufgeholt hat.`
+  </Accordion>
+
+  <Accordion title="Warum zeigt die Warteschlange an, dass sie pausiert ist?">
+    Das Stoppen eines Durchlaufs hält auch die Warteschlange an, sodass nichts, was Sie in die Warteschlange gestellt haben, durch einen für die aktuelle Antwort vorgesehenen Stopp gesendet wird. Die Überschrift der Warteschlange lautet dann `Warteschlange pausiert, weil Sie unterbrochen haben`. Klicken Sie auf **Fortsetzen**, um sie freizugeben, oder senden Sie einfach Ihre nächste Nachricht: Das Starten eines neuen Durchlaufs gibt die Warteschlange ebenfalls frei.
+  </Accordion>
+
+  <Accordion title="Wie verwende ich Skills im KI-Chat?">
+    Öffnen Sie das Menü **+** und wählen Sie **Skills**, um Skills zu importieren oder zu verwalten, oder geben Sie `/` in das Eingabefeld ein, um einen aktivierten Skill auszuwählen. Wählen Sie beim Import aus, wer den Skill verwenden kann: persönlich für Ihre eigenen Chats, Base, wenn Mitarbeitende in derselben Base ihn benötigen, und Space, wenn ihn alle Personen im Space verwenden sollen. Personen, die die Base verwalten können, können Base-Skills hinzufügen; Space-Eigentümer und -Ersteller können Space-Skills hinzufügen. Wenn der KI-Chat eine `.skill`-Datei zeigt, verwenden Sie auf der Dateikarte **Installieren**, um sie hinzuzufügen.
+  </Accordion>
+
+  <Accordion title="Welcher Skill gilt, wenn zwei davon denselben Namen haben?">
+    Es ist immer nur eine Version wirksam, und die gemeinsam genutzte Teamversion hat Vorrang vor einer persönlichen Kopie: Ein Base-Skill schlägt einen Space-Skill, und ein Space-Skill schlägt einen persönlichen. In einer App- oder Bot-Unterhaltung hat der für diese App oder diesen Bot hinzugefügte Skill Vorrang. Um alle auf eine neue Version umzustellen, aktualisieren Sie die Kopie in der Base oder im Space.
+  </Accordion>
+
+  <Accordion title="Welche Dateien bleiben in Dateien verwalten?">
+    **Dateien verwalten** enthält zwei Ordner: `uploads` für die von Ihnen hinzugefügten Dateien und `outputs` für die in der Unterhaltung erzeugten Dateien. Beide verwenden ihren eigenen Speicher, überstehen daher die Freigabe oder Neuerstellung der Sandbox und können später erneut in der Vorschau angezeigt, heruntergeladen oder gelöscht werden.
+
+    Alles, was Cuppy außerhalb dieser beiden Ordner schreibt, ist temporär, etwa Zwischenergebnisse eines Skripts. Es erscheint nicht in **Dateien verwalten** und ist nach dem Neustart der Sandbox nicht mehr vorhanden. Bitten Sie Cuppy bei Ergebnissen, die Sie behalten müssen, diese in `outputs` oder zurück in Teable zu schreiben, oder laden Sie sie herunter, während die Unterhaltung geöffnet ist. Verwenden Sie **Alle herunterladen**, wenn eine Antwort mehrere Dateien erzeugt hat.
+  </Accordion>
+
+  <Accordion title="Was passiert, wenn ich eine Nachricht mit Chips kopiere?">
+    Wenn Sie eine Benutzernachricht kopieren, werden Tabellen, Ansichten, Apps, Automatisierungen, Ordner, Auswahlen und Anhänge als Markierungstext beibehalten. Wenn Sie den Text zurück in den KI-Chat einfügen, stellt Teable die erkannten Markierungen als Chips wieder her.
+  </Accordion>
+
+  <Accordion title="Wo sollte ich API-Schlüssel für den KI-Chat hinterlegen?">
+    Verwenden Sie **+** → **Geheimnisse** in der Chat-Eingabe. Der KI-Chat kann diese Werte während der Unterhaltung verwenden, ohne den Klartext in Ihre Eingabeaufforderung einzufügen.
+  </Accordion>
+</AccordionGroup>
+

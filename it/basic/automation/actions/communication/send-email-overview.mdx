@@ -1,0 +1,103 @@
+---
+title: "Panoramica sull'invio di email"
+description: "Invia email personalizzate da un workflow"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Consigliamo vivamente di usare Esegui script per creare automazioni, perché può coprire il comportamento di tutte le azioni, comprese quelle che altrimenti dovrebbero essere create manualmente. Descrivi semplicemente le tue esigenze all'IA nella chat.
+
+Nota: se aggiungi azioni manualmente, in seguito l'IA non sarà in grado di riconoscerle o modificarle.
+</Tip>
+
+## Crea con l'IA
+
+Apri AI Chat nella barra laterale destra della Tabella e descrivi ciò che desideri.
+
+L'IA si occupa di tutto: sceglie il trigger corretto, seleziona le azioni appropriate, associa i Campi e configura automaticamente l'intero workflow.
+
+Descrivi una sola volta l'obiettivo e il workflow sarà pronto, senza alcuna configurazione manuale.
+
+Questa azione invia un'email a uno o più destinatari. Puoi personalizzare destinatari, oggetto, corpo e indirizzo di risposta, oltre a usare valori dinamici provenienti dai passaggi precedenti per personalizzare ogni messaggio.
+
+Per impostazione predefinita, le email vengono inviate tramite il servizio di posta integrato di Teable. Se devi inviarle dal tuo dominio, configura un [server SMTP personalizzato](/it/basic/automation/actions/communication/smtp-sender).
+
+## Configurazione
+
+| Impostazione | Obbligatoria | Descrizione |
+|---|---|---|
+| A | Sì* | Indirizzi email dei destinatari. Separa più indirizzi con virgole |
+| Oggetto | Sì | La riga dell'oggetto. Supporta variabili dinamiche tramite **+** |
+| Corpo | Sì | Il corpo dell'email. Supporta Markdown, HTML e variabili dinamiche |
+| Nome mittente | No | Il nome visualizzato nella posta in arrivo del destinatario, ad esempio "Assistenza Acme" |
+| CC | No | Destinatari in copia conoscenza |
+| CCN | No | Destinatari in copia conoscenza nascosta |
+| Rispondi a | No | L'indirizzo a cui rispondono i destinatari, se diverso da quello del mittente |
+
+\* È obbligatorio specificare almeno uno tra **A** e **CCN**.
+
+**Limite di frequenza:** 5 email al secondo per Base.
+
+## Come configurarla
+
+1. Aggiungi un'azione **Invia email** al workflow.
+2. Nel Campo **A**, inserisci un indirizzo email statico oppure fai clic su **+** per aggiungere un valore dinamico, ad esempio il Campo Email del Record che ha attivato il trigger.
+3. Scrivi l'**Oggetto**. Fai clic su **+** per includere valori dinamici come il nome del Record o uno stato. Esempio: `Nuovo ordine da {{Customer Name}} — N. {{Order ID}}`.
+4. Scrivi il **Corpo**. Puoi usare:
+   - **Testo normale** — digita semplicemente il messaggio.
+   - **Markdown** — usa `**grassetto**`, `*corsivo*`, `- elenchi`, `[link](url)` e così via.
+   - **HTML** — per controllare completamente la formattazione, scrivi direttamente i tag HTML.
+   - **Variabili dinamiche** — fai clic su **+** in qualsiasi punto del corpo per inserire valori provenienti dai passaggi precedenti.
+5. (Facoltativo) Imposta **Nome mittente**, **CC**, **CCN** o **Rispondi a** secondo necessità.
+6. Salva l'azione.
+
+## Uso delle variabili nell'oggetto e nel corpo
+
+Le variabili consentono di personalizzare ogni email. Fai clic sul pulsante **+** in qualsiasi Campo di testo per aprire il selettore di variabili. Puoi fare riferimento a:
+
+- **Dati del trigger:** Campi del Record che ha attivato l'automazione, come nome del cliente, email e importo dell'ordine.
+- **Output dell'azione precedente:** dati dei passaggi precedenti, come l'ID di un Record appena creato o testo generato dall'IA.
+
+Esempio di corpo con variabili:
+
+```
+Ciao {{Customer Name}},
+
+il tuo ordine n. {{Order ID}} è stato confermato.
+
+**Totale:** ${{Order Amount}}
+**Consegna stimata:** {{Delivery Date}}
+
+Grazie per il tuo acquisto!
+```
+
+## Opzioni di formattazione del corpo
+
+| Formato | Come utilizzarlo | Ideale per |
+|---|---|---|
+| Testo normale | Digita semplicemente il messaggio | Notifiche semplici |
+| Markdown | Usa la sintassi Markdown (`**grassetto**`, `# intestazione` e così via) | Messaggi strutturati con formattazione |
+| HTML | Scrivi tag HTML (`<h1>`, `<p>`, `<table>` e così via) | Email completamente progettate con layout personalizzati |
+
+Puoi combinare Markdown e variabili dinamiche nello stesso corpo. Per strutture email complesse, HTML offre il massimo controllo.
+
+## Quando utilizzarla
+
+- **Inviare conferme d'ordine.** Quando viene creato un nuovo ordine, invia un'email con i dettagli e un messaggio di ringraziamento.
+- **Avvisare i membri del team dei cambiamenti di stato.** Quando un'attività passa a "Bloccata", invia un'email all'assegnatario e al suo responsabile.
+- **Consegnare report pianificati.** Combinala con un trigger pianificato e Ottieni Record per inviare via email un riepilogo settimanale.
+- **Inviare comunicazioni personalizzate.** Usa i dati dei Record per personalizzare oggetto e corpo per ogni destinatario.
+- **Confermare l'invio di moduli.** Dopo l'invio di un modulo, invia all'utente una conferma con le sue risposte.
+
+## Suggerimenti per la recapitabilità
+
+- **Usa un server SMTP personalizzato** se invii grandi volumi di email o messaggi essenziali per l'attività. Il servizio integrato di Teable è adatto alle notifiche di base, ma le email provenienti dal tuo dominio hanno maggiori probabilità di raggiungere la posta in arrivo del destinatario.
+- **Evita contenuti che sembrano spam** nell'oggetto e nel corpo: un uso eccessivo di maiuscole, punti esclamativi o link può attivare i filtri antispam.
+- **Imposta un indirizzo Rispondi a** affinché i destinatari possano rispondere a una casella reale anziché a un indirizzo che non accetta risposte.
+- **Prova le email** prima di attivare l'automazione in produzione. Esegui manualmente l'automazione con dati di prova per verificare formattazione e consegna.
+
+## Contenuti correlati
+
+- [Configura SMTP e mittente](/it/basic/automation/actions/communication/smtp-sender) — invia email dal tuo dominio
+- [Ciclo (batch)](../logic/loop-run) — invia email in blocco scorrendo un elenco di Record
+- [Generazione IA](/it/basic/automation/actions/ai/ai-generate) — genera contenuti email personalizzati con l'IA

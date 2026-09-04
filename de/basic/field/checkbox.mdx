@@ -1,0 +1,56 @@
+---
+title: "Kontrollkästchen"
+description: "Speichern Sie binäre Zustände wie Ja/Nein oder Erledigt/Nicht erledigt."
+---
+
+Ein Feld vom Typ **Kontrollkästchen** erfasst einen binären Zustand, beispielsweise Ja/Nein, Ein/Aus oder Erledigt/Nicht erledigt. Benutzer können auf eine Zelle klicken, um zwischen aktiviert und deaktiviert zu wechseln.
+
+## Anwendungsfälle
+
+| Szenario | Geeignet für |
+| --- | --- |
+| Aufgabenabschluss | Erledigt, verarbeitet, archiviert |
+| Schnelle Kennzeichnungen | VIP, blockiert, Nachbestellung erforderlich |
+| Prozesskontrollpunkte | Bild hochgeladen, Text geprüft, Genehmigung erteilt |
+| Auslöser für Automatisierungen | Nach dem Aktivieren eines Kontrollkästchens eine Benachrichtigung senden, einen Status aktualisieren oder den nächsten Schritt starten |
+
+## Erstellen und konfigurieren
+
+<Steps>
+  <Step title="Feldtyp auswählen">
+    Klicken Sie rechts in der Tabellenkopfzeile auf `+` und wählen Sie anschließend **Kontrollkästchen** aus der Liste der Feldtypen.
+  </Step>
+  <Step title="Feld benennen">
+    Geben Sie einen Feldnamen ein, beispielsweise „Erledigt“, „VIP“ oder „Genehmigt“.
+  </Step>
+  <Step title="Standardwert festlegen">
+    Wählen Sie aus, ob neue Datensätze standardmäßig aktiviert oder deaktiviert sein sollen.
+  </Step>
+  <Step title="Feld speichern">
+    Nach dem Speichern können Benutzer auf Zellen klicken, um den Zustand zu wechseln.
+  </Step>
+</Steps>
+
+## Häufige Verwendungszwecke
+
+- **Aufgabenstatus**: Verwenden Sie in einer Aufgabentabelle ein Feld „Erledigt“ und erstellen Sie anschließend eine Ansicht „Unerledigte Aufgaben“, in der nur nicht aktivierte Datensätze angezeigt werden.
+- **Schnelle Kennzeichnungen**: Markieren Sie „VIP“ in einer Kundentabelle oder „Nachbestellung erforderlich“ in einer Bestandstabelle.
+- **Prozesskontrollpunkte**: Fügen Sie einem Inhaltskalender Felder wie „Bild hochgeladen“ oder „Text geprüft“ hinzu, damit Mitwirkende sehen können, welche Schritte abgeschlossen sind.
+
+## Werte von Kontrollkästchen in Formeln verwenden
+
+Kontrollkästchenfelder können in Formeln als boolesche Werte verwendet werden. Geben Sie beispielsweise je nach Abschlussstatus unterschiedlichen Text zurück:
+
+```js
+IF({Erledigt}, "Erledigt", "In Bearbeitung")
+```
+
+## Statistiken und Automatisierung
+
+- **Abschluss verfolgen**: Verwenden Sie die Zusammenfassungsleiste, um aktivierte Werte zu zählen. Anhand der Anzahl können Sie Abschlussquoten berechnen.
+- **Automatisierung auslösen**: Wenn „Genehmigt“ aktiviert wird, kann eine Automatisierung eine E-Mail senden oder andere Felder aktualisieren.
+
+## Hinweise
+
+- Ein Kontrollkästchenfeld stellt nur zwei Zustände dar. Wenn Sie mehrere Zustände wie „Nicht begonnen“, „In Bearbeitung“ und „Erledigt“ benötigen, verwenden Sie ein Feld vom Typ **Einfachauswahl**.
+- Verwenden Sie Kontrollkästchenfelder für eindeutige Umschalter. Verwenden Sie sie nicht für Notizen, Gründe oder Erklärungen.

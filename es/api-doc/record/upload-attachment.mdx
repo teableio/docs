@@ -1,0 +1,212 @@
+---
+title: "Cargar un archivo adjunto"
+description: "Carga archivos locales o archivos mediante URL al final de un Campo de archivos adjuntos de un Registro específico"
+---
+
+### Ruta
+
+POST /api/table/\{tableId}/record/\{recordId}/\{fieldId}/uploadAttachment
+
+### Solicitud
+
+#### Parámetros de ruta
+
+* tableId (string): El identificador único de la Tabla [(cómo obtenerlo)](/es/api-doc/get-id#tableid).
+* recordId (string): El identificador único del Registro que se actualizará [(cómo obtenerlo)](/es/api-doc/get-id#recordid).
+* fieldId (string): El ID del Campo de archivos adjuntos en el que se realizará la carga [(cómo obtenerlo)](/es/api-doc/get-id#fieldid)
+
+Los Campos de archivos adjuntos pueden contener varios archivos adjuntos. Esta API permite cargar un archivo adjunto a la vez al final de la celda.
+
+Para eliminar o reordenar archivos adjuntos, usa la [API para actualizar Registros](/es/api-doc/record/update).
+
+fieldId debe ser un Campo de tipo archivo adjunto.
+
+Mediante la API, los archivos adjuntos cargados están limitados a 100 MB en la versión en la nube, mientras que la versión autoalojada no tiene límite.
+
+#### Cuerpo de la solicitud
+
+Tipo: formData
+
+Parámetros:
+
+* **file (opcional)**
+  * Descripción: Los datos del Registro que se actualizarán
+  * Tipo: Buffer o ReadStream
+* **fileUrl (opcional)**
+  * Descripción: La URL desde la que se realizará la carga
+  * Tipo: Cadena
+  * Ejemplo: `https://example.com/image.jpg`
+  * Nota: Solo se puede especificar file o fileUrl, no ambos a la vez. Si se especifican ambos, file tiene prioridad.
+
+### Respuesta
+
+#### Respuesta correcta
+
+* Código de estado: 201 Creado
+* Cuerpo de la respuesta: Devuelve los datos del Registro actualizado.
+
+**Ejemplo del cuerpo de la respuesta**
+
+```json
+{
+    "id": "rec123456789ABCDE",
+    "fields": {
+      "fld123456789ABCDE": [
+        {
+          "id": "act75TiSyhcS7hfrizW",
+          "name": "example.jpg",
+          "path": "table/example",
+          "size": 392903,
+          "token": "tokenxxxxx",
+          "width": 976,
+          "height": 1000,
+          "mimetype": "image/jpeg",
+          "presignedUrl": "https://app.teable.ai/preview/previewURL"
+        }
+      ],
+    }
+}
+```
+
+#### Respuestas de error
+
+* Código de estado: 400 Solicitud incorrecta: Error en el formato del cuerpo de la solicitud o faltan Campos obligatorios.
+* Código de estado: 404 No encontrado: El tableId o recordId especificado no existe.
+
+### Código de ejemplo
+
+<CodeGroup>
+  ```bash CURL
+  # Cargar mediante un archivo
+
+  curl -X POST 'https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment' \
+    -H 'Authorization: Bearer __token__' \
+    -H 'Content-Type: multipart/form-data' \
+    -F 'file=@/path/to/your/file.jpg'
+
+  # Cargar mediante una URL
+  curl -X POST 'https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment' \
+    -H 'Authorization: Bearer __token__' \
+    -H 'Content-Type: multipart/form-data' \
+    -F 'fileUrl=https://example.com/image.jpg'
+  ```
+
+  ```js JS SDK
+  import { configApi, uploadAttachment } from '@teable/openapi';
+
+  configApi({
+    endpoint: 'https://app.teable.ai',
+    token: '__token__',
+  });
+
+  // Entorno Node.js: cargar un archivo local
+  const fileStream = fs.createReadStream('/path/to/your/file.jpg');
+  const response = await uploadAttachment('__tableId__', '__recordId__', '__fieldId__', fileStream);
+
+  console.log(response.data);
+
+  // Cargar mediante URL (funciona tanto en Node.js como en navegadores)
+  const response = await uploadAttachment('__tableId__', '__recordId__', '__fieldId__', 'https://example.com/image.jpg');
+
+  console.log(response.data);
+
+  // Entorno de navegador: cargar un archivo
+  // Se presupone que existe un elemento de entrada de archivo: <input type="file" id="fileInput">
+  document.getElementById('fileInput').addEventListener('change', async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const response = await uploadAttachment('__tableId__', '__recordId__', '__fieldId__', file);
+      console.log(response.data);
+    }
+  });
+  ```
+
+  ```ts TypeScript
+  import FormData from 'form-data';
+  import fs from 'fs';
+
+  // Entorno Node.js: cargar un archivo local
+  const formData = new FormData();
+  formData.append('file', fs.createReadStream('/path/to/your/file.jpg'));
+
+  const response = await fetch('https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer __token__',
+      ...formData.getHeaders()
+    },
+    body: formData
+  });
+
+  console.log(await response.json());
+
+  // Cargar mediante URL (funciona tanto en Node.js como en navegadores)
+  const formDataUrl = new FormData();
+  formDataUrl.append('fileUrl', 'https://example.com/image.jpg');
+
+  const responseUrl = await fetch('https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer __token__',
+      ...formDataUrl.getHeaders()
+    },
+    body: formDataUrl
+  });
+
+  console.log(await responseUrl.json());
+
+  // Entorno de navegador: cargar un archivo
+  // Se presupone que existe un elemento de entrada de archivo: <input type="file" id="fileInput">
+  document.getElementById('fileInput').addEventListener('change', async (event: Event) => {
+    const fileInput = event.target as HTMLInputElement;
+    const file = fileInput.files?.[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer __token__'
+        },
+        body: formData
+      });
+
+      console.log(await response.json());
+    }
+  });
+  ```
+
+  ```python Python
+  import requests
+  import mimetypes
+  import os
+
+  # Cargar un archivo local
+  file_path = '/path/to/your/file.jpg'
+  with open(file_path, 'rb') as file:
+      file_name = os.path.basename(file_path)
+      mime_type, _ = mimetypes.guess_type(file_path)
+      files = {'file': (file_name, file, mime_type)}
+      response = requests.post(
+          'https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment',
+          headers={
+              'Authorization': 'Bearer __token__'
+          },
+          files=files
+      )
+
+  print(response.json())
+
+  # Cargar mediante URL
+  response_url = requests.post(
+      'https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment',
+      headers={
+          'Authorization': 'Bearer __token__'
+      },
+      data={'fileUrl': 'https://example.com/image.jpg'}
+  )
+
+  print(response_url.json())
+  ```
+</CodeGroup>

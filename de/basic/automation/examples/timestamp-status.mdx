@@ -1,0 +1,36 @@
+---
+title: "Zeitpunkt einer Statusänderung automatisch erfassen"
+description: "Schreiben Sie automatisch einen Zeitstempel, wenn sich der Status eines Datensatzes in einen bestimmten Wert ändert"
+---
+
+<Tip>Wir empfehlen, Automatisierungsbeispiele direkt im KI-Chat zu erstellen. Beschreiben Sie einfach den gewünschten Workflow, und die KI übernimmt die vollständige Einrichtung für Sie – einschließlich Auslöser, Aktionen, Skript und Konfiguration.</Tip>
+
+## Mit KI erstellen
+
+Öffnen Sie den KI-Chat in der rechten Seitenleiste Ihrer Tabelle und teilen Sie der KI mit, was Sie möchten. Sie können zum Beispiel sagen:
+
+*„Wenn sich der Status einer Aufgabe in Abgeschlossen ändert, trage das aktuelle Datum und die aktuelle Uhrzeit in das Feld Abgeschlossen am ein.“*
+
+Die KI erstellt automatisch den vollständigen Workflow. Sie können das erzeugte Skript überprüfen, mit echten Daten testen und den Workflow aktivieren, sobald er bereit ist.
+
+## Manuelle Einrichtung
+
+1. **Erstellen Sie einen Workflow** mit dem Auslöser **Wenn Datensatz Bedingungen erfüllt**.
+2. Wählen Sie Ihre Tabelle **Aufgaben** aus.
+3. Legen Sie den Filter fest: `Status` **ist** `Abgeschlossen`.
+4. Klicken Sie auf **Testen**.
+5. **Fügen Sie eine Aktion hinzu** → **Datensatz aktualisieren**.
+6. Ordnen Sie Folgendes zu:
+   - Datensatz-ID → ID des Auslöserdatensatzes (über **+**)
+   - Abgeschlossen am → Verwenden Sie einen Ausdruck oder legen Sie den Zeitstempel des Auslösers fest
+7. Klicken Sie auf **Testen** und anschließend auf **Aktivieren**.
+
+## Warum „Wenn Datensatz Bedingungen erfüllt“?
+
+Dieser Auslöser wird **einmal** ausgeführt – in dem Moment, in dem der Datensatz die Bedingungen erstmals erfüllt. Wenn jemand später die Beschreibung bearbeitet (während der Status weiterhin „Abgeschlossen“ lautet), wird der Workflow **nicht** erneut ausgelöst. So wird verhindert, dass der Zeitstempel überschrieben wird.
+
+## Varianten
+
+- **„Begonnen am“** – auslösen, wenn der Status „In Bearbeitung“ annimmt.
+- **„Eskaliert am“** – auslösen, wenn die Priorität „Dringend“ annimmt.
+- **„Genehmigt am“** – auslösen, wenn die Genehmigung „Ja“ annimmt.

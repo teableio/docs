@@ -1,0 +1,104 @@
+---
+title: "Boucle (traitement par lots)"
+description: "Traitez plusieurs éléments en une seule action en parcourant un tableau"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Nous vous recommandons vivement d’utiliser Exécuter un script pour créer des automatisations, car cette action peut couvrir tous les comportements, y compris ceux qui devraient autrement être configurés manuellement. Décrivez simplement vos besoins à l’IA dans le chat.
+
+Remarque : si vous ajoutez des actions manuellement, l’IA ne pourra ni les reconnaître ni les modifier par la suite.
+</Tip>
+
+Boucle permet d’exécuter une action **une fois par élément** d’un tableau. Au lieu de traiter un seul enregistrement ou d’envoyer un seul e-mail, Boucle répète l’action pour chaque élément d’une liste : création d’enregistrements en masse, envoi d’e-mails personnalisés à une liste de contacts ou appels d’API pour chaque élément.
+
+Les éléments sont traités dans l’ordre et les résultats de toutes les itérations sont renvoyés sous forme de tableau utilisable par les étapes suivantes.
+
+## Actions prises en charge
+
+| Action | Prise en charge de Boucle |
+|---|---|
+| Créer un enregistrement | Oui |
+| Mettre à jour un enregistrement | Oui |
+| Envoyer un e-mail | Oui |
+| Requête HTTP | Oui |
+| Générer avec l’IA | Oui |
+
+## Origine des tableaux
+
+Pour utiliser Boucle, vous avez besoin d’un tableau comme donnée d’entrée. Les sources courantes comprennent :
+
+| Source | Résultat obtenu |
+|---|---|
+| Action **Obtenir des enregistrements** | Tableau d’enregistrements issu d’une requête de table |
+| Déclencheur **Lorsqu’un webhook est reçu** | Le corps JSON peut contenir des tableaux (par exemple, une liste d’articles commandés) |
+| Action **Générer avec l’IA** (sortie JSON) | L’IA peut renvoyer un tableau d’éléments structurés |
+| Action **Requête HTTP** | Réponse d’API contenant un tableau |
+| Action **Script** | Un script peut renvoyer n’importe quel tableau via `output.set()` |
+
+## Configuration
+
+1. Ouvrez une action prise en charge (par exemple, Créer un enregistrement ou Envoyer un e-mail).
+2. Cliquez sur **Exécuter en boucle** sous le sélecteur de table (ou dans la zone de configuration de l’action).
+3. Dans le sélecteur de source de données, choisissez une **variable de tableau** issue d’une étape précédente. Par exemple, le tableau d’enregistrements d’une étape Obtenir des enregistrements.
+4. La zone d’association des champs affiche désormais les propriétés de chaque élément individuel, et non le tableau complet. Cliquez sur **+** pour référencer les propriétés de l’**élément actuel**, par exemple son Nom, son E-mail ou son Statut.
+5. Enregistrez l’action. Lors de l’exécution du workflow, l’action s’exécute une fois par élément du tableau.
+
+## Référencer l’élément actuel
+
+Lorsque Boucle est active, le sélecteur de variables **+** affiche les propriétés de l’élément actuel de l’itération. Par exemple :
+
+- Si vous parcourez le résultat d’Obtenir des enregistrements, vous pouvez référencer `élément actuel → champs → Nom`, `élément actuel → champs → E-mail`, etc.
+- Si vous parcourez un tableau de webhook, vous pouvez référencer `élément actuel → product_name`, `élément actuel → quantity`, etc.
+
+Ce comportement diffère du mode sans boucle, dans lequel vous référencez le tableau complet ou un index précis.
+
+## Exemple concret : envoyer des e-mails de rappel pour les tâches en retard
+
+1. **Déclencheur :** À l’heure planifiée — tous les jours à 9 h.
+2. **Action 1 :** Obtenir des enregistrements — dans la table Tâches, filtre : Date d’échéance antérieure à aujourd’hui ET Statut différent de « Terminée ».
+3. **Action 2 :** Envoyer un e-mail avec **Boucle** activée, source de données = tableau d’enregistrements de l’Action 1.
+   - **À :** champ E-mail du responsable de l’élément actuel.
+   - **Objet :** `Rappel : « {{current item → Task Name}} » est en retard`
+   - **Corps :** `Bonjour {{current item → Assignee Name}}, votre tâche « {{current item → Task Name}} » était due le {{current item → Due Date}}. Veuillez la mettre à jour.`
+
+Résultat : un e-mail personnalisé par tâche en retard.
+
+## Corps de tableau HTTP
+
+Pour les actions Requête HTTP, Boucle propose un mode spécial **Corps de tableau**. Au lieu d’envoyer une requête HTTP par élément, ce qui peut être lent et atteindre les limites de débit, Corps de tableau envoie **le tableau entier sous forme de tableau JSON unique** dans une seule requête.
+
+Cette option est utile lorsque l’API externe prend en charge les opérations par lots, par exemple pour créer plusieurs enregistrements en un seul appel d’API ou envoyer un lot d’événements à un service d’analyse.
+
+Pour utiliser Corps de tableau :
+1. Activez Boucle sur une action Requête HTTP.
+2. Choisissez le mode **Corps de tableau** au lieu du mode par élément par défaut.
+3. Le tableau entier est sérialisé sous forme de tableau JSON et envoyé dans le corps de la requête.
+
+## Considérations relatives aux performances
+
+- Boucle traite les éléments **séquentiellement**, et non en parallèle. Une boucle de 100 éléments prendra environ 100 fois plus de temps qu’une seule exécution.
+- Pour les tableaux volumineux, comptant des centaines ou des milliers d’éléments, vérifiez si l’action externe accepte une entrée par lots. Utilisez Corps de tableau HTTP lorsque l’API le permet.
+- Si vous parcourez le résultat d’Obtenir des enregistrements et effectuez des requêtes HTTP pour chaque enregistrement, tenez compte des limites de débit de l’API externe.
+- Pour les très grands jeux de données, envisagez de diviser le travail en lots plus petits avec la pagination d’Obtenir des enregistrements (Ignorer/Prendre) et plusieurs exécutions de l’automatisation.
+
+## Quand l’utiliser
+
+- **Créer des enregistrements en masse.** Récupérez des enregistrements d’une table, puis parcourez-les pour créer les enregistrements correspondants dans une autre table.
+- **Envoyer des e-mails personnalisés à une liste.** Récupérez une liste de contacts, puis parcourez-la pour envoyer à chacun un e-mail personnalisé.
+- **Mettre à jour plusieurs enregistrements.** Récupérez les enregistrements qui remplissent une condition, puis parcourez-les pour mettre chacun à jour (par exemple, définir toutes les tâches en retard sur « À escalader »).
+- **Effectuer des appels d’API pour chaque enregistrement.** Transmettez les données de chaque enregistrement à un système externe, un par un.
+- **Traiter un lot d’enregistrements avec l’IA.** Parcourez les enregistrements et utilisez Générer avec l’IA afin de classer, résumer ou extraire les données de chacun.
+
+## Conseils
+
+- Vérifiez toujours la taille de votre tableau avant d’activer Boucle. Si Obtenir des enregistrements renvoie 1 000 enregistrements, votre boucle s’exécutera 1 000 fois.
+- Si votre boucle crée ou met à jour des enregistrements dans la table qui a déclenché l’automatisation, prenez garde à ne pas la redéclencher. Utilisez des filtres sur le déclencheur pour éviter les boucles.
+- Les résultats de toutes les itérations de la boucle sont accessibles sous forme de tableau aux étapes suivantes. Toutefois, ce tableau peut être volumineux pour les très grandes boucles. Ne référencez que les données nécessaires.
+
+## Pages connexes
+
+- [Obtenir des enregistrements](/fr/basic/automation/actions/records/get-records) — source de tableaux la plus courante pour Boucle
+- [Créer un enregistrement](/fr/basic/automation/actions/records/create-record) — action souvent utilisée dans une Boucle pour créer des enregistrements en masse
+- [Requête HTTP](/fr/basic/automation/actions/logic/http-request) — action souvent utilisée dans une Boucle pour effectuer un appel d’API par élément
+- [Envoyer un e-mail](/fr/basic/automation/actions/communication/send-email-overview) — action souvent utilisée dans une Boucle pour envoyer des e-mails en masse

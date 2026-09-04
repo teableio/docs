@@ -1,0 +1,63 @@
+---
+title: "API'ye Genel Bakış"
+description: "Teable API'yi kullanmaya başlamak için gereken her şey: temel URL, kimlik doğrulama, kimlikler ve yaygın istek kalıpları."
+---
+
+Bu bölüm, Teable API'yi hızlı ve güvenli bir şekilde kullanmaya başlamanıza yardımcı olur.
+
+## Temel URL
+
+- **Teable Cloud**: `https://app.teable.ai`
+- **Kendi sunucunuzda barındırılan sürüm**: kendi alan adınızı kullanın (örneğin `https://teable.example.com`)
+
+Bu belgelerdeki tüm API yolları temel URL'ye göredir ve `/api` ile başlar.
+
+## Kimlik doğrulama
+
+Teable API'leri **Bearer token'ları** kullanır:
+
+```bash
+curl -H 'Authorization: Bearer __token__' \
+  'https://app.teable.ai/api/table/__tableId__/record'
+```
+
+Aşağıdakilerden birini kullanabilirsiniz:
+
+- **Kişisel Erişim Token'ı**: betikler, dahili araçlar ve sunucu tarafı entegrasyonları için en uygun seçenektir. [Erişim Token'ı](/tr/api-doc/token) sayfasına bakın.
+- **OAuth Erişim Token'ı**: son kullanıcıların erişim izni verdiği çok kiracılı entegrasyonlar için en uygun seçenektir. [OAuth Uygulaması](/tr/api-doc/oauth) sayfasına bakın.
+
+## Kimlikler (spaceId / baseId / tableId / viewId / fieldId / recordId)
+
+Çoğu uç nokta `tbl...`, `rec...` gibi kimlikler gerektirir. [Kimlikleri Alma](/tr/api-doc/get-id) sayfasına bakın.
+
+## Kapsamlar ve izinler
+
+Hem Kişisel Erişim Token'larının hem de OAuth token'larının izin kapsamları vardır. 403 hatası alırsanız bu genellikle token'ın gerekli kapsamı içermediği anlamına gelir.
+
+- [Hata Kodları](/tr/api-doc/error-code) sayfasına bakın
+- OAuth kapsamları referansı: [OAuth Uygulaması](/tr/api-doc/oauth#available-scopes)
+
+## Sayfalama (take / skip)
+
+Birçok liste uç noktası şunları destekler:
+
+- `take`: döndürülecek öğe sayısı (bazı uç noktalar bu sayıyı sınırlar; örneğin istek başına en fazla 100 Kayıt döndürülür, bu nedenle `skip` ile sayfalama yapın)
+- `skip`: atlanacak öğe sayısı
+
+## Alan anahtarları ve hücre biçimi
+
+Bazı API'ler, Kayıt Alanlarının nasıl gösterileceğini belirlemenize olanak tanır:
+
+- `fieldKeyType`: `name` (varsayılan) / `id` / `dbFieldName`
+- `cellFormat`: `json` (varsayılan) / `text`
+
+Kayıt Alanı değeri yapıları için [Kayıt Alanı Arayüzü](/tr/api-doc/record/interface) sayfasına bakın.
+
+## Sonraki adımlar
+
+- **Yalnızca veri almak istiyorsanız**: [Kayıtları Alma](/tr/api-doc/record/get)
+- **Kayıt oluşturma/güncelleme/silme**: [Kayıt Oluşturma](/tr/api-doc/record/create), [Kaydı Güncelleme](/tr/api-doc/record/update), [Kayıtları Silme](/tr/api-doc/record/delete)
+- **Ek yükleme**: [Ek Yükleme](/tr/api-doc/record/upload-attachment)
+- **Uç noktaların tam listesi**: sol gezinme menüsündeki **API Referansı** bölümünü kullanın
+
+

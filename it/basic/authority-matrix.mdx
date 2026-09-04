@@ -1,0 +1,120 @@
+---
+title: "Panoramica"
+description: "Imposta gli ambiti di accesso per diversi team nella stessa Base, affinché i membri possano visualizzare, modificare o esportare soltanto i dati necessari."
+---
+
+{/* mintlify-resync: 2026-05-28 */}
+<Tip>Disponibile per il piano Business e versioni successive</Tip>
+
+Quando vendite, finanza, operazioni e dirigenza condividono la stessa Base,
+le autorizzazioni stabiliscono chi può accedere alla Base, quali dati può visualizzare o modificare
+e se può importare o esportare dati. La Matrice di autorità aiuta i team
+a mantenere i dati in un unico luogo, separando al contempo gli accessi in base alle responsabilità.
+
+Puoi assegnare ruoli personalizzati a membri o reparti, quindi consentire a ogni ruolo
+di accedere soltanto alle Tabelle, alle app e ai flussi di lavoro necessari. Per le Tabelle puoi anche
+limitare le Viste visibili, i Record visibili, i Campi modificabili e le autorizzazioni
+di importazione o esportazione. Ad esempio, il team vendite può gestire i propri clienti, il team finanza può
+visualizzare i Campi di fatturazione e la dirigenza può visualizzare l'intero set di dati.
+
+## Quando utilizzarla
+
+| Scenario | Utilità |
+| --- | --- |
+| Accesso a livello di reparto | Il team vendite può gestire i Record dei clienti, mentre il team finanza vede soltanto i Campi di fatturazione. |
+| Record basati sull'assegnatario | I rappresentanti commerciali possono visualizzare e aggiornare soltanto i Record loro assegnati. |
+| Inserimento dati limitato | I membri possono creare nuovi Record senza modificare o eliminare quelli esistenti. |
+| Campi sensibili in una Base condivisa | I membri possono visualizzare i Record degli ordini senza vedere i Campi relativi ai pagamenti o ai costi. |
+| App e flussi di lavoro controllati | I ruoli possono aprire app o flussi di lavoro selezionati, mentre i nodi non autorizzati rimangono nascosti. |
+
+## Funzionamento delle autorizzazioni
+
+La Matrice di autorità assegna gli accessi per ruolo. Gli utenti possono ricevere autorizzazioni
+dai ruoli assegnati direttamente oppure dai ruoli dei reparti. Quando si applicano più
+ruoli, Teable combina le autorizzazioni consentite da tali ruoli.
+
+<Info>Gli utenti dello Spazio con autorizzazione **Manager** e gli amministratori della Matrice di autorità possono gestire la Matrice di autorità e non sono soggetti alle relative limitazioni.</Info>
+
+L'elenco dei ruoli include una sezione `Amministratori` e una sezione `Ruoli personalizzati`:
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-role-list-en.png"
+  alt="Elenco dei ruoli della Matrice di autorità"
+  className="docs-screenshot"
+/>
+
+Usa `Aggiungi ruolo` per creare un ruolo personalizzato. Nella pagina dei dettagli del ruolo, assegna
+i collaboratori, scrivi una breve descrizione e configura l'accesso a ogni nodo della
+Base:
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-role-detail-en.png"
+  alt="Pagina dei dettagli del ruolo della Matrice di autorità"
+  className="docs-screenshot"
+/>
+
+## Configurare l'accesso del ruolo
+
+Ogni Tabella, app e flusso di lavoro dispone di una propria impostazione di accesso.
+
+| Tipo di nodo | Impostazione disponibile |
+| --- | --- |
+| Tabella | Scegli `Può modificare` o `Nessun accesso`. Dopo aver impostato una Tabella su `Può modificare`, configurane le autorizzazioni dettagliate. |
+| App | Scegli `Può accedere` o `Nessun accesso`. Questa impostazione stabilisce se il ruolo può aprire l'app. |
+| Flusso di lavoro | Scegli `Può accedere` o `Nessun accesso`. Questa impostazione stabilisce se il ruolo può aprire il flusso di lavoro. |
+| Cartella | Le cartelle vengono mostrate per la navigazione. Se nessun nodo figlio è accessibile, la cartella viene nascosta per il ruolo. |
+
+Per configurare le autorizzazioni dettagliate relative a Viste, Record, Campi e altre aree della Tabella, imposta prima la
+Tabella su `Può modificare`. Una Tabella con `Nessun accesso` viene nascosta ai membri di
+quel ruolo.
+
+## Autorizzazioni delle Tabelle
+
+Quando una Tabella è impostata su `Può modificare`, configura queste aree di autorizzazione:
+
+| Area di autorizzazione | Elemento controllato |
+| --- | --- |
+| Autorizzazioni delle Viste | Indica se il ruolo può creare, aggiornare o eliminare Viste e se può visualizzare `Tutte le viste` o soltanto `Viste specifiche`. |
+| Autorizzazioni dei Record | Indica se il ruolo può creare, aggiornare, eliminare, commentare o copiare Record. I Record visibili possono essere `Tutti i record` oppure Record che soddisfano condizioni di filtro. |
+| Autorizzazioni dei Campi | Indica se il ruolo può visualizzare, aggiornare o creare valori in Campi specifici. Il Campo primario deve rimanere visibile. |
+| Autorizzazioni di importazione ed esportazione | Indica se il ruolo può importare dati nella Tabella o esportarne i dati. |
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-table-permissions-en.png"
+  alt="Autorizzazioni delle Tabelle nella Matrice di autorità"
+  className="docs-screenshot"
+/>
+
+I filtri dei Record sono adatti agli ambiti di accesso che cambiano in base al proprietario, al reparto
+o a Campi analoghi. Ad esempio, una condizione come `Responsabile vendite` `è`
+`utente corrente` consente a ogni venditore di vedere soltanto i propri Record. Le autorizzazioni
+dei Campi possono inoltre nascondere o bloccare i valori sensibili nei Record a cui
+il ruolo può accedere.
+
+## Ruolo predefinito
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-default-role-en.png"
+  alt="Impostazione del ruolo predefinito della Matrice di autorità"
+  className="docs-screenshot"
+/>
+
+Usa `Ruolo predefinito` per i membri a cui non è stato assegnato alcun ruolo personalizzato. Puoi
+selezionare un ruolo personalizzato abilitato oppure scegliere `Permesso negato`, affinché tali
+membri non possano accedere ai contenuti controllati dalla Matrice di autorità.
+
+## Note
+
+- Dopo aver abilitato la Matrice di autorità, gli utenti la cui autorizzazione dello Spazio è inferiore a
+  `Manager` sono soggetti alle relative limitazioni, a meno che non vengano aggiunti come amministratori della Matrice di autorità.
+- L'utente che abilita la Matrice di autorità viene aggiunto automaticamente a
+  `Amministratori`.
+- I nuovi ruoli personalizzati vengono abilitati quando sono creati tramite `Aggiungi ruolo`, ma ogni
+  Tabella, app e flusso di lavoro richiede comunque la propria impostazione di accesso.
+- Una Tabella impostata su `Nessun accesso` per un ruolo viene nascosta a tale ruolo, anche se le relative
+  opzioni di autorizzazione dettagliate erano state modificate in precedenza.
+- L'assegnazione di un ruolo tramite `Aggiungi utente` o `Aggiungi dall'organizzazione` può aggiungere i
+  membri o i reparti selezionati come collaboratori della Base. La Matrice di autorità
+  restringe quindi ciò a cui possono accedere all'interno della Base.
+
+<Note>Per informazioni sui livelli di autorizzazione di base dello Spazio e della Base, consulta [Autorizzazioni di collaborazione](/it/basic/space/space-permission).</Note>

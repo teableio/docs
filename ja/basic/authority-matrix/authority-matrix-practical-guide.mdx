@@ -1,0 +1,200 @@
+---
+title: "権限マトリクスのガイドライン"
+description: "共有データ、所有者に基づくレコードアクセス、制限付きデータ入力が必要な営業チーム向けに、権限マトリクスのロールを設定します。"
+---
+
+{/* mintlify-resync: 2026-05-28 */}
+このガイドでは、`顧客`、`販売注文`、`商品`という3つのテーブルを持つ営業ベースを使用します。ベース全体を公開せずに、各ロールが必要なデータを操作できるようにすることが目標です。
+
+| ロール | アクセスの目的 |
+| --- | --- |
+| 営業責任者 | 顧客と売上データを表示し、商品にコメントを追加できますが、商品価格は変更しません。 |
+| 営業担当者 | 自分の顧客と注文だけを表示、更新し、新しい顧客を作成できますが、完了済みの注文は削除しません。 |
+| データ入力担当者 | 既存の商品、顧客、注文を表示せずに、新しい商品を追加します。 |
+
+<Info>ロール権限を利用する前に、権限マトリクスをオンにしてください。</Info>
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-enable-en.png"
+  alt="権限マトリクスを有効化"
+  className="docs-screenshot"
+/>
+
+## ロールを作成する
+
+<Steps>
+  <Step title="権限マトリクスを有効にする">
+    ベースで権限マトリクスページを開き、メインスイッチをオンにします。有効にしたユーザーが管理者として追加されます。
+  </Step>
+  <Step title="カスタムロールを追加する">
+    `ロールを追加`をクリックし、`営業部長`、`営業担当者`、`Data Entry
+    Clerk`を作成します。
+  </Step>
+</Steps>
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-create-roles-en.png"
+  alt="営業責任者、営業担当者、データ入力担当者の3つのロールを作成"
+  className="docs-screenshot"
+/>
+
+## 営業責任者を設定する
+
+営業責任者には広い表示範囲が必要ですが、誤操作による変更から商品価格を保護する必要があります。
+
+| ノード | 設定 |
+| --- | --- |
+| 顧客 | テーブルを`編集可能`に設定します。顧客データを表示できるよう、レコードとフィールドの権限を制限しないままにします。 |
+| 注文 | テーブルを`編集可能`に設定します。営業活動を確認できるよう、レコードとフィールドの権限を制限しないままにします。 |
+| 商品 | テーブルを`編集可能`に設定し、レコード権限では`レコードの読み取り`と`レコードにコメント`だけを許可します。 |
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-director-permissions-en.png"
+  alt="営業責任者の権限を設定"
+  className="docs-screenshot"
+/>
+
+ロール一覧から`ユーザーを追加`または`組織から追加`を使用してメンバーを割り当て、ロールのスイッチが有効になっていることを確認します。
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-director-members-en.png"
+  alt="営業責任者ロールへメンバーを追加"
+  className="docs-screenshot"
+/>
+
+設定後、営業責任者は顧客と注文のデータを確認し、商品へコメントを追加できますが、商品レコードは変更しません。
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-director-view-en.webp"
+  alt="権限設定後の営業責任者のビュー"
+  className="docs-screenshot"
+/>
+
+## 営業担当者を設定する
+
+営業担当者ロールではレコードフィルターを使用し、各担当者が自分の所有するレコードだけを操作できるようにします。
+
+### 顧客
+
+`顧客`を`編集可能`に設定します。
+
+| 権限領域 | 設定 |
+| --- | --- |
+| レコード権限 | 特定の条件に一致するレコードを選択します。`営業担当者` `等しい` `自分 (現在のユーザー)`などのフィルターを追加します。 |
+| レコード操作 | `レコードの読み取り`、`レコードの更新`、`レコードの作成`を許可します。担当者が顧客レコードを削除できないようにする場合は、`レコードの削除`をオフのままにします。 |
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-filter-en.webp"
+  alt="営業担当者用に所有者ベースのレコードフィルターを設定"
+  className="docs-screenshot"
+/>
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-customer-permissions-en.png"
+  alt="営業担当者の顧客権限を設定"
+  className="docs-screenshot"
+/>
+
+### 注文
+
+`販売注文`を`編集可能`に設定します。
+
+| 権限領域 | 設定 |
+| --- | --- |
+| レコード権限 | `営業担当者` `等しい` `自分 (現在のユーザー)`など、同じ所有者ベースのフィルターを使用します。 |
+| レコード操作 | `レコードの読み取り`と`レコードの作成`を許可します。完了済みの注文を変更しない場合は、`レコードの更新`と`レコードの削除`をオフのままにします。 |
+| フィールド権限 | `支払方法`などの機密フィールドでは、そのフィールドの`レコードの読み取り`をオフにして非表示にします。 |
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-order-permissions-en.png"
+  alt="営業担当者の注文権限を設定"
+  className="docs-screenshot"
+/>
+
+営業担当者をロールへ割り当て、ロールを有効なままにします。
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-members-en.png"
+  alt="営業担当者ロールへメンバーを追加"
+  className="docs-screenshot"
+/>
+
+各営業担当者には、所有者フィルターに一致する顧客レコードと注文レコードだけが表示されるようになります。
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-view-en.webp"
+  alt="営業担当者のビューのプレビュー"
+  className="docs-screenshot"
+/>
+
+## データ入力担当者を設定する
+
+データ入力担当者は、商品を追加するだけでかまいません。
+
+| ノード | 設定 |
+| --- | --- |
+| 商品 | テーブルを`編集可能`に設定します。レコード権限では、`レコードの作成`だけを許可します。 |
+| 商品フィールド | リンクされた注文データを非表示にする場合は、`レコードの読み取り`を`注文`リンクフィールドでオフにします。 |
+| 顧客と注文 | これらのテーブルは`アクセス不可`のままにします。 |
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-data-entry-permissions-en.png"
+  alt="データ入力担当者の権限を設定"
+  className="docs-screenshot"
+/>
+
+データ入力担当者をロールへ割り当て、ロールを有効なままにします。
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-data-entry-members-en.png"
+  alt="データ入力担当者ロールへメンバーを追加"
+  className="docs-screenshot"
+/>
+
+設定後、データ入力担当者は新しい商品レコードを追加できますが、既存の商品、顧客、注文データは閲覧できません。
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-data-entry-view-en.webp"
+  alt="データ入力担当者のビューのプレビュー"
+  className="docs-screenshot"
+/>
+
+## 営業レビュー用ビュー
+
+<Tip>営業レビューでは、この設定を使用します。担当者は顧客一覧全体を表示できますが、自分が所有する顧客だけを編集できます。</Tip>
+
+レビュー中、担当者はフォローアップの傾向と顧客の状態を比較するため、すべての顧客レコードを確認する必要がある場合があります。日常的な編集は引き続き自分が所有する顧客に限定し、誤って他の担当者のレコードを変更しないようにします。
+
+既存の`営業担当者`ロールを維持し、会社全体の顧客を表示するための読み取り専用ロールを追加します。担当者は読み取り専用ロールですべての顧客を表示し、`営業担当者`ロールで自分が所有する顧客だけを更新できます。
+
+### 読み取り専用ロールを作成する
+
+`ロールを追加`をクリックし、`全社顧客閲覧者`などの読み取り専用ロールを作成します。
+
+### 顧客へのアクセスを設定する
+
+`顧客`を`編集可能`に設定します。レコード権限では、`レコードの読み取り`だけを許可します。`レコードの更新`、`レコードの削除`、`レコードの作成`は有効にしないでください。このロールですべての顧客レコードを表示できるよう、レコードフィルターは空のままにします。
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-global-customer-viewer-permissions-en.png"
+  alt="全顧客閲覧者の読み取り専用顧客権限を設定"
+  className="docs-screenshot"
+/>
+
+### 営業担当者を割り当てる
+
+ロール一覧へ戻り、レビューアクセスが必要な営業担当者を`全社顧客閲覧者`へ追加します。
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-global-customer-viewer-members-en.png"
+  alt="全顧客閲覧者ロールへメンバーを追加"
+  className="docs-screenshot"
+/>
+
+ユーザーが`営業担当者`と`全社顧客閲覧者`の両方を持つ場合、Teableは権限を組み合わせます。ユーザーはすべての顧客レコードを表示できますが、所有者ベースの`営業担当者`ロールで許可されたレコードだけを更新できます。
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-global-customer-viewer-result-en.webp"
+  alt="全顧客閲覧者権限を持つ営業担当者のビュー"
+  className="docs-screenshot"
+/>

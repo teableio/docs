@@ -1,0 +1,37 @@
+---
+title: "デプロイ"
+description: "Teable Cloud、スタンドアロンのセルフホスト、フル機能のセルフホストプラットフォームから選択します。"
+---
+
+Teable の実行方法は3つあります。必要な機能に応じて選択してください。
+
+| | **Teable Cloud** | **フル機能のセルフホスト** | **スタンドアロンのセルフホスト** |
+|---|---|---|---|
+| テーブル、共同作業、API、オートメーション | ✅ | ✅ | ✅ |
+| AI機能（チャット、エージェント） | ✅ | ✅ | ❌ |
+| アプリビルダー（アプリの構築とデプロイ） | ✅ | ✅ | ❌ |
+| サンドボックス／プレビュー | ✅ | ✅ | ❌ |
+| 実行環境 | [teable.ai](https://teable.ai) — デプロイ不要 | 1台のマシン（Docker）または Kubernetes クラスター | 1台のマシン：アプリ + PostgreSQL |
+| はじめに | [teable.ai](https://teable.ai) | [アーキテクチャ](/ja/deploy/architecture) → [teableio/teable-deployment](https://github.com/teableio/teable-deployment) | [Docker デプロイ](/ja/deploy/docker) |
+
+<Note>
+**すでに Teable を運用していますか？** 既存のデプロイをフル機能のプラットフォームへアップグレードする手順は、デプロイリポジトリの[移行ガイド](https://github.com/teableio/teable-deployment/blob/main/migration/2026-07-basic-to-full-featured.md)で詳しく説明しています。ランタイムプレーンは既存の Teable と並行してインストールされ、データはそのまま維持されます。
+</Note>
+
+## AIエージェントにデプロイを任せる
+
+デプロイリポジトリは、AIエージェントから操作できるように作られています。使用するエージェント環境（Claude Code、Codex など）で [teableio/teable-deployment](https://github.com/teableio/teable-deployment) を指定し、デプロイ先の環境を伝えると、最初から最後までデプロイを実行できます。次の3点を準備してください。
+
+1. **ドメイン** — すべてが1つのベースドメイン（例：`teable.example.com`）から派生します。
+2. **DNSトークン** — DNSレコードと TLS 証明書を自動設定するため、DNS をホストするプラットフォーム（Cloudflare、Route 53 など）の API トークンを用意します。対象の1ゾーンだけに権限を限定してください。
+3. **デプロイ先へのアクセス：**
+
+| デプロイ先 | エージェントに渡すもの |
+|---|---|
+| 自分のマシン — Docker オールインワン、`local` モード | マシン上の Docker だけで構いません。ドメインや DNS トークンは不要です（すべて `*.localhost` で動作します） |
+| クラウドサーバー — Docker オールインワン | マシンへの SSH アクセス |
+| AWS（EKS）／GCP（GKE）／Azure（AKS）のマネージドクラスター | クラスターを作成してから、その `kubeconfig` を渡します |
+| 既存の任意の Kubernetes クラスター | Helm リリースをインストールできる `kubeconfig` |
+
+必要なのはこれだけです。リポジトリ内のガイド、診断スクリプト、バージョンマニフェストに従って、エージェントが残りの作業を進めます。
+

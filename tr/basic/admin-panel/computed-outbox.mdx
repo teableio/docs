@@ -1,0 +1,106 @@
+---
+title: "Hesaplama Giden Kutusu"
+description: "Yönetici Panelinde BullMQ teslimatını ve hesaplama görevi birikimini izleyin."
+---
+
+<Tip>Kendi sunucunuzda barındırılan Business ve üzeri planlarda kullanılabilir</Tip>
+
+Yol: Yönetici Paneli → Hesaplama Giden Kutusu
+
+Formül, arama veya hesaplanan diğer Alan değerleri güncellenmeyi durdurduğunda ya da beklenenden çok daha uzun sürdüğünde **Hesaplama Giden Kutusunu** kullanın. Bu sayfa genel görev durumunu, kuyrukta ilerleyen işleri, kurtarılması gerekebilecek görevleri ve hesaplama görevleri o anda duraklatılmış Alanları gösterir.
+
+## Sistem Durumunu Okuma
+
+Sayfa başlığının yanındaki durum, hesaplama görevlerinin müdahale gerektirip gerektirmediğini gösterir:
+
+| Durum | Anlamı |
+| --- | --- |
+| **Sağlıklı** | Hesaplama görevleri normal şekilde çalışıyor. |
+| **Performansı Düşük** | Teable hatalar, zaman aşımına uğramış görevler veya büyüyen bir birikim tespit etti. |
+| **Kritik** | BullMQ kullanılamıyor veya görevleri işleyecek bir worker yok. |
+
+Durum müdahale gerektirdiğinde sayfada nedeni listelenir.
+
+## Kuyrukta Bir Görev Bulma
+
+**Canlı BullMQ kuyruğu**, Teable'ın hâlâ sakladığı işleri listeler; böylece tek bir hesaplama görevini takip edebilir veya yavaş görevleri arayabilirsiniz.
+
+Varsayılan olarak her satır bir görevi temsil eder ve Teable görevi yeniden denerken satır mevcut konumunda farklı durumlara geçer. Bir görevin tüm deneme geçmişine ihtiyaç duyduğunuzda veya yavaş çalışmaları aramak istediğinizde **Teslimatlar** görünümüne geçin.
+
+Listeyi daraltmak için:
+
+- Duruma göre filtrelemek için Tablonun üzerindeki durum kutucuklarına tıklayın: **Bekliyor**, **Etkin**, **Ertelendi**, **Başarısız**, **Tamamlandı (saklanıyor)** vb. Aynı anda birkaçını seçebilirsiniz; bir kutucuğun üzerine geldiğinizde o durumun anlamı açıklanır.
+- **Alan**, **Veritabanı**, **Neden** veya **Sonuç** ölçütüne göre filtreleyin; görev, Veritabanı, Alan ya da hata arayın veya yavaş görevleri ortaya çıkarmak için asgari işleme süresi belirleyin.
+- **Hesaplama kökenini** açmak için bir satıra tıklayın: kuyruk zaman damgaları, teslimat gecikmesi, işleme süresi, başarısız bir teslimatın maskelenmiş SQL'iyle birlikte tam hata nedeni ve aşağıda açıklanan yayılma ayrıntıları.
+
+<Info>**Tamamlandı**, görevin işlem yaptığı anlamına gelmez. Sonuç rozeti, teslimatın gerçekte ne yaptığını gösterir: **İşlendi** görevi çalıştırdı, **İşlem yok** yapılacak bir şey kalmadığını belirledi, **Ertelendi** görevi daha sonrası için yeniden zamanladı ve **Park edildi** görevin kapsamının duraklatıldığı anlamına gelir. **Sonuç** filtresi listeyi bu sonuca göre daraltıp her birinin kaç teslimatı kapsadığını gösterir; böylece **Tamamlandı (saklanıyor)** ile **İşlendi** eşleştirildiğinde yalnızca görevi gerçekten çalıştıran teslimatlar kalır.</Info>
+
+Başarısız bir satır, takılı kalmış bir görevi değil tek bir teslimat denemesinin geçmişini temsil eder. Kalıcı görev kendi kendine yeniden denemeye devam eder; bu nedenle işlem yapıp yapmayacağınıza karar vermek için **Kayıt defteri durumu** sütununu okuyun: **Sonuçlandı**, sonraki bir yeniden denemenin başarılı olduğu anlamına gelir; **Ölü mektup** ise anomali yönetimine bağlantı verir. Sonuçlanmış hatalar varsayılan olarak gizlenir; bir başlık şeridi bunların sayısını gösterir ve görünür hâle getirmenizi sağlar.
+
+**Başarısız geçmişini temizle**, kuyrukta saklanan başarısız iş Kayıtlarını yalnızca kuyruktan kaldırır. Hiçbir şeyi onarmaz ve ölü mektuplar **Anomali yönetiminde** kalır.
+
+Bir durum kutucuğu, genellikle tahliye veya veri kaybından sonra kalan ve iş verileri artık Redis'te bulunmayan girdileri de sayabilir. Liste bunları gösteremediğinden sayfa, Tablonun altında farkı açıklar. Teable bu kalıntıları başarısız durumundan kendiliğinden temizler; **Başarısız geçmişini temizle** ise bunları hemen kaldırır.
+
+## Bir Değerin Nasıl Yayıldığını İzleme
+
+Hesaplanan bir değer yanlış göründüğünde veya geç ulaştığında arkasındaki zincirin tamamını görmek için **Hesaplama kökenini** açın. Herhangi bir kuyruk satırına ya da anomali ayrıntılarındaki bir görev kimliğinin yanında bulunan **Köken** seçeneğine tıklayın.
+
+| Bölüm | Yanıtladığı soru |
+| --- | --- |
+| Özet | Uçtan uca gecikme, kaynağın ne zaman değiştiği, değerin ne zaman son hâline ulaştığı ve çalışmayı hangi Tablo ve Alanların tetiklediği. **Hesaplanıyor** rozeti zincirin hâlâ çalıştığını belirtir. |
+| **Zaman çizelgesi** | Çalışmanın ne zaman kuyruğa alındığı, başladığı ve tamamlandığı veya başarısız olduğu. |
+| **Görev zinciri** | Basamaklı yapıdaki her görev, kendisini kuyruğa alan görevin altında iç içe gösterilir; böylece bir dalın nereden geldiğini görebilirsiniz. Her satır durumunu, plan adımlarını, **Yazma hedefini** (görevin güncellediği Tablo ve Alanlar), **Değişmiş satırları**, basamak derinliğini, kuyruğa alınma zamanını ve süresini gösterir. |
+| **Alan yayılımı** | Çalışmanın hangi Alanları okuyup yazdığı ve değişikliğin bunlar arasında nasıl ilerlediği. Kesik mavi çizgi bu yazmaya yol açan kaynağı, gri bu çalışmada yazılmayan bir girdiyi, yeşil bu çalışmada yazılanı; oklar ise adım sırası yerine Alan bağımlılıklarını veya bağlantı geçişlerini gösterir. Yalnızca bu çalışmanın yazmalarına gerçekten ulaşan kaynaklar çizilir. Geniş bir zinciri satır içinde takip etmek zor olduğunda grafiği tam ekran açmak için **Genişlet**'i kullanın. |
+
+<Info>Köken kayıt defteri yalnızca bu özellik kullanıma sunulduktan sonra oluşturulan görevleri kaydeder ve 7 günlük geçmişi saklar. Daha eski bir görev, yayılım grafiği olmadan kuyruk bilgilerini gösterir. Worker'ın henüz planlamadığı bir başlangıç görevi yalnızca tetikleyici Alanlarını gösterir. Bir değişiklik aşağı akışta hesaplanan herhangi bir yazma üretmediyse grafik bunu belirtir: Bu Alanlara bir formül, arama, özet veya bağlantı başlığı üzerinden hiçbir şey bağlı değildir.</Info>
+
+## Anormal Görevleri Yönetme
+
+<Info>**Başarısız** sayısı ve **Anomali yönetimi** farklı sorun türlerini gösterdiğinden sayıları farklı olabilir.</Info>
+
+**Anomali yönetimi**, tek bir temel nedenin kolayca fark edilebilmesi için anomalileri her Veritabanı, kaynak Tablo ve hata için bir tane olacak şekilde sorun gruplarında toplar. Herhangi bir şeyi kurtarmadan önce hata nedenini inceleyip temel sorunu giderin. Hata ayrıntılarını ve kapsadığı görevleri okumak için bir grubu genişletin; bu satırlar inceleme amaçlıdır ve kurtarma her zaman grubun tamamında çalışır.
+
+Bir grubun sunduğu eylemler türüne bağlıdır:
+
+| Anomali türü | Eylem | Gerçekleşen işlem |
+| --- | --- | --- |
+| **Ölü mektup** | **Tüm grubu kurtar** | O anda grupta bulunan tüm ölü mektupları kalıcı kuyruğa geri yükleyip yeniden teslim eder. Diğer tüm gruplar değişmeden kalır. |
+| **Ölü mektup** | **Grubu at** (**Diğer eylemler** menüsünde) | Gruptaki ölü mektupları kalıcı olarak siler. Daha sonra kurtarılamaz veya yeniden oynatılamazlar; bu nedenle yalnızca yeniden oynatmanın anlamsız olduğu durumlarda kullanın. |
+| **Zaman aşımına uğradı** | **Son zaman aşımını yeniden etkinleştir** | Gruptaki en yeni görev için kuyruğu uyandırır; böylece bir worker görevi devralabilir. |
+
+Bir grup kurtarıldıktan sonra Teable kaç görevin geri yüklendiğini, kaçının yeni veya daha önce kuyruğa alınmış olduğunu ve kaçının teslim edildiğini veya ertelendiğini bildirir. Worker'lar daha sonra grubu mevcut eş zamanlılık ve görev bölme sınırları altında işler.
+
+**Veritabanı silindi** olarak işaretlenen bir grup, artık mevcut olmayan bir Veritabanına aittir. Kurtarılması hemen yeniden başarısız olacağından sunulan tek eylem **Grubu at** olur.
+
+Bir Tabloyu çöp kutusuna taşımak artık burada anomali oluşturmaz. Çöp kutusundaki bir Tabloya hâlâ başvuran hesaplama görevi, o Tabloyu okuyan adımları atlar, etkin Tabloları hedefleyen adımları tamamlar ve sona erer.
+
+Bir boyut sınırını aşan veya Alan kısıtlamasını ihlal eden bir değer gibi hataya verinin kendisi neden olduğunda kurtarma da kullanılamaz. Aynı görevin yeniden oynatılması aynı şekilde başarısız olur; bu nedenle grubu atıp kaynak verileri veya Alan tanımını düzeltin. Sonraki yazmalar bu Alanları otomatik olarak yeniden hesaplar.
+
+## Bir Alanın Hesaplama Görevlerini Duraklatma
+
+Bir Alanın hesaplama görevleri olayı daha da kötüleştiriyorsa tüm örneği durdurmak yerine **Hesaplama görevi duraklatmaları** bölümünden ilgili Alanı duraklatın.
+
+<Steps>
+  <Step title="Duraklatma iletişim kutusunu açın">**Bir Alanı duraklat**'a tıklayın.</Step>
+  <Step title="Alanı bulun">Alan kimliği veya adıyla arama yapıp sonuçlardan seçin.</Step>
+  <Step title="Süreyi seçin">**Duraklatma süresini** 15, 30, 60 veya 120 dakika olarak ayarlayın.</Step>
+  <Step title="Nedeni kaydedin (isteğe bağlı)">Olayı veya bakım aralığını **Neden** bölümüne yazın.</Step>
+  <Step title="Onaylayın">**Duraklatmayı onayla**'ya tıklayın.</Step>
+</Steps>
+
+Duraklatma, yalnızca worker'ların ilgili Alan için yeni hesaplama görevleri almasını engeller. Çalışmakta olan görevler kesintiye uğramaz ve eşleşen görevler atılmak yerine duraklatma sona erene kadar bekler.
+
+Duraklatma her zaman kendiliğinden sona erer ve ayarlayabileceğiniz en uzun süre iki saattir. Olay daha uzun sürerse Alanı bu sayfadan tekrar duraklatın. Liste; etkin duraklatmaların tamamını, bunları kimin oluşturduğunu, nedenini ve otomatik olarak ne zaman devam edeceğini gösterir. Ayrıca etkin duraklatmaların kaç bekleyen görevi tuttuğunu da belirtir; böylece devam etmenin serbest bırakacağı birikimi değerlendirebilirsiniz. Duraklatmayı erken kaldırmak için satırındaki **Devam et**'e tıklayıp onaylayın.
+
+## Eş Zamanlılığı Ayarlama
+
+Kuyruk bölümünde iki eş zamanlılık denetimi bulunur. Her biri, her işlemin yaklaşık 15 saniye içinde ve yeniden başlatma gerektirmeden aldığı küme genelinde bir geçersiz kılma değeri yazar. Her denetim sıfırlanarak işlemlerin kendi ortam ayarlarına dönmesi sağlanabilir. **Geçersiz kılındı** rozeti, artık varsayılan değerini kullanmayan bir denetimi işaretler.
+
+| Denetim | Sınırladığı öğe |
+| --- | --- |
+| **İşlem başına eş zamanlılık** | Her worker işleminin aynı anda yönettiği hesaplama görevi sayısı. |
+| **Veritabanı başına görev alma sınırları** | Bir Veritabanı için (**Veritabanı başına**) ve içindeki bir kaynak Tablo için (**Başlangıç Tablosu başına**) aynı anda çalışan hesaplama görevi sayısı. Her ikisinin varsayılan değeri 2'dir ve 1 ile 16 arasında değerleri kabul eder. |
+
+Darboğazı tek bir yoğun Veritabanı oluşturuyorsa görev alma sınırlarını, aynı anda çok sayıda Veritabanı kuyruktaysa işlem başına eş zamanlılığı artırın.
+
+<Warning>Daha yüksek eş zamanlılık, veritabanınıza daha fazla yük bindirir. Verilerini bir [veritabanı kiracısında](/tr/basic/admin-panel/database-tenant) saklayan Alanlar, bağlantı havuzları bu değerlere göre boyutlandırıldığından görev alma sınırları için ortam varsayılanlarını kullanmaya devam eder.</Warning>

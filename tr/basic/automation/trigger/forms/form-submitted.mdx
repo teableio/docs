@@ -1,0 +1,75 @@
+---
+title: "Form gönderildiğinde"
+description: "Bir form görünümü gönderildiğinde iş akışını tetikleyin"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Lütfen unutmayın: tüm tetikleyici yapılandırması AI Chat'te yapılabilir. İş akışının ne yapmasını istediğinizi AI'a söyleyin; gerisini o halleder.</Tip>
+
+Bu tetikleyici, birisi belirli bir form görünümünü gönderdiğinde çalışır. Gönderilen tüm alanlar sonraki adımlarda kullanılabilir.
+
+## AI ile oluşturma
+
+Tablonuzun sağ kenar çubuğunda AI Chat'i açın ve ne istediğinizi açıklayın.
+
+AI her şeyi halleder: doğru tetikleyiciyi seçer, ilgili alanları eşler ve tüm eylemleri otomatik olarak yapılandırır.
+
+Hedefinizi bir kez açıklayın; iş akışınız elle yapılandırma gerektirmeden hazır olur.
+
+**Örnek:** *"Birisi iletişim formunu gönderdiğinde onay e-postası gönder."*
+
+## Yapılandırma
+
+| Ayar | Zorunlu | Açıklama |
+|---|---|---|
+| Tablo | Evet | Formun ait olduğu tablo |
+| Form | Evet | Gönderimleri izlenecek belirli form görünümü |
+
+## Nasıl yapılandırılır?
+
+1. Tablonuzda önceden oluşturulmuş bir form görünümü bulunduğundan emin olun. Yoksa görünüm çubuğundaki **+** simgesine tıklayıp **Form**'u seçerek oluşturun.
+2. Otomasyonunuzu açıp yeni bir tetikleyici ekleyin.
+3. **Form gönderildiğinde** seçeneğini belirleyin.
+4. Formu içeren **Tabloyu** seçin.
+5. İzlemek istediğiniz **Form** görünümünü seçin.
+6. Otomasyonu kaydedip etkinleştirin.
+7. Eylem adımlarınızı ekleyin. Gönderilen verilere başvurmak için herhangi bir eylem alanında **+** simgesine tıklayın; tüm form alanları kullanılabilir.
+
+## Sonraki adımlarda kullanılabilen veriler
+
+Bir form gönderildiğinde şu veriler iş akışınıza aktarılır:
+
+- **Kayıt Kimliği** — yeni oluşturulan kaydın benzersiz tanımlayıcısı.
+- **Gönderilen tüm alan değerleri** — formdaki her alana (metin, e-posta, sayı, tarih, seçim, ek vb.) sonraki eylemlerde **+** simgesine tıklanarak başvurulabilir.
+
+Formda bulunmayan alanlar (gizli alanlar) gönderimden değer almaz ancak tabloda belirlenmiş varsayılan değerleri olabilir.
+
+## Form gönderimi aynı zamanda kayıt oluşturur
+
+Form gönderimiyle kayıt oluşturmanın veri düzeyinde aynı olay olduğunu anlamak önemlidir. Birisi form gönderdiğinde tabloya yeni bir kayıt eklenir. Bunun anlamı şudur:
+
+- Aynı tabloda **Kayıt oluşturulduğunda** otomasyonu da varsa bir form gönderiminde *iki* otomasyon da çalışır.
+- Yinelenen işlemeyi önlemek için yalnızca Form Gönderildiğinde tetikleyicisini kullanın veya Kayıt Oluşturulduğunda tetikleyicisine form kaynaklı kayıtları hariç tutan bir filtre ekleyin.
+
+<Note>Form gönderimi özünde kayıt oluşturma işlemidir. Aynı tabloda "Kayıt oluşturulduğunda" tetikleyicisi de yapılandırılmışsa iki iş akışı da çalışır.</Note>
+
+## Ne zaman kullanılır?
+
+- **Gönderimden sonra onay e-postası gönderin.** Bir müşteri iletişim formunu doldurduğunda gönderim ayrıntılarını içeren bir "teşekkür" e-postasını otomatik olarak gönderin.
+- **Yeni destek taleplerini AI ile otomatik sınıflandırın.** Kullanıcının gönderdiği açıklamaya göre talebi kategorilere ayırmak için AI ile Oluştur eylemini kullanın.
+- **Gelen başvuruları ekibinize bildirin.** Birisi iş başvurusu formunu gönderdiğinde Slack'e bildirim gönderin veya işe alım ekibine e-posta yollayın.
+- **Diğer tablolarda bağlantılı kayıtlar oluşturun.** Bir sipariş formu gönderildiğinde "Sipariş Kalemleri" veya "Sevkiyatlar" tablosunda otomatik olarak kayıtlar oluşturun.
+- **Gönderimleri doğrulayıp işaretleyin.** Zorunlu bilgilerin eksiksiz olup olmadığını veya bir değerin aralık dışında kalıp kalmadığını denetleyin; sorun varsa durum alanını "İnceleme Gerekiyor" olarak güncelleyin.
+
+## İpuçları
+
+- Bu tetikleyici her gönderim için bir kez çalışır. Aynı kişi formu iki kez gönderirse iki kez çalışır.
+- Kaynağı ne olursa olsun (elle giriş, API, form) tüm yeni kayıtlarda tetiklemek istiyorsanız bunun yerine [Kayıt oluşturulduğunda](/tr/basic/automation/trigger/records/record-created) seçeneğini kullanın.
+- Aynı formu izleyen birden fazla otomasyonunuz olabilir. Örneğin bir otomasyon onay e-postası gönderirken başka biri bağlantılı görev oluşturabilir.
+- Form görünümleri alan görünürlüğü ayarlarına uyar. Gönderim yalnızca formda görünen alanları doldurur; gizli alanlar varsayılan değerlerini korur veya boş kalır.
+
+## İlgili konular
+
+- [Kayıt oluşturulduğunda](/tr/basic/automation/trigger/records/record-created) — yalnızca form gönderimlerinde değil, tüm kayıt oluşturma yöntemlerinde çalışır
+- [Düğmeye tıklandığında](/tr/basic/automation/trigger/forms/button-click) — kullanıcı mevcut bir satırdaki düğme alanına tıkladığında çalışır
+- [E-posta gönder eylemi](/tr/basic/automation/actions/communication/send-email-overview) — onay göndermek için form gönderimleriyle yaygın olarak kullanılır

@@ -1,0 +1,145 @@
+---
+title: "Query SQL (deprecata)"
+noindex: true
+---
+
+<Tip>
+**Solo self-hosted**: disponibile per tutte le versioni con connessioni illimitate.
+</Tip>
+
+Teable consente di collegarsi al database PostgreSQL sottostante tramite strumenti esterni per eseguire query di sola lettura. Ciò permette l'integrazione con strumenti di BI (PowerBI, Metabase, Superset), client di database (DataGrip, Navicat, TablePlus), piattaforme low-code (Appsmith, Budibase) e codice applicativo.
+
+### Creare una connessione al database
+
+1. **Apri una Tabella**: per prima cosa, apri una Tabella qualsiasi nella Base a cui vuoi collegarti.
+2. **Accedi alla pagina Progettazione**: fai clic sull'icona ⚙️ nell'angolo in alto a destra per accedere alla pagina Progettazione della Base.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-open-design-page-en.png"
+  alt="Apertura della pagina Progettazione della Base"
+  className="docs-screenshot"
+/>
+
+3. **Trova il pannello Connessione al database**: nella pagina Progettazione, individua il pannello «Connessione al database».
+4. **Crea la connessione**: fai clic su Crea; il sistema genererà automaticamente una connessione PostgreSQL di sola lettura con nome utente, password e indirizzo host.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-database-connection-panel-en.png"
+  alt="Pannello Connessione al database"
+  className="docs-screenshot"
+/>
+
+### Collegarsi al database
+
+Usa le credenziali per collegarti tramite lo strumento che preferisci. Ecco un esempio:
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-connection-example.png"
+  alt="Esempio di connessione a un database esterno"
+  className="docs-screenshot"
+/>
+
+### Eseguire query sui dati
+
+Una volta stabilita la connessione, puoi interrogare i dati tramite SQL:
+
+```sql
+SELECT * FROM "bseamGnQT65TVSCzIaC"."clients" LIMIT 100
+```
+
+**Nota:** in PostgreSQL, racchiudi i nomi di schemi e Tabelle tra virgolette doppie `"` per mantenere la distinzione tra maiuscole e minuscole.
+
+Per scrivere questa query, devi conoscere tre elementi:
+- **Nome dello schema (BaseId)**: l'identificatore della Base che inizia con `bse`
+- **Nome della Tabella**: il nome fisico della Tabella in PostgreSQL
+- **Nomi dei Campi**: i nomi effettivi delle colonne nel database
+
+Le sezioni seguenti spiegano come trovare ciascuno di questi elementi.
+
+### Trovare il BaseId (nome dello schema)
+
+Ogni Base in Teable corrisponde a uno **schema** in PostgreSQL. Il BaseId è il nome dello schema utilizzato nelle query SQL.
+
+**Metodo 1:** osserva l'URL: la stringa che inizia con `bse` è il BaseId.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-base-id-url.png"
+  alt="ID della Base nell'URL"
+  className="docs-screenshot"
+/>
+
+**Metodo 2:** nell'interfaccia Progettazione della Base, il nome dello schema visualizzato è il BaseId.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-design-page-schema.png"
+  alt="Nome dello schema nella pagina Progettazione della Base"
+  className="docs-screenshot"
+/>
+
+### Trovare i nomi delle Tabelle
+
+I nomi delle Tabelle nell'interfaccia di Teable non vengono sincronizzati automaticamente con i nomi fisici delle Tabelle del database. Controlla il nome effettivo della Tabella del database nell'interfaccia Progettazione della Base.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-table-info.png"
+  alt="Nome fisico della Tabella nella pagina di progettazione"
+  className="docs-screenshot"
+/>
+
+**Suggerimento:** se necessario, puoi modificare il nome fisico della Tabella nell'interfaccia di progettazione.
+
+### Trovare i nomi dei Campi
+
+I nomi dei Campi (colonne) nel database possono essere diversi da quelli nell'interfaccia di Teable. Controlla il `dbFieldName` nell'interfaccia di progettazione.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-db-field-name.png"
+  alt="Nome del Campo DB nella pagina di progettazione"
+  className="docs-screenshot"
+/>
+
+**Suggerimento:** la modifica dei nomi dei Campi in Teable non viene sincronizzata automaticamente. Modifica esplicitamente `dbFieldName` per cambiare il nome effettivo della colonna in PostgreSQL.
+
+### Campi di sistema
+
+Teable crea automaticamente questi Campi di sistema, che non possono essere rinominati:
+
+| Campo | Descrizione |
+|-------|-------------|
+| `__id` | ID univoco |
+| `__version` | Numero di versione |
+| `__auto_number` | Numero autoincrementale, chiave primaria |
+| `__created_time` | Data e ora di creazione |
+| `__last_modified_time` | Data e ora dell'ultima modifica |
+| `__created_by` | ID dell'autore |
+| `__last_modified_by` | ID dell'autore dell'ultima modifica |
+| `__row*` | Campi indice della Vista, utilizzati per mantenere l'ordine dei Record |
+| `__fk*` | Chiavi esterne per i Campi di relazione |
+
+### Tabelle di giunzione
+
+Le Tabelle che iniziano con `junction_` vengono generate dal sistema per gestire le relazioni ManyToMany e unidirezionali.
+
+### Note sulle autorizzazioni
+
+La connessione al database è limitata esclusivamente alla Base corrente. Gli schemi PostgreSQL garantiscono l'isolamento delle autorizzazioni, assicurando che sia possibile accedere soltanto alle Tabelle della propria Base.
+
+Durante la connessione potresti vedere altri baseId (nomi di schema), ma non potrai accedere al loro contenuto.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-tableplus-base-id.png"
+  alt="ID della Base in TablePlus"
+  className="docs-screenshot"
+/>
+
+### Limiti di connessione
+
+Il limite predefinito è di 20 connessioni simultanee.
+
+### Scrivere dati
+
+Teable non consente la scrittura diretta nel database tramite connessioni esterne. Per modificare i dati, usa invece l'[API di Teable](/it/api-doc/token).
+
+### Chiudere la connessione
+
+Nel pannello Connessione al database, fai clic su Elimina per chiudere la connessione. La vecchia password verrà cancellata e la creazione di una nuova connessione genererà nuove credenziali.

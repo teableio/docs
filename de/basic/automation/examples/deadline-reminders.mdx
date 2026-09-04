@@ -1,0 +1,34 @@
+---
+title: "Vor Fälligkeit von Aufgaben Erinnerungen senden"
+description: "Senden Sie zugewiesenen Personen automatisch E-Mails zu bald fälligen Aufgaben"
+---
+
+<Tip>Wir empfehlen, Automatisierungsbeispiele direkt im KI-Chat zu erstellen. Beschreiben Sie einfach den gewünschten Workflow, und die KI übernimmt die vollständige Einrichtung für Sie – einschließlich Auslöser, Aktionen, Skript und Konfiguration.</Tip>
+
+## Mit KI erstellen
+
+Öffnen Sie den KI-Chat in der rechten Seitenleiste Ihrer Tabelle und teilen Sie der KI mit, was Sie möchten. Sie können zum Beispiel sagen:
+
+*„Suche jeden Morgen um 8 Uhr nach Aufgaben, die innerhalb der nächsten 2 Tage fällig und noch nicht abgeschlossen sind, und sende jeder zugewiesenen Person eine Erinnerung per E-Mail.“*
+
+Die KI erstellt automatisch den vollständigen Workflow. Sie können das erzeugte Skript überprüfen, mit echten Daten testen und den Workflow aktivieren, sobald er bereit ist.
+
+## Manuelle Einrichtung
+
+1. **Erstellen Sie einen Workflow** mit dem Auslöser **Zum geplanten Zeitpunkt** – täglich um 08:00 Uhr.
+2. **Fügen Sie eine Aktion hinzu** → **Datensätze abrufen**.
+   - Tabelle: **Aufgaben**
+   - Filter: `Fälligkeitsdatum` **liegt innerhalb** der `nächsten 2 Tage` UND `Status` **ist nicht** `Abgeschlossen`
+3. Klicken Sie auf **Testen**, um passende Datensätze anzuzeigen.
+4. **Fügen Sie eine Aktion hinzu** → **E-Mail senden** mit aktivierter **Schleife**.
+5. Wählen Sie das Array aus dem Schritt „Datensätze abrufen“ als Schleifenquelle aus.
+6. Ordnen Sie Folgendes zu:
+   - An → E-Mail-Adresse der zugewiesenen Person (über **+**, mit Verweis auf das aktuelle Schleifenelement)
+   - Betreff: `Erinnerung: „<aufgabentitel>“ ist bald fällig`
+   - Text: `Ihre Aufgabe „<aufgabentitel>“ ist am <fälligkeitsdatum> fällig. Bitte aktualisieren Sie den Status nach Abschluss.`
+7. Klicken Sie auf **Testen** und anschließend auf **Aktivieren**.
+
+## Tipps
+
+- Passen Sie das Filterzeitfenster („nächste 2 Tage“, „nächste 7 Tage“) daran an, wie dringend Ihre Aufgaben üblicherweise sind.
+- Fügen Sie eine Bedingung hinzu, sodass nur für Aufgaben mit einer nicht leeren zugewiesenen Person E-Mails versendet werden.

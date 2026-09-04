@@ -1,0 +1,62 @@
+---
+title: "Einzelwert und mehrere Werte"
+description: "Erläutert, ob eine Feldzelle einen einzelnen Wert oder eine Gruppe von Werten speichert."
+---
+
+Einzelwert und mehrere Werte beschreiben, ob eine Zelle einen einzelnen Wert oder eine Gruppe von Werten speichert. Wenn Sie dieses Konzept verstanden haben, wird deutlicher, warum Verknüpfungen, Suchfelder, Rollups und Formeln mehrere Ergebnisse zurückgeben können.
+
+## Grundbegriffe
+
+| Typ | Beschreibung | Beispiel |
+| --- | --- | --- |
+| Einzelwert | Eine bestimmte Information | „das heutige Datum“, „Johns Telefonnummer“ |
+| Mehrere Werte | Eine Gruppe von Werten, auch als Array bezeichnet | „alle Datumsangaben dieses Monats“, „alle Telefonnummern von John“ |
+
+## Standardzustände für einzelne und mehrere Werte
+
+| Feldtyp | Standardzustand |
+| --- | --- |
+| Einzeiliger Text, Langtext | Einzeln |
+| Einfachauswahl, Kontrollkästchen, Datum, Zahl, Bewertung | Einzeln |
+| Erstellungszeit, letzte Änderungszeit, erstellt von, zuletzt geändert von, automatische Nummer, Schaltfläche | Einzeln |
+| Mehrfachauswahl, Anhang | Mehrfach |
+| Benutzer | Optional |
+| Verknüpfung | Optional |
+| Formel, Rollup | Dynamisch |
+
+„Standardzustand“ bezeichnet hier den üblichen eigenständigen Zustand des Felds. **Optional** bedeutet, dass Sie über die Feldeinstellungen festlegen können, ob das Feld einen einzelnen oder mehrere Werte enthält. **Dynamisch** bedeutet, dass das Ergebnis von der Formellogik, den Rollup-Funktionen und davon abhängt, ob referenzierte Felder mehrere Werte enthalten. Nachdem ein Wert eine Verknüpfung, ein Suchfeld, ein Rollup oder einen Formelverweis durchlaufen hat, kann sich sein Zustand ändern.
+
+## Zustandsänderungen durch Verknüpfungen und Referenzen
+
+- **Verknüpfungsfelder**: Wenn ein Verknüpfungsfeld mehrere Werte enthält, können auch Felder, auf die über diese Verknüpfung verwiesen wird, mehrere Werte enthalten. Wenn beispielsweise eine Aufgabe mehreren Mitarbeitern zugewiesen werden kann, kann die Suche nach Telefonnummern der Mitarbeiter über diese Verknüpfung mehrere Telefonnummern zurückgeben.
+- **Formeln und Rollups**: Formeln und Rollups enthalten häufig einen einzelnen Wert, können jedoch mehrere Werte enthalten, wenn sie auf Felder mit mehreren Werten verweisen.
+
+### Beispiel
+
+Angenommen, Sie verwalten in Teable ein Unternehmen mit zwei Tabellen: `Mitarbeiterinformationen` und `Projektaufgaben`.
+
+**Tabelle „Mitarbeiterinformationen“**
+
+| Name | Telefon | E-Mail | Aufgaben |
+| --- | --- | --- | --- |
+| John | 123456 | john@company.com | Aufgabe 1, Aufgabe 2 |
+| Mary | 789012 | mary@company.com | Aufgabe 3 |
+
+**Tabelle „Projektaufgaben“**
+
+| Aufgabenname | Zuständige Person | Fälligkeitsdatum | Fortschritt |
+| --- | --- | --- | --- |
+| Aufgabe 1 | John | 2023-11-20 | 50% |
+| Aufgabe 2 | John | 2023-12-01 | 30% |
+| Aufgabe 3 | Mary | 2023-11-15 | 80% |
+
+In diesem Beispiel:
+
+- Das Feld „Aufgaben“ in der Tabelle **Mitarbeiterinformationen** enthält mehrere Werte, da ein Mitarbeiter für mehrere Aufgaben verantwortlich sein kann.
+- Das Feld „Zuständige Person“ in der Tabelle **Projektaufgaben** enthält einen einzelnen Wert, da jede Aufgabe genau eine zuständige Person hat.
+
+Wenn Sie in der Tabelle „Projektaufgaben“ eine neue Aufgabe erstellen und sie einem Mitarbeiter zuweisen, wird das Feld „Aufgaben“ dieses Mitarbeiters in der Tabelle „Mitarbeiterinformationen“ aktualisiert und enthält dann alle zugewiesenen Aufgaben.
+
+### Mini-Diagramme für Zahlen
+
+Zahlenfelder zeigen manchmal mehrere Linien oder Balken anstelle einer einzelnen Zahl an. Das bedeutet in der Regel, dass das Feld mehrere Werte enthält, häufig aufgrund einer Verknüpfung, eines Suchfelds, eines Rollups oder eines Formelverweises.

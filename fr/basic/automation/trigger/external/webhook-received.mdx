@@ -1,0 +1,155 @@
+---
+title: "À la réception d’un webhook"
+description: "Déclenchez un flux de travail à la réception d’une requête HTTP provenant d’un système externe"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Remarque : vous pouvez configurer tous les déclencheurs dans le Chat IA. Indiquez à l’IA ce que le flux de travail doit accomplir et elle se chargera du reste.</Tip>
+
+Ce déclencheur génère une URL unique. Lorsqu’un système externe lui envoie une requête HTTP POST, le flux de travail s’exécute.
+
+## Créer avec l’IA
+
+Ouvrez le Chat IA dans la barre latérale droite de votre table et décrivez ce que vous souhaitez.
+
+L’IA s’occupe de tout : elle choisit le bon déclencheur, associe les champs pertinents et configure automatiquement toutes les actions.
+
+Décrivez une seule fois votre objectif et le flux de travail est prêt, sans aucune configuration manuelle.
+
+**Exemple :** *"Lorsque je reçois un webhook de paiement Stripe, crée un enregistrement de commande."*
+
+## Configuration
+
+| Paramètre | Obligatoire | Description |
+|---|---|---|
+| Autorisation | Non | **Aucune** (publique : toute personne disposant de l’URL peut la déclencher) ou **Jeton Bearer** (un jeton généré automatiquement doit figurer dans l’en-tête de la requête) |
+| Réponse | Non | **Par défaut** (Teable renvoie son propre accusé de réception) ou **Personnalisée** (vous choisissez le code d’état, le type de contenu et le corps) |
+
+## Procédure de configuration
+
+1. Ouvrez votre automatisation et ajoutez un nouveau déclencheur.
+2. Sélectionnez **À la réception d’un webhook**.
+3. Le déclencheur génère immédiatement une **URL de webhook** unique. Copiez cette URL : vous en aurez besoin dans le système externe.
+4. (Facultatif, mais recommandé) Cliquez sur **Générer un jeton** pour activer l’autorisation par jeton Bearer. Un jeton est alors créé et doit être inclus dans l’en-tête `Authorization` des requêtes entrantes.
+5. Enregistrez et activez l’automatisation.
+6. Configurez votre système externe pour qu’il envoie une requête POST à l’URL du webhook. Incluez le jeton dans l’en-tête si vous avez activé l’autorisation.
+7. Envoyez une requête de test (voir les exemples ci-dessous). Consultez l’historique d’exécution de l’automatisation pour vérifier que les données ont été correctement reçues.
+8. Ajoutez vos étapes d’action. Cliquez sur **+** dans n’importe quel champ d’action pour référencer les valeurs du corps JSON du webhook.
+
+## Données accessibles aux étapes suivantes
+
+L’intégralité du corps JSON de la requête POST entrante est disponible sous forme de variables. Par exemple, si vous envoyez :
+
+```json
+{
+  "order_id": "12345",
+  "customer": "Alice",
+  "amount": 99.95
+}
+```
+
+Dans vos actions, vous pouvez ensuite référencer séparément `order_id`, `customer` et `amount` en cliquant sur **+**, puis en accédant aux champs de sortie du déclencheur.
+
+Teable analyse automatiquement le JSON et crée des variables nommées pour chaque clé de premier niveau. Les objets imbriqués sont également accessibles.
+
+## Personnaliser la réponse
+
+Par défaut, Teable répond à chaque requête entrante avec son propre accusé de réception. Certaines plateformes ne l’acceptent pas : elles vérifient une URL d’abonnement en envoyant une requête de contrôle et exigent que votre point de terminaison leur renvoie la valeur d’un champ. Slack fonctionne ainsi ; ses événements ne peuvent donc atteindre une automatisation qu’une fois que le webhook a répondu à cette requête de validation.
+
+Dans le panneau du déclencheur, faites passer **Réponse** de **Par défaut** à **Personnalisée** :
+
+| Champ | Description |
+|---|---|
+| **Code d’état** | Tout code compris entre 200 et 299. La valeur par défaut est 200. |
+| **Type de contenu** | **JSON** ou **texte brut**. La valeur par défaut est JSON. |
+| **Corps de la réponse** | Texte à renvoyer. Utilisez `{{body.<path>}}` pour insérer des valeurs provenant de la requête entrante. |
+
+Lorsque vous sélectionnez **Personnalisée**, le corps est prérempli avec la réponse de validation dont la plupart des appelants ont besoin :
+
+```json
+{"challenge":"{{body.challenge}}"}
+```
+
+Les chemins entre `{{ }}` sont les mêmes que ceux exposés par le déclencheur sous forme de variables de sortie. Vous pouvez donc copier directement un chemin depuis une charge utile déjà reçue lors d’une exécution de test. Les valeurs imbriquées fonctionnent également, par exemple `{{body.event.type}}`. Dans un corps JSON, un chemin absent de la requête est rendu sous la forme `null`, ce qui garantit la validité du JSON renvoyé.
+
+<Info>Slack ne peut pas envoyer d’en-tête `Authorization`. Lorsque vous le connectez, laissez donc le paramètre **Autorisation** défini sur **Aucune**. Le panneau du déclencheur affiche un avertissement si les deux options sont activées simultanément.</Info>
+
+Vous pouvez à tout moment faire repasser **Réponse** à **Par défaut** pour rétablir l’accusé de réception propre à Teable. Les automatisations qui n’utilisent jamais ce paramètre ne sont pas affectées.
+
+## Tester votre webhook
+
+La méthode la plus simple consiste à utiliser `curl` depuis la ligne de commande. Copiez l’URL réelle depuis le panneau du déclencheur plutôt que de la saisir manuellement : elle contient les identifiants de la base et du flux de travail.
+
+**Sans autorisation :**
+
+```bash
+curl -X POST https://your-teable-instance.com/api/webhook/base/bseXXXXXXXXXXXX/workflow/wflXXXXXXXXXXXX \
+  -H "Content-Type: application/json" \
+  -d '{"test": true, "message": "Bonjour depuis curl"}'
+```
+
+**Avec autorisation par jeton Bearer :**
+
+```bash
+curl -X POST https://your-teable-instance.com/api/webhook/base/bseXXXXXXXXXXXX/workflow/wflXXXXXXXXXXXX \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-generated-token" \
+  -d '{"order_id": "12345", "status": "payé"}'
+```
+
+**Envoi de données plus complexes :**
+
+```bash
+curl -X POST https://your-teable-instance.com/api/webhook/base/bseXXXXXXXXXXXX/workflow/wflXXXXXXXXXXXX \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-generated-token" \
+  -d '{
+    "event": "invoice.paid",
+    "data": {
+      "invoice_id": "INV-001",
+      "amount": 250.00,
+      "currency": "USD",
+      "customer_email": "alice@example.com"
+    }
+  }'
+```
+
+Après l’envoi d’une requête de test, consultez l’historique d’exécution de l’automatisation pour confirmer que les données ont été correctement reçues et analysées.
+
+## Limites de débit
+
+| Portée | Limite |
+|---|---|
+| Par base | 50 requêtes/seconde |
+| Par flux de travail | 2 requêtes/seconde |
+
+Les requêtes qui dépassent la limite de débit reçoivent une réponse HTTP 429. Si votre système externe envoie des rafales de requêtes, envisagez de mettre en œuvre une logique de nouvelle tentative avec délai exponentiel.
+
+## Bonnes pratiques de sécurité
+
+- **Utilisez toujours l’autorisation par jeton Bearer** pour les webhooks de production. Une URL de webhook publique peut être déclenchée par toute personne qui la découvre.
+- **Gardez l’URL de votre webhook confidentielle.** Traitez-la comme un mot de passe. Ne l’enregistrez pas dans un dépôt public et ne la partagez pas sur des canaux ouverts.
+- **Régénérez le jeton** si vous pensez qu’il a été compromis. Vous pouvez générer un nouveau jeton à tout moment depuis le panneau du déclencheur.
+- **Validez les données dans votre flux de travail.** Ne supposez pas que les données entrantes sont correctement structurées. Utilisez des filtres ou des étapes de script pour vérifier la présence des champs obligatoires avant de les traiter.
+- **Surveillez l’historique d’exécution.** Consultez régulièrement les journaux d’exécution de votre automatisation pour repérer les requêtes inattendues ou non autorisées.
+
+## Cas d’utilisation
+
+- **Recevoir des événements de paiement provenant de Stripe ou PayPal.** Configurez un webhook Stripe pour envoyer des événements `invoice.paid` à votre automatisation Teable afin de créer ou de mettre à jour automatiquement les enregistrements de commande.
+- **Accepter les soumissions de formulaires de votre site Web.** Faites pointer le formulaire de contact ou d’inscription de votre site vers l’URL du webhook afin de créer directement des enregistrements dans Teable.
+- **Ingérer des données provenant d’appareils IoT.** Les capteurs ou appareils capables d’envoyer des requêtes HTTP peuvent transmettre des données à Teable à des fins de surveillance et d’alerte.
+- **Connecter des pipelines CI/CD.** Déclenchez des flux de travail lorsqu’une compilation réussit ou échoue : créez des enregistrements, envoyez des notifications ou mettez à jour le statut du projet.
+- **Recevoir des événements provenant de n’importe quel outil SaaS.** De nombreux outils (GitHub, Jira, Shopify, Twilio, etc.) prennent en charge les notifications par webhook. Faites-les pointer vers votre webhook Teable afin d’automatiser les flux de travail entre outils.
+
+## Conseils
+
+- Le webhook n’accepte que les requêtes **POST**. Les méthodes GET, PUT et autres ne déclenchent pas l’automatisation.
+- Envoyez toujours un en-tête `Content-Type: application/json`. Si le corps n’est pas un JSON valide, le déclencheur risque de ne pas analyser correctement les données.
+- Si vous devez envoyer des données depuis un système qui ne prend pas en charge les en-têtes personnalisés (pour l’autorisation Bearer), envisagez d’utiliser le mode public tout en ajoutant au corps JSON une clé secrète que votre flux de travail validera au moyen d’un filtre ou d’un script.
+- Pour le débogage, vous pouvez utiliser des services comme [webhook.site](https://webhook.site) afin d’examiner ce que votre système externe envoie réellement avant de le faire pointer vers Teable.
+
+## Pages associées
+
+- [Action Requête HTTP](/fr/basic/automation/actions/logic/http-request) — équivalent sortant permettant d’appeler des API externes depuis votre flux de travail
+- [Exécuter un script](/fr/basic/automation/ai/scripting/runscript) — pour le traitement avancé des charges utiles de webhook
+- [Action Boucle (traitement par lots)](/fr/basic/automation/actions/logic/loop-run) — traite les tableaux présents dans les charges utiles de webhook

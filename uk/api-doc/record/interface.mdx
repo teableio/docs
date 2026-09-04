@@ -1,0 +1,449 @@
+---
+title: "Інтерфейс Полів Запису"
+---
+
+<Note>Поле пошуку не є окремим типом Поля. У пов’язаній Базі можна шукати Поле будь-якого типу. Тип Поля пошуку визначається вихідним Полем у пов’язаній Базі та має властивість isLookup. Поля пошуку не можна редагувати.</Note>
+
+<Note>
+За певних умов усі значення, що повертаються Полями, можуть мати `isMultipleCellValue: true`:
+
+1. Це відбувається, коли Поле є Полем пошуку. Якщо пов’язане значення допускає множинний вибір, значення Поля пошуку обов’язково буде масивом.
+
+2. Поля можна налаштовувати: наприклад, для Полів користувачів і Полів зв’язків можна встановити одиночний або множинний вибір. У коді можна використовувати `field.isMultipleCellValue`, щоб визначити, чи приймає Поле кілька значень.
+</Note>
+
+<Note>
+Не використовуйте тип Поля для визначення дозволів на запис. Натомість використовуйте властивість isComputed Поля.
+</Note>
+
+### 1. Числове Поле
+* тип: number
+* Тип запису: `number`
+* Тип повернення:
+  * `isMultipleCellValue: false`: `number`
+  * `isMultipleCellValue: true`: `number[]`
+
+Приклад:
+```js
+// Значення для запису
+42
+
+// Повернене значення (isMultipleCellValue: false)
+42
+
+// Повернене значення (isMultipleCellValue: true)
+[42, 17, 99]
+```
+
+### 2. Поле однорядкового тексту
+* тип: singleLineText
+* Тип запису: `string`
+* Тип повернення:
+  * `isMultipleCellValue: false`: `string`
+  * `isMultipleCellValue: true`: `string[]`
+
+Приклад:
+```js
+// Значення для запису
+"Вітаємо, Teable!"
+
+// Повернене значення (isMultipleCellValue: false)
+"Вітаємо, Teable!"
+
+// Повернене значення (isMultipleCellValue: true)
+["Вітаємо, Teable!", "Ласкаво просимо", "Добрий день"]
+```
+
+### 3. Поле довгого тексту
+* тип: longText
+* Тип запису: `string`
+* Тип повернення:
+  * `isMultipleCellValue: false`: `string`
+  * `isMultipleCellValue: true`: `string[]`
+
+Приклад:
+```js
+// Значення для запису
+"Це поле довгого тексту, яке може містити кілька абзаців..."
+
+// Повернене значення (isMultipleCellValue: false)
+"Це поле довгого тексту, яке може містити кілька абзаців..."
+
+// Повернене значення (isMultipleCellValue: true)
+["Це довгий текст...", "Ще один довгий текст...", "Іще один довгий текст..."]
+```
+
+### 4. Поле одиночного вибору
+* тип: singleSelect
+* Тип запису: `string` (значення варіанта)
+* Тип повернення:
+  * `isMultipleCellValue: false`: `string`
+  * `isMultipleCellValue: true`: `string[]`
+
+Приклад:
+```js
+// Значення для запису
+"Варіант A"
+
+// Повернене значення (isMultipleCellValue: false)
+"Варіант A"
+
+// Повернене значення (isMultipleCellValue: true)
+["Варіант A", "Варіант B", "Варіант C"]
+```
+
+### 5. Поле множинного вибору
+* тип: multipleSelect
+* Тип запису: `string[]` (масив значень варіантів)
+* Тип повернення: `string[]`
+
+Приклад:
+```js
+// Значення для запису
+["Червоний", "Синій", "Зелений"]
+
+// Повернене значення
+["Червоний", "Синій", "Зелений"]
+```
+
+### 6. Поле зв’язку
+* тип: link
+* Тип запису:
+  * `isMultipleCellValue: false`: `{ id: string }`
+  * `isMultipleCellValue: true`: `{ id: string }[]`
+* Тип повернення:
+  * `isMultipleCellValue: false`: `{ id: string, title?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title?: string }[]`
+
+Приклад:
+```js
+// Значення для запису (isMultipleCellValue: false)
+{ id: "rec123456" }
+
+// Значення для запису (isMultipleCellValue: true)
+[{ id: "rec123456" }, { id: "rec789012" }]
+
+// Повернене значення (isMultipleCellValue: false)
+{ id: "rec123456", title: "Пов’язаний запис 1" }
+
+// Повернене значення (isMultipleCellValue: true)
+[
+  { id: "rec123456", title: "Пов’язаний запис 1" },
+  { id: "rec789012", title: "Пов’язаний запис 2" }
+]
+```
+
+### 7. Поле формули
+* тип: formula
+* Тип запису: не підтримує безпосередній запис
+* Тип повернення: залежить від результату формули; може бути `string | number | boolean` або масивом одного з цих типів
+
+Приклад:
+```js
+// Повернене значення (isMultipleCellValue: false)
+42 // або "Результат", або true
+
+// Повернене значення (isMultipleCellValue: true)
+[42, 17, 99] // або ["Результат1", "Результат2"], або [true, false, true]
+```
+
+### 8. Поле вкладень
+Щоб завантажити вкладення в Поле вкладень, скористайтеся спеціальним API. Докладніше див. у розділі [Завантаження вкладення](/uk/api-doc/record/upload-attachment).
+* тип: attachment
+* Тип запису:
+  ```ts
+  {
+    id: string;
+    name: string;
+    path: string;
+    token: string; // Унікальний ідентифікатор
+    size: number; // Розмір файлу в байтах
+    mimetype: string; // Тип файлу
+    presignedUrl?: string; // URL для перегляду або завантаження файлу
+    width?: number; // Ширина зображення
+    height?: number; // Висота зображення
+  }[]
+  ```
+
+* Тип повернення:
+```ts
+{
+  id: string;
+  name: string;
+  path: string;
+  token: string; // Унікальний ідентифікатор
+  size: number; // Розмір файлу в байтах
+  mimetype: string; // Тип файлу
+  presignedUrl?: string; // URL для перегляду або завантаження файлу
+  width?: number; // Ширина зображення
+  height?: number; // Висота зображення
+}[]
+```
+
+Приклад:
+```js
+// Значення для запису
+[
+  {
+    name: "document.pdf",
+    type: "application/pdf",
+    token: "abc123",
+    size: 1024000
+  }
+]
+
+// Повернене значення
+[
+  {
+    id: "att123",
+    name: "document.pdf",
+    path: "/uploads/document.pdf",
+    token: "abc123",
+    size: 1024000,
+    mimetype: "application/pdf",
+    presignedUrl: "https://app.teable.ai/preview/document.pdf",
+  },
+  {
+    id: "att456",
+    name: "image.jpg",
+    path: "/uploads/image.jpg",
+    token: "def456",
+    size: 2048000,
+    mimetype: "image/jpeg",
+    presignedUrl: "https://app.teable.ai/preview/image.jpg",
+    width: 1920,
+    height: 1080
+  }
+]
+```
+
+### 9. Поле дати
+* тип: date
+* Тип запису: `string` (формат ISO 8601)
+* Тип повернення:
+  * `isMultipleCellValue: false`: `string` (формат ISO 8601)
+  * `isMultipleCellValue: true`: `string[]` (формат ISO 8601)
+Щоб отримати час у форматі ISO 8601, можна використати `new Date().toISOString()`
+
+Приклад:
+```js
+// Значення для запису
+"2024-09-02T02:51:03.875Z"
+
+// Повернене значення (isMultipleCellValue: false)
+"2024-09-02T02:51:03.875Z"
+
+// Повернене значення (isMultipleCellValue: true)
+["2024-09-02T02:51:03.875Z", "2024-09-02T02:51:03.875Z"]
+```
+
+### 10. Поле часу створення
+* тип: createdTime
+* Тип запису: не підтримує безпосередній запис
+* Тип повернення:
+  * `isMultipleCellValue: false`: `string` (формат ISO 8601)
+  * `isMultipleCellValue: true`: `string[]` (формат ISO 8601)
+
+Приклад:
+```js
+// Повернене значення (isMultipleCellValue: false)
+"2024-09-02T02:51:03.875Z"
+
+// Повернене значення (isMultipleCellValue: true)
+["2024-09-02T02:51:03.875Z", "2024-09-02T02:51:03.875Z"]
+```
+
+### 11. Поле часу останньої зміни
+* тип: lastModifiedTime
+* Тип запису: не підтримує безпосередній запис
+* Тип повернення:
+  * `isMultipleCellValue: false`: `string` (формат ISO 8601)
+  * `isMultipleCellValue: true`: `string[]` (формат ISO 8601)
+
+Приклад:
+```js
+// Повернене значення (isMultipleCellValue: false)
+"2023-04-15T10:30:00Z"
+
+// Повернене значення (isMultipleCellValue: true)
+["2023-04-15T10:30:00Z", "2023-04-16T14:45:00Z"]
+```
+
+### 12. Поле прапорця
+* тип: checkbox
+* Тип запису: `boolean`
+* Тип повернення:
+  * `isMultipleCellValue: false`: `boolean`
+  * `isMultipleCellValue: true`: `boolean[]`
+
+Приклад:
+```js
+// Значення для запису
+true
+
+// Повернене значення (isMultipleCellValue: false)
+true
+
+// Повернене значення (isMultipleCellValue: true)
+[true, false, true]
+```
+
+### 13. Поле агрегації
+* тип: rollup
+* Тип запису: не підтримує безпосередній запис
+* Тип повернення: залежить від налаштування агрегації; може бути `number | string` або масивом одного з цих типів
+
+Приклад:
+```js
+// Повернене значення (isMultipleCellValue: false)
+42 // або "Підсумковий результат"
+
+// Повернене значення (isMultipleCellValue: true)
+[42, 17, 99] // або ["Підсумок 1", "Підсумок 2"]
+```
+
+### 14. Поле рейтингу
+* тип: rating
+* Тип запису: `number`
+* Тип повернення:
+  * `isMultipleCellValue: false`: `number`
+  * `isMultipleCellValue: true`: `number[]`
+
+Приклад:
+```js
+// Значення для запису
+4
+
+// Повернене значення (isMultipleCellValue: false)
+4
+
+// Повернене значення (isMultipleCellValue: true)
+[4, 3, 5]
+```
+
+### 15. Поле автоматичної нумерації
+* тип: autoNumber
+* Тип запису: не підтримує безпосередній запис
+* Тип повернення:
+  * `isMultipleCellValue: false`: `number`
+  * `isMultipleCellValue: true`: `number[]`
+
+Приклад:
+```js
+// Повернене значення (isMultipleCellValue: false)
+42
+
+// Повернене значення (isMultipleCellValue: true)
+[42, 43, 44]
+```
+
+### 16. Поле користувача
+
+* тип: user
+* Тип запису:
+  * `isMultipleCellValue: false`: `{ id: string, title: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string }[]`
+* Тип повернення:
+  * `isMultipleCellValue: false`: `{ id: string, title: string, email?: string, avatar?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string, email?: string, avatar?: string }[]`
+
+Приклад:
+```js
+// Значення для запису (isMultipleCellValue: false)
+{ id: "user123", title: "John Doe" }
+
+// Значення для запису (isMultipleCellValue: true)
+[
+  { id: "user123", title: "John Doe" },
+  { id: "user456", title: "Jane Smith" }
+]
+
+// Повернене значення (isMultipleCellValue: false)
+{
+  id: "user123",
+  title: "John Doe",
+  email: "john@example.com",
+  avatar: "https://example.com/avatar.jpg"
+}
+
+// Повернене значення (isMultipleCellValue: true)
+[
+  {
+    id: "user123",
+    title: "John Doe",
+    email: "john@example.com",
+    avatar: "https://example.com/avatar1.jpg"
+  },
+  {
+    id: "user456",
+    title: "Jane Smith",
+    email: "jane@example.com",
+    avatar: "https://example.com/avatar2.jpg"
+  }
+]
+```
+
+### 17. Поле автора
+* Тип запису: не підтримує безпосередній запис
+* Тип повернення:
+  * `isMultipleCellValue: false`: `{ id: string, title: string, email?: string, avatar?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string, email?: string, avatar?: string }[]`
+Приклад:
+```js
+// Повернене значення (isMultipleCellValue: false)
+{
+  id: "user123",
+  title: "John Doe",
+  email: "john@example.com",
+  avatar: "https://example.com/avatar.jpg"
+}
+
+// Повернене значення (isMultipleCellValue: true)
+[
+  {
+    id: "user123",
+    title: "John Doe",
+    email: "john@example.com",
+    avatar: "https://example.com/avatar1.jpg"
+  },
+  {
+    id: "user456",
+    title: "Jane Smith",
+    email: "jane@example.com",
+    avatar: "https://example.com/avatar2.jpg"
+  }
+]
+```
+
+### 18. Поле автора останньої зміни
+* Тип запису: не підтримує безпосередній запис
+* Тип повернення:
+  * `isMultipleCellValue: false`: `{ id: string, title: string, email?: string, avatar?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string, email?: string, avatar?: string }[]`
+
+Приклад:
+```js
+// Повернене значення (isMultipleCellValue: false)
+{
+  id: "user123",
+  title: "John Doe",
+  email: "john@example.com",
+  avatar: "https://example.com/avatar.jpg"
+}
+
+// Повернене значення (isMultipleCellValue: true)
+[
+  {
+    id: "user123",
+    title: "John Doe",
+    email: "john@example.com",
+    avatar: "https://example.com/avatar1.jpg"
+  },
+  {
+    id: "user456",
+    title: "Jane Smith",
+    email: "jane@example.com",
+    avatar: "https://example.com/avatar2.jpg"
+  }
+]
+```

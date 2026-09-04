@@ -1,0 +1,119 @@
+---
+title: "Google Workspace SSO"
+description: "Google Workspace'i Teable için SSO kimlik doğrulama sağlayıcınız olarak yapılandırın"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Business planı ve üzerindeki planlarda kullanılabilir</Tip>
+
+## 1. Adım: Teable'da Kimlik Doğrulama Sağlayıcısı Oluşturma
+
+1. Teable SSO ayarlarınıza gidin
+2. Yeni bir kimlik doğrulama sağlayıcısı oluşturun, adını **Google Workspace** olarak belirleyin ve **OpenID Connect**'i seçin
+
+## 2. Adım: Google Cloud Console'a Erişme
+
+1. [Google Cloud Console'a](https://console.cloud.google.com) gidin
+2. Google Workspace yönetici hesabınızla oturum açın
+3. Teable SSO entegrasyonu için bir proje seçin veya oluşturun
+
+## 3. Adım: Google Identity Services'ı Etkinleştirme
+
+1. Google Cloud Console'da **API'ler ve Hizmetler** → **Kitaplık** bölümüne gidin
+2. **Google Identity** veya **Google+ API** için arama yapın
+3. Henüz etkinleştirilmemişse **Etkinleştir**'e tıklayın
+
+## 4. Adım: OAuth İzin Ekranını Yapılandırma
+
+1. **API'ler ve Hizmetler** → **OAuth izin ekranı** bölümüne gidin
+2. **Dahili** (yalnızca Google Workspace kullanıcıları için) veya **Harici** seçeneğini belirleyin
+3. Gerekli bilgileri doldurun:
+   - **Uygulama adı**: Teable SSO
+   - **Kullanıcı desteği e-postası**: E-posta adresiniz
+   - **Uygulama logosu**: (İsteğe bağlı) Teable logosunu yükleyin
+   - **Yetkilendirilmiş alan adları**: Teable alan adınızı ekleyin
+   - **Geliştirici iletişim bilgileri**: E-posta adresiniz
+4. **Kaydet ve Devam Et**'e tıklayın
+
+### Kapsamları Yapılandırma
+
+1. **Kapsam Ekle veya Kaldır**'a tıklayın
+2. Aşağıdaki kapsamları ekleyin:
+   - `openid`
+   - `email`
+   - `profile`
+3. **Güncelle**'ye, ardından **Kaydet ve Devam Et**'e tıklayın
+
+### Test Kullanıcıları Ekleme (Harici Kullanıyorsanız)
+
+"Harici" seçeneğini belirlediyseniz geliştirme sırasında test kullanıcıları ekleyin:
+1. **Kullanıcı Ekle**'ye tıklayın
+2. Test kullanıcılarının e-posta adreslerini girin
+3. **Kaydet ve Devam Et**'e tıklayın
+
+## 5. Adım: OAuth İstemci Kimliği Oluşturma
+
+1. **API'ler ve Hizmetler** → **Kimlik bilgileri** bölümüne gidin
+2. **Kimlik Bilgileri Oluştur** → **OAuth istemci kimliği**'ne tıklayın
+3. Uygulama türü olarak **Web uygulaması**'nı seçin
+4. İstemciyi yapılandırın:
+   - **Ad**: Teable SSO İstemcisi
+   - **Yetkilendirilmiş JavaScript kaynakları**: (İsteğe bağlı) `https://app.teable.ai`
+   - **Yetkilendirilmiş yönlendirme URI'leri**: Teable'daki **Geri Çağırma URL'sini** yapıştırın
+5. **Oluştur**'a tıklayın
+
+## 6. Adım: İstemci Kimlik Bilgilerini Kaydetme
+
+OAuth istemcisini oluşturduktan sonra kimlik bilgilerinizin yer aldığı bir iletişim kutusu görünür:
+
+1. **İstemci Kimliğini** kopyalayın
+2. **İstemci Gizli Anahtarını** kopyalayın
+3. **Tamam**'a tıklayın
+4. Her iki değeri de Teable SSO yapılandırmasına yapıştırın
+
+<Note>Bu kimlik bilgilerini daha sonra Kimlik Bilgileri sayfasından istediğiniz zaman alabilirsiniz.</Note>
+
+## 7. Adım: OAuth Uç Noktalarını Yapılandırma
+
+Teable'da aşağıdaki OAuth uç noktalarını doldurun:
+
+- **Yetkilendirme URL'si**: `https://accounts.google.com/o/oauth2/v2/auth`
+- **Belirteç URL'si**: `https://oauth2.googleapis.com/token`
+- **Kullanıcı Bilgileri URL'si**: `https://openidconnect.googleapis.com/v1/userinfo`
+- **Veren**: `https://accounts.google.com`
+
+## 8. Adım: SSO ile Oturum Açmayı Test Etme
+
+SSO ile oturum açmayı etkinleştirmek için iki seçeneğiniz vardır:
+
+**1. Seçenek: Doğrudan Kimlik Doğrulama URL'si**
+- Yetkilendirme URL'sini SSO oturum açma URL'niz olarak kullanın
+
+**2. Seçenek: Alan Adı Doğrulaması**
+1. Teable'da alan adı doğrulamasını yapılandırın
+2. Google Workspace alan adınızı doğrulayın
+3. https://app.teable.ai adresini ziyaret edin
+4. SSO ile oturum açma düğmesine tıklayın
+5. Oturum açmak için Google Workspace e-posta adresinizi girin
+
+## Ek Yapılandırma (İsteğe Bağlı)
+
+### Erişimi Alan Adına Göre Kısıtlama
+
+Erişimi belirli Google Workspace alan adlarıyla kısıtlamak istiyorsanız:
+
+1. Uygulama kodunuzda veya Teable ayarlarında alan adı kısıtlamalarını yapılandırın
+2. Yalnızca doğrulanmış alan adlarınızdaki e-posta adreslerine izin verin
+
+### Oturum Süresini Yapılandırma
+
+1. Google Yönetici Konsolu'nda **Güvenlik** → **Kimlik doğrulama** bölümüne gidin
+2. **Google oturum denetimi** ayarlarını yapılandırın
+3. Oturum süresini ve yeniden kimlik doğrulama ilkelerini ayarlayın
+
+### 2 Adımlı Doğrulamayı Etkinleştirme
+
+1. Google Yönetici Konsolu'nda **Güvenlik** → **Kimlik doğrulama** → **2 Adımlı Doğrulama** bölümüne gidin
+2. Kuruluşunuz için 2 Adımlı Doğrulamayı etkinleştirin
+3. Kullanıcılar için zorunlu kılma ilkelerini yapılandırın
+

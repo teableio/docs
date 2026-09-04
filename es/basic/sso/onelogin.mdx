@@ -1,0 +1,156 @@
+---
+title: "SSO con OneLogin"
+description: "Configura OneLogin como proveedor de autenticación SSO para Teable"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Disponible en el plan Business y superiores</Tip>
+
+## Paso 1: crear un proveedor de autenticación en Teable
+
+1. Ve a los ajustes de SSO de Teable
+2. Crea un proveedor de autenticación, asígnale el nombre **OneLogin** y selecciona **OpenID Connect**
+
+## Paso 2: acceder al portal de administración de OneLogin
+
+1. Inicia sesión en el [portal de administración de OneLogin](https://app.onelogin.com/login)
+2. Comprueba que tienes privilegios de administrador
+3. Ve a **Aplicaciones** en el menú superior
+
+## Paso 3: añadir una aplicación nueva
+
+1. Haz clic en **Aplicaciones** → **Aplicaciones** en el menú
+2. Haz clic en el botón **Añadir aplicación**
+3. Busca **OpenId Connect (OIDC)** en el cuadro de búsqueda
+4. Selecciona **OpenId Connect (OIDC)** en los resultados
+5. Haz clic en **Guardar**
+
+## Paso 4: configurar los ajustes de la aplicación
+
+### Información de visualización
+
+En la pestaña **Configuración**:
+
+1. **Nombre para mostrar**: SSO de Teable
+2. **Descripción**: (opcional) Integración SSO para Teable
+3. **Logotipo**: (opcional) carga el logotipo de Teable
+4. Haz clic en **Guardar**
+
+### Ajustes de configuración
+
+Ve a la pestaña **Configuración** y configura:
+
+1. **URI de redirección**: pega la **URL de devolución de llamada** de Teable
+2. **URL de inicio de sesión**: (opcional) `https://app.teable.ai`
+3. **Tipo de aplicación**: Web
+4. Haz clic en **Guardar**
+
+## Paso 5: obtener las credenciales del cliente
+
+Ve a la pestaña **SSO**:
+
+1. Busca el Campo **ID de cliente** y copia el valor
+2. Busca el Campo **Secreto de cliente** y copia el valor (quizá tengas que hacer clic primero en «Mostrar»)
+3. Pega ambos valores en la configuración de SSO de Teable
+
+<Warning>Mantén el Secreto de cliente protegido. Puedes regenerarlo desde esta página si es necesario.</Warning>
+
+## Paso 6: configurar los endpoints de OAuth
+
+En la pestaña **SSO** encontrarás tu subdominio de OneLogin. Utilízalo para configurar los endpoints en Teable:
+
+- **URL de autorización**: `https://{subdomain}.onelogin.com/oidc/2/auth`
+- **URL del token**: `https://{subdomain}.onelogin.com/oidc/2/token`
+- **URL de información del usuario**: `https://{subdomain}.onelogin.com/oidc/2/me`
+- **Emisor**: `https://{subdomain}.onelogin.com/oidc/2`
+
+<Note>Sustituye `{subdomain}` por tu subdominio real de OneLogin (por ejemplo, `mycompany.onelogin.com`). Puedes encontrarlo en la URL de tu portal de OneLogin.</Note>
+
+## Paso 7: configurar el acceso a la aplicación
+
+### Asignar roles
+
+Ve a la pestaña **Acceso**:
+
+1. **Roles**: selecciona qué roles deben tener acceso a esta aplicación
+2. Puedes seleccionar:
+   - Roles concretos
+   - Todos los usuarios
+   - Condiciones personalizadas
+3. Haz clic en **Guardar**
+
+### Asignar usuarios
+
+Ve a la pestaña **Usuarios**:
+
+1. Haz clic en **Añadir usuarios** o **Añadir usuarios por rol**
+2. Selecciona los usuarios que deban tener acceso a Teable mediante SSO
+3. Haz clic en **Continuar** y en **Guardar**
+
+## Paso 8: configurar los parámetros (opcional)
+
+Ve a la pestaña **Parámetros** para asignar atributos de usuario:
+
+1. Haz clic en **Añadir parámetro** para crear declaraciones personalizadas
+2. Configura las declaraciones estándar de OIDC:
+   - **email**: dirección de correo electrónico del usuario
+   - **name**: nombre completo del usuario
+   - **given_name**: nombre del usuario
+   - **family_name**: apellidos del usuario
+3. Asigna cada parámetro al Campo de usuario correspondiente de OneLogin
+4. Haz clic en **Guardar**
+
+## Paso 9: activar la aplicación
+
+1. Comprueba que se hayan guardado todos los ajustes
+2. La aplicación debería estar activada y visible para los usuarios asignados
+3. Los usuarios verán la aplicación de Teable en su portal de OneLogin
+
+## Paso 10: probar el inicio de sesión mediante SSO
+
+Dispones de tres opciones para activar el inicio de sesión mediante SSO:
+
+**Opción 1: URL de autenticación directa**
+- Utiliza la URL de autorización como URL de inicio de sesión mediante SSO
+
+**Opción 2: portal de OneLogin**
+- Los usuarios pueden iniciar sesión en su portal de OneLogin y hacer clic en el icono de la aplicación Teable
+
+**Opción 3: verificación del dominio**
+1. Configura la verificación del dominio en Teable
+2. Verifica tu dominio personalizado
+3. Visita https://app.teable.ai
+4. Haz clic en el botón de inicio de sesión mediante SSO
+5. Introduce tu dirección de correo electrónico del dominio verificado para iniciar sesión
+
+## Configuración adicional (opcional)
+
+### Configurar MFA
+
+1. En el portal de administración de OneLogin, ve a **Seguridad** → **Autenticación multifactor**
+2. Activa las políticas de MFA para tu organización o para usuarios concretos
+3. Configura los requisitos de MFA (por ejemplo, exigir siempre o para dispositivos nuevos)
+
+### Configurar el aprovisionamiento (SCIM)
+
+Si quieres aprovisionar usuarios automáticamente desde OneLogin en Teable:
+
+1. Ve a la pestaña **Aprovisionamiento** de tu aplicación de Teable
+2. Activa el aprovisionamiento
+3. Configura el endpoint de SCIM (si Teable admite SCIM)
+4. Asigna los atributos de usuario
+5. Activa la creación, actualización y eliminación de usuarios
+
+### Configurar la duración de las sesiones
+
+1. Ve a **Ajustes** → **Sesiones** en OneLogin
+2. Configura los ajustes de tiempo de espera de las sesiones
+3. Establece el tiempo de espera por inactividad y la duración máxima de las sesiones
+
+### Marca personalizada
+
+1. Ve a **Personalización** → **Portal** en OneLogin
+2. Personaliza la apariencia del portal de OneLogin
+3. Añade el logotipo y los colores de tu empresa, además de CSS personalizado
+4. Esto afecta a lo que ven los usuarios cuando inician sesión en OneLogin
+

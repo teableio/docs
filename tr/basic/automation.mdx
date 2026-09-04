@@ -1,0 +1,87 @@
+---
+title: "Genel Bakış"
+description: "AI veya elle yapılandırma ile otomasyon iş akışları oluşturun."
+---
+
+{/* mintlify-resync: 2026-05-26 */}
+Teable Otomasyon, güçlü iş akışları oluşturmayı kolaylaştırır. Kod yazmak, sürükleyip bırakmak veya karmaşık kurulum yapmak gerekmez. İhtiyacınızı AI'a doğal dille açıklayın; yinelenen işleri Teable sizin için halletsin.
+
+## AI ile oluşturma (sıfırdan)
+
+Başlamanın en kolay yolu budur. Herhangi bir tabloyu açın, sağ kenar çubuğundaki **AI Chat**'e tıklayın ve ne istediğinizi açıklayın:
+
+- *"Yeni bir sipariş geldiğinde müşteri adını ve tutarı içeren bir Slack bildirimi gönder."*
+- *"Her pazartesi sabahı vadesi geçmiş görevlerin özetini bana e-postayla gönder."*
+- *"Birisi geri bildirim formunu gönderdiğinde geri bildirimi sınıflandır ve kategori alanını güncelle."*
+
+AI tüm otomasyonu sizin için oluşturur ve test eder: tetikleyici, eylemler ve alan eşlemeleri. Sonuçları Otomasyon panelinde inceleyip etkinleştirin.
+
+## AI ile oluşturma (tetikleyiciden)
+
+Belirli bir tetikleyiciyle başlayıp eylemleri AI'ın oluşturmasını da sağlayabilirsiniz:
+
+1. **Tetikleyici ekleyin** — bir tetikleyici türü seçin (ör. "Kayıt Oluşturulduğunda") ve yapılandırın.
+2. **Eylem ekleyin** — **+** simgesine tıklayın, **AI ile Oluştur** bölümüne gidin ve **Komut Dosyası Çalıştır**'ı seçin.
+3. Yapılandırma panelinde **Düzenleyiciyi Aç**'a tıklayın.
+4. Hızla başlamak için **önerilerden** birini seçin veya ihtiyacınızı kendi sözlerinizle açıklayın.
+5. AI, JavaScript kodunu oluşturur. Kodu inceleyip **Uygula**'ya tıklayın.
+6. Komut dosyasını gerçek verilerle çalıştırmak için **Test et**'e, ardından iş akışını açmak için **Etkinleştir**'e tıklayın.
+
+## Elle oluşturma
+
+Yerleşik eylemleri kullanarak otomasyonları adım adım da oluşturabilirsiniz:
+
+1. **Tetikleyici ekleyin** — bir tetikleyici türü ve tablo seçip alanları yapılandırın. **Test et**'e tıklayın.
+2. **Eylem ekleyin** — bir eylem türü (Kayıt Oluştur, E-posta Gönder, HTTP İsteği vb.) seçin ve dinamik değişkenler eklemek için **+** simgesini kullanarak alan değerlerini eşleyin. **Önizleme Oluştur** veya **Yapılandırıldığı Gibi Çalıştır**'a tıklayın.
+3. **Etkinleştirin** — sol üst köşedeki anahtara tıklayın.
+
+## Etkin bir iş akışını düzenleme
+
+Değişiklikler taslak olarak kaydedilir. Siz **Güncellemeyi Uygula**'ya tıklayana kadar etkin iş akışı önceki sürümle çalışmayı sürdürür.
+
+## Gizli anahtarlar
+
+Bir otomasyonun çalışma zamanında ihtiyaç duyduğu API anahtarlarını, kimlik bilgilerini ve yapılandırmayı saklamak için **Gizli Anahtarlar**'ı kullanın. İş akışını düzenleme sekmesinde açın, ardından test denetimlerinin yanındaki **Gizli Anahtarlar**'a tıklayın.
+
+Gizli anahtarların kapsamı geçerli otomasyonla sınırlıdır. Komut dosyası eylemleri bunları `process.env.EXTERNAL_API_KEY` gibi ortam değişkenlerinden okuyabilir. Kaydedilen değerler yalnızca yazılabilir; bir gizli anahtarı güncellemek için yeni bir değer girin.
+
+## Çalıştırma geçmişi
+
+Bir iş akışını açın → **Çalıştırma geçmişi**. Geçmiş paneli, her çalıştırmanın durumunu, geçen süreyi ve adım ayrıntılarını listeler. Adım başına girdi/çıktıyı incelemek için bir çalıştırmaya tıklayın.
+
+Listeyi durum, süre veya tarih aralığına göre daraltmak için geçmiş filtrelerini kullanın. Başarısız çalıştırmaları tanılamak veya yeniden çalıştırmak için çalıştırma ayrıntıları panelini kullanın:
+
+- **Tanıla**, başarısız çalıştırmayı bağlam olarak kullanarak AI Chat'i açar; böylece Cuppy'den hatayı açıklamasını isteyebilirsiniz.
+- **Tam yeniden çalıştırma**, tüm adımları yeniden yürütür ve yinelenen kayıtlar, e-postalar veya bildirimler oluşturabilir.
+- Teable başarısız adımdan güvenle devam edebiliyorsa **Başarısız adımdan sürdür** kullanılabilir.
+
+**Başarısız adımdan sürdür** kullanılamadığında Teable neden yalnızca **Tam yeniden çalıştırma** seçeneğinin kullanılabileceğini açıklar. Bu durum, başarısız çalıştırmadan sonra iş akışı değiştirilmişse, iş akışı devre dışıysa, hatadan önce hiçbir adım başarıyla tamamlanmamışsa veya denetim adımı verileri eksikse oluşabilir.
+
+Yeniden çalıştırma denemeleri yeniden deneme olarak işaretlenir ve özgün çalıştırmaya bağlanır.
+
+## Sınırlar
+
+| Öğe | Sınır |
+|---|---|
+| E-posta gönderim hızı | Veritabanı başına saniyede 5 |
+| Webhook alma hızı | Veritabanı başına saniyede 50, iş akışı başına saniyede 2 |
+| Webhook yük boyutu | 4 MB |
+| Çalıştırma kotası ve geçmişi saklama süresi | Plana göre değişir |
+
+## SSS
+
+<AccordionGroup>
+  <Accordion title="Neden otomasyon çalıştırma kullanımı uyarısı aldım?">
+    Teable Cloud'da bir Alan çalıştırma kotasına yaklaştığında veya kotayı aştığında ya da kısa sürede çalıştırma sayısı hızla arttığında Teable, Alan Sahiplerine otomasyon çalıştırma kullanımı bildirimleri gönderir.
+
+    Teable, kota hatırlatmalarını geçerli faturalandırma döneminde kullanılabilir çalıştırma kotasının %80'ine veya %90'ına ulaşıldığında gönderir.
+
+    Pro ve üzeri planlar, otomasyon çalıştırmaları kotayı aştıktan sonra uyarı alabilir. Teable yaklaşık 6 saatte bir hatırlatma gönderebilir.
+
+    Teable Cloud, günlük kullanımda büyük artış veya kısa sürede ani yoğunluk gibi olağan dışı kullanımlarda kritik bildirimler de gönderebilir. Sistem son günlük ve saatlik çalıştırma örüntülerini kullanır; kesin eşikler değişebilir.
+
+    Bildirim, **Alan Ayarları** → **Faturalandırma** bölümünü açar. Kullanılabilir olduğunda en fazla çalıştırmaya katkıda bulunan iş akışını ve Veritabanını gösterir. Kota hatırlatmaları plan sınırınıza dahil edilen çalıştırmalara dayanır; olağan dışı kullanım denetimleri **başarılı**, **başarısız** veya **beklemede** durumundaki son çalıştırmaları da değerlendirebilir.
+
+    Kullanım beklediğiniz gibiyse ek otomasyon kotası satın almayı veya planınızı değiştirmeyi değerlendirin. Beklenmedik bir kullanım varsa en yoğun iş akışını inceleyip ilgili otomasyonu ayarlayın ya da duraklatın.
+  </Accordion>
+</AccordionGroup>

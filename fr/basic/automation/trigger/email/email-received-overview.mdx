@@ -1,0 +1,114 @@
+---
+title: "Présentation du déclencheur À la réception d’un e-mail"
+description: "Déclenchez un flux de travail lorsqu’un nouvel e-mail arrive dans une boîte aux lettres surveillée"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Remarque : vous pouvez configurer tous les déclencheurs dans le Chat IA. Indiquez à l’IA ce que le flux de travail doit accomplir et elle se chargera du reste.</Tip>
+
+Ce déclencheur s’exécute lorsqu’un nouvel e-mail non lu arrive dans une boîte aux lettres surveillée.
+
+## Créer avec l’IA
+
+Ouvrez le Chat IA dans la barre latérale droite de votre table et décrivez ce que vous souhaitez.
+
+L’IA s’occupe de tout : elle choisit le bon déclencheur, associe les champs pertinents et configure automatiquement toutes les actions.
+
+Décrivez une seule fois votre objectif et le flux de travail est prêt, sans aucune configuration manuelle.
+
+**Exemple :** *"Lorsque je reçois un e-mail d’assistance, crée un ticket et classe-le."*
+
+## Configuration
+
+| Paramètre | Obligatoire | Description |
+|---|---|---|
+| Type de connexion | Oui | IMAP, Gmail ou Outlook |
+| Intervalle de relève | Oui | Fréquence de recherche des nouveaux e-mails : de 10 à 60 minutes (10 par défaut) |
+
+## Types de connexion en détail
+
+### IMAP
+
+IMAP fonctionne avec tous les fournisseurs de messagerie qui prennent en charge le protocole IMAP, notamment les serveurs de messagerie auto-hébergés, les messageries d’entreprise et les fournisseurs tels que Yahoo ou Zoho.
+
+| Paramètre | Obligatoire | Description |
+|---|---|---|
+| Hôte | Oui | Adresse de votre serveur IMAP (par exemple, `imap.gmail.com`, `imap.mail.yahoo.com`) |
+| Port | Oui | Généralement 993 (SSL/TLS) ou 143 (non chiffré, déconseillé) |
+| Nom d’utilisateur | Oui | Votre adresse e-mail ou le nom d’utilisateur de votre compte |
+| Mot de passe | Oui | Votre mot de passe d’application (remarque : pas le mot de passe de votre messagerie) |
+| Boîte aux lettres | Non | Dossier à surveiller (`INBOX` par défaut) |
+
+### Gmail (OAuth)
+
+La connexion s’effectue au moyen du flux OAuth de Google. Aucun mot de passe n’est nécessaire : vous autorisez Teable à accéder à votre compte Gmail.
+
+| Paramètre | Obligatoire | Description |
+|---|---|---|
+| Compte Google | Oui | Autorisation via OAuth : Teable demande un accès en lecture seule |
+| Libellé | Non | Sélectionnez le libellé Gmail à surveiller (Boîte de réception par défaut) |
+
+### Outlook (OAuth)
+
+La connexion s’effectue au moyen du flux OAuth de Microsoft pour les boîtes aux lettres Outlook et Microsoft 365.
+
+| Paramètre | Obligatoire | Description |
+|---|---|---|
+| Compte Microsoft | Oui | Autorisation via OAuth : Teable demande un accès en lecture seule |
+| Dossier | Non | Sélectionnez le dossier Outlook à surveiller (Boîte de réception par défaut) |
+
+## Données de l’e-mail accessibles aux étapes suivantes
+
+Lorsque le déclencheur s’exécute, les données suivantes de l’e-mail sont disponibles sous forme de variables dans vos étapes d’action :
+
+| Donnée | Description |
+|---|---|
+| **Expéditeur** | Adresse e-mail de l’expéditeur |
+| **Objet** | Ligne d’objet de l’e-mail |
+| **Corps (texte)** | Version en texte brut du corps de l’e-mail |
+| **Corps (HTML)** | Version HTML du corps de l’e-mail (si disponible) |
+| **Date** | Date d’envoi de l’e-mail |
+| **Pièces jointes** | Fichiers joints à l’e-mail |
+
+Vous pouvez référencer n’importe laquelle de ces données en cliquant sur **+** dans les champs de vos actions.
+
+## Procédure de configuration (exemple IMAP)
+
+1. Ouvrez votre automatisation et ajoutez un nouveau déclencheur.
+2. Sélectionnez **À la réception d’un e-mail**.
+3. Choisissez **IMAP** comme type de connexion.
+4. Saisissez les informations de votre serveur IMAP : hôte, port, nom d’utilisateur et mot de passe.
+5. (Facultatif) Modifiez la **Boîte aux lettres** si vous souhaitez surveiller un autre dossier que INBOX.
+6. Définissez l’**Intervalle de relève**, c’est-à-dire la fréquence de recherche des nouveaux e-mails. Un intervalle plus court permet de réagir plus vite, mais sollicite le serveur plus fréquemment.
+7. Cliquez sur **Tester** pour vérifier la connexion. Teable tentera de se connecter à votre boîte aux lettres et vous indiquera si la tentative a réussi ou échoué.
+8. Enregistrez et activez l’automatisation.
+9. Ajoutez vos étapes d’action en utilisant les données de l’e-mail (Expéditeur, Objet, Corps, etc.) comme variables.
+
+## Cas d’utilisation
+
+- **Créer un enregistrement pour chaque e-mail d’assistance reçu.** Analysez l’objet et le corps afin de renseigner automatiquement les champs d’une table de tickets d’assistance.
+- **Extraire les données de factures reçues par e-mail avec l’IA.** Utilisez l’action Générer avec l’IA pour lire le corps de l’e-mail ou la pièce jointe et en extraire les montants, les dates et les noms des fournisseurs.
+- **Acheminer les demandes des clients vers la bonne équipe.** Selon les mots-clés présents dans l’objet ou le corps, mettez à jour un champ « Équipe » ou envoyez des notifications à des personnes précises.
+- **Archiver les e-mails importants sous forme d’enregistrements.** Consignez automatiquement dans une table Teable les e-mails provenant d’expéditeurs précis ou dont l’objet répond à certains critères, afin de faciliter leur recherche et leur suivi.
+- **Traiter les confirmations de commande.** Lorsqu’un e-mail de confirmation de commande arrive, extrayez le numéro et les détails de la commande afin de mettre à jour votre table de commandes.
+
+## Résolution des problèmes
+
+- **Échec de la connexion (IMAP) :** vérifiez l’hôte, le port, le nom d’utilisateur et le mot de passe. Assurez-vous que votre fournisseur de messagerie autorise l’accès IMAP : certains le désactivent par défaut.
+- **Gmail : erreur « Application moins sécurisée » :** Gmail n’autorise pas la connexion avec un simple mot de passe. Utilisez plutôt un **mot de passe d’application**. Consultez [Configurer Gmail IMAP](/fr/basic/automation/trigger/email/gmail-imap) pour obtenir des instructions.
+- **Les e-mails ne sont pas récupérés :** vérifiez l’intervalle de relève. Vérifiez également que les e-mails arrivent bien dans le dossier ou sous le libellé surveillé. Les e-mails placés dans des sous-dossiers ou associés à des libellés filtrés peuvent être ignorés si la mauvaise boîte aux lettres est sélectionnée.
+- **Traitement en double :** le déclencheur mémorise les e-mails déjà traités. Toutefois, si vous désactivez puis réactivez l’automatisation, il peut traiter de nouveau des e-mails récents. Marquez-les comme lus dans votre boîte de réception si nécessaire.
+- **Jeton OAuth expiré :** pour Gmail ou Outlook, autorisez de nouveau la connexion si le jeton OAuth a expiré. Cela se produit généralement après plusieurs mois ou si vous révoquez les autorisations de l’application.
+
+## Conseils
+
+- Un intervalle de relève plus court permet de réagir plus rapidement aux e-mails, sans toutefois garantir un traitement en temps réel. Pour un véritable traitement en temps réel, envisagez une approche fondée sur les webhooks si votre fournisseur de messagerie les prend en charge.
+- Utilisez les filtres de votre client de messagerie pour acheminer les e-mails pertinents vers un libellé ou un dossier précis, puis demandez à Teable de surveiller uniquement cet emplacement. Vous réduirez ainsi le bruit.
+- Pour les boîtes aux lettres à fort volume, envisagez d’augmenter l’intervalle de relève et de traiter les e-mails par lots afin de ne pas surcharger votre flux de travail.
+
+## Pages associées
+
+- [Configurer Gmail IMAP](/fr/basic/automation/trigger/email/gmail-imap) — instructions détaillées pour connecter Gmail
+- [Action Générer avec l’IA](/fr/basic/automation/actions/ai/ai-generate) — utile pour extraire des données structurées du contenu des e-mails
+- [Action Créer un enregistrement](/fr/basic/automation/actions/records/create-record) — souvent associée aux déclencheurs d’e-mail pour consigner les e-mails sous forme d’enregistrements
+- [Envoyer un e-mail](/fr/basic/automation/actions/communication/send-email-overview)

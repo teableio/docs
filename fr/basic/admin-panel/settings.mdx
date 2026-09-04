@@ -1,0 +1,104 @@
+---
+title: "Paramètres de l’instance"
+description: "Gérez les options au niveau de l’instance, les paramètres d’e-mail et les éléments système en attente."
+---
+
+<Tip>Disponible à partir du plan Business auto-hébergé</Tip>
+
+Chemin : Administration système → Paramètres de l’instance
+
+La page **Paramètres de l’instance** permet de gérer les paramètres principaux de toute l’instance, notamment les **Paramètres généraux**, les **E-mails** et les vérifications système affichées dans le panneau **Configuration en attente**.
+
+## Vue d’ensemble
+
+Cette page couvre principalement les éléments de base au niveau de l’instance. Les principaux paramètres sont regroupés comme suit :
+
+| Type de paramètre | Description |
+|------|------|
+| **Paramètres généraux** | Inclut **Autoriser la création de nouveaux comptes**, **Domaines d’e-mail interdits**, **Autoriser l’envoi d’invitations à un Espace**, **Autoriser tout le monde à créer de nouveaux Espaces** et **Activer la vérification de l’e-mail** |
+| **E-mail** | Inclut **E-mail de notification** et **E-mail d’Automatisation** pour la réinitialisation du mot de passe, la vérification de l’e-mail, les e-mails de notification et les e-mails d’invitation |
+| **Limites système** | Affiche les limites effectives de l’instance pour les données de Table, les Champs, les Vues et le texte |
+
+Pour activer les e-mails système, effectuez la configuration dans **E-mail**.
+
+Utilisez **Domaines d’e-mail interdits** pour empêcher les adresses e-mail des domaines répertoriés de s’inscrire. Teable rejette ces domaines avant l’envoi des codes de vérification d’inscription, et aucun e-mail d’invitation impliquant ces domaines n’est envoyé.
+
+<Tip>
+Si l’e-mail n’est pas entièrement configuré, l’élément **E-mail** du panneau **Configuration en attente** ne deviendra pas vert.
+</Tip>
+
+## Limites système
+
+**Limites système** affiche les limites actuelles au niveau de l’instance pour les données de Table et la configuration associée. Si vous devez ajuster une limite, utilisez la variable d’environnement affichée sur cette page.
+
+<Note>
+Après avoir modifié une variable d’environnement, redémarrez le service pour que la nouvelle valeur prenne effet.
+</Note>
+
+## Configuration en attente
+
+Le panneau **Configuration en attente** à droite est une liste de contrôle système. Il indique quels paramètres importants manquent encore pour l’instance.
+
+Les vérifications courantes sur cette page comprennent :
+
+| Élément | Impact |
+|------|------|
+| **Variable d’environnement PUBLIC_ORIGIN** | Affecte les fonctionnalités qui dépendent d’une URL d’accès externe, telles que les pièces jointes et les importations |
+| **Activer HTTPS** | Affecte les capacités qui dépendent de HTTPS, telles que le copier-coller |
+| **E-mail** | Affecte la réinitialisation du mot de passe, la vérification de l’e-mail, les notifications et les fonctionnalités similaires |
+
+Si ces éléments ne sont pas terminés, l’instance peut toujours s’ouvrir normalement, mais certaines fonctionnalités peuvent rester indisponibles.
+
+## Lien avec les paramètres IA
+
+**Paramètres de l’instance** affiche une partie des vérifications au niveau système, mais ce n’est pas l’endroit où vous configurez les **modèles IA**, l’environnement d’exécution du **Chat IA** ou le **Générateur d’Applications**.
+
+Accédez ici à ces paramètres :
+
+- [Paramètres IA](/fr/basic/admin-panel/ai-setting)
+
+Vous pouvez comprendre la répartition ainsi :
+
+- **Paramètres de l’instance** : couvre les capacités fondamentales de l’instance elle-même
+- **Paramètres IA** : couvre le Chat IA, les Champs IA, l’Automatisation IA et le Générateur d’Applications
+
+## Ordre de vérification
+
+Si vous préparez un nouveau déploiement auto-hébergé ou une première mise en production, vérifiez ces éléments dans l’ordre :
+
+<Steps>
+  <Step title="Vérifier l’URL d’accès">
+    Assurez-vous que **PUBLIC_ORIGIN** est correctement configuré.
+  </Step>
+  <Step title="Vérifier HTTPS">
+    Assurez-vous que **HTTPS** est déjà activé pour l’instance.
+  </Step>
+  <Step title="Vérifier l’e-mail">
+    Assurez-vous que **SMTP** est configuré et peut envoyer des e-mails correctement.
+  </Step>
+  <Step title="Continuer avec les paramètres IA">
+    Une fois les éléments de base confirmés, poursuivez avec les [Paramètres IA](/fr/basic/admin-panel/ai-setting).
+  </Step>
+</Steps>
+
+Cela facilite l’activation successive des éléments de **Configuration en attente** et aide au dépannage.
+
+## FAQ
+
+<AccordionGroup>
+<Accordion title="L’instance s’ouvre normalement, mais des éléments restent inachevés à droite">
+
+Cela signifie généralement que l’instance est accessible, mais qu’une ou plusieurs exigences importantes d’exécution sont encore absentes. Suivez les indications du panneau de droite et complétez-les une par une au lieu de vous fier uniquement à l’ouverture de la page.
+</Accordion>
+
+<Accordion title="L’e-mail fonctionne parfois, mais E-mail n’est toujours pas marqué comme terminé">
+
+Vérifiez que les paramètres SMTP enregistrés sont complets, qu’ils correspondent à l’usage d’envoi prévu et que les e-mails de vérification ou de notification peuvent être envoyés de manière fiable.
+</Accordion>
+
+<Accordion title="Pourquoi PUBLIC_ORIGIN est-il important ?">
+
+De nombreuses fonctionnalités dépendant d’une URL d’accès externe en dépendent. Si la valeur configurée ne correspond pas à l’URL d’accès réelle, des fonctionnalités telles que les importations, les pièces jointes ou les redirections peuvent ne pas fonctionner correctement.
+</Accordion>
+</AccordionGroup>
+

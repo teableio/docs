@@ -1,0 +1,103 @@
+---
+title: "E-posta göndermeye genel bakış"
+description: "Bir iş akışından özelleştirilmiş e-postalar gönderin"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Otomasyon oluşturmak için Komut dosyası çalıştır'ı kullanmanızı kesinlikle öneririz; bu özellik, aksi hâlde elle oluşturulması gerekecek eylemler dahil tüm eylem davranışlarını kapsayabilir. Gereksinimlerinizi sohbette AI'a açıklamanız yeterlidir.
+
+Lütfen unutmayın: eylemleri elle eklerseniz AI daha sonra bunları tanıyamaz veya değiştiremez.
+</Tip>
+
+## AI ile oluşturma
+
+Tablonuzun sağ kenar çubuğunda AI Chat'i açın ve ne istediğinizi açıklayın.
+
+AI her şeyi halleder: doğru tetikleyiciyi belirler, uygun eylemleri seçer, alanları eşler ve iş akışının tamamını otomatik olarak yapılandırır.
+
+Hedefinizi bir kez açıklayın; iş akışınız elle yapılandırma gerektirmeden hazır olur.
+
+Bu eylem bir veya daha fazla alıcıya e-posta gönderir. Alıcıları, konuyu, gövdeyi ve yanıt adresini özelleştirebilir; her iletiyi kişiselleştirmek için önceki adımlardaki dinamik değerleri kullanabilirsiniz.
+
+E-postalar varsayılan olarak Teable'ın yerleşik posta hizmetinden gönderilir. Kendi alan adınızdan göndermek istiyorsanız [özel bir SMTP sunucusu](/tr/basic/automation/actions/communication/smtp-sender) yapılandırın.
+
+## Yapılandırma
+
+| Ayar | Zorunlu | Açıklama |
+|---|---|---|
+| Kime | Evet* | Alıcı e-posta adresleri. Birden fazla adresi virgülle ayırın |
+| Konu | Evet | Konu satırı. **+** üzerinden dinamik değişkenleri destekler |
+| Gövde | Evet | E-posta gövdesi. Markdown, HTML ve dinamik değişkenleri destekler |
+| Gönderen Adı | Hayır | Alıcının gelen kutusunda gösterilen ad (ör. "Acme Destek") |
+| CC | Hayır | Bilgi alıcıları |
+| BCC | Hayır | Gizli bilgi alıcıları |
+| Yanıt Adresi | Hayır | Alıcıların yanıt vereceği adres (gönderen adresinden farklıysa) |
+
+\* **Kime** veya **BCC** alanlarından en az biri zorunludur.
+
+**Hız sınırı:** Veritabanı başına saniyede 5 e-posta.
+
+## Nasıl yapılandırılır?
+
+1. İş akışınıza bir **E-posta Gönder** eylemi ekleyin.
+2. **Kime** alanına sabit bir e-posta adresi girin veya dinamik bir değer (ör. tetikleyici kaydındaki E-posta alanı) eklemek için **+** simgesine tıklayın.
+3. **Konuyu** yazın. Kaydın adı veya durum gibi dinamik değerleri eklemek için **+** simgesine tıklayın. Örnek: `{{Customer Name}} müşterisinden yeni sipariş — #{{Order ID}}`.
+4. **Gövdeyi** yazın. Şunları kullanabilirsiniz:
+   - **Düz metin** — iletinizi doğrudan yazın.
+   - **Markdown** — `**kalın**`, `*italik*`, `- listeler`, `[bağlantılar](url)` vb. kullanın.
+   - **HTML** — biçimlendirme üzerinde tam denetim için HTML etiketlerini doğrudan yazın.
+   - **Dinamik değişkenler** — önceki adımlardaki değerleri eklemek için gövdenin herhangi bir yerinde **+** simgesine tıklayın.
+5. (İsteğe bağlı) Gerektiği şekilde **Gönderen Adı**, **CC**, **BCC** veya **Yanıt Adresi**ni ayarlayın.
+6. Eylemi kaydedin.
+
+## Konu ve gövdede değişken kullanma
+
+Değişkenler her e-postayı kişiselleştirmenizi sağlar. Değişken seçiciyi açmak için herhangi bir metin alanında **+** düğmesine tıklayın. Şunlara başvurabilirsiniz:
+
+- **Tetikleyici verileri:** otomasyonu tetikleyen kaydın alanları (ör. müşteri adı, e-posta, sipariş tutarı).
+- **Önceki eylemin çıktısı:** yeni oluşturulan Kayıt Kimliği veya AI tarafından oluşturulan metin gibi önceki adımlardan gelen veriler.
+
+Değişkenler içeren örnek gövde:
+
+```
+Merhaba {{Customer Name}},
+
+{{Order ID}} numaralı siparişiniz onaylandı.
+
+**Toplam:** ${{Order Amount}}
+**Tahmini teslimat:** {{Delivery Date}}
+
+Bizi tercih ettiğiniz için teşekkür ederiz!
+```
+
+## Gövde biçimlendirme seçenekleri
+
+| Biçim | Kullanım | En uygun olduğu durum |
+|---|---|---|
+| Düz metin | İletinizi doğrudan yazın | Basit bildirimler |
+| Markdown | Markdown sözdizimini (`**kalın**`, `# başlık` vb.) kullanın | Biçimlendirilmiş, yapılandırılmış iletiler |
+| HTML | HTML etiketleri (`<h1>`, `<p>`, `<table>` vb.) yazın | Özel düzenlere sahip, tam tasarlanmış e-postalar |
+
+Aynı gövdede Markdown ile dinamik değişkenleri birlikte kullanabilirsiniz. Karmaşık e-posta tasarımlarında en fazla denetimi HTML sağlar.
+
+## Ne zaman kullanılır?
+
+- **Sipariş onayları gönderin.** Yeni bir sipariş oluşturulduğunda sipariş ayrıntılarını ve teşekkür iletisini içeren bir e-posta gönderin.
+- **Durum değişikliklerini ekip üyelerine bildirin.** Bir görev "Engellendi" durumuna geçtiğinde sorumlu kişiye ve yöneticisine e-posta gönderin.
+- **Zamanlanmış raporlar iletin.** Haftalık bir özeti e-postayla göndermek için zamanlanmış tetikleyiciyle Kayıtları Getir'i birlikte kullanın.
+- **Kişiselleştirilmiş tanıtım iletileri gönderin.** Her alıcının konusunu ve gövdesini kayıt verileriyle özelleştirin.
+- **Form gönderimlerini onaylayın.** Bir form gönderildikten sonra formu gönderen kişiye yanıtlarını içeren bir onay iletisi gönderin.
+
+## İletilebilirlik ipuçları
+
+- Yüksek hacimli veya iş açısından kritik e-postalar gönderiyorsanız **özel SMTP kullanın**. Teable'ın yerleşik hizmeti temel bildirimler için uygundur ancak kendi alan adınızdan gönderilen e-postaların alıcının gelen kutusuna ulaşma olasılığı daha yüksektir.
+- Konu ve gövdede **istenmeyen posta izlenimi veren içerikten kaçının**; aşırı büyük harf, ünlem işareti veya çok sayıda bağlantı istenmeyen posta filtrelerini tetikleyebilir.
+- Alıcıların yanıt kabul etmeyen bir adres yerine gerçek bir gelen kutusuna yanıt verebilmesi için **Yanıt Adresi belirleyin**.
+- Otomasyonu üretimde etkinleştirmeden önce **e-postalarınızı test edin**. Biçimlendirmeyi ve teslimatı doğrulamak için otomasyonu test verileriyle elle çalıştırın.
+
+## İlgili konular
+
+- [SMTP ve göndereni yapılandırın](/tr/basic/automation/actions/communication/smtp-sender) — kendi alan adınızdan e-posta gönderin
+- [Döngü (toplu)](../logic/loop-run) — bir kayıt listesinde döngü kurarak toplu e-posta gönderin
+- [AI ile oluştur](/tr/basic/automation/actions/ai/ai-generate) — AI ile kişiselleştirilmiş e-posta içeriği oluşturun

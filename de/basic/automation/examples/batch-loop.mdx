@@ -1,0 +1,33 @@
+---
+title: "Datensätze mit einer Schleife stapelweise verarbeiten"
+description: "Verwenden Sie „Datensätze abrufen“ und „Schleife“, um mehrere Datensätze in einer einzigen Workflow-Ausführung zu verarbeiten"
+---
+
+<Tip>Wir empfehlen, Automatisierungsbeispiele direkt im KI-Chat zu erstellen. Beschreiben Sie einfach den gewünschten Workflow, und die KI übernimmt die vollständige Einrichtung einschließlich Auslöser, Aktionen, Skript und Konfiguration.</Tip>
+
+## Mit KI erstellen
+
+Öffnen Sie den KI-Chat in der rechten Seitenleiste Ihrer Tabelle und teilen Sie der KI mit, was Sie erreichen möchten. Sie können beispielsweise Folgendes sagen:
+
+*„Finde jeden Tag um 8 Uhr alle Aufgaben, deren Fälligkeitsdatum verstrichen und deren Status nicht ‚Überfällig‘ ist, und aktualisiere ihren Status anschließend auf ‚Überfällig‘.“*
+
+Die KI erstellt automatisch den vollständigen Workflow. Sie können das generierte Skript prüfen, mit echten Daten testen und den Workflow aktivieren, sobald er bereit ist.
+
+## Manuelle Einrichtung
+
+1. **Erstellen Sie einen Workflow** mit dem Auslöser **Zum geplanten Zeitpunkt** – täglich um 08:00 Uhr.
+2. **Aktion hinzufügen** → **Datensätze abrufen**.
+   - Tabelle: **Aufgaben**
+   - Filter: `Fälligkeitsdatum` **ist vor** `heute` UND `Status` **ist nicht** `Überfällig`
+3. Klicken Sie auf **Testen**, um die übereinstimmenden Datensätze anzuzeigen.
+4. **Aktion hinzufügen** → **Datensatz aktualisieren**.
+5. Klicken Sie unter der Tabellenauswahl auf **Schleifenausführung**.
+6. Wählen Sie die Array-Ausgabe des Schritts „Datensätze abrufen“ aus.
+7. Zuordnung:
+   - Datensatz-ID → Datensatz-ID des aktuellen Elements (über **+**)
+   - Status → `Überfällig`
+8. Klicken Sie auf **Testen** und anschließend auf **Aktivieren**.
+
+## Funktionsweise
+
+Der Schritt „Datensätze abrufen“ gibt ein Array zurück. Der Schritt „Datensatz aktualisieren“ mit aktivierter Schleife durchläuft der Reihe nach jedes Element und aktualisiert es einzeln.

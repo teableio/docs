@@ -1,0 +1,170 @@
+---
+title: "Panoramica"
+description: "Crea, importa, condividi e gestisci Tabelle in una Base."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+Ogni Base può contenere più Tabelle per archiviare e gestire dati correlati. Le Tabelle Teable equivalgono alle Tabelle di un database: comprendere [in cosa differiscono dai fogli di calcolo](/it/compare/teable-vs-excel) ti aiuterà a sfruttare al meglio Teable.
+
+## Creare e gestire le Tabelle
+
+### Aggiungere Tabelle
+
+In una Base, fai clic sul pulsante `+` nella directory e scegli se:
+
+<img
+  src="/images/docs/base/2026-05-22-table-create-menu.png"
+  alt="Menu Aggiungi Tabella"
+  className="docs-screenshot"
+/>
+
+1. Creare una nuova Tabella vuota
+2. Importare da un file CSV
+3. Importare da un file Excel
+4. Importare da Airtable, se l'integrazione Airtable è configurata
+
+Per i dettagli, consulta la [sezione Importazione](/it/basic/table/import).
+
+### Rinominare ed eliminare
+
+- **Rinomina**: fai doppio clic sul nome della Tabella nella directory, modificalo, quindi fai clic in un punto esterno per salvare.
+- **Elimina**: passa il puntatore sulla Tabella nella directory, fai clic su `...`, quindi seleziona **Elimina**.
+
+<img
+  src="/images/docs/base/2026-05-22-table-rename-delete.png"
+  alt="Ridenominazione o eliminazione di una Tabella"
+  className="docs-screenshot"
+/>
+
+Quando altre Tabelle sono collegate alla Tabella che stai eliminando, la finestra di conferma elenca i Campi interessati dall'eliminazione, con la Base e la Tabella a cui appartiene ciascuno. L'eliminazione della Tabella converte tali Campi di collegamento in Campi di testo su una riga che conservano i titoli dei Record collegati, mentre i Campi lookup o rollup basati su di essi smettono di funzionare.
+
+### Cestino
+
+Fai clic sull'icona del cestino nell'angolo in alto a sinistra della Base per gestire le Tabelle eliminate.
+
+<img
+  src="/images/docs/base/2026-05-22-table-trash.png"
+  alt="Cestino delle Tabelle"
+  className="docs-screenshot"
+/>
+
+- **Ripristina**: riporta la Tabella nella Base con tutti i dati intatti
+- **Svuota cestino**: elimina definitivamente tutte le Tabelle nel cestino
+
+<Note>Il ripristino di una Tabella non annulla la conversione dei collegamenti. I Campi di collegamento nelle altre Tabelle rimangono Campi di testo, quindi ricreali se devi ripristinare il collegamento.</Note>
+
+## Progettare le Tabelle
+
+Fai clic su **Progettazione** nel menu della Tabella per visualizzarne le proprietà di base:
+
+<img
+  src="/images/docs/base/2026-05-22-table-design.png"
+  alt="Progettazione della Tabella"
+  className="docs-screenshot"
+/>
+
+**Informazioni sulla Tabella**
+
+Schema, nome fisico della Tabella, descrizione e data dell'ultima modifica
+
+**Proprietà dei Campi**
+
+| Proprietà | Descrizione |
+| :--- | :--- |
+| **id** | ID del Campo |
+| **name** | Nome del Campo |
+| **dbFieldName** | Nome del Campo nel database fisico |
+| **type** | Tipo di Campo |
+| **description** | Descrizione del Campo |
+| **graph** | Visualizza le dipendenze correnti del Campo |
+| **cellValueType** | Tipo di valore corrente del Campo |
+| **isLookup** | Indica se è un Campo cercato da una Tabella collegata |
+| **isMultipleCellValue** | Indica se è un [Campo con valore array](/it/basic/field/common/is-multiple-value) |
+| **isComputed** | Indica se è un Campo calcolato (i valori dei Record dei Campi calcolati non possono essere modificati) |
+| **isPending** | Indica se è in fase di calcolo |
+| **hasError** | Indica se sono presenti errori di calcolo |
+| **notNull** | Indica se è abilitata la convalida non null |
+| **unique** | Indica se è abilitata la convalida dei valori univoci |
+
+## Condividere e accedere alle Tabelle
+
+### Condividere una Tabella
+
+In una Tabella, fai clic su **Condividi** nell'angolo in alto a destra, passa a **Condividi Tabella** e attiva **Condividi sul web** per generare un link di condivisione.
+
+<img
+  src="/images/docs/base/2026-05-22-table-share-entry.png"
+  alt="Punto di accesso alla condivisione della Tabella"
+  className="docs-screenshot"
+/>
+<img
+  src="/images/docs/base/2026-05-22-table-share-web.png"
+  alt="Condivisione della Tabella sul web"
+  className="docs-screenshot"
+/>
+
+<Note>Dopo aver abilitato la condivisione della Tabella, il pulsante **Condividi** appare in uno stato di condivisione grigio in ogni Vista della Tabella. Questo stato deriva dalla condivisione della Tabella e non significa che ogni Vista sia stata condivisa separatamente.</Note>
+
+Autorizzazioni del link:
+
+<img
+  src="/images/docs/base/2026-05-22-table-share-permissions.png"
+  alt="Autorizzazioni di condivisione della Tabella"
+  className="docs-screenshot"
+/>
+
+- **Può visualizzare**: chiunque disponga del link può visualizzare i dati della Tabella
+- **Può modificare**: gli utenti che hanno effettuato l'accesso possono modificare i Record nella Tabella condivisa
+- **Può salvare come copia**: chiunque disponga del link può salvare una copia nel proprio Spazio
+
+Puoi inoltre configurare **Consenti a chi visualizza di copiare i dati**, **Limita con password**, rigenerare o eliminare il link e copiare la configurazione di incorporamento.
+
+Per condividere soltanto la Vista corrente, passa a **Condividi Vista**. Per i dettagli, consulta la [barra degli strumenti della Vista](/it/basic/view/toolbar).
+
+### Modi per accedere alle Tabelle
+
+Le Tabelle utilizzano per impostazione predefinita una [Vista griglia](/it/basic/view/grid) e sono accessibili anche tramite l'[API](/it/api-doc/overview). Puoi creare Viste aggiuntive, come Kanban, per soddisfare diverse esigenze del flusso di lavoro.
+
+## Ricerca e download
+
+### Ricerca globale
+
+<img
+  src="/images/docs/base/2026-05-22-table-global-search.png"
+  alt="Ricerca globale nella Tabella"
+  className="docs-screenshot"
+/>
+
+- Attiva **Campo di ricerca** per scegliere i Campi in cui cercare. Questa modalità supporta i Campi data oltre a quelli di testo.
+- Disattiva **Campo di ricerca** per eseguire una ricerca fuzzy in tutti i Campi supportati. La ricerca globale non include i Campi data, casella di controllo o pulsante. L'istanza può inoltre limitare il numero di Campi inclusi nella ricerca globale.
+- Attiva **Nascondi righe non corrispondenti** per mostrare soltanto i Record corrispondenti. Disattivala per mantenere visibili tutte le righe ed evidenziare le corrispondenze.
+- Per le Tabelle di grandi dimensioni, gli editor possono attivare **Indice** per migliorare la velocità di ricerca. La creazione o l'aggiornamento dell'indice può influire temporaneamente sulle prestazioni di lettura e scrittura.
+
+### Download degli allegati
+
+I download degli allegati in blocco rispettano i risultati di ricerca correnti e includono soltanto gli allegati dei Record corrispondenti.
+
+<img
+  src="/images/docs/base/2026-05-22-table-attachment-download-menu.png"
+  alt="Punto di accesso al download in blocco degli allegati"
+  className="docs-screenshot"
+/>
+
+Nella finestra di download in blocco, usa **Prefisso del nome dell'allegato** per denominare i file ZIP in base all'indice predefinito, a un Campo scelto oppure seleziona **Nessun prefisso** per mantenere i nomi file originali; ai duplicati viene aggiunto automaticamente un suffisso.
+
+<img
+  src="/images/docs/base/2026-05-22-table-attachment-download-options.png"
+  alt="Opzioni per il download in blocco degli allegati"
+  className="docs-screenshot"
+/>
+
+## Domande frequenti
+
+<AccordionGroup>
+  <Accordion title="Perché non posso inserire testo in una colonna Numero?">
+    Teable è più rigoroso di Excel: ogni colonna ha un tipo di dati fisso e una colonna Numero archivia soltanto numeri. Questo vincolo garantisce l'integrità dei dati e costituisce la base per filtri e Automazioni avanzati. Per i dettagli, consulta [Teable e Excel a confronto](/it/compare/teable-vs-excel).
+  </Accordion>
+  <Accordion title="Cosa devo controllare prima di eliminare una Tabella?">
+    Controlla se alla Tabella fanno riferimento **Campi collegati** in altre Tabelle. L'eliminazione della Tabella di origine può causare problemi di visualizzazione dei dati nelle Tabelle collegate.
+  </Accordion>
+</AccordionGroup>

@@ -1,0 +1,93 @@
+---
+title: "Formül"
+description: "Diğer alanlara başvurun ve formüllerle metinleri, sayıları, tarihleri ve mantıksal koşulları hesaplayın."
+---
+
+Formül alanları, aynı kayıttaki diğer alanlardan sonuçlar hesaplar. Matematiksel işlemleri, metin birleştirmeyi, tarih hesaplamalarını ve koşullu mantığı işleyebilir. Yinelenen hesaplama kurallarını alanlara dönüştürmek için bunları kullanın.
+
+## Kullanım Alanları
+
+| Senaryo | Uygun olduğu durumlar |
+| --- | --- |
+| Otomatik hesaplama | Miktar, birim fiyat, indirim ve diğer alanlardan toplam fiyat, kâr veya puan hesaplama |
+| Metin işleme | Metni birleştirme, içeriği ayıklama veya bilgileri sınırlayıcıya göre ayrıştırma |
+| Tarih işleme | Tarih farklarını hesaplama, zaman aralıklarını kontrol etme veya gelecekteki tarihleri oluşturma |
+| Koşullu mantık | Durum, ipucu veya kategori gibi koşullara göre farklı sonuçlar döndürme |
+
+## Formülün Temelleri
+
+### Veri Türleri
+
+Bir formül yazmadan önce hesaplamada kullanılan alanların türlerini doğrulayın. Farklı türler farklı işlemleri ve işlevleri destekler.
+
+| Tür | Açıklama | Yaygın kullanımlar |
+| --- | --- | --- |
+| Sayı | Tam sayılar veya ondalık sayılar | Aritmetik, özetler, karşılaştırmalar |
+| Metin | Dize değerleri | Birleştirme, ayıklama, değiştirme, bölme |
+| Tarih | Tarih veya tarih-saat değerleri | Aralıkları hesaplama, tarihleri karşılaştırma |
+| Boole | `TRUE` veya `FALSE` | Koşullar ve mantıksal işlemler |
+
+### Alanlara Başvurma
+
+Bir formülde başka bir alana alan adıyla başvurun. Alan adını `{}` içine alın ve gerçek alan adıyla tutarlı olmasını sağlayın:
+
+```js
+{Unit price} * {Quantity}
+```
+
+### İşleçler
+
+| İşleç | Kullanım |
+| --- | --- |
+| `+` | Sayıların toplamını hesaplar veya dizeleri birleştirir |
+| `-` | Sayılar arasındaki farkı hesaplar |
+| `*` | Sayıların çarpımını hesaplar |
+| `/` | Sayıların bölümünü hesaplar |
+| `%` | Kalanı hesaplar |
+
+## İşlevler ve İfadeler
+
+### Yaygın İşlevler
+
+İşlevler belirli işlemleri gerçekleştirir. Örneğin `SUM` toplamı hesaplar, `LEFT` metnin başından karakterleri ayıklar, `TEXTBEFORE` sınırlayıcıdan önceki metni ayıklar ve `TEXTSPLIT` metni sınırlayıcıya göre böler.
+
+Daha fazla işlev için [formül hızlı başvuru kılavuzuna](/tr/basic/field/formula/cheat-sheet) bakın.
+
+### Metin İşleme
+
+| İşlem | İşlev örnekleri | Açıklama |
+| --- | --- | --- |
+| Metni birleştirme | `&`, `CONCATENATE` | İki veya daha fazla metin değerini birleştirir |
+| Metni ayıklama | `LEFT`, `RIGHT`, `MID`, `TEXTBEFORE` | Bir dizenin bir bölümünü ayıklar |
+| Metni bölme | `TEXTSPLIT` | Metni sınırlayıcıya göre birden fazla değere böler |
+
+### Mantıksal Koşullar
+
+Bir koşula göre farklı değerler döndürmek için `IF` işlevini kullanın:
+
+```js
+IF(condition, value_if_true, value_if_false)
+```
+
+Bir alanın boş olup olmadığını kontrol ederken `BLANK()` ile karşılaştırın. Örneğin `IF({Weight}=BLANK(), 1, 2)`, bir sayı alanı boş olduğunda `1`, aksi hâlde `2` döndürür.
+
+### Karmaşık İfadeler
+
+Karmaşık bir formül birden fazla işlev, alan başvurusu ve işleç içerebilir. Hesaplama sırasını denetlemek için parantezleri kullanın:
+
+```js
+({Unit price} * {Quantity}) * (1 - {Discount})
+```
+
+## Sonuç Görüntüleme ve Bakım
+
+### Biçimlendirme ve Etkileşimli Görüntüleme
+
+Formül sonuçlarında yüzde, ilerleme çubuğu veya simge stilleri gibi [biçimlendirme](/tr/basic/field/common/formatter) ve [etkileşimli görüntüleme](/tr/basic/field/common/show-as) ayarları da kullanılabilir. Kullanılabilir seçenekler formül sonucunun türüne bağlıdır.
+
+### Hata Ayıklama ve Optimizasyon
+
+- **Veri türlerini kontrol edin**: İşlemlerin ve işlevlerin doğru veri türlerini kullandığını doğrulayın.
+- **Alan başvurularını doğrulayın**: Alan adlarının doğru yazıldığını doğrulayın.
+- **Adım adım test edin**: Karmaşık formülleri daha küçük parçalara ayırın ve ayrı ayrı test edin.
+- **Yinelenen hesaplamalardan kaçının**: Aynı hesaplama birden fazla yerde kullanılıyorsa sonucu ayrı bir alanda saklamayı değerlendirin.

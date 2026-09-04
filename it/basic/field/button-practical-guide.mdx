@@ -1,0 +1,109 @@
+---
+title: "Guida pratica al Pulsante"
+description: "Usa un Campo Pulsante per attivare automazioni e trasformare flussi di lavoro fissi, come la conversione dei lead o i promemoria delle attività, in operazioni con un solo clic."
+---
+
+I Campi Pulsante sono utili per flussi di lavoro fissi e ripetitivi che devono essere eseguiti dopo la conferma di una persona. Alcuni esempi comuni includono la conversione di un lead in un'opportunità, la pianificazione di contenuti approvati, l'invio di promemoria per le attività o la sincronizzazione del Record corrente con un sistema esterno.
+
+Questa guida usa come esempio principale la conversione dei lead e mostra come collegare un pulsante a un'automazione.
+
+## Casi d'uso
+
+| Scenario | Cosa può fare il pulsante |
+| --- | --- |
+| Conversione dei lead | Creare un Record nella Tabella delle opportunità e contrassegnare il lead originale come convertito |
+| Pianificazione dei contenuti | Creare un calendario di pubblicazione e avvisare il membro del team responsabile |
+| Promemoria delle attività | Inviare un'email o un messaggio del team all'assegnatario |
+| Sincronizzazione con sistemi esterni | Inviare il Record corrente a un altro sistema tramite una richiesta HTTP |
+
+## Esempio: convertire un lead in un'opportunità
+
+In una Tabella CRM, un rappresentante commerciale fa clic sul pulsante "Converti in opportunità" dopo aver stabilito che un lead è pronto. L'automazione completa due azioni:
+
+- Crea un nuovo Record nella Tabella delle opportunità con informazioni chiave, come azienda e contatto.
+- Aggiorna lo stato del lead originale nella Tabella dei lead in "Convertito".
+
+### Preparare le Tabelle
+
+Questo esempio usa due Tabelle:
+
+| Tabella | Scopo | Campi di esempio |
+| --- | --- | --- |
+| Tabella dei lead | Archivia i lead da ricontattare. Qui viene creato il Campo Pulsante | Nome azienda, contatto, responsabile, stato |
+| Tabella delle opportunità | Archivia le opportunità convertite | Nome opportunità, cliente correlato, responsabile, lead di origine |
+
+### Creare il Campo Pulsante
+
+Aggiungi un Campo Pulsante nella Tabella dei lead:
+
+<Steps>
+  <Step title="Scegli il tipo di Campo">
+    Crea un Campo e scegli **Pulsante** come tipo di Campo.
+  </Step>
+  <Step title="Imposta il testo del pulsante">
+    Imposta il testo del pulsante su "Converti in opportunità" e scegli un colore facilmente riconoscibile.
+  </Step>
+  <Step title="Abilita la conferma al clic">
+    Per evitare clic accidentali, abilita **Conferma prima del clic** e compila il titolo e il messaggio della finestra di dialogo, oltre al testo del pulsante di conferma.
+  </Step>
+</Steps>
+
+### Configurare le azioni dell'automazione
+
+Dopo aver creato il Campo Pulsante, configura l'automazione che viene eseguita al clic.
+
+<Steps>
+  <Step title="Crea un'automazione">
+    Nelle impostazioni del Campo Pulsante, fai clic su **Automazione personalizzata** e crea un flusso di lavoro.
+  </Step>
+  <Step title="Crea un Record opportunità">
+    Aggiungi un'azione **Crea Record** e scegli la Tabella delle opportunità come Tabella di destinazione.
+  </Step>
+  <Step title="Mappa i Campi">
+    Scrivi i Campi principali del lead nella nuova opportunità. Ad esempio:
+    - `Nome opportunità` = `Nome azienda` del Record che ha attivato l'automazione
+    - `Cliente correlato` = `Contatto` del Record che ha attivato l'automazione
+    - `Responsabile` = `Responsabile` del Record che ha attivato l'automazione
+  </Step>
+  <Step title="Aggiorna lo stato del lead originale">
+    Aggiungi un'azione **Aggiorna Record**. Scegli la Tabella dei lead come Tabella di destinazione, usa l'ID del Record che ha attivato l'automazione come ID Record e aggiorna `Stato` a "Convertito".
+  </Step>
+</Steps>
+
+Dopo aver salvato l'automazione, il rappresentante commerciale può fare clic su "Converti in opportunità" per creare l'opportunità e aggiornare lo stato del lead originale.
+
+### Aggiungere notifiche
+
+Se un responsabile commerciale o il responsabile dell'opportunità deve ricevere una notifica dopo la conversione, aggiungi all'automazione un'azione **Invia email** o un'azione per inviare un messaggio al team.
+
+Impostazioni comuni:
+
+- **Destinatario**: un indirizzo email fisso oppure un Campo Utente del Record corrente.
+- **Oggetto e corpo**: inserisci valori dei Campi del Record che ha attivato l'automazione, ad esempio nome dell'azienda, responsabile o origine del lead.
+
+Esempio di corpo dell'email:
+
+> Nuova opportunità convertita: [Nome azienda] è stata convertita da [Responsabile]. Procedi con il ricontatto.
+
+### Collegare sistemi esterni
+
+Se le opportunità convertite devono anche essere sincronizzate con un CRM, un sistema finanziario o uno strumento interno, aggiungi all'automazione un'azione di richiesta HTTP.
+
+Le richieste HTTP funzionano al meglio quando il sistema di destinazione dispone di un'API stabile. Prima di configurare l'azione, verifica endpoint, metodo di richiesta, metodo di autenticazione e formato dei Campi.
+
+### Limitare i clic duplicati
+
+In genere, la conversione di un lead non dovrebbe avvenire più di una volta per lo stesso lead. Abilita **Limita il numero di clic** nel Campo Pulsante:
+
+| Impostazione | Indicazione |
+| --- | --- |
+| Clic massimi | Imposta su `1` |
+| Consenti azzeramento | In genere, mantieni questa opzione disattivata per evitare opportunità duplicate |
+
+Una volta raggiunto il limite di clic, il pulsante del Record viene disabilitato.
+
+## Note
+
+- La corretta esecuzione di un clic sul pulsante dipende dal fatto che l'automazione collegata sia abilitata e funzionante.
+- Ogni attivazione riuscita dell'automazione viene conteggiata nella quota di esecuzioni delle automazioni dello Spazio di lavoro.
+- Se il pulsante modifica dati importanti, abilita la conferma al clic e limita il numero di clic.

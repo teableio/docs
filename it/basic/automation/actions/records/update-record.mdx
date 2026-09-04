@@ -1,0 +1,103 @@
+---
+title: "Aggiorna Record"
+description: "Modifica i Campi di un Record esistente come parte di un workflow"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Consigliamo vivamente di usare Esegui script per creare automazioni, perché può coprire il comportamento di tutte le azioni, comprese quelle che altrimenti dovrebbero essere create manualmente. Descrivi semplicemente le tue esigenze all'IA nella chat.
+
+Nota: se aggiungi azioni manualmente, in seguito l'IA non sarà in grado di riconoscerle o modificarle.
+</Tip>
+
+## Crea con l'IA
+
+Apri AI Chat nella barra laterale destra della Tabella e descrivi ciò che desideri.
+
+L'IA si occupa di tutto: sceglie il trigger corretto, seleziona le azioni appropriate, associa i Campi e configura automaticamente l'intero workflow.
+
+Descrivi una sola volta l'obiettivo e il workflow sarà pronto, senza alcuna configurazione manuale.
+
+Aggiorna uno o più Campi di un Record esistente. Cambiano solo i Campi associati; tutti gli altri rimangono invariati.
+
+## Configurazione
+
+| Impostazione | Obbligatoria | Descrizione |
+|---|---|---|
+| Tabella | Sì | La Tabella contenente il Record da aggiornare |
+| ID Record | Sì | Il Record da aggiornare. Supporta variabili dinamiche e ID separati da virgole per più Record |
+| Campi | Sì | Associa ogni Campo al nuovo valore, statico o dinamico |
+
+## Come configurarla
+
+1. Aggiungi un'azione **Aggiorna Record** al workflow.
+2. Scegli la **Tabella** contenente il Record da modificare.
+3. Imposta l'**ID Record**. Fai clic su **+** per inserire una variabile dinamica:
+   - Da un **trigger di Record**, come creazione, aggiornamento o clic su un pulsante: il trigger fornisce direttamente l'ID Record.
+   - Da un'azione **Ottieni Record**: fai riferimento all'ID Record nei risultati recuperati.
+   - Puoi anche digitare un ID Record statico o usare un elenco separato da virgole per aggiornare più Record contemporaneamente, ad esempio `rec123,rec456,rec789`.
+4. Associa i Campi da modificare. Per ogni Campo:
+   - **Valore statico:** digita direttamente il nuovo valore.
+   - **Valore dinamico:** fai clic su **+** per inserire un valore proveniente da un passaggio precedente.
+5. Lascia non associati i Campi che non vuoi modificare: manterranno i valori correnti.
+6. Salva l'azione.
+
+## Come ottenere l'ID Record
+
+L'ID Record è l'informazione essenziale richiesta dall'azione. Ecco dove trovarlo a seconda del trigger:
+
+| Trigger/passaggio precedente | Come ottenere l'ID Record |
+|---|---|
+| Quando viene creato un Record | Disponibile direttamente come variabile di output del trigger |
+| Quando viene aggiornato un Record | Disponibile direttamente come variabile di output del trigger |
+| Quando si fa clic su un pulsante | Disponibile direttamente: è la riga in cui è stato premuto il pulsante |
+| Quando viene inviato un modulo | Disponibile direttamente: è il Record creato dall'invio |
+| Azione Ottieni Record | Ogni Record dei risultati ha un ID. In un Ciclo, fai riferimento all'ID dell'elemento corrente |
+| Webhook ricevuto | Devi includere l'ID Record nel payload del webhook oppure cercarlo con Ottieni Record |
+
+<Tip>Devi aggiornare più Record contemporaneamente? Puoi passare ID Record separati da virgole oppure usare [Ciclo (batch)](../logic/loop-run) con il risultato di Ottieni Record per aggiornare i Record in blocco.</Tip>
+
+## Aggiornamenti parziali
+
+Questa azione esegue un aggiornamento parziale. Ciò significa che:
+
+- I **Campi associati** vengono sovrascritti con i nuovi valori specificati.
+- I **Campi non associati** rimangono esattamente come sono.
+
+Non è necessario inviare nuovamente tutti i valori dei Campi, ma solo quelli da modificare. È un approccio sicuro ed efficiente.
+
+## Avviso: cicli del trigger
+
+<Warning>Se il workflow usa il trigger "Quando viene aggiornato un Record" e un passaggio successivo aggiorna nella stessa Tabella gli stessi Campi monitorati, il workflow si attiverà di nuovo, creando un ciclo infinito.</Warning>
+
+Se l'automazione viene attivata da **Quando viene aggiornato un Record** e l'azione Aggiorna Record scrive nella **stessa Tabella**, può crearsi un ciclo infinito:
+
+1. Il Record cambia → il trigger si attiva → l'automazione aggiorna il Record → il trigger si attiva di nuovo → e così via.
+
+**Come evitare i cicli:**
+
+- **Monitora Campi specifici** nel trigger che siano *diversi* da quelli aggiornati. Ad esempio, monitora "Stato" ma aggiorna "Data di elaborazione".
+- **Aggiungi un filtro** al trigger. Ad esempio, attivalo solo quando `Elaborato` non è `vero` e imposta `Elaborato` su `vero` nell'azione.
+- Valuta invece l'uso di [Quando un Record soddisfa le condizioni](/it/basic/automation/trigger/records/record-matches-conditions), che si attiva solo durante le transizioni di stato.
+
+## Quando utilizzarla
+
+- **Contrassegnare un'attività come completata dopo l'approvazione.** Quando si fa clic su un pulsante, imposta Stato su "Approvata" e compila la data di approvazione.
+- **Aggiornare un Campo di stato in base a eventi esterni.** Quando un webhook segnala un pagamento, trova il Record dell'ordine e aggiorna lo stato a "Pagato".
+- **Scrivere una marca temporale quando cambia qualcosa.** Quando viene aggiornato un Record, imposta un Campo data "Ultima modifica dell'automazione" sull'ora corrente.
+- **Sincronizzare dati da un sistema esterno.** Dopo aver chiamato un'API esterna, scrivi i dati della risposta, ad esempio un numero di tracciamento, nel Record.
+- **Aggiornare Record in batch.** Combina Ottieni Record e Ciclo per aggiornare più Record contemporaneamente, ad esempio contrassegnando tutte le attività scadute come "In escalation".
+
+## Suggerimenti
+
+- L'aggiornamento di un Record può attivare altre automazioni che monitorano la stessa Tabella. Tieni conto degli effetti a cascata.
+- Quando aggiorni più Record con ID separati da virgole, tutti ricevono gli stessi valori dei Campi. Per assegnare valori diversi a ciascun Record, usa invece un passaggio [Ciclo](../logic/loop-run).
+- Se devi cancellare il contenuto di un Campo, associalo a un valore vuoto. Lasciarlo semplicemente non associato *non* lo svuota.
+- Usa [Accesso tra Base](/it/basic/automation/actions/records/cross-base) per aggiornare Record in una Tabella appartenente a una Base diversa.
+
+## Contenuti correlati
+
+- [Crea Record](/it/basic/automation/actions/records/create-record) — aggiunge nuovi Record invece di modificare quelli esistenti
+- [Ottieni Record](/it/basic/automation/actions/records/get-records) — recupera Record per trovarne gli ID prima dell'aggiornamento
+- [Accesso tra Base](/it/basic/automation/actions/records/cross-base) — aggiorna Record in Tabelle esterne alla Base corrente
+- [Ciclo (batch)](../logic/loop-run) — aggiorna più Record con valori diversi

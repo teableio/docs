@@ -1,0 +1,96 @@
+---
+title: "SSO con Okta"
+description: "Configura Okta como proveedor de autenticación SSO para Teable"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Disponible en el plan Business y superiores</Tip>
+
+## Paso 1: crear un proveedor de autenticación en Teable
+
+1. Ve a los ajustes de SSO de Teable
+2. Crea un proveedor de autenticación, asígnale el nombre **Okta** y selecciona **OpenID Connect**
+
+## Paso 2: acceder a la consola de administración de Okta
+
+1. Inicia sesión en tu cuenta de Okta
+2. Ve al **Panel de administración**
+3. Ve a **Aplicaciones** → **Aplicaciones** en el menú de la izquierda
+
+## Paso 3: crear una aplicación nueva
+
+1. Haz clic en **Crear integración de aplicación**
+2. Selecciona **OIDC - OpenID Connect** como método de inicio de sesión
+3. Selecciona **Aplicación web** como tipo de aplicación
+4. Haz clic en **Siguiente**
+
+## Paso 4: configurar los ajustes de la aplicación
+
+Completa el formulario de configuración de la aplicación:
+
+- **Nombre de la integración de la aplicación**: SSO de Teable
+- **Tipo de concesión**: selecciona **Código de autorización**
+- **URI de redirección de inicio de sesión**: pega la **URL de devolución de llamada** de Teable
+- **URI de redirección de cierre de sesión**: (opcional) `https://app.teable.ai`
+- **Acceso controlado**: elige quién puede acceder a esta aplicación
+
+Haz clic en **Guardar** para crear la aplicación.
+
+## Paso 5: guardar las credenciales del cliente
+
+Después de crear la aplicación, verás la página con sus detalles:
+
+1. Copia el **ID de cliente**
+2. Copia el **Secreto de cliente** (haz clic en «Mostrar» si es necesario)
+3. Pega ambos valores en la configuración de SSO de Teable
+
+<Warning>Mantén el Secreto de cliente protegido y no lo compartas nunca públicamente.</Warning>
+
+## Paso 6: configurar los endpoints de OAuth
+
+En Teable, completa los siguientes endpoints de OAuth:
+
+- **URL de autorización**: `https://{yourOktaDomain}/oauth2/v1/authorize`
+- **URL del token**: `https://{yourOktaDomain}/oauth2/v1/token`
+- **URL de información del usuario**: `https://{yourOktaDomain}/oauth2/v1/userinfo`
+- **Emisor**: `https://{yourOktaDomain}`
+
+<Note>Sustituye `{yourOktaDomain}` por tu dominio real de Okta (por ejemplo, `dev-123456.okta.com` o `mycompany.okta.com`)</Note>
+
+## Paso 7: asignar usuarios o grupos
+
+1. En tu aplicación de Okta, ve a la pestaña **Asignaciones**
+2. Haz clic en **Asignar** → **Asignar a personas** o **Asignar a grupos**
+3. Selecciona los usuarios o grupos que deban tener acceso a Teable mediante SSO
+4. Haz clic en **Asignar** y en **Hecho**
+
+## Paso 8: probar el inicio de sesión mediante SSO
+
+Dispones de dos opciones para activar el inicio de sesión mediante SSO:
+
+**Opción 1: URL de autenticación directa**
+- Utiliza la URL de autorización como URL de inicio de sesión mediante SSO
+
+**Opción 2: verificación del dominio**
+1. Configura la verificación del dominio en Teable
+2. Verifica tu dominio personalizado
+3. Visita https://app.teable.ai
+4. Haz clic en el botón de inicio de sesión mediante SSO
+5. Introduce tu dirección de correo electrónico del dominio verificado para iniciar sesión
+
+## Configuración adicional (opcional)
+
+### Configurar declaraciones personalizadas
+
+Si necesitas asignar atributos de usuario adicionales:
+
+1. Ve a **Seguridad** → **API** en la administración de Okta
+2. Selecciona tu servidor de autorización (normalmente "default")
+3. Ve a la pestaña **Declaraciones**
+4. Añade las declaraciones personalizadas que necesites (por ejemplo, departamento o rol)
+
+### Activar la autenticación multifactor
+
+1. Ve a **Seguridad** → **Autenticadores** en la administración de Okta
+2. Configura los métodos de MFA que prefieras
+3. Crea una política de autenticación para tu aplicación de Teable

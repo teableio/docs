@@ -1,0 +1,154 @@
+---
+title: "Champs IA"
+description: "Les champs IA peuvent résumer du texte, classer des étiquettes, générer des scores ou transformer du contenu en images."
+---
+
+<Note>Disponible avec toutes les offres Cloud. Les déploiements auto-hébergés nécessitent l’offre Business ou une offre supérieure.</Note>
+
+## Principaux cas d’utilisation
+
+Les champs IA génèrent la valeur du Champ actuel à partir d’autres Champs de la même ligne. Utilisez-les pour transformer du contenu brut en résumés, traductions, informations extraites, catégories, scores, dates ou images.
+
+<Columns cols={2}>
+  <Card title="Texte" icon="text">
+    Résumez, traduisez, extrayez des informations, améliorez la rédaction ou personnalisez la sortie. Idéal pour transformer un texte long en contenu exploitable.
+  </Card>
+  <Card title="Sélection unique" icon="circle-dot">
+    Classez intelligemment ou personnalisez la sortie. Idéal pour associer le contenu à une catégorie existante.
+  </Card>
+  <Card title="Sélection multiple" icon="tags">
+    Étiquetez intelligemment ou personnalisez la sortie. Idéal pour associer le contenu à une ou plusieurs étiquettes existantes.
+  </Card>
+  <Card title="Évaluation / Nombre" icon="star">
+    Évaluez ou personnalisez la sortie. Idéal pour générer des scores ou des résultats numériques à partir du contenu source.
+  </Card>
+  <Card title="Date" icon="calendar">
+    Extrayez des informations ou personnalisez la sortie. Idéal pour extraire des dates ou des heures du contenu.
+  </Card>
+  <Card title="Pièce jointe" icon="image">
+    Générez des images ou personnalisez la sortie. Idéal pour créer des images à partir de texte ou de pièces jointes.
+  </Card>
+</Columns>
+
+Si vous ne savez pas quelle action utiliser, commencez ici :
+
+<AccordionGroup>
+  <Accordion title="Résumer, Traduire, Extraire des informations">
+    - **Résumer** : crée un résumé à partir du Champ source.
+    - **Traduire** : traduit le Champ source dans la langue cible.
+    - **Extraire des informations** : extrait des informations précises d’un texte. Les champs Date peuvent également utiliser cette action pour extraire des dates ou des heures.
+  </Accordion>
+  <Accordion title="Améliorer la rédaction, Classer intelligemment, Étiqueter intelligemment">
+   - **Améliorer la rédaction** : réécrit le contenu selon vos exigences supplémentaires.
+   -  **Classer intelligemment** : associe un champ Sélection unique à une option existante.
+   -  **Étiqueter intelligemment** : associe un champ Sélection multiple à des options existantes.
+  </Accordion>
+  <Accordion title="Évaluer, Générer une image">
+    - **Évaluer** : génère un score ou une valeur numérique à partir du contenu source.
+    - **Générer une image** : crée des images dans un champ Pièce jointe. Certains modèles permettent d’utiliser un champ Pièce jointe comme image de référence.
+  </Accordion>
+  <Accordion title="Personnaliser">
+    Utilisez un prompt personnalisé lorsque les actions par défaut ne couvrent pas votre cas. Les prompts personnalisés peuvent référencer des Champs de la même ligne.
+  </Accordion>
+</AccordionGroup>
+
+## Flux de travail
+
+<Steps>
+  <Step title="Ajouter un champ">
+    Créez un Champ, choisissez son type, puis développez **Configuration de l’IA**. Chaque type de Champ affiche les actions IA qu’il prend en charge.
+  </Step>
+  <Step title="Choisir une action et un modèle">
+    Choisissez le **Type d’action IA** et le **Modèle d’IA**. L’action détermine la tâche. Le modèle détermine le modèle d’IA qui génère le résultat.
+  </Step>
+  <Step title="Choisir les champs sources">
+    Choisissez le Champ que l’IA doit lire comme entrée. Le champ IA génère sa valeur à partir des Champs sources de la même ligne.
+  </Step>
+  <Step title="Ajouter les exigences de génération">
+    Selon l’action, renseignez les **Exigences supplémentaires**, la **Langue cible** ou un **Prompt personnalisé**. Pour la génération d’images dans les champs Pièce jointe, utilisez les **Paramètres avancés** afin d’ajuster la taille, la qualité et le nombre d’images, le format d’image, la résolution ou les images de référence. Les paramètres disponibles dépendent du modèle sélectionné.
+  </Step>
+</Steps>
+
+<img
+  src="/images/docs/base/2026-05-22-ai-field-create-config.png"
+  alt="Créer un champ IA"
+  className="docs-screenshot"
+/>
+
+Lorsque vous modifiez un champ IA, vous pouvez changer le type d’action, le modèle, les Champs sources, les exigences supplémentaires, le prompt personnalisé et le paramètre de mise à jour automatique. Après l’enregistrement, la nouvelle configuration s’applique aux générations futures. Si un résultat existant ne vous convient pas, régénérez-le.
+
+<img
+  src="/images/docs/base/2026-05-22-ai-field-edit-config.png"
+  alt="Modifier un champ IA"
+  className="docs-screenshot"
+/>
+
+## Mise à jour automatique et génération par lot
+
+Lorsque la **Mise à jour automatique** est activée, le champ IA est actualisé avec la configuration actuelle lorsque le contenu des Champs sources ou la configuration de l’IA change. Utilisez-la lorsque le résultat doit rester synchronisé avec le contenu source, par exemple pour des catégories, résumés, scores ou étiquettes générés à partir de retours.
+
+Après avoir créé un Champ ou modifié sa configuration IA, vous pouvez choisir de traiter immédiatement les Enregistrements de la Vue actuelle :
+
+<Columns cols={3}>
+  <Card title="Remplir uniquement les cellules vides" icon="circle">
+    Générez du contenu uniquement pour les cellules vides. Les valeurs existantes ne sont pas remplacées.
+  </Card>
+  <Card title="Générer toute la colonne" icon="rotate">
+    Régénérez les résultats des Enregistrements de la Vue actuelle. Les valeurs existantes sont remplacées.
+  </Card>
+  <Card title="Enregistrer uniquement la configuration" icon="floppy-disk">
+    Enregistrez la configuration du Champ sans écrire de valeurs dans les cellules.
+  </Card>
+</Columns>
+
+<img
+  src="/images/docs/base/2026-05-22-ai-field-save-options.png"
+  alt="Options d’enregistrement du champ IA"
+  className="docs-screenshot"
+/>
+
+Après avoir choisi une option de génération, Teable affiche l’état de la tâche pendant le traitement des Enregistrements.
+
+<img
+  src="/images/docs/base/2026-05-22-ai-field-generation-status.png"
+  alt="État de la génération du champ IA"
+  className="docs-screenshot"
+/>
+
+Pour lancer la génération ultérieurement, utilisez le menu du Champ au lieu d’enregistrer à nouveau la configuration.
+
+Vous pouvez également effectuer un clic droit sur le Champ et choisir **Générer** pour lancer une génération par lot dans la Vue actuelle. La disponibilité dépend de la Vue actuelle et de vos autorisations.
+
+<img
+  src="/images/docs/base/2026-05-22-ai-field-generate-menu.png"
+  alt="Menu de génération du champ IA"
+  className="docs-screenshot"
+/>
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Les champs IA traitent-ils automatiquement les enregistrements existants ?">
+    Après avoir créé un Champ ou modifié sa configuration IA, vous pouvez choisir **Remplir uniquement les cellules vides**, **Générer toute la colonne** ou **Enregistrer uniquement la configuration**. Vous pouvez également effectuer une génération par lot ultérieurement depuis le menu contextuel du Champ en choisissant **Générer**.
+  </Accordion>
+
+  <Accordion title="Quand dois-je activer la mise à jour automatique ?">
+    Activez la **Mise à jour automatique** si vous souhaitez que le champ IA soit mis à jour lorsque le contenu des Champs sources change. Si vous préférez contrôler le lancement de la génération, laissez-la désactivée et utilisez **Générer** lorsque nécessaire.
+  </Accordion>
+
+  <Accordion title="Pourquoi les différents types de champs affichent-ils des actions IA différentes ?">
+    Les actions IA dépendent du type de Champ. Les champs de texte conviennent aux résumés, aux traductions et à l’extraction d’informations. Les champs Sélection unique conviennent au classement intelligent. Les champs Sélection multiple conviennent à l’étiquetage intelligent. Les champs Pièce jointe conviennent à la génération d’images.
+  </Accordion>
+
+  <Accordion title="Pourquoi le modèle que je souhaite utiliser n’apparaît-il pas ?">
+    La liste des modèles provient des modèles fournis par Teable et des modèles d’IA configurés dans l’Espace actuel. Pour utiliser un modèle tiers, ajoutez d’abord un modèle d’IA personnalisé dans les paramètres de l’Espace.
+  </Accordion>
+
+  <Accordion title="Pourquoi les options de génération d’images changent-elles ?">
+    Les options de taille, de qualité et de nombre d’images, de format d’image, de résolution et d’image de référence dépendent du modèle sélectionné.
+  </Accordion>
+
+  <Accordion title="Pourquoi une image 4K n’utilise-t-elle pas toujours un côté complet de 3 840 px ?">
+    Certains modèles d’image imposent une limite au nombre total de pixels. Lorsque vous choisissez une résolution élevée telle que **4K**, Teable utilise la plus grande taille conforme pour le format d’image sélectionné ; la largeur et la hauteur exactes peuvent donc varier.
+  </Accordion>
+</AccordionGroup>

@@ -1,0 +1,103 @@
+---
+title: "Présentation de l’envoi d’e-mails"
+description: "Envoyez des e-mails personnalisés depuis un workflow"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Nous vous recommandons vivement d’utiliser Exécuter un script pour créer des automatisations, car cette action peut couvrir tous les comportements, y compris ceux qui devraient autrement être configurés manuellement. Décrivez simplement vos besoins à l’IA dans le chat.
+
+Remarque : si vous ajoutez des actions manuellement, l’IA ne pourra ni les reconnaître ni les modifier par la suite.
+</Tip>
+
+## Créer avec l’IA
+
+Ouvrez le Chat IA dans la barre latérale droite de votre table et décrivez ce que vous souhaitez obtenir.
+
+L’IA s’occupe de tout : elle sélectionne le bon déclencheur, choisit les actions appropriées, associe les champs et configure automatiquement l’ensemble du workflow.
+
+Décrivez une seule fois votre objectif : le workflow est prêt, sans aucune configuration manuelle.
+
+Cette action envoie un e-mail à un ou plusieurs destinataires. Vous pouvez personnaliser les destinataires, l’objet, le corps et l’adresse de réponse, et utiliser des valeurs dynamiques provenant des étapes précédentes pour adapter chaque message.
+
+Par défaut, les e-mails sont envoyés depuis le service de messagerie intégré de Teable. Pour les envoyer depuis votre propre domaine, configurez un [serveur SMTP personnalisé](/fr/basic/automation/actions/communication/smtp-sender).
+
+## Configuration
+
+| Paramètre | Obligatoire | Description |
+|---|---|---|
+| À | Oui* | Adresse(s) e-mail des destinataires. Séparez plusieurs adresses par des virgules |
+| Objet | Oui | Ligne d’objet. Prend en charge les variables dynamiques via **+** |
+| Corps | Oui | Corps de l’e-mail. Prend en charge Markdown, HTML et les variables dynamiques |
+| Nom de l’expéditeur | Non | Nom affiché dans la boîte de réception du destinataire (par exemple, « Assistance Acme ») |
+| CC | Non | Destinataires en copie |
+| CCI | Non | Destinataires en copie cachée |
+| Répondre à | Non | Adresse à laquelle les destinataires répondent (si elle diffère de celle de l’expéditeur) |
+
+\* Au moins l’un des champs **À** ou **CCI** est obligatoire.
+
+**Limite de débit :** 5 e-mails/seconde/base.
+
+## Configuration de l’action
+
+1. Ajoutez une action **Envoyer un e-mail** à votre workflow.
+2. Dans le champ **À**, saisissez une adresse e-mail fixe ou cliquez sur **+** pour insérer une valeur dynamique (par exemple, le champ E-mail de l’enregistrement déclencheur).
+3. Rédigez l’**Objet**. Cliquez sur **+** pour inclure des valeurs dynamiques telles que le nom ou le statut de l’enregistrement. Exemple : `Nouvelle commande de {{Customer Name}} — nº {{Order ID}}`.
+4. Rédigez le **Corps**. Vous pouvez utiliser :
+   - **Texte brut** — saisissez simplement votre message.
+   - **Markdown** — utilisez `**gras**`, `*italique*`, `- listes`, `[liens](url)`, etc.
+   - **HTML** — pour maîtriser entièrement la mise en forme, écrivez directement les balises HTML.
+   - **Variables dynamiques** — cliquez sur **+** n’importe où dans le corps pour insérer des valeurs provenant des étapes précédentes.
+5. (Facultatif) Définissez le **Nom de l’expéditeur**, les champs **CC**, **CCI** ou **Répondre à**, selon vos besoins.
+6. Enregistrez l’action.
+
+## Utilisation de variables dans l’objet et le corps
+
+Les variables permettent de personnaliser chaque e-mail. Cliquez sur le bouton **+** dans n’importe quel champ de texte pour ouvrir le sélecteur de variables. Vous pouvez référencer :
+
+- **Données du déclencheur :** champs de l’enregistrement qui a déclenché l’automatisation (par exemple, nom du client, e-mail, montant de la commande).
+- **Résultat d’une action précédente :** données issues d’étapes antérieures, comme l’ID d’un enregistrement récemment créé ou un texte généré par l’IA.
+
+Exemple de corps avec des variables :
+
+```
+Bonjour {{Customer Name}},
+
+Votre commande nº {{Order ID}} a bien été confirmée.
+
+**Total :** ${{Order Amount}}
+**Livraison estimée :** {{Delivery Date}}
+
+Merci pour votre achat !
+```
+
+## Options de mise en forme du corps
+
+| Format | Utilisation | Idéal pour |
+|---|---|---|
+| Texte brut | Saisissez simplement votre message | Notifications simples |
+| Markdown | Utilisez la syntaxe Markdown (`**gras**`, `# titre`, etc.) | Messages structurés et mis en forme |
+| HTML | Écrivez des balises HTML (`<h1>`, `<p>`, `<table>`, etc.) | E-mails entièrement conçus avec une mise en page personnalisée |
+
+Vous pouvez combiner Markdown et variables dynamiques dans un même corps. Pour les conceptions d’e-mails complexes, HTML offre le plus de contrôle.
+
+## Quand l’utiliser
+
+- **Envoyer des confirmations de commande.** Lorsqu’une nouvelle commande est créée, envoyez un e-mail contenant les détails de la commande et un message de remerciement.
+- **Informer les membres de l’équipe des changements de statut.** Lorsqu’une tâche passe au statut « Bloquée », envoyez un e-mail au responsable et à son manager.
+- **Distribuer des rapports planifiés.** Associez cette action à un déclencheur planifié et à Obtenir des enregistrements pour envoyer un récapitulatif hebdomadaire par e-mail.
+- **Envoyer des messages personnalisés.** Utilisez les données des enregistrements pour personnaliser l’objet et le corps pour chaque destinataire.
+- **Confirmer les envois de formulaire.** Après l’envoi d’un formulaire, adressez à son auteur une confirmation contenant ses réponses.
+
+## Conseils de délivrabilité
+
+- **Utilisez un serveur SMTP personnalisé** pour les e-mails à fort volume ou essentiels à votre activité. Le service intégré de Teable convient aux notifications simples, mais les e-mails provenant de votre propre domaine ont plus de chances d’arriver dans la boîte de réception du destinataire.
+- **Évitez tout contenu assimilable à du spam** dans l’objet et le corps : un excès de majuscules, de points d’exclamation ou de liens peut déclencher les filtres antispam.
+- **Définissez une adresse Répondre à** afin que les destinataires puissent répondre à une véritable boîte de réception plutôt qu’à une adresse sans réponse.
+- **Testez vos e-mails** avant d’activer l’automatisation en production. Exécutez-la manuellement avec des données de test pour vérifier la mise en forme et la distribution.
+
+## Pages connexes
+
+- [Configurer SMTP et l’expéditeur](/fr/basic/automation/actions/communication/smtp-sender) — envoyez des e-mails depuis votre propre domaine
+- [Boucle (traitement par lots)](../logic/loop-run) — envoyez des e-mails en masse en parcourant une liste d’enregistrements
+- [Générer avec l’IA](/fr/basic/automation/actions/ai/ai-generate) — générez du contenu d’e-mail personnalisé avec l’IA

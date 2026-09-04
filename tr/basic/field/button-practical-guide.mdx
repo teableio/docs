@@ -1,0 +1,109 @@
+---
+title: "Düğme Uygulama Kılavuzu"
+description: "Otomasyonları tetiklemek ve potansiyel müşteri dönüştürme ya da görev hatırlatmaları gibi sabit iş akışlarını tek tıkla çalıştırmak için Düğme alanını kullanın."
+---
+
+Düğme alanları, bir kişi eylemi onayladıktan sonra çalışması gereken sabit ve yinelenen iş akışları için kullanışlıdır. Yaygın örnekler arasında potansiyel müşteriyi fırsata dönüştürme, onaylanmış içeriği planlama, görev hatırlatmaları gönderme veya geçerli kaydı harici bir sistemle senkronize etme bulunur.
+
+Bu kılavuzda ana örnek olarak potansiyel müşteri dönüştürme kullanılır ve bir düğmenin otomasyona nasıl bağlanacağı gösterilir.
+
+## Kullanım Alanları
+
+| Senaryo | Düğmenin yapabilecekleri |
+| --- | --- |
+| Potansiyel müşteri dönüştürme | Fırsatlar tablosunda bir kayıt oluşturur ve özgün potansiyel müşteriyi dönüştürülmüş olarak işaretler |
+| İçerik planlama | Bir yayın planı oluşturur ve yayımlamadan sorumlu ekip arkadaşını bilgilendirir |
+| Görev hatırlatmaları | Atanan kişiye e-posta veya ekip mesajı gönderir |
+| Harici sistem senkronizasyonu | Geçerli kaydı HTTP isteği üzerinden başka bir sisteme gönderir |
+
+## Örnek: Potansiyel Müşteriyi Fırsata Dönüştürme
+
+Bir CRM tablosunda satış temsilcisi, potansiyel müşterinin hazır olduğuna karar verdikten sonra "Fırsata dönüştür" düğmesine tıklar. Otomasyon iki eylemi tamamlar:
+
+- Şirket ve iletişim bilgileri gibi önemli bilgilerle fırsatlar tablosunda yeni bir kayıt oluşturur.
+- Potansiyel müşteriler tablosundaki özgün potansiyel müşteri durumunu "Dönüştürüldü" olarak günceller.
+
+### Tabloları Hazırlama
+
+Bu örnek iki tablo kullanır:
+
+| Tablo | Amaç | Örnek alanlar |
+| --- | --- | --- |
+| Potansiyel müşteriler tablosu | Takip edilecek potansiyel müşterileri saklar. Düğme alanı burada oluşturulur | Şirket adı, iletişim bilgisi, sorumlu, durum |
+| Fırsatlar tablosu | Dönüştürülen fırsatları saklar | Fırsat adı, ilişkili müşteri, sorumlu, kaynak potansiyel müşteri |
+
+### Düğme Alanını Oluşturma
+
+Potansiyel müşteriler tablosuna bir düğme alanı ekleyin:
+
+<Steps>
+  <Step title="Alan türünü seçin">
+    Bir alan oluşturun ve alan türü olarak **Düğme**'yi seçin.
+  </Step>
+  <Step title="Düğme metnini ayarlayın">
+    Düğme metnini "Fırsata dönüştür" olarak ayarlayın ve kolayca tanınabilecek bir renk seçin.
+  </Step>
+  <Step title="Tıklama onayını etkinleştirin">
+    Yanlışlıkla tıklamaları önlemek için **Tıklamadan önce onayla** seçeneğini etkinleştirin ve iletişim kutusu başlığını, mesajını ve onay düğmesi metnini doldurun.
+  </Step>
+</Steps>
+
+### Otomasyon Eylemlerini Yapılandırma
+
+Düğme alanını oluşturduktan sonra düğmeye tıklandığında çalışacak otomasyonu yapılandırın.
+
+<Steps>
+  <Step title="Bir otomasyon oluşturun">
+    Düğme alanı ayarlarında **Özel otomasyon**'a tıklayın ve bir iş akışı oluşturun.
+  </Step>
+  <Step title="Bir fırsat kaydı oluşturun">
+    Bir **Kayıt oluştur** eylemi ekleyin ve hedef tablo olarak fırsatlar tablosunu seçin.
+  </Step>
+  <Step title="Alanları eşleyin">
+    Önemli potansiyel müşteri alanlarını yeni fırsata yazın. Örneğin:
+    - `Fırsat adı` = tetikleyici kayıttaki `Şirket adı`
+    - `İlişkili müşteri` = tetikleyici kayıttaki `İletişim bilgisi`
+    - `Sorumlu` = tetikleyici kayıttaki `Sorumlu`
+  </Step>
+  <Step title="Özgün potansiyel müşteri durumunu güncelleyin">
+    Bir **Kaydı güncelle** eylemi ekleyin. Hedef tablo olarak potansiyel müşteriler tablosunu seçin, kayıt kimliği olarak tetikleyici kayıt kimliğini kullanın ve `Durum` alanını "Dönüştürüldü" olarak güncelleyin.
+  </Step>
+</Steps>
+
+Otomasyonu kaydettikten sonra satış temsilcisi, fırsatı oluşturmak ve özgün potansiyel müşteri durumunu güncellemek için "Fırsata dönüştür"e tıklayabilir.
+
+### Bildirim Ekleme
+
+Bir satış yöneticisinin veya fırsat sorumlusunun dönüştürmeden sonra bilgilendirilmesi gerekiyorsa otomasyona bir **E-posta gönder** eylemi veya ekip mesajı eylemi ekleyin.
+
+Yaygın ayarlar:
+
+- **Alıcı**: Sabit bir e-posta adresi veya geçerli kayıttaki bir kullanıcı alanı.
+- **Konu ve gövde**: Tetikleyici kayıttan şirket adı, sorumlu veya potansiyel müşteri kaynağı gibi alan değerleri ekleyin.
+
+Örnek e-posta gövdesi:
+
+> Yeni fırsat dönüştürüldü: [Şirket adı], [Sorumlu] tarafından dönüştürüldü. Lütfen takip edin.
+
+### Harici Sistemleri Bağlama
+
+Dönüştürülen fırsatların bir CRM, finans sistemi veya dahili araçla da senkronize edilmesi gerekiyorsa otomasyona bir HTTP isteği eylemi ekleyin.
+
+HTTP istekleri, hedef sistem kararlı bir API'ye sahip olduğunda en iyi şekilde çalışır. Eylemi yapılandırmadan önce uç noktayı, istek yöntemini, kimlik doğrulama yöntemini ve alan biçimini doğrulayın.
+
+### Yinelenen Tıklamaları Sınırlama
+
+Potansiyel müşteri dönüştürme genellikle aynı potansiyel müşteri için birden fazla kez gerçekleşmemelidir. Düğme alanında **Tıklama sayısını sınırla** seçeneğini etkinleştirin:
+
+| Ayar | Öneri |
+| --- | --- |
+| Azami tıklama | `1` olarak ayarlayın |
+| Sıfırlamaya izin ver | Yinelenen fırsatları önlemek için genellikle kapalı tutun |
+
+Tıklama sınırına ulaşıldıktan sonra ilgili kayıttaki düğme devre dışı kalır.
+
+## Notlar
+
+- Bir düğme tıklamasının başarıyla çalışıp çalışmaması, bağlı otomasyonun etkin ve çalışır durumda olmasına bağlıdır.
+- Her başarılı otomasyon tetiklemesi, çalışma alanının otomasyon çalıştırma kotasına dahil edilir.
+- Düğme önemli verileri değiştiriyorsa tıklama onayını etkinleştirin ve tıklama sayısını sınırlayın.

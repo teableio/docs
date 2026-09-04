@@ -1,0 +1,59 @@
+---
+title: "Fehlercodes"
+---
+
+<Note>Die Teable Web API folgt der Semantik von HTTP-Statuscodes.</Note>
+
+* 2xx
+  Steht für Erfolg
+* 4xx
+  Clientfehler
+* 5xx
+  Serverfehler
+
+Fehlerantworten enthalten einen JSON-codierten Body mit Fehler- und Informationsfeldern. Hier ist ein Beispiel für einen Fehlerantwort-Body:
+
+```json
+{
+  "message": "not allowed to operate space|read on spcxxxxxx",
+  "status": 403,
+  "code": "restricted_resource"
+}
+```
+
+## Erfolgsstatuscodes
+
+### 200 OK
+
+Die Anfrage wurde erfolgreich abgeschlossen.
+
+### 201 Created
+
+Die Anfrage wurde erfolgreich abgeschlossen und eine neue Ressource wurde erstellt.
+
+## Fehlercodes
+
+### 400 Bad Request
+
+Der Anfragetext kann nicht als `JSON` geparst werden, oder die Eingabeparameter im Anfragetext erfüllen die Spezifikationsanforderungen nicht.
+
+### 401 Unauthorized
+
+Nicht autorisierter Zugriff auf die API.
+
+### 403 Forbidden
+
+Es wird versucht, mit API-Anmeldedaten ohne die erforderlichen Berechtigungen auf eine geschützte Ressource zuzugreifen.
+
+### 404 Not Found
+
+Route oder Ressource nicht gefunden. Dieser Fehler wird zurückgegeben, wenn auf einen nicht vorhandenen Ressourcenpfad zugegriffen wird oder die Anfragemethode nicht übereinstimmt.
+
+### 500 Internal Server Error
+
+Auf dem Server ist ein unerwarteter Zustand aufgetreten.
+
+### 503 Service Unavailable
+
+Der Dienst ist vorübergehend nicht verfügbar, möglicherweise aufgrund eines Verarbeitungs-Timeouts oder eines Fehlers bei der Datenbankverbindung.
+

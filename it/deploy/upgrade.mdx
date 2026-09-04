@@ -1,0 +1,132 @@
+---
+title: "Aggiornamento della versione"
+---
+
+Questo documento descrive come aggiornare un deployment self-hosted di Teable.
+
+## Canali di release e tag di versione
+
+L'app Teable pubblica **tag di release basati sulla data** nel formato
+`release.<timestamp>.<build>` (ad esempio
+`release.2026-07-14T12-24-39Z.2228`), oltre a due canali mobili:
+
+| Tag | Significato |
+|---|---|
+| `latest` | Il canale **stabile**: punta sempre alla release stabile più recente |
+| `beta` | Il canale progressivo: la build più recente, precedente al rilascio stabile |
+| `release.<timestamp>.<build>` | Una release specifica e immutabile |
+
+Le release vengono pubblicate frequentemente (spesso più volte alla settimana); sei tu a decidere quando eseguire l'aggiornamento.
+Tutti i tag sono elencati in
+[GitHub Packages](https://github.com/teableio/teable/pkgs/container/teable).
+
+<Note>
+Prima di eseguire qualsiasi aggiornamento, consigliamo vivamente di effettuare un backup dei dati.
+</Note>
+
+## Aggiornamenti ordinari: seguire il changelog
+
+Le nuove funzionalità e le correzioni vengono annunciate nel [Changelog](/it/changelog) e
+ogni tag di release di Teable riporta la data della build: per sapere se una funzionalità
+è già disponibile, basta confrontare le date. Per ottenere una funzionalità descritta nel
+changelog, passa a una qualsiasi release con data uguale o successiva a quella della voce:
+
+- I **deployment Docker** possono semplicemente seguire il canale `latest`:
+
+  ```bash
+  cd teable          # directory del deployment
+  docker compose pull
+  docker compose up -d
+  ```
+
+  I container vengono ricreati con la nuova immagine; i dati risiedono nei volumi Docker
+  (o nel database esterno) e non vengono modificati.
+
+- I **deployment Kubernetes** non devono usare un tag mobile: mantieni fissa l'immagine
+  Teable e **aggiorna deliberatamente il tag fissato a ogni aggiornamento**. Lo script
+  `pin-image.sh` del repository di deployment determina la release concreta a cui punta
+  attualmente `latest`.
+
+## Procedura consigliata: aggiornare insieme l'intera piattaforma
+
+Un deployment completo ha due linee di versione: l'app Teable e la piattaforma stessa
+(consulta [Architettura](/it/deploy/architecture)). La procedura più affidabile le unisce,
+utilizzando [`VERSIONS.md`](https://github.com/teableio/teable-deployment/blob/main/VERSIONS.md)
+come riferimento per l'aggiornamento. A ogni ciclo:
+
+1. Aggiorna il piano di runtime alla **release più recente della piattaforma**
+   (`v<year>.<month>.<seq>`): ogni tag Git è uno snapshot verificato di tutti i
+   componenti di runtime e la relativa voce in
+   [`CHANGELOG.md`](https://github.com/teableio/teable-deployment/blob/main/CHANGELOG.md)
+   indica cosa è cambiato e quali eventuali operazioni sono necessarie (la maggior parte
+   delle release è sostituibile a caldo). Lavora dal repository dopo aver eseguito il
+   checkout di quel tag.
+2. Sposta l'app Teable sul **tag di release concreto a cui corrisponde attualmente
+   `latest`** (`pin-image.sh` lo determina): in questo modo utilizzi una combinazione
+   fissa e verificata anziché un canale mobile.
+3. Esegui lo script **doctor** incluso: controlla lo stato e confronta ciò che è
+   effettivamente in esecuzione con il manifest della release della piattaforma
+   (compatibile / aggiorna l'app Teable / combinazione sconosciuta).
+
+## Segreti obbligatori
+
+Teable non utilizza più segreti predefiniti incorporati come ripiego. Se il deployment
+si basava su tali valori, il primo avvio dopo l'aggiornamento si interrompe mostrando
+un elenco delle variabili d'ambiente necessarie e un blocco da copiare e incollare che
+preserva sessioni, token e dati crittografati esistenti. Aggiungi il blocco, riavvia,
+quindi pianifica una rotazione. Consulta [Segreti e rotazione](/it/deploy/env#secrets-and-rotation).
+
+## Migrazione del database
+
+Teable esegue automaticamente le migrazioni del database all'avvio; non è richiesto alcun
+passaggio manuale. Se qualcosa non funziona correttamente dopo un aggiornamento, controlla i log:
+
+```bash
+docker compose logs teable | grep -i migration
+```
+
+## Rollback
+
+Se riscontri problemi dopo l'aggiornamento:
+
+1. Reimposta nel file `docker-compose.yaml` il tag dell'immagine sulla release precedente
+   (ecco perché fissare il tag è preferibile a `latest`: la versione precedente rimane annotata).
+2. `docker compose up -d`
+
+<Warning>
+Eseguire il rollback **dopo** una release che ha migrato lo schema del database potrebbe
+non essere sicuro: in tal caso, ripristina il backup creato prima dell'aggiornamento.
+Questo è il motivo principale per cui consigliamo il backup.
+</Warning>
+
+## Domande frequenti
+
+<Accordion title="Perderò i dati dopo l'aggiornamento?">
+No. I dati sono memorizzati nei volumi Docker o in database esterni e l'aggiornamento dei container non li modifica. Consigliamo comunque di eseguire un backup prima dell'aggiornamento.
+</Accordion>
+
+<Accordion title="L'ID istanza cambierà dopo l'aggiornamento?">
+No. L'ID istanza rimane invariato durante gli aggiornamenti dell'applicazione. È un identificatore permanente dell'installazione self-hosted.
+</Accordion>
+
+<Accordion title="Quanto dura l'aggiornamento?">
+In genere, il download delle nuove immagini richiede alcuni minuti (a seconda della velocità della rete), mentre il riavvio dei container richiede soltanto pochi secondi. L'intera procedura viene normalmente completata in 5-10 minuti.
+</Accordion>
+
+<Accordion title="Si verificherà un'interruzione del servizio durante l'aggiornamento?">
+Con `docker compose up -d` si verificherà una breve interruzione del servizio, in genere da pochi secondi ad alcune decine di secondi.
+</Accordion>
+
+<Accordion title="Come posso controllare la versione attualmente in esecuzione?">
+Puoi controllare la versione corrente nei seguenti modi:
+- Visualizza il numero di versione nell'angolo inferiore sinistro dell'interfaccia di Teable
+- Usa un account amministratore per accedere all'Amministrazione di sistema
+- Esegui `docker inspect <container> --format='{{.Config.Image}}'` per controllare la versione dell'immagine. Se utilizzi il canale `latest`, il deployment completo include lo strumento `pin-image.sh`, che determina la release a cui corrisponde attualmente `latest`.
+</Accordion>
+
+<Accordion title="Cosa devo fare se l'aggiornamento non riesce?">
+1. Per prima cosa, controlla i log del container per diagnosticare il problema: `docker compose logs teable`
+2. Se si tratta di un problema di migrazione del database, prova a eseguire il ripristino dal backup
+3. Se il problema persiste, esegui il rollback alla versione precedente
+4. Contatta l'assistenza all'indirizzo support@teable.ai
+</Accordion>

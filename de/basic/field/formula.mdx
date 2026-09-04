@@ -1,0 +1,93 @@
+---
+title: "Formel"
+description: "Verweisen Sie auf andere Felder und berechnen Sie mit Formeln Texte, Zahlen, Datumsangaben und logische Bedingungen."
+---
+
+Formelfelder berechnen Ergebnisse aus anderen Feldern desselben Datensatzes. Sie können mathematische Operationen, Textverknüpfungen, Datumsberechnungen und bedingte Logik verarbeiten. Verwenden Sie sie, um wiederkehrende Berechnungsregeln in Felder umzuwandeln.
+
+## Anwendungsfälle
+
+| Szenario | Geeignet für |
+| --- | --- |
+| Automatische Berechnung | Gesamtpreis, Gewinn oder Bewertung aus Menge, Stückpreis, Rabatt und anderen Feldern berechnen |
+| Textverarbeitung | Text verknüpfen, Inhalte extrahieren oder Informationen anhand eines Trennzeichens analysieren |
+| Datumsverarbeitung | Datumsdifferenzen berechnen, Zeiträume prüfen oder zukünftige Datumsangaben erzeugen |
+| Bedingte Logik | Abhängig von Bedingungen unterschiedliche Ergebnisse wie Status, Hinweise oder Kategorien zurückgeben |
+
+## Grundlagen von Formeln
+
+### Datentypen
+
+Prüfen Sie vor dem Schreiben einer Formel die Typen der in der Berechnung verwendeten Felder. Unterschiedliche Typen unterstützen unterschiedliche Operationen und Funktionen.
+
+| Typ | Beschreibung | Häufige Verwendungszwecke |
+| --- | --- | --- |
+| Zahl | Ganzzahlen oder Dezimalzahlen | Arithmetik, Rollups, Vergleiche |
+| Text | Zeichenfolgenwerte | Verknüpfen, extrahieren, ersetzen, aufteilen |
+| Datum | Datums- oder Datum-Uhrzeit-Werte | Intervalle berechnen, Datumsangaben vergleichen |
+| Boolesch | `TRUE` oder `FALSE` | Bedingungen und logische Operationen |
+
+### Auf Felder verweisen
+
+Verweisen Sie in einer Formel anhand des Feldnamens auf ein anderes Feld. Schließen Sie den Feldnamen in `{}` ein und achten Sie darauf, dass er mit dem tatsächlichen Feldnamen übereinstimmt:
+
+```js
+{Stückpreis} * {Menge}
+```
+
+### Operatoren
+
+| Operator | Verwendung |
+| --- | --- |
+| `+` | Berechnet die Summe von Zahlen oder verknüpft Zeichenfolgen |
+| `-` | Berechnet die Differenz zwischen Zahlen |
+| `*` | Berechnet das Produkt von Zahlen |
+| `/` | Berechnet den Quotienten von Zahlen |
+| `%` | Berechnet den Rest |
+
+## Funktionen und Ausdrücke
+
+### Häufige Funktionen
+
+Funktionen führen bestimmte Operationen aus. Beispielsweise berechnet `SUM` eine Summe, `LEFT` extrahiert Zeichen vom Anfang eines Textes, `TEXTBEFORE` extrahiert Text vor einem Trennzeichen und `TEXTSPLIT` teilt Text anhand eines Trennzeichens auf.
+
+Weitere Funktionen finden Sie in der [Formelkurzübersicht](/de/basic/field/formula/cheat-sheet).
+
+### Textverarbeitung
+
+| Operation | Funktionsbeispiele | Beschreibung |
+| --- | --- | --- |
+| Text verknüpfen | `&`, `CONCATENATE` | Verknüpft zwei oder mehr Textwerte |
+| Text extrahieren | `LEFT`, `RIGHT`, `MID`, `TEXTBEFORE` | Extrahiert einen Teil einer Zeichenfolge |
+| Text aufteilen | `TEXTSPLIT` | Teilt Text anhand eines Trennzeichens in mehrere Werte auf |
+
+### Logische Bedingungen
+
+Verwenden Sie die Funktion `IF`, um abhängig von einer Bedingung unterschiedliche Werte zurückzugeben:
+
+```js
+IF(condition, value_if_true, value_if_false)
+```
+
+Wenn Sie prüfen möchten, ob ein Feld leer ist, vergleichen Sie es mit `BLANK()`. Beispielsweise gibt `IF({Gewicht}=BLANK(), 1, 2)` den Wert `1` zurück, wenn ein Zahlenfeld leer ist, andernfalls `2`.
+
+### Komplexe Ausdrücke
+
+Eine komplexe Formel kann mehrere Funktionen, Feldverweise und Operatoren enthalten. Verwenden Sie Klammern, um die Berechnungsreihenfolge zu steuern:
+
+```js
+({Stückpreis} * {Menge}) * (1 - {Rabatt})
+```
+
+## Ergebnisanzeige und Pflege
+
+### Formatierung und interaktive Anzeige
+
+Formelergebnisse können außerdem Einstellungen für [Formatierung](/de/basic/field/common/formatter) und [interaktive Anzeige](/de/basic/field/common/show-as) verwenden, etwa Prozentsätze, Fortschrittsbalken oder Symbolstile. Die verfügbaren Optionen hängen vom Ergebnistyp der Formel ab.
+
+### Fehlerbehebung und Optimierung
+
+- **Datentypen prüfen**: Vergewissern Sie sich, dass Operationen und Funktionen die richtigen Datentypen verwenden.
+- **Feldverweise überprüfen**: Vergewissern Sie sich, dass Feldnamen korrekt geschrieben sind.
+- **Schrittweise testen**: Teilen Sie komplexe Formeln in kleinere Teile auf und testen Sie diese separat.
+- **Wiederholte Berechnungen vermeiden**: Wenn dieselbe Berechnung an mehreren Stellen verwendet wird, sollten Sie das Ergebnis in einem separaten Feld speichern.

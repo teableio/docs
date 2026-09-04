@@ -1,0 +1,88 @@
+---
+title: "Übersicht"
+description: "Erstellen Sie Automatisierungs-Workflows mit KI oder manueller Konfiguration."
+---
+
+{/* mintlify-resync: 2026-05-26 */}
+Teable Automatisierung macht leistungsstarke Workflows einfach. Kein Code, kein Drag-and-Drop, keine komplizierte Einrichtung. Sagen Sie der KI einfach in natürlicher Sprache, was Sie benötigen, und Teable übernimmt die wiederkehrende Arbeit für Sie.
+
+## Mit KI erstellen (von Grund auf)
+
+Der einfachste Einstieg. Öffnen Sie eine beliebige Tabelle, klicken Sie in der rechten Seitenleiste auf **KI-Chat** und beschreiben Sie, was Sie möchten:
+
+- *„Wenn eine neue Bestellung eingeht, sende eine Slack-Benachrichtigung mit Kundennamen und Betrag.“*
+- *„Sende mir jeden Montagmorgen eine E-Mail mit einer Zusammenfassung überfälliger Aufgaben.“*
+- *„Wenn jemand das Feedback-Formular absendet, klassifiziere es und aktualisiere das Kategoriefeld.“*
+
+Die KI erstellt und testet die gesamte Automatisierung für Sie – Trigger, Aktionen und Feldzuordnungen. Prüfen Sie die Ergebnisse im Bereich Automatisierung und aktivieren Sie sie.
+
+## Mit KI erstellen (ab Trigger)
+
+Sie können auch mit einem bestimmten Trigger beginnen und die Aktionen von der KI erstellen lassen:
+
+1. **Trigger hinzufügen** — Wählen Sie einen Trigger-Typ (z. B. „Wenn Datensatz erstellt“) und konfigurieren Sie ihn.
+2. **Aktion hinzufügen** — Klicken Sie auf **+**, gehen Sie zu **Mit KI erstellen** und wählen Sie **Skript ausführen**.
+3. Klicken Sie im Konfigurationsbereich auf **Editor öffnen**.
+4. Wählen Sie eine der **Vorschläge**, um schnell zu beginnen, oder beschreiben Sie mit eigenen Worten, was Sie benötigen.
+5. Die KI generiert den JavaScript-Code. Prüfen Sie ihn und klicken Sie auf **Anwenden**.
+6. Klicken Sie auf **Testen**, um das Skript mit echten Daten auszuführen, und **Aktivieren** Sie anschließend den Workflow.
+
+## Manuell erstellen
+
+Sie können Automatisierungen auch Schritt für Schritt mit den integrierten Aktionen erstellen:
+
+1. **Trigger hinzufügen** — Wählen Sie einen Trigger-Typ, wählen Sie die Tabelle und konfigurieren Sie die Felder. Klicken Sie auf **Testen**.
+2. **Aktion hinzufügen** — Wählen Sie einen Aktionstyp (Datensatz erstellen, E-Mail senden, HTTP-Anfrage usw.), ordnen Sie Feldwerte mit **+** zu, um dynamische Variablen einzufügen. Klicken Sie auf **Vorschau generieren** oder **Wie konfiguriert ausführen**.
+3. **Aktivieren** — Klicken Sie auf den Schalter oben links.
+
+## Einen aktiven Workflow bearbeiten
+
+Änderungen werden als Entwurf gespeichert. Der aktive Workflow wird weiterhin mit der vorherigen Version ausgeführt, bis Sie auf **Aktualisierung anwenden** klicken.
+
+## Geheimnisse
+
+Verwenden Sie **Geheimnisse**, um API-Schlüssel, Anmeldedaten und Konfigurationen zu speichern, die eine Automatisierung zur Laufzeit benötigt. Öffnen Sie den Workflow im Bearbeitungs-Tab und klicken Sie neben den Test-Steuerelementen auf **Geheimnisse**.
+
+Geheimnisse sind auf die aktuelle Automatisierung beschränkt. Skriptaktionen können sie aus Umgebungsvariablen wie `process.env.EXTERNAL_API_KEY` lesen. Gespeicherte Werte sind nur schreibbar; geben Sie einen neuen Wert ein, um ein Geheimnis zu aktualisieren.
+
+## Ausführungshistorie
+
+Öffnen Sie einen Workflow → **Ausführungshistorie**. Der Verlaufsbereich listet jede Ausführung mit Status, benötigter Zeit und Schrittdetails auf. Klicken Sie auf eine Ausführung, um die Ein- und Ausgabe pro Schritt zu prüfen.
+
+Verwenden Sie die Verlaufsfilter, um die Liste nach Status, Dauer oder Datumsbereich einzugrenzen. Verwenden Sie bei fehlgeschlagenen Ausführungen den Bereich mit Ausführungsdetails, um die Ursache zu ermitteln oder erneut auszuführen:
+
+- **Diagnostizieren** öffnet den KI-Chat mit der fehlgeschlagenen Ausführung als Kontext, sodass Sie Cuppy nach einer Erklärung des Fehlers fragen können.
+- **Vollständig erneut ausführen** führt jeden Schritt erneut aus und kann doppelte Datensätze, E-Mails oder Benachrichtigungen erstellen.
+- **Ab fehlgeschlagenem Schritt fortsetzen** ist verfügbar, wenn Teable sicher ab dem fehlgeschlagenen Schritt fortfahren kann.
+
+Wenn **Ab fehlgeschlagenem Schritt fortsetzen** nicht verfügbar ist, erklärt Teable, warum nur **Vollständig erneut ausführen** verwendet werden kann. Dies kann passieren, wenn der Workflow nach der fehlgeschlagenen Ausführung geändert wurde, der Workflow deaktiviert ist, vor dem Fehler kein Schritt erfolgreich abgeschlossen wurde oder Daten eines Steuerungsschritts fehlen.
+
+Wiederholungsversuche werden als Wiederholungen markiert und mit der ursprünglichen Ausführung verknüpft.
+
+## Limits
+
+| Element | Limit |
+|---|---|
+| E-Mail-Senderate | 5 / Sekunde / Base |
+| Webhook-Empfangsrate | 50 / Sekunde / Base, 2 / Sekunde / Workflow |
+| Größe der Webhook-Nutzlast | 4 MB |
+| Ausführungskontingent & Aufbewahrung der Historie | Variiert je nach Plan |
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Warum habe ich eine Warnung zur Nutzung von Automatisierungsausführungen erhalten?">
+    In Teable Cloud sendet Teable Benachrichtigungen zur Nutzung von Automatisierungsausführungen an Space-Eigentümer, wenn ein Space seinem Ausführungskontingent nahekommt oder es überschreitet oder wenn die Ausführungen in kurzer Zeit stark ansteigen.
+
+    Für Kontingenterinnerungen sendet Teable eine Benachrichtigung, wenn im aktuellen Abrechnungszeitraum 80 % oder 90 % des verfügbaren Ausführungskontingents erreicht sind.
+
+    Bei Pro- und höheren Plänen können nach Überschreitung des Ausführungskontingents für Automatisierungen Warnungen angezeigt werden. Teable kann Sie etwa alle 6 Stunden erinnern.
+
+    Teable Cloud kann auch kritische Benachrichtigungen bei ungewöhnlicher Nutzung senden, beispielsweise bei einem starken täglichen Anstieg oder einem plötzlichen Schub in kurzer Zeit. Das System verwendet aktuelle tägliche und stündliche Ausführungsmuster; die genauen Schwellenwerte können sich ändern.
+
+    Die Benachrichtigung öffnet **Space-Einstellungen** → **Abrechnung**. Wenn verfügbar, zeigt sie, welcher Workflow und welche Base die meisten Ausführungen verursacht haben. Kontingenterinnerungen basieren auf Ausführungen, die auf Ihr Planlimit angerechnet werden; Prüfungen auf ungewöhnliche Nutzung können auch aktuelle Ausführungen mit dem Status **success**, **failed** oder **pending** berücksichtigen.
+
+    Wenn die Nutzung erwartet wird, sollten Sie zusätzliches Automatisierungskontingent kaufen oder Ihren Plan ändern. Wenn sie unerwartet ist, prüfen Sie den wichtigsten Workflow und passen Sie die zugehörige Automatisierung an oder pausieren Sie sie.
+  </Accordion>
+</AccordionGroup>
+

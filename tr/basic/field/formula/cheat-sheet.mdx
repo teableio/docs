@@ -1,0 +1,113 @@
+---
+title: "İşlev Başvuru Tablosu"
+description: "Formül işlevlerini, parametreleri, çıktı türlerini ve temel örnekleri hızla bulun."
+mode: "wide"
+---
+
+İşlev başvuru tablosu; kullanılabilir işlevleri, parametreleri, çıktı türlerini ve örnekleri bulmanıza yardımcı olur. Formül yazarken ihtiyacınız olan işlevi bulmak için işlev kategorisini kullanın.
+
+## Sayısal İşlevler
+
+Sayısal işlevler matematiksel işlemleri, istatistiksel hesaplamaları ve sayı biçimlendirmeyi gerçekleştirir.
+
+| İşlev Adı | Açıklama | Girdi | Çıktı | Örnek |
+| ------------ | ----------- | ----- | ------ | ------- |
+| SUM | Sayıları toplar. number1 + number2 + ... ifadesine eşdeğerdir | `number1, [number2, ...]` | Sayı | `SUM(100, 200, 300) => 600` |
+| AVERAGE | Sayıların ortalamasını döndürür. | `number1, [number2, ...]` | Sayı | `AVERAGE(100, 200, 300) => 200` |
+| MAX | Verilen sayılar arasındaki en büyük değeri döndürür. | `number1, [number2, ...]` | Sayı | `MAX(100, 200, 300) => 300` |
+| MIN | Verilen sayılar arasındaki en küçük değeri döndürür. | `number1, [number2, ...]` | Sayı | `MIN(100, 200, 300) => 100` |
+| ROUND | Bir değeri "precision" ile belirtilen ondalık basamak sayısına yuvarlar. | `value, [precision]` | Sayı | `ROUND(1.99, 0) => 2` `ROUND(16.8, -1) => 20` |
+| ROUNDUP | Her zaman sıfırdan uzaklaşacak şekilde yukarı yuvarlar. | `value, [precision]` | Sayı | `ROUNDUP(1.1, 0) => 2` `ROUNDUP(-1.1, 0) => -2` |
+| ROUNDDOWN | Her zaman sıfıra yaklaşacak şekilde aşağı yuvarlar. | `value, [precision]` | Sayı | `ROUNDDOWN(1.9, 0) => 1` `ROUNDDOWN(-1.9, 0) => -1` |
+| CEILING | Değerden büyük veya değere eşit en yakın tam sayı katını döndürür. | `value, [significance]` | Sayı | `CEILING(2.49) => 3` `CEILING(2.49, 1) => 2.5` |
+| FLOOR | Değerden küçük veya değere eşit en yakın tam sayı katını döndürür. | `value, [significance]` | Sayı | `FLOOR(2.49) => 2` `FLOOR(2.49, 1) => 2.4` |
+| EVEN | Belirtilen değerden büyük veya değere eşit en küçük çift sayıyı döndürür. | `value` | Sayı | `EVEN(0.1) => 2` `EVEN(-0.1) => -2` |
+| ODD | Pozitif değerleri bir sonraki tek sayıya yukarı, negatif değerleri ise bir sonraki tek sayıya aşağı yuvarlar. | `value` | Sayı | `ODD(0.1) => 1` `ODD(-0.1) => -1` |
+| INT | Bir sayının tam sayı kısmını döndürür. | `value` | Sayı | `INT(1.9) => 1` `INT(-1.9) => -2` |
+| ABS | Mutlak değeri döndürür. | `value` | Sayı | `ABS(-1) => 1` |
+| SQRT | Negatif olmayan bir sayının karekökünü döndürür. | `value` | Sayı | `SQRT(4) => 2` |
+| POWER | Belirtilen tabanı belirtilen kuvvete yükseltir. | `base, exponent` | Sayı | `POWER(2, 2) => 4` |
+| EXP | Euler sayısını (e) belirtilen kuvvete yükseltir. | `value` | Sayı | `EXP(0) => 1` `EXP(1) => 2.718` |
+| LOG | Bir değerin belirtilen tabandaki logaritmasını hesaplar. Taban belirtilmezse varsayılan değer 10'dur. | `value, [base=10]` | Sayı | `LOG(100) => 2` `LOG(1024, 2) => 10` |
+| MOD | İlk parametre ikinciye bölündükten sonra kalanı döndürür. | `value, divisor` | Sayı | `MOD(9, 2) => 1` `MOD(9, 3) => 0` |
+| VALUE | Bir metin dizesini sayıya dönüştürür. | `text` | Sayı | `VALUE("$1,000,000") => 1000000` |
+
+## Metin İşlevleri
+
+Metin işlevleri dizeleri birleştirme, arama, değiştirme, ayıklama ve bölme işlemlerini gerçekleştirir.
+
+| İşlev Adı | Açıklama | Girdi | Çıktı | Örnek |
+| ------------ | ----------- | ----- | ------ | ------- |
+| CONCATENATE | Birden çok değer türündeki parametreyi tek bir metin değerinde birleştirir. | `text1, [text2, ...]` | Metin | `CONCATENATE("Hello ", "Teable") => Hello Teable` |
+| FIND | Belirtilen metinde bir alt dizenin konumunu bulur. Alt dize bulunamazsa 0 döndürür. | `stringToFind, whereToSearch, [startFromPosition]` | Sayı | `FIND("Teable", "Hello Teable") => 7` |
+| SEARCH | Belirtilen metinde bir alt dizenin konumunu bulur. Alt dize bulunamazsa boş değer döndürür. FIND işlevine benzer, ancak 0 yerine boş değer döndürür. | `stringToFind, whereToSearch, [startFromPosition]` | Metin veya Boş | `SEARCH("Teable", "Hello Teable") => 7` |
+| MID | Belirtilen konumdan başlayarak bir metin dizesinden belirtilen sayıda karakter ayıklar. | `text, whereToStart, count` | Metin | `MID("Hello Teable", 6, 6) => "Teable"` |
+| LEFT | Bir dizenin başlangıcından belirtilen sayıda karakter ayıklar. | `text, count` | Metin | `LEFT("2023-09-06", 4) => "2023"` |
+| RIGHT | Bir dizenin sonundan belirtilen sayıda karakter ayıklar. | `text, count` | Metin | `RIGHT("2023-09-06", 5) => "09-06"` |
+| REPLACE | Belirtilen konumdan başlayan belirli sayıda karakteri yeni metinle değiştirir. | `text, whereToStart, count, replacement` | Metin | `REPLACE("Hello Table", 7, 5, "Teable") => "Hello Teable"` |
+| REGEXP_REPLACE | Düzenli ifadeyle eşleşen tüm alt dizeleri yeni metinle değiştirir. | `text, regular_expression, replacement` | Metin | `REGEXP_REPLACE("Hello Table", "H.* ", "") => "Teable"` |
+| SUBSTITUTE | Eski metni yeni metinle değiştirir. Eski metnin belirli bir örneğini değiştirmek için bir dizin belirtilebilir. Dizin belirtilmezse tüm örnekleri değiştirir. | `text, oldText, newText, [index]` | Metin | `SUBSTITUTE("Hello Table", "Table", "Teable") => "Hello Teable"` |
+| TEXTBEFORE | Belirtilen sınırlayıcıdan önceki metni döndürür. | `text, delimiter` | Metin | `TEXTBEFORE("20, 04, 79", ",") => "20"` |
+| TEXTSPLIT | Metni belirtilen sınırlayıcıya göre böler ve birden çok metin değeri döndürür. | `text, delimiter` | Dizi | `TEXTSPLIT("20, 04, 79", ",") => ["20", " 04", " 79"]` |
+| LOWER | Dizeyi küçük harfe dönüştürür. | `text` | Metin | `LOWER("Hello Teable") => "hello teable"` |
+| UPPER | Dizeyi büyük harfe dönüştürür. | `text` | Metin | `UPPER("Hello Teable") => "HELLO TEABLE"` |
+| REPT | Metni belirtilen sayıda tekrarlar. | `text, number` | Metin | `REPT("Hello!", 3) => "Hello!Hello!Hello!"` |
+| TRIM | Bir dizenin başındaki ve sonundaki boşluk karakterlerini kaldırır. | `text` | Metin | `TRIM(" Hello ") => "Hello"` |
+| LEN | Bir dizedeki karakterlerin sayısını hesaplar. | `text` | Sayı | `LEN("Hello") => 5` |
+| T | Parametre metinse parametreyi, değilse boş değer döndürür. | `value` | Metin veya Boş | `T("Hello") => "Hello"` `T(100) => null` |
+| ENCODE_URL_COMPONENT | URL veya URI oluşturmak için belirli karakterleri kodlanmış karşılıklarıyla değiştirir. Şunları kodlamaz: - _ . ~ | `value` | Metin | `ENCODE_URL_COMPONENT("Hello Teable") => "Hello%20Teable"` |
+
+## Mantıksal İşlevler
+
+Mantıksal işlevler, `IF`, `AND` ve `OR` gibi koşulları ve mantıksal işlemleri gerçekleştirir.
+
+| İşlev Adı | Açıklama | Girdi | Çıktı | Örnek |
+| ------------ | ----------- | ----- | ------ | ------- |
+| IF | Mantıksal parametre doğruysa value1, değilse value2 değerini döndürür. İç içe IF ifadeleri ve hücrelerin boş olup olmadığını kontrol etmek için kullanılabilir. | `logical, value1, value2` | Dize \| Sayı \| Boole \| Tarih-saat | `IF(2 > 1, "A", "B") => "A"` `IF(2 > 1, TRUE, FALSE) => TRUE` |
+| SWITCH | Bir girdi ifadesini bir dizi değerle eşleştirir ve karşılık gelen sonucu döndürür. Eşleşme bulunmazsa varsayılan bir değer döndürebilir. Çoğu zaman iç içe IF() formüllerinin yerini alabilir. | `expression, [pattern, result]..., [default]` | Dize \| Sayı \| Boole \| Tarih-saat | `SWITCH("B", "A", "Value A", "B", "Value B", "Default Value") => "Value B"` |
+| AND | Tüm parametreler doğruysa true, değilse false döndürür. | `logical1, [logical2, ...]` | Boole | `AND(1 < 2, 5 > 3) => true` `AND(1 < 2, 5 < 3) => false` |
+| OR | Herhangi bir parametre doğruysa true döndürür. | `logical1, [logical2, ...]` | Boole | `OR(1 < 2, 5 < 3) => true` `OR(1 > 2, 5 < 3) => false` |
+| XOR | Tek sayıda parametre doğruysa true döndürür. | `logical1, [logical2, ...]` | Boole | `XOR(1 < 2, 5 < 3, 8 < 10) => false` `XOR(1 > 2, 5 < 3, 8 < 10) => true` |
+| NOT | Parametresinin mantıksal değerini tersine çevirir. | `boolean` | Boole | `NOT(1 < 2) => false` `NOT(1 > 2) => true` |
+| BLANK | Null değer döndürür. Bir alanın boş olup olmadığını sınamak için de kullanılabilir. | `-` | null | `BLANK() => null` `IF({Weight}=BLANK(), 1, 2) => 1` |
+| ERROR | Hata değeri döndürür. | `message` | Hata | `IF(2 > 3, "Yes", ERROR("Calculation")) => "#ERROR: Calculation"` |
+| IS_ERROR | İfade hataya neden oluyorsa true döndürür. | `expr` | Boole | `IS_ERROR(ERROR()) => true` |
+
+## Tarih İşlevleri
+
+Tarih işlevleri; geçerli tarihi alma, tarih farklarını hesaplama ve tarihleri karşılaştırma gibi tarih ve saat değerleriyle ilgili işlemleri ve dönüşümleri gerçekleştirir.
+
+| İşlev Adı | Açıklama | Girdi | Çıktı | Örnek |
+| ------------ | ----------- | ----- | ------ | ------- |
+| TODAY | Geçerli tarihi döndürür. | `-` | Tarih-saat | `TODAY() => "2023-09-08 00:00"` |
+| NOW | Geçerli tarih ve saati döndürür. | `-` | Tarih-saat | `NOW() => "2023-09-08 16:50"` |
+| YEAR | Bir tarihin dört basamaklı yılını döndürür. | `date` | Sayı | `YEAR("2023-09-08") => 2023` |
+| MONTH | Bir tarihin ayını 1 (Ocak) ile 12 (Aralık) arasında bir sayı olarak döndürür. | `date` | Sayı | `MONTH("2023-09-08") => 9` |
+| WEEKNUM | Yılın hafta numarasını döndürür. | `date` | Sayı | `WEEKNUM("2023-09-08") => 36` |
+| WEEKDAY | Haftanın gününü 0 ile 6 arasında bir tam sayı olarak döndürür. Haftayı o gün başlatmak için isteğe bağlı olarak ikinci bir parametre ("Sunday" veya "Monday") sağlayabilirsiniz. | `date, [startDayOfWeek]` | Sayı | `WEEKDAY("2023-09-08", "Monday") => 5` |
+| DAY | Ayın gününü 1 ile 31 arasında bir sayı olarak döndürür. | `date` | Sayı | `DAY("2023-09-08") => 8` |
+| HOUR | Bir tarihin saatini 0 (12:00am) ile 23 (11:00pm) arasında bir sayı olarak döndürür. | `date` | Sayı | `HOUR("2023-09-08 16:50") => 16` |
+| MINUTE | Bir tarihin dakikasını 0 ile 59 arasında bir tam sayı olarak döndürür. | `date` | Sayı | `MINUTE("2023-09-08 16:50") => 50` |
+| SECOND | Bir tarihin saniyesini 0 ile 59 arasında bir tam sayı olarak döndürür. | `date` | Sayı | `SECOND("2023-09-08 16:50:30") => 30` |
+| FROMNOW | Geçerli tarihle başka bir tarih arasındaki gün sayısını hesaplar. | `date, unit` | Sayı | `FROMNOW({Date}, "day") => 25` |
+| TONOW | Geçerli tarihle başka bir tarih arasındaki gün sayısını hesaplar. | `date, unit` | Sayı | `TONOW({Date}, "day") => 25` |
+| DATETIME_DIFF | Tarih-saat farkını belirtilen birimde döndürür. Varsayılan birim saniyedir. (Birim belirteçleri listesine bakın.) | `date1, date2, [unit]` | Sayı | `DATETIME_DIFF("2022-08-01", "2023-09-08", "day") => 403` |
+| WORKDAY | Belirtilen tatilleri hariç tutarak başlangıç tarihinden ötelenmiş iş günü tarihini döndürür | `date, count, [holidayStr]` | Tarih-saat | `WORKDAY("2023-09-08", 200) => "2024-06-14 00:00:00"` |
+| WORKDAY_DIFF | date1 ile date2 arasındaki iş günü sayısını döndürür. İş günleri hafta sonlarını ve ISO biçimindeki tarihlerin virgülle ayrılmış dizesi olarak sunulan isteğe bağlı tatil listesini hariç tutar. | `date1, date2, [holidayStr]` | Sayı | `WORKDAY_DIFF("2023-06-18", "2023-10-01") => 75` |
+| IS_SAME | İki tarihi bir birime göre karşılaştırır ve aynı olup olmadıklarını belirler. Aynıysa true, değilse false döndürür. | `date1, date2, [unit]` | Boole | `IS_SAME("2023-09-08", "2023-09-10") => false` |
+| IS_AFTER | date1'in date2'den sonra olup olmadığını belirler. Sonraysa true, değilse false döndürür. | `date1, date2, [unit]` | Boole | `IS_AFTER("2023-09-10", "2023-09-08") => true` `IS_AFTER("2023-09-10", "2023-09-08", "month") => false` |
+
+## Dizi ve Diğer İşlevler
+
+Dizi ve diğer işlevler; toplama dizileri, yinelenen öğeleri kaldırma, birleştirme, boş değerleri temizleme ve kayıt kimlikleriyle ilgili işlemleri gerçekleştirir.
+
+| İşlev Adı | Açıklama | Girdi | Çıktı | Örnek |
+| ------------ | ----------- | ----- | ------ | ------- |
+| COUNTALL | Metin ve boş değerler dahil tüm öğelerin sayısını döndürür. | `value1, [value2, ...]` | Sayı | `COUNTALL(100, 200, "", "Teable", TRUE()) => 5` |
+| COUNTA | Boş olmayan değerlerin sayısını döndürür. Bu işlev hem sayıları hem de metin değerlerini sayar. | `value1, [value2, ...]` | Sayı | `COUNTA(100, 200, 300, "", "Teable", TRUE) => 4` |
+| COUNT | Sayısal öğelerin sayısını döndürür. | `value1, [value2, ...]` | Sayı | `COUNT(100, 200, 300, "", "Teable", TRUE) => 3` |
+| ARRAY_JOIN | Toplama öğelerinden oluşan bir diziyi ayırıcı kullanarak bir dizede birleştirir. | `array, [separator]` | Dize | `ARRAY_JOIN(["Tom", "Jerry", "Mike"], "; ") => "Tom; Jerry; Mike"` |
+| ARRAY_UNIQUE | Bir dizide yalnızca benzersiz öğeleri döndürür. | `array` | Dizi | `ARRAY_UNIQUE([1, 2, 3, 2, 1]) => [1, 2, 3]` |
+| ARRAY_FLATTEN | Tüm dizi iç içe yerleşimlerini kaldırarak bir diziyi düzleştirir. Tüm öğeler tek bir dizinin elemanları hâline gelir. | `array` | Dizi | `ARRAY_FLATTEN([1, 2, " ", 3, true], ["ABC"]) => [1, 2, 3, " ", true, "ABC"]` |
+| ARRAY_COMPACT | Bir dizideki boş dizeleri ve null değerleri kaldırır. "false" değerini ve bir ya da daha fazla boşluk karakteri içeren dizeleri korur. | `array` | Dizi | `ARRAY_COMPACT([1, 2, 3, "", null, "ABC"]) => [1, 2, 3, "ABC"]` |
+| RECORD_ID | Geçerli kaydın kimliğini döndürür. | `-` | Dize | `RECORD_ID() => "recxxxxxx"` |

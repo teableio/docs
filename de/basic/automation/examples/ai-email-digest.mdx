@@ -1,0 +1,40 @@
+---
+title: "Tägliche E-Mail-Zusammenfassung mit KI generieren und senden"
+description: "Verwenden Sie einen zeitgesteuerten Auslöser und „Mit KI generieren“, um die Aktivitäten des Tages zusammenzufassen und per E-Mail an Ihr Team zu senden"
+---
+
+<Tip>Wir empfehlen, Automatisierungsbeispiele direkt im KI-Chat zu erstellen. Beschreiben Sie einfach den gewünschten Workflow, und die KI übernimmt die vollständige Einrichtung einschließlich Auslöser, Aktionen, Skript und Konfiguration.</Tip>
+
+## Mit KI erstellen
+
+Öffnen Sie den KI-Chat in der rechten Seitenleiste Ihrer Tabelle und teilen Sie der KI mit, was Sie erreichen möchten. Sie können beispielsweise Folgendes sagen:
+
+*„Finde jeden Tag um 18 Uhr alle heute abgeschlossenen Aufgaben, fasse sie in einem kurzen Bericht zusammen und sende ihn per E-Mail an team@yourcompany.com.“*
+
+Die KI erstellt automatisch den vollständigen Workflow. Sie können das generierte Skript prüfen, mit echten Daten testen und den Workflow aktivieren, sobald er bereit ist.
+
+## Manuelle Einrichtung
+
+1. **Erstellen Sie einen Workflow** mit dem Auslöser **Zum geplanten Zeitpunkt** – täglich um 18:00 Uhr.
+2. **Aktion hinzufügen** → **Datensätze abrufen**.
+   - Tabelle: **Aufgaben**
+   - Filter: `Status` **ist** `Abgeschlossen` UND `Abgeschlossen am` **ist** `heute`
+3. **Aktion hinzufügen** → **Mit KI generieren**.
+   - Prompt:
+     ```
+     Fasse diese abgeschlossenen Aufgaben in einem kurzen Tagesbericht zusammen.
+     Gruppiere sie gegebenenfalls nach Kategorie. Beschränke den Bericht auf höchstens 200 Wörter.
+
+     Aufgaben: <ausgabe von „Datensätze abrufen“ über + einfügen>
+     ```
+   - Ausgabetyp: **Text**
+4. **Aktion hinzufügen** → **E-Mail senden**.
+   - An: `team@yourcompany.com`
+   - Betreff: `Täglicher Aufgabenbericht`
+   - Text: Ausgabe von „Mit KI generieren“ einfügen (über **+**)
+5. Testen Sie jeden Schritt und **aktivieren** Sie anschließend den Workflow.
+
+## Varianten
+
+- **Wöchentliche Zusammenfassung:** Ändern Sie den Zeitplan auf freitags und den Filter auf „letzte 7 Tage“.
+- **Zusammenfassung der Kundenaktivitäten:** Fragen Sie eine CRM-Tabelle nach neuen Interaktionen ab und fassen Sie diese zusammen.

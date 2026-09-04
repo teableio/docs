@@ -1,0 +1,107 @@
+---
+title: "Boîte d’envoi calculée"
+description: "Surveillez la livraison BullMQ et l’arriéré des tâches calculées dans le panneau d’administration."
+---
+
+<Tip>Disponible avec le forfait Business auto-hébergé et les forfaits supérieurs</Tip>
+
+Chemin : Panneau d’administration → Boîte d’envoi calculée
+
+Utilisez **Boîte d’envoi calculée** lorsque les valeurs de champ de formule, de recherche ou d’autres champs calculés cessent de se mettre à jour ou prennent beaucoup plus de temps que prévu. La page affiche l’état de santé global des tâches, les tâches qui transitent par la file d’attente, celles qui peuvent nécessiter une récupération et tous les Espaces dont les tâches calculées sont actuellement suspendues.
+
+## Lire l’état de santé
+
+L’état à côté du titre de la page indique si les tâches calculées nécessitent votre attention :
+
+| État | Signification |
+| --- | --- |
+| **Sain** | Les tâches calculées s’exécutent normalement. |
+| **Dégradé** | Teable a détecté des échecs, des tâches expirées ou un arriéré croissant. |
+| **Critique** | BullMQ n’est pas disponible ou aucun worker n’est disponible pour traiter les tâches. |
+
+Lorsque l’état nécessite votre attention, la page en indique la raison.
+
+## Rechercher une tâche dans la file d’attente
+
+La **file d’attente BullMQ en direct** répertorie les tâches que Teable conserve encore afin que vous puissiez suivre une tâche calculée ou rechercher les tâches lentes.
+
+Chaque ligne correspond par défaut à une tâche et celle-ci change d’état sur place à mesure que Teable la relance. Passez à **Livraisons** lorsque vous avez besoin de l’historique complet des tentatives d’une tâche ou souhaitez rechercher des exécutions lentes.
+
+Pour affiner la liste :
+
+- Cliquez sur les tuiles d’état au-dessus de la table pour filtrer par état : **En attente**, **Active**, **Différée**, **Échouée**, **Terminée (conservée)**, etc. Vous pouvez en sélectionner plusieurs à la fois ; survolez une tuile pour connaître la signification de cet état.
+- Filtrez par **Espace**, **Base**, **Cause** ou **Résultat**, recherchez une tâche, une Base, un Espace ou une erreur, ou définissez un temps de traitement minimal pour faire apparaître les tâches lentes.
+- Cliquez sur une ligne pour ouvrir la **Traçabilité calculée** : horodatages de la file d’attente, délai de livraison, temps de traitement, raison complète de l’échec avec le SQL masqué d’une livraison échouée, et détails de propagation décrits ci-dessous.
+
+<Info>**Terminée** ne signifie pas que la tâche a effectué un travail. Le badge de résultat indique ce que la livraison a réellement fait : **Traitée** a exécuté la tâche, **Aucune opération** n’a rien trouvé à faire, **Différée** l’a replanifiée pour plus tard et **Mise en attente** signifie que son périmètre est suspendu. Le filtre **Résultat** restreint la liste selon ce résultat et indique le nombre de livraisons couvertes par chacun ; associer **Terminée (conservée)** à **Traitée** ne conserve donc que les livraisons ayant réellement exécuté la tâche.</Info>
+
+Une ligne échouée représente l’historique d’une tentative de livraison, et non une tâche bloquée. La tâche durable continue de se relancer elle-même ; consultez donc la colonne **État du registre** pour décider si une action est nécessaire : **Réglée** signifie qu’une nouvelle tentative ultérieure a déjà réussi, et **Lettre morte** renvoie à la maintenance des anomalies. Les échecs réglés sont masqués par défaut ; une bannière indique leur nombre et vous permet de les afficher.
+
+**Effacer l’historique des échecs** supprime uniquement de la file d’attente les enregistrements de tâches échouées conservés. Cette opération ne répare rien, et les lettres mortes restent dans **Maintenance des anomalies**.
+
+Une tuile d’état peut également compter des entrées dont les données de tâche n’existent plus dans Redis, généralement laissées après une éviction ou une perte de données. La liste ne peut pas les afficher ; la page explique donc l’écart sous la table. Teable supprime lui-même ces éléments résiduels de l’état échoué ; **Effacer l’historique des échecs** les supprime immédiatement.
+
+## Suivre la propagation d’une valeur
+
+Lorsqu’une valeur calculée semble incorrecte ou est arrivée tardivement, ouvrez **Traçabilité calculée** pour voir toute la chaîne à l’origine de celle-ci. Cliquez sur une ligne de la file d’attente, ou sur **Traçabilité** à côté d’un ID de tâche dans le détail d’une anomalie.
+
+| Section | Ce qu’elle indique |
+| --- | --- |
+| Résumé | Latence de bout en bout, date de modification de la source, date de convergence de la valeur, ainsi que la table et les champs qui ont déclenché l’exécution. Un badge **En cours de calcul** signifie que la chaîne est toujours en cours d’exécution. |
+| **Chronologie** | Date de mise en file d’attente, de début et de fin ou d’échec de l’exécution. |
+| **Chaîne de tâches** | Toutes les tâches de la cascade, imbriquées sous la tâche qui les a mises en file d’attente, afin de voir l’origine de chaque branche. Chaque ligne indique son état, les étapes du plan, la **Cible d’écriture** (la table et les champs que cette tâche met à jour), les **Lignes modifiées**, la profondeur de cascade, l’heure de mise en file d’attente et la durée. |
+| **Propagation des champs** | Les champs lus et écrits par l’exécution, ainsi que le cheminement de la modification entre eux. Le bleu en pointillé est l’origine ayant conduit à cette écriture, le gris est une entrée non écrite lors de cette exécution, le vert est écrit lors de cette exécution, et les flèches représentent des dépendances de champs ou des sauts de liens plutôt que l’ordre des étapes. Seules les origines qui atteignent réellement les écritures de cette exécution sont dessinées. Utilisez **Développer** pour ouvrir le graphique en plein écran lorsqu’une chaîne large est difficile à suivre en ligne. |
+
+<Info>Le registre de traçabilité n’enregistre que les tâches créées après le déploiement de cette fonctionnalité et conserve 7 jours d’historique. Une tâche plus ancienne affiche les informations de sa file d’attente sans graphique de propagation. Une tâche initiale que le worker n’a pas encore planifiée n’affiche que ses champs déclencheurs. Lorsqu’une modification n’a produit aucune écriture calculée en aval, le graphique l’indique : aucun élément ne dépendait de ces champs via une formule, une recherche, un rollup ou un titre de lien.</Info>
+
+## Gérer les tâches anormales
+
+<Info>Le nombre **Échouée** et **Maintenance des anomalies** indiquent différents types de problèmes ; leurs nombres peuvent donc différer.</Info>
+
+**Maintenance des anomalies** regroupe les anomalies par groupes de problèmes, un par Base, table source et erreur, ce qui permet d’identifier facilement une cause racine unique. Examinez la raison de l’échec et corrigez le problème sous-jacent avant toute récupération. Développez un groupe pour consulter les détails de son erreur et les tâches qu’il couvre ; ces lignes sont destinées à l’inspection et la récupération s’exécute toujours sur le groupe dans son ensemble.
+
+Les actions proposées par un groupe dépendent de son type :
+
+| Type d’anomalie | Action | Ce qui se passe |
+| --- | --- | --- |
+| **Lettre morte** | **Récupérer tout le groupe** | Restaure chaque lettre morte actuellement présente dans ce groupe dans la file d’attente durable et les relivre. Tous les autres groupes restent intacts. |
+| **Lettre morte** | **Ignorer le groupe** (dans le menu **Plus d’actions**) | Supprime définitivement les lettres mortes de ce groupe. Elles ne peuvent ensuite être ni récupérées ni rejouées ; utilisez cette action uniquement lorsqu’une nouvelle exécution est inutile. |
+| **Expirée** | **Réarmer le dernier délai d’expiration** | Réactive la file d’attente pour la tâche la plus récente du groupe afin qu’un worker puisse la prendre en charge. |
+
+Après la récupération d’un groupe, Teable indique le nombre de tâches restaurées, celles nouvellement mises en file d’attente ou déjà dans la file, et celles livrées ou différées. Les workers consomment ensuite le groupe selon les limites actuelles de concurrence et de fractionnement des tâches.
+
+Un groupe marqué **Base supprimée** appartient à une Base qui n’existe plus. Sa récupération échouerait immédiatement à nouveau ; **Ignorer le groupe** est donc la seule action proposée.
+
+Déplacer une table vers la corbeille ne crée plus d’anomalies ici. Une tâche calculée qui référence toujours une table placée dans la corbeille ignore les étapes qui la lisent, termine les étapes ciblant des tables actives, puis se termine.
+
+La récupération n’est pas non plus disponible lorsque les données elles-mêmes ont causé l’échec, par exemple une valeur qui dépasse une limite de taille ou ne respecte pas une contrainte de champ. Rejouer la même tâche échouerait de la même manière ; ignorez donc le groupe et corrigez les données source ou la définition du champ. Les écritures ultérieures recalculent automatiquement ces champs.
+
+## Suspendre les tâches calculées d’un Espace
+
+Lorsque les tâches calculées d’un Espace aggravent un incident, suspendez cet Espace dans **Suspensions des tâches calculées** plutôt que d’arrêter toute l’instance.
+
+<Steps>
+  <Step title="Ouvrir la boîte de dialogue de suspension">Cliquez sur **Suspendre un Espace**.</Step>
+  <Step title="Rechercher l’Espace">Recherchez par ID ou nom d’Espace, puis sélectionnez-le dans les résultats.</Step>
+  <Step title="Choisir la durée">Définissez **Durée de suspension** sur 15, 30, 60 ou 120 minutes.</Step>
+  <Step title="Indiquer la raison (facultatif)">Indiquez l’incident ou la fenêtre de maintenance dans **Raison**.</Step>
+  <Step title="Confirmer">Cliquez sur **Confirmer la suspension**.</Step>
+</Steps>
+
+Une suspension empêche uniquement les workers de prendre en charge de nouvelles tâches calculées pour cet Espace. Les tâches déjà en cours ne sont pas interrompues, et les tâches correspondantes attendent la fin de la suspension au lieu d’être supprimées.
+
+Une suspension expire toujours d’elle-même, et deux heures est la durée maximale que vous pouvez définir. Si l’incident dure plus longtemps, suspendez de nouveau l’Espace depuis cette page. La liste affiche chaque suspension active avec son créateur, sa raison et sa date de reprise automatique, ainsi que le nombre de tâches en attente retenues par les suspensions actives, afin que vous puissiez évaluer l’arriéré qui sera libéré lors de la reprise. Pour lever une suspension plus tôt, cliquez sur **Reprendre** dans sa ligne et confirmez.
+
+## Ajuster la concurrence
+
+La section de la file d’attente comporte deux contrôles de concurrence. Chacun écrit un remplacement à l’échelle du cluster que tous les processus appliquent dans un délai d’environ 15 secondes, sans redémarrage ; chacun peut être réinitialisé afin que les processus reviennent à leur propre paramètre d’environnement. Un badge **Remplacé** signale un contrôle qui n’utilise plus sa valeur par défaut.
+
+| Contrôle | Ce qu’il limite |
+| --- | --- |
+| **Concurrence par processus** | Nombre de tâches calculées que chaque processus worker traite simultanément. |
+| **Plafonds de prise en charge par Base** | Nombre de tâches calculées exécutées simultanément pour une Base (**Par Base**) et pour une table source au sein de celle-ci (**Par table initiale**). Les deux valeurs sont définies sur 2 par défaut et acceptent des valeurs de 1 à 16. |
+
+Augmentez les plafonds de prise en charge lorsqu’une Base très sollicitée constitue le goulot d’étranglement, et la concurrence par processus lorsque de nombreuses Bases sont mises en file d’attente simultanément.
+
+<Warning>Une concurrence plus élevée accroît la charge sur votre base de données. Les Espaces qui stockent leurs données dans un [locataire de base de données](/fr/basic/admin-panel/database-tenant) conservent les valeurs par défaut de l’environnement pour les plafonds de prise en charge, car leurs pools de connexions sont dimensionnés pour ces valeurs.</Warning>
+

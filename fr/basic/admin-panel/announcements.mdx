@@ -1,0 +1,63 @@
+---
+title: "Annonces"
+description: "Publiez des annonces dans l’application à l’intention de tous, d’Espaces sélectionnés ou d’utilisateurs sélectionnés, et retirez-les lorsqu’elles ne s’appliquent plus."
+---
+
+<Tip>Disponible à partir du plan Business auto-hébergé</Tip>
+
+Chemin : Administration système → Annonces
+
+**Annonces** permet aux administrateurs d’afficher un message aux utilisateurs connectés sans envoyer d’e-mail : maintenance planifiée, incident et sa résolution, changement de politique ou nouvelle fonctionnalité que vous souhaitez faire connaître. Chaque annonce est active pendant une période planifiée et peut cibler toute l’instance ou un groupe spécifique.
+
+## Publier une annonce
+
+Cliquez sur **Publier une annonce** et remplissez le formulaire. L’aperçu latéral montre l’annonce telle que les utilisateurs la verront.
+
+| Paramètre | Ce qu’il contrôle |
+| --- | --- |
+| **Formulaire** | L’emplacement de l’annonce : une **Bannière** en haut de l’application, un **Toast** sous forme de notification temporaire, une **Fenêtre modale** sous forme de boîte de dialogue interrompant le travail, ou une **Carte latérale** dans les barres latérales de l’Espace et de la Base. |
+| **Niveau** | Le ton affiché aux utilisateurs : **Info**, **Maintenance**, **Critique** ou **Résolu**. |
+| Titre et **Corps** | Le texte de l’annonce. |
+| **Commence le** / **Se termine le** | La période pendant laquelle l’annonce est diffusée. L’heure de fin doit être postérieure à l’heure de début. |
+| **Texte du lien** / **URL du lien** | Une destination facultative. Une carte latérale est elle-même un lien et propose donc toujours le champ URL ; les autres formats l’affichent lorsque le corps utilise l’espace réservé `{link}`. |
+| **Audience** | **Tout le monde**, **Espaces spécifiques** ou **Utilisateurs spécifiques**. |
+
+Choisissez le format le plus marquant que le message justifie. Une bannière et une carte latérale accompagnent le travail de l’utilisateur ; une fenêtre modale le bloque. Les utilisateurs peuvent eux-mêmes fermer une annonce et, lorsque plusieurs annonces sont actives simultanément, les bannières se replient derrière le bouton **N annonces supplémentaires**.
+
+### Cibler des Espaces ou des utilisateurs spécifiques
+
+Pour **Espaces spécifiques** ou **Utilisateurs spécifiques**, collez des identifiants dans le champ d’audience (ID ou noms d’Espace, ou ID, noms ou e-mails d’utilisateur, séparés par des virgules), puis cliquez sur **Faire correspondre**. Les éléments correspondants deviennent des pastilles, et tout élément que Teable n’a pas pu résoudre reste dans le champ sous **Sans correspondance :** afin que vous puissiez le corriger et réessayer.
+
+L’appartenance à un Espace est évaluée lors de la diffusion de l’annonce ; les collaborateurs ajoutés ultérieurement reçoivent donc toujours une annonce ciblant cet Espace.
+
+### Insérer des valeurs dynamiques
+
+Utilisez **Insérer un espace réservé** dans le corps pour ajouter des valeurs que Teable renseigne lors de l’affichage, afin qu’un seul message reste exact pour chaque lecteur :
+
+| Espace réservé | S’affiche sous la forme |
+| --- | --- |
+| `{startTime}` / `{endTime}` | Le début ou la fin de la période, dans la langue et le fuseau horaire du lecteur |
+| `{time:…}` | Un instant spécifique que vous choisissez |
+| `{duration}` | La durée de la période |
+| `{countdown}` | Un compte à rebours dynamique jusqu’au début |
+| `{link}` | Le lien, affiché avec votre **Texte du lien** |
+
+`{link}` n’est pas disponible pour la carte latérale, car toute la carte est déjà le lien.
+
+### Traduire le contenu
+
+Rédigez l’annonce dans une langue, puis utilisez **Traduire avec l’IA** pour renseigner les autres langues d’interface proposées. Choisissez **Remplir uniquement les champs vides** pour conserver les traductions déjà rédigées, ou **Tout remplacer** pour tout retraduire. Vérifiez ensuite chaque onglet de langue : la traduction est un brouillon, pas une relecture finale. Les lecteurs voient la langue correspondant à leur interface, avec repli vers l’anglais.
+
+## Gérer les annonces publiées
+
+La liste affiche chaque annonce avec son **Statut**, son **Titre**, son **Formulaire**, son **Niveau**, son **Audience**, sa **Période** et son **Créé par**. Ouvrez une ligne pour examiner son contenu complet.
+
+| Statut | Signification |
+| --- | --- |
+| **Planifiée** | L’heure de début n’est pas encore arrivée. |
+| **Active** | En cours de diffusion. |
+| **Expirée** | L’heure de fin est passée. |
+| **Retirée** | Arrêtée prématurément par un administrateur. |
+
+Cliquez sur **Retirer** pour une annonce active afin d’arrêter immédiatement sa diffusion. Une annonce déjà expirée ne peut pas être retirée et son enregistrement reste inchangé.
+

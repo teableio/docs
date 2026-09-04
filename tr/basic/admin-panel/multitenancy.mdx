@@ -1,0 +1,145 @@
+---
+title: "Kuruluş Kiracısı Yönetimi"
+description: "Tek bir Teable örneğinde birden fazla kuruluş kiracısı oluşturup yönetin ve her kiracıya bir yönetici atayın."
+hidden: true
+noindex: true
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Kendi sunucunuzda barındırılan Enterprise planında kullanılabilir</Tip>
+
+Bir Teable örneği, her biri bir müşteri, iş birimi veya ekip için ayrı üyelere, departmanlara, Alanlara ve ayarlara sahip birden fazla kuruluş kiracısı içerebilir.
+
+## Kuruluş Kiracısı Hiyerarşisi
+
+```text
+Teable örneği
+├── Kuruluş kiracısı A
+│   ├── Kuruluş yöneticileri, üyeler ve departmanlar
+│   └── Alanlar, Veritabanları ve kuruluş düzeyindeki ayarlar
+├── Kuruluş kiracısı B
+│   ├── Kuruluş yöneticileri, üyeler ve departmanlar
+│   └── Alanlar, Veritabanları ve kuruluş düzeyindeki ayarlar
+└── Kuruluş kiracısı C
+```
+
+Kuruluş kiracıları aynı Teable dağıtımını ve örnek yapılandırmasını paylaşırken aşağıdaki öğeleri ayrı ayrı yönetir:
+
+| Kapsam | Açıklama |
+| --- | --- |
+| **Üyeler ve departmanlar** | Her kuruluş kendi kuruluş üyelerini, kuruluş yöneticilerini ve departman yapısını korur |
+| **Alanlar** | Her kuruluş kendisiyle ilişkili Alanları yönetir |
+| **Kimlik doğrulama ve güvenlik** | Her kuruluş kendi kimlik doğrulama sağlayıcılarını ve doğrulanmış e-posta alan adlarını yapılandırabilir |
+| **Kuruluş ayarları** | Kuruluş adı, otomatik Alan erişimi ve departman kapsamı ayrı ayrı yapılandırılır |
+| **Örnek yapılandırması** | Lisanslar, sistem ayarları ve kuruluş kiracısı oluşturma ve silme işlemleri örnek yöneticisinin denetiminde kalır |
+
+<Info>Kuruluş kiracıları her kuruluşa ayrı bir PostgreSQL veritabanı sağlamaz. Bir Alanın verilerini ayrı bir PostgreSQL veritabanında saklamak için [Veritabanı Kiracısı](/tr/basic/admin-panel/database-tenant) bölümüne bakın.</Info>
+
+## İki Yönetim Giriş Noktası
+
+| Giriş noktası | Yönetim rolü | Amaç |
+| --- | --- | --- |
+| **Yönetici Paneli → Kuruluşlar** | Örnek yöneticisi | Kuruluş kiracıları oluşturma, görüntüleme ve silme; kuruluş yöneticileri atama |
+| **Kuruluş Paneli** | Kuruluş yöneticisi | Mevcut kiracı içindeki kullanıcıları, departmanları, Alanları, kimlik doğrulamayı, güvenliği ve ayarları yönetme |
+
+Kuruluş yöneticileri yalnızca atandıkları kuruluşu yönetebilir. Başka kuruluş kiracılarını oluşturamaz veya silemez ve sistem genelindeki örnek ayarlarını değiştiremezler.
+
+## Kuruluşları Açma
+
+1. Teable'da örnek yöneticisi olarak oturum açın.
+2. Sol üst köşeden **Yönetici Paneli**'ni seçin.
+3. Sol gezinme menüsünden **Kuruluşlar**'ı açın.
+
+<img
+  src="/images/selfhosted/admin-panel/2026-05-29-admin-panel-organizations-entry-en.png"
+  alt="Yönetici Panelindeki Kuruluşlar girişi"
+  className="docs-screenshot"
+/>
+
+<Tip>Bir örneğe kaydolan ilk kullanıcı otomatik olarak örnek yöneticisi olur.</Tip>
+
+## Kuruluş Kiracısı Oluşturma
+
+1. **Kuruluş oluştur**'u seçin.
+2. **Kuruluş adını** girin.
+3. **Oluştur**'u seçin.
+
+Yeni kuruluş, kuruluş listesinde görünür. Bir kuruluş yöneticisi atadıktan sonra bu yönetici, Kuruluş Panelinden üyeleri, departmanları ve Alanları yapılandırabilir.
+
+## Kuruluş Listesini Görüntüleme
+
+Listede ada göre arama yapılabilir ve şu bilgiler yer alır:
+
+| Sütun | Açıklama |
+| --- | --- |
+| **Kuruluş adı** | Kuruluş kiracısının adı ve kimliği |
+| **Kullanıcı sayısı** | Kuruluştaki toplam kullanıcı sayısı |
+| **Alan sayısı** | Kuruluşla ilişkili toplam Alan sayısı |
+| **Yöneticiler** | Atanmış kuruluş yöneticileri |
+| **Oluşturulma zamanı** | Kuruluş kiracısının oluşturulduğu zaman |
+
+<img
+  src="/images/selfhosted/admin-panel/2026-05-29-admin-panel-organizations-list-en.png"
+  alt="Yönetici Panelindeki kuruluş listesi"
+  className="docs-screenshot"
+/>
+
+## Kuruluş Yöneticileri Atama
+
+1. Hedef kuruluşun eylem menüsünü açın.
+2. **Yöneticileri yönet**'i seçin.
+3. Örnekte bir kullanıcı arayın.
+4. **Yönetici olarak ayarla** veya **Yöneticiliği kaldır** seçeneğini belirleyin.
+
+Silinmiş kullanıcılar dışındaki tüm örnek kullanıcıları kuruluş yöneticisi olarak atanabilir. Kullanıcı mevcut kuruluşu yönetme erişimi kazanır ancak örnek yöneticisi olmaz.
+
+| Rol | Tüm kuruluş kiracılarını yönetme | Örnek ayarlarını yönetme | Mevcut kuruluşu yönetme | Mevcut kuruluştaki Alanları yönetme |
+| --- | --- | --- | --- | --- |
+| **Örnek yöneticisi** | Evet | Evet | Evet | Evet |
+| **Kuruluş yöneticisi** | Hayır | Hayır | Evet | Evet |
+| **Normal üye** | Hayır | Hayır | Hayır | Alan rolüne bağlıdır |
+
+## Kiracıyı İçeriden Yönetme
+
+Bir kuruluş yöneticisi, Alan seçiciden **Kuruluş Panelini** açarak şunları yönetebilir:
+
+| Sayfa | Yönetim özellikleri |
+| --- | --- |
+| **Kullanıcılar** | Mevcut kuruluştaki kullanıcıları görüntüleme ve yönetme |
+| **Kuruluş** | Departmanları oluşturma, taşıma, yeniden adlandırma ve silme; departman üyelerini yönetme |
+| **Alan yönetimi** | Kuruluşa Alan ekleme veya kuruluştan Alan kaldırma; Alan ve Veritabanı sayılarını görüntüleme |
+| **Kimlik doğrulama ayarları** | Kuruluş için üçüncü taraf kimlik doğrulama sağlayıcılarını yapılandırma |
+| **Güvenlik ayarları** | Bu alan adlarına sahip yeni kullanıcıların kuruluşa otomatik olarak katılması için e-posta alan adlarını doğrulama |
+| **Örnek ayarları** | Kuruluş adını, otomatik Alan erişimini ve departman kapsamını değiştirme |
+
+Ayrıntılı **Örnek ayarları** talimatları için [Kuruluş Paneli Ayarları](/tr/basic/organization-panel/settings) bölümüne bakın.
+
+## Kuruluş Kiracısını Silme
+
+1. Hedef kuruluşun eylem menüsünü açın.
+2. **Sil**'i seçin.
+3. Onayı inceleyip silme işlemini doğrulayın.
+
+<Warning>Bir kuruluşun silinmesi, kuruluşu ve tüm verilerini kalıcı olarak kaldırır. Devam etmeden önce hedef kuruluşu, ilişkili Alanları ve yedekleri doğrulayın.</Warning>
+
+## Yaygın Kiracı Modelleri
+
+| Senaryo | Kuruluş kiracısı modeli |
+| --- | --- |
+| Birden fazla müşteriye tek bir Teable hizmeti sunma | Her müşteri için ayrı bir kuruluş kiracısı oluşturun |
+| Bağımsız iştirakleri bulunan tek bir grup dağıtımını sürdürme | Her iştirak için bir kuruluş kiracısı oluşturun |
+| Büyük bir işletmedeki iş birimlerini yalıtma | Bağımsız üyelik, Alan ve yönetim politikaları gerektiren her birim için kuruluş kiracısı oluşturun |
+
+## SSS
+
+<AccordionGroup>
+  <Accordion title="Kuruluş kiracısı ile veritabanı kiracısı arasındaki fark nedir?">
+    Kuruluş kiracısı üyeleri, departmanları, Alanları ve yönetim izinlerini birbirinden ayırır. Veritabanı kiracısı, belirli bir Alanın verilerini hangi PostgreSQL veritabanının saklayacağını belirler. Bir kuruluş kiracısı birden fazla Alan içerebilir ve her Alanın kullandığı veri veritabanı ayrı ayrı yapılandırılır.
+  </Accordion>
+  <Accordion title="Kuruluş oluşturduktan sonra neden bir kuruluş yöneticisi atanmalıdır?">
+    Örnek yöneticisi kiracıları oluşturup siler ve örneği yönetir. Kuruluş yöneticisi ise bir kiracının günlük yönetimini yürütür. Kuruluş yöneticisi atamak; örnek düzeyinde erişim vermeden üye, departman, Alan ve kimlik doğrulama yönetimini devretmenizi sağlar.
+  </Accordion>
+  <Accordion title="Tek bir örnek birden fazla müşteriye hizmet verebilir mi?">
+    Evet. Her müşteri için ayrı bir kuruluş kiracısı oluşturun. Örnek yöneticisi ortak dağıtımı ve sistem ayarlarını korurken her müşteri kendi kuruluş yöneticilerine sahip olur.
+  </Accordion>
+</AccordionGroup>

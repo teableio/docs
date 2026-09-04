@@ -1,0 +1,93 @@
+---
+title: "Formula"
+description: "Fai riferimento ad altri Campi e calcola testo, numeri, date e condizioni logiche con le formule."
+---
+
+I Campi Formula calcolano risultati a partire da altri Campi dello stesso Record. Possono gestire operazioni matematiche, concatenazione di testo, calcoli con date e logica condizionale. Usali per trasformare regole di calcolo ripetute in Campi.
+
+## Casi d'uso
+
+| Scenario | Ideale per |
+| --- | --- |
+| Calcolo automatico | Calcolare prezzo totale, profitto o punteggio a partire da quantità, prezzo unitario, sconto e altri Campi |
+| Elaborazione del testo | Unire testo, estrarre contenuti o analizzare informazioni in base a un delimitatore |
+| Elaborazione delle date | Calcolare differenze tra date, verificare intervalli temporali o generare date future |
+| Logica condizionale | Restituire risultati diversi in base alle condizioni, ad esempio stati, suggerimenti o categorie |
+
+## Nozioni di base sulle formule
+
+### Tipi di dati
+
+Prima di scrivere una formula, verifica i tipi dei Campi usati nel calcolo. Tipi diversi supportano operazioni e funzioni differenti.
+
+| Tipo | Descrizione | Utilizzi comuni |
+| --- | --- | --- |
+| Numero | Numeri interi o decimali | Aritmetica, aggregazioni, confronti |
+| Testo | Valori stringa | Concatenazione, estrazione, sostituzione, suddivisione |
+| Data | Valori di data o data e ora | Calcolo di intervalli, confronto tra date |
+| Booleano | `TRUE` o `FALSE` | Condizioni e operazioni logiche |
+
+### Riferimenti ai Campi
+
+In una formula, fai riferimento a un altro Campo tramite il suo nome. Racchiudi il nome del Campo tra `{}` e assicurati che corrisponda al nome effettivo:
+
+```js
+{Unit price} * {Quantity}
+```
+
+### Operatori
+
+| Operatore | Utilizzo |
+| --- | --- |
+| `+` | Calcola la somma di numeri oppure concatena stringhe |
+| `-` | Calcola la differenza tra numeri |
+| `*` | Calcola il prodotto di numeri |
+| `/` | Calcola il quoziente tra numeri |
+| `%` | Calcola il resto |
+
+## Funzioni ed espressioni
+
+### Funzioni comuni
+
+Le funzioni eseguono operazioni specifiche. Ad esempio, `SUM` calcola un totale, `LEFT` estrae caratteri dall'inizio del testo, `TEXTBEFORE` estrae il testo che precede un delimitatore e `TEXTSPLIT` divide il testo in base a un delimitatore.
+
+Per altre funzioni, consulta la [scheda di riferimento delle formule](/it/basic/field/formula/cheat-sheet).
+
+### Elaborazione del testo
+
+| Operazione | Esempi di funzioni | Descrizione |
+| --- | --- | --- |
+| Concatena testo | `&`, `CONCATENATE` | Unisce due o più valori di testo |
+| Estrai testo | `LEFT`, `RIGHT`, `MID`, `TEXTBEFORE` | Estrae una parte di una stringa |
+| Dividi testo | `TEXTSPLIT` | Divide il testo in più valori in base a un delimitatore |
+
+### Condizioni logiche
+
+Usa la funzione `IF` per restituire valori diversi in base a una condizione:
+
+```js
+IF(condition, value_if_true, value_if_false)
+```
+
+Per verificare se un Campo è vuoto, confrontalo con `BLANK()`. Ad esempio, `IF({Weight}=BLANK(), 1, 2)` restituisce `1` quando un Campo Numero è vuoto e `2` in caso contrario.
+
+### Espressioni complesse
+
+Una formula complessa può includere più funzioni, riferimenti ai Campi e operatori. Usa le parentesi per controllare l'ordine dei calcoli:
+
+```js
+({Unit price} * {Quantity}) * (1 - {Discount})
+```
+
+## Visualizzazione e manutenzione dei risultati
+
+### Formattazione e visualizzazione interattiva
+
+I risultati delle formule possono anche utilizzare le impostazioni di [formattazione](/it/basic/field/common/formatter) e [visualizzazione interattiva](/it/basic/field/common/show-as), ad esempio percentuali, barre di avanzamento o stili delle icone. Le opzioni disponibili dipendono dal tipo di risultato della formula.
+
+### Debug e ottimizzazione
+
+- **Controlla i tipi di dati**: verifica che le operazioni e le funzioni usino i tipi di dati corretti.
+- **Verifica i riferimenti ai Campi**: accertati che i nomi dei Campi siano scritti correttamente.
+- **Esegui test passo dopo passo**: suddividi le formule complesse in parti più piccole e testale separatamente.
+- **Evita calcoli ripetuti**: se lo stesso calcolo viene usato in più punti, valuta la possibilità di archiviare il risultato in un Campo separato.

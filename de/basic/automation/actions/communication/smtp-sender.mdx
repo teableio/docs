@@ -1,0 +1,83 @@
+---
+title: "SMTP und Absender einrichten"
+description: "Konfigurieren Sie einen benutzerdefinierten SMTP-Server und eine Absenderidentität für Automatisierungs-E-Mails"
+---
+
+Standardmäßig werden Automatisierungs-E-Mails über den integrierten E-Mail-Dienst von Teable gesendet. Dies funktioniert für einfache Benachrichtigungen; aus Gründen der Markenidentität, Zustellbarkeit oder Compliance möchten Sie E-Mails möglicherweise jedoch von Ihrer eigenen Domain senden. Mit einer benutzerdefinierten SMTP-Konfiguration ist genau das möglich.
+
+Wenn Sie einen benutzerdefinierten SMTP-Server konfigurieren, werden alle von dieser Aktion gesendeten E-Mails über Ihren eigenen Mailserver und mit Ihrer eigenen Absenderadresse verschickt – die Empfänger sehen Ihre Domain, nicht die von Teable.
+
+## Verwendung eines benutzerdefinierten SMTP-Servers
+
+- **E-Mails von Ihrer Unternehmensdomain senden** (z. B. `noreply@yourcompany.com` oder `support@yourcompany.com`), damit Empfänger den Absender erkennen.
+- **Zustellbarkeit verbessern.** E-Mails von Ihrer eigenen Domain mit korrekt eingerichteten SPF-, DKIM- und DMARC-Einträgen landen seltener im Spam.
+- **Compliance-Anforderungen erfüllen.** In einigen Branchen müssen automatisierte E-Mails von einer durch die Organisation kontrollierten Domain stammen.
+- **Ihre vorhandene E-Mail-Infrastruktur verwenden.** Leiten Sie E-Mails zur Protokollierung, Archivierung oder Sicherheitsprüfung über den Mailserver Ihres Unternehmens.
+- **Höhere Versandlimits.** Der integrierte Dienst von Teable unterliegt Ratenbegrenzungen. Ihr eigener SMTP-Server unterstützt möglicherweise einen höheren Durchsatz.
+
+## Konfiguration
+
+Klicken Sie in der Aktion **E-Mail senden** auf die Option für die Transportkonfiguration, um einen benutzerdefinierten SMTP-Server einzurichten:
+
+| Einstellung | Erforderlich | Beschreibung |
+|---|---|---|
+| SMTP-Host | Ja | Die Adresse Ihres Mailservers (z. B. `smtp.gmail.com`) |
+| Port | Ja | Der SMTP-Port – normalerweise 465 (SSL) oder 587 (STARTTLS) |
+| Benutzername | Ja | Benutzername des SMTP-Kontos (häufig Ihre E-Mail-Adresse) |
+| Passwort | Ja | Passwort des SMTP-Kontos oder App-spezifisches Passwort |
+| Absenderadresse | Ja | Die den Empfängern angezeigte Absender-E-Mail-Adresse |
+
+## Einrichtung
+
+1. Öffnen Sie Ihre Automatisierung und wechseln Sie zur Aktion **E-Mail senden**.
+2. Klicken Sie auf die Option **Transportkonfiguration** (Zahnradsymbol oder Link neben den Absendereinstellungen).
+3. Geben Sie die Details Ihres SMTP-Servers ein:
+   - **Host:** Die Adresse des SMTP-Servers Ihres E-Mail-Anbieters.
+   - **Port:** Verwenden Sie 465 für SSL/TLS oder 587 für STARTTLS. Wenn Sie unsicher sind, versuchen Sie zuerst 465.
+   - **Benutzername:** Ihr E-Mail-Konto oder SMTP-Benutzername.
+   - **Passwort:** Ihr E-Mail-Passwort oder – bei Anbietern wie Gmail – ein App-spezifisches Passwort.
+4. Legen Sie die **Absenderadresse** fest – diese sehen die Empfänger als Absender.
+5. Klicken Sie auf **Testen**, um die Verbindung zu überprüfen. Teable versucht, über Ihren SMTP-Server eine Test-E-Mail zu senden.
+6. Wenn der Test erfolgreich ist, speichern Sie die Konfiguration. Alle E-Mails aus dieser Aktion verwenden nun Ihren SMTP-Server.
+
+## Übliche SMTP-Einstellungen nach Anbieter
+
+| Anbieter | Host | Port | Hinweise |
+|---|---|---|---|
+| **Gmail** | `smtp.gmail.com` | 465 | Erfordert ein App-Passwort (nicht Ihr Kontopasswort). Siehe [Gmail IMAP einrichten](../../trigger/email/gmail-imap) |
+| **Outlook / Microsoft 365** | `smtp.office365.com` | 587 | Verwenden Sie die Anmeldedaten Ihres Microsoft-Kontos |
+| **Amazon SES** | `email-smtp.{region}.amazonaws.com` | 465 | Verwenden Sie SES-SMTP-Anmeldedaten (keine IAM-Anmeldedaten) |
+| **SendGrid** | `smtp.sendgrid.net` | 465 | Der Benutzername lautet `apikey`, das Passwort ist Ihr API-Schlüssel |
+| **Mailgun** | `smtp.mailgun.org` | 465 | Verwenden Sie die SMTP-Anmeldedaten aus den Domaineinstellungen von Mailgun |
+| **Zoho Mail** | `smtp.zoho.com` | 465 | Verwenden Sie die Anmeldedaten Ihres Zoho-Kontos |
+| **Yahoo Mail** | `smtp.mail.yahoo.com` | 465 | Erfordert ein App-Passwort |
+| **Postmark** | `smtp.postmarkapp.com` | 587 | Verwenden Sie das API-Token Ihres Postmark-Servers als Benutzername und Passwort |
+| **Benutzerdefiniert / selbst gehostet** | Adresse Ihres Servers | Variiert | Fragen Sie Ihr IT-Team nach Host, Port und Anmeldedaten |
+
+## Häufige Fehler und Lösungen
+
+Wenn bei einer Ausführung der Versand fehlschlägt, öffnen Sie den **Ausführungsverlauf** des Workflows und prüfen Sie die Ausgabe des Schritts **E-Mail senden**. Bei einem benutzerdefinierten SMTP-Server meldet der Schritt die vom Mailserver zurückgegebene Ablehnung: Antwortcode, fehlgeschlagener SMTP-Befehl, abgelehnte Empfänger und Host. Gleichen Sie diese Angaben mit den folgenden Ursachen ab.
+
+| Fehler | Wahrscheinliche Ursache | Lösung |
+|---|---|---|
+| **Verbindung abgelehnt** | Falscher Host oder Port | Überprüfen Sie SMTP-Host und Port. Wechseln Sie versuchsweise zwischen 465 und 587 |
+| **Authentifizierung fehlgeschlagen** | Falscher Benutzername oder falsches Passwort | Überprüfen Sie die Anmeldedaten. Verwenden Sie für Gmail/Yahoo ein App-Passwort anstelle Ihres Kontopassworts |
+| **Zertifikatfehler / TLS-Handshake fehlgeschlagen** | Port und Verschlüsselung stimmen nicht überein | Port 465 erwartet SSL, Port 587 STARTTLS. Stellen Sie sicher, dass der Port zur Verschlüsselung Ihres Servers passt |
+| **Absenderadresse abgelehnt** | Absenderadresse stimmt nicht mit dem SMTP-Konto überein | Einige Anbieter verlangen, dass die Absenderadresse dem authentifizierten Konto entspricht. Prüfen Sie die Richtlinie Ihres Anbieters |
+| **Ratenbegrenzung überschritten** | Zu viele E-Mails wurden zu schnell gesendet | Reduzieren Sie die Versandhäufigkeit oder stufen Sie Ihren E-Mail-Tarif hoch. Verwenden Sie bei Bedarf Stapelversand mit Verzögerungen |
+| **Zeitüberschreitung** | Firewall- oder Netzwerkproblem | Stellen Sie sicher, dass Ihr Netzwerk ausgehende Verbindungen über den SMTP-Port zulässt. Bei selbst gehostetem Teable: Prüfen Sie die Firewallregeln des Servers |
+
+## Tipps
+
+- **Vor der Inbetriebnahme testen.** Senden Sie nach der SMTP-Konfiguration immer eine Test-E-Mail, um die korrekte Funktion zu bestätigen.
+- **Verwenden Sie App-spezifische Passwörter** für Gmail, Yahoo und andere Anbieter, die Zwei-Faktor-Authentifizierung unterstützen. Bei aktivierter 2FA funktioniert Ihr reguläres Kontopasswort nicht.
+- **Richten Sie SPF, DKIM und DMARC ein** in den DNS-Einträgen Ihrer Domain, um die Zustellbarkeit zu verbessern und zu verhindern, dass Ihre E-Mails als Spam markiert werden.
+- **Bewahren Sie Anmeldedaten sicher auf.** SMTP-Passwörter werden in Teable verschlüsselt gespeichert. Vermeiden Sie dennoch, Automatisierungskonfigurationen mit vertraulichen Anmeldedaten zu teilen.
+- **Überwachen Sie die Zustellung.** Wenn E-Mails nicht mehr ankommen, prüfen Sie das Dashboard Ihres SMTP-Anbieters auf unzustellbare Nachrichten, Warnungen zu Ratenbegrenzungen oder Kontoprobleme.
+
+<Tip>Verwenden Sie für Gmail ein App-Passwort anstelle Ihres Kontopassworts. Unter [Gmail IMAP einrichten](../../trigger/email/gmail-imap) erfahren Sie, wie Sie eines erstellen.</Tip>
+
+## Verwandte Themen
+
+- [Aktion „E-Mail senden“](/de/basic/automation/actions/communication/send-email-overview) – die Aktion, die die SMTP-Konfiguration verwendet
+- [Gmail IMAP einrichten](../../trigger/email/gmail-imap) – Anleitung zu Gmail-App-Passwörtern

@@ -1,0 +1,98 @@
+---
+title: "À l’heure planifiée"
+description: "Exécutez un flux de travail selon une planification récurrente ou ponctuelle"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Remarque : vous pouvez configurer tous les déclencheurs dans le Chat IA. Indiquez à l’IA ce que le flux de travail doit accomplir et elle se chargera du reste.</Tip>
+
+Ce déclencheur s’exécute selon la planification que vous définissez : toutes les quelques minutes, une fois par mois ou une seule fois.
+
+## Créer avec l’IA
+
+Ouvrez le Chat IA dans la barre latérale droite de votre table et décrivez ce que vous souhaitez.
+
+L’IA s’occupe de tout : elle choisit le bon déclencheur, associe les champs pertinents et configure automatiquement toutes les actions.
+
+Décrivez une seule fois votre objectif et le flux de travail est prêt, sans aucune configuration manuelle.
+
+**Exemple :** *"Chaque lundi à 9 h, envoie-moi par e-mail la liste des tâches en retard."*
+
+## Configuration
+
+| Paramètre | Obligatoire | Description |
+|---|---|---|
+| Heure de début | Oui | Moment où la planification commence |
+| Heure de fin | Non | Moment où la planification s’arrête (laissez ce champ vide pour une exécution illimitée) |
+| Fuseau horaire | Oui | Votre fuseau horaire actuel par défaut. Toutes les heures sont interprétées dans ce fuseau |
+| Fréquence | Oui | Fréquence d’exécution du déclencheur — voir les options ci-dessous |
+
+## Options de fréquence
+
+| Fréquence | Intervalle | Paramètres supplémentaires |
+|---|---|---|
+| Minutes | Toutes les 10 à 60 min | — |
+| Heures | Toutes les 1 à 24 h | — |
+| Jours | Tous les 1 à 31 jours | Heure de déclenchement (heure + minute) |
+| Semaines | Toutes les 1 à 52 semaines | Jours de la semaine (lun.–dim.) + heure de déclenchement |
+| Mois | Tous les 1 à 12 mois | Jours du mois + heure de déclenchement |
+| Une fois | — | S’exécute une fois à l’heure indiquée, puis se désactive automatiquement |
+
+Utilisez **-1** comme jour du mois pour cibler son dernier jour, qu’il en compte 28, 30 ou 31.
+
+## Procédure de configuration
+
+1. Ouvrez votre automatisation et ajoutez un nouveau déclencheur.
+2. Sélectionnez **À l’heure planifiée**.
+3. Définissez le **Fuseau horaire**. Ce paramètre est particulièrement important si les membres de votre équipe se trouvent dans plusieurs fuseaux horaires : la planification s’exécute selon le fuseau sélectionné ici.
+4. Choisissez une **Fréquence**. Par exemple, pour une exécution tous les lundis à 9 h :
+   - Définissez la fréquence sur **Semaines**.
+   - Définissez l’intervalle sur **1** (toutes les 1 semaine).
+   - Cochez **Lundi** dans le sélecteur des jours de la semaine.
+   - Définissez l’heure de déclenchement sur **09:00**.
+5. Définissez une **Heure de début** (moment où la planification devient active).
+6. (Facultatif) Définissez une **Heure de fin** si vous souhaitez que la planification expire.
+7. Enregistrez et activez l’automatisation.
+8. Comme aucune donnée d’enregistrement n’est disponible, votre première action sera généralement une étape **Obtenir les enregistrements** afin de charger les données dont vous avez besoin.
+
+## Exemple concret : rapport hebdomadaire du lundi matin
+
+Objectif : chaque lundi à 9 h, récupérer toutes les tâches à terminer dans la semaine et envoyer un e-mail récapitulatif.
+
+1. **Déclencheur :** À l’heure planifiée — Semaines, toutes les 1 semaine, lundi, 09:00, votre fuseau horaire.
+2. **Action 1 :** Obtenir les enregistrements — dans la table Tâches, avec le filtre : Date d’échéance se situe dans cette semaine.
+3. **Action 2 :** Envoyer un e-mail — à votre équipe, en répertoriant les tâches récupérées dans le corps du message.
+
+## Planifications ponctuelles
+
+Lorsque vous sélectionnez la fréquence **Une fois**, l’automatisation s’exécute une seule fois à la date et à l’heure indiquées, puis se désactive automatiquement. Cette option est utile pour :
+
+- Un rappel de suivi à une date précise.
+- Une action différée qui doit avoir lieu une seule fois (par exemple, envoyer une annonce de lancement à une date future).
+- Une campagne limitée dans le temps qui ne se déclenche qu’une seule fois.
+
+Après l’exécution d’un déclencheur ponctuel, l’automatisation est marquée comme inactive. Vous pouvez la réactiver avec une nouvelle heure si nécessaire.
+
+## Cas d’utilisation
+
+- **Générer un rapport récapitulatif quotidien.** Exécutez le flux chaque jour à 8 h, récupérez tous les enregistrements mis à jour la veille et envoyez une synthèse par e-mail.
+- **Créer des tâches récurrentes chaque lundi.** Exécutez le flux chaque semaine et créez dans votre table de tâches les enregistrements de la nouvelle semaine.
+- **Envoyer des rappels mensuels de facture.** Exécutez le flux le premier jour de chaque mois, recherchez les factures impayées et envoyez des e-mails de rappel.
+- **Nettoyer les enregistrements obsolètes.** Exécutez le flux chaque jour, recherchez les enregistrements datant de plus de 90 jours dont le statut est « Brouillon », puis archivez-les ou supprimez-les.
+- **Synchroniser des données selon une planification.** Exécutez le flux toutes les heures pour transmettre les enregistrements mis à jour à une API externe.
+
+<Warning>Les déclencheurs planifiés ne sont liés à aucun enregistrement. Les étapes suivantes ne disposent donc d’aucune donnée d’enregistrement. Si vous devez traiter des enregistrements, ajoutez une action Obtenir les enregistrements comme première étape et utilisez des filtres pour sélectionner les enregistrements nécessaires.</Warning>
+
+## Conseils
+
+- Comme les déclencheurs planifiés n’ont aucun « enregistrement actuel », vous ne pouvez pas référencer leurs données dans les actions comme vous le feriez avec des déclencheurs fondés sur des enregistrements. Commencez toujours par une action **Obtenir les enregistrements** si vous avez besoin de données.
+- Tenez compte des fuseaux horaires, surtout si votre équipe travaille dans plusieurs régions. Le paramètre de fuseau horaire du déclencheur détermine le moment de son exécution, et non l’heure locale de la personne qui consulte la page.
+- Pour les planifications à haute fréquence (toutes les quelques minutes), privilégiez un flux de travail léger afin d’éviter le chevauchement des exécutions.
+- Si votre automatisation est sensible à l’heure (par exemple, si elle doit s’exécuter avant une réunion quotidienne), planifiez-la quelques minutes plus tôt afin de laisser le temps au traitement.
+- L’astuce du jour du mois **-1** est utile pour les rapports ou processus de fin de mois. La valeur -1 signifie « dernier jour du mois » : le déclencheur s’exécute donc correctement le 31 janvier, le 28 (ou le 29) février, le 31 mars, etc.
+
+## Pages associées
+
+- [Action Obtenir les enregistrements](/fr/basic/automation/actions/records/get-records) — généralement la première étape après un déclencheur planifié
+- [Action Envoyer un e-mail](/fr/basic/automation/actions/communication/send-email-overview) — souvent associée aux planifications pour envoyer des notifications périodiques
+- [Action Boucle (traitement par lots)](/fr/basic/automation/actions/logic/loop-run) — utile pour traiter le tableau d’enregistrements renvoyé par l’action Obtenir les enregistrements

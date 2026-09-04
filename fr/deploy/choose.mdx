@@ -1,0 +1,49 @@
+---
+title: "Déploiement"
+description: "Choisissez entre Teable Cloud, l’auto-hébergement autonome et la plateforme Auto-hébergée complète."
+---
+
+Trois façons d’exécuter Teable — choisissez selon vos besoins :
+
+| | **Teable Cloud** | **Auto-hébergement complet** | **Auto-hébergement autonome** |
+|---|---|---|---|
+| Tables, collaboration, API, automatisation | ✅ | ✅ | ✅ |
+| Fonctionnalités d’IA (chat, agents) | ✅ | ✅ | ❌ |
+| Créateur d’applications (créer et déployer des applications) | ✅ | ✅ | ❌ |
+| Bacs à sable / aperçus | ✅ | ✅ | ❌ |
+| S’exécute sur | [teable.ai](https://teable.ai) — rien à déployer | une machine (Docker) ou un cluster Kubernetes | une machine : application + PostgreSQL |
+| Commencez ici | [teable.ai](https://teable.ai) | [Architecture](/fr/deploy/architecture) → [teableio/teable-deployment](https://github.com/teableio/teable-deployment) | [Déploiement Docker](/fr/deploy/docker) |
+
+<Note>
+**Vous exécutez déjà Teable ?** La mise à niveau d’un déploiement existant vers la
+plateforme complète est expliquée étape par étape dans le
+[guide de migration](https://github.com/teableio/teable-deployment/blob/main/migration/2026-07-basic-to-full-featured.md)
+du dépôt de déploiement : le plan d’exécution s’installe à côté de votre Teable
+existant et vos données restent en place.
+</Note>
+
+## Laissez un agent IA le déployer
+
+Le dépôt de déploiement est conçu pour être piloté par des agents IA. Indiquez à
+votre harnais d’agent (Claude Code, Codex, …) le dépôt
+[teableio/teable-deployment](https://github.com/teableio/teable-deployment),
+précisez-lui l’environnement de déploiement, et il pourra gérer le déploiement
+de bout en bout. Préparez trois éléments :
+
+1. **Un domaine** — tout dérive d’un domaine de base, par exemple
+   `teable.example.com`.
+2. **Un jeton DNS** — un jeton d’API pour la plateforme qui héberge votre DNS
+   (Cloudflare, Route 53, …), afin que les enregistrements DNS et les certificats TLS puissent être configurés
+   automatiquement. Limitez sa portée à cette seule zone.
+3. **Accès à la cible de déploiement :**
+
+| Cible | Ce qu’il faut fournir à l’agent |
+|---|---|
+| Votre propre machine — Docker tout-en-un, mode `local` | Docker sur la machine suffit — aucun domaine ni jeton DNS requis (tout s’exécute sur `*.localhost`) |
+| Un serveur cloud — Docker tout-en-un | Accès SSH à la machine |
+| Un cluster géré sur AWS (EKS) / GCP (GKE) / Azure (AKS) | Créez le cluster, puis fournissez son `kubeconfig` |
+| Tout cluster Kubernetes existant | Un `kubeconfig` capable d’installer des versions Helm |
+
+C’est tout ce qu’il faut — les guides, scripts doctor et manifestes de version du
+dépôt accompagnent l’agent pour le reste.
+

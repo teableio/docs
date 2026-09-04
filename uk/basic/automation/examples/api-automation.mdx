@@ -1,0 +1,80 @@
+---
+title: "Програмне створення автоматизацій за допомогою API"
+description: "Створюйте й налаштовуйте робочі процеси за допомогою API Teable і JavaScript"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Рекомендуємо створювати приклади автоматизацій безпосередньо в AI Chat. Просто опишіть потрібний робочий процес, і ШІ повністю налаштує його за вас, зокрема тригер, дії, сценарій і конфігурацію.</Tip>
+
+## Створення за допомогою ШІ
+
+Відкрийте AI Chat на правій бічній панелі таблиці й опишіть ШІ бажаний результат. Наприклад:
+
+*«Створи автоматизацію, яка відстежує зміни статусу замовлення й надсилає сповіщення через вебхук після відправлення замовлення»*
+
+ШІ автоматично створить повний робочий процес. Ви зможете переглянути згенерований сценарій, перевірити його з реальними даними й увімкнути робочий процес, коли все буде готово.
+
+## Передумови
+
+- Персональний токен доступу (PAT). Див. [Токен доступу](/uk/api-doc/token).
+- Ідентифікатори Бази, таблиці й полів. Див. [Отримання ідентифікаторів](/uk/api-doc/get-id).
+
+## Допоміжні функції
+
+```javascript
+const baseUrl = "https://app.teable.ai/api";
+const token = process.env.TEABLE_TOKEN;
+const baseId = "bserxxxxxx";
+
+const headers = {
+  Authorization: `Bearer ${token}`,
+  "Content-Type": "application/json",
+};
+
+async function api(method, path, body) {
+  const res = await fetch(`${baseUrl}${path}`, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!res.ok) throw new Error(`${method} ${path} → ${res.status}`);
+  return res.json();
+}
+```
+
+## Створення робочого процесу
+
+```javascript
+// 1. Створіть робочий процес
+const wf = await api("POST", `/base/${baseId}/workflow`, {
+  name: "Сповіщення про відправлення",
+  description: "Надіслати вебхук, коли статус замовлення зміниться на «Відправлено»",
+});
+
+// 2. Додайте тригер
+const trigger = await api("POST", `/base/${baseId}/workflow/${wf.id}/trigger`, {
+  type: "recordUpdated",
+  config: { tableId: "tblOrders", watchFieldIds: ["fldStatus"] },
+});
+
+// 3. Перевірте тригер
+await api("POST", `/base/${baseId}/workflow/${wf.id}/test/${trigger.id}`);
+
+// 4. Додайте дію «HTTP-запит»
+const action = await api("POST", `/base/${baseId}/workflow/${wf.id}/action`, {
+  type: "httpRequest",
+  parentNodeId: trigger.id,
+});
+
+// 5. Увімкніть
+await api("PUT", `/base/${baseId}/workflow/${wf.id}/active`, {
+  method: "activate",
+});
+```
+
+## Рекомендації
+
+- Використовуйте PAT із мінімальними привілеями — обмежте його лише потрібними Просторами/Базами.
+- Зберігайте токени у змінних середовища й ніколи не вбудовуйте їх безпосередньо в код.
+- Перед увімкненням використовуйте **Перевірити вузол** для перевірки.
+- Див. повний [Довідник API автоматизації](/uk/api-reference/automation/put-base-workflow-action).

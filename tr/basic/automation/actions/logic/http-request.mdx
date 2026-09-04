@@ -1,0 +1,134 @@
+---
+title: "HTTP isteği"
+description: "Bir iş akışından herhangi bir harici API'yi çağırın"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Otomasyon oluşturmak için Komut dosyası çalıştır'ı kullanmanızı kesinlikle öneririz; bu özellik, aksi hâlde elle oluşturulması gerekecek eylemler dahil tüm eylem davranışlarını kapsayabilir. Gereksinimlerinizi sohbette AI'a açıklamanız yeterlidir.
+
+Lütfen unutmayın: eylemleri elle eklerseniz AI daha sonra bunları tanıyamaz veya değiştiremez.
+</Tip>
+
+## AI ile oluşturma
+
+Tablonuzun sağ kenar çubuğunda AI Chat'i açın ve ne istediğinizi açıklayın.
+
+AI her şeyi halleder: doğru tetikleyiciyi belirler, uygun eylemleri seçer, alanları eşler ve iş akışının tamamını otomatik olarak yapılandırır.
+
+Hedefinizi bir kez açıklayın; iş akışınız elle yapılandırma gerektirmeden hazır olur.
+
+Herhangi bir URL'ye HTTP isteği gönderir ve yanıtı döndürür. REST API'lerini çağırmak, Slack veya Discord'a bildirim göndermek, CRM'lere veri aktarmak ya da HTTP API'si bulunan herhangi bir hizmetle etkileşim kurmak için kullanın.
+
+## Yapılandırma
+
+| Ayar | Zorunlu | Açıklama |
+|---|---|---|
+| URL | Evet | Hedef uç nokta. **+** üzerinden dinamik değişkenleri destekler |
+| Yöntem | Evet | GET, POST, PUT, PATCH, DELETE veya HEAD |
+| Üstbilgiler | Hayır | Anahtar-değer çiftleri biçiminde özel HTTP üstbilgileri |
+| Content-Type | Hayır | İstek gövdesinin biçimi (aşağıya bakın) |
+| Gövde | Hayır | İstek yükü — Content-Type değerine göre metin veya anahtar-değer çiftleri |
+
+## Nasıl yapılandırılır?
+
+1. İş akışınıza bir **HTTP İsteği** eylemi ekleyin.
+2. API uç noktasının **URL** değerini girin. Dinamik değerler eklemek için **+** simgesini kullanabilirsiniz (ör. URL yoluna Kayıt Kimliği ekleyebilirsiniz).
+3. **Yöntemi** seçin:
+   - **GET** — veri alır.
+   - **POST** — bir öğe oluşturmak için veri gönderir.
+   - **PUT / PATCH** — mevcut veriyi günceller.
+   - **DELETE** — veriyi siler.
+4. API gerektiriyorsa **Üstbilgiler** ekleyin (ör. yetkilendirme belirteçleri, özel üstbilgiler).
+5. Gerekirse (POST, PUT, PATCH için) bir **Content-Type** seçin ve **Gövdeyi** yazın.
+6. Eylemi kaydedin.
+
+## Content-Type seçeneklerinin açıklaması
+
+| Content-Type | Ne zaman kullanılır? | Gövde biçimi |
+|---|---|---|
+| `application/json` | Çoğu REST API'si. Yapılandırılmış veri gönderir | JSON metni (ör. `{"key": "value"}`) |
+| `application/x-www-form-urlencoded` | Geleneksel form gönderimleri ve bazı eski API'ler | Anahtar-değer çiftleri; URL kodlaması otomatik yapılır |
+| `multipart/form-data` | Dosya yüklemeleri veya karma veriler | Dosya desteğine sahip anahtar-değer çiftleri |
+| `text/plain` | Basit metin yükleri | Düz metin dizesi |
+
+<Tip>Hangi Content-Type değerini kullanacağınızdan emin değilseniz `application/json` seçin. Modern API'lerin çoğu JSON kullanır.</Tip>
+
+Hangisini kullanacağınızdan emin değilseniz modern API'lerin çoğu için `application/json` doğru seçimdir.
+
+## Kimlik doğrulama örnekleri
+
+Birçok API kimlik doğrulaması gerektirir. Üstbilgiler bölümünde yapılandırabileceğiniz yaygın kalıplar şunlardır:
+
+### Taşıyıcı Belirteci
+
+Bir üstbilgi ekleyin:
+- **Anahtar:** `Authorization`
+- **Değer:** `Bearer your-api-token-here`
+
+Bu yöntem Slack, GitHub, Notion ve daha birçok API'de çalışır.
+
+### Üstbilgide API Anahtarı
+
+Bir üstbilgi ekleyin:
+- **Anahtar:** `X-API-Key` (veya API'nin beklediği değer; ör. `api-key`, `x-api-token`)
+- **Değer:** `your-api-key`
+
+### Temel Kimlik Doğrulaması
+
+Bir üstbilgi ekleyin:
+- **Anahtar:** `Authorization`
+- **Değer:** `Basic base64encoded(username:password)`
+
+Kimlik bilgilerinizi Teable dışında Base64 ile kodlamanız veya üstbilgi değerini oluşturmak için bir Komut Dosyası eylemi kullanmanız gerekir.
+
+## Somut örnek: Slack bildirimi gönderme
+
+Hedef: Yeni bir kayıt oluşturulduğunda bir Slack kanalına ileti gönderin.
+
+1. **Tetikleyici:** Kayıt oluşturulduğunda.
+2. **Eylem:** Şu ayarlara sahip HTTP İsteği:
+   - **URL:** `https://hooks.slack.com/services/T00/B00/xxxx` (Slack webhook URL'niz)
+   - **Yöntem:** POST
+   - **Content-Type:** `application/json`
+   - **Gövde:**
+     ```json
+     {
+       "text": "Yeni görev oluşturuldu: {{Task Name}} — Öncelik: {{Priority}}"
+     }
+     ```
+   **+** simgesine tıklayarak `{{Task Name}}` ve `{{Priority}}` değerlerini tetikleyicideki dinamik değişkenlerle değiştirin.
+
+## Yanıt verilerini sonraki adımlarda kullanma
+
+HTTP isteği çalıştıktan sonra yanıt, sonraki eylemlerde kullanılabilir:
+
+- **Durum kodu** — HTTP durumu (200, 201, 404 vb.).
+- **Yanıt gövdesi** — API'nin döndürdüğü ve uygunsa JSON olarak ayrıştırılan veri.
+
+Sonraki adımlarda **+** değişken seçiciyi kullanarak yanıttaki belirli alanlara başvurabilirsiniz. Örneğin API `{"id": "abc123", "status": "created"}` döndürürse `id` ve `status` değerlerine ayrı ayrı başvurabilirsiniz. **+** ile dinamik değerler eklerken, harici bir API belirli bir istek biçimi gerektiriyorsa alan yollarını ve biçimlendirme seçeneklerini de kullanabilirsiniz.
+
+Bu özellik API çağrılarını zincirlemek için kullanışlıdır; örneğin POST ile bir öğe oluşturup dönen kimliği sonraki Kaydı Güncelle eyleminde veya başka bir HTTP isteğinde kullanabilirsiniz.
+
+## Ne zaman kullanılır?
+
+- **Slack veya Discord'a ileti gönderin.** Gelen webhook URL'lerini kullanarak kanallara bildirim gönderin.
+- **Verileri bir CRM veya ERP ile eşitleyin.** Yeni veya güncellenmiş kayıtları Salesforce, HubSpot ya da API'si bulunan başka bir sisteme aktarın.
+- **Herhangi bir üçüncü taraf API'sini çağırın.** Ödeme işleyicileri, kargo hizmetleri, analiz araçları veya özel dahili API'lerle etkileşim kurun.
+- **Harici iş akışlarını tetikleyin.** Zapier webhook'larını, Make (Integromat) senaryolarını veya diğer otomasyon platformlarını çağırın.
+- **Harici kaynaklardan veri alın.** Döviz kurlarını, hava durumu verilerini veya herkese açık herhangi bir API verisini iş akışınıza çekmek için GET isteklerini kullanın.
+
+## İpuçları
+
+- Zorunlu üstbilgiler, kimlik doğrulaması ve beklenen gövde biçimi için her zaman API belgelerine bakın.
+- Modern API'lerin çoğunda Content-Type olarak `application/json` kullanın. API form verisi bekliyorsa `x-www-form-urlencoded` değerine geçin.
+- API bir hata (4xx veya 5xx durumu) döndürürse eylem yine tamamlanır ancak sonraki adımlar hata yanıtını görür. Koşullu işleme gerekiyorsa iş akışınızda durum kodunu denetleyin.
+- Büyük yanıtlar döndüren API'lerde sonraki adımlarda yalnızca ihtiyaç duyduğunuz alanlara başvurun.
+- Kayıt başına bir API çağrısı olmak üzere birden fazla çağrı yapmak için [Döngü (Toplu)](/tr/basic/automation/actions/logic/loop-run) ile birlikte kullanın. Harici API'nin hız sınırlarını göz önünde bulundurun.
+- İstek başına bir öğe göndermek yerine birden fazla öğeyi tek istekte göndermeniz gerektiğinde [HTTP Dizi Gövdesi](/tr/basic/automation/actions/logic/loop-run) özelliğini kullanın.
+
+## İlgili konular
+
+- [Döngü (toplu)](/tr/basic/automation/actions/logic/loop-run) — bir dizideki her öğe için HTTP isteği yapın
+- [Webhook alındığında](/tr/basic/automation/trigger/external/webhook-received) — gelen karşılığıdır: harici sistemlerden HTTP istekleri alın
+- [Komut dosyası çalıştır](/tr/basic/automation/ai/scripting/runscript) — özel kodla daha karmaşık API etkileşimleri için

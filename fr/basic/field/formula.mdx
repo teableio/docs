@@ -1,0 +1,93 @@
+---
+title: "Formule"
+description: "Référencez d’autres champs et calculez du texte, des nombres, des dates et des conditions logiques à l’aide de formules."
+---
+
+Les champs Formule calculent des résultats à partir d’autres Champs du même Enregistrement. Ils peuvent effectuer des opérations mathématiques, concaténer du texte, calculer des dates et appliquer une logique conditionnelle. Utilisez-les pour transformer des règles de calcul répétitives en Champs.
+
+## Cas d’utilisation
+
+| Scénario | Utilité |
+| --- | --- |
+| Calcul automatique | Calculer le prix total, le bénéfice ou un score à partir de la quantité, du prix unitaire, de la remise et d’autres Champs |
+| Traitement du texte | Concaténer du texte, extraire du contenu ou analyser des informations selon un délimiteur |
+| Traitement des dates | Calculer des écarts de dates, vérifier des plages temporelles ou générer des dates futures |
+| Logique conditionnelle | Renvoyer des résultats différents selon des conditions, comme des statuts, des indications ou des catégories |
+
+## Principes de base des formules
+
+### Types de données
+
+Avant d’écrire une formule, vérifiez les types des Champs utilisés dans le calcul. Chaque type prend en charge des opérations et fonctions différentes.
+
+| Type | Description | Utilisations courantes |
+| --- | --- | --- |
+| Nombre | Entiers ou décimaux | Arithmétique, agrégations, comparaisons |
+| Texte | Chaînes de caractères | Concaténation, extraction, remplacement, fractionnement |
+| Date | Valeurs de date ou de date et heure | Calcul d’intervalles, comparaison de dates |
+| Booléen | `TRUE` ou `FALSE` | Conditions et opérations logiques |
+
+### Référencer des champs
+
+Dans une formule, référencez un autre Champ par son nom. Placez le nom du Champ entre `{}` et veillez à ce qu’il corresponde au nom réel :
+
+```js
+{Prix unitaire} * {Quantité}
+```
+
+### Opérateurs
+
+| Opérateur | Utilisation |
+| --- | --- |
+| `+` | Calcule la somme de nombres ou concatène des chaînes |
+| `-` | Calcule la différence entre des nombres |
+| `*` | Calcule le produit de nombres |
+| `/` | Calcule le quotient de nombres |
+| `%` | Calcule le reste |
+
+## Fonctions et expressions
+
+### Fonctions courantes
+
+Les fonctions effectuent des opérations précises. Par exemple, `SUM` calcule un total, `LEFT` extrait des caractères au début d’un texte, `TEXTBEFORE` extrait le texte situé avant un délimiteur et `TEXTSPLIT` fractionne le texte selon un délimiteur.
+
+Consultez l’[aide-mémoire des formules](/fr/basic/field/formula/cheat-sheet) pour découvrir davantage de fonctions.
+
+### Traitement du texte
+
+| Opération | Exemples de fonctions | Description |
+| --- | --- | --- |
+| Concaténer du texte | `&`, `CONCATENATE` | Concatène deux valeurs textuelles ou plus |
+| Extraire du texte | `LEFT`, `RIGHT`, `MID`, `TEXTBEFORE` | Extrait une partie d’une chaîne |
+| Fractionner du texte | `TEXTSPLIT` | Fractionne le texte en plusieurs valeurs selon un délimiteur |
+
+### Conditions logiques
+
+Utilisez la fonction `IF` pour renvoyer différentes valeurs selon une condition :
+
+```js
+IF(condition, value_if_true, value_if_false)
+```
+
+Pour vérifier si un Champ est vide, comparez-le à `BLANK()`. Par exemple, `IF({Poids}=BLANK(), 1, 2)` renvoie `1` lorsqu’un champ Nombre est vide et `2` dans le cas contraire.
+
+### Expressions complexes
+
+Une formule complexe peut comprendre plusieurs fonctions, références de Champs et opérateurs. Utilisez des parenthèses pour contrôler l’ordre des calculs :
+
+```js
+({Prix unitaire} * {Quantité}) * (1 - {Remise})
+```
+
+## Affichage et maintenance des résultats
+
+### Mise en forme et affichage interactif
+
+Les résultats de Formule peuvent également utiliser les paramètres de [mise en forme](/fr/basic/field/common/formatter) et d’[affichage interactif](/fr/basic/field/common/show-as), comme les styles de pourcentage, de barre de progression ou d’icône. Les options disponibles dépendent du type de résultat de la formule.
+
+### Débogage et optimisation
+
+- **Vérifier les types de données** : vérifiez que les opérations et les fonctions utilisent les bons types de données.
+- **Vérifier les références de champs** : vérifiez que les noms de Champs sont correctement écrits.
+- **Tester étape par étape** : décomposez les formules complexes en éléments plus petits et testez-les séparément.
+- **Éviter les calculs répétés** : si le même calcul est utilisé à plusieurs endroits, envisagez d’en stocker le résultat dans un Champ distinct.

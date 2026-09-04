@@ -1,0 +1,97 @@
+---
+title: "Okta SSO"
+description: "Okta'yı Teable için SSO kimlik doğrulama sağlayıcınız olarak yapılandırın"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Business planı ve üzerindeki planlarda kullanılabilir</Tip>
+
+## 1. Adım: Teable'da Kimlik Doğrulama Sağlayıcısı Oluşturma
+
+1. Teable SSO ayarlarınıza gidin
+2. Yeni bir kimlik doğrulama sağlayıcısı oluşturun, adını **Okta** olarak belirleyin ve **OpenID Connect**'i seçin
+
+## 2. Adım: Okta Yönetici Konsoluna Erişme
+
+1. Okta hesabınızda oturum açın
+2. **Yönetici Panosu**'na gidin
+3. Sol menüden **Uygulamalar** → **Uygulamalar** bölümüne gidin
+
+## 3. Adım: Yeni Bir Uygulama Oluşturma
+
+1. **Uygulama Entegrasyonu Oluştur**'a tıklayın
+2. Oturum açma yöntemi olarak **OIDC - OpenID Connect**'i seçin
+3. Uygulama türü olarak **Web Uygulaması**'nı seçin
+4. **İleri**'ye tıklayın
+
+## 4. Adım: Uygulama Ayarlarını Yapılandırma
+
+Uygulama yapılandırma formunu doldurun:
+
+- **Uygulama entegrasyonu adı**: Teable SSO
+- **İzin türü**: **Yetkilendirme Kodu**'nu seçin
+- **Oturum açma yönlendirme URI'leri**: Teable'daki **Geri Çağırma URL'sini** yapıştırın
+- **Oturumu kapatma yönlendirme URI'leri**: (İsteğe bağlı) `https://app.teable.ai`
+- **Denetimli erişim**: Bu uygulamaya kimlerin erişebileceğini seçin
+
+Uygulamayı oluşturmak için **Kaydet**'e tıklayın.
+
+## 5. Adım: İstemci Kimlik Bilgilerini Kaydetme
+
+Uygulamayı oluşturduktan sonra uygulama ayrıntıları sayfasını görürsünüz:
+
+1. **İstemci Kimliğini** kopyalayın
+2. **İstemci Gizli Anahtarını** kopyalayın (gerekirse "Göster"e tıklayın)
+3. Her iki değeri de Teable SSO yapılandırmasına yapıştırın
+
+<Warning>İstemci Gizli Anahtarınızı güvende tutun ve hiçbir zaman herkese açık biçimde paylaşmayın.</Warning>
+
+## 6. Adım: OAuth Uç Noktalarını Yapılandırma
+
+Teable'da aşağıdaki OAuth uç noktalarını doldurun:
+
+- **Yetkilendirme URL'si**: `https://{yourOktaDomain}/oauth2/v1/authorize`
+- **Belirteç URL'si**: `https://{yourOktaDomain}/oauth2/v1/token`
+- **Kullanıcı Bilgileri URL'si**: `https://{yourOktaDomain}/oauth2/v1/userinfo`
+- **Veren**: `https://{yourOktaDomain}`
+
+<Note>`{yourOktaDomain}` değerini gerçek Okta alan adınızla (ör. `dev-123456.okta.com` veya `mycompany.okta.com`) değiştirin</Note>
+
+## 7. Adım: Kullanıcı veya Grup Atama
+
+1. Okta uygulamanızda **Atamalar** sekmesine gidin
+2. **Ata** → **Kişilere Ata** veya **Gruplara Ata**'ya tıklayın
+3. Teable'a SSO üzerinden erişmesi gereken kullanıcıları veya grupları seçin
+4. **Ata** ve ardından **Bitti**'ye tıklayın
+
+## 8. Adım: SSO ile Oturum Açmayı Test Etme
+
+SSO ile oturum açmayı etkinleştirmek için iki seçeneğiniz vardır:
+
+**1. Seçenek: Doğrudan Kimlik Doğrulama URL'si**
+- Yetkilendirme URL'sini SSO oturum açma URL'niz olarak kullanın
+
+**2. Seçenek: Alan Adı Doğrulaması**
+1. Teable'da alan adı doğrulamasını yapılandırın
+2. Özel alan adınızı doğrulayın
+3. https://app.teable.ai adresini ziyaret edin
+4. SSO ile oturum açma düğmesine tıklayın
+5. Oturum açmak için doğrulanmış alan adındaki e-posta adresinizi girin
+
+## Ek Yapılandırma (İsteğe Bağlı)
+
+### Özel Talepleri Yapılandırma
+
+Ek kullanıcı özniteliklerini eşlemeniz gerekiyorsa:
+
+1. Okta Yönetici'de **Güvenlik** → **API** bölümüne gidin
+2. Yetkilendirme sunucunuzu seçin (genellikle "default")
+3. **Talepler** sekmesine gidin
+4. Gerektiği gibi özel talepler ekleyin (ör. departman, rol)
+
+### Çok Faktörlü Kimlik Doğrulamayı Etkinleştirme
+
+1. Okta Yönetici'de **Güvenlik** → **Kimlik Doğrulayıcılar** bölümüne gidin
+2. Tercih ettiğiniz MFA yöntemlerini yapılandırın
+3. Teable uygulamanız için bir kimlik doğrulama ilkesi oluşturun
+

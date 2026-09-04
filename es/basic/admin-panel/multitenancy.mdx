@@ -1,0 +1,145 @@
+---
+title: "Gestión de inquilinos de organización"
+description: "Crea y administra varios inquilinos de organización en una instancia de Teable y asigna un administrador a cada uno."
+hidden: true
+noindex: true
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Disponible para el plan Enterprise autoalojado</Tip>
+
+Una instancia de Teable puede contener varios inquilinos de organización, cada uno con miembros, departamentos, Espacios y ajustes independientes para un cliente, una unidad de negocio o un equipo.
+
+## Jerarquía de inquilinos de organización
+
+```text
+Instancia de Teable
+├── Inquilino de organización A
+│   ├── Administradores, miembros y departamentos de la organización
+│   └── Espacios, Bases y ajustes a nivel de organización
+├── Inquilino de organización B
+│   ├── Administradores, miembros y departamentos de la organización
+│   └── Espacios, Bases y ajustes a nivel de organización
+└── Inquilino de organización C
+```
+
+Los inquilinos de organización comparten la misma implementación de Teable y la misma configuración de la instancia, pero administran por separado los elementos siguientes:
+
+| Ámbito | Descripción |
+| --- | --- |
+| **Miembros y departamentos** | Cada organización mantiene sus propios miembros, administradores y estructura de departamentos |
+| **Espacios** | Cada organización administra los Espacios asociados a ella |
+| **Autenticación y seguridad** | Cada organización puede configurar sus proveedores de autenticación y sus dominios de correo electrónico verificados |
+| **Ajustes de la organización** | El nombre de la organización, el acceso automático a Espacios y el ámbito de los departamentos se configuran por separado |
+| **Configuración de la instancia** | Las licencias, los ajustes del sistema y la creación y eliminación de inquilinos de organización permanecen bajo el control del administrador de la instancia |
+
+<Info>Los inquilinos de organización no proporcionan a cada organización una base de datos PostgreSQL independiente. Para almacenar los datos de un Espacio en una base de datos PostgreSQL separada, consulta [Inquilino de base de datos](/es/basic/admin-panel/database-tenant).</Info>
+
+## Dos puntos de acceso a la gestión
+
+| Punto de acceso | Rol de gestión | Finalidad |
+| --- | --- | --- |
+| **Administración del sistema → Organizaciones** | Administrador de la instancia | Crear, consultar y eliminar inquilinos de organización, y asignar administradores de organización |
+| **Panel de organización** | Administrador de la organización | Administrar usuarios, departamentos, Espacios, autenticación, seguridad y ajustes del inquilino actual |
+
+Los administradores de organización solo pueden gestionar la organización que tienen asignada. No pueden crear ni eliminar otros inquilinos de organización ni cambiar los ajustes generales de la instancia.
+
+## Abrir Organizaciones
+
+1. Inicia sesión en Teable como administrador de la instancia.
+2. Selecciona **Administración del sistema** en la esquina superior izquierda.
+3. Abre **Organizaciones** desde el panel de navegación izquierdo.
+
+<img
+  src="/images/selfhosted/admin-panel/2026-05-29-admin-panel-organizations-entry-en.png"
+  alt="Acceso a Organizaciones en Administración del sistema"
+  className="docs-screenshot"
+/>
+
+<Tip>El primer usuario que se registra en una instancia se convierte automáticamente en administrador de la instancia.</Tip>
+
+## Crear un inquilino de organización
+
+1. Selecciona **Crear organización**.
+2. Introduce el **Nombre de la organización**.
+3. Selecciona **Crear**.
+
+La nueva organización aparece en la lista de organizaciones. Después de asignar un administrador de organización, este podrá configurar los miembros, los departamentos y los Espacios desde el Panel de organización.
+
+## Consultar la lista de organizaciones
+
+La lista permite buscar por nombre e incluye:
+
+| Columna | Descripción |
+| --- | --- |
+| **Nombre de la organización** | El nombre y el ID del inquilino de organización |
+| **Número de usuarios** | Número total de usuarios de la organización |
+| **Número de Espacios** | Número total de Espacios asociados a la organización |
+| **Administradores** | Administradores de organización asignados |
+| **Fecha de creación** | Cuándo se creó el inquilino de organización |
+
+<img
+  src="/images/selfhosted/admin-panel/2026-05-29-admin-panel-organizations-list-en.png"
+  alt="Lista de organizaciones en Administración del sistema"
+  className="docs-screenshot"
+/>
+
+## Asignar administradores de organización
+
+1. Abre el menú de acciones de la organización de destino.
+2. Selecciona **Administrar administradores**.
+3. Busca un usuario de la instancia.
+4. Selecciona **Establecer como administrador** o **Quitar administrador**.
+
+Cualquier usuario de la instancia, salvo los usuarios eliminados, puede asignarse como administrador de organización. El usuario obtiene acceso para gestionar la organización actual, pero no se convierte en administrador de la instancia.
+
+| Rol | Administrar todos los inquilinos de organización | Administrar los ajustes de la instancia | Administrar la organización actual | Administrar los Espacios de la organización actual |
+| --- | --- | --- | --- | --- |
+| **Administrador de la instancia** | Sí | Sí | Sí | Sí |
+| **Administrador de la organización** | No | No | Sí | Sí |
+| **Miembro normal** | No | No | No | Depende del rol en el Espacio |
+
+## Administrar internamente un inquilino
+
+Desde el selector de Espacios, un administrador de organización puede abrir el **Panel de organización** y administrar:
+
+| Página | Funciones de gestión |
+| --- | --- |
+| **Usuarios** | Consultar y administrar los usuarios de la organización actual |
+| **Organización** | Crear, mover, cambiar de nombre y eliminar departamentos, y administrar los miembros de los departamentos |
+| **Gestión de Espacios** | Añadir Espacios a la organización o quitarlos, y consultar el número de Espacios y Bases |
+| **Ajustes de autenticación** | Configurar proveedores de autenticación externos para la organización |
+| **Ajustes de seguridad** | Verificar dominios de correo electrónico para que los usuarios nuevos de esos dominios se incorporen automáticamente a la organización |
+| **Ajustes de la instancia** | Cambiar el nombre de la organización, el acceso automático a Espacios y el ámbito de los departamentos |
+
+Para obtener instrucciones detalladas sobre los **Ajustes de la instancia**, consulta [Ajustes del Panel de organización](/es/basic/organization-panel/settings).
+
+## Eliminar un inquilino de organización
+
+1. Abre el menú de acciones de la organización de destino.
+2. Selecciona **Eliminar**.
+3. Revisa la confirmación y confirma la eliminación.
+
+<Warning>Al eliminar una organización, se eliminan permanentemente tanto la organización como todos sus datos. Verifica la organización de destino, los Espacios asociados y las copias de seguridad antes de continuar.</Warning>
+
+## Modelos habituales de inquilinos
+
+| Situación | Modelo de inquilinos de organización |
+| --- | --- |
+| Ofrecer un servicio de Teable a varios clientes | Crear un inquilino de organización independiente para cada cliente |
+| Mantener una implementación de grupo con filiales independientes | Crear un inquilino de organización para cada filial |
+| Aislar unidades de negocio en una gran empresa | Crear un inquilino de organización para cada unidad que necesite miembros, Espacios y políticas de gestión independientes |
+
+## Preguntas frecuentes
+
+<AccordionGroup>
+  <Accordion title="¿Cuál es la diferencia entre un inquilino de organización y un inquilino de base de datos?">
+    Un inquilino de organización separa los miembros, los departamentos, los Espacios y los permisos de gestión. Un inquilino de base de datos controla qué base de datos PostgreSQL almacena los datos de un Espacio concreto. Un inquilino de organización puede contener varios Espacios, y la base de datos que usa cada Espacio se configura por separado.
+  </Accordion>
+  <Accordion title="¿Por qué se debe asignar un administrador de organización después de crear una organización?">
+    El administrador de la instancia crea y elimina inquilinos y administra la instancia. El administrador de organización se ocupa de la gestión diaria de un inquilino. Asignar un administrador de organización permite delegar la gestión de miembros, departamentos, Espacios y autenticación sin conceder acceso a la instancia.
+  </Accordion>
+  <Accordion title="¿Puede una instancia prestar servicio a varios clientes?">
+    Sí. Crea un inquilino de organización independiente para cada cliente. El administrador de la instancia mantiene la implementación y los ajustes del sistema compartidos, mientras que cada cliente cuenta con sus propios administradores de organización.
+  </Accordion>
+</AccordionGroup>

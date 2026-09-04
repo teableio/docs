@@ -1,0 +1,41 @@
+---
+title: "Activar el Dashboard independiente"
+description: "Cómo activar la función Dashboard independiente en despliegues autoalojados"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+La función Dashboard independiente ha sido sustituida por App Builder. **Recomendamos encarecidamente utilizar App Builder para crear dashboards más potentes y personalizables y disfrutar de la mejor experiencia.**
+
+Si aún necesitas utilizar el nodo Dashboard heredado, puedes seguir los pasos de configuración que aparecen a continuación para activar Dashboard independiente. Ten en cuenta que actualmente no tenemos previsto seguir desarrollando esta función.
+</Tip>
+
+## Descripción general
+
+En las instancias autoalojadas de Teable, la función Dashboard independiente está desactivada de forma predeterminada. Sigue los pasos que aparecen a continuación para activarla.
+
+## Pasos
+
+### Paso 1: ejecutar una instrucción SQL
+
+Conéctate a la base de datos PostgreSQL que utiliza Teable y ejecuta la siguiente instrucción SQL para establecer `disallowDashboard` en `false`:
+
+```sql
+UPDATE setting SET content = 'false' WHERE name = 'disallowDashboard';
+```
+
+### Paso 2: borrar la caché de la Tabla de ajustes
+
+Después de ejecutar la instrucción SQL, debes borrar la caché de la Tabla `setting` para que la configuración entre en vigor.
+
+Como no hay una opción directa para borrar la caché, puedes provocar que se actualice **cambiando cualquier opción de los ajustes de la instancia**. Por ejemplo:
+
+1. Ve a **Administración del sistema** > **Ajustes de la instancia**
+2. **Activa** la opción de verificación del correo electrónico
+3. **Desactiva** de nuevo la opción de verificación del correo electrónico
+
+<Callout type="info">
+El propósito de este paso es provocar una actualización de la caché de la Tabla de ajustes. Basta con cambiar cualquier opción; no es necesario modificar permanentemente ninguna configuración.
+</Callout>
+
+Después de completar ambos pasos, actualiza la página y se activará la función Dashboard independiente.

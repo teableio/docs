@@ -1,0 +1,179 @@
+---
+title: "Azure Entra ID SSO"
+description: "Azure Entra ID'yi Teable için SSO kimlik doğrulama sağlayıcınız olarak yapılandırın"
+---
+
+{/* mintlify-resync: 2026-05-28 */}
+<Tip>Business planı ve üzerindeki planlarda kullanılabilir</Tip>
+
+## 1. Adım: Teable'da Kimlik Doğrulama Sağlayıcısı Oluşturma
+
+1. Teable SSO ayarlarınıza gidin
+2. Yeni bir kimlik doğrulama sağlayıcısı oluşturun, adını **Azure Entra ID** olarak belirleyin ve **OpenID Connect**'i seçin
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-create-provider.png"
+  alt="Azure Entra ID SSO kurulumu 1. adım"
+  className="docs-screenshot"
+/>
+
+## 2. Adım: Azure Entra ID'ye Erişme
+
+1. Azure hesabınızda oturum açın
+2. **Microsoft Entra ID** (eski adıyla Azure Active Directory) bölümüne gidin
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-open-entra-id.png"
+  alt="Azure Entra ID SSO kurulumu 2. adım"
+  className="docs-screenshot"
+/>
+
+## 3. Adım: OAuth Uç Noktalarını Yapılandırma
+
+**Kiracı Kimliğinizi** kullanarak Teable'da aşağıdaki OAuth uç noktalarını doldurun:
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-oauth-endpoints.png"
+  alt="Azure Entra ID SSO kurulumu 3. adım"
+  className="docs-screenshot"
+/>
+
+- **Yetkilendirme URL'si**: `https://login.microsoftonline.com/_YOUR_TENANT_ID_/oauth2/v2.0/authorize`
+- **Belirteç URL'si**: `https://login.microsoftonline.com/_YOUR_TENANT_ID_/oauth2/v2.0/token`
+- **Kullanıcı Bilgileri URL'si**: `https://graph.microsoft.com/oidc/userinfo`
+- **Veren**: `https://login.microsoftonline.com/_YOUR_TENANT_ID_/v2.0`
+
+<Note>`_YOUR_TENANT_ID_` değerini gerçek Azure Kiracı Kimliğinizle değiştirin.</Note>
+
+## 4. Adım: Yeni Bir Uygulama Kaydetme
+
+1. Azure Entra ID'de sol menüden **Uygulama kayıtları**'na tıklayın
+2. **+ Yeni kayıt**'a tıklayın
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-app-registration-entry.png"
+  alt="Azure Entra ID uygulama kaydı"
+  className="docs-screenshot"
+/>
+
+## 5. Adım: Uygulama Kaydını Yapılandırma
+
+Uygulama kayıt formunu doldurun:
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-app-registration-form.png"
+  alt="Azure Entra ID SSO kurulumu 5. adım"
+  className="docs-screenshot"
+/>
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-redirect-uri.png"
+  alt="Azure Entra ID SSO kurulumu 6. adım"
+  className="docs-screenshot"
+/>
+
+- **Ad**: Teable SSO
+- **Desteklenen hesap türleri**: İhtiyaçlarınıza göre seçim yapın
+- **Platform**: Web
+- **Yönlendirme URI'si**: Teable'daki **Geri Çağırma URL'sini** yapıştırın
+
+Uygulamayı oluşturmak için **Kaydet**'e tıklayın.
+
+## 6. Adım: İstemci Kimliğini Kaydetme
+
+1. Uygulamaya genel bakış sayfasındaki **Uygulama (istemci) kimliğini** kopyalayın
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-application-client-id.png"
+  alt="Azure Entra ID SSO kurulumu 7. adım"
+  className="docs-screenshot"
+/>
+
+2. İstemci Kimliğini Teable SSO yapılandırmasına yapıştırın
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-teable-client-id.png"
+  alt="Azure Entra ID SSO kurulumu 8. adım"
+  className="docs-screenshot"
+/>
+
+## 7. Adım: İstemci Gizli Anahtarı Oluşturma
+
+1. Uygulamanızın sol menüsünde **Sertifikalar ve gizli anahtarlar**'a tıklayın
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-certificates-secrets.png"
+  alt="Azure Entra ID SSO kurulumu 9. adım"
+  className="docs-screenshot"
+/>
+
+2. **+ Sertifika veya gizli anahtar ekle**'ye tıklayın
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-add-client-secret.png"
+  alt="Azure Entra ID SSO kurulumu 10. adım"
+  className="docs-screenshot"
+/>
+
+3. Bir açıklama ekleyin ve süre sonu dönemini ayarlayın
+4. **Ekle**'ye tıklayın
+5. **Önemli**: Gizli anahtarın **Değer**'ini hemen kopyalayın ve Teable'da İstemci Gizli Anahtarınız olarak kaydedin
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-client-secret-value.png"
+  alt="Azure Entra ID SSO kurulumu 11. adım"
+  className="docs-screenshot"
+/>
+
+<Warning>Gizli anahtar değeri yalnızca bir kez görünür. Hemen kaydettiğinizden emin olun.</Warning>
+
+## 8. Adım: API İzinlerini Yapılandırma
+
+1. Sol menüden **API izinleri**'ne tıklayın
+2. **+ İzin ekle**'ye tıklayın
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-add-api-permission.png"
+  alt="Azure Entra ID SSO kurulumu 12. adım"
+  className="docs-screenshot"
+/>
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-microsoft-graph-permissions.png"
+  alt="Azure Entra ID SSO kurulumu 13. adım"
+  className="docs-screenshot"
+/>
+
+3. **Microsoft Graph**'ı seçin
+4. **Temsilci izinleri**'ni seçin
+5. Aşağıdaki izinleri ekleyin:
+   - `email`
+   - `openid`
+   - `profile`
+6. **İzinleri ekle**'ye tıklayın
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-delegated-permissions.png"
+  alt="Azure Entra ID SSO kurulumu 14. adım"
+  className="docs-screenshot"
+/>
+
+7. İzinleri onaylamak için **[Dizininiz] adına yönetici onayı ver**'e tıklayın
+
+## 9. Adım: SSO ile Oturum Açmayı Test Etme
+
+SSO ile oturum açmayı etkinleştirmek için iki seçeneğiniz vardır:
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-login-options.png"
+  alt="Azure Entra ID SSO kurulumu 15. adım"
+  className="docs-screenshot"
+/>
+
+**1. Seçenek: Doğrudan Kimlik Doğrulama URL'si**
+- Kimlik doğrulama URL'sini SSO oturum açma URL'niz olarak kullanın
+
+**2. Seçenek: Alan Adı Doğrulaması**
+1. Sol menüden **Alan adı doğrulaması**'na tıklayın
+2. Özel alan adınızı doğrulayın
+3. Teable oturum açma sayfanızı ziyaret edin
+4. SSO ile oturum açma düğmesine tıklayın
+5. Oturum açmak için doğrulanmış alan adındaki e-posta adresinizi girin

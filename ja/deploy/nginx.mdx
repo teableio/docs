@@ -1,0 +1,132 @@
+---
+title: "Nginx（リバースプロキシ）"
+description: "Teable で推奨される Nginx リバースプロキシの設定：HTTPS（証明書）、WebSocket、Docker に関するヒント、Nginx Proxy Manager。"
+---
+
+ドメイン名で Teable にアクセスする、HTTPS（SSL終端）を有効にする、または単一のゲートウェイの背後にあるプライベートネットワーク内で Teable を運用する場合は、Teable の前段に Nginx を配置する構成が一般的です。
+
+<Callout type="info">
+重要なポイント：
+- `PUBLIC_ORIGIN` はユーザーが使用する最終的な公開URLと一致させる必要があります（例：`https://teable.example.com`。末尾の `/` は付けません）
+- **HTTPS + 証明書**をデフォルトとして扱うことを強く推奨します（本番トラフィックに暗号化されていない HTTP を使用しないでください）
+- WebSocket 機能を使用する場合、リバースプロキシは `Upgrade/Connection` ヘッダーを転送する必要があります
+</Callout>
+
+<Tip>
+Teable は**共同作業／リアルタイム**のワークフローでよく使用されるため、WebSocket 対応を有効にしておくと最も安定します。主に1人で使用する場合でも、これらの WebSocket 関連設定を残しておいて通常のアクセスに影響はありません。
+</Tip>
+
+## 推奨：HTTPS（デフォルト／本番環境）
+
+HTTPS をデフォルトとして扱い、**エンドユーザーには443番ポートで提供**してください。80番ポートは443番ポートへのリダイレクト（または ACME HTTP-01 チャレンジ）だけに使用します。
+
+以下は本番環境向けの例（HTTPS + WebSocket + HTTP→HTTPS リダイレクト）です。ドメインと証明書のパスを置き換えてください。
+
+```nginx
+upstream teable {
+  server 127.0.0.1:3000;
+  # Nginx が Teable と同じ Docker ネットワークで動作する場合：
+  # server teable:3000;
+}
+
+map $http_upgrade $connection_upgrade {
+  default upgrade;
+  '' close;
+}
+
+# 80番ポートはリダイレクト専用（または ACME チャレンジに使用）
+server {
+  listen 80;
+  server_name teable.example.com;
+  return 301 https://$host$request_uri;
+}
+
+server {
+  listen 443 ssl http2;
+  server_name teable.example.com;
+
+  ssl_certificate     /etc/letsencrypt/live/teable.example.com/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/teable.example.com/privkey.pem;
+
+  # このドメインで常に HTTPS を使用することが確実な場合、HSTS を有効にできます（慎重に使用してください）
+  # add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+
+  location / {
+    proxy_pass http://teable;
+
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto https;
+
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+    proxy_set_header Host $host;
+
+    proxy_http_version 1.1;
+  }
+}
+```
+
+### 証明書（発行／更新）
+
+- **Let’s Encrypt（推奨）**：Certbot または acme.sh を使用して、自動的に発行・更新します
+- **GUIツール**：Nginx Proxy Manager では、画面上で証明書を申請し、自動更新できます
+
+## 例1：最小限の `location /`（クイックスタート）
+
+> 注：これは内部ネットワークや簡易確認向けの **HTTP のみ**の例です。本番環境では、上記の HTTPS 設定を推奨します。
+
+```nginx
+upstream teable {
+  server 127.0.0.1:3000;
+  # Nginx が Teable と同じ Docker ネットワークで動作する場合：
+  # server teable:3000;
+}
+
+map $http_upgrade $connection_upgrade {
+  default upgrade;
+  '' close;
+}
+
+server {
+  listen 80;
+  server_name teable.example.com;
+
+  location / {
+    proxy_pass http://teable;
+
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+    proxy_set_header Host $host;
+
+    proxy_http_version 1.1;
+  }
+}
+```
+
+## Docker に関するヒント
+
+- **ホスト上の Nginx、コンテナ内の Teable**：通常は `proxy_pass http://127.0.0.1:3000;` を使用します（`3000:3000` が公開されている場合）
+- **同じ Docker ネットワーク内の Nginx と Teable**：サービス名またはコンテナ名を介してルーティングできます。例：`proxy_pass http://teable:3000;`
+
+## よくある注意点
+
+- **パスの書き換えを避ける**：動作を正確に理解していない状態で書き換えると、Teable の内部ルーティングが壊れる可能性があります。
+- **`PUBLIC_ORIGIN` が正しいことを確認する**：生成されるURL、リダイレクト、インポート／アップロード処理、コールバックなどに影響します。
+
+## Nginx Proxy Manager（NPM）
+
+Nginx の設定を手作業で記述したくない場合は、GUIツールを使用してドメイン、証明書、プロキシホストを管理できます。
+
+- **Nginx Proxy Manager（NPM）**：Docker ベースの環境で一般的に使用されます
+
+**Nginx Proxy Manager** の一般的な設定は次のとおりです。
+
+- **プロキシホストを作成**：`ドメイン名`を `teable.example.com`、`スキーム`を `http`、`転送先ホスト名／IP`を `127.0.0.1`（または Docker ネットワーク内の `teable`）、`転送先ポート`を `3000` に設定します
+- **WebSocket 対応を有効化**：プロキシホストのオプションで WebSocket 対応をオンにします（ラベルはバージョンによって異なります）
+- **SSLを発行／割り当て**：Let’s Encrypt 証明書を申請または選択し、必要に応じて HTTPS リダイレクトを強制します
+- **Teable の環境変数を忘れずに設定**：`PUBLIC_ORIGIN` を最終的な公開URL（例：`https://teable.example.com`）に設定します

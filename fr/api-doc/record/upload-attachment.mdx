@@ -1,0 +1,212 @@
+---
+title: "Téléverser une pièce jointe"
+description: "Téléverser des fichiers locaux ou des fichiers via URL à la fin d’un champ de pièce jointe dans un enregistrement spécifié"
+---
+
+### Chemin
+
+POST /api/table/\{tableId}/record/\{recordId}/\{fieldId}/uploadAttachment
+
+### Requête
+
+#### Paramètres de chemin
+
+* tableId (string) : L’identifiant unique de la Table [(comment l’obtenir)](/fr/api-doc/get-id#tableid).
+* recordId (string) : L’identifiant unique de l’Enregistrement à mettre à jour [(comment l’obtenir)](/fr/api-doc/get-id#recordid).
+* fieldId (string) : L’ID du Champ de pièce jointe vers lequel téléverser [(comment l’obtenir)](/fr/api-doc/get-id#fieldid)
+
+Les Champs de pièce jointe peuvent contenir plusieurs pièces jointes. Cette API permet de téléverser une pièce jointe à la fois à la fin de la cellule.
+
+Pour supprimer ou réorganiser les pièces jointes, utilisez l’[API de mise à jour d’un enregistrement](/fr/api-doc/record/update).
+
+fieldId doit être un Champ de type pièce jointe.
+
+Via l’API, les pièces jointes téléversées sont limitées à 100 Mo dans la version cloud, sans limite dans la version Auto-hébergée.
+
+#### Corps de la requête
+
+Type : formData
+
+Paramètres :
+
+* **file (facultatif)**
+  * Description : Les données de l’Enregistrement à mettre à jour
+  * Type : Buffer ou ReadStream
+* **fileUrl (facultatif)**
+  * Description : L’URL depuis laquelle téléverser
+  * Type : String
+  * Exemple : `https://example.com/image.jpg`
+  * Remarque : Un seul de file ou fileUrl peut être spécifié à la fois. Si les deux sont spécifiés, file est prioritaire.
+
+### Réponse
+
+#### Réponse en cas de succès
+
+* Code d’état : 201 Created
+* Corps de la réponse : Renvoie les données de l’Enregistrement mis à jour.
+
+**Exemple de corps de réponse**
+
+```json
+{
+    "id": "rec123456789ABCDE",
+    "fields": {
+      "fld123456789ABCDE": [
+        {
+          "id": "act75TiSyhcS7hfrizW",
+          "name": "example.jpg",
+          "path": "table/example",
+          "size": 392903,
+          "token": "tokenxxxxx",
+          "width": 976,
+          "height": 1000,
+          "mimetype": "image/jpeg",
+          "presignedUrl": "https://app.teable.ai/preview/previewURL"
+        }
+      ],
+    }
+}
+```
+
+#### Réponses d’erreur
+
+* Code d’état : 400 Bad Request : erreur de format du corps de la requête ou champs obligatoires manquants.
+* Code d’état : 404 Not Found : le tableId ou le recordId spécifié n’existe pas.
+
+### Exemples de code
+
+<CodeGroup>
+  ```bash CURL
+  # Téléversement via un fichier
+
+  curl -X POST 'https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment' \
+    -H 'Authorization: Bearer __token__' \
+    -H 'Content-Type: multipart/form-data' \
+    -F 'file=@/path/to/your/file.jpg'
+
+  # Téléversement via une URL
+  curl -X POST 'https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment' \
+    -H 'Authorization: Bearer __token__' \
+    -H 'Content-Type: multipart/form-data' \
+    -F 'fileUrl=https://example.com/image.jpg'
+  ```
+
+  ```js JS SDK
+  import { configApi, uploadAttachment } from '@teable/openapi';
+
+  configApi({
+    endpoint: 'https://app.teable.ai',
+    token: '__token__',
+  });
+
+  // Environnement Node.js : téléverser un fichier local
+  const fileStream = fs.createReadStream('/path/to/your/file.jpg');
+  const response = await uploadAttachment('__tableId__', '__recordId__', '__fieldId__', fileStream);
+
+  console.log(response.data);
+
+  // Téléverser une URL (fonctionne dans les environnements Node.js et navigateur)
+  const response = await uploadAttachment('__tableId__', '__recordId__', '__fieldId__', 'https://example.com/image.jpg');
+
+  console.log(response.data);
+
+  // Environnement navigateur : téléverser un fichier
+  // En supposant qu’un élément de sélection de fichier est présent : <input type="file" id="fileInput">
+  document.getElementById('fileInput').addEventListener('change', async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const response = await uploadAttachment('__tableId__', '__recordId__', '__fieldId__', file);
+      console.log(response.data);
+    }
+  });
+  ```
+
+  ```ts TypeScript
+  import FormData from 'form-data';
+  import fs from 'fs';
+
+  // Environnement Node.js : téléverser un fichier local
+  const formData = new FormData();
+  formData.append('file', fs.createReadStream('/path/to/your/file.jpg'));
+
+  const response = await fetch('https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer __token__',
+      ...formData.getHeaders()
+    },
+    body: formData
+  });
+
+  console.log(await response.json());
+
+  // Téléverser une URL (fonctionne dans les environnements Node.js et navigateur)
+  const formDataUrl = new FormData();
+  formDataUrl.append('fileUrl', 'https://example.com/image.jpg');
+
+  const responseUrl = await fetch('https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer __token__',
+      ...formDataUrl.getHeaders()
+    },
+    body: formDataUrl
+  });
+
+  console.log(await responseUrl.json());
+
+  // Environnement navigateur : téléverser un fichier
+  // En supposant qu’un élément de sélection de fichier est présent : <input type="file" id="fileInput">
+  document.getElementById('fileInput').addEventListener('change', async (event: Event) => {
+    const fileInput = event.target as HTMLInputElement;
+    const file = fileInput.files?.[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer __token__'
+        },
+        body: formData
+      });
+
+      console.log(await response.json());
+    }
+  });
+  ```
+
+  ```python Python
+  import requests
+  import mimetypes
+  import os
+
+  # Téléverser un fichier local
+  file_path = '/path/to/your/file.jpg'
+  with open(file_path, 'rb') as file:
+      file_name = os.path.basename(file_path)
+      mime_type, _ = mimetypes.guess_type(file_path)
+      files = {'file': (file_name, file, mime_type)}
+      response = requests.post(
+          'https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment',
+          headers={
+              'Authorization': 'Bearer __token__'
+          },
+          files=files
+      )
+
+  print(response.json())
+
+  # Téléverser une URL
+  response_url = requests.post(
+      'https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment',
+      headers={
+          'Authorization': 'Bearer __token__'
+      },
+      data={'fileUrl': 'https://example.com/image.jpg'}
+  )
+
+  print(response_url.json())
+  ```
+</CodeGroup>

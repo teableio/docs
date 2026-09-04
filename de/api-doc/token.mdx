@@ -1,0 +1,31 @@
+---
+title: "Zugriffstoken"
+description: "Persönliche Zugriffstoken werden zur Authentifizierung und Autorisierung verwendet."
+---
+
+Persönliche Zugriffstoken eignen sich am besten für Skripte, interne Tools und serverseitige Integrationen.
+
+Wenn Sie eine mandantenfähige Integration für externe Nutzer erstellen, verwenden Sie stattdessen OAuth: siehe [OAuth-App](/de/api-doc/oauth).
+
+## Token erstellen
+
+1. Rufen Sie die [Tokenverwaltungsseite](https://app.teable.ai/setting/personal-access-token) auf und klicken Sie auf die Schaltfläche „Token erstellen“, um einen neuen persönlichen Zugriffstoken zu erstellen.
+
+2. Wählen Sie einen Ablaufzeitraum für Ihren Token. Beachten Sie, dass dieser Zeitraum nach dem Festlegen nicht geändert werden kann.
+
+3. Fügen Sie Ihrem Token die passenden Berechtigungsbereiche hinzu.
+
+4. Legen Sie fest, auf welche Bases und Spaces der Token zugreifen kann.
+
+<Note>Nach der Erstellung wird Ihr Token nur einmal angezeigt. Wir empfehlen, ihn zu kopieren und an einem sicheren Ort aufzubewahren.</Note>
+
+## Token verwenden
+
+Senden Sie den Token im Header `Authorization`:
+
+```bash
+curl -H 'Authorization: Bearer __token__' \
+  'https://app.teable.ai/api/table/__tableId__/record'
+```
+
+Benötigen Sie Hilfe beim Finden von IDs wie `tbl...`? Siehe [IDs abrufen](/de/api-doc/get-id).

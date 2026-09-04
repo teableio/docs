@@ -1,0 +1,63 @@
+---
+title: "Collegamento a Record"
+description: "Crea relazioni tra Tabelle e seleziona nel Record corrente i Record di un'altra Tabella."
+---
+
+{/* mintlify-resync: 2026-05-26 */}
+Il Campo Collegamento a Record connette due Tabelle. Con un Campo Collegamento a Record puoi selezionare nella Tabella corrente i Record di un'altra Tabella e aprire i Record collegati quando necessario. I Campi Collegamento a Record sono inoltre necessari prima di poter utilizzare i Campi **Lookup** e **Rollup**.
+
+## Casi d'uso
+
+| Scenario | Utile per |
+| --- | --- |
+| Clienti e ordini | Collegare i clienti nella Tabella degli ordini e visualizzare gli ordini correlati dalla Tabella dei clienti |
+| Progetti e attività | Collegare un'attività al relativo progetto e visualizzare tutte le attività di un progetto |
+| Studenti e corsi | Monitorare le iscrizioni ai corsi, i membri dei progetti o altre relazioni molti-a-molti |
+| Voci e Record principali | Collegare le voci di un ordine all'ordine, quindi cercare i prezzi o aggregare i totali |
+
+## Creare e configurare
+
+<Steps>
+  <Step title="Scegli il tipo di Campo">
+    Nella Tabella corrente, fai clic su Aggiungi Campo e scegli **Collegamento a Record**.
+  </Step>
+  <Step title="Scegli la Tabella di destinazione">
+    Nella finestra di configurazione, scegli la Tabella da collegare, ad esempio collegando la Tabella degli ordini a quella dei clienti.
+  </Step>
+  <Step title="Scegli la modalità di collegamento">
+    Scegli un collegamento unidirezionale o bidirezionale in base alle esigenze.
+  </Step>
+  <Step title="Configura le regole della relazione">
+    Usa **Consenti selezione multipla** e **Consenti valori duplicati** per configurare relazioni uno-a-uno, uno-a-molti, molti-a-uno o molti-a-molti.
+  </Step>
+</Steps>
+
+## Collegamenti unidirezionali e bidirezionali
+
+| Modalità | Descrizione | Ideale per |
+| --- | --- | --- |
+| Collegamento bidirezionale | Abilitato per impostazione predefinita. Quando crei un Campo Collegamento a Record, Teable crea un Campo corrispondente nella Tabella di destinazione e mantiene sincronizzati entrambi i lati | Relazioni che devono essere visualizzate da entrambe le Tabelle, ad esempio ordini e clienti oppure progetti e attività |
+| Collegamento unidirezionale | Quando l'opzione bidirezionale è disattivata, soltanto la Tabella corrente mostra i Record collegati. Nella Tabella di destinazione non viene creato un Campo inverso | Casi in cui devi soltanto fare riferimento a un'altra Tabella e non vuoi modificare la struttura della Tabella di destinazione |
+
+## Tipi di relazione
+
+Usa insieme **Consenti selezione multipla** e **Consenti valori duplicati** per definire quattro tipi comuni di relazione:
+
+| Relazione | Esempio aziendale | Configurazione |
+| :--- | :--- | :--- |
+| **Uno-a-uno (1:1)** | **Dipendente - Profilo**<br />Un dipendente ha un profilo e un profilo appartiene a un dipendente | ☐ Consenti selezione multipla<br />☐ Consenti valori duplicati<br />*(entrambe le opzioni disattivate)* |
+| **Uno-a-molti (1:N)** | **Reparto - Dipendente**<br />Un reparto ha più dipendenti, ma ogni dipendente appartiene a un solo reparto | ☑ Consenti selezione multipla<br />☐ Consenti valori duplicati<br />*(soltanto la selezione multipla è consentita)* |
+| **Molti-a-uno (N:1)** | **Attività - Progetto**<br />Più attività appartengono a un progetto, ma ogni attività appartiene a un solo progetto | ☐ Consenti selezione multipla<br />☑ Consenti valori duplicati<br />*(soltanto i valori duplicati sono consentiti)* |
+| **Molti-a-molti (N:N)** | **Studente - Corso**<br />Uno studente può frequentare più corsi e un corso può avere più studenti | ☑ Consenti selezione multipla<br />☑ Consenti valori duplicati<br />*(entrambe le opzioni attivate)* |
+
+## Utilizzi comuni
+
+- **Gestione dei clienti nel CRM**: in una Tabella `Aziende`, crea un Campo Collegamento a Record verso una Tabella `Contatti`, in modo che un'azienda possa essere collegata a più contatti.
+- **Assegnazione delle attività di progetto**: in una Tabella `Attività`, crea un Campo Collegamento a Record verso una Tabella `Progetti`, in modo che ogni attività appartenga a un progetto e la Tabella dei progetti possa mostrare le attività correlate.
+- **Voci degli ordini**: in una Tabella `Ordini`, crea un collegamento verso una Tabella `Prodotti`, quindi usa i Campi lookup per mostrare i prezzi e i Campi rollup per calcolare i totali degli ordini.
+
+## Note
+
+- **Limiti delle relazioni uno-a-molti**: in una relazione uno-a-molti rigorosa, quando la selezione multipla è disattivata sul lato della Tabella B, un Record della Tabella B collegato da un Record della Tabella A non può essere selezionato da altri Record della Tabella A. Questa configurazione è adatta a dati che non devono essere riutilizzati, come numeri identificativi o profili dei dipendenti.
+
+<Info>I Campi Collegamento a Record possono connettere soltanto Tabelle dello stesso Spazio. Anche i Campi Lookup, Rollup, Lookup condizionale e Rollup condizionale richiedono dati di origine nello stesso Spazio.</Info>

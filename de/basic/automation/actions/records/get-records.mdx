@@ -1,0 +1,90 @@
+---
+title: "Datensätze abrufen"
+description: "Rufen Sie Datensätze mit optionalen Filtern und Paginierung aus einer Tabelle ab"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Wir empfehlen dringend, Automatisierungen mit „Skript ausführen“ zu erstellen, da diese Funktion alle Aktionsarten abdecken kann – auch solche, die andernfalls manuell erstellt werden müssten. Beschreiben Sie Ihre Anforderungen einfach im KI-Chat.
+
+Bitte beachten Sie: Wenn Sie Aktionen manuell hinzufügen, kann die KI sie später weder erkennen noch ändern.
+</Tip>
+
+## Mit KI erstellen
+
+Öffnen Sie den KI-Chat in der rechten Seitenleiste Ihrer Tabelle und beschreiben Sie, was Sie erreichen möchten.
+
+Die KI übernimmt alles: Sie wählt den richtigen Auslöser und die passenden Aktionen aus, ordnet die Felder zu und konfiguriert den gesamten Workflow automatisch.
+
+Beschreiben Sie Ihr Ziel einmal, und der Workflow ist einsatzbereit – eine manuelle Einrichtung ist nicht erforderlich.
+
+Ruft Datensätze aus einer Tabelle ab und gibt sie als Array zurück. Verwenden Sie die Ergebnisse in späteren Schritten, um Datensätze zu durchlaufen, Daten an ein Skript zu übergeben oder sie in andere Aktionen einzuspeisen.
+
+## Konfiguration
+
+| Einstellung | Erforderlich | Beschreibung |
+|---|---|---|
+| Tabelle | Ja | Die abzufragende Tabelle |
+| Ansicht | Nein | Ergebnisse auf die in einer bestimmten Ansicht sichtbaren Datensätze beschränken (übernimmt Filter, Sortierung und ausgeblendete Felder der Ansicht) |
+| Filter | Nein | Zusätzliche Filterbedingungen, die zusätzlich zu einem etwaigen Ansichtsfilter angewendet werden |
+| Skip | Nein | Anzahl der Datensätze, die am Anfang übersprungen werden (für die Paginierung) |
+| Take | Nein | Maximale Anzahl zurückzugebender Datensätze (für die Paginierung) |
+
+## Einrichtung
+
+1. Fügen Sie Ihrem Workflow die Aktion **Datensätze abrufen** hinzu.
+2. Wählen Sie die abzufragende **Tabelle**. Verwenden Sie [Base-übergreifenden Zugriff](/de/basic/automation/actions/records/cross-base), wenn sich die Tabelle in einer anderen Base befindet.
+3. (Optional) Wählen Sie eine **Ansicht** aus, um deren Filter-, Sortier- und Feldsichtbarkeitseinstellungen zu übernehmen.
+4. (Optional) Fügen Sie **Filterbedingungen** hinzu, um die Ergebnisse einzugrenzen. Beispiel: `Status` entspricht `Aktiv` und `Fälligkeitsdatum` liegt vor heute.
+5. (Optional) Legen Sie **Skip** und **Take** für die Paginierung fest. Mit Skip 0 und Take 100 erhalten Sie beispielsweise die ersten 100 Datensätze.
+6. Speichern Sie die Aktion. Beim Ausführen des Workflows stehen die Ergebnisse nachfolgenden Schritten als Array zur Verfügung.
+
+## Ausgabe: Mit den Ergebnissen arbeiten
+
+Die Ausgabe ist ein **Array aus Datensätzen**. Jeder Datensatz im Array enthält:
+
+- **Datensatz-ID** – die eindeutige Kennung.
+- **Alle Feldwerte** – jedes Feld der Tabelle (oder Ansicht, falls Sie eine ausgewählt haben).
+
+### Ergebnisse im nächsten Schritt verwenden
+
+- **Auf einen einzelnen Datensatz verweisen:** Wenn Sie nur ein Ergebnis erwarten (oder das erste verwenden möchten), können Sie über die Variablenauswahl **+** direkt auf Felder des ersten Datensatzes verweisen.
+- **Alle Datensätze durchlaufen:** Fügen Sie nach „Datensätze abrufen“ eine Aktion [Schleife (Stapelverarbeitung)](../logic/loop-run) hinzu und wählen Sie das Ergebnis-Array als Datenquelle aus. Verweisen Sie innerhalb der Schleife auf die Felder jedes Elements.
+- **In einem Skript verarbeiten:** Übergeben Sie das Array für eine benutzerdefinierte Verarbeitung, Filterung oder Transformation an einen Schritt [Skript ausführen](/de/basic/automation/actions/ai/ai-script).
+
+## Paginierung
+
+Wenn Sie **Skip** und **Take** nicht festlegen, gibt die Aktion Datensätze bis zur systemweiten Standardbegrenzung zurück. Verwenden Sie bei großen Tabellen die Paginierung, um die Ergebnisgröße zu steuern:
+
+| Einstellung | Zweck | Beispiel |
+|---|---|---|
+| Skip | Anzahl der am Anfang zu überspringenden Datensätze | `0` (am Anfang beginnen) |
+| Take | Anzahl der zurückzugebenden Datensätze | `100` (100 Datensätze zurückgeben) |
+
+Um eine gesamte große Tabelle zu verarbeiten, können Sie mehrere Schritte „Datensätze abrufen“ mit steigenden Skip-Werten verwenden oder die Paginierung in einem Skript verarbeiten.
+
+## Verwendung
+
+- **Überfällige Aufgaben für Erinnerungen finden.** Filtern Sie nach Aufgaben, deren Fälligkeitsdatum vor heute liegt und deren Status nicht „Erledigt“ ist. Durchlaufen Sie die Ergebnisse und senden Sie für jede Aufgabe eine E-Mail.
+- **Daten für eine tägliche Zusammenfassung sammeln.** Rufen Sie alle in den letzten 24 Stunden aktualisierten Datensätze ab und stellen Sie sie in einer zusammenfassenden E-Mail zusammen.
+- **Vor dem Erstellen oder Aktualisieren nach verknüpften Datensätzen suchen.** Prüfen Sie vor dem Erstellen eines Duplikats, ob bereits ein Datensatz mit derselben E-Mail-Adresse vorhanden ist.
+- **Daten in eine KI-Aktion einspeisen.** Rufen Sie Datensätze mit langen Textfeldern ab und verwenden Sie anschließend „Mit KI generieren“ in einer Schleife, um jeden Datensatz zusammenzufassen oder zu klassifizieren.
+- **Datensätze mit einem externen System synchronisieren.** Rufen Sie alle seit der letzten Synchronisierung geänderten Datensätze ab und übertragen Sie sie anschließend per HTTP-Anfrage an ein CRM-System oder Data Warehouse.
+
+## Tipps
+
+- **Verwenden Sie Filter.** Je genauer Ihr Filter ist, desto weniger Datensätze werden zurückgegeben und desto schneller wird die Aktion ausgeführt.
+- **Begrenzen Sie Ergebnisse mit Take.** Wenn Sie nur die ersten 10 Datensätze benötigen, setzen Sie Take auf 10. Es ist nicht nötig, Tausende Datensätze abzurufen, wenn Sie nur wenige brauchen.
+- **Wählen Sie eine Ansicht**, die die benötigten Daten bereits filtert und sortiert. Dadurch bleibt Ihre Automatisierungskonfiguration einfacher.
+- **Vermeiden Sie den Abruf der gesamten Tabelle**, sofern Sie nicht wirklich alle Datensätze benötigen. Große Ergebnismengen brauchen länger und verbrauchen mehr Ressourcen, besonders in Verbindung mit einer Schleife.
+- „Datensätze abrufen“ ändert keine Daten – die Aktion ist schreibgeschützt.
+- Gibt die Abfrage keine Datensätze zurück, erhalten nachfolgende Schritte, die auf die Ergebnisse verweisen, ein leeres Array. Stellen Sie sicher, dass Ihr Workflow dies angemessen behandelt (senden Sie beispielsweise keine E-Mail mit dem Text „Hier sind Ihre Ergebnisse“, wenn keine Ergebnisse vorliegen).
+- Filter in „Datensätze abrufen“ funktionieren genauso wie Ansichtsfilter: Sie können Bedingungen mit UND-/ODER-Logik kombinieren.
+- Bei Base-übergreifendem Zugriff wird die Abfrage mit den Berechtigungen des Workflow-Erstellers ausgeführt. Verliert dieser den Zugriff auf die Ziel-Base, schlägt der Schritt fehl.
+
+## Verwandte Themen
+
+- [Base-übergreifender Zugriff](/de/basic/automation/actions/records/cross-base) – Tabellen in anderen Bases abfragen
+- [Schleife (Stapelverarbeitung)](../logic/loop-run) – das Ergebnis-Array durchlaufen
+- [Datensatz erstellen](/de/basic/automation/actions/records/create-record) – Datensätze auf Grundlage abgerufener Daten erstellen
+- [Datensatz aktualisieren](/de/basic/automation/actions/records/update-record) – von „Datensätze abrufen“ gefundene Datensätze aktualisieren

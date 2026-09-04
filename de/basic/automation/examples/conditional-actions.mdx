@@ -1,0 +1,37 @@
+---
+title: "Je nach Datensatzwert unterschiedliche Aktionen ausführen"
+description: "Verwenden Sie bedingte Logik, um Ihren Workflow zu verzweigen und abhängig von Feldwerten unterschiedliche Aktionen auszuführen"
+---
+
+<Tip>Wir empfehlen, Automatisierungsbeispiele direkt im KI-Chat zu erstellen. Beschreiben Sie einfach den gewünschten Workflow, und die KI übernimmt die vollständige Einrichtung für Sie – einschließlich Auslöser, Aktionen, Skript und Konfiguration.</Tip>
+
+## Mit KI erstellen
+
+Öffnen Sie den KI-Chat in der rechten Seitenleiste Ihrer Tabelle und teilen Sie der KI mit, was Sie möchten. Sie können zum Beispiel sagen:
+
+*„Wenn ein neues Ticket erstellt wird, prüfe das Feld Priorität. Wenn es Dringend ist, sende dem Bereitschaftsteam eine E-Mail. Sende andernfalls eine E-Mail an die allgemeine Support-Warteschlange.“*
+
+Die KI erstellt automatisch den vollständigen Workflow. Sie können das erzeugte Skript überprüfen, mit echten Daten testen und den Workflow aktivieren, sobald er bereit ist.
+
+## Manuelle Einrichtung
+
+1. **Erstellen Sie einen Workflow** mit dem Auslöser **Wenn Datensatz erstellt wird**.
+2. Wählen Sie Ihre Tabelle **Tickets** aus.
+3. Klicken Sie auf **Testen**, um einen Beispieldatensatz abzurufen.
+4. **Fügen Sie einen Bedingungsknoten hinzu**.
+5. Legen Sie die Regel fest: **Priorität** `ist` **Dringend**.
+6. Klicken Sie auf **Testen**.
+7. **Im „Wahr“-Pfad** → fügen Sie die Aktion **E-Mail senden** hinzu:
+   - An: `oncall@yourcompany.com`
+   - Betreff: `Dringendes Ticket: ` + Tickettitel (über **+**)
+   - Text: Ticketbeschreibung (über **+**)
+8. **Im „Falsch“-Pfad** → fügen Sie die Aktion **E-Mail senden** hinzu:
+   - An: `support@yourcompany.com`
+   - Betreff: `Neues Ticket: ` + Tickettitel
+   - Text: Ticketbeschreibung
+9. Testen Sie beide Pfade und **aktivieren** Sie anschließend den Workflow.
+
+## Tipps
+
+- Sie können Bedingungen verschachteln: Fügen Sie im „Falsch“-Pfad eine weitere Bedingung hinzu, um die Prioritäten „Hoch“ und „Niedrig“ zu unterscheiden.
+- Kombinieren Sie Regeln mit UND/ODER – z. B. `Priorität ist Dringend UND Zugewiesene Person ist leer`.

@@ -1,0 +1,96 @@
+---
+title: "Kayıt güncellendiğinde"
+description: "Mevcut bir kayıt değiştirildiğinde iş akışını tetikleyin"
+---
+
+<Tip>Lütfen unutmayın: tüm tetikleyici yapılandırması AI Chat'te yapılabilir. İş akışının ne yapmasını istediğinizi AI'a söyleyin; gerisini o halleder.</Tip>
+
+Bu tetikleyici mevcut bir kayıt değiştirildiğinde çalışır. Kayıt oluşturulduğunda çalışmaz.
+
+## AI ile oluşturma
+
+Tablonuzun sağ kenar çubuğunda AI Chat'i açın ve ne istediğinizi açıklayın.
+
+AI her şeyi halleder: doğru tetikleyiciyi seçer, ilgili alanları eşler ve tüm eylemleri otomatik olarak yapılandırır.
+
+Hedefinizi bir kez açıklayın; iş akışınız elle yapılandırma gerektirmeden hazır olur.
+
+**Örnek:** *"Durum alanı değiştiğinde sorumlu kişiye e-posta gönder."*
+
+## Yapılandırma
+
+| Ayar | Zorunlu | Açıklama |
+|---|---|---|
+| Tablo | Evet | Değişiklikler için izlenecek tablo |
+| İzlenen Alanlar | Evet | İzlenecek belirli alanları seçin veya herhangi bir değişiklikte tetiklemek için "Tüm Alanlar"ı seçin |
+| Filtre | Hayır | Yalnızca güncellenen kayıt değişiklikten sonra bu koşullarla eşleşiyorsa tetiklenir |
+
+## Nasıl yapılandırılır?
+
+1. Otomasyonunuzu açıp yeni bir tetikleyici ekleyin.
+2. **Kayıt güncellendiğinde** seçeneğini belirleyin.
+3. İzlemek istediğiniz **Tabloyu** seçin.
+4. **İzlenen Alanlar** bölümünde bir veya daha fazla belirli alan seçin. Örneğin yalnızca durum değişikliklerine tepki vermek istiyorsanız sadece "Durum"u seçin.
+5. (İsteğe bağlı) Tetikleyiciyi çalıştıracak güncellemeleri daha da daraltmak için bir **Filtre** ekleyin. Örneğin `Durum`, `Tamamlandı` değerine eşittir filtresi yalnızca kaydın durumu "Tamamlandı" olarak değiştirildiğinde çalışır.
+6. Otomasyonu kaydedip etkinleştirin.
+7. Eylem adımlarınızı ekleyin. Güncellenen kaydın değerlerini eklemek için herhangi bir eylem alanında **+** simgesine tıklayın.
+
+## İzlenen Alanları Anlama
+
+İzlenen Alanlar ayarı bu tetikleyicinin en önemli bölümüdür:
+
+- **Belirli alanlar (önerilen):** Yalnızca önemsediğiniz alanları seçin. Tetikleyici, bu alanlardan biri değiştiğinde çalışır. Kayıttaki diğer tüm düzenlemeler yok sayılır.
+- **Tüm Alanlar:** Tetikleyici, kayıttaki *herhangi bir* alan değiştiğinde çalışır. Hesaplanan alanlar, son değiştirilme zaman damgaları ve önemsemeyebileceğiniz küçük düzenlemeler buna dahildir.
+
+**Belirli alanlar çoğu durumda neden daha iyidir?**
+
+- Gereksiz tetikleyici yürütmelerini ve dolayısıyla boşa harcanan otomasyon çalıştırmalarını azaltır.
+- İstenmeyen döngüleri önler (aşağıya bakın).
+- Otomasyonunuzun amacını onu okuyan herkes için daha anlaşılır kılar.
+
+Yalnızca olası her değişikliğe gerçekten tepki vermeniz gerekiyorsa (örneğin tam bir denetim günlüğü için) "Tüm Alanlar"ı seçin.
+
+<Tip>Belirli izlenen alanları seçmeniz kesinlikle önerilir. "Tüm Alanlar"ı seçmek iş akışının ilgisiz düzenlemelerde çalışmasına, otomasyon çalıştırmalarının boşa harcanmasına ve beklenmeyen davranışlara yol açabilir.</Tip>
+
+### Hesaplanan alanlar
+
+[Formül](/tr/basic/field/formula), [Arama](/tr/basic/field/lookup), [Toplama](/tr/basic/field/rollup), [Koşullu Arama](/tr/basic/field/conditional-lookup) ve [Koşullu Toplama](/tr/basic/field/conditional-rollup) değerleri yazılarak değil, Teable'ın kendi hesaplamasıyla elde edilir. Yeniden hesaplama, yalnızca hesaplanan alanı **İzlenen Alanlar** bölümünde belirttiğinizde bu tetikleyiciyi çalıştırır. Beş alan türünün tümü aynı şekilde davranır.
+
+Böylece ham girdiler yerine türetilmiş bir sonuca tepki verebilirsiniz. `Toplam tutar` Formül alanını izlerseniz temel alanlardan hangisi değişmiş olursa olsun toplam gerçekten her değiştiğinde iş akışı çalışır. Bağlantılı görevlerin Toplama alanını izlerseniz değişiklik bağlantılı tablodaki bir düzenlemeden kaynaklansa bile toplanan değer değiştiğinde iş akışı çalışır.
+
+## Yaygın sorun: güncelleme döngüleri
+
+<Warning>İş akışınız aynı tabloya yazan ve izlenen bir alanı güncelleyen Kaydı Güncelle eylemi içeriyorsa tetikleyici yeniden çalışarak sonsuz döngü oluşturur.</Warning>
+
+Otomasyonunuz bir tablodaki güncellemelerle tetikleniyor ve *aynı tabloya* geri yazan bir **Kaydı Güncelle** eylemi de içeriyorsa sonsuz döngü oluşturabilirsiniz:
+
+1. Bir alan değişir → tetikleyici çalışır.
+2. Otomasyon aynı kayıttaki başka bir alanı günceller → tetikleyici yeniden çalışır.
+3. Bu işlem sonsuza kadar yinelenir.
+
+**Bunu nasıl önleyebilirsiniz?**
+
+- Yalnızca belirli alanları izleyin ve Kaydı Güncelle eyleminizin izlenen alanlardan *farklı* alanlara yazdığından emin olun.
+- Döngüyü durdurmak için filtre koşulu kullanın. Örneğin yalnızca `Durum`, `Processed` değerine eşit değilken tetikleyin ve eyleminizin `Durum` değerini `Processed` olarak ayarlamasını sağlayın.
+- Eyleminizin aynı alanı güncellemesi gerekiyorsa bunun yerine yalnızca geçişlerde çalışan [Kayıt koşullarla eşleştiğinde](/tr/basic/automation/trigger/records/record-matches-conditions) tetikleyicisini kullanmayı değerlendirin.
+
+## Ne zaman kullanılır?
+
+- **Fiyat değişikliklerini harici sisteme eşitleyin.** "Fiyat" alanını izleyin. Değiştiğinde e-ticaret platformunuzdaki fiyatı güncellemek için HTTP isteği gönderin.
+- **Bir görevin durumu değiştiğinde bildirim gönderin.** "Durum" alanını izleyin. Görev "Engellendi" veya "Tamamlandı" durumuna geçtiğinde sorumlu kişiye ya da yöneticiye bildirim gönderin.
+- **Denetim için alan değişikliklerini kaydedin.** "Tüm Alanlar"ı izleyin ve eski ve yeni değerleri içeren bir denetim günlüğü tablosunda kayıt oluşturun.
+- **Üst kayıt değiştiğinde bağlantılı kaydı güncelleyin.** Proje kaydındaki önemli alanları izleyin. Projenin son tarihi değiştiğinde tüm bağlantılı görevleri güncelleyin.
+- **Başka bir sistemde yeniden hesaplamayı tetikleyin.** "Miktar" veya "Birim Fiyat" gibi sayısal alanları izleyin. Değiştiklerinde toplamları yeniden hesaplamak için API çağırın.
+
+## İpuçları
+
+- Belirli izlenen alanlarla başlayın. Olayların eksik kaldığını fark ederseniz daha sonra her zaman başka alanlar ekleyebilirsiniz.
+- Filtre güncellemeden *sonra* değerlendirilir. Yani kaydın eski değerlerini değil, yeni değerlerini denetler.
+- Bu tetikleyici önceki değerin ne olduğunu söylemez; yalnızca kaydın şu anda nasıl göründüğünü gösterir. Önceki ve sonraki değerleri karşılaştırmanız gerekiyorsa otomasyonunuzun güncellediği bir "Önceki Değer" alanı tutmayı değerlendirin.
+- Aynı düzenlemede izlenen birden fazla alan değişse bile tetikleyici her kaydetme işlemi için bir kez çalışır.
+
+## İlgili konular
+
+- [Kayıt koşullarla eşleştiğinde](/tr/basic/automation/trigger/records/record-matches-conditions) — her düzenlemede değil, yalnızca durum geçişlerinde çalışır
+- [Kayıt oluşturulduğunda](/tr/basic/automation/trigger/records/record-created) — güncellemelerde değil, yeni kayıtlarda çalışır
+- [Kaydı güncelle eylemi](/tr/basic/automation/actions/records/update-record) — iş akışlarında kayıtları değiştiren karşılık gelen eylem

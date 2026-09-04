@@ -1,0 +1,139 @@
+---
+title: "Auth0 SSO"
+description: "Konfigurieren Sie Auth0 als Ihren SSO-Authentifizierungsanbieter für Teable"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Verfügbar ab dem Business-Plan</Tip>
+
+## Schritt 1: Authentifizierungsanbieter in Teable erstellen
+
+1. Navigieren Sie zu Ihren Teable-SSO-Einstellungen.
+2. Erstellen Sie einen neuen Authentifizierungsanbieter, nennen Sie ihn **Auth0**, und wählen Sie **OpenID Connect** aus.
+
+## Schritt 2: Auth0-Dashboard aufrufen
+
+1. Melden Sie sich bei Ihrem [Auth0 Dashboard](https://manage.auth0.com) an.
+2. Wählen Sie Ihren Auth0-Tenant aus.
+3. Navigieren Sie im linken Menü zu **Applications** → **Applications**.
+
+## Schritt 3: Eine neue Anwendung erstellen
+
+1. Klicken Sie auf **Create Application**.
+2. Geben Sie die Anwendungsdetails ein:
+   - **Name**: Teable SSO
+   - **Application Type**: Wählen Sie **Regular Web Applications**.
+3. Klicken Sie auf **Create**.
+
+## Schritt 4: Anwendungseinstellungen konfigurieren
+
+Rufen Sie nach dem Erstellen der Anwendung die Registerkarte **Settings** auf:
+
+### Grundlegende Informationen
+
+1. Kopieren Sie Ihre **Domain** (z. B. `your-tenant.auth0.com` oder `your-tenant.us.auth0.com`).
+2. Kopieren Sie die **Client ID**.
+3. Kopieren Sie das **Client Secret**.
+4. Fügen Sie diese Werte in die Teable-SSO-Konfiguration ein.
+
+### Anwendungs-URIs
+
+Scrollen Sie zum Abschnitt **Application URIs**:
+
+1. **Allowed Callback URLs**: Fügen Sie die **Callback-URL** aus Teable ein.
+2. **Allowed Logout URLs**: (Optional) `https://app.teable.ai`
+3. **Allowed Web Origins**: (Optional) `https://app.teable.ai`
+4. Klicken Sie unten auf der Seite auf **Save Changes**.
+
+<Warning>Speichern Sie Ihre Änderungen, bevor Sie die Seite verlassen.</Warning>
+
+## Schritt 5: OAuth-Endpunkte konfigurieren
+
+Tragen Sie in Teable mithilfe Ihrer Auth0-Domain die folgenden OAuth-Endpunkte ein:
+
+- **Authorization URL**: `https://{yourDomain}/authorize`
+- **Token URL**: `https://{yourDomain}/oauth/token`
+- **User Info URL**: `https://{yourDomain}/userinfo`
+- **Issuer**: `https://{yourDomain}/`
+
+<Note>Ersetzen Sie `{yourDomain}` durch Ihre tatsächliche Auth0-Domain aus Schritt 4.</Note>
+
+## Schritt 6: Verbindungen konfigurieren (optional)
+
+Auth0 ermöglicht es Ihnen, mehrere Identitätsanbieter zu aktivieren. So konfigurieren Sie die verfügbaren Anmeldemethoden:
+
+1. Öffnen Sie in Ihren Anwendungseinstellungen die Registerkarte **Connections**.
+2. Aktivieren Sie die Authentifizierungsmethoden, die Sie unterstützen möchten:
+   - **Database**: Authentifizierung mit Benutzername/Passwort
+   - **Social**: Google, Microsoft, GitHub usw.
+   - **Enterprise**: SAML, Active Directory usw.
+3. Konfigurieren Sie jede Verbindung nach Bedarf.
+
+## Schritt 7: Anmeldeerlebnis anpassen (optional)
+
+### Universal Login Page
+
+1. Navigieren Sie im Auth0-Dashboard zu **Branding** → **Universal Login**.
+2. Passen Sie das Erscheinungsbild der Anmeldeseite an.
+3. Fügen Sie Ihr Unternehmenslogo und Ihre Markenfarben hinzu.
+
+### E-Mail-Vorlagen
+
+1. Navigieren Sie zu **Branding** → **Email Templates**.
+2. Passen Sie E-Mail-Vorlagen für Verifizierung, Passwortzurücksetzung usw. an.
+
+## Schritt 8: Benutzerberechtigungen konfigurieren
+
+### Scopes definieren
+
+1. Navigieren Sie im Auth0-Dashboard zu **Applications** → **APIs**.
+2. Wählen Sie **Auth0 Management API** aus oder erstellen Sie eine benutzerdefinierte API.
+3. Definieren Sie die für Ihre Anwendung erforderlichen Scopes/Berechtigungen.
+
+### Rollen zuweisen (optional)
+
+1. Navigieren Sie zu **User Management** → **Roles**.
+2. Erstellen Sie Rollen für verschiedene Benutzertypen.
+3. Weisen Sie jeder Rolle Berechtigungen zu.
+4. Weisen Sie Benutzern passende Rollen zu.
+
+## Schritt 9: SSO-Anmeldung testen
+
+Sie haben zwei Möglichkeiten, die SSO-Anmeldung zu aktivieren:
+
+**Option 1: Direkte Authentifizierungs-URL**
+- Verwenden Sie die Autorisierungs-URL als Ihre SSO-Anmelde-URL.
+
+**Option 2: Domainverifizierung**
+1. Konfigurieren Sie in Teable die Domainverifizierung.
+2. Verifizieren Sie Ihre benutzerdefinierte Domain.
+3. Rufen Sie https://app.teable.ai auf.
+4. Klicken Sie auf die Schaltfläche für die SSO-Anmeldung.
+5. Geben Sie Ihre E-Mail-Adresse unter der verifizierten Domain ein, um sich anzumelden.
+
+## Zusätzliche Konfiguration (optional)
+
+### Multi-Faktor-Authentifizierung aktivieren
+
+1. Navigieren Sie im Auth0-Dashboard zu **Security** → **Multi-Factor Auth**.
+2. Aktivieren Sie Ihre bevorzugten MFA-Methoden (SMS, Authenticator-App usw.).
+3. Definieren Sie MFA-Richtlinien und -Regeln.
+
+### Regeln für benutzerdefinierte Logik konfigurieren
+
+1. Navigieren Sie zu **Auth Pipeline** → **Rules**.
+2. Erstellen Sie benutzerdefinierte Regeln, um:
+   - Tokens benutzerdefinierte Claims hinzuzufügen
+   - bedingten Zugriff durchzusetzen
+   - externe Dienste zu integrieren
+   - Benutzerprofile anzureichern
+
+### Organisationen einrichten (Auth0-Organizations-Funktion)
+
+Bei Verwendung von Auth0 Organizations:
+
+1. Navigieren Sie im Auth0-Dashboard zu **Organizations**.
+2. Erstellen Sie Organisationen für verschiedene Tenants/Unternehmen.
+3. Konfigurieren Sie organisationsspezifisches Branding und Verbindungen.
+4. Aktivieren Sie die Organisationsunterstützung in Ihrer Teable-Anwendung.
+

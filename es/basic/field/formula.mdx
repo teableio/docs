@@ -1,0 +1,93 @@
+---
+title: "Fórmula"
+description: "Haz referencia a otros campos y calcula textos, números, fechas y condiciones lógicas mediante fórmulas."
+---
+
+Los campos Fórmula calculan resultados a partir de otros campos del mismo registro. Pueden realizar operaciones matemáticas, unir texto, calcular fechas y aplicar lógica condicional. Úsalos para convertir reglas de cálculo repetitivas en campos.
+
+## Casos de uso
+
+| Escenario | Ideal para |
+| --- | --- |
+| Cálculo automático | Calcular el precio total, el beneficio o la puntuación a partir de la cantidad, el precio unitario, el descuento y otros campos |
+| Procesamiento de texto | Unir texto, extraer contenido o analizar información mediante un delimitador |
+| Procesamiento de fechas | Calcular diferencias entre fechas, comprobar intervalos de tiempo o generar fechas futuras |
+| Lógica condicional | Devolver resultados distintos según ciertas condiciones, como estados, indicaciones o categorías |
+
+## Conceptos básicos de las fórmulas
+
+### Tipos de datos
+
+Antes de escribir una fórmula, confirma los tipos de los campos utilizados en el cálculo. Los distintos tipos admiten operaciones y funciones diferentes.
+
+| Tipo | Descripción | Usos habituales |
+| --- | --- | --- |
+| Número | Enteros o decimales | Aritmética, acumulaciones, comparaciones |
+| Texto | Valores de cadena | Unir, extraer, reemplazar, dividir |
+| Fecha | Valores de fecha o fecha y hora | Calcular intervalos, comparar fechas |
+| Booleano | `TRUE` o `FALSE` | Condiciones y operaciones lógicas |
+
+### Hacer referencia a campos
+
+En una fórmula, haz referencia a otro campo mediante su nombre. Escribe el nombre del campo entre `{}` y asegúrate de que coincida con el nombre real del campo:
+
+```js
+{Precio unitario} * {Cantidad}
+```
+
+### Operadores
+
+| Operador | Uso |
+| --- | --- |
+| `+` | Calcula la suma de números o une cadenas |
+| `-` | Calcula la diferencia entre números |
+| `*` | Calcula el producto de números |
+| `/` | Calcula el cociente de números |
+| `%` | Calcula el resto |
+
+## Funciones y expresiones
+
+### Funciones habituales
+
+Las funciones realizan operaciones específicas. Por ejemplo, `SUM` calcula un total, `LEFT` extrae caracteres del principio de un texto, `TEXTBEFORE` extrae el texto anterior a un delimitador y `TEXTSPLIT` divide el texto mediante un delimitador.
+
+Consulta la [hoja de referencia de fórmulas](/es/basic/field/formula/cheat-sheet) para conocer más funciones.
+
+### Procesamiento de texto
+
+| Operación | Ejemplos de funciones | Descripción |
+| --- | --- | --- |
+| Unir texto | `&`, `CONCATENATE` | Une dos o más valores de texto |
+| Extraer texto | `LEFT`, `RIGHT`, `MID`, `TEXTBEFORE` | Extrae parte de una cadena |
+| Dividir texto | `TEXTSPLIT` | Divide el texto en varios valores mediante un delimitador |
+
+### Condiciones lógicas
+
+Usa la función `IF` para devolver valores diferentes según una condición:
+
+```js
+IF(condición, valor_si_verdadero, valor_si_falso)
+```
+
+Para comprobar si un campo está vacío, compáralo con `BLANK()`. Por ejemplo, `IF({Peso}=BLANK(), 1, 2)` devuelve `1` cuando un campo numérico está vacío y `2` en caso contrario.
+
+### Expresiones complejas
+
+Una fórmula compleja puede incluir varias funciones, referencias a campos y operadores. Usa paréntesis para controlar el orden de cálculo:
+
+```js
+({Precio unitario} * {Cantidad}) * (1 - {Descuento})
+```
+
+## Visualización y mantenimiento de resultados
+
+### Formato y visualización interactiva
+
+Los resultados de las fórmulas también pueden usar opciones de [formato](/es/basic/field/common/formatter) y [visualización interactiva](/es/basic/field/common/show-as), como porcentaje, barra de progreso o estilos de iconos. Las opciones disponibles dependen del tipo de resultado de la fórmula.
+
+### Depuración y optimización
+
+- **Comprueba los tipos de datos**: Confirma que las operaciones y funciones utilicen los tipos de datos correctos.
+- **Verifica las referencias a campos**: Confirma que los nombres de los campos estén escritos correctamente.
+- **Prueba paso a paso**: Divide las fórmulas complejas en partes más pequeñas y pruébalas por separado.
+- **Evita cálculos repetidos**: Si el mismo cálculo se utiliza en varios lugares, considera almacenar el resultado en un campo independiente.

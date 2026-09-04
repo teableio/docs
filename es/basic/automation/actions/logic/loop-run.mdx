@@ -1,0 +1,104 @@
+---
+title: "Bucle (lote)"
+description: "Procesa varios elementos en una acción mediante la iteración sobre una matriz"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Recomendamos encarecidamente usar Ejecutar script para crear automatizaciones, ya que permite cubrir el comportamiento de todas las acciones, incluidas aquellas que, de otro modo, tendrían que crearse manualmente. Solo tienes que describir tus requisitos a la IA en el chat.
+
+Ten en cuenta que, si añades acciones manualmente, la IA no podrá reconocerlas ni modificarlas más adelante.
+</Tip>
+
+Bucle te permite ejecutar una acción **una vez por elemento** de una matriz. En lugar de procesar un único Registro o enviar un solo correo electrónico, Bucle repite la acción para cada elemento de una lista: crea Registros en lote, envía correos personalizados a una lista de contactos o realiza llamadas a una API por cada elemento.
+
+Los elementos se procesan en orden y los resultados de todas las iteraciones se devuelven como una matriz que pueden utilizar los pasos posteriores.
+
+## Acciones compatibles
+
+| Acción | Compatible con Bucle |
+|---|---|
+| Crear Registro | Sí |
+| Actualizar Registro | Sí |
+| Enviar correo electrónico | Sí |
+| Solicitud HTTP | Sí |
+| Generar con IA | Sí |
+
+## De dónde proceden las matrices
+
+Para utilizar Bucle necesitas una matriz como entrada. Estas son algunas fuentes habituales:
+
+| Fuente | Qué obtienes |
+|---|---|
+| Acción **Obtener Registros** | Una matriz de Registros de una consulta de Tabla |
+| Desencadenador **Webhook recibido** | El cuerpo JSON puede contener matrices (p. ej., una lista de artículos de un pedido) |
+| Acción **Generar con IA** (salida JSON) | La IA puede devolver una matriz de elementos estructurados |
+| Acción **Solicitud HTTP** | Una respuesta de API que contiene una matriz |
+| Acción **Script** | Un script puede devolver cualquier matriz mediante `output.set()` |
+
+## Cómo configurarlo
+
+1. Abre una acción compatible (p. ej., Crear Registro o Enviar correo electrónico).
+2. Haz clic en **Ejecutar en bucle** debajo del selector de Tabla (o en el área de configuración de la acción).
+3. En el selector de fuentes de datos, selecciona una **variable de matriz** de un paso anterior. Por ejemplo, la matriz de Registros de un paso Obtener Registros.
+4. El área de asignación de Campos mostrará ahora las propiedades de cada elemento individual (no la matriz completa). Haz clic en **+** para hacer referencia a las propiedades del **elemento actual**; por ejemplo, el Nombre, el Correo electrónico o el Estado del Registro actual.
+5. Guarda la acción. Cuando se ejecute el flujo de trabajo, la acción se ejecutará una vez por cada elemento de la matriz.
+
+## Cómo hacer referencia al elemento actual
+
+Cuando Bucle está activo, el selector de variables **+** muestra las propiedades del elemento actual de la iteración. Por ejemplo:
+
+- Si recorres la salida de Obtener Registros, puedes hacer referencia a `elemento actual → fields → Name`, `elemento actual → fields → Email`, etc.
+- Si recorres una matriz de webhook, puedes hacer referencia a `elemento actual → product_name`, `elemento actual → quantity`, etc.
+
+Esto difiere del modo sin bucle, en el que se hace referencia a la matriz completa o a un índice concreto.
+
+## Ejemplo concreto: enviar correos electrónicos de recordatorio para tareas vencidas
+
+1. **Desencadenador:** A la hora programada, todos los días a las 9:00.
+2. **Acción 1:** Obtener Registros, de la Tabla Tareas, con el filtro: Fecha de vencimiento es anterior a hoy AND Estado no es «Completada».
+3. **Acción 2:** Enviar correo electrónico con **Bucle** activado; fuente de datos = matriz de Registros de la Acción 1.
+   - **Para:** Campo Correo electrónico de la persona asignada del elemento actual.
+   - **Asunto:** `Recordatorio: "{{current item → Task Name}}" está vencida`
+   - **Cuerpo:** `Hola, {{current item → Assignee Name}}: tu tarea "{{current item → Task Name}}" venció el {{current item → Due Date}}. Actualízala.`
+
+Resultado: un correo electrónico personalizado por cada tarea vencida.
+
+## Cuerpo de matriz HTTP
+
+En las acciones Solicitud HTTP, Bucle ofrece un modo especial de **Cuerpo de matriz**. En lugar de enviar una solicitud HTTP por elemento (lo que puede ser lento y alcanzar los límites de velocidad), Cuerpo de matriz envía **toda la matriz como una única matriz JSON** en una sola solicitud.
+
+Esto resulta útil cuando la API externa admite operaciones por lotes; por ejemplo, crear varios Registros en una sola llamada a la API o enviar un lote de eventos a un servicio de análisis.
+
+Para utilizar Cuerpo de matriz:
+1. Activa Bucle en una acción Solicitud HTTP.
+2. Elige el modo **Cuerpo de matriz** en lugar del modo predeterminado por elemento.
+3. Toda la matriz se serializa como una matriz JSON y se envía en el cuerpo de la solicitud.
+
+## Consideraciones de rendimiento
+
+- Bucle procesa los elementos **secuencialmente**, no en paralelo. Un bucle de 100 elementos tardará aproximadamente 100 veces más que una sola ejecución.
+- En el caso de matrices grandes (cientos o miles de elementos), comprueba si la acción externa admite entradas por lotes. Utiliza Cuerpo de matriz HTTP cuando la API lo permita.
+- Si recorres la salida de Obtener Registros y realizas solicitudes HTTP por cada Registro, ten en cuenta los límites de velocidad de la API externa.
+- Para conjuntos de datos muy grandes, considera dividir el trabajo en lotes más pequeños mediante la paginación de Obtener Registros (Omitir/Tomar), con varias ejecuciones de la Automatización.
+
+## Cuándo usarlo
+
+- **Crear Registros en lote.** Obtén Registros de una Tabla y recórrelos para crear los Registros correspondientes en otra Tabla.
+- **Enviar correos electrónicos personalizados a una lista.** Obtén una lista de contactos y recórrela para enviar a cada uno un correo electrónico personalizado.
+- **Actualizar varios Registros.** Obtén los Registros que coincidan con una condición y recórrelos para actualizar cada uno (p. ej., marcar todas las tareas vencidas como «Escaladas»).
+- **Realizar llamadas a la API por cada Registro.** Transfiere los datos de cada Registro a un sistema externo, uno por uno.
+- **Procesar un lote de Registros con IA.** Recorre los Registros y utiliza Generar con IA para clasificar, resumir o extraer datos de cada uno.
+
+## Consejos
+
+- Comprueba siempre el tamaño de la matriz antes de activar Bucle. Si Obtener Registros devuelve 1000 Registros, el bucle se ejecutará 1000 veces.
+- Si el bucle crea o actualiza Registros en la misma Tabla que activó la Automatización, ten cuidado de no volver a activarla. Utiliza filtros en el desencadenador para evitar bucles.
+- Los resultados de todas las iteraciones del bucle están disponibles como una matriz en los pasos posteriores, pero esta matriz puede ser grande si el bucle tiene muchas iteraciones. Haz referencia únicamente a lo que necesites.
+
+## Contenido relacionado
+
+- [Obtener Registros](/es/basic/automation/actions/records/get-records) — la fuente de matrices más habitual para Bucle
+- [Crear Registro](/es/basic/automation/actions/records/create-record) — se utiliza habitualmente dentro de un Bucle para crear Registros en lote
+- [Solicitud HTTP](/es/basic/automation/actions/logic/http-request) — se utiliza habitualmente dentro de un Bucle para realizar llamadas a la API por elemento
+- [Enviar correo electrónico](/es/basic/automation/actions/communication/send-email-overview) — se utiliza habitualmente dentro de un Bucle para enviar correos electrónicos en lote

@@ -1,0 +1,170 @@
+---
+title: "Übersicht"
+description: "Tabellen in einer Base erstellen, importieren, teilen und verwalten."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+Jede Base kann mehrere Tabellen zum Speichern und Verwalten zusammengehöriger Daten enthalten. Teable-Tabellen entsprechen Datenbanktabellen — wenn Sie verstehen, [wie sie sich von Tabellenkalkulationen unterscheiden](/de/compare/teable-vs-excel), können Sie Teable optimal nutzen.
+
+## Tabellen erstellen und verwalten
+
+### Tabellen hinzufügen
+
+Klicken Sie in einer Base im Verzeichnis auf die Schaltfläche `+` und wählen Sie eine der folgenden Optionen:
+
+<img
+  src="/images/docs/base/2026-05-22-table-create-menu.png"
+  alt="Menü zum Hinzufügen einer Tabelle"
+  className="docs-screenshot"
+/>
+
+1. Eine neue leere Tabelle erstellen
+2. Aus einer CSV-Datei importieren
+3. Aus einer Excel-Datei importieren
+4. Aus Airtable importieren, wenn die Airtable-Integration konfiguriert ist
+
+Details finden Sie im Abschnitt [Import](/de/basic/table/import).
+
+### Umbenennen und löschen
+
+- **Umbenennen**: Doppelklicken Sie im Verzeichnis auf den Tabellennamen, bearbeiten Sie ihn und klicken Sie dann zum Speichern außerhalb des Namens.
+- **Löschen**: Bewegen Sie den Mauszeiger im Verzeichnis über die Tabelle, klicken Sie auf `...` und wählen Sie anschließend **Löschen**.
+
+<img
+  src="/images/docs/base/2026-05-22-table-rename-delete.png"
+  alt="Eine Tabelle umbenennen oder löschen"
+  className="docs-screenshot"
+/>
+
+Wenn andere Tabellen auf die Tabelle verweisen, die Sie löschen, listet der Bestätigungsdialog die Felder auf, die vom Löschen betroffen sind, sowie die jeweilige Base und Tabelle. Beim Löschen der Tabelle werden diese Verknüpfungsfelder in einzeilige Textfelder umgewandelt, die die Titel der verknüpften Datensätze beibehalten; darauf aufbauende Lookup- oder Rollup-Felder funktionieren anschließend nicht mehr.
+
+### Papierkorb
+
+Klicken Sie oben links in der Base auf das Papierkorbsymbol, um gelöschte Tabellen zu verwalten.
+
+<img
+  src="/images/docs/base/2026-05-22-table-trash.png"
+  alt="Tabellenpapierkorb"
+  className="docs-screenshot"
+/>
+
+- **Wiederherstellen**: Bringt die Tabelle mit allen Daten intakt zurück in die Base.
+- **Papierkorb leeren**: Löscht alle Tabellen im Papierkorb dauerhaft.
+
+<Note>Das Wiederherstellen einer Tabelle macht die Verknüpfungskonvertierung nicht rückgängig. Verknüpfungsfelder in anderen Tabellen bleiben Textfelder. Erstellen Sie sie daher neu, wenn Sie die Verbindung wiederherstellen möchten.</Note>
+
+## Tabellen entwerfen
+
+Klicken Sie im Tabellenmenü auf **Entwurf**, um die grundlegenden Eigenschaften der Tabelle anzuzeigen:
+
+<img
+  src="/images/docs/base/2026-05-22-table-design.png"
+  alt="Tabellenentwurf"
+  className="docs-screenshot"
+/>
+
+**Tabelleninformationen**
+
+Schema, physischer Tabellenname, Beschreibung und Zeitpunkt der letzten Änderung
+
+**Feldeigenschaften**
+
+| Eigenschaft | Beschreibung |
+| :--- | :--- |
+| **id** | Feld-ID |
+| **name** | Feldname |
+| **dbFieldName** | Feldname in der physischen Datenbank |
+| **type** | Feldtyp |
+| **description** | Feldbeschreibung |
+| **graph** | Aktuelle Feldabhängigkeiten anzeigen |
+| **cellValueType** | Aktueller Feldwerttyp |
+| **isLookup** | Ob es sich um ein aus einer verknüpften Tabelle abgerufenes Feld handelt |
+| **isMultipleCellValue** | Ob es sich um ein [Array-Wert-Feld](/de/basic/field/common/is-multiple-value) handelt |
+| **isComputed** | Ob es sich um ein berechnetes Feld handelt (Datensatzwerte berechneter Felder können nicht geändert werden) |
+| **isPending** | Ob eine Berechnung läuft |
+| **hasError** | Ob Berechnungsfehler vorliegen |
+| **notNull** | Ob die Validierung auf Nicht-Null aktiviert ist |
+| **unique** | Ob die Validierung eindeutiger Werte aktiviert ist |
+
+## Tabellen teilen und darauf zugreifen
+
+### Eine Tabelle teilen
+
+Klicken Sie in einer Tabelle oben rechts auf **Teilen**, wechseln Sie zu **Tabelle teilen** und aktivieren Sie **Im Web teilen**, um einen Freigabelink zu erzeugen.
+
+<img
+  src="/images/docs/base/2026-05-22-table-share-entry.png"
+  alt="Einstieg zur Tabellenfreigabe"
+  className="docs-screenshot"
+/>
+<img
+  src="/images/docs/base/2026-05-22-table-share-web.png"
+  alt="Eine Tabelle im Web teilen"
+  className="docs-screenshot"
+/>
+
+<Note>Nach dem Aktivieren der Tabellenfreigabe erscheint die Schaltfläche **Teilen** in jeder Ansicht dieser Tabelle in einem grauen Freigabestatus. Dieser Status stammt von der Tabellenfreigabe und bedeutet nicht, dass jede Ansicht separat geteilt wurde.</Note>
+
+Linkberechtigungen:
+
+<img
+  src="/images/docs/base/2026-05-22-table-share-permissions.png"
+  alt="Berechtigungen für die Tabellenfreigabe"
+  className="docs-screenshot"
+/>
+
+- **Kann anzeigen**: Jeder mit dem Link kann Tabellendaten anzeigen.
+- **Kann bearbeiten**: Angemeldete Benutzer können Datensätze in der geteilten Tabelle bearbeiten.
+- **Als Kopie speichern**: Jeder mit dem Link kann eine Kopie in seinem Space speichern.
+
+Sie können außerdem **Zuschauern das Kopieren von Daten erlauben**, **Per Passwort beschränken**, den Link neu erstellen oder löschen und die Einbettungskonfiguration kopieren.
+
+Um nur die aktuelle Ansicht zu teilen, wechseln Sie zu **Ansicht teilen**. Details finden Sie unter [Symbolleiste der Ansicht](/de/basic/view/toolbar).
+
+### Zugriffswege auf Tabellen
+
+Tabellen verwenden standardmäßig eine [Rasteransicht](/de/basic/view/grid) und sind auch über die [API](/de/api-doc/overview) zugänglich. Sie können zusätzliche Ansichten — beispielsweise Kanban — erstellen, die verschiedene Workflow-Anforderungen erfüllen.
+
+## Suche und Downloads
+
+### Globale Suche
+
+<img
+  src="/images/docs/base/2026-05-22-table-global-search.png"
+  alt="Globale Tabellensuche"
+  className="docs-screenshot"
+/>
+
+- Aktivieren Sie **Suchfeld**, um die zu durchsuchenden Felder auszuwählen. Dieser Modus unterstützt zusätzlich zu Textfeldern auch Datumsfelder.
+- Deaktivieren Sie **Suchfeld**, um eine unscharfe Suche über alle unterstützten Felder auszuführen. Die globale Suche umfasst keine Datums-, Kontrollkästchen- oder Schaltflächenfelder. Ihre Instanz kann außerdem die Anzahl der Felder begrenzen, die von der globalen Suche abgedeckt werden.
+- Aktivieren Sie **Nicht übereinstimmende Zeilen ausblenden**, um nur passende Datensätze anzuzeigen. Deaktivieren Sie die Option, damit alle Zeilen sichtbar bleiben und Übereinstimmungen hervorgehoben werden.
+- Bei großen Tabellen können Bearbeiter **Index** aktivieren, um die Suchgeschwindigkeit zu verbessern. Das Erstellen oder Aktualisieren des Index kann die Lese- und Schreibleistung vorübergehend beeinträchtigen.
+
+### Anhang-Downloads
+
+Massen-Downloads von Anhängen berücksichtigen die aktuellen Suchergebnisse und umfassen nur Anhänge aus passenden Datensätzen.
+
+<img
+  src="/images/docs/base/2026-05-22-table-attachment-download-menu.png"
+  alt="Einstieg zum Massen-Download von Anhängen"
+  className="docs-screenshot"
+/>
+
+Verwenden Sie im Dialog für Massen-Downloads **Präfix für Anhangsname**, um ZIP-Dateien nach dem Standardindex, einem ausgewählten Feld oder mit **Kein Präfix** unter Beibehaltung der Originaldateinamen zu benennen; bei Duplikaten wird automatisch ein Suffix angehängt.
+
+<img
+  src="/images/docs/base/2026-05-22-table-attachment-download-options.png"
+  alt="Optionen für den Massen-Download von Anhängen"
+  className="docs-screenshot"
+/>
+
+## Häufig gestellte Fragen
+
+<AccordionGroup>
+  <Accordion title="Warum kann ich keinen Text in eine Zahlenspalte eingeben?">
+    Teable ist strikter als Excel — jede Spalte hat einen festen Datentyp, und eine Zahlenspalte speichert nur Zahlen. Diese Einschränkung gewährleistet Datenintegrität und ist die Grundlage für erweiterte Filterung und Automatisierung. Details finden Sie unter [Teable vs. Excel](/de/compare/teable-vs-excel).
+  </Accordion>
+  <Accordion title="Was sollte ich vor dem Löschen einer Tabelle prüfen?">
+    Prüfen Sie, ob die Tabelle über **verknüpfte Felder** in anderen Tabellen referenziert wird. Das Löschen der Quelltabelle kann zu Problemen bei der Datenanzeige in verknüpften Tabellen führen.
+  </Accordion>
+</AccordionGroup>

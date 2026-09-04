@@ -1,0 +1,45 @@
+---
+title: "Éviter les déclenchements indésirables avec des filtres et des champs surveillés"
+description: "Empêchez vos automatisations de s’exécuter lorsqu’elles ne le devraient pas"
+---
+
+<Tip>Nous vous recommandons de créer les exemples d’automatisation directement dans le Chat IA. Décrivez simplement le flux de travail souhaité : l’IA se chargera de toute la configuration, y compris du déclencheur, des actions, du script et des paramètres.</Tip>
+
+## Créer avec l’IA
+
+Ouvrez le Chat IA dans la barre latérale droite de votre table et indiquez à l’IA ce que vous souhaitez. Par exemple, vous pouvez dire :
+
+*"Lorsque le champ Statut devient Approuvé, envoie un e-mail de notification au responsable. Déclenche le flux de travail uniquement lors des changements du Statut et ignore les modifications des autres champs"*
+
+L’IA créera automatiquement le flux de travail complet. Vous pourrez examiner le script généré, le tester avec des données réelles et activer le flux de travail lorsqu’il sera prêt.
+
+Un flux de travail qui se déclenche trop souvent gaspille des exécutions, envoie des e-mails indésirables et génère du bruit. Voici comment rendre les déclencheurs plus précis.
+
+## Utiliser les champs surveillés
+
+Lorsque vous utilisez **Lorsqu’un enregistrement est mis à jour**, sélectionnez toujours des champs précis plutôt que « Tous les champs ».
+
+**Problème :** un flux de travail envoie une notification lorsque le champ Statut change. Si « Tous les champs » est sélectionné, il se déclenche également lorsqu’une personne modifie la Description ou ajoute un commentaire.
+
+**Solution :** définissez uniquement **Statut** comme champ surveillé. Le flux de travail ignore désormais tous les autres changements.
+
+## Utiliser des filtres
+
+Ajoutez un filtre à n’importe quel déclencheur d’enregistrement afin de limiter les enregistrements qui activent le flux de travail.
+
+**Problème :** un flux de travail traite tous les nouveaux enregistrements, mais certains sont des entrées de test.
+
+**Solution :** ajoutez un filtre : `Type` **n’est pas** `Test`. Seuls les véritables enregistrements déclenchent le flux de travail.
+
+## Combiner les deux
+
+Pour un contrôle maximal, utilisez ensemble les champs surveillés **et** un filtre :
+
+- Champs surveillés : `Statut`
+- Filtre : `Statut` **est** `Approuvé`
+
+Ainsi, le flux de travail ne se déclenche que lorsque le champ Statut change **et** que sa nouvelle valeur est « Approuvé ».
+
+## Utiliser « Lorsqu’un enregistrement remplit les conditions » pour les changements d’état
+
+Si vous souhaitez déclencher le flux de travail **uniquement lors de la transition** (par exemple, de « En attente » à « Approuvé »), utilisez plutôt le déclencheur **Lorsqu’un enregistrement remplit les conditions**. Il s’exécute une seule fois, au moment où l’enregistrement commence à remplir les conditions, et non après chaque modification ultérieure.

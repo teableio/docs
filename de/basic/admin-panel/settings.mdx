@@ -1,0 +1,104 @@
+---
+title: "Instanzeinstellungen"
+description: "Verwalten Sie Schalter auf Instanzebene, E-Mail-Einstellungen und ausstehende Systempunkte."
+---
+
+<Tip>Verfügbar ab dem selbst gehosteten Business-Tarif</Tip>
+
+Pfad: Admin-Panel → Instanzeinstellungen
+
+Die Seite **Instanzeinstellungen** dient zur Verwaltung der zentralen Einstellungen der gesamten Instanz, einschließlich **Allgemeine Einstellungen**, **E-Mail** und der Systemprüfungen im Bereich **Ausstehende Konfiguration**.
+
+## Überblick
+
+Diese Seite behandelt hauptsächlich Grundlagen auf Instanzebene. Die wichtigsten Einstellungen sind wie folgt gruppiert:
+
+| Einstellungstyp | Beschreibung |
+|------|------|
+| **Allgemeine Einstellungen** | Umfasst **Erstellung neuer Konten zulassen**, **Gesperrte E-Mail-Domains**, **Versenden von Space-Einladungen zulassen**, **Allen das Erstellen neuer Spaces erlauben** und **E-Mail-Verifizierung aktivieren** |
+| **E-Mail** | Umfasst **Benachrichtigungs-E-Mail** und **Automatisierungs-E-Mail** für Passwortzurücksetzungen, E-Mail-Verifizierung, Benachrichtigungs-E-Mails und Einladungs-E-Mails |
+| **Systemlimits** | Zeigt die wirksamen Limits der Instanz für Tabellendaten, Felder, Ansichten und Text |
+
+Um System-E-Mails zu aktivieren, schließen Sie die Einrichtung unter **E-Mail** ab.
+
+Verwenden Sie **Gesperrte E-Mail-Domains**, um die Registrierung von E-Mail-Adressen aus aufgeführten Domains zu verhindern. Teable lehnt diese Domains vor dem Versand von Bestätigungscodes für die Registrierung ab, und es werden keine Einladungs-E-Mails an oder von diesen Domains gesendet.
+
+<Tip>
+Wenn E-Mail nicht vollständig konfiguriert ist, wird der Eintrag **E-Mail** im Bereich **Ausstehende Konfiguration** nicht grün.
+</Tip>
+
+## Systemlimits
+
+**Systemlimits** zeigt die aktuellen Limits auf Instanzebene für Tabellendaten und zugehörige Konfigurationen. Wenn Sie ein Limit anpassen müssen, verwenden Sie die auf dieser Seite angezeigte Umgebungsvariable.
+
+<Note>
+Starten Sie den Dienst nach der Änderung einer Umgebungsvariable neu, damit der neue Wert wirksam wird.
+</Note>
+
+## Ausstehende Konfiguration
+
+Der Bereich **Ausstehende Konfiguration** rechts ist eine System-Checkliste. Er zeigt, welche wichtigen Einstellungen für die Instanz noch fehlen.
+
+Zu den häufigen Prüfungen auf dieser Seite gehören:
+
+| Element | Auswirkung |
+|------|------|
+| **Umgebungsvariable PUBLIC_ORIGIN** | Beeinflusst Funktionen, die auf einer externen Zugriffs-URL beruhen, etwa Anhänge und Importe |
+| **HTTPS aktivieren** | Beeinflusst Funktionen, die HTTPS benötigen, etwa Kopieren und Einfügen |
+| **E-Mail** | Beeinflusst Passwortzurücksetzungen, E-Mail-Verifizierung, Benachrichtigungen und ähnliche Funktionen |
+
+Wenn diese Punkte nicht abgeschlossen sind, kann die Instanz weiterhin normal geöffnet werden, einige Funktionen können jedoch nicht verfügbar bleiben.
+
+## Beziehung zu KI-Einstellungen
+
+**Instanzeinstellungen** zeigt einen Teil der Prüfungen auf Systemebene, ist aber nicht der Ort, an dem Sie **KI-Modelle**, die **AI Chat-Laufzeit** oder den **App Builder** konfigurieren.
+
+Für diese Einstellungen gehen Sie hierhin:
+
+- [KI-Einstellungen](/de/basic/admin-panel/ai-setting)
+
+Sie können sich die Aufteilung so vorstellen:
+
+- **Instanzeinstellungen**: Decken die Kernfunktionen der Instanz selbst ab
+- **KI-Einstellungen**: Decken AI Chat, KI-Felder, KI-Automatisierung und App Builder ab
+
+## Prüfungsreihenfolge
+
+Wenn Sie eine neue selbst gehostete Bereitstellung vorbereiten oder zum ersten Mal live gehen, prüfen Sie diese Punkte der Reihe nach:
+
+<Steps>
+  <Step title="Zugriffs-URL prüfen">
+    Stellen Sie sicher, dass **PUBLIC_ORIGIN** korrekt konfiguriert ist.
+  </Step>
+  <Step title="HTTPS prüfen">
+    Stellen Sie sicher, dass für die Instanz bereits **HTTPS** aktiviert ist.
+  </Step>
+  <Step title="E-Mail prüfen">
+    Stellen Sie sicher, dass **SMTP** konfiguriert ist und E-Mails erfolgreich senden kann.
+  </Step>
+  <Step title="Mit KI-Einstellungen fortfahren">
+    Fahren Sie nach der Bestätigung der grundlegenden Punkte mit den [KI-Einstellungen](/de/basic/admin-panel/ai-setting) fort.
+  </Step>
+</Steps>
+
+So können Sie die Punkte unter **Ausstehende Konfiguration** leichter der Reihe nach auf grün setzen und die Fehlerbehebung wird erleichtert.
+
+## FAQ
+
+<AccordionGroup>
+<Accordion title="Die Instanz wird normal geöffnet, rechts gibt es jedoch noch offene Punkte">
+
+Das bedeutet in der Regel, dass die Instanz erreichbar ist, aber eine oder mehrere wichtige Laufzeitanforderungen noch fehlen. Folgen Sie den Hinweisen im rechten Bereich und schließen Sie sie einzeln ab, statt sich nur darauf zu verlassen, ob sich die Seite öffnet.
+</Accordion>
+
+<Accordion title="E-Mail funktioniert manchmal, wird aber weiterhin nicht als abgeschlossen markiert">
+
+Prüfen Sie, ob die gespeicherten SMTP-Einstellungen vollständig sind, ob sie dem vorgesehenen Versandzweck entsprechen und ob Bestätigungs- oder Benachrichtigungs-E-Mails zuverlässig gesendet werden können.
+</Accordion>
+
+<Accordion title="Warum ist PUBLIC_ORIGIN wichtig?">
+
+Viele Funktionen, die auf einer externen Zugriffs-URL beruhen, sind davon abhängig. Wenn der konfigurierte Wert nicht mit der tatsächlichen Zugriffs-URL übereinstimmt, funktionieren Funktionen wie Importe, Anhänge oder Weiterleitungen möglicherweise nicht korrekt.
+</Accordion>
+</AccordionGroup>
+

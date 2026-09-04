@@ -1,0 +1,123 @@
+---
+title: "Cuadrícula"
+description: "Muestra los Registros en filas y columnas para consultarlos y editarlos de forma estructurada y depurar los datos."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+La Vista de cuadrícula es la Vista más habitual de Teable. Cada Registro aparece como una fila y cada Campo, como una columna. Utilízala para la introducción diaria de datos, la edición en bloque, la ordenación, los filtros y las comprobaciones rápidas.
+
+## Casos de uso
+
+| Situación | Configuración recomendada |
+| --- | --- |
+| Mantener los datos diariamente | Introducir, editar, copiar y pegar Registros directamente en la cuadrícula |
+| Depurar muchos Registros | Combinar filtros, grupos, criterios de ordenación y Campos ocultos |
+| Comprobar datos numéricos | Utilizar las estadísticas de selección para consultar la media, el recuento de celdas con contenido y la suma |
+| Trabajar con Tablas anchas | Inmovilizar las columnas principales para mantener visibles los Campos identificativos |
+
+## Crear una Vista de cuadrícula
+
+Todas las Tablas nuevas incluyen una Vista de cuadrícula de forma predeterminada. Para crear otra destinada a un flujo de trabajo concreto:
+
+<Steps>
+  <Step title="Abre la barra lateral de Vistas">
+    Ve a la Tabla de destino y abre la lista de Vistas de la izquierda.
+  </Step>
+  <Step title="Crea una Vista">
+    Haz clic en `+` en la parte superior de la barra lateral de Vistas y elige **Vista de cuadrícula**.
+  </Step>
+  <Step title="Asigna un nombre y guarda">
+    Introduce un nombre para la Vista, establece el modo de colaboración si es necesario y crea la Vista.
+  </Step>
+</Steps>
+
+## Ajustes de visualización
+
+### Administrar la visualización de Campos
+
+<img
+  src="/images/docs/base/2026-05-22-field-hide-tool.png"
+  alt="Herramienta para ocultar Campos"
+  className="docs-screenshot"
+/>
+
+| Acción | Descripción |
+| --- | --- |
+| Ocultar Campos | Haz clic en **Campos ocultos** en la barra de herramientas y activa o desactiva los Campos |
+| Reordenar Campos | Arrastra los encabezados de los Campos a la izquierda o a la derecha |
+| Buscar Campos | Busca nombres de Campos en el panel de Campos ocultos cuando la Tabla contenga muchos Campos |
+
+Los Campos ocultos solo modifican la Vista actual. No eliminan Campos ni datos de los Registros.
+
+### Ajustar la altura de las filas y de los nombres de Campo
+
+Haz clic en **Altura de fila** en la barra de herramientas para ajustar la densidad de visualización de la Vista de Tabla.
+
+<img
+  src="/images/docs/base/2026-05-26-grid-row-height-menu.png"
+  alt="Menú de altura de fila de la Vista de cuadrícula"
+  className="docs-screenshot"
+/>
+
+- **Altura de fila**: elige Corta, Media, Alta o Muy alta para ajustar la altura de las filas de los Registros.
+- **Nombre del Campo**: elige 1 línea, 2 líneas o 3 líneas para controlar la altura con la que se muestran los nombres de las columnas en el encabezado de la Tabla.
+
+### Inmovilizar columnas
+
+Cuando una Tabla contiene muchos Campos, inmoviliza las columnas principales para mantenerlas visibles al desplazarte horizontalmente.
+
+<img
+  src="/images/docs/base/2026-05-26-grid-freeze-divider.png"
+  alt="Divisor para inmovilizar columnas en la Vista de cuadrícula"
+  className="docs-screenshot"
+/>
+
+- Arrastra el divisor de inmovilización para inmovilizar las columnas situadas a su izquierda.
+
+<img
+  src="/images/docs/base/2026-05-26-grid-freeze-field-menu.png"
+  alt="Opción Inmovilizar hasta este Campo en la Vista de cuadrícula"
+  className="docs-screenshot"
+/>
+
+- Haz clic con el botón derecho en el encabezado de un Campo y elige **Inmovilizar hasta este Campo** para inmovilizar ese Campo y todos los situados a su izquierda.
+- Teable conserva un área desplazable a la derecha de las columnas inmovilizadas. Si la ventana actual es demasiado estrecha, se desactiva **Inmovilizar hasta este Campo** o Teable muestra **No se puede inmovilizar hasta esta zona porque la ventana actual es demasiado estrecha**. Amplía la ventana o inmoviliza menos columnas.
+
+## Editar y revisar datos
+
+### Editar y trabajar en bloque
+
+- **Editar una celda**: haz clic en cualquier celda e introduce o modifica el contenido.
+- **Ver contenido extenso**: haz doble clic en una celda, o selecciónala y pulsa Espacio, para abrir todo el contenido.
+- **Rellenar arrastrando**: arrastra el controlador de relleno de la esquina inferior derecha de una celda seleccionada para copiar los valores hacia abajo.
+
+### Estadísticas de selección
+
+<img
+  src="/images/docs/base/2026-05-26-grid-selection-statistics.png"
+  alt="Estadísticas de selección de la Vista de cuadrícula"
+  className="docs-screenshot"
+/>
+
+Cuando seleccionas un intervalo de celdas, Teable muestra **Media**, **Con contenido** y **Suma** para los valores numéricos. Utiliza estos datos para comprobar rápidamente importes, recuentos y puntuaciones.
+
+### Seguir la actividad de los Campos calculados
+
+Cuando un Campo calculado está en espera, calculándose o ha fallado, haz clic en el indicador de actividad de cálculo situado a la derecha de la barra de herramientas de la Cuadrícula para consultar el estado de la Tabla actual.
+
+| Estado | Información mostrada |
+| --- | --- |
+| **Calculando** | Registros afectados y progreso del cálculo |
+| **En espera** | Campos en cola para calcularse |
+| **Con errores** | Error de cálculo más reciente |
+
+Si un valor calculado supera el tamaño que puede contener una celda, el Campo muestra `El valor de la celda calculada es demasiado grande`, junto con el tamaño intentado y el máximo. El límite es de 256 KB por celda calculada. El resto de la Tabla continúa calculándose y la celda conserva su valor anterior, por lo que el Campo vuelve a calcularse en la siguiente escritura cuando el valor ya cabe.
+
+Un único fragmento de texto o un número rara vez alcanza los 256 KB. El límite suele alcanzarse cuando un Registro enlaza con muchos otros Registros y un Campo de Búsqueda o Acumulación incorpora todo su texto largo en una celda. Por ejemplo, un cliente con 500 Registros de seguimiento, cada uno con notas de varios cientos de palabras, supera el límite cuando se buscan todas las notas.
+
+La solución consiste en mantener los detalles fuera de la celda: utiliza una Acumulación para contar o sumar los Registros enlazados, o busca un Campo más breve, como un estado o un número. Abre la Tabla enlazada cuando necesites leer todo el contenido.
+
+## Notas
+
+- Los Campos ocultos, la ordenación, los filtros, la agrupación y otros ajustes similares solo se aplican a la Vista actual.
+- Para evitar cambios accidentales de configuración, bloquea la Vista. Solo los usuarios con permiso pueden desbloquearla o cambiarla.

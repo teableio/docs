@@ -1,0 +1,330 @@
+---
+title: App-Builder
+description: Verwandeln Sie Ihre Daten mit KI in individuelle Webanwendungen.
+---
+
+<Note>In allen Cloud-Plänen verfügbar; für Self-Hosted ist Business oder höher erforderlich.</Note>
+
+Mit dem Teable App-Builder können Sie Ihre Datenbanken ohne Programmierung in voll funktionsfähige, individuelle Webanwendungen verwandeln. Durch die Kombination der Leistungsfähigkeit Ihrer Datenstruktur mit KI-gestütztem Design können Sie in wenigen Minuten interne Tools, Kundenportale und Daten-Dashboards erstellen.
+
+## Überblick
+
+Der App-Builder folgt einem „Prompt-zu-App“-Workflow. Sie beschreiben, was Sie möchten, und die KI erstellt die Anwendungsstruktur, Seiten und Logik für Sie. Anschließend können Sie jedes Detail mit dem visuellen Editor oder Code optimieren.
+
+<Note>
+Verwenden Sie den App-Builder, um individuelle Oberflächen und eigenständige Apps zu erstellen. Für interaktive Datenanalysen und Ad-hoc-Fragen innerhalb der Datenbank verwenden Sie [KI-Chat](/de/basic/ai/ai-chat).
+</Note>
+
+## Eine App erstellen
+
+Es gibt zwei Hauptwege, eine App zu erstellen:
+
+1. **Aus einer Base**: Klicken Sie in einer beliebigen Base auf „App erstellen“, um eine mit Ihren aktuellen Daten verknüpfte Anwendung zu generieren.
+2. **Aus dem Chat**: Öffnen Sie KI-Chat und sagen Sie „Erstelle eine CRM-App für diese Kundentabelle“.
+
+## Die Oberfläche des App-Editors
+
+Der App-Builder bietet eine duale Oberfläche für nicht technische Nutzer und Entwickler.
+
+<img
+  src="/images/docs/ai/2026-05-21-app-builder-editor-interface.png"
+  alt="Oberfläche des App-Builder-Editors"
+  className="docs-screenshot"
+/>
+
+### 1. Chat-Oberfläche (KI-gesteuert)
+Die Kommandozentrale für Ihre App.
+- **Bearbeitung in natürlicher Sprache**: Beschreiben Sie Änderungen wie *„Mache die Kopfzeile blau“* oder *„Füge ein Übermittlungsformular für neue Datensätze hinzu“*.
+- **Automatisches Routing**: Die KI versteht, auf welche Komponente oder Seite Sie sich beziehen, und ändert sie direkt.
+- **Integrationen**: Wenn die App-Aufgabe Zugriff auf ein Drittanbieter-Konto benötigt, kann der App-Builder im Chat-Bereich eine Karte wie **Slack verbinden** anzeigen. Klicken Sie auf **Verbinden**, um sich per OAuth zu autorisieren. Klicken Sie auf **Überspringen**, um diese Autorisierung abzubrechen; die KI fährt mit den Teilen fort, die sie ohne diese Verbindung abschließen kann.
+- **Skills**: Öffnen Sie das Menü **+** und wählen Sie **Skills**, um Skills für diese App-Unterhaltung zu verwalten. Ein hier hinzugefügter Skill ist nur für die aktuelle App verfügbar; die mit der Base und dem Space der App geteilten Skills können hier ebenfalls verwendet werden. Geben Sie `/` in das Eingabefeld ein, um einen aktivierten Skill auszuwählen.
+- **Dateien verwalten**: Öffnen Sie **+** → **Mehr** → **Dateien verwalten**, um Dateien in der App-Sandbox anzuzeigen. Verwenden Sie dies, um unterstützte Dateien in der Vorschau anzuzeigen, generierte Dateien herunterzuladen oder nicht mehr benötigte Dateien und Ordner zu löschen.
+- **Unterhaltung löschen**: Wenn die aktuelle Unterhaltung vom Thema abgekommen ist, klicken Sie unten rechts im Bereich auf **Chat löschen**, um eine neue Sitzung zu beginnen. Dadurch wird der Chatverlauf der aktuellen Unterhaltung gelöscht, nicht jedoch die App selbst. Bei der ersten Verwendung wird eine Bestätigung angezeigt, und Sie können festlegen, dass sie beim nächsten Mal nicht wieder angezeigt wird.
+
+### 2. Vorschau-Bereich
+- **Vorschau und Live**: Der Bereich hat zwei Tabs. **Vorschau** führt die Version aus, die Sie gerade erstellen, einschließlich noch nicht veröffentlichter Änderungen. **Live** lädt die veröffentlichte App über ihre öffentliche Adresse, sodass Sie vergleichen können, was Ihre Nutzer sehen und woran Sie arbeiten. Bis die App veröffentlicht ist, zeigt **Live** stattdessen eine Veröffentlichungsaufforderung an. Der App-Builder öffnet eine veröffentlichte App unter **Live** und eine unveröffentlichte unter **Vorschau** und merkt sich anschließend den Tab, den Sie zuletzt für diese App verwendet haben.
+- **Simulation mehrerer Geräte**: Verwenden Sie den Umschalter oben, um zwischen den Ansichten **Desktop**, **Tablet** und **Mobil** zu wechseln.
+- **Live-Generierung**: Der Vorschau-Bereich kann anzeigen, wie die App Gestalt annimmt, während der App-Builder sie generiert.
+- **Sofortiges Feedback**: Nachdem der App-Builder eine Änderung abgeschlossen hat, wird die Vorschau mit der neuesten gespeicherten Version aktualisiert.
+
+Verwenden Sie im Tab **Vorschau** die schwebende Werkzeugleiste unten, um gezielte Änderungen vorzunehmen:
+
+- Wählen Sie **Element zum Bearbeiten auswählen** und klicken Sie dann auf ein Element in der Vorschau. Der App-Builder fügt das Element zur Chat-Eingabe hinzu. Fügen Sie Ihre Anweisung hinzu und senden Sie die Nachricht, damit die KI diesen bestimmten Teil der App aktualisieren kann.
+- Wählen Sie **Text direkt bearbeiten**, klicken Sie dann auf statischen Text in der Vorschau und geben Sie den Ersatztext ein. Sie können mehr als ein Textelement bearbeiten, bevor Sie auf **Speichern** klicken. Klicken Sie auf **Änderungen verwerfen**, um die ausstehenden Textänderungen rückgängig zu machen.
+
+Dynamischer Text, etwa aus Daten geladene oder von der App berechnete Inhalte, kann nicht direkt bearbeitet werden. Wählen Sie stattdessen das Element aus und beschreiben Sie die Änderung im Chat. Elementauswahl und direkte Textbearbeitung werden pausiert, während die KI generiert. Drücken Sie `Esc`, um einen der beiden Modi zu verlassen.
+
+### 3. Entwicklermodus (Code-Editor)
+Für unbegrenzte Anpassungsmöglichkeiten haben Sie direkten Zugriff auf den Code.
+- **Monaco Editor**: Eine VS-Code-ähnliche Umgebung direkt im Browser.
+- **React-Komponenten**: Bearbeiten Sie den zugrunde liegenden React-Code, Tailwind-CSS-Klassen und die Logik.
+- **Dateibaum**: Navigieren Sie durch die Projektstruktur.
+
+<img
+  src="/images/docs/ai/2026-05-21-app-builder-code-editor-en.png"
+  alt="App-Builder-Code-Editor"
+  className="docs-screenshot"
+/>
+
+#### Code herunterladen
+Sie können die gesamte App jederzeit als ZIP-Archiv herunterladen:
+1. Wechseln Sie im Editor zum Tab **Code**.
+2. Klicken Sie in der Tab-Leiste auf das Menü **`...`**.
+3. Wählen Sie **Code herunterladen**, um ein ZIP-Archiv zu speichern, das alle Quelldateien enthält.
+
+Wenn die App eigene Umgebungsvariablen verwendet, kann das heruntergeladene Archiv eine `.env`-Datei im Stammverzeichnis enthalten. Prüfen Sie sie, bevor Sie die ZIP-Datei weitergeben.
+
+#### Code importieren
+Sie können den Code der App durch Importieren einer ZIP-Datei aktualisieren:
+1. Wechseln Sie im Editor zum Tab **Code**.
+2. Klicken Sie in der Tab-Leiste auf das Menü **`...`**.
+3. Wählen Sie **Code importieren** und wählen Sie eine ZIP-Datei mit bis zu 20 MB aus.
+
+<Note>
+- Schließen Sie nur Quelldateien ein. `node_modules`, `.next` und andere Build-Artefakte werden automatisch ignoriert.
+- Die ZIP-Datei ersetzt das vorhandene Projekt. Nicht enthaltene Dateien werden aus der neuen Version entfernt.
+- Wenn die ZIP-Datei einen einzelnen umschließenden Ordner enthält, entfernt Teable diesen Ordner. Sie können den äußersten Projektordner direkt komprimieren.
+- Das importierte Projekt muss `package.json` im Stammverzeichnis des Projekts enthalten.
+- Eine `.env`-Datei im Stammverzeichnis der ZIP-Datei wird in die **Secrets** der App eingelesen. Andere `.env*`-Varianten wie `.env.local` werden ignoriert.
+</Note>
+
+#### Secrets
+
+Verwenden Sie **Secrets** für API-Schlüssel, Anmeldedaten und Konfigurationswerte, die Ihre App während der Ausführung benötigt. Öffnen Sie im Chat-Bereich des App-Builders das Menü **+** und wählen Sie **Secrets**.
+
+| Detail | Verhalten |
+| --- | --- |
+| Verfügbarkeit | App-Secrets sind in der Vorschauumgebung der App und in der veröffentlichten App verfügbar |
+| Codezugriff | Serverseitiger App-Code kann sie aus Umgebungsvariablen wie `process.env.MY_API_KEY` lesen |
+| Gespeicherte Werte | Secret-Werte sind nach dem Speichern nur schreibbar; geben Sie einen neuen Wert ein, um einen Wert zu aktualisieren |
+| Namensformat | Der **Name** muss mit einem Großbuchstaben beginnen und darf Großbuchstaben, Ziffern und Unterstriche enthalten |
+
+Nachdem Sie einen Secret-Wert hinzugefügt, gelöscht oder geändert haben, verwendet die Vorschauumgebung der App den neuen Wert. Die veröffentlichte App verwendet ihn erst nach einer erneuten Veröffentlichung. Das Bearbeiten nur einer Secret-Beschreibung erfordert keine erneute Veröffentlichung.
+
+#### App-Dateien verwalten
+
+Der App-Builder speichert hochgeladene Dateien, generierte Ausgaben und Laufzeitdateien in der App-Sandbox. Öffnen Sie im Chat-Bereich **+** → **Mehr** → **Dateien verwalten**, um sie zu prüfen. Unterstützte Dateitypen werden in der Vorschau geöffnet. Sie können außerdem Dateien herunterladen oder nicht mehr benötigte Dateien und Ordner löschen.
+
+#### KI-Funktionen zu einer App hinzufügen
+
+Fügen Sie KI hinzu, wenn Ihre App Datensätze zusammenfassen, Anfragen klassifizieren, Antworten entwerfen oder Fragen von App-Nutzern beantworten soll.
+
+Sie können dem App-Builder sagen, was Sie möchten, beispielsweise: „Füge einen KI-Antwortassistenten für Support-Tickets hinzu“ oder „Fasse jede Formularübermittlung zusammen.“ Der App-Builder kann den **KI-Zugriff** aktivieren und den Code für die Funktion hinzufügen.
+
+<Info>
+Nachdem der App-Builder die KI-Funktion hinzugefügt hat, verwendet die App-Vorschau die neue Version. Die veröffentlichte App verwendet sie erst nach einer erneuten Veröffentlichung.
+</Info>
+
+## Code mit GitHub synchronisieren
+
+<Note>In Cloud-Business-Plänen und höher verfügbar.</Note>
+
+Verknüpfen Sie eine App mit einem privaten GitHub-Repository, wenn Sie Code in Pull Requests prüfen, eine Kopie außerhalb von Teable aufbewahren oder an der App in Ihrem lokalen Editor arbeiten möchten. Nach der Verknüpfung werden die App und das Repository in beide Richtungen synchronisiert: Jede neue App-Version wird zu GitHub gepusht, und Commits, die Sie zu GitHub pushen, werden zu neuen App-Versionen.
+
+### Ein Konto verbinden und das Repository erstellen
+
+Generieren Sie die App zunächst mindestens einmal. Solange die App keinen Code enthält, zeigt die GitHub-Schaltfläche **Generieren Sie zuerst die App, um GitHub zu verbinden** an und führt keine Aktion aus.
+
+<Steps>
+  <Step title="GitHub-Bereich öffnen">Klicken Sie auf das GitHub-Symbol in der Kopfzeile der App, um **GitHub-Synchronisierung** zu öffnen. Sie benötigen Bearbeitungszugriff auf die App.</Step>
+  <Step title="Ein Konto verbinden">Klicken Sie auf **GitHub verbinden** und schließen Sie die Installation im Pop-up-Fenster ab. Wählen Sie Ihr persönliches Konto oder eine Organisation, die Sie verwalten. Erlauben Sie Pop-ups, falls Ihr Browser das Fenster blockiert.</Step>
+  <Step title="Konto auswählen">Wählen Sie das verbundene Konto unter **GitHub-Konto** aus. Klicken Sie auf **+**, um ein weiteres Konto zu verbinden.</Step>
+  <Step title="Repository benennen">**Repository-Name** wird aus dem App-Namen vorausgefüllt. Namen dürfen Buchstaben, Ziffern, `.`, `-` und `_` enthalten und bis zu 100 Zeichen lang sein.</Step>
+  <Step title="Erstellen und verknüpfen">Klicken Sie auf **Repository erstellen & verknüpfen**. Bei einem persönlichen Konto fordert GitHub Sie in einem weiteren Pop-up zur Autorisierung der Erstellung auf.</Step>
+</Steps>
+
+Teable erstellt ein neues privates Repository und committet den aktuellen App-Code in den Branch `main`, zusammen mit einer README, die auf die App zurückverweist und erklärt, wie beide synchron bleiben. Sie können eine App nicht mit einem bereits vorhandenen Repository verknüpfen.
+
+Standardmäßig gehört eine Verbindung der Person, die sie erstellt hat. Damit Mitarbeitende auf demselben Organisationskonto aufbauen können, wählen Sie die Verbindung aus und aktivieren Sie **Anderen Mitgliedern die Nutzung dieser Verbindung erlauben**. Andere Mitglieder mit Bearbeitungszugriff auf Apps können dann für ihre eigenen Apps unter dieser Organisation Repositories erstellen. Persönliche Verbindungen können nicht geteilt werden, da GitHub die Autorisierung des Kontoinhabers selbst erfordert, um ein Repository zu erstellen.
+
+### So funktioniert die Synchronisierung
+
+| Richtung | Was geschieht |
+| --- | --- |
+| App → GitHub | Jede neue App-Version wird in den Branch `main` des Repositorys gepusht. |
+| GitHub → App | In `main` gepushte Commits werden zu einer neuen App-Version. Eine Nachricht im Chat-Bereich meldet, was synchronisiert wurde, und eine geöffnete Vorschau lädt mit dem neuen Code neu. |
+
+Umgebungsdateien werden nie gepusht. Siehe unten **Umgebungsvariablen und lokale Entwicklung**.
+
+Der Bereich zeigt den aktuellen Status neben dem Repository-Namen an:
+
+| Status | Bedeutung | Was zu tun ist |
+| --- | --- | --- |
+| **Synchronisiert** | Das Repository entspricht der neuesten App-Version. | Keine Aktion erforderlich. |
+| **Wird synchronisiert** | Ein Push wird gerade ausgeführt. | Warten Sie; der Bereich aktualisiert sich selbst. |
+| **Konflikt** | Der Branch `main` enthält Commits, die Teable nicht erstellt hat und die nicht automatisch zusammengeführt werden können. | Führen Sie den Branch `teable-sync` auf GitHub mit einem Merge zusammen. Siehe unten. |
+| **Pausiert** | Teable hat die Synchronisierung angehalten, weil die GitHub-App deinstalliert oder ausgesetzt wurde. | Der Bereich zeigt an, welche Ursache zutrifft. Das Aufheben einer Aussetzung setzt die Synchronisierung selbstständig fort. |
+| **Fehler** | Der letzte Synchronisierungsversuch ist fehlgeschlagen. | Lesen Sie den Grund im Bereich und klicken Sie auf **Wiederholen**. |
+
+### Einen Konflikt auflösen
+
+Teable führt niemals einen Force-Push für Ihren Branch aus. Wenn die Verläufe auseinanderlaufen, legt Teable die neueste App-Version in einem Branch namens `teable-sync` ab und markiert die Verknüpfung als **Konflikt**. Führen Sie `teable-sync` auf GitHub mit `main` zusammen; der Merge wird als neue App-Version zurückgeführt und die Verknüpfung kehrt zu **Synchronisiert** zurück. Solange der Konflikt besteht, verschieben spätere App-Versionen den Branch `teable-sync` weiter, sodass ein Merge immer die neueste Arbeit übernimmt.
+
+### Umgebungsvariablen und lokale Entwicklung
+
+Das Repository enthält nur Quellcode. Teable pusht niemals eine Datei, deren Name mit `.env` beginnt: weder im Stammverzeichnis des Projekts noch in einem Unterordner oder im Commit-Verlauf. Umgebungswerte befinden sich in den **Secrets** der App und gelangen nie in Git. Die `.gitignore` des Repositorys enthält bereits `.env*`, sodass ein lokaler Klon nicht versehentlich eine solche Datei committet.
+
+So führen Sie die App auf Ihrem eigenen Rechner aus:
+
+<Steps>
+  <Step title="Klonen und installieren">Klonen Sie das Repository und führen Sie `pnpm install` aus.</Step>
+  <Step title="Variablen kopieren">Klicken Sie im GitHub-Bereich auf **Lokale Umgebungsvariablen kopieren** und fügen Sie dann die Zwischenablage in eine `.env`-Datei im Stammverzeichnis des Projekts ein.</Step>
+  <Step title="App starten">Führen Sie `pnpm dev` aus.</Step>
+</Steps>
+
+Der kopierte Inhalt entspricht dem, was die App in der eigenen Sandbox von Teable erhält: Ihre Secrets sowie die Variablen, die die Plattform für den API-Endpunkt, das Zugriffstoken und den KI-Zugriff der App einfügt.
+
+<Warning>
+Die Zeile `TEABLE_APP_TOKEN` in dieser Datei gewährt Zugriff auf die Daten der App. Deshalb können sie nur Mitglieder mit Bearbeitungszugriff auf die App kopieren. Committen Sie die Datei niemals und fügen Sie sie niemals in ein Issue oder einen Pull Request ein.
+</Warning>
+
+Um ein Secret hinzuzufügen oder zu ändern, bearbeiten Sie **Secrets** in Teable statt der lokalen Datei. Eine in GitHub committete `.env` erstellt oder aktualisiert kein Secret. Kopieren Sie die Variablen nach einer Secret-Änderung erneut, um Ihre lokale `.env` zu aktualisieren.
+
+### Verknüpfung mit dem Repository aufheben
+
+Klicken Sie auf das Löschsymbol neben dem Repository-Namen und bestätigen Sie. Die Synchronisierung wird beendet; das Repository und sein Code bleiben auf GitHub. Wenn Sie dieselbe App später erneut verknüpfen, wird ein neues Repository erstellt, anstatt die Verbindung zum alten wiederherzustellen.
+
+## Veröffentlichung und Verwaltung
+
+### Ihre App veröffentlichen
+Wenn Ihre App bereit ist, klicken Sie oben rechts auf die Schaltfläche **Veröffentlichen** (Pfeilsymbol).
+- **Öffentliche URL**: Teable generiert eine sichere, öffentlich zugängliche URL für Ihre App.
+- **Eigene Domain**: Ordnen Sie der App Ihre eigene Domain zu.
+- **Branding anzeigen**: Verwenden Sie **Branding anzeigen** im Menü **Veröffentlichen**, um zu steuern, ob die veröffentlichte App das Abzeichen **Mit Teable erstellt** anzeigt. Wenn Sie diese Einstellung nach der Veröffentlichung ändern, klicken Sie auf **Neu bereitstellen**, um sie anzuwenden.
+- **Veröffentlichung aufheben**: Verwenden Sie für eine veröffentlichte App **Veröffentlichung aufheben** im Veröffentlichungsmenü, um den öffentlichen Link offline zu nehmen.
+- **Änderungen der App-Konfiguration**: Wenn im Veröffentlichungsmenü **Laufzeitkonfiguration geändert. Neu bereitstellen, um sie auf die Live-App anzuwenden** oder **Branding-Einstellung geändert. Neu bereitstellen, um sie auf die Live-App anzuwenden** angezeigt wird, klicken Sie auf **Neu bereitstellen**.
+- **Veröffentlichte App öffnen**: Sobald eine App veröffentlicht ist, öffnet das Symbol neben **Veröffentlichen** die Live-App in einem neuen Tab.
+
+<Info>Das Ausblenden des Abzeichens **Mit Teable erstellt** erfordert den Business-Plan oder höher.</Info>
+
+<img
+  src="/images/docs/ai/2026-05-21-app-builder-publish-app.png"
+  alt="Menü zum Veröffentlichen der App"
+  className="docs-screenshot"
+/>
+
+### Veröffentlichung einer App aufheben
+
+Um eine veröffentlichte App offline zu nehmen, öffnen Sie das Menü **Veröffentlichen** und klicken Sie auf **Veröffentlichung aufheben**. Nach Ihrer Bestätigung ist die öffentliche App-URL nicht mehr zugänglich.
+
+<img
+  src="/images/docs/ai/2026-06-05-app-builder-unpublish-en.png"
+  alt="Schaltfläche zum Aufheben der Veröffentlichung im Veröffentlichungsmenü"
+  className="docs-screenshot"
+/>
+
+Das Aufheben der Veröffentlichung löscht weder die App noch ihren Bearbeitungsverlauf. Sie können die App weiter bearbeiten und später erneut veröffentlichen.
+
+### Eigene Domains
+
+<Note>Eigene Domains erfordern den Business-Plan oder höher.</Note>
+
+Verwenden Sie **Eigene Domain**, um eine Domain mit der veröffentlichten App zu verbinden. Eine Subdomain wird empfohlen, beispielsweise `app.yourdomain.com`. Nachdem Sie die Domain eingegeben haben, zeigt Teable die hinzuzufügenden DNS-Einträge an. Fügen Sie die Einträge bei Ihrem DNS-Anbieter hinzu, warten Sie auf die Verbreitung und verifizieren Sie dann die Domain in Teable.
+
+Sie können auch eine verfügbare Subdomain unter `teable.app` verwenden und das Präfix von `teable.app` bearbeiten, beispielsweise `your-name.teable.app`.
+
+<img
+  src="/images/docs/ai/2026-05-21-app-builder-custom-domain.png"
+  alt="Einstellungen für eigene Domains"
+  className="docs-screenshot"
+/>
+
+### Eigene Website-Informationen
+
+Verwenden Sie **Eigene Website-Informationen** im Menü **Veröffentlichen**, um das Browser-Tab-Symbol, den Seitentitel und die Beschreibung der veröffentlichten App festzulegen. Der Dialog zeigt während der Bearbeitung eine Vorschau, wie sie zusammen aussehen.
+
+| Einstellung | Was sie steuert |
+| --- | --- |
+| **Favicon** | Das im Browser-Tab angezeigte Symbol. Laden Sie eine PNG-, JPEG-, WebP-, SVG- oder ICO-Datei mit bis zu 5 MB hoch; 32×32 ist die empfohlene Größe. Entfernen Sie die hochgeladene Datei, um zum Standard-Teable-Symbol zurückzukehren. |
+| **Titel** | Der Seitentitel mit bis zu 120 Zeichen. |
+| **Beschreibung** | Die Website-Beschreibung in den Seitenmetadaten mit bis zu 500 Zeichen. |
+
+Lassen Sie ein Feld leer, um den Wert beizubehalten, den der App-Builder für Sie erstellt hat. Das Speichern übernimmt die Änderung in die Vorschauumgebung der App; die veröffentlichte App verwendet sie erst nach einer erneuten Veröffentlichung.
+
+### App-Anmeldung
+
+Klicken Sie in der Kopfzeile der App auf **Anmeldung hinzufügen**, damit sich Besucher anmelden müssen, bevor sie die App nutzen können. Sobald die Anmeldung konfiguriert ist, ändert sich die Schaltfläche zu **Anmeldeeinstellungen**.
+
+<img
+  src="/images/docs/ai/2026-05-21-app-builder-login-settings.png"
+  alt="App-Anmeldeeinstellungen"
+  className="docs-screenshot"
+/>
+
+Wenn Sie die Anmeldung aktivieren:
+
+1. Wählen Sie aus, wo App-Nutzer gespeichert werden. Sie können eine **Nutzer**-Tabelle erstellen oder eine vorhandene Tabelle mit einem E-Mail-Feld wiederverwenden. Jeder angemeldete Nutzer wird als ein Datensatz gespeichert, und dieselbe Nutzertabelle kann von mehreren Apps wiederverwendet werden.
+2. Wählen Sie mindestens eine Anmeldemethode, beispielsweise **E-Mail-OTP**, **Google** oder **Teable**. Die verfügbaren Methoden hängen von den Authentifizierungseinstellungen Ihrer Instanz ab.
+3. Wählen Sie eine Zugriffsrichtlinie: **Jeder kann sich registrieren**, **Zugelassene E-Mail-Domains** oder **Nur auf Einladung**.
+
+Änderungen an der Anmeldung erscheinen nach dem Neuladen in der Vorschauumgebung der App. Veröffentlichen Sie die App erneut, um diese Änderungen auf die veröffentlichte App anzuwenden.
+
+### Versionsverlauf und Rollback
+Teable verfolgt jede Bereitstellung automatisch.
+- Klicken Sie auf die Schaltfläche **Verlauf** (Uhrsymbol), um eine Liste aller bereitgestellten Versionen anzuzeigen.
+- **Rollback mit einem Klick**: Wenn ein neues Update Probleme verursacht, können Sie die Live-App sofort auf jede frühere stabile Version zurücksetzen.
+
+<img
+  src="/images/docs/ai/2026-05-21-app-builder-version-history.png"
+  alt="Versionsverlauf der App"
+  className="docs-screenshot"
+/>
+
+### Automatische Fehlerbehebung
+Wenn Ihre Änderungen am eigenen Code einen Build-Fehler verursachen, schlägt die Bereitstellung fehl.
+- Teable stellt neben dem Fehlerprotokoll eine Schaltfläche **Automatisch beheben** bereit.
+- Wenn Sie darauf klicken, kann die KI den Kompilierungsfehler analysieren und den Code automatisch patchen, um das Problem zu beheben.
+
+### Eine App löschen
+Um eine App zu löschen, klicken Sie in der Kopfzeile auf die Schaltfläche **Einstellungen** (Zahnradsymbol) und wählen Sie **Löschen**.
+
+## Bewährte Vorgehensweisen
+
+Informationen zu Prompt-Mustern, Tipps zum Erstellen, Hinweisen zum Rollback und zur häufigen Fehlerbehebung finden Sie im [Praxisleitfaden für den App-Builder](/de/basic/ai/app-builder-practical-guide).
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Löscht das Löschen der Unterhaltung die App?">
+    Nein. Das Löschen der Unterhaltung entfernt nur den Chatverlauf der aktuellen App-Unterhaltung. Die App selbst wird nicht gelöscht. Verwenden Sie dies, wenn die Unterhaltung vom Thema abgekommen ist und Sie neu beginnen möchten.
+  </Accordion>
+
+  <Accordion title="Wie lade ich App-Code herunter oder importiere ihn?">
+    Wechseln Sie im Editor zum Tab **Code**, klicken Sie in der Tab-Leiste auf das Menü **`...`** und wählen Sie dann **Code herunterladen** oder **Code importieren**. Importierte ZIP-Dateien können bis zu 20 MB groß sein und ersetzen das vorhandene Projekt. Schließen Sie daher jede Quelldatei ein, die Sie behalten möchten. Das importierte Projekt muss eine `package.json` im Stammverzeichnis enthalten. Eine `.env`-Datei im Stammverzeichnis wird in die **Secrets** der App importiert.
+  </Accordion>
+
+  <Accordion title="Wann werden Anmeldeeinstellungen auf die Live-App angewendet?">
+    Anmeldeeinstellungen erscheinen nach dem Neuladen in der Vorschauumgebung der App. Veröffentlichen Sie die App erneut, um diese Änderungen auf die veröffentlichte App anzuwenden.
+  </Accordion>
+
+  <Accordion title="Wie kann eine App zur Laufzeit KI-Modelle aufrufen?">
+    Teilen Sie dem App-Builder mit, welche KI-Funktion Sie wünschen, etwa einen Antwortassistenten, eine Zusammenfassung von Übermittlungen oder einen Anfrageklassifikator. Der App-Builder kann den **KI-Zugriff** aktivieren und den Code für die Funktion hinzufügen. Die App-Vorschau verwendet die neue Version, nachdem der App-Builder die Änderung abgeschlossen hat. Die veröffentlichte App verwendet sie erst nach einer erneuten Veröffentlichung. KI-Aufrufe über diese App erscheinen in den Details zur Credit-Nutzung als **App-KI**.
+  </Accordion>
+
+  <Accordion title="Wie werden integrierte KI und KI in Apps abgerechnet?">
+    **Integrierte KI** umfasst KI-Funktionen, die direkt in Teable verfügbar sind, etwa KI-Feld-Generierung, KI-Chat, IM-Bot und App-Builder. Diese Funktionen verwenden derzeit Credits zu einem erheblich reduzierten Preis.
+
+    **KI in Apps** bezieht sich auf KI-Funktionen, die innerhalb von mit dem App-Builder erstellten Apps verwendet werden. Die Nutzung wird zum [offiziellen API-Preis](https://vercel.com/ai-gateway/models) des ausgewählten Modellanbieters abgerechnet, ohne Aufschlag oder Rabatt. 1 US-Dollar API-Nutzung entspricht 100 Credits.
+  </Accordion>
+
+  <Accordion title="Wie setze ich eine frühere Version wieder her?">
+    Klicken Sie auf die Schaltfläche **Verlauf** (Uhrsymbol), um bereitgestellte Versionen anzuzeigen, und stellen Sie dann die Live-App auf eine frühere stabile Version zurück.
+  </Accordion>
+
+  <Accordion title="Warum meldet der App-Builder, dass ein Agent in einer anderen Unterhaltung beschäftigt ist?">
+    Jeder Nutzer kann bis zu drei Agents gleichzeitig ausführen, einschließlich KI-Chat und App-Builder. Wenn der App-Builder meldet, dass ein Agent in einer anderen Unterhaltung beschäftigt ist, läuft noch eine andere Aufgabe. Warten Sie, bis die vorherige Aufgabe abgeschlossen ist, bevor Sie fortfahren.
+  </Accordion>
+
+  <Accordion title="Wie werden Credits erstattet, wenn ein App-Builder-Durchlauf fehlschlägt?">
+    Ein App-Builder-Durchlauf kann mehrere Verarbeitungsschritte enthalten. Sowohl die Unterhaltung als auch die Abrechnungsseite zeigen die gesamten Credits für diesen Durchlauf an. Arbeit, die Cuppy bereits abgeschlossen und gespeichert hat, kann weiterhin verwendet werden. Wenn der letzte Schritt durch einen unerwarteten Fehler unterbrochen wird, werden die Credits für diesen unterbrochenen Schritt automatisch erstattet. Sie können in derselben App-Unterhaltung weiterarbeiten.
+  </Accordion>
+
+  <Accordion title="Wo konfiguriere ich den App-Builder für Self-Hosted?">
+    Wenn Sie Teable selbst hosten, folgen Sie der Einrichtung auf der Seite [KI-Einstellungen](/de/basic/admin-panel/ai-setting). Wenn der App-Builder Ihren eigenen Schlüssel verwendet (BYOK), muss das Chat-Modell von einem Anbieter stammen, der **OpenAI Compatible** oder **Anthropic** unterstützt. Wenden Sie sich für Unterstützung bei der Bereitstellung an Teable unter **support@teable.ai**.
+
+    <Note>
+    Wenn Sie unter **Bereitstellungs-Engine** **Vercel** auswählen, stellen Sie sicher, dass sowohl Ihre Teable-Instanz als auch der Objektspeicher (MinIO / S3) öffentlich zugänglich sind, und verwenden Sie dann **Öffentlichen Zugriff testen** auf der Seite [KI-Einstellungen](/de/basic/admin-panel/ai-setting). Diese Prüfung ist nicht erforderlich, wenn Sie **Teable Infra** auswählen.
+    </Note>
+  </Accordion>
+</AccordionGroup>
+

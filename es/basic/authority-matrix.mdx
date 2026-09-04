@@ -1,0 +1,120 @@
+---
+title: "Descripción general"
+description: "Define ámbitos de acceso para distintos equipos de una misma Base, de modo que los miembros solo puedan ver, editar o exportar los datos que necesitan."
+---
+
+{/* mintlify-resync: 2026-05-28 */}
+<Tip>Disponible para el plan Business y los planes superiores</Tip>
+
+Cuando los equipos de ventas, finanzas, operaciones y dirección comparten una misma Base,
+los permisos determinan quién puede entrar en ella, qué datos puede ver o editar
+y si puede importar o exportar datos. La Matriz de Autoridad ayuda a los equipos
+a mantener los datos en un único lugar y, al mismo tiempo, separar el acceso según las responsabilidades.
+
+Puedes asignar roles personalizados a miembros o departamentos y permitir que cada rol
+acceda únicamente a las Tablas, aplicaciones y flujos de trabajo que necesita. En las Tablas también puedes
+limitar las Vistas visibles, los Registros visibles, los Campos editables y los permisos
+de importación o exportación. Por ejemplo, ventas puede mantener sus propios clientes, finanzas puede
+consultar los Campos de facturación y dirección puede ver el conjunto de datos completo.
+
+## Cuándo usarla
+
+| Situación | Resulta útil para |
+| --- | --- |
+| Acceso por departamento | Ventas puede mantener los Registros de clientes, mientras que finanzas solo ve los Campos de facturación. |
+| Registros por responsable | Los representantes de ventas solo pueden ver y actualizar los Registros que tienen asignados. |
+| Entrada de datos restringida | Los miembros pueden crear Registros nuevos sin editar ni eliminar los existentes. |
+| Campos confidenciales en una Base compartida | Los miembros pueden ver los Registros de pedidos sin consultar los Campos de pagos o costes. |
+| Aplicaciones y flujos de trabajo controlados | Los roles pueden abrir determinadas aplicaciones o flujos de trabajo, mientras que los nodos no autorizados permanecen ocultos. |
+
+## Cómo funcionan los permisos
+
+La Matriz de Autoridad asigna el acceso por rol. Los usuarios pueden recibir permisos
+de los roles que se les asignen directamente o de los roles de departamento. Cuando se aplican
+varios roles, Teable combina los permisos que estos conceden.
+
+<Info>Los usuarios del Espacio con el permiso **Gestor** y los administradores de la Matriz de Autoridad pueden administrarla y no están sujetos a sus restricciones.</Info>
+
+La lista de roles incluye una sección `Administradores` y otra de `Roles personalizados`:
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-role-list-en.png"
+  alt="Lista de roles de la Matriz de Autoridad"
+  className="docs-screenshot"
+/>
+
+Usa `Añadir rol` para crear un rol personalizado. En la página de detalles del rol, asigna
+colaboradores, escribe una descripción breve y configura el acceso de cada nodo de
+la Base:
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-role-detail-en.png"
+  alt="Página de detalles de un rol de la Matriz de Autoridad"
+  className="docs-screenshot"
+/>
+
+## Configurar el acceso de los roles
+
+Cada Tabla, aplicación y flujo de trabajo tiene su propio ajuste de acceso.
+
+| Tipo de nodo | Ajuste disponible |
+| --- | --- |
+| Tabla | Elige `Puede editar` o `Sin acceso`. Después de establecer una Tabla en `Puede editar`, configura sus permisos detallados. |
+| Aplicación | Elige `Puede acceder` o `Sin acceso`. Esto controla si el rol puede abrir la aplicación. |
+| Flujo de trabajo | Elige `Puede acceder` o `Sin acceso`. Esto controla si el rol puede abrir el flujo de trabajo. |
+| Carpeta | Las carpetas se muestran para facilitar la navegación. Si ninguno de sus nodos secundarios es accesible, la carpeta permanece oculta para el rol. |
+
+Para configurar permisos detallados de Vistas, Registros, Campos y otros elementos de una Tabla, establece primero
+la Tabla en `Puede editar`. Una Tabla con `Sin acceso` permanece oculta para los miembros de
+ese rol.
+
+## Permisos de Tabla
+
+Cuando una Tabla está configurada como `Puede editar`, define estas áreas de permisos:
+
+| Área de permisos | Qué controla |
+| --- | --- |
+| Permisos de Vista | Si el rol puede crear, actualizar o eliminar Vistas y si puede ver `Todas las Vistas` o únicamente `Vistas específicas`. |
+| Permisos de Registro | Si el rol puede crear, actualizar, eliminar, comentar o copiar Registros. Los Registros visibles pueden ser `Todos los Registros` o aquellos que cumplan las condiciones de filtro. |
+| Permisos de Campo | Si el rol puede ver, actualizar o crear valores en determinados Campos. El Campo principal debe permanecer visible. |
+| Permisos de importación y exportación | Si el rol puede importar datos en la Tabla o exportar sus datos. |
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-table-permissions-en.png"
+  alt="Permisos de Tabla de la Matriz de Autoridad"
+  className="docs-screenshot"
+/>
+
+Los filtros de Registros son adecuados para ámbitos de acceso que cambian según el propietario, el departamento
+u otros Campos similares. Por ejemplo, una condición como `Responsable de ventas` `es`
+`usuario actual` permite que cada vendedor vea únicamente sus propios Registros. Los permisos de
+Campo también pueden ocultar o bloquear valores confidenciales de los Campos de los Registros a los que
+puede acceder el rol.
+
+## Rol predeterminado
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-default-role-en.png"
+  alt="Ajuste del rol predeterminado de la Matriz de Autoridad"
+  className="docs-screenshot"
+/>
+
+Usa `Rol predeterminado` para los miembros que no tengan asignado ningún rol personalizado. Puedes
+seleccionar un rol personalizado habilitado o elegir `Permiso denegado` para impedir que estos
+miembros accedan al contenido controlado por la Matriz de Autoridad.
+
+## Notas
+
+- Después de habilitar la Matriz de Autoridad, los usuarios cuyo permiso de Espacio sea inferior a
+  `Gestor` estarán sujetos a sus restricciones, salvo que se añadan como administradores de la Matriz de Autoridad.
+- El usuario que habilita la Matriz de Autoridad se añade automáticamente a
+  `Administradores`.
+- Los roles personalizados nuevos se habilitan al crearlos desde `Añadir rol`, pero cada
+  Tabla, aplicación y flujo de trabajo sigue necesitando su propio ajuste de acceso.
+- Una Tabla configurada como `Sin acceso` para un rol permanece oculta para ese rol, aunque sus
+  opciones de permisos detallados se hayan editado anteriormente.
+- Al asignar un rol desde `Añadir usuario` o `Añadir desde la organización`, se pueden añadir determinados
+  miembros o departamentos como colaboradores de la Base. La Matriz de Autoridad limita después
+  a qué contenido pueden acceder dentro de la Base.
+
+<Note>Para obtener información sobre los niveles básicos de permisos de Espacios y Bases, consulta [Permisos de colaboración](/es/basic/space/space-permission).</Note>

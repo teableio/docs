@@ -1,0 +1,184 @@
+---
+title: "Güvenlik"
+description: "Teable'ın güvenlik mimarisi, veri koruması ve uyumluluk önlemleri hakkında bilgi edinin"
+---
+
+<CardGroup cols={4}>
+  <Card title="Şifreleme" icon="lock">
+    AES-256 ve TLS
+  </Card>
+  <Card title="ISO 27001" icon="shield-check">
+    Sertifikalı
+  </Card>
+  <Card title="AWS'de Barındırma" icon="server">
+    Batı ABD, Oregon
+  </Card>
+  <Card title="SSO'ya Hazır" icon="key">
+    OIDC Protokolü
+  </Card>
+</CardGroup>
+
+<Info>
+Teable, verilerinizin güvenliğini ve gizliliğini korumaya kararlıdır. Güvenlik uygulamalarımız, çalışma alanınız üzerinde tam denetim sahibi olmanızı sağlarken bilgilerinizi koruyacak şekilde tasarlanmıştır.
+</Info>
+
+## Veri Şifreleme
+
+### Aktarım Sırasında Şifreleme
+
+Tarayıcınız ile Teable sunucuları arasında aktarılan tüm veriler **256 bit SSL/TLS şifrelemesi** ile korunur. Otomatik HTTP'den HTTPS'ye yönlendirmeyle tüm bağlantılarda HTTPS kullanılmasını zorunlu kılarız.
+
+### Bekleyen Verilerin Şifrelenmesi
+
+<Tabs>
+  <Tab title="Teable Cloud">
+    Veritabanlarımızda saklanan tüm veriler, AWS altyapısı üzerinden **AES-256 şifrelemesi** kullanılarak şifrelenir. Buna şunlar dahildir:
+    - Veritabanı depolaması (AWS RDS üzerinde PostgreSQL)
+    - Dosya ekleri
+    - Yedekler
+  </Tab>
+  <Tab title="Kendi Sunucunuzda Barındırma">
+    Altyapı gereksinimlerinize göre şifreleme yapılandırmanız üzerinde tam denetime sahip olursunuz. Şunları öneririz:
+    - Veritabanı düzeyinde şifrelemeyi etkinleştirme
+    - Şifrelenmiş depolama birimleri kullanma
+    - Yedek şifrelemesi uygulama
+  </Tab>
+</Tabs>
+
+## Altyapı Güvenliği
+
+Teable Cloud, AWS'nin kurumsal düzeyde güvenlik altyapısından yararlanılarak Batı ABD (Oregon) bölgesinde **Amazon Web Services (AWS)** üzerinde barındırılır.
+
+<CardGroup cols={2}>
+  <Card title="Güvenlik Başlıkları" icon="shield-halved">
+    XSS ve clickjacking gibi yaygın web güvenlik açıklarını önlemek için Helmet ve Content Security Policy (CSP) uygulaması.
+  </Card>
+  <Card title="Bot Koruması" icon="robot">
+    Otomatik saldırıları ve istenmeyen kayıtları önlemek için Cloudflare Turnstile entegrasyonu.
+  </Card>
+  <Card title="Hız Sınırlama" icon="gauge-high">
+    Hesap kilitleme yoluyla oturum açma denemelerindeki kaba kuvvet saldırılarına karşı koruma; e-posta doğrulama ve parola sıfırlama işlemlerinde hız sınırlama.
+  </Card>
+  <Card title="Parola Güvenliği" icon="key">
+    Tüm parolalar benzersiz salt değerleriyle bcrypt algoritması kullanılarak hash'lenir ve rainbow table saldırılarına karşı dayanıklı hâle getirilir.
+  </Card>
+</CardGroup>
+
+## Erişim Denetimleri
+
+### Rol Tabanlı İzinler
+
+Teable, beş izin düzeyiyle ayrıntılı rol tabanlı erişim denetimi sağlar:
+
+| Rol | Yetkiler |
+|------|-------------|
+| **Sahip** | Faturalandırma ve silme dahil olmak üzere çalışma alanı üzerinde tam denetim |
+| **Oluşturucu** | Tablo ve Görünüm oluşturabilir, çalışma alanı yapısını yönetebilir |
+| **Editör** | Kayıtları ve Alan değerlerini düzenleyebilir |
+| **Yorumcu** | İçeriği görüntüleyebilir ve yorum ekleyebilir |
+| **Görüntüleyici** | İçeriğe salt okunur erişim |
+
+### Yetki Matrisi
+
+<Tip>
+Yetki Matrisi; Alan, Kayıt ve Görünüm düzeyinde ayrıntılı izin denetimi sağlayarak her kullanıcının veya rolün neleri görebileceğini ve değiştirebileceğini hassas biçimde tanımlamanıza olanak tanır.
+</Tip>
+
+Bu özellik özellikle şu durumlarda kullanışlıdır:
+- Hassas Alanları kısıtlama (ör. maaş, kişisel bilgiler)
+- Sahipliğe veya departmana göre Kayıt erişimini sınırlama
+- Farklı izin kümelerine sahip özel Görünümler oluşturma
+
+### Paylaşım Bağlantısı Koruması
+
+Paylaşılan Görünümlerinizi parola doğrulamasıyla koruyun. Etkinleştirildiğinde alıcıların paylaşılan içeriğe erişmeden önce doğru parolayı girmesi gerekir.
+
+## Veri Yönetimi
+
+### Kayıt Geçmişi
+
+Kapsamlı değişiklik geçmişiyle Kayıtlarınızda yapılan tüm değişiklikleri takip edin:
+- Değişiklikleri kimin, ne zaman yaptığını görün
+- Değişikliklerden önceki değerleri görüntüleyin
+- Verilerinizin tüm yaşam döngüsünü anlayın
+
+### Çöp Kutusu ve Kurtarma
+
+Silinen öğeler çöp kutusuna taşınır ve saklama süresi içinde kurtarılabilir; böylece yanlışlıkla veri kaybına karşı koruma sağlanır.
+
+### Veri Yedekleme ve Dışa Aktarma
+
+Teable, verilerinizi yedeklemek için birden fazla seçenek sunar:
+
+| Yöntem | Açıklama | Kullanım Alanı |
+|--------|-------------|----------|
+| **[Veritabanını Dışa Aktarma](/tr/basic/base#export-base-backup-&-migration)** | Veritabanının tamamını `.tea` dosyası olarak indirin (yapı, veriler, otomasyonlar) | Tam yedekleme, taşıma |
+| **[Veritabanını Çoğaltma](/tr/basic/base#duplicate-a-base-to-another-space)** | Teable içinde Veritabanının bir kopyasını oluşturun | Hızlı anlık görüntü |
+| **[CSV Olarak Dışa Aktarma](/tr/basic/table/export)** | Tek bir Tablonun verilerini dışa aktarın | Veri taşınabilirliği |
+| **[API ile Dışa Aktarma](/tr/api-doc/record/get)** | Kayıtları REST API aracılığıyla programlı olarak dışa aktarın | Otomatik yedeklemeler |
+
+<Tip>
+Veritabanının tamamını `.tea` dosyası olarak, tek tek Tabloları CSV dosyaları olarak dışa aktararak veya verilerinizi Teable API üzerinden alarak Veritabanlarınızı elle yedekleyebilirsiniz.
+</Tip>
+
+## Tek Oturum Açma (SSO)
+
+Teable, başlıca kimlik sağlayıcılarıyla uyumlu **OIDC (OpenID Connect)** protokolü üzerinden kurumsal SSO'yu destekler:
+
+<CardGroup cols={3}>
+  <Card title="Azure Entra ID" icon="microsoft" href="/tr/basic/sso/azure-entra-id" />
+  <Card title="Okta" icon="o" href="/tr/basic/sso/okta" />
+  <Card title="Google Workspace" icon="google" href="/tr/basic/sso/google-workspace" />
+  <Card title="Auth0" icon="a" href="/tr/basic/sso/auth0" />
+  <Card title="OneLogin" icon="1" href="/tr/basic/sso/onelogin" />
+  <Card title="Authentik" icon="lock" href="/tr/basic/sso/authentik" />
+</CardGroup>
+
+## Uyumluluk
+
+<Card title="ISO 27001 Sertifikalı" icon="certificate">
+  Teable Cloud, ISO 27001 sertifikası alarak bilgi güvenliği yönetimindeki en iyi uygulamalara bağlılığımızı göstermiştir.
+</Card>
+
+## Kendi Sunucunuzda Barındırma
+
+Teable, katı güvenlik veya uyumluluk gereksinimleri bulunan kuruluşlara kendi sunucularında barındırma seçenekleri sunar:
+
+<Steps>
+  <Step title="Verilerin Konumu">
+    Tüm verileri kendi altyapınız ve coğrafi sınırlarınız içinde tutun
+  </Step>
+  <Step title="Ağ Denetimi">
+    Özel güvenlik duvarı kuralları ve ağ politikalarıyla VPC'nizde dağıtın
+  </Step>
+  <Step title="Özel Güvenlik">
+    Mevcut güvenlik altyapınız, SIEM ve izleme araçlarınızla entegre edin
+  </Step>
+  <Step title="Yedekleme Denetimi">
+    Kendi yedekleme ve felaket kurtarma prosedürlerinizi uygulayın
+  </Step>
+</Steps>
+
+## En İyi Güvenlik Uygulamaları
+
+Çalışma alanınızın güvenliğini en üst düzeye çıkarmak için şu uygulamaları öneririz:
+
+<AccordionGroup>
+  <Accordion title="Güçlü ve benzersiz parolalar kullanın">
+    Büyük harf, küçük harf, rakam ve simgelerden oluşan parolalar oluşturun. Parola yöneticisi kullanmayı değerlendirin.
+  </Accordion>
+  <Accordion title="Kullanılabiliyorsa SSO'yu etkinleştirin">
+    Tek Oturum Açma, merkezi kimlik doğrulama yönetimi ve ek güvenlik denetimleri sağlar.
+  </Accordion>
+  <Accordion title="İşbirlikçi izinlerini düzenli olarak inceleyin">
+    En düşük ayrıcalıklı erişimi güvence altına almak için çalışma alanı üyelerinizi ve izin düzeylerini düzenli olarak denetleyin.
+  </Accordion>
+  <Accordion title="Parola korumalı paylaşım bağlantıları kullanın">
+    Görünümleri harici olarak paylaşırken hassas veriler için her zaman parola korumasını etkinleştirin.
+  </Accordion>
+</AccordionGroup>
+
+## İletişim
+
+Güvenlikle ilgili sorularınız veya güvenlik açığı bildirimleriniz için lütfen **support@teable.ai** adresinden bize ulaşın.
+

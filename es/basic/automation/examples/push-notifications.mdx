@@ -1,0 +1,70 @@
+---
+title: "Enviar notificaciones a Slack, Discord o Teams"
+description: "Envía un mensaje a un canal de chat cuando ocurra algo en tu Tabla"
+---
+
+<Tip>Recomendamos crear los ejemplos de Automatización directamente en el Chat de IA. Describe el flujo de trabajo que quieres y la IA se encargará de configurarlo por completo, incluidos el disparador, las acciones, el script y la configuración.</Tip>
+
+## Crear con IA
+
+Abre el Chat de IA en la barra lateral derecha de tu Tabla y dile a la IA lo que quieres. Por ejemplo, puedes decir:
+
+*"Cuando se cree un ticket nuevo de alta prioridad, envía un mensaje de Slack al canal #support con el título y la descripción del ticket"*
+
+La IA creará automáticamente el flujo de trabajo completo. Puedes revisar el script generado, probarlo con datos reales y habilitar el flujo de trabajo cuando esté listo.
+
+## Requisitos previos
+
+Necesitas una URL de webhook de tu plataforma de chat:
+- **Slack:** crea un [webhook entrante](https://api.slack.com/messaging/webhooks)
+- **Discord:** Configuración del servidor → Integraciones → Webhooks → Nuevo webhook
+- **Teams:** Canal → Conectores → Webhook entrante
+
+## Configuración manual
+
+1. **Crea un flujo de trabajo** con el disparador **Cuando se crea un Registro**.
+2. Selecciona tu Tabla **Tickets**.
+3. Añade un filtro: `Prioridad` **es** `Alta`.
+4. Haz clic en **Probar**.
+5. **Añade una acción** → **Solicitud HTTP**.
+6. Configura lo siguiente:
+   - Método: **POST**
+   - URL: la URL de tu webhook
+   - Content-Type: `application/json`
+   - Cuerpo (para Slack):
+     ```json
+     {
+       "text": "Ticket nuevo de alta prioridad: <título del ticket>"
+     }
+     ```
+   - Usa el botón **+** para insertar dinámicamente el título del ticket.
+7. Haz clic en **Probar** y, después, en **Habilitar**.
+
+## Adaptación para Discord
+
+Discord usa `"content"` en lugar de `"text"`:
+
+```json
+{
+  "content": "Ticket nuevo de alta prioridad: <título del ticket>"
+}
+```
+
+## Adaptación para Teams
+
+Teams usa el formato Adaptive Card:
+
+```json
+{
+  "type": "message",
+  "attachments": [{
+    "contentType": "application/vnd.microsoft.card.adaptive",
+    "content": {
+      "type": "AdaptiveCard",
+      "body": [{ "type": "TextBlock", "text": "Ticket nuevo de alta prioridad: <título del ticket>" }],
+      "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+      "version": "1.2"
+    }
+  }]
+}
+```

@@ -1,0 +1,144 @@
+---
+title: "Настройка почтового сервиса"
+description: "Включите почтовый сервис, чтобы активировать уведомления по электронной почте в приложении, самостоятельный сброс пароля, письма-приглашения и другие функции."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+## Способы настройки
+
+Teable поддерживает два способа настройки почтового сервиса:
+
+<CardGroup cols={2}>
+  <Card title="Панель администратора (рекомендуется)" icon="sliders" href="#option-1-admin-panel-recommended">
+    Визуальная настройка с проверкой в реальном времени. Перезапуск не требуется.
+  </Card>
+  <Card title="Переменные окружения" icon="code" href="#option-2-environment-variables">
+    Традиционная настройка через файл `.env`. Требуется перезапуск контейнера.
+  </Card>
+</CardGroup>
+
+---
+
+## Вариант 1: Панель администратора (рекомендуется) {#option-1-admin-panel-recommended}
+
+Самый простой способ настроить электронную почту — через Панель администратора:
+
+1. Войдите как администратор (первый зарегистрированный пользователь)
+2. Перейдите в **Панель администратора** → **Настройки экземпляра**
+3. Найдите раздел **Электронная почта**
+4. При необходимости настройте **Почту для уведомлений** и **Почту для автоматизаций**
+
+<Tip>
+Настройка в Панели администратора поддерживает **проверку в реальном времени** — вы можете убедиться, что настройки SMTP работают, до сохранения.
+</Tip>
+
+- **Почта для уведомлений**: используется для подтверждения пользователей, сброса пароля, приглашений, системных уведомлений и подобных писем.
+- **Почта для автоматизаций**: используется как почтовый сервис по умолчанию для действий «Отправить письмо» в автоматизациях. Одно действие «Отправить письмо» также может настроить собственный [пользовательский SMTP-сервер](/ru/basic/automation/actions/communication/smtp-sender).
+
+### Источники настройки и приоритет
+
+Рекомендуем сначала настроить почтовый сервис в **Панель администратора → Настройки экземпляра → Электронная почта**. Фактический приоритет:
+
+1. **Пользовательский почтовый сервер внутри действия «Отправить письмо»**: применяется только к этому конкретному действию «Отправить письмо» в текущей автоматизации.
+2. **Панель администратора → Настройки экземпляра → Электронная почта → Почта для автоматизаций**: используется письмами автоматизаций, когда действие «Отправить письмо» не настраивает собственный почтовый сервер.
+3. **Панель администратора → Настройки экземпляра → Электронная почта → Почта для уведомлений**: используется для подтверждения пользователей, сброса пароля, приглашений, системных уведомлений и подобных писем. Также используется как резервный вариант для писем автоматизаций, если Почта для автоматизаций не настроена.
+4. **`BACKEND_MAIL_*` переменные окружения**: почтовая конфигурация по умолчанию на уровне развёртывания. Используется только как резервный вариант, когда соответствующий почтовый ящик не настроен в Панели администратора.
+
+### Поля настройки
+
+| Поле | Описание | Пример |
+|-------|-------------|---------|
+| Адрес сервера | Адрес SMTP-сервера | `smtp.gmail.com` |
+| Порт | Порт SMTP | `465` (SSL) или `587` (TLS) |
+| SSL/TLS | Использовать ли SSL/TLS | `true` |
+| Имя пользователя | Пользователь для аутентификации SMTP | `noreply@company.com` |
+| Пароль | Пароль SMTP или пароль приложения | `xxxxxxxxxxxxxx` |
+| Адрес отправителя | Адрес в поле «От» | `noreply@company.com` |
+| Имя отправителя | Отображаемое имя | `Уведомление Teable` |
+
+---
+
+## Вариант 2: Переменные окружения {#option-2-environment-variables}
+
+Для развёртываний, где вы предпочитаете настройку через файл, используйте переменные окружения:
+
+<Note>
+Рекомендуем сначала настроить Почту для уведомлений и Почту для автоматизаций в **Панель администратора → Настройки экземпляра → Электронная почта**. Переменные окружения в основном используются как значения по умолчанию на уровне развёртывания и резервная конфигурация.
+</Note>
+
+```sh
+BACKEND_MAIL_HOST=smtp.example.com
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=noreply@company.com
+BACKEND_MAIL_SENDER_NAME=Teable
+BACKEND_MAIL_AUTH_USER=username
+BACKEND_MAIL_AUTH_PASS=your_password
+```
+
+<Note>
+После изменения переменных окружения необходимо **перезапустить** контейнер Teable, чтобы изменения вступили в силу.
+</Note>
+
+---
+
+## Примеры SMTP-провайдеров
+
+<Accordion title="AWS SES">
+```sh
+# Как получить: AWS Console → Simple Email Service → SMTP Settings → Create SMTP Credentials
+BACKEND_MAIL_HOST=email-smtp.us-east-1.amazonaws.com  # Replace with your region
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=noreply@yourdomain.com  # Must be a verified sender address
+BACKEND_MAIL_SENDER_NAME=Уведомление Teable
+BACKEND_MAIL_AUTH_USER=your_smtp_username   # AWS SMTP username
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx       # AWS SMTP password
+```
+</Accordion>
+
+<Accordion title="Gmail">
+```sh
+# Как получить: Google Account → Security → 2-Step Verification → App Passwords
+BACKEND_MAIL_HOST=smtp.gmail.com
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=you@gmail.com
+BACKEND_MAIL_SENDER_NAME=Уведомление Teable
+BACKEND_MAIL_AUTH_USER=you@gmail.com
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # 16-digit app password
+```
+</Accordion>
+
+<Accordion title="Microsoft 365 / Outlook">
+```sh
+# Как получить: Microsoft 365 admin center → Security → Policies & rules → Email authentication
+BACKEND_MAIL_HOST=smtp.office365.com
+BACKEND_MAIL_PORT=587
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=your.name@yourdomain.com
+BACKEND_MAIL_SENDER_NAME=Уведомление Teable
+BACKEND_MAIL_AUTH_USER=your.name@yourdomain.com
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # Your Microsoft 365 password or app password
+```
+</Accordion>
+
+<Accordion title="SendGrid">
+```sh
+# Как получить: SendGrid Dashboard → Settings → API Keys → Create API Key
+BACKEND_MAIL_HOST=smtp.sendgrid.net
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=noreply@yourdomain.com
+BACKEND_MAIL_SENDER_NAME=Уведомление Teable
+BACKEND_MAIL_AUTH_USER=apikey
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # Your SendGrid API Key
+```
+</Accordion>
+
+---
+
+## Связанная документация
+
+- [Справочник по переменным окружения](/ru/deploy/env)
+- [Обзор Панели администратора](/ru/basic/admin-panel/overview)

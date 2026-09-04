@@ -1,0 +1,87 @@
+---
+title: "Descripción general"
+description: "Crea flujos de automatización mediante IA o configuración manual."
+---
+
+{/* mintlify-resync: 2026-05-26 */}
+La Automatización de Teable simplifica la creación de potentes flujos de trabajo. Sin código, sin arrastrar y soltar y sin configuraciones complicadas. Solo tienes que indicar a la IA lo que necesitas con lenguaje natural, y Teable se encargará del trabajo repetitivo.
+
+## Crear con IA (desde cero)
+
+Es la forma más sencilla de empezar. Abre cualquier Tabla, haz clic en el **Chat de IA** de la barra lateral derecha y describe lo que quieres:
+
+- *«Cuando llegue un pedido nuevo, envía una notificación de Slack con el nombre del cliente y el importe».*
+- *«Cada lunes por la mañana, envíame por correo electrónico un resumen de las tareas vencidas».*
+- *«Cuando alguien envíe el formulario de comentarios, clasifícalo y actualiza el Campo de categoría».*
+
+La IA crea y prueba toda la automatización: desencadenador, acciones y asignaciones de Campos. Revisa los resultados en el panel Automatización y habilítala.
+
+## Crear con IA (desde el desencadenador)
+
+También puedes partir de un desencadenador concreto y dejar que la IA cree las acciones:
+
+1. **Añade un desencadenador** — elige un tipo de desencadenador (p. ej., «Al crear un Registro») y configúralo.
+2. **Añade una acción** — haz clic en **+**, ve a **Crear con IA** y selecciona **Ejecutar código**.
+3. En el panel de configuración, haz clic en **Abrir editor**.
+4. Elige una de las **sugerencias** para empezar rápidamente o describe con tus propias palabras lo que necesitas.
+5. La IA genera el código JavaScript. Revísalo y haz clic en **Aplicar**.
+6. Haz clic en **Probar** para ejecutar el código con datos reales y, después, en **Habilitar** para activar el flujo de trabajo.
+
+## Crear manualmente
+
+También puedes crear automatizaciones paso a paso mediante las acciones integradas:
+
+1. **Añade un desencadenador** — elige un tipo de desencadenador, selecciona la Tabla y configura los Campos. Haz clic en **Probar**.
+2. **Añade una acción** — elige un tipo de acción (Crear Registro, Enviar correo electrónico, Solicitud HTTP, etc.) y asigna los valores de los Campos mediante **+** para insertar variables dinámicas. Haz clic en **Generar vista previa** o **Ejecutar según la configuración**.
+3. **Habilita el flujo** — haz clic en el interruptor de la esquina superior izquierda.
+
+## Editar un flujo de trabajo activo
+
+Los cambios se guardan como borrador. El flujo de trabajo activo continúa ejecutando la versión anterior hasta que hagas clic en **Aplicar actualización**.
+
+## Secretos
+
+Usa **Secretos** para almacenar las claves de API, las credenciales y la configuración que una automatización necesita durante la ejecución. Abre el flujo de trabajo en la pestaña de edición y haz clic en **Secretos**, junto a los controles de prueba.
+
+El ámbito de los secretos se limita a la automatización actual. Las acciones de código pueden leerlos desde variables de entorno como `process.env.EXTERNAL_API_KEY`. Los valores guardados son de solo escritura; introduce un valor nuevo para actualizar un secreto.
+
+## Historial de ejecuciones
+
+Abre un flujo de trabajo → **Historial de ejecuciones**. El panel de historial enumera cada ejecución con su estado, tiempo empleado y detalles de los pasos. Haz clic en una ejecución para examinar la entrada y la salida de cada paso.
+
+Usa los filtros del historial para acotar la lista por estado, duración o intervalo de fechas. En las ejecuciones fallidas, usa el panel de detalles para diagnosticar o volver a ejecutar:
+
+- **Diagnosticar** abre el Chat de IA con la ejecución fallida como contexto para que puedas pedir a Cuppy que explique el fallo.
+- **Repetición completa** vuelve a ejecutar todos los pasos y puede crear Registros, correos electrónicos o notificaciones duplicados.
+- **Reanudar desde el paso fallido** está disponible cuando Teable puede continuar de forma segura desde el paso que falló.
+
+Cuando **Reanudar desde el paso fallido** no está disponible, Teable explica por qué solo se puede usar **Repetición completa**. Esto puede ocurrir si el flujo de trabajo se modificó después de la ejecución fallida, está deshabilitado, ningún paso terminó correctamente antes del fallo o faltan datos de los pasos de control.
+
+Los intentos de repetición se marcan como reintentos y enlazan con la ejecución original.
+
+## Límites
+
+| Elemento | Límite |
+|---|---|
+| Frecuencia de envío de correos electrónicos | 5 por segundo y por Base |
+| Frecuencia de recepción de webhooks | 50 por segundo y por Base; 2 por segundo y por flujo de trabajo |
+| Tamaño de la carga útil de los webhooks | 4 MB |
+| Cuota de ejecuciones y conservación del historial | Varía según el plan |
+
+## Preguntas frecuentes
+
+<AccordionGroup>
+  <Accordion title="¿Por qué he recibido una alerta sobre el uso de ejecuciones de automatización?">
+    En Teable Cloud, Teable envía notificaciones sobre el uso de ejecuciones de automatización a los propietarios del Espacio cuando este se acerca a su cuota de ejecuciones, la supera o el número de ejecuciones aumenta bruscamente en poco tiempo.
+
+    Para los recordatorios de cuota, Teable envía una notificación cuando el periodo de facturación actual alcanza el 80 % o el 90 % de la cuota de ejecuciones disponible.
+
+    Los planes Pro y superiores pueden recibir alertas después de que las ejecuciones de automatización superen la cuota. Teable puede enviar un recordatorio aproximadamente cada 6 horas.
+
+    Teable Cloud también puede enviar notificaciones críticas por un uso inusual, como un gran aumento diario o un pico repentino en un periodo breve. El sistema utiliza patrones recientes de ejecuciones diarias y por hora, y los umbrales exactos pueden cambiar.
+
+    La notificación abre **Ajustes del Espacio** → **Facturación**. Cuando está disponible, muestra qué flujo de trabajo y Base aportaron más ejecuciones. Los recordatorios de cuota se basan en las ejecuciones que cuentan para el límite del plan; las comprobaciones de uso inusual también pueden tener en cuenta las ejecuciones recientes con estado **correcto**, **fallido** o **pendiente**.
+
+    Si el uso es el esperado, considera comprar una cuota de automatización adicional o cambiar de plan. Si no lo es, revisa el flujo de trabajo principal y ajusta o pausa la automatización correspondiente.
+  </Accordion>
+</AccordionGroup>

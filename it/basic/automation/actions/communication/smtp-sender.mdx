@@ -1,0 +1,83 @@
+---
+title: "Configura SMTP e mittente"
+description: "Configura un server SMTP personalizzato e l'identità del mittente per le email delle automazioni"
+---
+
+Per impostazione predefinita, le email delle automazioni vengono inviate tramite il servizio di posta integrato di Teable. Sebbene sia adatto alle notifiche di base, potresti voler inviare email dal tuo dominio per ragioni di identità del marchio, recapitabilità o conformità. La configurazione SMTP personalizzata permette di farlo.
+
+Quando configuri un server SMTP personalizzato, tutte le email inviate da quell'azione provengono dal tuo server di posta e dal tuo indirizzo mittente: i destinatari vedono il tuo dominio, non quello di Teable.
+
+## Quando usare un server SMTP personalizzato
+
+- **Inviare email dal dominio aziendale**, ad esempio `noreply@yourcompany.com` o `support@yourcompany.com`, affinché i destinatari riconoscano il mittente.
+- **Migliorare la recapitabilità.** Le email provenienti dal tuo dominio, con record SPF, DKIM e DMARC configurati correttamente, hanno meno probabilità di finire nello spam.
+- **Soddisfare i requisiti di conformità.** Alcuni settori richiedono che le email automatiche provengano da un dominio controllato dall'organizzazione.
+- **Usare l'infrastruttura email esistente.** Instrada le email attraverso il server di posta aziendale per registrazione, archiviazione o scansione di sicurezza.
+- **Ottenere limiti di invio più elevati.** Il servizio integrato di Teable prevede limiti di frequenza; il tuo server SMTP potrebbe supportare una capacità maggiore.
+
+## Configurazione
+
+Nell'azione **Invia email**, fai clic sull'opzione di configurazione del trasporto per impostare un server SMTP personalizzato:
+
+| Impostazione | Obbligatoria | Descrizione |
+|---|---|---|
+| Host SMTP | Sì | L'indirizzo del server di posta, ad esempio `smtp.gmail.com` |
+| Porta | Sì | La porta SMTP, in genere 465 (SSL) o 587 (STARTTLS) |
+| Nome utente | Sì | Il nome utente dell'account SMTP, spesso l'indirizzo email |
+| Password | Sì | La password dell'account SMTP o una password specifica per l'app |
+| Indirizzo mittente | Sì | L'indirizzo email del mittente mostrato ai destinatari |
+
+## Come configurarlo
+
+1. Apri l'automazione e vai all'azione **Invia email**.
+2. Fai clic sull'opzione **Configurazione del trasporto**, rappresentata dall'icona a forma di ingranaggio o da un link vicino alle impostazioni del mittente.
+3. Inserisci i dettagli del server SMTP:
+   - **Host:** l'indirizzo del server SMTP del tuo provider email.
+   - **Porta:** usa 465 per SSL/TLS o 587 per STARTTLS. In caso di dubbi, prova prima 465.
+   - **Nome utente:** il tuo account email o nome utente SMTP.
+   - **Password:** la password dell'email oppure, per provider come Gmail, una password specifica per l'app.
+4. Imposta l'**Indirizzo mittente**, ovvero quello visualizzato dai destinatari.
+5. Fai clic su **Test** per verificare la connessione. Teable proverà a inviare un'email di test tramite il tuo server SMTP.
+6. Se il test riesce, salva la configurazione. Da questo momento tutte le email dell'azione useranno il tuo server SMTP.
+
+## Impostazioni SMTP comuni per provider
+
+| Provider | Host | Porta | Note |
+|---|---|---|---|
+| **Gmail** | `smtp.gmail.com` | 465 | Richiede una password per l'app, non quella dell'account. Consulta [Configura Gmail IMAP](../../trigger/email/gmail-imap) |
+| **Outlook/Microsoft 365** | `smtp.office365.com` | 587 | Usa le credenziali del tuo account Microsoft |
+| **Amazon SES** | `email-smtp.{region}.amazonaws.com` | 465 | Usa le credenziali SMTP di SES, non quelle IAM |
+| **SendGrid** | `smtp.sendgrid.net` | 465 | Il nome utente è `apikey`; la password è la chiave API |
+| **Mailgun** | `smtp.mailgun.org` | 465 | Usa le credenziali SMTP presenti nelle impostazioni del dominio Mailgun |
+| **Zoho Mail** | `smtp.zoho.com` | 465 | Usa le credenziali del tuo account Zoho |
+| **Yahoo Mail** | `smtp.mail.yahoo.com` | 465 | Richiede una password per l'app |
+| **Postmark** | `smtp.postmarkapp.com` | 587 | Usa il token API del server Postmark sia come nome utente sia come password |
+| **Personalizzato/Self-hosted** | Indirizzo del tuo server | Variabile | Chiedi al team IT host, porta e credenziali |
+
+## Errori comuni e soluzioni
+
+Quando un'esecuzione non riesce a inviare l'email, apri la **Cronologia esecuzioni** del workflow e controlla l'output del passaggio **Invia email**. Per un server SMTP personalizzato, il passaggio riporta il rifiuto restituito dal server di posta: codice di risposta, comando SMTP non riuscito, destinatari rifiutati e host. Confrontalo con le cause seguenti.
+
+| Errore | Causa probabile | Soluzione |
+|---|---|---|
+| **Connessione rifiutata** | Host o porta errati | Ricontrolla host e porta SMTP. Prova a passare da 465 a 587 o viceversa |
+| **Autenticazione non riuscita** | Nome utente o password errati | Verifica le credenziali. Per Gmail/Yahoo, usa una password per l'app invece della password dell'account |
+| **Errore del certificato/handshake TLS non riuscito** | Mancata corrispondenza tra porta e crittografia | La porta 465 richiede SSL, mentre la 587 richiede STARTTLS. Assicurati che la porta corrisponda alla crittografia del server |
+| **Indirizzo mittente rifiutato** | L'Indirizzo mittente non corrisponde all'account SMTP | Alcuni provider richiedono che l'Indirizzo mittente corrisponda all'account autenticato. Controlla le regole del provider |
+| **Limite di frequenza superato** | Troppe email inviate troppo rapidamente | Riduci la frequenza di invio o passa a un piano email superiore. Se necessario, usa invii in batch con intervalli |
+| **Timeout** | Problema del firewall o della rete | Verifica che la rete consenta connessioni in uscita sulla porta SMTP. Se usi Teable Self-hosted, controlla le regole del firewall del server |
+
+## Suggerimenti
+
+- **Esegui un test prima della messa in produzione.** Dopo aver configurato SMTP, invia sempre un'email di prova per verificare che tutto funzioni.
+- **Usa password specifiche per le app** con Gmail, Yahoo e gli altri provider che supportano l'autenticazione a due fattori. Se la 2FA è abilitata, la normale password dell'account non funzionerà.
+- **Configura SPF, DKIM e DMARC** nei record DNS del dominio per migliorare la recapitabilità e impedire che le email vengano contrassegnate come spam.
+- **Proteggi le credenziali.** Le password SMTP vengono archiviate in forma crittografata in Teable, ma evita di condividere configurazioni di automazione contenenti credenziali sensibili.
+- **Monitora la consegna.** Se le email smettono di arrivare, controlla nella dashboard del provider SMTP la presenza di messaggi respinti, avvisi sui limiti di frequenza o problemi dell'account.
+
+<Tip>Per Gmail, usa una password per l'app invece della password dell'account. Consulta [Configura Gmail IMAP](../../trigger/email/gmail-imap) per scoprire come crearne una.</Tip>
+
+## Contenuti correlati
+
+- [Azione Invia email](/it/basic/automation/actions/communication/send-email-overview) — l'azione che usa la configurazione SMTP
+- [Configura Gmail IMAP](../../trigger/email/gmail-imap) — istruzioni per le password per le app di Gmail

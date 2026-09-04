@@ -1,0 +1,183 @@
+---
+title: "Seguridad"
+description: "Conoce la arquitectura de seguridad, la protección de datos y las medidas de cumplimiento de Teable"
+---
+
+<CardGroup cols={4}>
+  <Card title="Cifrado" icon="lock">
+    AES-256 y TLS
+  </Card>
+  <Card title="ISO 27001" icon="shield-check">
+    Con certificación
+  </Card>
+  <Card title="Alojamiento en AWS" icon="server">
+    Oeste de EE. UU., Oregón
+  </Card>
+  <Card title="Preparado para SSO" icon="key">
+    Protocolo OIDC
+  </Card>
+</CardGroup>
+
+<Info>
+Teable se compromete a mantener la seguridad y la privacidad de tus datos. Nuestras prácticas de seguridad están diseñadas para proteger tu información y darte pleno control sobre tu espacio de trabajo.
+</Info>
+
+## Cifrado de datos
+
+### Cifrado en tránsito
+
+Todos los datos transmitidos entre tu navegador y los servidores de Teable están protegidos mediante **cifrado SSL/TLS de 256 bits**. Exigimos HTTPS en todas las conexiones y redirigimos automáticamente de HTTP a HTTPS.
+
+### Cifrado en reposo
+
+<Tabs>
+  <Tab title="Teable Cloud">
+    Todos los datos almacenados en nuestras bases de datos se cifran mediante **AES-256** a través de la infraestructura de AWS. Esto incluye:
+    - El almacenamiento de bases de datos (PostgreSQL en AWS RDS)
+    - Los archivos adjuntos
+    - Las copias de seguridad
+  </Tab>
+  <Tab title="Autoalojado">
+    Tienes pleno control sobre la configuración del cifrado de acuerdo con los requisitos de tu infraestructura. Recomendamos:
+    - Activar el cifrado en la base de datos
+    - Utilizar volúmenes de almacenamiento cifrados
+    - Implementar el cifrado de las copias de seguridad
+  </Tab>
+</Tabs>
+
+## Seguridad de la infraestructura
+
+Teable Cloud está alojado en **Amazon Web Services (AWS)**, en la región Oeste de EE. UU. (Oregón), y aprovecha la infraestructura de seguridad de nivel empresarial de AWS.
+
+<CardGroup cols={2}>
+  <Card title="Encabezados de seguridad" icon="shield-halved">
+    Implementación de Helmet y de la Política de Seguridad de Contenidos (CSP) para prevenir vulnerabilidades web habituales, como XSS y el secuestro de clics.
+  </Card>
+  <Card title="Protección contra bots" icon="robot">
+    Integración con Cloudflare Turnstile para impedir ataques automatizados y registros de spam.
+  </Card>
+  <Card title="Limitación de solicitudes" icon="gauge-high">
+    Protección contra ataques de fuerza bruta en los intentos de inicio de sesión mediante el bloqueo de cuentas, además de límites de solicitudes en las operaciones de verificación del correo electrónico y restablecimiento de contraseñas.
+  </Card>
+  <Card title="Seguridad de las contraseñas" icon="key">
+    Todas las contraseñas se procesan mediante el algoritmo hash bcrypt con sales únicas, lo que las hace resistentes a los ataques con tablas arcoíris.
+  </Card>
+</CardGroup>
+
+## Controles de acceso
+
+### Permisos basados en roles
+
+Teable ofrece un control de acceso granular basado en roles con cinco niveles de permisos:
+
+| Rol | Capacidades |
+|------|-------------|
+| **Propietario** | Control total del espacio de trabajo, incluidas la facturación y la eliminación |
+| **Creador** | Puede crear Tablas y Vistas, y administrar la estructura del espacio de trabajo |
+| **Editor** | Puede editar Registros y valores de Campos |
+| **Comentador** | Puede ver contenido y añadir comentarios |
+| **Espectador** | Acceso de solo lectura al contenido |
+
+### Matriz de Autoridad
+
+<Tip>
+La Matriz de Autoridad permite controlar con precisión los permisos a nivel de Campo, Registro y Vista, para que puedas definir exactamente qué puede ver y modificar cada usuario o rol.
+</Tip>
+
+Esta función resulta especialmente útil para:
+- Restringir Campos confidenciales (por ejemplo, salarios o información personal)
+- Limitar el acceso a Registros según la propiedad o el departamento
+- Crear Vistas personalizadas con distintos conjuntos de permisos
+
+### Protección de enlaces compartidos
+
+Protege las Vistas compartidas mediante una contraseña. Cuando esta opción está activada, las personas destinatarias deben introducir la contraseña correcta antes de acceder al contenido compartido.
+
+## Gestión de datos
+
+### Historial del Registro
+
+Haz un seguimiento de todos los cambios realizados en tus Registros mediante un historial de revisiones completo:
+- Consulta quién realizó los cambios y cuándo
+- Visualiza los valores anteriores a las modificaciones
+- Comprende el ciclo de vida completo de tus datos
+
+### Papelera y recuperación
+
+Los elementos eliminados se trasladan a la Papelera y pueden recuperarse durante el periodo de conservación, lo que protege frente a pérdidas accidentales de datos.
+
+### Copias de seguridad y exportación de datos
+
+Teable ofrece varias opciones para crear copias de seguridad de tus datos:
+
+| Método | Descripción | Caso de uso |
+|--------|-------------|----------|
+| **[Exportar una Base](/es/basic/base#export-base-backup-&-migration)** | Descarga una Base completa como archivo `.tea` (estructura, datos y Automatizaciones) | Copia de seguridad completa y migración |
+| **[Duplicar una Base](/es/basic/base#duplicate-a-base-to-another-space)** | Crea una copia de una Base dentro de Teable | Instantánea rápida |
+| **[Exportar CSV](/es/basic/table/export)** | Exporta los datos de una Tabla concreta | Portabilidad de datos |
+| **[Exportar mediante la API](/es/api-doc/record/get)** | Exporta Registros mediante programación a través de la API REST | Copias de seguridad automatizadas |
+
+<Tip>
+Puedes crear copias de seguridad manuales de tus Bases exportando una Base completa como archivo `.tea`, exportando Tablas concretas como archivos CSV u obteniendo tus datos mediante la API de Teable.
+</Tip>
+
+## Inicio de sesión único (SSO)
+
+Teable admite SSO empresarial mediante el protocolo **OIDC (OpenID Connect)**, compatible con los principales proveedores de identidad:
+
+<CardGroup cols={3}>
+  <Card title="Azure Entra ID" icon="microsoft" href="/es/basic/sso/azure-entra-id" />
+  <Card title="Okta" icon="o" href="/es/basic/sso/okta" />
+  <Card title="Google Workspace" icon="google" href="/es/basic/sso/google-workspace" />
+  <Card title="Auth0" icon="a" href="/es/basic/sso/auth0" />
+  <Card title="OneLogin" icon="1" href="/es/basic/sso/onelogin" />
+  <Card title="Authentik" icon="lock" href="/es/basic/sso/authentik" />
+</CardGroup>
+
+## Cumplimiento
+
+<Card title="Certificación ISO 27001" icon="certificate">
+  Teable Cloud ha obtenido la certificación ISO 27001, lo que demuestra nuestro compromiso con las mejores prácticas de gestión de la seguridad de la información.
+</Card>
+
+## Implementación autoalojada
+
+Para las organizaciones con requisitos estrictos de seguridad o cumplimiento, Teable ofrece opciones de implementación autoalojada:
+
+<Steps>
+  <Step title="Residencia de los datos">
+    Conserva todos los datos dentro de tu propia infraestructura y tus límites geográficos
+  </Step>
+  <Step title="Control de la red">
+    Implementa Teable en tu VPC con reglas de cortafuegos y políticas de red personalizadas
+  </Step>
+  <Step title="Seguridad personalizada">
+    Integra Teable con tu infraestructura de seguridad, SIEM y herramientas de supervisión actuales
+  </Step>
+  <Step title="Control de las copias de seguridad">
+    Implementa tus propios procedimientos de copia de seguridad y recuperación ante desastres
+  </Step>
+</Steps>
+
+## Prácticas recomendadas de seguridad
+
+Recomendamos las siguientes prácticas para maximizar la seguridad de tu espacio de trabajo:
+
+<AccordionGroup>
+  <Accordion title="Utiliza contraseñas seguras y únicas">
+    Crea contraseñas que combinen mayúsculas, minúsculas, números y símbolos. Considera la posibilidad de utilizar un gestor de contraseñas.
+  </Accordion>
+  <Accordion title="Activa SSO cuando esté disponible">
+    El inicio de sesión único ofrece una gestión centralizada de la autenticación y controles de seguridad adicionales.
+  </Accordion>
+  <Accordion title="Revisa periódicamente los permisos de los colaboradores">
+    Audita periódicamente los miembros de tu espacio de trabajo y sus niveles de permisos para garantizar un acceso con los privilegios mínimos necesarios.
+  </Accordion>
+  <Accordion title="Utiliza enlaces compartidos protegidos con contraseña">
+    Cuando compartas Vistas externamente, activa siempre la protección con contraseña para los datos confidenciales.
+  </Accordion>
+</AccordionGroup>
+
+## Contacto
+
+Para realizar consultas relacionadas con la seguridad o informar de una vulnerabilidad, ponte en contacto con nosotros en **support@teable.ai**.

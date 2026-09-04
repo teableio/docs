@@ -1,0 +1,180 @@
+---
+title: "Azure Entra ID SSO"
+description: "Konfigurieren Sie Azure Entra ID als Ihren SSO-Authentifizierungsanbieter für Teable"
+---
+
+{/* mintlify-resync: 2026-05-28 */}
+<Tip>Verfügbar ab dem Business-Plan</Tip>
+
+## Schritt 1: Authentifizierungsanbieter in Teable erstellen
+
+1. Navigieren Sie zu Ihren Teable-SSO-Einstellungen.
+2. Erstellen Sie einen neuen Authentifizierungsanbieter, nennen Sie ihn **Azure Entra ID**, und wählen Sie **OpenID Connect** aus.
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-create-provider.png"
+  alt="Einrichtung von Azure Entra ID SSO, Schritt 1"
+  className="docs-screenshot"
+/>
+
+## Schritt 2: Azure Entra ID aufrufen
+
+1. Melden Sie sich bei Ihrem Azure-Konto an.
+2. Navigieren Sie zu **Microsoft Entra ID** (früher Azure Active Directory).
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-open-entra-id.png"
+  alt="Einrichtung von Azure Entra ID SSO, Schritt 2"
+  className="docs-screenshot"
+/>
+
+## Schritt 3: OAuth-Endpunkte konfigurieren
+
+Tragen Sie die folgenden OAuth-Endpunkte in Teable ein und verwenden Sie dabei Ihre **Tenant ID**:
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-oauth-endpoints.png"
+  alt="Einrichtung von Azure Entra ID SSO, Schritt 3"
+  className="docs-screenshot"
+/>
+
+- **Authorization URL**: `https://login.microsoftonline.com/_YOUR_TENANT_ID_/oauth2/v2.0/authorize`
+- **Token URL**: `https://login.microsoftonline.com/_YOUR_TENANT_ID_/oauth2/v2.0/token`
+- **User Info URL**: `https://graph.microsoft.com/oidc/userinfo`
+- **Issuer**: `https://login.microsoftonline.com/_YOUR_TENANT_ID_/v2.0`
+
+<Note>Ersetzen Sie `_YOUR_TENANT_ID_` durch Ihre tatsächliche Azure Tenant ID.</Note>
+
+## Schritt 4: Eine neue Anwendung registrieren
+
+1. Klicken Sie in Azure Entra ID im linken Menü auf **App registrations**.
+2. Klicken Sie auf **+ New registration**.
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-app-registration-entry.png"
+  alt="Registrierung einer Azure-Entra-ID-Anwendung"
+  className="docs-screenshot"
+/>
+
+## Schritt 5: Anwendungsregistrierung konfigurieren
+
+Füllen Sie das Formular für die Anwendungsregistrierung aus:
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-app-registration-form.png"
+  alt="Einrichtung von Azure Entra ID SSO, Schritt 5"
+  className="docs-screenshot"
+/>
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-redirect-uri.png"
+  alt="Einrichtung von Azure Entra ID SSO, Schritt 6"
+  className="docs-screenshot"
+/>
+
+- **Name**: Teable SSO
+- **Supported account types**: Wählen Sie die Option entsprechend Ihren Anforderungen aus.
+- **Platform**: Web
+- **Redirect URI**: Fügen Sie die **Callback URL** aus Teable ein.
+
+Klicken Sie auf **Register**, um die Anwendung zu erstellen.
+
+## Schritt 6: Client ID speichern
+
+1. Kopieren Sie die **Application (client) ID** von der Anwendungsübersichtsseite.
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-application-client-id.png"
+  alt="Einrichtung von Azure Entra ID SSO, Schritt 7"
+  className="docs-screenshot"
+/>
+
+2. Fügen Sie die Client ID in die Teable-SSO-Konfiguration ein.
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-teable-client-id.png"
+  alt="Einrichtung von Azure Entra ID SSO, Schritt 8"
+  className="docs-screenshot"
+/>
+
+## Schritt 7: Client Secret erstellen
+
+1. Klicken Sie in Ihrer Anwendung im linken Menü auf **Certificates & secrets**.
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-certificates-secrets.png"
+  alt="Einrichtung von Azure Entra ID SSO, Schritt 9"
+  className="docs-screenshot"
+/>
+
+2. Klicken Sie auf **+ Add a certificate or secret**.
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-add-client-secret.png"
+  alt="Einrichtung von Azure Entra ID SSO, Schritt 10"
+  className="docs-screenshot"
+/>
+
+3. Fügen Sie eine Beschreibung hinzu und legen Sie die Gültigkeitsdauer fest.
+4. Klicken Sie auf **Add**.
+5. **Wichtig**: Kopieren Sie den geheimen **Value** sofort und speichern Sie ihn als Ihr Client Secret in Teable.
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-client-secret-value.png"
+  alt="Einrichtung von Azure Entra ID SSO, Schritt 11"
+  className="docs-screenshot"
+/>
+
+<Warning>Der geheime Wert wird nur einmal angezeigt. Speichern Sie ihn sofort.</Warning>
+
+## Schritt 8: API-Berechtigungen konfigurieren
+
+1. Klicken Sie im linken Menü auf **API permissions**.
+2. Klicken Sie auf **+ Add a permission**.
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-add-api-permission.png"
+  alt="Einrichtung von Azure Entra ID SSO, Schritt 12"
+  className="docs-screenshot"
+/>
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-microsoft-graph-permissions.png"
+  alt="Einrichtung von Azure Entra ID SSO, Schritt 13"
+  className="docs-screenshot"
+/>
+
+3. Wählen Sie **Microsoft Graph** aus.
+4. Wählen Sie **Delegated permissions**.
+5. Fügen Sie die folgenden Berechtigungen hinzu:
+   - `email`
+   - `openid`
+   - `profile`
+6. Klicken Sie auf **Add permissions**.
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-delegated-permissions.png"
+  alt="Einrichtung von Azure Entra ID SSO, Schritt 14"
+  className="docs-screenshot"
+/>
+
+7. Klicken Sie auf **Grant admin consent for [Your Directory]**, um die Berechtigungen zu genehmigen.
+
+## Schritt 9: SSO-Anmeldung testen
+
+Sie haben zwei Möglichkeiten, die SSO-Anmeldung zu aktivieren:
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-login-options.png"
+  alt="Einrichtung von Azure Entra ID SSO, Schritt 15"
+  className="docs-screenshot"
+/>
+
+**Option 1: Direkte Authentifizierungs-URL**
+- Verwenden Sie die Authentifizierungs-URL als Ihre SSO-Anmelde-URL.
+
+**Option 2: Domainverifizierung**
+1. Klicken Sie im linken Menü auf **Domain verification**.
+2. Verifizieren Sie Ihre benutzerdefinierte Domain.
+3. Rufen Sie Ihre Teable-Anmeldeseite auf.
+4. Klicken Sie auf die Schaltfläche für die SSO-Anmeldung.
+5. Geben Sie Ihre E-Mail-Adresse unter der verifizierten Domain ein, um sich anzumelden.
+

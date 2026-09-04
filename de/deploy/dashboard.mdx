@@ -1,0 +1,41 @@
+---
+title: "Eigenständiges Dashboard aktivieren"
+description: "So aktivieren Sie die Funktion für eigenständige Dashboards bei selbstgehosteten Bereitstellungen"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Die Funktion für eigenständige Dashboards wurde durch App Builder ersetzt. **Wir empfehlen dringend, App Builder zu verwenden, um leistungsfähigere, anpassbare Dashboards für die beste Erfahrung zu erstellen.**
+
+Wenn Sie weiterhin den veralteten Dashboard-Knoten verwenden müssen, können Sie die folgenden Konfigurationsschritte ausführen, um das eigenständige Dashboard zu aktivieren. Beachten Sie, dass wir derzeit keine weiteren Pläne zur Entwicklung dieser Funktion haben.
+</Tip>
+
+## Überblick
+
+Bei selbstgehosteten Teable-Instanzen ist die Funktion für eigenständige Dashboards standardmäßig deaktiviert. Führen Sie die folgenden Schritte aus, um sie zu aktivieren.
+
+## Schritte
+
+### Schritt 1: SQL-Anweisung ausführen
+
+Stellen Sie eine Verbindung zur von Teable verwendeten PostgreSQL-Datenbank her und führen Sie die folgende SQL-Anweisung aus, um `disallowDashboard` auf `false` zu setzen:
+
+```sql
+UPDATE setting SET content = 'false' WHERE name = 'disallowDashboard';
+```
+
+### Schritt 2: Cache der Einstellungstabelle leeren
+
+Nach dem Ausführen des SQL müssen Sie den Cache der Tabelle `setting` leeren, damit die Konfiguration wirksam wird.
+
+Da es keinen direkten Einstiegspunkt zum Leeren des Caches gibt, können Sie eine Cache-Aktualisierung auslösen, indem Sie **eine beliebige Instanzeinstellungsoption umschalten**. Beispiel:
+
+1. Gehen Sie zu **Verwaltungspanel** > **Instanzeinstellungen**
+2. **Aktivieren** Sie die E-Mail-Verifizierungsoption.
+3. **Deaktivieren** Sie die E-Mail-Verifizierungsoption erneut.
+
+<Callout type="info">
+Der Zweck dieses Schritts besteht darin, eine Cache-Aktualisierung der Einstellungstabelle auszulösen. Das bloße Umschalten einer beliebigen Einstellungsoption ist ausreichend — Sie müssen keine Konfiguration dauerhaft ändern.
+</Callout>
+
+Nach Abschluss beider Schritte aktualisieren Sie die Seite. Die Funktion für eigenständige Dashboards ist dann aktiviert.

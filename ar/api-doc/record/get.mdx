@@ -1,0 +1,85 @@
+---
+title: "الحصول على السجلات"
+---
+
+<Tip>نوفر للمطورين [أداة مدمجة لإنشاء معلمات الاستعلام](https://app.teable.ai/developer/tool/query-builder)، تساعدهم على إنشاء طلبات مخصصة استنادًا إلى جداولهم الحالية.</Tip>
+
+### المسار
+GET /api/table/\{tableId\}/record
+​
+### الطلب
+#### معلمات المسار
+tableId (string): المعرّف الفريد للجدول [(كيفية الحصول عليه)](/ar/api-doc/get-id#tableid).
+
+#### معلمات الاستعلام الأساسية
+جميع المعلمات اختيارية
+
+<ParamField query="viewId" type="string">
+  يحدد معرّف طريقة العرض التي ستُجلب السجلات منها. إذا لم تحدده، فستُرجع السجلات بترتيب وقت إنشائها، بما يشمل جميع السجلات والحقول.
+</ParamField>
+
+<ParamField query="take" type="number">
+  يحدد عدد السجلات المطلوب جلبها، وقيمته القصوى 100. لقراءة المزيد من السجلات، تنقّل بين صفحات البيانات باستخدام `skip` و`take` (راجع [التقسيم إلى صفحات](/ar/api-doc/overview)).
+
+  ينطبق حد 100 سجل على مفاتيح API الشخصية في Teable السحابية التي أُنشئت في 10 سبتمبر 2026 أو بعده. أما المفاتيح التي أُنشئت قبل ذلك التاريخ، ورموز OAuth والمكونات الإضافية، والنسخ ذاتية الاستضافة، فلا تزال تقبل ما يصل إلى 1000 سجل، لكن يظل الحجم الموصى به للصفحة 100 سجل.
+</ParamField>
+
+<ParamField query="skip" type="number">
+  يحدد عدد السجلات المطلوب تخطيها، ويُستخدم للتقسيم إلى صفحات.
+</ParamField>
+
+<ParamField query="fieldKeyType" type="string" default="name">
+  يحدد نوع مفتاح الحقول في السجلات. القيم الممكنة:
+  - `name`: استخدام أسماء الحقول كمفاتيح (الافتراضي)
+  - `id`: استخدام معرّفات الحقول كمفاتيح
+  - `dbFieldName`: استخدام قيم dbFieldName للحقول كمفاتيح
+</ParamField>
+
+<ParamField query="cellFormat" type="string" default="json">
+  يحدد تنسيق إرجاع قيم الخلايا. القيم الممكنة:
+  - `json`: إرجاع بيانات JSON منظّمة (الافتراضي)
+  - `text`: إرجاعها بتنسيق نص عادي
+</ParamField>
+
+<ParamField query="projection" type="string[]">
+  إذا كنت تحتاج إلى حقول محددة فقط، فحددها باستخدام هذه المعلمة. وإلا، فستُجلب جميع الحقول المرئية. تعتمد قيم المعلمة على إعداد fieldKeyType (أي استخدام أسماء الحقول أو معرّفاتها أو dbFieldName).
+</ParamField>
+
+<ParamField query="orderBy" type="string">
+  مصفوفة من كائنات الفرز تحدد كيفية ترتيب السجلات.
+</ParamField>
+
+<ParamField query="filter" type="string">
+  كائن شروط استعلام مركبة لتصفية النتائج. يدعم شروط الاستعلام المركبة استنادًا إلى الحقول والعوامل والقيم.
+</ParamField>
+
+<ParamField query="search" type="string[]">
+  البحث عن سجلات تطابق الحقول والقيم المحددة.
+</ParamField>
+
+<Accordion title="معلمات الاستعلام المتقدمة">
+<ParamField query="groupBy" type="string">
+  مصفوفة من كائنات التجميع تحدد كيفية تجميع السجلات.
+</ParamField>
+
+<ParamField query="collapsedGroupIds" type="string[]">
+  مصفوفة معرّفات المجموعات المطلوب طيها.
+</ParamField>
+
+<ParamField query="selectedRecordIds" type="string[]">
+  تصفية السجلات المحددة حسب معرّفات السجلات.
+</ParamField>
+
+<ParamField query="ignoreViewQuery" type="boolean">
+  عند تحديد viewId، يؤدي ضبط هذه القيمة على true إلى تجاهل عوامل التصفية والفرز والإعدادات الأخرى الخاصة بطريقة العرض.
+</ParamField>
+
+<ParamField query="filterLinkCellCandidate" type="string[]">
+  تصفية السجلات القابلة للتحديد من الجدول المرتبط بواسطة خلية الارتباط المحددة. على سبيل المثال، في حقول العلاقات من واحد إلى متعدد أو من واحد إلى واحد، لن تظهر معرّفات السجلات المحددة مسبقًا.
+</ParamField>
+
+<ParamField query="filterLinkCellSelected" type="string[]">
+  تصفية السجلات المحددة بالفعل من الجدول المرتبط بواسطة خلية الارتباط هذه. ملاحظة: لن تسري قيم viewId وfilter وorderBy في هذه الحالة، لأن للسجلات المحددة ترتيبها الخاص.
+</ParamField>
+</Accordion>
+

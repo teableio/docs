@@ -1,0 +1,118 @@
+---
+title: "Recherche conditionnelle"
+description: "Recherchez des données entre plusieurs tables à l’aide de conditions de filtrage et renvoyez les valeurs des enregistrements correspondants."
+---
+
+La Recherche conditionnelle peut récupérer des données correspondantes dans une Table cible sans nécessiter la création préalable d’une relation de lien. Elle est utile lorsque la recherche doit varier selon les valeurs de Champ de l’Enregistrement actuel, par exemple pour trouver le produit le plus vendu de la même catégorie ou rechercher des données pour une période correspondante.
+
+## Cas d’utilisation
+
+| Scénario | Utilité |
+| --- | --- |
+| Analyse par catégorie | Trouver le produit le plus vendu de la même catégorie |
+| Comparaison de périodes | Rechercher le montant des ventes de la période précédente pour calculer l’évolution d’une période à l’autre |
+| Correspondance de clients | Trouver les informations d’un client par numéro de téléphone, e-mail ou ID client |
+| Recherche de détails | Renvoyer les Enregistrements de détail correspondants selon les conditions de l’Enregistrement actuel |
+
+## Procédure
+
+<Steps>
+  <Step title="Créer un champ de recherche conditionnelle">
+    Cliquez sur l’icône `+` à droite du nom d’un Champ, choisissez **Recherche conditionnelle** et saisissez un titre de Champ, tel que « Commandes associées ».
+  </Step>
+  <Step title="Choisir la table cible">
+    Dans la liste déroulante des Tables cibles, choisissez la Table à interroger.
+  </Step>
+  <Step title="Configurer le champ de recherche">
+    Choisissez le Champ à extraire et confirmez le type de données renvoyé.
+  </Step>
+  <Step title="Définir les conditions de filtrage">
+    Ajoutez des conditions de filtrage, puis choisissez le Champ, le type de condition et la valeur de comparaison. Cette dernière peut être une valeur statique ou un Champ de la Table actuelle.
+  </Step>
+  <Step title="Configurer le tri et les limites">
+    Définissez le Champ de tri, l’ordre de tri et le nombre d’Enregistrements à afficher si nécessaire.
+  </Step>
+</Steps>
+
+Au moins une condition de filtrage est requise. Pour plusieurs conditions, choisissez « Toutes les conditions sont remplies (ET) » ou « Au moins une condition est remplie (OU) ».
+
+## Mise en pratique
+
+### Analyse de l’évolution des données de vente d’une période à l’autre
+
+**Tables**
+
+- Table récapitulative des ventes par période, avec des Champs tels que la période, la date de début, la date de fin et le montant des ventes
+- Table des détails des ventes, avec des Champs tels que le montant des ventes et la date de vente
+
+Dans la Table récapitulative des ventes par période, calculez la croissance de chaque période par rapport à la précédente. Utilisez d’abord une Agrégation conditionnelle pour calculer les ventes de la période actuelle, puis une Recherche conditionnelle pour récupérer celles de la période précédente, et enfin un champ Formule pour calculer le taux de croissance.
+
+**Étapes**
+
+**Créer un champ d’agrégation conditionnelle pour les ventes de la période actuelle**
+
+1. Dans la Table récapitulative des ventes par période, créez un champ Agrégation conditionnelle nommé « Ventes de la période actuelle »
+2. Table cible : Table des détails des ventes
+3. Champ à agréger : Montant des ventes
+4. Conditions de filtrage :
+   - Champ : Date de vente -> Condition : Antérieure ou égale à -> Valeur : Champ Date de fin de la Table actuelle
+   - Champ : Date de vente -> Condition : Postérieure ou égale à -> Valeur : Champ Date de début de la Table actuelle
+5. Fonction d’agrégation : Somme
+
+**Créer un champ de recherche conditionnelle pour les ventes de la période précédente**
+
+1. Créez un champ Recherche conditionnelle nommé « Ventes de la période précédente »
+2. Table cible : Table récapitulative des ventes par période (cette Table)
+3. Champ : Ventes de la période actuelle
+4. Condition de filtrage :
+   - Champ : Date de fin -> Condition : Est égal à -> Valeur : Champ Date de fin de la période précédente dans la Table actuelle
+5. Fonction d’agrégation : Somme
+
+**Créer un champ de formule pour la croissance d’une période à l’autre**
+
+1. Créez un champ Formule nommé « Taux de croissance d’une période à l’autre »
+2. Définissez la formule sur `(Ventes de la période actuelle - Ventes de la période précédente) / Ventes de la période précédente * 100`
+3. Formatez-la comme un pourcentage avec 2 décimales
+
+### Analyse des ventes par produit
+
+**Tables**
+
+- Table des produits, avec des Champs tels que l’ID de catégorie, le nom du produit et le volume des ventes
+- Table des catégories, avec des Champs tels que l’ID de catégorie et le nom de la catégorie
+
+Dans la Table des catégories, trouvez le produit le plus vendu de chaque catégorie afin d’identifier le produit principal de chacune.
+
+**Étapes**
+
+**Produit le plus vendu**
+
+1. Dans la Table des catégories, créez un champ Recherche conditionnelle nommé « Produit le plus vendu »
+2. Table cible : Table des produits
+3. Champ de recherche : Nom du produit
+4. Condition de filtrage :
+   - Champ : ID de catégorie -> Condition : Est égal à -> Valeur : Champ ID de catégorie de la Table actuelle
+5. Tri : Champ Volume des ventes -> Décroissant
+6. Limiter l’affichage : 1 Enregistrement
+
+**Volume des ventes**
+
+1. Créez un autre champ Recherche conditionnelle nommé « Volume des ventes »
+2. Table cible : Table des produits
+3. Champ de recherche : Volume des ventes
+4. Condition de filtrage :
+   - Champ : ID de catégorie -> Condition : Est égal à -> Valeur : Champ ID de catégorie de la Table actuelle
+5. Tri : Champ Volume des ventes -> Décroissant
+6. Limiter l’affichage : 1 Enregistrement
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Pourquoi certains champs ne peuvent-ils pas être utilisés comme conditions de filtrage ?">
+    Certains types de Champs complexes, comme les images et les pièces jointes, peuvent ne pas prendre en charge les conditions de filtrage.
+  </Accordion>
+
+  <Accordion title="Quelle est la différence entre la Recherche conditionnelle et un champ Recherche standard ?">
+    Un champ Recherche standard nécessite d’abord un champ Lien. La Recherche conditionnelle peut faire correspondre directement les données de la Table cible au moyen de conditions de filtrage.
+  </Accordion>
+</AccordionGroup>

@@ -1,0 +1,184 @@
+---
+title: "Sicurezza"
+description: "Scopri l'architettura di sicurezza, la protezione dei dati e le misure di conformità di Teable"
+---
+
+<CardGroup cols={4}>
+  <Card title="Crittografia" icon="lock">
+    AES-256 e TLS
+  </Card>
+  <Card title="ISO 27001" icon="shield-check">
+    Certificato
+  </Card>
+  <Card title="Ospitato su AWS" icon="server">
+    Stati Uniti occidentali, Oregon
+  </Card>
+  <Card title="Pronto per SSO" icon="key">
+    Protocollo OIDC
+  </Card>
+</CardGroup>
+
+<Info>
+Teable si impegna a garantire la sicurezza e la riservatezza dei tuoi dati. Le nostre pratiche di sicurezza sono progettate per proteggere le informazioni, offrendoti al contempo il pieno controllo dello Spazio di lavoro.
+</Info>
+
+## Crittografia dei dati
+
+### Crittografia in transito
+
+Tutti i dati trasmessi tra il browser e i server Teable sono protetti tramite **crittografia SSL/TLS a 256 bit**. Imponiamo HTTPS per tutte le connessioni con reindirizzamento automatico da HTTP a HTTPS.
+
+### Crittografia dei dati inattivi
+
+<Tabs>
+  <Tab title="Teable Cloud">
+    Tutti i dati archiviati nei nostri database sono crittografati tramite **crittografia AES-256** mediante l'infrastruttura AWS. Ciò include:
+    - Archiviazione del database (PostgreSQL su AWS RDS)
+    - File allegati
+    - Backup
+  </Tab>
+  <Tab title="Self-hosted">
+    Hai il pieno controllo della configurazione della crittografia in base ai requisiti dell'infrastruttura. Consigliamo di:
+    - Abilitare la crittografia a livello di database
+    - Utilizzare volumi di archiviazione crittografati
+    - Implementare la crittografia dei backup
+  </Tab>
+</Tabs>
+
+## Sicurezza dell'infrastruttura
+
+Teable Cloud è ospitato su **Amazon Web Services (AWS)** nella regione Stati Uniti occidentali (Oregon) e sfrutta l'infrastruttura di sicurezza AWS di livello aziendale.
+
+<CardGroup cols={2}>
+  <Card title="Header di sicurezza" icon="shield-halved">
+    Implementazione di Helmet e Content Security Policy (CSP) per impedire le vulnerabilità web comuni, come XSS e clickjacking.
+  </Card>
+  <Card title="Protezione dai bot" icon="robot">
+    Integrazione con Cloudflare Turnstile per impedire attacchi automatizzati e registrazioni indesiderate.
+  </Card>
+  <Card title="Limitazione della frequenza" icon="gauge-high">
+    Protezione dagli attacchi di forza bruta ai tentativi di accesso mediante blocco dell'account e limitazione della frequenza delle operazioni di verifica email e reimpostazione della password.
+  </Card>
+  <Card title="Sicurezza delle password" icon="key">
+    Tutte le password vengono sottoposte ad hashing con l'algoritmo bcrypt e salt univoci, rendendole resistenti agli attacchi con rainbow table.
+  </Card>
+</CardGroup>
+
+## Controlli di accesso
+
+### Autorizzazioni basate sui ruoli
+
+Teable offre un controllo granulare degli accessi basato sui ruoli con cinque livelli di autorizzazione:
+
+| Ruolo | Funzionalità |
+|------|-------------|
+| **Proprietario** | Controllo completo dello Spazio di lavoro, inclusi fatturazione ed eliminazione |
+| **Creatore** | Può creare Tabelle e Viste e gestire la struttura dello Spazio di lavoro |
+| **Editor** | Può modificare Record e valori dei Campi |
+| **Commentatore** | Può visualizzare i contenuti e aggiungere commenti |
+| **Visualizzatore** | Accesso ai contenuti in sola lettura |
+
+### Matrice di autorità
+
+<Tip>
+La Matrice di autorità consente un controllo granulare delle autorizzazioni a livello di Campo, Record e Vista, permettendo di definire con precisione ciò che ogni utente o ruolo può visualizzare e modificare.
+</Tip>
+
+Questa funzionalità è particolarmente utile per:
+- Limitare i Campi sensibili (ad esempio stipendio e informazioni personali)
+- Limitare l'accesso ai Record in base alla proprietà o al reparto
+- Creare Viste personalizzate con diversi set di autorizzazioni
+
+### Protezione dei link di condivisione
+
+Proteggi le Viste condivise tramite autenticazione con password. Quando è abilitata, i destinatari devono inserire la password corretta prima di accedere ai contenuti condivisi.
+
+## Gestione dei dati
+
+### Cronologia dei Record
+
+Monitora tutte le modifiche apportate ai Record tramite una cronologia completa delle revisioni:
+- Scopri chi ha apportato le modifiche e quando
+- Visualizza i valori precedenti alle modifiche
+- Comprendi l'intero ciclo di vita dei dati
+
+### Cestino e ripristino
+
+Gli elementi eliminati vengono spostati nel cestino e possono essere recuperati entro il periodo di conservazione, offrendo protezione dalla perdita accidentale di dati.
+
+### Backup ed esportazione dei dati
+
+Teable offre diverse opzioni per il backup dei dati:
+
+| Metodo | Descrizione | Caso d'uso |
+|--------|-------------|----------|
+| **[Esportazione Base](/it/basic/base#export-base-backup-&-migration)** | Scarica l'intera Base come file `.tea` (struttura, dati, Automazioni) | Backup completo, migrazione |
+| **[Duplicazione Base](/it/basic/base#duplicate-a-base-to-another-space)** | Crea una copia della Base all'interno di Teable | Snapshot rapido |
+| **[Esportazione CSV](/it/basic/table/export)** | Esporta i dati di una singola Tabella | Portabilità dei dati |
+| **[Esportazione API](/it/api-doc/record/get)** | Esporta Record in modo programmatico tramite API REST | Backup automatizzati |
+
+<Tip>
+Puoi eseguire manualmente il backup delle Base esportando l'intera Base come file `.tea`, esportando singole Tabelle come file CSV oppure recuperando i dati tramite l'API di Teable.
+</Tip>
+
+## Single Sign-On (SSO)
+
+Teable supporta SSO aziendale tramite il protocollo **OIDC (OpenID Connect)**, compatibile con i principali provider di identità:
+
+<CardGroup cols={3}>
+  <Card title="Azure Entra ID" icon="microsoft" href="/it/basic/sso/azure-entra-id" />
+  <Card title="Okta" icon="o" href="/it/basic/sso/okta" />
+  <Card title="Google Workspace" icon="google" href="/it/basic/sso/google-workspace" />
+  <Card title="Auth0" icon="a" href="/it/basic/sso/auth0" />
+  <Card title="OneLogin" icon="1" href="/it/basic/sso/onelogin" />
+  <Card title="Authentik" icon="lock" href="/it/basic/sso/authentik" />
+</CardGroup>
+
+## Conformità
+
+<Card title="Certificazione ISO 27001" icon="certificate">
+  Teable Cloud ha ottenuto la certificazione ISO 27001, dimostrando il nostro impegno verso le procedure consigliate per la gestione della sicurezza delle informazioni.
+</Card>
+
+## Distribuzione Self-hosted
+
+Per le organizzazioni con requisiti rigorosi di sicurezza o conformità, Teable offre opzioni di distribuzione Self-hosted:
+
+<Steps>
+  <Step title="Residenza dei dati">
+    Conserva tutti i dati all'interno della tua infrastruttura e dei tuoi confini geografici
+  </Step>
+  <Step title="Controllo della rete">
+    Esegui la distribuzione nella tua VPC con regole firewall e criteri di rete personalizzati
+  </Step>
+  <Step title="Sicurezza personalizzata">
+    Esegui l'integrazione con lo stack di sicurezza, SIEM e strumenti di monitoraggio esistenti
+  </Step>
+  <Step title="Controllo dei backup">
+    Implementa procedure personalizzate di backup e ripristino di emergenza
+  </Step>
+</Steps>
+
+## Procedure consigliate per la sicurezza
+
+Consigliamo le procedure seguenti per ottimizzare la sicurezza dello Spazio di lavoro:
+
+<AccordionGroup>
+  <Accordion title="Usa password complesse e univoche">
+    Crea password con una combinazione di maiuscole, minuscole, numeri e simboli. Valuta l'utilizzo di un gestore di password.
+  </Accordion>
+  <Accordion title="Abilita SSO quando disponibile">
+    Single Sign-On offre una gestione centralizzata dell'autenticazione e controlli di sicurezza aggiuntivi.
+  </Accordion>
+  <Accordion title="Esamina regolarmente le autorizzazioni dei collaboratori">
+    Controlla periodicamente i membri dello Spazio di lavoro e i relativi livelli di autorizzazione per garantire l'accesso con privilegi minimi.
+  </Accordion>
+  <Accordion title="Usa link di condivisione protetti da password">
+    Quando condividi esternamente le Viste, abilita sempre la protezione con password per i dati sensibili.
+  </Accordion>
+</AccordionGroup>
+
+## Contatti
+
+Per richieste relative alla sicurezza o per segnalare una vulnerabilità, contattaci all'indirizzo **support@teable.ai**
+

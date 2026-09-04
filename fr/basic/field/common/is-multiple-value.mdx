@@ -1,0 +1,62 @@
+---
+title: "Valeur unique et valeurs multiples"
+description: "Explique si une cellule de champ stocke une valeur ou un groupe de valeurs."
+---
+
+Les notions de valeur unique et de valeurs multiples indiquent si une cellule stocke une seule valeur ou un groupe de valeurs. Une fois ce concept compris, il est plus facile de voir pourquoi les liens, recherches, agrégations et formules peuvent renvoyer plusieurs résultats.
+
+## Concepts de base
+
+| Type | Description | Exemple |
+| --- | --- | --- |
+| Valeur unique | Une information précise | « date d’aujourd’hui », « numéro de téléphone de Jean » |
+| Valeurs multiples | Un groupe de valeurs, également considéré comme un tableau | « toutes les dates de ce mois », « tous les numéros de téléphone de Jean » |
+
+## États par défaut des valeurs uniques et multiples
+
+| Type de Champ | État par défaut |
+| --- | --- |
+| Texte sur une ligne, texte long | Unique |
+| Sélection unique, case à cocher, date, nombre, évaluation | Unique |
+| Date de création, date de dernière modification, créé par, dernière modification par, numéro automatique, bouton | Unique |
+| Sélection multiple, pièce jointe | Multiple |
+| Utilisateur | Facultatif |
+| Lien | Facultatif |
+| Formule, agrégation | Dynamique |
+
+Ici, « état par défaut » désigne l’état habituel du Champ lorsqu’il est utilisé seul. **Facultatif** signifie que vous pouvez déterminer dans les paramètres du Champ s’il contient une valeur unique ou des valeurs multiples. **Dynamique** signifie que le résultat dépend de la logique de la formule, des fonctions d’agrégation et du fait que les Champs référencés contiennent ou non plusieurs valeurs. Après le passage d’une valeur par un lien, une recherche, une agrégation ou une référence de formule, son état peut changer.
+
+## Changements d’état dus aux liens et aux références
+
+- **Champs Lien** : si un champ Lien contient plusieurs valeurs, les Champs référencés par ce lien peuvent également devenir multivalués. Par exemple, si une tâche peut être attribuée à plusieurs employés, la recherche de leurs numéros de téléphone par l’intermédiaire de ce lien peut renvoyer plusieurs numéros.
+- **Formules et agrégations** : les Formules et Agrégations contiennent souvent une valeur unique, mais peuvent devenir multivaluées lorsqu’elles référencent des Champs à valeurs multiples.
+
+### Exemple
+
+Supposons que vous gériez une entreprise dans Teable avec deux Tables : `Informations sur les employés` et `Tâches du projet`.
+
+**Table Informations sur les employés**
+
+| Nom | Téléphone | E-mail | Tâches |
+| --- | --- | --- | --- |
+| Jean | 123456 | jean@entreprise.com | Tâche 1, Tâche 2 |
+| Marie | 789012 | marie@entreprise.com | Tâche 3 |
+
+**Table Tâches du projet**
+
+| Nom de la tâche | Responsable | Date d’échéance | Avancement |
+| --- | --- | --- | --- |
+| Tâche 1 | Jean | 2023-11-20 | 50% |
+| Tâche 2 | Jean | 2023-12-01 | 30% |
+| Tâche 3 | Marie | 2023-11-15 | 80% |
+
+Dans cet exemple :
+
+- Le champ « Tâches » de la Table **Informations sur les employés** contient plusieurs valeurs, car un employé peut être responsable de plusieurs tâches.
+- Le champ « Responsable » de la Table **Tâches du projet** contient une valeur unique, car chaque tâche n’a qu’un seul responsable.
+
+Lorsque vous créez une nouvelle tâche dans la Table « Tâches du projet » et l’attribuez à un employé, le champ « Tâches » de cet employé dans la Table « Informations sur les employés » est mis à jour afin d’inclure toutes les tâches qui lui sont attribuées.
+
+### Mini-graphiques numériques
+
+Les champs Nombre affichent parfois plusieurs lignes ou barres au lieu d’un seul nombre. Cela signifie généralement que le Champ est devenu multivalué, souvent par l’intermédiaire d’un lien, d’une recherche, d’une agrégation ou d’une référence de formule.

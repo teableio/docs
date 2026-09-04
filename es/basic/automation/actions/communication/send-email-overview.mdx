@@ -1,0 +1,103 @@
+---
+title: "Descripción general de Enviar correo electrónico"
+description: "Envía correos electrónicos personalizados desde un flujo de trabajo"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Recomendamos encarecidamente usar Ejecutar script para crear automatizaciones, ya que permite cubrir el comportamiento de todas las acciones, incluidas aquellas que, de otro modo, tendrían que crearse manualmente. Solo tienes que describir tus requisitos a la IA en el chat.
+
+Ten en cuenta que, si añades acciones manualmente, la IA no podrá reconocerlas ni modificarlas más adelante.
+</Tip>
+
+## Crear con IA
+
+Abre el Chat de IA en la barra lateral derecha de tu Tabla y describe lo que quieres.
+
+La IA se encarga de todo: elige el desencadenador adecuado, selecciona las acciones correspondientes, asigna los Campos y configura automáticamente todo el flujo de trabajo.
+
+Describe el objetivo una sola vez y el flujo de trabajo estará listo, sin necesidad de configuración manual.
+
+Esta acción envía un correo electrónico a uno o varios destinatarios. Puedes personalizar los destinatarios, el asunto, el cuerpo y la dirección de respuesta, además de utilizar valores dinámicos de pasos anteriores para personalizar cada mensaje.
+
+De forma predeterminada, los correos electrónicos se envían desde el servicio de correo integrado de Teable. Si necesitas enviarlos desde tu propio dominio, configura un [servidor SMTP personalizado](/es/basic/automation/actions/communication/smtp-sender).
+
+## Configuración
+
+| Ajuste | Obligatorio | Descripción |
+|---|---|---|
+| Para | Sí* | Direcciones de correo electrónico de los destinatarios. Separa varias direcciones con comas |
+| Asunto | Sí | La línea de asunto. Admite variables dinámicas mediante **+** |
+| Cuerpo | Sí | El cuerpo del correo electrónico. Admite Markdown, HTML y variables dinámicas |
+| Nombre del remitente | No | El nombre para mostrar en la bandeja de entrada del destinatario (p. ej., «Soporte de Acme») |
+| CC | No | Destinatarios con copia |
+| CCO | No | Destinatarios con copia oculta |
+| Responder a | No | La dirección a la que responderán los destinatarios (si es distinta de la del remitente) |
+
+\* Se requiere al menos uno de los Campos **Para** o **CCO**.
+
+**Límite de velocidad:** 5 correos electrónicos por segundo y por Base.
+
+## Cómo configurarla
+
+1. Añade una acción **Enviar correo electrónico** a tu flujo de trabajo.
+2. En el Campo **Para**, introduce una dirección de correo electrónico estática o haz clic en **+** para insertar un valor dinámico (p. ej., el Campo Correo electrónico del Registro desencadenador).
+3. Escribe el **Asunto**. Haz clic en **+** para incluir valores dinámicos, como el nombre o el estado del Registro. Ejemplo: `Nuevo pedido de {{Customer Name}} — #{{Order ID}}`.
+4. Escribe el **Cuerpo**. Puedes usar:
+   - **Texto sin formato** — escribe tu mensaje directamente.
+   - **Markdown** — usa `**negrita**`, `*cursiva*`, `- listas`, `[enlaces](url)`, etc.
+   - **HTML** — para controlar por completo el formato, escribe las etiquetas HTML directamente.
+   - **Variables dinámicas** — haz clic en **+** en cualquier lugar del cuerpo para insertar valores de pasos anteriores.
+5. (Opcional) Configura el **Nombre del remitente**, **CC**, **CCO** o **Responder a**, según sea necesario.
+6. Guarda la acción.
+
+## Usar variables en el asunto y el cuerpo
+
+Las variables te permiten personalizar cada correo electrónico. Haz clic en el botón **+** de cualquier Campo de texto para abrir el selector de variables. Puedes hacer referencia a:
+
+- **Datos del desencadenador:** Campos del Registro que activó la Automatización (p. ej., nombre del cliente, correo electrónico o importe del pedido).
+- **Salida de una acción anterior:** datos de pasos anteriores, como el ID de un Registro recién creado o texto generado por IA.
+
+Ejemplo de cuerpo con variables:
+
+```
+Hola, {{Customer Name}}:
+
+Tu pedido n.º {{Order ID}} ha sido confirmado.
+
+**Total:** ${{Order Amount}}
+**Entrega estimada:** {{Delivery Date}}
+
+¡Gracias por tu compra!
+```
+
+## Opciones de formato del cuerpo
+
+| Formato | Cómo usarlo | Ideal para |
+|---|---|---|
+| Texto sin formato | Escribe tu mensaje directamente | Notificaciones sencillas |
+| Markdown | Usa la sintaxis de Markdown (`**negrita**`, `# encabezado`, etc.) | Mensajes estructurados con formato |
+| HTML | Escribe etiquetas HTML (`<h1>`, `<p>`, `<table>`, etc.) | Correos electrónicos con diseño completo y composiciones personalizadas |
+
+Puedes combinar Markdown y variables dinámicas en el mismo cuerpo. Para diseños de correo complejos, HTML ofrece el mayor control.
+
+## Cuándo usarla
+
+- **Enviar confirmaciones de pedidos.** Cuando se cree un nuevo pedido, envía un correo electrónico con sus detalles y un mensaje de agradecimiento.
+- **Notificar a los miembros del equipo los cambios de estado.** Cuando una tarea pase a «Bloqueada», envía un correo electrónico a la persona asignada y a su responsable.
+- **Entregar informes programados.** Combínala con un desencadenador programado y Obtener Registros para enviar por correo un resumen semanal.
+- **Enviar comunicaciones personalizadas.** Utiliza los datos del Registro para personalizar el asunto y el cuerpo para cada destinatario.
+- **Confirmar el envío de formularios.** Después de enviar un formulario, envía al remitente una confirmación con sus respuestas.
+
+## Consejos de entregabilidad
+
+- **Utiliza un SMTP personalizado** si envías correos electrónicos de gran volumen o esenciales para la empresa. El servicio integrado de Teable funciona para notificaciones básicas, pero los correos de tu propio dominio tienen más probabilidades de llegar a la bandeja de entrada del destinatario.
+- **Evita el contenido propio del spam** en el asunto y el cuerpo: el exceso de mayúsculas, signos de exclamación o enlaces puede activar los filtros de spam.
+- **Configura una dirección de respuesta** para que los destinatarios puedan responder a una bandeja de entrada real en vez de a una dirección que no admite respuestas.
+- **Prueba tus correos electrónicos** antes de activar la Automatización en producción. Ejecuta la Automatización manualmente con datos de prueba para comprobar el formato y la entrega.
+
+## Contenido relacionado
+
+- [Configurar SMTP y remitente](/es/basic/automation/actions/communication/smtp-sender) — envía correos electrónicos desde tu propio dominio
+- [Bucle (lote)](../logic/loop-run) — envía correos electrónicos en lote mediante un bucle que recorre una lista de Registros
+- [Generar con IA](/es/basic/automation/actions/ai/ai-generate) — genera contenido de correo electrónico personalizado con IA

@@ -1,0 +1,119 @@
+---
+title: "SSO через Google Workspace"
+description: "Налаштуйте Google Workspace як постачальника автентифікації SSO для Teable"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Доступно в плані Business і вище</Tip>
+
+## Крок 1. Створіть постачальника автентифікації в Teable
+
+1. Перейдіть до налаштувань SSO у Teable
+2. Створіть нового постачальника автентифікації, назвіть його **Google Workspace** і виберіть **OpenID Connect**
+
+## Крок 2. Відкрийте Google Cloud Console
+
+1. Перейдіть до [Google Cloud Console](https://console.cloud.google.com)
+2. Увійдіть за допомогою облікового запису адміністратора Google Workspace
+3. Виберіть або створіть проєкт для інтеграції SSO з Teable
+
+## Крок 3. Увімкніть Google Identity Services
+
+1. У Google Cloud Console перейдіть до **APIs & Services** → **Library**
+2. Знайдіть **Google Identity** або **Google+ API**
+3. Натисніть **Enable**, якщо службу ще не ввімкнено
+
+## Крок 4. Налаштуйте екран згоди OAuth
+
+1. Перейдіть до **APIs & Services** → **OAuth consent screen**
+2. Виберіть **Internal** (лише для користувачів Google Workspace) або **External**
+3. Заповніть обов’язкові відомості:
+   - **App name**: SSO Teable
+   - **User support email**: ваша адреса електронної пошти
+   - **App logo**: (необов’язково) завантажте логотип Teable
+   - **Authorized domains**: додайте свій домен Teable
+   - **Developer contact information**: ваша адреса електронної пошти
+4. Натисніть **Save and Continue**
+
+### Налаштуйте області доступу
+
+1. Натисніть **Add or Remove Scopes**
+2. Додайте такі області:
+   - `openid`
+   - `email`
+   - `profile`
+3. Натисніть **Update**, а потім **Save and Continue**
+
+### Додайте тестових користувачів (якщо вибрано External)
+
+Якщо ви вибрали «External», додайте тестових користувачів на етапі розробки:
+1. Натисніть **Add Users**
+2. Введіть адреси електронної пошти тестових користувачів
+3. Натисніть **Save and Continue**
+
+## Крок 5. Створіть ідентифікатор клієнта OAuth
+
+1. Перейдіть до **APIs & Services** → **Credentials**
+2. Натисніть **Create Credentials** → **OAuth client ID**
+3. Виберіть тип застосунку **Web application**
+4. Налаштуйте клієнта:
+   - **Name**: Клієнт SSO Teable
+   - **Authorized JavaScript origins**: (необов’язково) `https://app.teable.ai`
+   - **Authorized redirect URIs**: вставте **Callback URL** із Teable
+5. Натисніть **Create**
+
+## Крок 6. Збережіть облікові дані клієнта
+
+Після створення клієнта OAuth з’явиться діалогове вікно з обліковими даними:
+
+1. Скопіюйте **Client ID**
+2. Скопіюйте **Client Secret**
+3. Натисніть **OK**
+4. Вставте обидва значення в конфігурацію SSO у Teable
+
+<Note>Ці облікові дані завжди можна знову отримати на сторінці Credentials.</Note>
+
+## Крок 7. Налаштуйте кінцеві точки OAuth
+
+У Teable заповніть наведені нижче кінцеві точки OAuth:
+
+- **Authorization URL**: `https://accounts.google.com/o/oauth2/v2/auth`
+- **Token URL**: `https://oauth2.googleapis.com/token`
+- **User Info URL**: `https://openidconnect.googleapis.com/v1/userinfo`
+- **Issuer**: `https://accounts.google.com`
+
+## Крок 8. Перевірте вхід через SSO
+
+Увімкнути вхід через SSO можна двома способами:
+
+**Варіант 1. Пряма URL-адреса автентифікації**
+- Використовуйте URL-адресу авторизації як адресу входу через SSO
+
+**Варіант 2. Перевірка домену**
+1. Налаштуйте перевірку домену в Teable
+2. Підтвердьте свій домен Google Workspace
+3. Відкрийте https://app.teable.ai
+4. Натисніть кнопку входу через SSO
+5. Щоб увійти, введіть адресу електронної пошти Google Workspace
+
+## Додаткові налаштування (необов’язково)
+
+### Обмеження доступу за доменом
+
+Щоб обмежити доступ певними доменами Google Workspace:
+
+1. Налаштуйте обмеження домену в коді застосунку або налаштуваннях Teable
+2. Дозвольте лише адреси електронної пошти з підтверджених доменів
+
+### Налаштування тривалості сеансу
+
+1. У Google Admin Console перейдіть до **Security** → **Authentication**
+2. Налаштуйте параметри **Google session control**
+3. Установіть тривалість сеансу й політики повторної автентифікації
+
+### Увімкнення двоетапної перевірки
+
+1. У Google Admin Console перейдіть до **Security** → **Authentication** → **2-Step Verification**
+2. Увімкніть двоетапну перевірку для своєї організації
+3. Налаштуйте політики її обов’язкового застосування для користувачів
+

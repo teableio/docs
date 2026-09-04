@@ -1,0 +1,83 @@
+---
+title: "Accès inter-base"
+description: "Lisez et écrivez des données dans différentes bases au sein d’un même workflow"
+---
+
+{/* mintlify-resync: 2026-05-26 */}
+<Tip>
+Nous vous recommandons vivement d’utiliser Exécuter un script pour créer des automatisations, car cette action peut couvrir tous les comportements, y compris ceux qui devraient autrement être configurés manuellement. Décrivez simplement vos besoins à l’IA dans le chat.
+
+Remarque : si vous ajoutez des actions manuellement, l’IA ne pourra ni les reconnaître ni les modifier par la suite.
+</Tip>
+
+Par défaut, les actions d’automatisation agissent sur les tables de la base propre au workflow. L’Accès inter-base permet à un workflow de lire et d’écrire dans une autre base. Utilisez-le pour des workflows couvrant plusieurs services, projets ou jeux de données.
+
+Par exemple, une automatisation d’une base Ventes peut créer un enregistrement de traitement dans une base Opérations distincte, ou un workflow de reporting peut regrouper les données de plusieurs bases de projets dans un même récapitulatif.
+
+## Actions prises en charge
+
+| Action | Prise en charge inter-base |
+|---|---|
+| Créer un enregistrement | Oui |
+| Mettre à jour un enregistrement | Oui |
+| Obtenir des enregistrements | Oui |
+
+Il s’agit des trois actions qui ciblent les enregistrements. Les autres actions (Envoyer un e-mail, Requête HTTP, etc.) n’ont pas besoin d’un accès inter-base, car elles ne ciblent pas une table donnée.
+
+## Configuration
+
+1. Ouvrez dans votre workflow une action prise en charge (Créer un enregistrement, Mettre à jour un enregistrement ou Obtenir des enregistrements).
+2. À côté du sélecteur de **Table**, cliquez sur **Accès inter-base**.
+3. Un panneau affiche tous les espaces et toutes les bases auxquels votre compte a accès. Sélectionnez l’**Espace** cible, puis la **Base** cible.
+4. Choisissez la **Table** dans cette base. Si l’action le permet, vous pouvez également sélectionner une **Vue** précise.
+5. Associez les champs et configurez l’action comme d’habitude. La liste des champs correspond désormais à ceux de la table cible, et non à ceux de la base actuelle.
+6. Enregistrez l’action.
+
+## Exemple concret : des ventes au traitement des commandes
+
+Imaginez que vous disposiez de deux bases :
+
+- **Base Ventes** — contient une table « Affaires » dans laquelle l’équipe commerciale suit les affaires conclues.
+- **Base Opérations** — contient une table « Traitement » dans laquelle l’équipe opérationnelle gère les expéditions.
+
+Vous souhaitez créer automatiquement un enregistrement de traitement lorsqu’une affaire est conclue :
+
+1. **Déclencheur :** dans la Base Ventes, utilisez « Lorsqu’un enregistrement remplit les conditions » avec le filtre : `Étape` est égale à `Gagnée`.
+2. **Action :** Créer un enregistrement avec un Accès inter-base pointant vers la table Traitement de la Base Opérations.
+3. **Association des champs :** associez le Nom du client, le Produit, la Quantité et l’Adresse de livraison de l’affaire aux champs correspondants de la table Traitement.
+
+Désormais, chaque fois qu’une affaire est conclue, un enregistrement de traitement est automatiquement créé dans la Base Opérations, sans transfert manuel.
+
+## Modèle d’autorisations
+
+Lorsque vous créez, modifiez ou appliquez des mises à jour de workflow, Teable vérifie chaque action inter-base par rapport aux autorisations de l’éditeur actuel :
+
+| Action | Autorisation requise sur la base cible |
+|---|---|
+| Obtenir des enregistrements | Lire les champs et les enregistrements |
+| Créer un enregistrement | Lire les champs et les enregistrements, et créer des enregistrements |
+| Mettre à jour un enregistrement | Lire les champs et les enregistrements, et mettre à jour des enregistrements |
+
+Les exécutions du workflow actif utilisent l’identité d’exécution des automatisations de Teable pour la base cible. Les enregistrements créés ou mis à jour par une action inter-base apparaissent comme **Robot d’automatisation** dans les métadonnées des enregistrements et les interfaces d’audit.
+
+### Lorsque les accès changent
+
+Si l’éditeur actuel ne dispose pas de l’autorisation requise sur la base cible, Teable l’empêche d’ajouter ou de modifier des actions inter-base pointant vers cette base. Si un brouillon contient déjà des actions inter-base auxquelles l’éditeur ne peut pas accéder, Teable l’empêche également d’appliquer ce brouillon. La version déjà active continue de s’exécuter ; Teable vérifie de nouveau les autorisations lors de la prochaine modification ou application du workflow.
+
+Pour corriger une erreur d’autorisation lors de la modification ou de l’application d’un workflow :
+
+1. Demandez à une personne ayant accès aux deux bases de modifier et d’appliquer le workflow.
+2. Ou rétablissez les autorisations requises sur la base cible, puis appliquez de nouveau le workflow.
+
+## Conseils
+
+- L’accès inter-base peut atteindre des bases situées dans différents **Espaces**. L’éditeur qui configure ou applique le workflow doit disposer des autorisations requises sur la base cible.
+- Lors de l’association de champs entre plusieurs bases, les types de champs doivent être compatibles. Par exemple, vous ne pouvez pas associer un champ de texte à un champ de pièce jointe.
+- Si vous restructurez une base cible (renommage de tables, suppression de champs), les actions inter-base qui référencent ces tables et champs cesseront de fonctionner. Mettez à jour votre workflow après toute modification structurelle.
+- Pour les workflows inter-base complexes, envisagez de centraliser vos automatisations dans une base « centrale » afin de faciliter leur organisation.
+
+## Pages connexes
+
+- [Créer un enregistrement](/fr/basic/automation/actions/records/create-record) — créez des enregistrements dans la base actuelle ou une autre base
+- [Mettre à jour un enregistrement](/fr/basic/automation/actions/records/update-record) — mettez à jour des enregistrements dans la base actuelle ou une autre base
+- [Obtenir des enregistrements](/fr/basic/automation/actions/records/get-records) — récupérez des enregistrements depuis la base actuelle ou une autre base

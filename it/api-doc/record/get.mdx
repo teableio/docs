@@ -1,0 +1,85 @@
+---
+title: "Ottenere i Record"
+---
+
+<Tip>Mettiamo a disposizione degli sviluppatori uno [strumento integrato per creare i parametri di query](https://app.teable.ai/developer/tool/query-builder), utile per comporre richieste personalizzate in base alle Tabelle esistenti.</Tip>
+
+### Percorso
+GET /api/table/\{tableId\}/record
+​
+### Richiesta
+#### Parametri del percorso
+tableId (string): identificatore univoco della Tabella [(come ottenerlo)](/it/api-doc/get-id#tableid).
+
+#### Parametri di query di base
+Tutti i parametri sono facoltativi.
+
+<ParamField query="viewId" type="string">
+  Specifica l'ID della Vista da cui recuperare i Record. Se non viene specificato, i Record vengono restituiti in ordine di creazione, includendo tutti i Record e i Campi.
+</ParamField>
+
+<ParamField query="take" type="number">
+  Specifica il numero di Record da recuperare; il valore massimo è 100. Per leggere più Record, suddividi i dati in pagine usando `skip` e `take` (consulta [Paginazione](/it/api-doc/overview)).
+
+  Il limite di 100 Record si applica alle chiavi API personali di Teable Cloud create a partire dal 10 settembre 2026. Le chiavi create prima di tale data, i token OAuth e dei plugin e le istanze self-hosted accettano ancora fino a 1000 Record, ma la dimensione consigliata per pagina rimane 100.
+</ParamField>
+
+<ParamField query="skip" type="number">
+  Specifica il numero di Record da ignorare e viene utilizzato per la paginazione.
+</ParamField>
+
+<ParamField query="fieldKeyType" type="string" default="name">
+  Definisce il tipo di chiave dei Campi nei Record; i valori possibili sono:
+  - `name`: usa i nomi dei Campi come chiavi (predefinito)
+  - `id`: usa gli ID dei Campi come chiavi
+  - `dbFieldName`: usa il dbFieldName dei Campi come chiavi
+</ParamField>
+
+<ParamField query="cellFormat" type="string" default="json">
+  Definisce il formato restituito per i valori delle celle; i valori possibili sono:
+  - `json`: restituisce dati JSON strutturati (predefinito)
+  - `text`: restituisce il formato di testo normale
+</ParamField>
+
+<ParamField query="projection" type="string[]">
+  Se ti servono soltanto Campi specifici, indicali tramite questo parametro. In caso contrario, verranno recuperati tutti i Campi visibili. I valori del parametro dipendono dall'impostazione fieldKeyType (nomi dei Campi, ID o dbFieldName).
+</ParamField>
+
+<ParamField query="orderBy" type="string">
+  Array di oggetti di ordinamento che specificano come ordinare i Record.
+</ParamField>
+
+<ParamField query="filter" type="string">
+  Oggetto con condizioni di query complesse per filtrare i risultati. Supporta condizioni di query complesse basate su Campi, operatori e valori.
+</ParamField>
+
+<ParamField query="search" type="string[]">
+  Cerca i Record che corrispondono ai Campi e ai valori specificati.
+</ParamField>
+
+<Accordion title="Parametri di query avanzati">
+<ParamField query="groupBy" type="string">
+  Array di oggetti di raggruppamento che specificano come raggruppare i Record.
+</ParamField>
+
+<ParamField query="collapsedGroupIds" type="string[]">
+  Array degli ID dei gruppi da comprimere.
+</ParamField>
+
+<ParamField query="selectedRecordIds" type="string[]">
+  Filtra i Record selezionati in base ai relativi ID.
+</ParamField>
+
+<ParamField query="ignoreViewQuery" type="boolean">
+  Quando viewId è specificato, impostando questo parametro su true verranno ignorati i filtri, l'ordinamento e le altre impostazioni della Vista.
+</ParamField>
+
+<ParamField query="filterLinkCellCandidate" type="string[]">
+  Filtra i Record della Tabella collegata che possono essere selezionati dalla cella di collegamento specificata. Ad esempio, per i Campi con relazione uno-a-molti o uno-a-uno, gli ID dei Record già selezionati non verranno visualizzati.
+</ParamField>
+
+<ParamField query="filterLinkCellSelected" type="string[]">
+  Filtra i Record della Tabella collegata già selezionati da questa cella di collegamento. Nota: in questo caso viewId, filter e orderBy non avranno effetto, poiché i Record selezionati dispongono di un proprio ordine.
+</ParamField>
+</Accordion>
+

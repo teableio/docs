@@ -1,0 +1,274 @@
+---
+title: "App Builder İçin En İyi Uygulamalar"
+description: "Teable App Builder'dan en iyi şekilde yararlanmanızı sağlayacak pratik ipuçları ve kalıplar."
+---
+
+## Geliştirme İpuçları
+
+### 1. Önce verileri tanımlayın
+
+Teable App Builder mevcut Teable Tablolarınızın üzerinde çalışır; **Tablolarınız ve Alanlarınız şemanızı oluşturur** ve AI, kullanıcı arayüzünü ve mantığı oluştururken bunları doğrudan okur.
+
+Bu nedenle geliştirmeye başlamadan önce veri modelinizi açıkça tanımlayın. Alan türleriniz, bağlantılarınız ve okuma/yazma yollarınız ne kadar net olursa AI'ın ürettiği sonuç da o kadar kaliteli olur.
+
+### 2. Geliştirmeden önce planlayın
+
+Veri modeliniz hazır olduğunda bile doğrudan kullanıcı arayüzünü geliştirmeye başlamayın. Önce AI ile bir planlama turu yapın.
+
+Şöyle bir şey söyleyin: *"Henüz kod yazmayalım; önce bir plan yapalım."* Çözmek istediğiniz sorunu, hedef kullanıcıları ve genel özellik kümesini açıklayın. AI'ın yapılandırılmış bir öneri hazırlamasına izin verin. Öneriyi inceleyip düzenleyin ve ancak planın anlamlı olduğundan emin olduktan sonra geliştirmeye başlayın.
+
+<Tip>Başlangıçta yön konusunda uzlaşmak için ayıracağınız birkaç dakika, daha sonra saatler sürecek yeniden çalışma ihtiyacını önler.</Tip>
+
+### 3. Küçük başlayın
+
+Her özelliği tek bir isteme sığdırmaya çalışmayın. Önce temel işlevi açıklayın ve çalışan asgari bir sürüm oluşturun; ardından her seferinde tek bir şey ekleyin: bir etkileşim, bir stil düzenlemesi veya bir mantık parçası.
+
+Devam etmeden önce her değişikliği doğrulayın. Bir şey bozulduğunda baştan başlamak yerine yalnızca küçük bir değişikliği geri almanız yeterli olur.
+
+### 4. Soyut değil, belirgin olun
+
+*"Daha güzel yap"* veya *"Etkileşimler daha doğal hissettirsin"* gibi açıklamalar AI'a neredeyse hiçbir bilgi sağlamaz.
+
+Etkili istemler somuttur: **hangi sayfa, hangi bölüm, nasıl bir davranış istediğiniz ve ne istemediğiniz**. Ekran görüntüleri veya referans kullanıcı arayüzleri eklemek de büyük ölçüde yardımcı olur.
+
+<Tip>İsteminizi, projeniz hakkında hiçbir şey bilmeyen zeki bir kişiye verdiğiniz brief gibi düşünün. Talimatlar ne kadar net olursa sonuç hayal ettiğinize o kadar yaklaşır.</Tip>
+
+### 5. Düzeltmeden önce tanılayın
+
+Uygulama beklenmedik şekilde davrandığında AI'a *"Sadece düzelt"* demeyin. Belirsiz düzeltme talimatları AI'ı körlemesine değişiklik yapmaya iter ve çoğu zaman yeni hatalara yol açar.
+
+Daha iyi yaklaşım iki adımdan oluşur:
+
+<Steps>
+  <Step title="Önce AI'dan analiz etmesini isteyin">
+    Belirtileri açıklayın ve AI'dan henüz koda dokunmadan olası nedenleri ve uygulanabilecek yaklaşımları listelemesini isteyin.
+  </Step>
+  <Step title="Bir yön seçip uygulayın">
+    Hangi açıklamanın en olası olduğuna karar verin ve AI'a bu yönde ilerlemesini söyleyin.
+  </Step>
+</Steps>
+
+<Warning>Arka arkaya birkaç düzeltme girişimi başarısız olursa bilinen son çalışan sürüme geri dönüp yeniden başlayın. Bu genellikle üst üste yama yapmaktan daha hızlıdır.</Warning>
+
+### 6. Sürüm geri almalarından yararlanın
+
+AI ile yapılan her sohbet değişiklikler üretir. Önerilen çalışma düzeni şudur: Bir özellik modülünü tamamlayın, çalıştığını doğrulayın ve ardından sonrakine geçin. **Aynı anda birden fazla tamamlanmamış özellikle uğraşmayın.**
+
+Sonraki bir değişiklik bir şeyi bozdu mu? Son kararlı sürüme geri dönüp daha açık bir istemle tekrar deneyin.
+
+## SSS
+
+### App Builder yalnızca Next.js'i destekler
+
+App Builder'ın çalışma zamanı ortamı (korumalı alan, önizleme ve derleme) **Next.js** üzerine kuruludur ve şu anda Astro, Vite, Create React App, Vue, Svelte vb. diğer ön uç çerçevelerini **desteklemez**.
+
+AI'dan Next.js dışındaki bir çerçeveyi kullanmasını isterseniz bunu her zaman reddetmeyebilir ve hatta ilgili kodu oluşturmaya çalışabilir. Ancak temel ortam uyumlu olmadığından **önizleme başlatılamaz**; süresiz olarak "Önizleme başlatılıyor..." ekranında kalırsınız ve bu sırada sohbetler kredi tüketmeye devam eder.
+
+<Warning>
+Next.js dışında bir çerçeve kullanmanız gerekiyorsa kendi yerel ortamınızda geliştirme yapmanızı ve Teable API aracılığıyla verilerinize bağlanmanızı öneririz.
+</Warning>
+
+### 429 hatalarını yönetme
+
+<Warning>
+Teable API şu anda **10 QPS** (saniyede 10 istek) ile sınırlıdır. App Builder tarafından oluşturulan uygulamalarda istek yönetimi optimize edilmemişse normal kullanım sırasında 429 hataları oluşabilir. Mühendislik ekibimiz API performansını iyileştirmek için etkin biçimde çalışmaktadır ve bu sınırı gelecekte değiştirebiliriz.
+</Warning>
+
+Bu sorunu ele almaya yönelik dört genel strateji vardır:
+
+<CardGroup cols={4}>
+  <Card title="Önbelleğe alma" icon="database">
+    Yinelenen istekleri azaltın
+  </Card>
+  <Card title="Sayfalama ve toplu işlem" icon="layer-group">
+    Her istekte taşınan veri miktarını azaltın
+  </Card>
+  <Card title="Debounce ve throttle" icon="gauge-high">
+    İstek sıklığını azaltın
+  </Card>
+  <Card title="İşleme uyumluluğu" icon="window-restore">
+    Önizleme hatalarını azaltın
+  </Card>
+</CardGroup>
+
+Aşağıdaki her bölümde yaygın senaryolar, çözüm ve yeniden kullanabileceğiniz bir referans istem yer alır.
+
+**Önbelleğe alma — yinelenen istekleri azaltın**
+
+<AccordionGroup>
+  <Accordion title="Görsel ağırlıklı sayfalar ve panolar yükleme sırasında çok fazla isteği tetikleyebilir" icon="bolt">
+    **Senaryo**: Bir pano sayfasında, her biri farklı bir Tabloyu sorgulayan birden fazla grafik, istatistik kartı ve liste bulunur. Ya da sayfa ağırlıklı olarak görüntüleme amacıyla kullanıldığı hâlde her ziyaret doğrudan API'ye istek gönderir. Her iki durumda da sayfa yüklenirken eş zamanlı istek sayısı aniden yükselebilir ve trafik artışlarının 429 hatalarını tetikleme olasılığı yükselir.
+
+    **Çözüm**: Önbellek dostu işleme kalıplarını tercih edin. Veriler yüklendikten sonra uygulama belleğinde önbelleğe alın (başlangıç için 1–3 dakikalık TTL uygundur) ve sonraki ziyaretlerde yeniden kullanın. İstekleri farklı zamanlara yaymak için ilk görünüm alanının altındaki bileşenleri gecikmeli yükleyin. Sayfa her ziyarette yeniden veri alıyorsa AI'dan önbelleğe alma stratejisini güçlendirmesini açıkça isteyin.
+
+    <Tip>
+    **Referans istem**: "Bu sayfa görsel ağırlıklıdır. Önbellek dostu bir işleme yaklaşımını tercih et. Sayfa yüklendikten sonra verileri 1 dakikalık TTL ile yerel olarak önbelleğe al, TTL süresi içinde API'ye yeniden istek gönderme ve ilk görünüm alanının altındaki bileşenleri 500 ms geciktir."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Aynı Tabloyu sorgulayan birden fazla bileşen" icon="copy">
+    **Senaryo**: Aynı sayfadaki üç bileşenin her biri aynı Tablodan veriye ihtiyaç duyar ve ayrı bir istek gönderir; oysa tek bir istek yeterlidir.
+
+    **Çözüm**: Aynı veri kümesinin bir kez yüklenip bileşenler arasında paylaşılması için veri alma işlemini merkezileştirin.
+
+    <Tip>
+    **Referans istem**: "Birden fazla bileşen aynı Tablodan veriye ihtiyaç duyuyorsa verileri bir kez al ve tüm bileşenler arasında paylaş. Yinelenen istekler gönderme."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Sayfa gezinmesinde verileri yeniden alma" icon="arrows-rotate">
+    **Senaryo**: Kullanıcılar sayfalar arasında ileri geri hareket eder. Hiçbir şey değişmemiş olsa bile her geri dönüşte veriler yeniden alınır.
+
+    **Çözüm**: Önbellek TTL süresi içinde yeniden istek göndermek yerine daha önce yüklenen verileri kullanın.
+
+    <Tip>
+    **Referans istem**: "Kullanıcı bir sayfaya döndüğünde son yüklemenin üzerinden 1 dakikadan az zaman geçtiyse önbellekteki verileri kullan. API'ye yeniden istek gönderme."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Çok büyük seçenek listeleri yükleyen açılır menüler" icon="list">
+    **Senaryo**: Bir açılır menü, Tablodaki her Kaydı seçenek olarak gösterir. Çok sayıda Kayıt olduğunda bu tek istek bile ağırdır.
+
+    **Çözüm**: Menüyü arama tarzı bir seçiciye dönüştürün; yalnızca kullanıcı yazmaya başladıktan sonra eşleşen Kayıtları alın. Alternatif olarak seçenek listesini önbelleğe alın.
+
+    <Tip>
+    **Referans istem**: "Açılır menüler tüm seçenekleri baştan yüklememeli. Debounce uygulayarak kullanıcı girişine göre eşleşen Kayıtları alan bir anahtar kelime aramasına geç."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="İstekleri zincirleyen basamaklı seçiciler" icon="sitemap">
+    **Senaryo**: Bir Alanın seçilmesi, sonraki düzeyin seçeneklerini yüklemeyi tetikler. Çok düzeyli basamaklar her etkileşimde birkaç istek oluşturur.
+
+    **Çözüm**: İlgili verileri bir kez önceden yükleyip yerel olarak filtreleyin veya ilk yüklemeden sonra basamak verilerini önbelleğe alın.
+
+    <Tip>
+    **Referans istem**: "Basamaklı seçici seçenek verilerini yükledikten sonra yerel olarak önbelleğe al. Kullanıcı üst düzey bir seçeneği değiştirdiğinde yeniden istek göndermek yerine önbellekten filtrele."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Yeniden işlemelerin yinelenen istekleri tetiklemesi" icon="repeat">
+    **Senaryo**: Yetersiz durum yönetimi, bileşenlerin her işlemede verileri yeniden almasına neden olur.
+
+    **Çözüm**: Veri almayı her işlemede değil, belirli olaylarda (ilk bağlama, açık kullanıcı eylemi) tetikleyin. Güvenlik ağı olarak önbelleğe alma kullanın.
+
+    <Tip>
+    **Referans istem**: "Verileri yalnızca ilk sayfa yüklemesinde veya açık kullanıcı eylemlerinde al. Yeniden işlemelerde verileri tekrar alma; bunun yerine önbellekteki verileri kullan."
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+**Sayfalama ve toplu işlem — her istekte taşınan veri miktarını azaltın**
+
+<AccordionGroup>
+  <Accordion title="Sayfalama içermeyen listeler veya Tablolar" icon="table-list">
+    **Senaryo**: Tüm Kayıtların tek seferde yüklenmesi, veri kümesi büyüdükçe çok sayıda API çağrısına yol açar.
+
+    **Çözüm**: Sayfalama kullanın. Yalnızca geçerli sayfanın verilerini alın.
+
+    <Tip>
+    **Referans istem**: "Her sayfada 20 satır göster. Sonraki sayfayı yalnızca kullanıcı o sayfaya gittiğinde yükle. Her şeyi tek seferde yükleme."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Bağlantılı veriler için satır başına veri alma (N+1)" icon="link">
+    **Senaryo**: Bir listeyi yükledikten sonra her Kayıt için bağlantılı Tablo ayrıntılarını tek tek alırsınız. 50 projeyi yükledikten sonra 50 sorumlu araması yapmak, bir anda 50 ek istek oluşturur.
+
+    **Çözüm**: Bağlantılı tüm verileri satır satır değil, tek bir toplu işlemle alın.
+
+    <Tip>
+    **Referans istem**: "Bir listeyi yüklerken bağlantılı tüm verileri tek istekte toplu olarak al. Bağlantılı bilgileri tek tek almak için Kayıtlar arasında döngü kurma."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Toplu güncellemelerde satır başına yazma" icon="pen-to-square">
+    **Senaryo**: Birden fazla Kaydı tek bir toplu istek yerine her Kayıt için ayrı bir güncelleme isteği göndererek toplu biçimde güncellemek.
+
+    **Çözüm**: Tüm değişiklikleri tek bir çağrıda göndermek için toplu güncelleme API'sini kullanın.
+
+    <Tip>
+    **Referans istem**: "Toplu işlemlerde birden fazla Kayıt değişikliğini tek bir toplu istekte birleştir. Her Kayıt için ayrı bir güncelleme gönderme."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Döngülerin içindeki API çağrıları" icon="rotate">
+    **Senaryo**: Bir `for` döngüsü Kayıtları tek tek işler ve her yinelemede API'yi çağırır.
+
+    **Çözüm**: Önce tüm kimlikleri toplayın, ardından tek bir toplu istek gönderin.
+
+    <Tip>
+    **Referans istem**: "Bir döngünün içinde API çağrısı yapma. Önce gerekli tüm kimlikleri topla, ardından tek bir toplu istek gönder."
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+**Debounce ve throttle — istek sıklığını azaltın**
+
+<AccordionGroup>
+  <Accordion title="Debounce uygulanmayan arama veya filtreler" icon="magnifying-glass">
+    **Senaryo**: Arama kutusundaki her tuş vuruşu bir istek gönderir. 4 karakterlik bir sorgu yazıldığında 4 istek oluşur.
+
+    **Çözüm**: Girdiye debounce uygulayın; isteği göndermeden önce kullanıcı yazmayı bıraktıktan sonra 300–500 ms bekleyin.
+
+    <Tip>
+    **Referans istem**: "Arama girdisine debounce uygula. Yalnızca kullanıcı yazmayı bıraktıktan 300 ms sonra istek gönder. Kullanıcı yazarken istek gönderme."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Hızla tekrarlanan kullanıcı eylemleri" icon="hand-pointer">
+    **Senaryo**: Gönder düğmesine art arda tıklama, filtreleri hızla değiştirme veya sayfalar arasında hızlı geçiş yapma gibi her eylem anında bir istek gönderir.
+
+    **Çözüm**: Debounce veya throttle uygulayın. Yinelenen gönderimleri önlemek için istek tamamlanana kadar gönder düğmelerini devre dışı bırakın.
+
+    <Tip>
+    **Referans istem**: "Tıklandıktan sonra gönder düğmesini devre dışı bırak ve istek sonuçlandığında yeniden etkinleştir. Filtre değişikliklerine debounce uygula; böylece 300 ms içindeki hızlı değişiklikler yalnızca tek bir istek göndersin."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Aşırı sık çalışan form otomatik kaydı" icon="floppy-disk">
+    **Senaryo**: Her Alan değişikliği anında kaydedilir. Bir formun doldurulması onlarca yazma işlemini tetikleyebilir.
+
+    **Çözüm**: Düğmeye tıklayarak açıkça kaydetme yöntemine geçin veya düzenlemeye ara verildikten sonra bir kez çalışması için otomatik kayda debounce uygulayın.
+
+    <Tip>
+    **Referans istem**: "Her Alan değişikliğinde kaydetme. Açık bir düğme tıklamasıyla kaydet veya kullanıcı düzenlemeyi 2 saniye duraklattıktan sonra bir kez otomatik kaydet."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Çok kısa yoklama aralıkları" icon="clock">
+    **Senaryo**: Veriler birkaç saniyede bir yenilenerek sürekli yüksek frekanslı trafik oluşturur.
+
+    **Çözüm**: Yoklama aralığını makul bir süreye (30 saniye veya daha fazla) çıkarın ya da elle yenilemeye geçin.
+
+    <Tip>
+    **Referans istem**: "Otomatik yenileme aralığını 60 saniyeye ayarla. Kullanıcıların gerektiğinde en son verileri alabilmesi için elle yenileme düğmesi ekle."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Birbirinden bağımsız yoklama yapan birden fazla bileşen" icon="timer">
+    **Senaryo**: Bir sayfadaki birkaç bileşenin her biri kendi yoklama zamanlayıcısını ayarlar. Birleşik yük sınırı kolayca aşar.
+
+    **Çözüm**: Yoklamayı merkezileştirin. Tek bir düzenli veri alma işlemi çalıştırın, ardından sonucu ihtiyaç duyan tüm bileşenlere dağıtın.
+
+    <Tip>
+    **Referans istem**: "Her bileşenin kendi yoklama zamanlayıcısını ayarlamasına izin verme. Her şeyi belirli bir programa göre alan ve verileri bileşenlere dağıtan tek bir yenileme mekanizması kullan."
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+**İşleme uyumluluğu — önizleme hatalarını azaltın**
+
+<AccordionGroup>
+  <Accordion title="Grafikler, haritalar veya yalnızca tarayıcıda çalışan bileşenler önizlemede başarısız oluyor" icon="chart-line">
+    **Senaryo**: Sayfa; `window`, DOM ölçümleri veya yalnızca tarayıcıda bulunan diğer API'lere bağımlı grafikler, haritalar ya da kitaplıklar kullanır ve önizlemede hatalar, boş ekran veya hidrasyon uyumsuzlukları görülür.
+
+    **Çözüm**: Bu bileşenleri doğrudan sunucuda işlemek yerine tarayıcıda yüklemek genellikle daha güvenlidir. Önizleme sorunları devam ederse AI'dan açıkça yalnızca tarayıcıda çalışan bir yükleme kalıbına geçmesini isteyin.
+
+    <Tip>
+    **Referans istem**: "Bu bileşen tarayıcı ortamına bağımlıdır. Önizleme işleme hatalarını veya hidrasyon uyumsuzluklarını önlemek için yalnızca istemcide yükle."
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+<Note>
+AI hata yapabilir. Lütfen yanıtları tekrar kontrol edin.
+</Note>

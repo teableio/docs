@@ -1,0 +1,144 @@
+---
+title: "Configurar el servicio de correo electrónico"
+description: "Activa el servicio de correo electrónico para habilitar las notificaciones dentro de la aplicación, el restablecimiento de contraseñas por parte del usuario, los correos de invitación y otras funciones."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+## Métodos de configuración
+
+Teable admite dos formas de configurar el servicio de correo electrónico:
+
+<CardGroup cols={2}>
+  <Card title="Administración del sistema (recomendado)" icon="sliders" href="#option-1-admin-panel-recommended">
+    Configuración visual con pruebas en directo. No requiere reiniciar.
+  </Card>
+  <Card title="Variables de entorno" icon="code" href="#option-2-environment-variables">
+    Configuración tradicional mediante el archivo `.env`. Requiere reiniciar el contenedor.
+  </Card>
+</CardGroup>
+
+---
+
+## Opción 1: Administración del sistema (recomendado) {#option-1-admin-panel-recommended}
+
+La forma más sencilla de configurar el correo electrónico es mediante Administración del sistema:
+
+1. Inicia sesión como administrador (el primer usuario registrado)
+2. Ve a **Administración del sistema** → **Ajustes de la instancia**
+3. Busca la sección **Correo electrónico**
+4. Configura **Correo de notificaciones** y **Correo de Automatizaciones** según tus necesidades
+
+<Tip>
+La configuración de Administración del sistema admite **pruebas en directo**, por lo que puedes comprobar que los ajustes de SMTP funcionan antes de guardarlos.
+</Tip>
+
+- **Correo de notificaciones**: se utiliza para verificar usuarios, restablecer contraseñas, enviar invitaciones y notificaciones del sistema y otros correos similares.
+- **Correo de Automatizaciones**: se utiliza como servicio de correo predeterminado para las acciones Enviar correo electrónico de las Automatizaciones. Cada acción Enviar correo electrónico también puede configurar su propio [servidor SMTP personalizado](/es/basic/automation/actions/communication/smtp-sender).
+
+### Fuentes de configuración y prioridad
+
+Recomendamos configurar primero el servicio de correo en **Administración del sistema → Ajustes de la instancia → Correo electrónico**. El orden de prioridad efectivo es:
+
+1. **Servidor de correo personalizado dentro de la acción Enviar correo electrónico**: solo se aplica a esa acción concreta de la Automatización actual.
+2. **Administración del sistema → Ajustes de la instancia → Correo electrónico → Correo de Automatizaciones**: se utiliza para los correos de las Automatizaciones cuando la acción Enviar correo electrónico no configura su propio servidor.
+3. **Administración del sistema → Ajustes de la instancia → Correo electrónico → Correo de notificaciones**: se utiliza para verificar usuarios, restablecer contraseñas, enviar invitaciones y notificaciones del sistema y otros correos similares. También se utiliza como alternativa para los correos de Automatizaciones si no se ha configurado el Correo de Automatizaciones.
+4. **Variables de entorno `BACKEND_MAIL_*`**: configuración de correo predeterminada a nivel de despliegue. Solo se utiliza como alternativa cuando el buzón correspondiente no está configurado en Administración del sistema.
+
+### Campos de configuración
+
+| Campo | Descripción | Ejemplo |
+|-------|-------------|---------|
+| Dirección del servidor | Dirección del servidor SMTP | `smtp.gmail.com` |
+| Puerto | Puerto SMTP | `465` (SSL) o `587` (TLS) |
+| SSL/TLS | Indica si se utiliza SSL/TLS | `true` |
+| Nombre de usuario | Usuario de autenticación SMTP | `noreply@company.com` |
+| Contraseña | Contraseña SMTP o contraseña de aplicación | `xxxxxxxxxxxxxx` |
+| Dirección del remitente | Dirección del campo De | `noreply@company.com` |
+| Nombre del remitente | Nombre para mostrar | `Notificaciones de Teable` |
+
+---
+
+## Opción 2: variables de entorno {#option-2-environment-variables}
+
+En los despliegues donde prefieras una configuración basada en archivos, utiliza variables de entorno:
+
+<Note>
+Recomendamos configurar primero Correo de notificaciones y Correo de Automatizaciones en **Administración del sistema → Ajustes de la instancia → Correo electrónico**. Las variables de entorno se utilizan principalmente como valores predeterminados a nivel de despliegue y como configuración alternativa.
+</Note>
+
+```sh
+BACKEND_MAIL_HOST=smtp.example.com
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=noreply@company.com
+BACKEND_MAIL_SENDER_NAME=Teable
+BACKEND_MAIL_AUTH_USER=username
+BACKEND_MAIL_AUTH_PASS=your_password
+```
+
+<Note>
+Después de modificar las variables de entorno, debes **reiniciar** el contenedor de Teable para que los cambios surtan efecto.
+</Note>
+
+---
+
+## Ejemplos de proveedores SMTP
+
+<Accordion title="AWS SES">
+```sh
+# Cómo obtener las credenciales: Consola de AWS → Simple Email Service → Ajustes de SMTP → Crear credenciales SMTP
+BACKEND_MAIL_HOST=email-smtp.us-east-1.amazonaws.com  # Sustituir por tu región
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=noreply@yourdomain.com  # Debe ser una dirección de remitente verificada
+BACKEND_MAIL_SENDER_NAME=Notificaciones de Teable
+BACKEND_MAIL_AUTH_USER=your_smtp_username   # Nombre de usuario SMTP de AWS
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx       # Contraseña SMTP de AWS
+```
+</Accordion>
+
+<Accordion title="Gmail">
+```sh
+# Cómo obtenerla: Cuenta de Google → Seguridad → Verificación en dos pasos → Contraseñas de aplicaciones
+BACKEND_MAIL_HOST=smtp.gmail.com
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=you@gmail.com
+BACKEND_MAIL_SENDER_NAME=Notificaciones de Teable
+BACKEND_MAIL_AUTH_USER=you@gmail.com
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # Contraseña de aplicación de 16 dígitos
+```
+</Accordion>
+
+<Accordion title="Microsoft 365 / Outlook">
+```sh
+# Cómo obtenerla: Centro de administración de Microsoft 365 → Seguridad → Directivas y reglas → Autenticación del correo electrónico
+BACKEND_MAIL_HOST=smtp.office365.com
+BACKEND_MAIL_PORT=587
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=your.name@yourdomain.com
+BACKEND_MAIL_SENDER_NAME=Notificaciones de Teable
+BACKEND_MAIL_AUTH_USER=your.name@yourdomain.com
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # Tu contraseña de Microsoft 365 o contraseña de aplicación
+```
+</Accordion>
+
+<Accordion title="SendGrid">
+```sh
+# Cómo obtenerla: Panel de SendGrid → Ajustes → Claves de API → Crear clave de API
+BACKEND_MAIL_HOST=smtp.sendgrid.net
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=noreply@yourdomain.com
+BACKEND_MAIL_SENDER_NAME=Notificaciones de Teable
+BACKEND_MAIL_AUTH_USER=apikey
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # Tu clave de API de SendGrid
+```
+</Accordion>
+
+---
+
+## Documentación relacionada
+
+- [Referencia de variables de entorno](/es/deploy/env)
+- [Descripción general de Administración del sistema](/es/basic/admin-panel/overview)

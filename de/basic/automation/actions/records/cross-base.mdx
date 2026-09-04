@@ -1,0 +1,83 @@
+---
+title: "Base-übergreifender Zugriff"
+description: "Lesen und schreiben Sie Daten aus verschiedenen Bases in einem einzigen Workflow"
+---
+
+{/* mintlify-resync: 2026-05-26 */}
+<Tip>
+Wir empfehlen dringend, Automatisierungen mit „Skript ausführen“ zu erstellen, da diese Funktion alle Aktionsarten abdecken kann – auch solche, die andernfalls manuell erstellt werden müssten. Beschreiben Sie Ihre Anforderungen einfach im KI-Chat.
+
+Bitte beachten Sie: Wenn Sie Aktionen manuell hinzufügen, kann die KI sie später weder erkennen noch ändern.
+</Tip>
+
+Standardmäßig arbeiten Automatisierungsaktionen mit Tabellen innerhalb der Base des Workflows. Der Base-übergreifende Zugriff ermöglicht einem Workflow, Daten aus einer anderen Base zu lesen und dorthin zu schreiben. Verwenden Sie ihn für Workflows, die sich über Abteilungen, Projekte oder Datensätze erstrecken.
+
+Eine Automatisierung in einer Vertriebs-Base kann beispielsweise einen Abwicklungsdatensatz in einer separaten Betriebs-Base erstellen. Ebenso kann ein Berichts-Workflow Daten aus mehreren Projekt-Bases in einer Zusammenfassung bündeln.
+
+## Unterstützte Aktionen
+
+| Aktion | Base-übergreifende Unterstützung |
+|---|---|
+| Datensatz erstellen | Ja |
+| Datensatz aktualisieren | Ja |
+| Datensätze abrufen | Ja |
+
+Dies sind die drei datensatzbezogenen Aktionen. Andere Aktionen („E-Mail senden“, „HTTP-Anfrage“ usw.) benötigen keinen Base-übergreifenden Zugriff, da sie nicht auf eine bestimmte Tabelle abzielen.
+
+## Einrichtung
+
+1. Öffnen Sie in Ihrem Workflow eine unterstützte Aktion („Datensatz erstellen“, „Datensatz aktualisieren“ oder „Datensätze abrufen“).
+2. Klicken Sie neben der Auswahl **Tabelle** auf **Base-übergreifender Zugriff**.
+3. Ein Bereich mit allen Spaces und Bases, auf die Ihr Konto zugreifen kann, wird geöffnet. Wählen Sie zuerst den Ziel-**Space** und dann die Ziel-**Base** aus.
+4. Wählen Sie die **Tabelle** in dieser Base aus. Wenn die Aktion dies unterstützt, können Sie auch eine bestimmte **Ansicht** auswählen.
+5. Ordnen Sie die Felder zu und konfigurieren Sie die Aktion wie gewohnt. Die Feldliste zeigt nun die Felder der Zieltabelle an, nicht die Felder der aktuellen Base.
+6. Speichern Sie die Aktion.
+
+## Konkretes Beispiel: Vom Vertrieb zur Abwicklung
+
+Angenommen, Sie haben zwei Bases:
+
+- **Vertriebs-Base** – enthält eine Tabelle „Abschlüsse“, in der das Vertriebsteam abgeschlossene Geschäfte verfolgt.
+- **Betriebs-Base** – enthält eine Tabelle „Abwicklung“, in der das Betriebsteam den Versand verwaltet.
+
+Wenn ein Geschäft abgeschlossen wird, möchten Sie automatisch einen Abwicklungsdatensatz erstellen:
+
+1. **Auslöser:** Verwenden Sie in der Vertriebs-Base „Wenn Datensatz Bedingungen erfüllt“ mit dem Filter: `Phase` entspricht `Erfolgreich abgeschlossen`.
+2. **Aktion:** „Datensatz erstellen“ mit Base-übergreifendem Zugriff auf die Betriebs-Base > Tabelle „Abwicklung“.
+3. **Feldzuordnung:** Ordnen Sie Kundenname, Produkt, Menge und Versandadresse des Geschäfts den entsprechenden Feldern in der Tabelle „Abwicklung“ zu.
+
+Bei jedem Geschäftsabschluss wird nun automatisch ein Abwicklungsdatensatz in der Betriebs-Base erstellt – eine manuelle Übergabe ist nicht erforderlich.
+
+## Berechtigungsmodell
+
+Wenn Sie Workflow-Aktualisierungen erstellen, bearbeiten oder anwenden, prüft Teable jede Base-übergreifende Aktion anhand der Berechtigungen der Person, die sie gerade bearbeitet:
+
+| Aktion | Erforderliche Berechtigung für die Ziel-Base |
+|---|---|
+| Datensätze abrufen | Felder und Datensätze lesen |
+| Datensatz erstellen | Felder und Datensätze lesen sowie Datensätze erstellen |
+| Datensatz aktualisieren | Felder und Datensätze lesen sowie Datensätze aktualisieren |
+
+Aktive Workflow-Ausführungen verwenden für die Ziel-Base die Laufzeitidentität der Teable-Automatisierung. Datensätze, die durch eine Base-übergreifende Aktion erstellt oder aktualisiert werden, erscheinen in Datensatzmetadaten und Überwachungsansichten als **Automatisierungsroboter**.
+
+### Was bei Zugriffsänderungen geschieht
+
+Verfügt die aktuell bearbeitende Person nicht über die erforderliche Berechtigung für die Ziel-Base, hindert Teable sie daran, Base-übergreifende Aktionen hinzuzufügen oder zu ändern, die auf diese Base verweisen. Enthält ein Entwurf bereits Base-übergreifende Aktionen, auf die diese Person nicht zugreifen kann, verhindert Teable außerdem das Anwenden des Entwurfs. Die bereits aktive Version wird weiter ausgeführt. Teable prüft die Berechtigungen erneut, sobald jemand den Workflow wieder bearbeitet oder anwendet.
+
+So beheben Sie beim Bearbeiten oder Anwenden eines Workflows einen Berechtigungsfehler:
+
+1. Bitten Sie eine Person mit Zugriff auf beide Bases, den Workflow zu bearbeiten und anzuwenden.
+2. Oder stellen Sie die erforderlichen Berechtigungen für die Ziel-Base wieder her und wenden Sie den Workflow erneut an.
+
+## Tipps
+
+- Base-übergreifender Zugriff kann Bases in verschiedenen **Spaces** erreichen. Die Person, die den Workflow konfiguriert oder anwendet, muss über die erforderlichen Berechtigungen für die Ziel-Base verfügen.
+- Bei der Zuordnung von Feldern über Bases hinweg müssen die Feldtypen kompatibel sein. Beispielsweise können Sie einem Anhangsfeld kein Textfeld zuordnen.
+- Wenn Sie eine Ziel-Base umstrukturieren (Tabellen umbenennen oder Felder löschen), funktionieren Base-übergreifende Aktionen nicht mehr, die auf diese Tabellen und Felder verweisen. Aktualisieren Sie Ihren Workflow nach strukturellen Änderungen.
+- Erwägen Sie bei komplexen Base-übergreifenden Workflows, Ihre Automatisierungen in einer zentralen „Hub“-Base zu bündeln, um sie übersichtlich zu organisieren.
+
+## Verwandte Themen
+
+- [Datensatz erstellen](/de/basic/automation/actions/records/create-record) – Datensätze in der aktuellen oder einer anderen Base erstellen
+- [Datensatz aktualisieren](/de/basic/automation/actions/records/update-record) – Datensätze in der aktuellen oder einer anderen Base aktualisieren
+- [Datensätze abrufen](/de/basic/automation/actions/records/get-records) – Datensätze aus der aktuellen oder einer anderen Base abrufen

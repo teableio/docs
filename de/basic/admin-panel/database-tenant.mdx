@@ -1,0 +1,32 @@
+---
+title: "Datenbank-Tenant"
+description: "Teable-Space-Daten in einer kundenseitig verwalteten PostgreSQL-Datenbank hosten."
+---
+
+<Tip>Verfügbar ab dem selbst gehosteten Business-Plan</Tip>
+
+Pfad: Admin-Panel → BYODB
+
+Ein Datenbank-Tenant ist nützlich, wenn ein bestimmter Kunde oder geschäftlicher Space separat verwalteten Datenspeicher benötigt. Die Geschäftsdaten des Space werden in einer festgelegten PostgreSQL-Datenbank gespeichert, statt die Standarddatenbank der Instanz mit anderen Spaces zu teilen. Dadurch werden die Auswirkungen der Datenbanklast oder eines Ausfalls eines Tenants auf andere Spaces verringert. Ihre Organisation kann außerdem den Bereitstellungsort der Datenbank, Datenbankzugriffskontrollen, Sicherungen und die Überwachung verwalten.
+
+## Was Sie tun können
+
+Über **Admin-Panel** → **BYODB** kann ein Instanzadministrator:
+
+- Einen neuen Space erstellen, der eine kundenseitig verwaltete PostgreSQL-Datenbank verwendet.
+- Einen bestehenden Space in die Zieldatenbank verschieben.
+- Verbindung, Migrationsstatus und aktuelle Fehler prüfen.
+
+<Info>Bei einem bestehenden Space testet Teable die Migration standardmäßig, ohne die Datenbanken umzuschalten. Nach der Validierung entscheidet der Administrator, ob umgeschaltet wird. Das Umschalten pausiert Schreibvorgänge kurzzeitig. Planen Sie es daher für ein geeignetes Wartungsfenster ein.</Info>
+
+## Häufig gestellte Fragen
+
+<AccordionGroup>
+  <Accordion title="Bedeutet Tenant ein PostgreSQL-Benutzerkonto?">
+    Nein. Gemeint ist der Teable-Space, dessen Daten in dieser Datenbank gespeichert sind.
+  </Accordion>
+  <Accordion title="Verbindet ein Datenbank-Tenant eine vorhandene Geschäftsdatenbank mit Teable?">
+    Nein. Es ändert, wo Teable seine eigenen Space-Daten speichert und verwaltet. Sie stellen eine anderswo gehostete PostgreSQL-Datenbank bereit, und Teable erstellt und verwaltet dort seine eigenen Daten. Vorhandene Tabellen und Datensätze in dieser Datenbank werden nicht mit Teable verbunden oder automatisch als Bases importiert.
+  </Accordion>
+</AccordionGroup>
+

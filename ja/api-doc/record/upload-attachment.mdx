@@ -1,0 +1,212 @@
+---
+title: "添付ファイルをアップロード"
+description: "ローカルファイルまたはURL経由のファイルを、指定したレコードの添付ファイルフィールド末尾へアップロードします"
+---
+
+### パス
+
+POST /api/table/\{tableId}/record/\{recordId}/\{fieldId}/uploadAttachment
+
+### リクエスト
+
+#### パスパラメーター
+
+* tableId (string): テーブルの一意の識別子です（[取得方法](/ja/api-doc/get-id#tableid)）。
+* recordId (string): 更新するレコードの一意の識別子です（[取得方法](/ja/api-doc/get-id#recordid)）。
+* fieldId (string): アップロード先となる添付ファイルフィールドのIDです（[取得方法](/ja/api-doc/get-id#fieldid)）
+
+添付ファイルフィールドには、複数の添付ファイルを格納できます。このAPIでは、セルの末尾へ一度に1つの添付ファイルをアップロードできます。
+
+添付ファイルを削除したり並べ替えたりするには、[レコード更新API](/ja/api-doc/record/update)を使用してください。
+
+fieldIdには、添付ファイル型のフィールドを指定する必要があります。
+
+API経由でアップロードする添付ファイルの上限は、クラウド版では100MBです。セルフホスト版には上限がありません。
+
+#### リクエスト本文
+
+型: formData
+
+パラメーター:
+
+* **file（任意）**
+  * 説明: 更新するレコードデータ
+  * 型: BufferまたはReadStream
+* **fileUrl（任意）**
+  * 説明: アップロード元のURL
+  * 型: 文字列
+  * 例: `https://example.com/image.jpg`
+  * 注: fileとfileUrlのいずれか一方だけを指定できます。両方を指定した場合は、fileが優先されます。
+
+### レスポンス
+
+#### 成功レスポンス
+
+* ステータスコード: 201 Created
+* レスポンス本文: 更新されたレコードデータを返します。
+
+**レスポンス本文の例**
+
+```json
+{
+    "id": "rec123456789ABCDE",
+    "fields": {
+      "fld123456789ABCDE": [
+        {
+          "id": "act75TiSyhcS7hfrizW",
+          "name": "example.jpg",
+          "path": "table/example",
+          "size": 392903,
+          "token": "tokenxxxxx",
+          "width": 976,
+          "height": 1000,
+          "mimetype": "image/jpeg",
+          "presignedUrl": "https://app.teable.ai/preview/previewURL"
+        }
+      ],
+    }
+}
+```
+
+#### エラーレスポンス
+
+* ステータスコード: 400 Bad Request: リクエスト本文の形式が正しくないか、必須フィールドがありません。
+* ステータスコード: 404 Not Found: 指定したtableIdまたはrecordIdが存在しません。
+
+### コード例
+
+<CodeGroup>
+  ```bash CURL
+  # ファイルをアップロードする
+
+  curl -X POST 'https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment' \
+    -H 'Authorization: Bearer __token__' \
+    -H 'Content-Type: multipart/form-data' \
+    -F 'file=@/path/to/your/file.jpg'
+
+  # URLからアップロードする
+  curl -X POST 'https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment' \
+    -H 'Authorization: Bearer __token__' \
+    -H 'Content-Type: multipart/form-data' \
+    -F 'fileUrl=https://example.com/image.jpg'
+  ```
+
+  ```js JS SDK
+  import { configApi, uploadAttachment } from '@teable/openapi';
+
+  configApi({
+    endpoint: 'https://app.teable.ai',
+    token: '__token__',
+  });
+
+  // Node.js環境：ローカルファイルをアップロードする
+  const fileStream = fs.createReadStream('/path/to/your/file.jpg');
+  const response = await uploadAttachment('__tableId__', '__recordId__', '__fieldId__', fileStream);
+
+  console.log(response.data);
+
+  // URLからアップロードする（Node.js環境とブラウザー環境の両方に対応）
+  const response = await uploadAttachment('__tableId__', '__recordId__', '__fieldId__', 'https://example.com/image.jpg');
+
+  console.log(response.data);
+
+  // ブラウザー環境：ファイルをアップロードする
+  // ファイル入力要素があることを前提とする： <input type="file" id="fileInput">
+  document.getElementById('fileInput').addEventListener('change', async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const response = await uploadAttachment('__tableId__', '__recordId__', '__fieldId__', file);
+      console.log(response.data);
+    }
+  });
+  ```
+
+  ```ts TypeScript
+  import FormData from 'form-data';
+  import fs from 'fs';
+
+  // Node.js環境：ローカルファイルをアップロードする
+  const formData = new FormData();
+  formData.append('file', fs.createReadStream('/path/to/your/file.jpg'));
+
+  const response = await fetch('https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer __token__',
+      ...formData.getHeaders()
+    },
+    body: formData
+  });
+
+  console.log(await response.json());
+
+  // URLからアップロードする（Node.js環境とブラウザー環境の両方に対応）
+  const formDataUrl = new FormData();
+  formDataUrl.append('fileUrl', 'https://example.com/image.jpg');
+
+  const responseUrl = await fetch('https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer __token__',
+      ...formDataUrl.getHeaders()
+    },
+    body: formDataUrl
+  });
+
+  console.log(await responseUrl.json());
+
+  // ブラウザー環境：ファイルをアップロードする
+  // ファイル入力要素があることを前提とする： <input type="file" id="fileInput">
+  document.getElementById('fileInput').addEventListener('change', async (event: Event) => {
+    const fileInput = event.target as HTMLInputElement;
+    const file = fileInput.files?.[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer __token__'
+        },
+        body: formData
+      });
+
+      console.log(await response.json());
+    }
+  });
+  ```
+
+  ```python Python
+  import requests
+  import mimetypes
+  import os
+
+  # ローカルファイルをアップロードする
+  file_path = '/path/to/your/file.jpg'
+  with open(file_path, 'rb') as file:
+      file_name = os.path.basename(file_path)
+      mime_type, _ = mimetypes.guess_type(file_path)
+      files = {'file': (file_name, file, mime_type)}
+      response = requests.post(
+          'https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment',
+          headers={
+              'Authorization': 'Bearer __token__'
+          },
+          files=files
+      )
+
+  print(response.json())
+
+  # URLからアップロードする
+  response_url = requests.post(
+      'https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment',
+      headers={
+          'Authorization': 'Bearer __token__'
+      },
+      data={'fileUrl': 'https://example.com/image.jpg'}
+  )
+
+  print(response_url.json())
+  ```
+</CodeGroup>

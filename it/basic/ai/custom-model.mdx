@@ -1,0 +1,109 @@
+---
+title: Modello IA personalizzato
+description: Aggiungi provider di modelli personalizzati per Campi IA, Automazioni, AI Chat, App Builder e altre funzionalità IA supportate.
+---
+
+<Tip>Disponibile per il piano Pro e versioni successive</Tip>
+
+## Dove configurarlo
+
+1. Apri lo Spazio desiderato.
+2. Fai clic su **Impostazioni** nell'angolo in alto a destra.
+3. Vai a **Impostazioni IA**.
+
+<img
+  src="/images/docs/ai/2026-05-21-custom-model-ai-settings.png"
+  alt="Pagina Impostazioni IA"
+  className="docs-screenshot"
+/>
+
+## Procedura di configurazione
+
+In **Funzionalità IA**, attiva ciò che ti serve:
+
+- **Campo IA**
+- **AI Chat**
+
+L'abilitazione di **AI Chat** stabilisce se la funzionalità di chat è disponibile nello Spazio.
+
+La riga **Concorrenza** sotto **Campo IA** imposta il numero di generazioni dei Campi IA che lo Spazio esegue contemporaneamente; le altre attendono in coda. Riduci il valore quando le compilazioni IA in blocco di questo Spazio rallentano il lavoro altrui e aumentalo quando vuoi completare più rapidamente una compilazione di grandi dimensioni.
+
+### Aggiungere un provider LLM
+
+<Note>
+Quando aggiungi un nuovo provider LLM, scegli **OpenAI**, **Anthropic** o **Compatibile con OpenAI** come tipo di provider. Usa **Compatibile con OpenAI** per i servizi che espongono un endpoint API compatibile con OpenAI. Se un'attività utilizza immagini, screenshot o altri input visivi, scegli un modello con supporto visivo. I modelli senza supporto visivo non riusciranno a completare queste attività multimodali.
+</Note>
+
+Fai clic su **Aggiungi provider LLM** e compila quanto segue:
+
+- **Nome**: utilizzato per distinguere i diversi provider.
+- **Tipo di provider**: seleziona il tipo di provider.
+- **URL di base**: inserisci l'endpoint API del provider.
+- **Chiave API**: inserisci la chiave API del provider.
+- **Modelli**: inserisci i nomi dei modelli da collegare. Separa più modelli con virgole inglesi.
+
+<img
+  src="/images/docs/ai/2026-05-21-custom-model-add-provider.png"
+  alt="Finestra di dialogo Aggiungi provider LLM"
+  className="docs-screenshot"
+/>
+
+### Testare le funzionalità dei modelli
+
+Attualmente esistono tre modalità di test:
+
+- Fai clic su **Testa** nella riga del provider LLM.
+- Fai clic su **Testa** nella riga di un singolo modello.
+- Fai clic su **Testa funzionalità modelli** nell'angolo in alto a destra dell'elenco per testare in blocco tutti i modelli configurati.
+
+Se un modello è destinato alla generazione di immagini, seleziona **Modello di generazione immagini** prima di eseguire il test. Una volta selezionata l'opzione, Teable lo testa come modello di immagini per le funzionalità da testo a immagine e da immagine a immagine. Se l'opzione non è selezionata, il modello viene testato come un normale modello di testo.
+
+## Suggerimenti per la configurazione
+
+### URL di base e modelli
+
+<Warning>Alcune chiavi dei piani Coding potrebbero funzionare soltanto negli strumenti di programmazione designati e potrebbero non essere chiavi API standard. Consulta le condizioni del provider prima di utilizzarle con servizi di terze parti. Per collegare Teable, usa una chiave API standard creata nella dashboard del provider.</Warning>
+
+Esempi comuni:
+
+| Tipo di provider | Formato dell'URL di base | Modelli di esempio |
+|----------|----------------|----------------|
+| OpenAI | `https://api.openai.com/v1` | `gpt-5.5,o3,gpt-5-mini` |
+| Anthropic | `https://api.anthropic.com/v1` | `claude-opus-4-8,claude-sonnet-5,claude-haiku-4-5` |
+| Compatibile con OpenAI | Endpoint `/v1` del provider compatibile con OpenAI | `gpt-5.5,gpt-5.4,o3,gpt-5-mini` |
+
+<Note>I nomi dei modelli devono corrispondere esattamente alla documentazione del provider e fanno distinzione tra maiuscole e minuscole. Separa più modelli con virgole inglesi.</Note>
+
+Note:
+
+- I nomi dei modelli fanno distinzione tra maiuscole e minuscole. Usa i nomi esatti riportati nella documentazione del provider.
+- Alcuni provider richiedono che non vi siano spazi dopo le virgole, ad esempio `gpt-5.5,o3`.
+- Per i provider **Compatibili con OpenAI**, usa il formato dei nomi dei modelli richiesto dal provider. Alcuni servizi utilizzano `provider/model-name`.
+
+## Domande frequenti
+
+<AccordionGroup>
+<Accordion title="Tutti i test dei modelli non sono riusciti">
+Controlla che l'**URL di base** sia corretto, che non sia stato inserito per errore l'URL della home page del provider e che non vi sia una `/` finale in più. Se utilizzi un endpoint compatibile con OpenAI, verifica anche che `/v1` non sia assente.
+</Accordion>
+
+<Accordion title="Ricevo un errore «Test non riuscito»">
+Controlla che la **Chiave API** sia valida e che l'account disponga ancora di Crediti o dell'autorizzazione per chiamare il modello.
+</Accordion>
+
+<Accordion title="Timeout della connessione">
+Controlla che l'**URL di base** sia corretto e che l'ambiente corrente possa raggiungere tale indirizzo.
+</Accordion>
+
+<Accordion title="Modello non trovato">
+Assicurati che il valore **Modelli** corrisponda esattamente alla documentazione del provider, incluse maiuscole, minuscole e formato del separatore.
+</Accordion>
+
+<Accordion title="Il test non riesce quando uso una chiave di un piano Coding">
+Questo tipo di chiave potrebbe non supportare le chiamate API standard oppure le condizioni del provider potrebbero non consentirne l'uso con servizi di terze parti. Consulta innanzitutto le condizioni del piano Coding del provider. Per collegare Teable, usa una **Chiave API** standard creata nella dashboard del provider.
+</Accordion>
+
+<Accordion title="Il risultato del test del modello di generazione immagini sembra errato">
+Se il modello è destinato alla generazione di immagini, seleziona prima **Modello di generazione immagini**, quindi ripeti il test. Una volta selezionata l'opzione, Teable testa invece le funzionalità da testo a immagine e da immagine a immagine.
+</Accordion>
+</AccordionGroup>

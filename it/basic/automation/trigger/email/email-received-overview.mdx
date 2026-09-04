@@ -1,0 +1,114 @@
+---
+title: "Quando viene ricevuta un'email: panoramica"
+description: "Attiva un workflow quando arriva una nuova email in una casella monitorata"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Nota: puoi configurare tutti i trigger in AI Chat. Spiega all'IA cosa deve fare il workflow e si occuperà del resto.</Tip>
+
+Questo trigger viene eseguito quando arriva una nuova email non letta in una casella monitorata.
+
+## Creare con l'IA
+
+Apri AI Chat nella barra laterale destra della Tabella e descrivi ciò che desideri.
+
+L'IA si occupa di tutto: sceglie il trigger corretto, mappa i Campi pertinenti e configura automaticamente tutte le azioni.
+
+Descrivi l'obiettivo una sola volta e il workflow è pronto, senza alcuna configurazione manuale.
+
+**Esempio:** *"Quando ricevo un'email di assistenza, crea un ticket e classificalo."*
+
+## Configurazione
+
+| Impostazione | Obbligatoria | Descrizione |
+|---|---|---|
+| Tipo di connessione | Sì | IMAP, Gmail o Outlook |
+| Intervallo di polling | Sì | Frequenza con cui verificare la presenza di nuove email: da 10 a 60 minuti (valore predefinito: 10) |
+
+## Tipi di connessione in dettaglio
+
+### IMAP
+
+IMAP funziona con qualsiasi provider email che supporti il protocollo IMAP, inclusi server di posta self-hosted, email aziendali e provider come Yahoo o Zoho.
+
+| Impostazione | Obbligatoria | Descrizione |
+|---|---|---|
+| Host | Sì | Indirizzo del server IMAP (ad esempio, `imap.gmail.com`, `imap.mail.yahoo.com`) |
+| Porta | Sì | In genere 993 (SSL/TLS) o 143 (senza crittografia, sconsigliato) |
+| Nome utente | Sì | Indirizzo email o nome utente dell'account |
+| Password | Sì | Password per l'app (nota: non la password dell'email) |
+| Casella | No | Cartella da monitorare (valore predefinito: `INBOX`) |
+
+### Gmail (OAuth)
+
+Si collega tramite il flusso OAuth di Google. Non serve una password: autorizzi Teable ad accedere al tuo account Gmail.
+
+| Impostazione | Obbligatoria | Descrizione |
+|---|---|---|
+| Account Google | Sì | Autorizza tramite OAuth: Teable richiede l'accesso in sola lettura |
+| Etichetta | No | Seleziona un'etichetta Gmail da monitorare (valore predefinito: Posta in arrivo) |
+
+### Outlook (OAuth)
+
+Si collega tramite il flusso OAuth di Microsoft per le caselle di posta Outlook e Microsoft 365.
+
+| Impostazione | Obbligatoria | Descrizione |
+|---|---|---|
+| Account Microsoft | Sì | Autorizza tramite OAuth: Teable richiede l'accesso in sola lettura |
+| Cartella | No | Seleziona una cartella Outlook da monitorare (valore predefinito: Posta in arrivo) |
+
+## Dati dell'email disponibili per i passaggi successivi
+
+Quando il trigger si attiva, i seguenti dati dell'email sono disponibili come variabili nei passaggi delle azioni:
+
+| Dato | Descrizione |
+|---|---|
+| **Da** | Indirizzo email del mittente |
+| **Oggetto** | Riga dell'oggetto dell'email |
+| **Corpo (testo)** | Versione in testo semplice del corpo dell'email |
+| **Corpo (HTML)** | Versione HTML del corpo dell'email, se disponibile |
+| **Data** | Data e ora di invio dell'email |
+| **Allegati** | File allegati inclusi nell'email |
+
+Puoi fare riferimento a uno qualsiasi di questi dati facendo clic su **+** nei Campi delle azioni.
+
+## Come configurarlo (esempio IMAP)
+
+1. Apri l'Automazione e aggiungi un nuovo trigger.
+2. Seleziona **Quando viene ricevuta un'email**.
+3. Scegli **IMAP** come tipo di connessione.
+4. Inserisci i dati del server IMAP: host, porta, nome utente e password.
+5. (Facoltativo) Modifica la **Casella** se vuoi monitorare una cartella diversa da INBOX.
+6. Imposta l'**Intervallo di polling**, ossia la frequenza con cui verificare la presenza di nuove email. Un intervallo più breve offre risposte più rapide, ma comporta controlli più frequenti del server.
+7. Fai clic su **Test** per verificare la connessione. Teable tenterà di collegarsi alla casella e segnalerà se l'operazione è riuscita o meno.
+8. Salva e attiva l'Automazione.
+9. Aggiungi i passaggi delle azioni, utilizzando i dati dell'email (Da, Oggetto, Corpo e così via) come variabili.
+
+## Quando utilizzarlo
+
+- **Creare un Record per ogni email di assistenza ricevuta.** Analizza l'oggetto e il corpo per compilare automaticamente i Campi di una Tabella dei ticket di assistenza.
+- **Estrarre con l'IA i dati delle fatture ricevute via email.** Usa l'azione Genera con l'IA per leggere il corpo o l'allegato dell'email ed estrarre importi, date e nomi dei fornitori.
+- **Instradare le richieste dei clienti al team appropriato.** In base alle parole chiave nell'oggetto o nel corpo, aggiorna un Campo "Team" oppure invia notifiche a persone specifiche.
+- **Archiviare le email importanti come Record.** Registra automaticamente in una Tabella Teable le email provenienti da mittenti specifici o con determinati oggetti, in modo da cercarle e monitorarle facilmente.
+- **Elaborare le conferme d'ordine.** Quando arriva un'email di conferma dell'ordine, estrai il numero e i dettagli dell'ordine per aggiornare la relativa Tabella.
+
+## Risoluzione dei problemi
+
+- **Connessione non riuscita (IMAP):** ricontrolla host, porta, nome utente e password. Assicurati che il provider email consenta l'accesso IMAP: alcuni provider lo disabilitano per impostazione predefinita.
+- **Gmail: errore "App meno sicura":** Gmail non consente l'accesso con una semplice password. Usa invece una **Password per l'app**. Consulta [Configurare Gmail IMAP](/it/basic/automation/trigger/email/gmail-imap) per le istruzioni.
+- **Le email non vengono rilevate:** controlla l'intervallo di polling. Verifica inoltre che le email arrivino nella cartella o nell'etichetta monitorata. Se è selezionata la casella sbagliata, le email nelle sottocartelle o con etichette filtrate potrebbero non essere rilevate.
+- **Elaborazione duplicata:** il trigger tiene traccia delle email già elaborate. Tuttavia, se disattivi e riattivi l'Automazione, potrebbe elaborare nuovamente le email recenti. Se necessario, contrassegna le email come lette nella posta in arrivo.
+- **Token OAuth scaduto:** per Gmail o Outlook, autorizza nuovamente la connessione se il token OAuth è scaduto. In genere ciò avviene dopo diversi mesi o se revochi le autorizzazioni dell'app.
+
+## Suggerimenti
+
+- Un intervallo di polling più breve offre risposte più rapide alle email, ma non garantisce la consegna in tempo reale. Per un'elaborazione realmente in tempo reale, valuta un approccio basato su webhook, se il provider email lo supporta.
+- Usa i filtri del client email per instradare le email pertinenti verso un'etichetta o una cartella specifica, quindi configura Teable affinché monitori soltanto quella posizione. In questo modo riduci il rumore.
+- Per le caselle con un volume elevato, valuta di aumentare l'intervallo di polling e di elaborare le email in batch, per evitare di sovraccaricare il workflow.
+
+## Contenuti correlati
+
+- [Configurare Gmail IMAP](/it/basic/automation/trigger/email/gmail-imap) — istruzioni dettagliate per collegare Gmail
+- [Azione Genera con l'IA](/it/basic/automation/actions/ai/ai-generate) — utile per estrarre dati strutturati dal contenuto delle email
+- [Azione Crea Record](/it/basic/automation/actions/records/create-record) — spesso abbinata ai trigger email per registrare le email come Record
+- [Invia email](/it/basic/automation/actions/communication/send-email-overview)

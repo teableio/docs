@@ -1,0 +1,90 @@
+---
+title: "Kayıtları getir"
+description: "İsteğe bağlı filtreler ve sayfalandırmayla bir tablodaki kayıtları alın"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Otomasyon oluşturmak için Komut dosyası çalıştır'ı kullanmanızı kesinlikle öneririz; bu özellik, aksi hâlde elle oluşturulması gerekecek eylemler dahil tüm eylem davranışlarını kapsayabilir. Gereksinimlerinizi sohbette AI'a açıklamanız yeterlidir.
+
+Lütfen unutmayın: eylemleri elle eklerseniz AI daha sonra bunları tanıyamaz veya değiştiremez.
+</Tip>
+
+## AI ile oluşturma
+
+Tablonuzun sağ kenar çubuğunda AI Chat'i açın ve ne istediğinizi açıklayın.
+
+AI her şeyi halleder: doğru tetikleyiciyi belirler, uygun eylemleri seçer, alanları eşler ve iş akışının tamamını otomatik olarak yapılandırır.
+
+Hedefinizi bir kez açıklayın; iş akışınız elle yapılandırma gerektirmeden hazır olur.
+
+Bir tablodaki kayıtları alıp dizi olarak döndürür. Sonraki adımlarda sonuçlar üzerinde döngü kurabilir, verileri komut dosyasına aktarabilir veya başka eylemlere girdi olarak verebilirsiniz.
+
+## Yapılandırma
+
+| Ayar | Zorunlu | Açıklama |
+|---|---|---|
+| Tablo | Evet | Sorgulanacak tablo |
+| Görünüm | Hayır | Sonuçları belirli bir görünümde görünen kayıtlarla sınırlar (görünümün filtrelerini, sıralamalarını ve gizli alanlarını devralır) |
+| Filtre | Hayır | Görünüm filtresine ek olarak uygulanan filtre koşulları |
+| Atla | Hayır | Başlangıçtan itibaren atlanacak kayıt sayısı (sayfalandırma için) |
+| Al | Hayır | Döndürülecek en fazla kayıt sayısı (sayfalandırma için) |
+
+## Nasıl yapılandırılır?
+
+1. İş akışınıza bir **Kayıtları Getir** eylemi ekleyin.
+2. Sorgulamak istediğiniz **Tabloyu** seçin. Tablo farklı bir Veritabanındaysa [Veritabanları Arası Erişim](/tr/basic/automation/actions/records/cross-base) özelliğini kullanın.
+3. (İsteğe bağlı) Görünümün filtre, sıralama ve alan görünürlüğü ayarlarını devralmak için bir **Görünüm** seçin.
+4. (İsteğe bağlı) Sonuçları daraltmak için **Filtre** koşulları ekleyin. Örneğin `Durum`, `Etkin` değerine eşit ve `Son Tarih` bugünden önce olabilir.
+5. (İsteğe bağlı) Sayfalandırma için **Atla** ve **Al** değerlerini ayarlayın. Örneğin ilk 100 kaydı almak için Atla 0 ve Al 100 değerlerini kullanın.
+6. Eylemi kaydedin. İş akışı çalıştığında sonuçlar, sonraki adımlarda kullanılmak üzere dizi olarak sunulur.
+
+## Çıktı: sonuçlarla çalışma
+
+Çıktı bir **kayıt dizisidir**. Dizideki her kayıt şunları içerir:
+
+- **Kayıt Kimliği** — benzersiz tanımlayıcı.
+- **Tüm alan değerleri** — tablodaki (veya seçtiyseniz görünümdeki) her alan.
+
+### Sonuçları sonraki adımda kullanma
+
+- **Tek bir kayda başvurun:** Yalnızca bir sonuç bekliyorsanız (veya ilk sonucu istiyorsanız) **+** değişken seçiciyle ilk kaydın alanlarına doğrudan başvurabilirsiniz.
+- **Tüm kayıtlar üzerinde döngü kurun:** Kayıtları Getir'den sonra bir [Döngü (Toplu)](../logic/loop-run) eylemi ekleyin ve veri kaynağı olarak sonuç dizisini seçin. Döngü içinde her öğenin alanlarına başvurun.
+- **Komut dosyasında işleyin:** Özel işleme, filtreleme veya dönüştürme için diziyi bir [Komut dosyası çalıştır](/tr/basic/automation/actions/ai/ai-script) adımına aktarın.
+
+## Sayfalandırma
+
+**Atla** ve **Al** değerlerini ayarlamazsanız eylem, sistemin varsayılan sınırına kadar kayıt döndürür. Büyük tablolarda sonuç boyutunu denetlemek için sayfalandırmayı kullanın:
+
+| Ayar | Amaç | Örnek |
+|---|---|---|
+| Atla | Başlangıçtan kaç kaydın atlanacağı | `0` (baştan başla) |
+| Al | Kaç kaydın döndürüleceği | `100` (100 kayıt döndür) |
+
+Büyük bir tablonun tamamını işlemek için giderek artan Atla değerlerine sahip birden fazla Kayıtları Getir adımı kullanabilir veya sayfalandırmayı bir komut dosyasında yönetebilirsiniz.
+
+## Ne zaman kullanılır?
+
+- **Hatırlatma göndermek için vadesi geçmiş görevleri bulun.** Son Tarihi bugünden önce olan ve Durumu "Tamamlandı" olmayan görevleri filtreleyin. Sonuçlar üzerinde döngü kurup her biri için e-posta gönderin.
+- **Günlük özet için veri toplayın.** Son 24 saatte güncellenen tüm kayıtları alıp bir özet e-postasında birleştirin.
+- **Oluşturmadan veya güncellemeden önce ilgili kayıtları arayın.** Yinelenen kayıt oluşturmadan önce aynı e-postaya sahip bir kaydın bulunup bulunmadığını denetleyin.
+- **AI eylemine veri sağlayın.** Uzun metin alanları içeren kayıtları alın, ardından her birini özetlemek veya sınıflandırmak için döngü içinde AI ile Oluştur'u kullanın.
+- **Kayıtları harici bir sistemle eşitleyin.** Son eşitlemeden bu yana değişen tüm kayıtları alın, ardından HTTP istekleriyle bir CRM'e veya veri ambarına aktarın.
+
+## İpuçları
+
+- **Filtreleri kullanın.** Filtreniz ne kadar belirgin olursa o kadar az kayıt döndürülür ve eylem o kadar hızlı çalışır.
+- **Sonuçları Al ile sınırlandırın.** Yalnızca ilk 10 kayıt gerekiyorsa Al değerini 10 yapın. Birkaç kayda ihtiyacınız varken binlerce kayıt almanız gerekmez.
+- İhtiyacınız olan verileri zaten filtreleyen ve sıralayan bir **Görünüm seçin**. Böylece otomasyon yapılandırmanız daha sade kalır.
+- Tüm kayıtlara gerçekten ihtiyacınız yoksa **tablonun tamamını almaktan kaçının**. Büyük sonuç kümelerinin işlenmesi daha uzun sürer ve özellikle Döngü ile birlikte kullanıldığında daha fazla kaynak tüketir.
+- Kayıtları Getir hiçbir veriyi değiştirmez; salt okunurdur.
+- Sorgu sıfır kayıt döndürürse sonuçlara başvuran sonraki adımlar boş bir dizi alır. İş akışınızın bu durumu uygun şekilde ele aldığından emin olun (ör. sonuç yokken "sonuçlarınız burada" yazan bir e-posta göndermeyin).
+- Kayıtları Getir'deki filtreler görünüm filtreleriyle aynı şekilde çalışır: koşulları VE/VEYA mantığıyla birleştirebilirsiniz.
+- Veritabanları Arası Erişim kullanılırken sorgu, iş akışını oluşturan kişinin izinleriyle çalışır. Oluşturan kişi hedef Veritabanına erişimini kaybederse adım başarısız olur.
+
+## İlgili konular
+
+- [Veritabanları arası erişim](/tr/basic/automation/actions/records/cross-base) — diğer Veritabanlarındaki tabloları sorgulayın
+- [Döngü (toplu)](../logic/loop-run) — sonuç dizisi üzerinde yineleme yapın
+- [Kayıt oluştur](/tr/basic/automation/actions/records/create-record) — alınan verilere göre kayıt oluşturun
+- [Kaydı güncelle](/tr/basic/automation/actions/records/update-record) — Kayıtları Getir ile bulunan kayıtları güncelleyin

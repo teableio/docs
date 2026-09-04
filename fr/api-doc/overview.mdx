@@ -1,0 +1,62 @@
+---
+title: "Présentation de l’API"
+description: "Tout ce dont vous avez besoin pour commencer à appeler l’API Teable : URL de base, authentification, identifiants et modèles de requête courants."
+---
+
+Cette section vous aide à commencer à utiliser l’API Teable rapidement et en toute sécurité.
+
+## URL de base
+
+- **Teable Cloud** : `https://app.teable.ai`
+- **Auto-hébergé** : utilisez votre propre domaine (par exemple, `https://teable.example.com`)
+
+Tous les chemins d’API de cette documentation sont relatifs à l’URL de base et commencent par `/api`.
+
+## Authentification
+
+Les API Teable utilisent des **jetons Bearer** :
+
+```bash
+curl -H 'Authorization: Bearer __token__' \
+  'https://app.teable.ai/api/table/__tableId__/record'
+```
+
+Vous pouvez utiliser l’un des deux éléments suivants :
+
+- **Jeton d’accès personnel** : idéal pour les scripts, les outils internes et les intégrations côté serveur. Consultez [Jeton d’accès](/fr/api-doc/token).
+- **Jeton d’accès OAuth** : idéal pour les intégrations multilocataires dans lesquelles les utilisateurs finaux accordent l’accès. Consultez [Application OAuth](/fr/api-doc/oauth).
+
+## ID (spaceId / baseId / tableId / viewId / fieldId / recordId)
+
+La plupart des points de terminaison nécessitent des ID tels que `tbl...`, `rec...`. Consultez [Obtenir les identifiants](/fr/api-doc/get-id).
+
+## Portées et autorisations
+
+Les jetons d’accès personnels et les jetons OAuth sont tous deux limités par des autorisations. Si vous obtenez une erreur 403, cela signifie généralement que le jeton ne dispose pas de la portée requise.
+
+- Consultez [Codes d’erreur](/fr/api-doc/error-code)
+- Référence des portées OAuth : [Application OAuth](/fr/api-doc/oauth#available-scopes)
+
+## Pagination (take / skip)
+
+De nombreux points de terminaison de liste prennent en charge :
+
+- `take` : nombre d’éléments à renvoyer (certains points de terminaison imposent une limite ; par exemple, les Enregistrements sont limités à 100 par requête, utilisez donc `skip` pour paginer)
+- `skip` : nombre d’éléments à ignorer
+
+## Clés de Champ et format des cellules
+
+Certaines API vous permettent de contrôler la représentation des Champs d’Enregistrement :
+
+- `fieldKeyType` : `name` (par défaut) / `id` / `dbFieldName`
+- `cellFormat` : `json` (par défaut) / `text`
+
+Pour les structures de valeurs des Champs d’Enregistrement, consultez [Interface des Champs d’Enregistrement](/fr/api-doc/record/interface).
+
+## Étapes suivantes
+
+- **Vous voulez seulement récupérer des données** : [Obtenir des Enregistrements](/fr/api-doc/record/get)
+- **Créer, mettre à jour ou supprimer des Enregistrements** : [Créer des Enregistrements](/fr/api-doc/record/create), [Mettre à jour un Enregistrement](/fr/api-doc/record/update), [Supprimer des Enregistrements](/fr/api-doc/record/delete)
+- **Téléverser des pièces jointes** : [Téléverser une pièce jointe](/fr/api-doc/record/upload-attachment)
+- **Liste complète des points de terminaison** : utilisez la navigation de gauche sous **Référence de l’API**
+

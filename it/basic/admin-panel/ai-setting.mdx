@@ -1,0 +1,111 @@
+---
+title: "Impostazioni IA"
+description: "Configura AI Chat, Campi IA, Automazione IA e App Builder per un'istanza Self-hosted."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Disponibile per il piano Business Self-hosted e versioni successive</Tip>
+
+Percorso: Amministrazione di sistema → Impostazioni IA
+
+La pagina **Impostazioni IA** consente di configurare **AI Chat**, **Campi IA**, **Automazione IA** e **App Builder**. Il pannello **Configurazione in sospeso** a destra mostra quali elementi obbligatori sono ancora mancanti.
+
+## Prima di iniziare
+
+Prima di aprire la pagina Impostazioni IA, assicurati che siano pronti gli elementi seguenti.
+
+| Requisito | Obbligatorio? | Note |
+|------|------|------|
+| **Configurazione di Agent Runtime** | Obbligatoria per AI Chat e App Builder | Utilizzata da AI Chat e App Builder |
+| **Provider personalizzato** | Obbligatorio quando AI Chat o App Builder usa la tua chiave (BYOK) | Usa un provider **compatibile con OpenAI** o **Anthropic** |
+| **Chiave API OpenAI** | Facoltativa | Necessaria soltanto se vuoi abilitare l'**input vocale** in AI Chat |
+| **Accesso pubblico** | Obbligatorio quando è selezionato il motore di distribuzione **Vercel** | La tua **istanza Teable** e l'**archiviazione di oggetti (MinIO / S3)** devono essere accessibili pubblicamente da Vercel |
+
+## Procedura di configurazione
+
+Inizia dal runtime di AI Chat, dalla distribuzione delle app e dalla configurazione dei modelli:
+
+<Steps>
+  <Step title="Configura il runtime di AI Chat e la distribuzione delle app">
+    Scegli un'[opzione di distribuzione](/it/deploy/choose) e completa la distribuzione, quindi fai clic su **Esegui test** e **Verifica connessione**.
+  </Step>
+  <Step title="Configura l'API LLM">
+    Configura la connessione al modello e completa il test iniziale.
+  </Step>
+  <Step title="Configura i modelli consigliati">
+    Scegli i modelli consigliati per i Campi IA e l'Automazione IA.
+  </Step>
+  <Step title="Imposta il modello di chat">
+    Scegli il modello predefinito per AI Chat.
+  </Step>
+</Steps>
+
+### Configurare il runtime
+
+Fai clic su **Esegui test** per verificare il runtime di AI Chat.
+
+### Configurare l'API LLM
+
+In **API LLM**, aggiungi un provider di modelli e testane i modelli. Se utilizzi la tua chiave (BYOK), scegli **Compatibile con OpenAI** o **Anthropic** come tipo di provider.
+
+Apri **Impostazioni modello** per un modello quando devi esaminare o sostituire questi valori:
+
+| Impostazione | Effetto |
+|------|------|
+| **Contesto** | Facoltativo. Imposta il numero massimo di token di input utilizzati per la compattazione del contesto. |
+| **Output massimo** | Facoltativo. Imposta il numero massimo di token che il modello può generare in una risposta. |
+
+### Configurare i modelli consigliati
+
+Scegli i modelli consigliati che gli utenti possono selezionare nei **Campi IA** e nell'**Automazione IA**.
+
+### Impostare il modello di chat
+
+Scegli il modello predefinito per **AI Chat** nella barra laterale. Il modello di chat deve appartenere all'elenco dei modelli consigliati.
+
+### Abilitare le funzionalità IA
+
+In **Funzionalità IA**, abilita **Campo IA** e **AI Chat** secondo necessità. Configura il runtime prima di utilizzare **AI Chat**.
+
+### Configurare App Builder
+
+In **Motore di distribuzione**, scegli come distribuire le app:
+
+| Motore di distribuzione | Requisiti di configurazione |
+|------|------|
+| **Vercel** | Inserisci un token di accesso Vercel, fai clic su **Verifica connessione** e usa **Verifica accesso pubblico** per confermare che Vercel possa raggiungere l'istanza Teable e l'archiviazione di oggetti. |
+| **Teable Infra** | Utilizza il runtime del container Teable Infra configurato. Qui non sono richieste credenziali aggiuntive né verifiche dell'accesso pubblico. |
+
+Quando necessario, puoi aggiungere queste impostazioni facoltative di App Builder:
+
+| Elemento facoltativo | Quando è necessario |
+|------|------|
+| **Dominio personalizzato** | Quando vuoi pubblicare le app nel tuo dominio |
+| **Autenticazione app** | Quando le app generate richiedono l'accesso tramite **OTP via email** o **Google** |
+
+In **Autenticazione app**, puoi configurare i provider di accesso per le app generate:
+
+- **OTP via email** utilizza una casella SMTP indipendente per le email di verifica dell'accesso all'app.
+- **Google OAuth** richiede un ID client e un Segreto client. Aggiungi l'URI di reindirizzamento mostrato in questa pagina all'elenco degli URI di reindirizzamento autorizzati nella console Google Cloud.
+
+L'accesso con **Teable** è disponibile per impostazione predefinita. **OTP via email** viene visualizzato in App Builder soltanto dopo aver completato le impostazioni SMTP, mentre **Google** viene visualizzato soltanto dopo aver configurato entrambe le credenziali OAuth.
+
+**Inserisci automaticamente la chiave API IA nelle app** è attivo per impostazione predefinita, così le app possono chiamare i modelli IA della piattaforma. Disattivandolo, le app non potranno più accedervi.
+
+### Facoltativo. Configurare l'input vocale
+
+Per utilizzare l'input vocale in AI Chat, abilita la funzionalità e inserisci una **chiave API OpenAI**. Configura l'**endpoint di trascrizione** soltanto se utilizzi un servizio di trascrizione personalizzato. Puoi anche limitare la durata della registrazione e il numero di richieste al minuto.
+
+### Verificare la configurazione
+
+Al termine della configurazione, verifica innanzitutto che tutti gli elementi obbligatori nel pannello **Configurazione in sospeso** siano verdi. Quindi testa singolarmente **AI Chat**, **Campi IA**, **Automazione IA** e **App Builder**.
+
+## Domande frequenti
+
+<AccordionGroup>
+<Accordion title="Ricevo un errore di superamento dei Crediti">
+
+Controlla l'account o il provider utilizzato dal servizio di modelli configurato. Se necessario, ricarica il saldo o modifica la configurazione del modello.
+</Accordion>
+
+</AccordionGroup>

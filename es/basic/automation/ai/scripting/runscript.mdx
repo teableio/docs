@@ -1,0 +1,290 @@
+---
+title: "Ejecutar script"
+description: "Ejecuta JavaScript personalizado en un entorno aislado seguro para aplicar lógica que va más allá de las acciones integradas"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Recomendamos encarecidamente usar Ejecutar script para crear automatizaciones, ya que permite cubrir el comportamiento de todas las acciones, incluidas aquellas que, de otro modo, tendrían que crearse manualmente. Solo tienes que describir tus requisitos a la IA en el chat.
+
+Ten en cuenta que, si añades acciones manualmente, la IA no podrá reconocerlas ni modificarlas más adelante.
+</Tip>
+
+La acción Ejecutar script te permite escribir JavaScript personalizado para aplicar una lógica que las acciones integradas no pueden cubrir. Puedes transformar datos, llamar a API externas, realizar cálculos, implementar ramificaciones condicionales y mucho más, todo ello dentro de un entorno aislado seguro.
+
+Los scripts reciben datos de pasos anteriores mediante el objeto `input` y pasan los resultados a los pasos posteriores mediante la función `output.set()`.
+
+## Cuándo usar Ejecutar script en lugar de las acciones integradas
+
+| Situación | Usar acciones integradas | Usar Ejecutar script |
+|---|---|---|
+| Crear, actualizar u obtener Registros | Sí | Solo si necesitas aplicar lógica compleja |
+| Enviar un correo electrónico sencillo | Sí | No |
+| Llamar a un único endpoint de API | Sí (Solicitud HTTP) | Solo si necesitas procesar la respuesta de forma compleja |
+| Transformar datos entre pasos | A veces | Sí, cuando necesitas lógica condicional, bucles o manipulación de cadenas |
+| Analizar estructuras JSON complejas | No | Sí |
+| Calcular fechas y dar formato a números | No | Sí |
+| Encadenar varias llamadas a una API con lógica | Complicado con las acciones integradas | Sí |
+| Implementar reglas de negocio con muchas condiciones | Poco práctico | Sí |
+
+En general, utiliza las acciones integradas cuando se ajusten a tus necesidades. Utiliza Ejecutar script cuando necesites lógica personalizada, transformación de datos o una interacción compleja con una API.
+
+## Entorno
+
+| Propiedad | Valor |
+|---|---|
+| Lenguaje | JavaScript (ES6+), compatible con `await` en el nivel superior |
+| Tiempo de ejecución | Entorno aislado seguro con un tiempo de espera de 60 segundos |
+| Módulos | CommonJS (`require()`), compatible con paquetes npm |
+| Red | Solicitudes HTTP mediante `fetch()` |
+
+## Cómo configurarla
+
+1. Añade una acción **Ejecutar script** a tu flujo de trabajo.
+2. El editor de scripts se abre con un lienzo en blanco. Escribe aquí tu código JavaScript.
+3. El script puede leer datos de pasos anteriores mediante el objeto `input` (consulta la información siguiente).
+4. Utiliza `output.set(key, value)` para pasar resultados a los pasos posteriores.
+5. (Opcional) Añade dependencias npm en el panel de configuración si tu script necesita bibliotecas externas.
+6. Haz clic en **Probar** para ejecutar el script con datos reales de la ejecución más reciente del desencadenador.
+7. Comprueba la salida de la prueba y los registros de la consola para verificar que el script funciona correctamente.
+8. Guarda la acción.
+
+## Leer datos de entrada
+
+El objeto `input` contiene datos de todos los pasos anteriores del flujo de trabajo. Cada paso se identifica por el ID de su acción.
+
+### Estructura de la entrada
+
+```javascript
+// input es un objeto cuyas claves son ID de acciones
+// Cada clave contiene la salida de ese paso
+
+const actionIds = Object.keys(input);
+// actionIds podría ser: ["triggerStep1", "actionStep2", "actionStep3"]
+```
+
+### Obtener datos del desencadenador (Campos del Registro)
+
+```javascript
+const actionIds = Object.keys(input);
+const triggerData = input[actionIds[0]]; // La primera entrada suele ser el desencadenador
+
+// Para desencadenadores basados en Registros (creado, actualizado, botón pulsado, formulario enviado):
+const recordId = triggerData.record.id;
+const fields = triggerData.record.fields;
+
+// Acceder a Campos concretos mediante su ID de Campo
+const customerName = fields.fldXXXXXXX;  // Sustituir por el ID de Campo real
+const orderAmount = fields.fldYYYYYYY;
+```
+
+### Obtener datos de un paso Obtener Registros
+
+```javascript
+const actionIds = Object.keys(input);
+const getRecordsData = input[actionIds[1]]; // Segundo paso, por ejemplo
+
+const records = getRecordsData.records;
+records.forEach(record => {
+  console.log(record.id, record.fields.fldName);
+});
+```
+
+### Obtener datos de las salidas de otras acciones
+
+```javascript
+const actionIds = Object.keys(input);
+const previousOutput = input[actionIds[2]]; // Salida del tercer paso
+// La estructura depende de la salida de esa acción
+```
+
+<Tip>Utiliza `console.log(JSON.stringify(input, null, 2))` durante las pruebas para ver la estructura exacta de los datos de entrada. Es la forma más rápida de saber qué hay disponible.</Tip>
+
+## Escribir la salida
+
+Utiliza `output.set(key, value)` para poner los datos a disposición de los pasos posteriores. Puedes definir varias claves.
+
+```javascript
+// Establecer valores sencillos
+output.set("status", "success");
+output.set("count", 42);
+
+// Establecer objetos
+output.set("result", {
+  name: "Alicia",
+  score: 95,
+  passed: true
+});
+
+// Establecer matrices
+output.set("items", [
+  { id: 1, name: "Elemento A" },
+  { id: 2, name: "Elemento B" }
+]);
+```
+
+Cada clave que definas se convierte en una variable independiente a la que los pasos posteriores pueden hacer referencia mediante el selector de variables **+**. Por ejemplo, si llamas a `output.set("status", "success")`, el paso siguiente puede hacer referencia a `status` en la salida de este script.
+
+## Depurar con console.log
+
+Durante el desarrollo, utiliza `console.log()` para inspeccionar datos y seguir el flujo de ejecución. La salida de los registros aparece en el panel de prueba al hacer clic en **Probar**.
+
+```javascript
+const actionIds = Object.keys(input);
+console.log("ID de acciones:", actionIds);
+
+const data = input[actionIds[0]];
+console.log("Datos del desencadenador:", JSON.stringify(data, null, 2));
+
+// Registrar resultados intermedios
+const processed = data.record.fields.fldName.toUpperCase();
+console.log("Nombre procesado:", processed);
+
+output.set("name", processed);
+```
+
+Los registros de la consola solo son visibles durante las pruebas; no aparecen en el historial de ejecuciones de producción. Utilízalos con libertad mientras creas tu script.
+
+## Gestión de paquetes npm
+
+Puedes utilizar paquetes npm en tus scripts. Declara las dependencias en el panel de configuración:
+
+```json
+[
+  { "name": "lodash", "version": "4.17.21" },
+  { "name": "dayjs", "version": "1.11.10" }
+]
+```
+
+Después, utilízalos en el script con `require()`:
+
+```javascript
+const _ = require("lodash");
+const dayjs = require("dayjs");
+
+const actionIds = Object.keys(input);
+const records = input[actionIds[0]].records;
+
+const grouped = _.groupBy(records, r => r.fields.fldCategory);
+const today = dayjs().format("YYYY-MM-DD");
+
+output.set("grouped", grouped);
+output.set("date", today);
+```
+
+<Tip>Siempre que sea posible, da prioridad a las funciones integradas de JavaScript frente a los paquetes npm. JavaScript moderno incluye muchas utilidades: `Array.map()`, `Array.filter()`, `Object.entries()`, literales de plantilla, desestructuración, etc. Añade paquetes npm únicamente cuando aporten un valor significativo.</Tip>
+
+## Variables integradas
+
+| Variable | Descripción |
+|---|---|
+| `process.env.AUTOMATION_TOKEN` | Un token Bearer para llamar a la API de Teable. Su alcance está limitado a los permisos de la Automatización actual |
+| `process.env.PUBLIC_ORIGIN` | La URL base de tu instancia de Teable (p. ej., `https://app.teable.io`) |
+
+### Seguridad: alcance de AUTOMATION_TOKEN
+
+El `AUTOMATION_TOKEN` se genera automáticamente para cada ejecución de la Automatización. Tiene los mismos permisos que el creador de la Automatización y su alcance se limita a la ejecución actual. Aspectos clave:
+
+- Puede acceder a cualquier Tabla a la que tenga acceso el creador de la Automatización.
+- Solo es válido mientras dure la ejecución del script (tiempo de espera de 60 segundos).
+- No expongas este token a sistemas externos: está destinado a llamar a la API de Teable desde el script.
+
+### Llamar a la API de Teable
+
+```javascript
+const base = process.env.PUBLIC_ORIGIN + "/api";
+const token = process.env.AUTOMATION_TOKEN;
+
+// Ejemplo: obtener Registros de una Tabla
+const res = await fetch(`${base}/table/tblXXXXXXX/record?take=10`, {
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json"
+  }
+});
+
+const data = await res.json();
+console.log("Registros obtenidos:", data);
+output.set("records", data);
+```
+
+### Llamar a la IA desde un script
+
+`POST /api/automation/runtime/ai` envía un prompt al modelo de IA de tu Base. La Base se obtiene del contexto de la Automatización, por lo que no se necesita ningún ID de Base. El cuerpo acepta `prompt`, además de los parámetros opcionales `attachments`, `modelKey`, `temperature` y `outputType`; la respuesta es `{ "message": ... }`.
+
+Los archivos adjuntos son elementos `{ url, mimetype, name }`: se admiten hasta 10 por llamada, cada uno de menos de 20 MB y con 30 segundos para su descarga, e incluyen imágenes, archivos PDF y documentos de Office. Es posible que el modelo de chat predeterminado no pueda leer imágenes y archivos similares, así que proporciona `modelKey` cuando envíes archivos. Cada llamada consume créditos.
+
+## Gestión de errores
+
+Envuelve siempre las operaciones de riesgo en bloques try/catch para que el flujo de trabajo pueda gestionar los fallos correctamente:
+
+```javascript
+try {
+  const res = await fetch("https://api.example.com/data");
+  
+  if (!res.ok) {
+    throw new Error(`La API devolvió ${res.status}: ${res.statusText}`);
+  }
+  
+  const data = await res.json();
+  output.set("success", true);
+  output.set("data", data);
+} catch (error) {
+  console.log("Error:", error.message);
+  output.set("success", false);
+  output.set("error", error.message);
+}
+```
+
+Sin la gestión de errores, un error de `fetch` o un formato de datos inesperado bloqueará el script, y los pasos posteriores no recibirán ninguna salida.
+
+## Ejemplo completo: procesar y dirigir tickets de soporte
+
+```javascript
+const actionIds = Object.keys(input);
+const record = input[actionIds[0]].record;
+
+const subject = record.fields.fldSubject || "";
+const body = record.fields.fldBody || "";
+const email = record.fields.fldEmail || "";
+
+// Enrutamiento sencillo basado en palabras clave
+const text = (subject + " " + body).toLowerCase();
+
+let category = "General";
+let priority = "Normal";
+
+if (text.includes("facturación") || text.includes("factura") || text.includes("pago")) {
+  category = "Facturación";
+} else if (text.includes("fallo") || text.includes("error") || text.includes("bloqueo")) {
+  category = "Técnico";
+  priority = "Alta";
+} else if (text.includes("cancelar") || text.includes("reembolso")) {
+  category = "Cuenta";
+  priority = "Alta";
+}
+
+// Comprobar si son clientes VIP
+const vipDomains = ["bigcorp.com", "enterprise.io"];
+const domain = email.split("@")[1] || "";
+if (vipDomains.includes(domain)) {
+  priority = "Urgente";
+}
+
+output.set("category", category);
+output.set("priority", priority);
+output.set("isVIP", vipDomains.includes(domain));
+```
+
+## Consejos
+
+- **Empieza con console.log.** Al crear un script nuevo, registra primero el objeto `input` completo para comprender su estructura.
+- **Crea scripts específicos.** Haz bien una sola cosa en vez de concentrar varias tareas en un único script. Encadena varias acciones Ejecutar script si es necesario.
+- **Ten en cuenta el tiempo de espera de 60 segundos.** Las operaciones prolongadas (procesamiento de grandes volúmenes de datos o muchas llamadas secuenciales a API) pueden alcanzar el tiempo de espera. Divide las tareas grandes en fragmentos más pequeños.
+- **Haz pruebas con datos reales.** El panel de prueba utiliza datos reales de la ejecución más reciente del desencadenador para ofrecerte resultados realistas.
+- **Gestiona los datos que faltan.** Utiliza valores predeterminados (operador `||`) para los Campos que puedan estar vacíos o no definidos.
+
+## Contenido relacionado
+
+- [Generar con IA](/es/basic/automation/actions/ai/ai-generate) — para tareas de IA basadas en prompts que no necesitan código personalizado
+- [Solicitud HTTP](/es/basic/automation/actions/logic/http-request) — para llamadas sencillas a API que no necesitan scripts

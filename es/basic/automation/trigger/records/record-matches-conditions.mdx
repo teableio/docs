@@ -1,0 +1,75 @@
+---
+title: "Cuando un Registro cumple las condiciones"
+description: "Activa un flujo de trabajo cuando un Registro empieza a cumplir condiciones específicas"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Ten en cuenta que toda la configuración del disparador puede realizarse en el Chat de IA. Dile a la IA qué quieres que haga el flujo de trabajo y se encargará del resto.</Tip>
+
+Este disparador se usa cuando un flujo de trabajo debe ejecutarse después de que un Registro empiece a cumplir determinadas condiciones.
+
+Puede activarse en dos casos habituales:
+
+- Se crea un Registro nuevo que ya cumple el filtro.
+- Se modifica un Registro existente y pasa de no cumplir el filtro a cumplirlo.
+
+## Crear con IA
+
+Abre el Chat de IA en la barra lateral derecha de tu Tabla y describe lo que quieres.
+
+La IA se encarga de todo: elige el disparador adecuado, asigna los Campos pertinentes y configura automáticamente todas las acciones.
+
+Describe el objetivo una sola vez y el flujo de trabajo estará listo, sin necesidad de configuración manual.
+
+**Ejemplo:** *"Cuando una tarea se venza, envíame un correo electrónico".*
+
+## Configuración
+
+| Ajuste | Obligatorio | Descripción |
+|---|---|---|
+| Tabla | Sí | Tabla en la que se supervisarán los cambios |
+| Filtro | **Sí** | Condiciones que debe cumplir el Registro. Usa el mismo generador de filtros que las Vistas y admite comparaciones de Campos, grupos Y/O y valores dinámicos |
+
+## Cómo configurarlo
+
+1. Abre tu Automatización y añade un disparador nuevo.
+2. Selecciona **Cuando un Registro cumple las condiciones**.
+3. Elige la **Tabla** que quieres supervisar.
+4. Haz clic en **Añadir filtro** para definir las condiciones. Por ejemplo: `Estado` es igual a `Vencido` o `Importe` es mayor que `10000`.
+5. Puedes combinar varias condiciones con lógica Y/O, igual que en los filtros de las Vistas.
+6. Guarda y activa la Automatización.
+7. Pruébala creando un Registro que cumpla las condiciones o modificando uno existente para que pase de *no cumplir* el filtro a *cumplirlo*. La Automatización debería activarse una vez.
+
+<Tip>Después de que se active el disparador, los pasos posteriores pueden usar todos los datos de los Campos del Registro coincidente, incluidos los valores más recientes en el momento de la transición.</Tip>
+
+## ¿En qué se diferencia de «Cuando se actualiza un Registro»?
+
+Es fácil confundir estos dos disparadores. Esta es la diferencia principal:
+
+- **Cuando se actualiza un Registro** se activa cada vez que cambia un Campo supervisado, con independencia de cuál sea el valor nuevo. Si supervisas el Campo «Estado», se activa tanto si Estado cambia a «En curso» como a «Hecho» o cualquier otro valor.
+- **Cuando un Registro cumple las condiciones** solo se activa cuando un Registro cruza el límite entre «no cumple» y «cumple» el filtro. No se activa con cada modificación, sino únicamente durante la transición.
+
+Usa **Cuando se actualiza un Registro** si necesitas reaccionar a cualquier cambio. Usa **Cuando un Registro cumple las condiciones** si solo te interesa que se alcance un estado concreto.
+
+<Note>Si quieres ejecutar una acción cada vez que se modifica un Registro, usa el disparador [Cuando se actualiza un Registro](/es/basic/automation/trigger/records/record-updated). Si solo quieres ejecutar una acción una vez, cuando un Registro cumpla por primera vez una condición específica, usa este disparador.</Note>
+
+## Cuándo usarlo
+
+- **Avisar cuando venza un pedido.** Establece el filtro en `Fecha de vencimiento` es anterior a hoy y `Estado` no es `Enviado`. La Automatización se activa una vez cuando el pedido cumple las condiciones por primera vez.
+- **Escalar un ticket de soporte cuando la prioridad cambie a urgente.** Filtro: `Prioridad` es igual a `Urgente`. Solo se activa cuando un ticket pasa a ser urgente por primera vez, no con las modificaciones posteriores.
+- **Notificar a un responsable cuando una operación supere un umbral de ingresos.** Filtro: `Valor de la operación` es mayor que `50000`. Se activa una vez cuando la operación supera ese límite.
+- **Marcar los Registros que queden incompletos.** Filtro: `Campo obligatorio` está vacío. Se activa cuando un Registro que antes estaba completo pierde su valor.
+- **Activar pasos de incorporación cuando el estado de un contacto cambie a «Activo».** Filtro: `Estado` es igual a `Activo`. Solo se ejecuta una vez por activación.
+
+## Consejos
+
+- **Debes** definir al menos una condición de filtro. Sin ella, el disparador no tiene nada que evaluar.
+- El disparador comprueba la transición en el momento en que se guarda un Registro. No se activa de forma retroactiva para los Registros que ya cumplían las condiciones antes de crear la Automatización.
+- Los Registros creados después de la activación también se comparan con el filtro. Si los valores iniciales coinciden, el flujo de trabajo puede activarse inmediatamente.
+- Combina este disparador con una acción **Enviar correo electrónico** o **Actualizar Registro** para crear flujos de trabajo eficaces basados en cambios de estado sin escribir código.
+
+## Contenido relacionado
+
+- [Cuando se actualiza un Registro](/es/basic/automation/trigger/records/record-updated) — se activa con cualquier cambio de Campo, no solo durante las transiciones
+- [Cuando se crea un Registro](/es/basic/automation/trigger/records/record-created) — se activa cuando se añaden Registros nuevos
+- [Enviar correo electrónico](/es/basic/automation/actions/communication/send-email-overview)

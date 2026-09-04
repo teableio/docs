@@ -1,0 +1,123 @@
+---
+title: "Griglia"
+description: "Visualizza i Record in righe e colonne per una consultazione strutturata, la modifica e la pulizia dei dati."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+La Vista Griglia è la Vista più comune in Teable. Ogni Record appare come una riga e ogni Campo come una colonna. Usala per l'inserimento quotidiano dei dati, la modifica in blocco, l'ordinamento, il filtraggio e i controlli rapidi.
+
+## Casi d'uso
+
+| Scenario | Configurazione consigliata |
+| --- | --- |
+| Gestire i dati ogni giorno | Inserisci, modifica, copia e incolla i Record direttamente nella griglia |
+| Pulire molti Record | Combina filtri, gruppi, ordinamenti e Campi nascosti |
+| Controllare dati numerici | Usa le statistiche della selezione per media, conteggio dei valori compilati e somma |
+| Lavorare con Tabelle ampie | Blocca le colonne principali affinché i Campi identificativi rimangano visibili |
+
+## Creare una Vista Griglia
+
+Ogni nuova Tabella include per impostazione predefinita una Vista Griglia. Per creare un'altra Vista Griglia per un flusso di lavoro specifico:
+
+<Steps>
+  <Step title="Apri la barra laterale delle Viste">
+    Vai alla Tabella desiderata e apri l'elenco delle Viste a sinistra.
+  </Step>
+  <Step title="Crea una Vista">
+    Fai clic su `+` nella parte superiore della barra laterale delle Viste e scegli **Vista Griglia**.
+  </Step>
+  <Step title="Assegna un nome e salva">
+    Inserisci il nome della Vista, imposta la modalità di collaborazione se necessario e crea la Vista.
+  </Step>
+</Steps>
+
+## Impostazioni di visualizzazione
+
+### Gestire la visualizzazione dei Campi
+
+<img
+  src="/images/docs/base/2026-05-22-field-hide-tool.png"
+  alt="Strumento per nascondere i Campi"
+  className="docs-screenshot"
+/>
+
+| Azione | Descrizione |
+| --- | --- |
+| Nascondere Campi | Fai clic su **Campi nascosti** nella barra degli strumenti e attiva o disattiva i Campi |
+| Riordinare Campi | Trascina le intestazioni dei Campi verso sinistra o destra |
+| Trovare Campi | Cerca i nomi dei Campi nel pannello dei Campi nascosti quando la Tabella contiene molti Campi |
+
+I Campi nascosti modificano soltanto la Vista corrente. Non eliminano Campi o dati dei Record.
+
+### Regolare l'altezza delle righe e dei nomi dei Campi
+
+Fai clic su **Altezza riga** nella barra degli strumenti per regolare la densità di visualizzazione della Vista Tabella.
+
+<img
+  src="/images/docs/base/2026-05-26-grid-row-height-menu.png"
+  alt="Menu dell'altezza delle righe nella Vista Griglia"
+  className="docs-screenshot"
+/>
+
+- **Altezza riga**: scegli Bassa, Media, Alta o Molto alta per regolare l'altezza delle righe dei Record.
+- **Nome Campo**: scegli 1 riga, 2 righe o 3 righe per controllare l'altezza di visualizzazione dei nomi delle colonne nell'intestazione della Tabella.
+
+### Bloccare le colonne
+
+Quando una Tabella contiene molti Campi, blocca le colonne principali affinché rimangano visibili durante lo scorrimento orizzontale.
+
+<img
+  src="/images/docs/base/2026-05-26-grid-freeze-divider.png"
+  alt="Separatore di blocco della Vista Griglia"
+  className="docs-screenshot"
+/>
+
+- Trascina il separatore di blocco per bloccare le colonne alla sua sinistra.
+
+<img
+  src="/images/docs/base/2026-05-26-grid-freeze-field-menu.png"
+  alt="Menu Blocca fino a questo Campo nella Vista Griglia"
+  className="docs-screenshot"
+/>
+
+- Fai clic con il pulsante destro del mouse sull'intestazione di un Campo e scegli **Blocca fino a questo Campo** per bloccare tale Campo e tutti quelli alla sua sinistra.
+- Teable mantiene un'area scorrevole a destra delle colonne bloccate. Se la finestra corrente è troppo stretta, **Blocca fino a questo Campo** è disabilitato oppure Teable mostra **Impossibile bloccare fino a quest'area perché la finestra corrente è troppo stretta**. Allarga la finestra o blocca meno colonne.
+
+## Modificare ed esaminare i dati
+
+### Modificare e lavorare in blocco
+
+- **Modificare una cella**: fai clic su una cella e inserisci o modifica il contenuto.
+- **Visualizzare contenuti lunghi**: fai doppio clic su una cella oppure selezionala e premi Spazio per aprire l'intero contenuto.
+- **Compilare tramite trascinamento**: trascina il quadratino di riempimento nell'angolo in basso a destra di una cella selezionata per copiare i valori verso il basso.
+
+### Statistiche della selezione
+
+<img
+  src="/images/docs/base/2026-05-26-grid-selection-statistics.png"
+  alt="Statistiche della selezione nella Vista Griglia"
+  className="docs-screenshot"
+/>
+
+Quando selezioni un intervallo di celle, Teable mostra **Media**, **Compilati** e **Somma** per i valori numerici. Usali per controlli rapidi su importi, conteggi e punteggi.
+
+### Monitorare l'attività dei Campi calcolati
+
+Quando un Campo calcolato è in attesa, in fase di calcolo o non è riuscito, fai clic sull'indicatore dell'attività di calcolo sul lato destro della barra degli strumenti Griglia per visualizzare lo stato della Tabella corrente.
+
+| Stato | Contenuto visibile |
+| --- | --- |
+| **Calcolo in corso** | Record interessati e avanzamento del calcolo |
+| **In attesa** | Campi in coda per il calcolo |
+| **Non riuscito** | Errore di calcolo più recente |
+
+Se un valore calcolato supera le dimensioni contenibili in una cella, il Campo segnala `Il valore della cella calcolata è troppo grande` indicando le dimensioni tentate e quelle massime. Il limite è di 256 KB per cella calcolata. Il resto della Tabella continua i calcoli e la cella mantiene il valore precedente, quindi il Campo viene ricalcolato alla scrittura successiva quando il valore rientra nel limite.
+
+È raro che un singolo testo o numero raggiunga 256 KB. In genere il limite viene raggiunto quando un Record è collegato a molti altri Record e un Lookup o un Rollup inserisce nella stessa cella tutto il relativo testo lungo. Ad esempio, un cliente con 500 Record di follow-up, ciascuno contenente qualche centinaio di parole di note, supera il limite quando vengono cercate tutte le note.
+
+La soluzione consiste nel tenere i dettagli fuori dalla cella: usa un Rollup per contare o sommare i Record collegati oppure esegui il lookup di un Campo più breve, come uno stato o un numero. Apri la Tabella collegata quando devi leggere il contenuto completo.
+
+## Note
+
+- I Campi nascosti, l'ordinamento, il filtraggio, il raggruppamento e le impostazioni analoghe si applicano soltanto alla Vista corrente.
+- Per impedire modifiche accidentali alla configurazione, blocca la Vista. Soltanto gli utenti autorizzati possono sbloccarla o modificarla.

@@ -1,0 +1,275 @@
+---
+title: "Bonnes pratiques du Créateur d’applications"
+description: "Conseils et méthodes pratiques pour tirer le meilleur parti du Créateur d’applications Teable."
+---
+
+## Conseils de création
+
+### 1. Définissez d’abord les données
+
+Le Créateur d’applications Teable s’appuie sur vos Tables Teable existantes — **vos Tables et Champs constituent votre schéma**, et l’IA les lit directement lors de la génération de l’interface utilisateur et de la logique.
+
+Avant de commencer à créer, définissez donc clairement votre modèle de données. Plus vos types de Champs, liens et chemins de lecture/écriture sont précis, plus la qualité de ce que produit l’IA sera élevée.
+
+### 2. Planifiez avant de créer
+
+Une fois votre modèle de données en place, résistez tout de même à l’envie de passer directement à la création de l’interface utilisateur. Commencez par une phase de planification avec l’IA.
+
+Dites quelque chose comme : *« N’écrivons pas encore de code — établissons un plan. »* Décrivez le problème que vous résolvez, les utilisateurs cibles et l’ensemble approximatif des fonctionnalités. Laissez l’IA rédiger une proposition structurée. Examinez-la, ajustez-la, et ne commencez à créer que lorsque vous convenez que le plan est pertinent.
+
+<Tip>Quelques minutes supplémentaires consacrées à l’alignement sur la direction dès le départ vous feront gagner des heures de retouches par la suite.</Tip>
+
+### 3. Commencez petit
+
+N’essayez pas de faire tenir toutes les fonctionnalités dans une seule invite. Décrivez d’abord la fonctionnalité principale, obtenez une version minimale fonctionnelle, puis ajoutez une chose à la fois : une interaction, un ajustement de style, un élément de logique.
+
+Vérifiez chaque modification avant de passer à la suivante. Lorsqu’un problème survient, vous n’avez qu’une petite modification à annuler au lieu de devoir tout recommencer.
+
+### 4. Soyez précis, pas abstrait
+
+Des descriptions comme *« rendez l’application plus jolie »* ou *« rendez les interactions plus naturelles »* ne transmettent presque aucune information à l’IA.
+
+Les invites efficaces sont concrètes : **quelle page, quelle zone, quel comportement vous souhaitez, ce que vous ne souhaitez pas**. Joindre des captures d’écran ou des interfaces de référence est très utile.
+
+<Tip>Traitez votre invite comme un brief destiné à une personne intelligente qui ne sait rien de votre projet. Plus les instructions sont précises, plus le résultat se rapproche de ce que vous avez imaginé.</Tip>
+
+### 5. Diagnostiquez avant de corriger
+
+Lorsque l’application se comporte de manière inattendue, résistez à l’envie de dire à l’IA de *« simplement corriger le problème »*. Des instructions de correction vagues poussent l’IA à appliquer des correctifs à l’aveugle, introduisant souvent de nouveaux bugs au passage.
+
+Une meilleure approche se déroule en deux étapes :
+
+<Steps>
+  <Step title="Demandez d’abord à l’IA d’analyser">
+    Décrivez les symptômes et demandez à l’IA de dresser la liste des causes probables et des approches possibles — sans encore toucher au code.
+  </Step>
+  <Step title="Choisissez une direction, puis implémentez">
+    Décidez quelle explication est la plus plausible et demandez à l’IA de poursuivre dans cette direction.
+  </Step>
+</Steps>
+
+<Warning>Si plusieurs tentatives de correction consécutives échouent, revenez à la dernière version connue comme fonctionnelle et recommencez. C’est généralement plus rapide que d’ajouter des correctifs sur d’autres correctifs.</Warning>
+
+### 6. Appuyez-vous sur les retours de version
+
+Chaque conversation avec l’IA produit des modifications. Le rythme recommandé : terminez un module de fonctionnalité, confirmez qu’il fonctionne, puis passez au suivant. **Ne gérez pas plusieurs fonctionnalités inachevées en même temps.**
+
+Une modification ultérieure a cassé quelque chose ? Revenez à la dernière version stable et réessayez avec une invite plus claire.
+
+## FAQ
+
+### Le Créateur d’applications ne prend en charge que Next.js
+
+L’environnement d’exécution du Créateur d’applications (sandbox, aperçu et build) repose sur **Next.js** et **ne prend actuellement pas en charge** les autres frameworks front-end, notamment Astro, Vite, Create React App, Vue, Svelte, etc.
+
+Si vous demandez à l’IA d’utiliser un framework autre que Next.js, elle ne le refusera pas toujours de manière cohérente et pourrait même tenter de générer le code correspondant. Toutefois, l’environnement sous-jacent étant incompatible, **l’aperçu ne parviendra pas à démarrer** — vous resterez indéfiniment sur « L’aperçu démarre... », et les conversations continueront de consommer des Crédits pendant ce temps.
+
+<Warning>
+Si vous devez utiliser un framework autre que Next.js, nous vous recommandons de développer dans votre propre environnement local et de vous connecter à vos données via l’API Teable.
+</Warning>
+
+### Gestion des erreurs 429
+
+<Warning>
+L’API Teable est actuellement limitée à **10 QPS** (10 requêtes par seconde). Les applications générées par le Créateur d’applications peuvent rencontrer des erreurs 429 lors d’une utilisation normale si la gestion des requêtes n’est pas optimisée. Notre équipe d’ingénierie travaille activement à l’optimisation des performances de l’API, et nous pourrons ajuster cette limite à l’avenir.
+</Warning>
+
+Il existe quatre grandes stratégies pour y remédier :
+
+<CardGroup cols={4}>
+  <Card title="Mise en cache" icon="database">
+    Réduire les requêtes dupliquées
+  </Card>
+  <Card title="Pagination et traitement par lots" icon="layer-group">
+    Réduire la charge utile par requête
+  </Card>
+  <Card title="Anti-rebond et limitation" icon="gauge-high">
+    Réduire la fréquence des requêtes
+  </Card>
+  <Card title="Compatibilité de rendu" icon="window-restore">
+    Réduire les erreurs d’aperçu
+  </Card>
+</CardGroup>
+
+Chaque section ci-dessous présente des scénarios courants, la correction et une invite de référence que vous pouvez réutiliser.
+
+**Mise en cache — réduire les requêtes dupliquées**
+
+<AccordionGroup>
+  <Accordion title="Les pages et tableaux de bord riches en affichage peuvent déclencher trop de requêtes au chargement" icon="bolt">
+    **Scénario** : Une page de tableau de bord comporte plusieurs graphiques, cartes de statistiques et listes, chacun interrogeant une Table différente. Ou la page est principalement destinée à l’affichage, mais chaque visite sollicite encore directement l’API. Dans les deux cas, la concurrence au chargement de la page peut augmenter fortement, et les pics de trafic sont plus susceptibles de déclencher des erreurs 429.
+
+    **Correction** : Privilégiez des modèles de rendu adaptés à la mise en cache. Mettez les données en cache dans la mémoire de l’application après leur chargement (un TTL de 1 à 3 minutes est un bon point de départ) et réutilisez-les lors des visites ultérieures. Chargez à la demande les composants situés sous la ligne de flottaison pour échelonner les requêtes. Si la page effectue encore une nouvelle récupération à chaque visite, demandez explicitement à l’IA de renforcer la stratégie de mise en cache.
+
+    <Tip>
+    **Invite de référence** : "Cette page est riche en affichage. Privilégiez une approche de rendu adaptée à la mise en cache. Mettez les données en cache localement après le chargement de la page avec un TTL de 1 minute, ne sollicitez pas de nouveau l’API pendant la fenêtre TTL et retardez les composants sous la ligne de flottaison de 500 ms."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Plusieurs composants interrogent la même Table" icon="copy">
+    **Scénario** : Trois composants de la même page ont chacun besoin de données de la même Table et effectuent chacun leur propre requête — alors qu’une seule aurait suffi.
+
+    **Correction** : Centralisez la récupération des données afin que le même jeu de données soit chargé une fois et partagé entre les composants.
+
+    <Tip>
+    **Invite de référence** : "Si plusieurs composants ont besoin de données de la même Table, récupérez-les une seule fois et partagez-les entre eux tous. N’effectuez pas de requêtes dupliquées."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Nouvelle récupération lors de la navigation entre les pages" icon="arrows-rotate">
+    **Scénario** : Les utilisateurs naviguent d’avant en arrière entre les pages. Chaque retour déclenche une nouvelle récupération, même lorsque rien n’a changé.
+
+    **Correction** : Pendant le TTL du cache, réutilisez les données précédemment chargées plutôt que de solliciter de nouveau l’API.
+
+    <Tip>
+    **Invite de référence** : "Lorsqu’un utilisateur revient sur une page, si moins d’une minute s’est écoulée depuis le dernier chargement, utilisez les données mises en cache. Ne sollicitez pas de nouveau l’API."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Les listes déroulantes chargent d’énormes listes d’options" icon="list">
+    **Scénario** : Une liste déroulante affiche chaque Enregistrement d’une Table comme option. Avec de nombreux Enregistrements, cette seule requête est lourde.
+
+    **Correction** : Transformez-la en sélecteur de type recherche — récupérez uniquement les Enregistrements correspondants après que l’utilisateur a saisi du texte. Vous pouvez aussi mettre la liste d’options en cache.
+
+    <Tip>
+    **Invite de référence** : "Les listes déroulantes ne doivent pas charger toutes les options immédiatement. Passez à une recherche par mot-clé qui récupère les Enregistrements correspondants à la saisie, avec un anti-rebond appliqué."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Les sélecteurs en cascade enchaînent les requêtes" icon="sitemap">
+    **Scénario** : Le choix d’un Champ déclenche le chargement des options du niveau suivant. Les cascades à plusieurs niveaux accumulent plusieurs requêtes par interaction.
+
+    **Correction** : Préchargez une fois les données liées et filtrez-les localement, ou mettez les données en cascade en cache après le premier chargement.
+
+    <Tip>
+    **Invite de référence** : "Mettez en cache localement les données d’options des sélecteurs en cascade après leur chargement. Lorsque l’utilisateur modifie une option parente, filtrez à partir du cache au lieu de solliciter de nouveau l’API."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Les nouveaux rendus déclenchent des requêtes dupliquées" icon="repeat">
+    **Scénario** : Une mauvaise gestion de l’état oblige les composants à récupérer à nouveau les données à chaque rendu.
+
+    **Correction** : Déclenchez la récupération des données lors d’événements précis (montage initial, action explicite de l’utilisateur), et non à chaque rendu. Utilisez la mise en cache comme filet de sécurité.
+
+    <Tip>
+    **Invite de référence** : "Récupérez les données uniquement au premier chargement de la page ou lors d’actions explicites de l’utilisateur. Ne les récupérez pas de nouveau lors des rendus — utilisez plutôt les données mises en cache."
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+**Pagination et traitement par lots — réduire la charge utile par requête**
+
+<AccordionGroup>
+  <Accordion title="Listes ou Tables sans pagination" icon="table-list">
+    **Scénario** : Charger tous les Enregistrements à la fois produit un déluge d’appels API lorsque le jeu de données augmente.
+
+    **Correction** : Utilisez la pagination. Récupérez uniquement les données de la page actuelle.
+
+    <Tip>
+    **Invite de référence** : "Affichez 20 lignes par page. Chargez la page suivante uniquement lorsque l’utilisateur y accède. Ne chargez pas tout en une fois."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Récupération par ligne des données liées (N+1)" icon="link">
+    **Scénario** : Après avoir chargé une liste, vous récupérez les détails de la Table liée pour chaque Enregistrement, un à la fois. Charger 50 projets puis effectuer 50 recherches de propriétaire = 50 requêtes supplémentaires en un instant.
+
+    **Correction** : Récupérez toutes les données liées en un seul lot, et non ligne par ligne.
+
+    <Tip>
+    **Invite de référence** : "Lors du chargement d’une liste, récupérez par lot toutes les données liées dans une seule requête. Ne parcourez pas les Enregistrements en boucle pour récupérer individuellement leurs informations liées."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Écritures par ligne lors des mises à jour en masse" icon="pen-to-square">
+    **Scénario** : Vous mettez à jour en masse plusieurs Enregistrements en envoyant une requête de mise à jour par Enregistrement au lieu d’une requête unique par lot.
+
+    **Correction** : Utilisez l’API de mise à jour par lot pour envoyer toutes les modifications en un seul appel.
+
+    <Tip>
+    **Invite de référence** : "Pour les opérations en masse, regroupez plusieurs modifications d’Enregistrements dans une seule requête par lot. N’envoyez pas une mise à jour par Enregistrement."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Appels API dans des boucles" icon="rotate">
+    **Scénario** : Une boucle `for` traite les Enregistrements un à un et appelle l’API à chaque itération.
+
+    **Correction** : Collectez d’abord tous les ID, puis effectuez une seule requête par lot.
+
+    <Tip>
+    **Invite de référence** : "N’appelez pas l’API dans une boucle. Collectez d’abord tous les ID requis, puis effectuez une seule requête par lot."
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+**Anti-rebond et limitation — réduire la fréquence des requêtes**
+
+<AccordionGroup>
+  <Accordion title="Recherche ou filtres sans anti-rebond" icon="magnifying-glass">
+    **Scénario** : Chaque frappe dans un champ de recherche déclenche une requête. La saisie d’une requête de 4 caractères produit 4 requêtes.
+
+    **Correction** : Appliquez un anti-rebond à la saisie — attendez 300 à 500 ms après que l’utilisateur a cessé de taper avant d’envoyer la requête.
+
+    <Tip>
+    **Invite de référence** : "Appliquez un anti-rebond au champ de recherche. Envoyez une requête seulement 300 ms après que l’utilisateur a cessé de taper. N’envoyez pas de requêtes pendant la saisie."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Actions utilisateur répétées rapidement" icon="hand-pointer">
+    **Scénario** : Clics rapides répétés sur Envoyer, basculement rapide de filtres, pagination accélérée — chaque action déclenche immédiatement une requête.
+
+    **Correction** : Appliquez un anti-rebond ou une limitation. Désactivez les boutons d’envoi jusqu’à la fin de la requête afin d’éviter les doubles envois.
+
+    <Tip>
+    **Invite de référence** : "Désactivez le bouton d’envoi après le clic et réactivez-le une fois la requête terminée. Appliquez un anti-rebond aux modifications de filtre afin que des modifications rapides dans les 300 ms ne déclenchent qu’une seule requête."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Enregistrement automatique de formulaire trop agressif" icon="floppy-disk">
+    **Scénario** : Chaque modification de Champ est enregistrée immédiatement. Remplir un formulaire peut déclencher une douzaine d’écritures.
+
+    **Correction** : Passez à un enregistrement explicite par clic sur un bouton, ou appliquez un anti-rebond à l’enregistrement automatique afin qu’il ne se déclenche qu’une fois après une pause dans la modification.
+
+    <Tip>
+    **Invite de référence** : "N’enregistrez pas à chaque modification de Champ. Enregistrez sur clic explicite d’un bouton, ou effectuez un enregistrement automatique une fois que l’utilisateur a interrompu sa modification pendant 2 secondes."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Intervalles d’interrogation trop courts" icon="clock">
+    **Scénario** : Les données sont actualisées toutes les quelques secondes, ce qui produit un trafic soutenu à haute fréquence.
+
+    **Correction** : Allongez l’intervalle d’interrogation à une durée raisonnable (30 secondes ou plus), ou passez à une actualisation manuelle.
+
+    <Tip>
+    **Invite de référence** : "Définissez l’intervalle d’actualisation automatique à 60 secondes. Ajoutez un bouton d’actualisation manuelle afin que les utilisateurs puissent obtenir les données les plus récentes à la demande."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Plusieurs composants interrogent indépendamment" icon="timer">
+    **Scénario** : Plusieurs composants d’une page configurent chacun leur propre minuteur d’interrogation. La charge combinée dépasse facilement la limite.
+
+    **Correction** : Centralisez l’interrogation. Exécutez une récupération périodique, puis distribuez le résultat à chaque composant qui en a besoin.
+
+    <Tip>
+    **Invite de référence** : "Ne laissez pas chaque composant configurer son propre minuteur d’interrogation. Utilisez un mécanisme d’actualisation unique qui récupère tout selon une planification et distribue les données aux composants."
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+**Compatibilité de rendu — réduire les erreurs d’aperçu**
+
+<AccordionGroup>
+  <Accordion title="Les graphiques, cartes ou composants réservés au navigateur échouent dans l’aperçu" icon="chart-line">
+    **Scénario** : La page utilise des graphiques, des cartes ou des bibliothèques qui dépendent de `window`, de mesures du DOM ou d’autres API réservées au navigateur, et l’aperçu affiche des erreurs, un écran vide ou des incohérences d’hydratation.
+
+    **Correction** : Il est souvent plus sûr de charger ces composants dans le navigateur plutôt que de les rendre directement sur le serveur. Si les problèmes d’aperçu persistent, demandez explicitement à l’IA de les basculer vers un modèle de chargement réservé au navigateur.
+
+    <Tip>
+    **Invite de référence** : "Ce composant dépend de l’environnement du navigateur. Chargez-le uniquement côté client afin d’éviter les erreurs de rendu de l’aperçu ou les incohérences d’hydratation."
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+<Note>
+L’IA peut faire des erreurs. Veuillez toujours vérifier les réponses.
+</Note>
+

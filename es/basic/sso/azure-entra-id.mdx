@@ -1,0 +1,180 @@
+---
+title: "SSO con Azure Entra ID"
+description: "Configura Azure Entra ID como proveedor de autenticación SSO para Teable"
+---
+
+{/* mintlify-resync: 2026-05-28 */}
+<Tip>Disponible en el plan Business y superiores</Tip>
+
+## Paso 1: crear un proveedor de autenticación en Teable
+
+1. Ve a los ajustes de SSO de Teable
+2. Crea un proveedor de autenticación, asígnale el nombre **Azure Entra ID** y selecciona **OpenID Connect**
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-create-provider.png"
+  alt="Paso 1 de la configuración de SSO con Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+## Paso 2: acceder a Azure Entra ID
+
+1. Inicia sesión en tu cuenta de Azure
+2. Ve a **Microsoft Entra ID** (antes Azure Active Directory)
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-open-entra-id.png"
+  alt="Paso 2 de la configuración de SSO con Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+## Paso 3: configurar los endpoints de OAuth
+
+Completa los siguientes endpoints de OAuth en Teable con tu **ID de inquilino**:
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-oauth-endpoints.png"
+  alt="Paso 3 de la configuración de SSO con Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+- **URL de autorización**: `https://login.microsoftonline.com/_YOUR_TENANT_ID_/oauth2/v2.0/authorize`
+- **URL del token**: `https://login.microsoftonline.com/_YOUR_TENANT_ID_/oauth2/v2.0/token`
+- **URL de información del usuario**: `https://graph.microsoft.com/oidc/userinfo`
+- **Emisor**: `https://login.microsoftonline.com/_YOUR_TENANT_ID_/v2.0`
+
+<Note>Sustituye `_YOUR_TENANT_ID_` por tu ID de inquilino real de Azure.</Note>
+
+## Paso 4: registrar una aplicación nueva
+
+1. En Azure Entra ID, haz clic en **Registros de aplicaciones** en el menú de la izquierda
+2. Haz clic en **+ Nuevo registro**
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-app-registration-entry.png"
+  alt="Registro de una aplicación en Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+## Paso 5: configurar el registro de la aplicación
+
+Completa el formulario de registro de la aplicación:
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-app-registration-form.png"
+  alt="Paso 5 de la configuración de SSO con Azure Entra ID"
+  className="docs-screenshot"
+/>
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-redirect-uri.png"
+  alt="Paso 6 de la configuración de SSO con Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+- **Nombre**: SSO de Teable
+- **Tipos de cuenta compatibles**: selecciona según tus necesidades
+- **Plataforma**: Web
+- **URI de redirección**: pega la **URL de devolución de llamada** de Teable
+
+Haz clic en **Registrar** para crear la aplicación.
+
+## Paso 6: guardar el ID de cliente
+
+1. Copia el **ID de aplicación (cliente)** de la página de descripción general de la aplicación
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-application-client-id.png"
+  alt="Paso 7 de la configuración de SSO con Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+2. Pega el ID de cliente en la configuración de SSO de Teable
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-teable-client-id.png"
+  alt="Paso 8 de la configuración de SSO con Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+## Paso 7: crear un Secreto de cliente
+
+1. En tu aplicación, haz clic en **Certificados y secretos** en el menú de la izquierda
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-certificates-secrets.png"
+  alt="Paso 9 de la configuración de SSO con Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+2. Haz clic en **+ Añadir un certificado o secreto**
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-add-client-secret.png"
+  alt="Paso 10 de la configuración de SSO con Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+3. Añade una descripción y establece el periodo de expiración
+4. Haz clic en **Añadir**
+5. **Importante**: copia inmediatamente el **Valor** del secreto y guárdalo como Secreto de cliente en Teable
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-client-secret-value.png"
+  alt="Paso 11 de la configuración de SSO con Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+<Warning>El valor del secreto solo se muestra una vez. Asegúrate de guardarlo inmediatamente.</Warning>
+
+## Paso 8: configurar los permisos de la API
+
+1. Haz clic en **Permisos de API** en el menú de la izquierda
+2. Haz clic en **+ Añadir un permiso**
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-add-api-permission.png"
+  alt="Paso 12 de la configuración de SSO con Azure Entra ID"
+  className="docs-screenshot"
+/>
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-microsoft-graph-permissions.png"
+  alt="Paso 13 de la configuración de SSO con Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+3. Selecciona **Microsoft Graph**
+4. Elige **Permisos delegados**
+5. Añade los siguientes permisos:
+   - `email`
+   - `openid`
+   - `profile`
+6. Haz clic en **Añadir permisos**
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-delegated-permissions.png"
+  alt="Paso 14 de la configuración de SSO con Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+7. Haz clic en **Conceder consentimiento del administrador para [Tu directorio]** para aprobar los permisos
+
+## Paso 9: probar el inicio de sesión mediante SSO
+
+Dispones de dos opciones para activar el inicio de sesión mediante SSO:
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-login-options.png"
+  alt="Paso 15 de la configuración de SSO con Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+**Opción 1: URL de autenticación directa**
+- Utiliza la URL de autenticación como URL de inicio de sesión mediante SSO
+
+**Opción 2: verificación del dominio**
+1. Haz clic en **Verificación del dominio** en el menú de la izquierda
+2. Verifica tu dominio personalizado
+3. Visita la página de inicio de sesión de Teable
+4. Haz clic en el botón de inicio de sesión mediante SSO
+5. Introduce tu dirección de correo electrónico del dominio verificado para iniciar sesión
+

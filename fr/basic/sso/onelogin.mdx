@@ -1,0 +1,157 @@
+---
+title: "SSO OneLogin"
+description: "Configurer OneLogin comme fournisseur d’authentification SSO pour Teable"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Disponible à partir du forfait Business</Tip>
+
+## Étape 1 : Créer un fournisseur d’authentification dans Teable
+
+1. Accédez aux paramètres SSO de Teable.
+2. Créez un fournisseur d’authentification, nommez-le **OneLogin**, puis sélectionnez **OpenID Connect**.
+
+## Étape 2 : Accéder au portail d’administration OneLogin
+
+1. Connectez-vous à votre [portail d’administration OneLogin](https://app.onelogin.com/login).
+2. Assurez-vous de disposer de privilèges d’administrateur.
+3. Accédez à **Applications** dans le menu supérieur.
+
+## Étape 3 : Ajouter une nouvelle application
+
+1. Dans le menu, cliquez sur **Applications** → **Applications**.
+2. Cliquez sur le bouton **Add App**.
+3. Recherchez **OpenId Connect (OIDC)** dans le champ de recherche.
+4. Sélectionnez **OpenId Connect (OIDC)** dans les résultats.
+5. Cliquez sur **Save**.
+
+## Étape 4 : Configurer les paramètres de l’application
+
+### Informations d’affichage
+
+Dans l’onglet **Configuration** :
+
+1. **Display Name** : Teable SSO
+2. **Description** : (facultatif) intégration SSO pour Teable
+3. **Logo** : (facultatif) téléversez le logo Teable
+4. Cliquez sur **Save**.
+
+### Paramètres de configuration
+
+Accédez à l’onglet **Configuration** et configurez les éléments suivants :
+
+1. **Redirect URIs** : collez l’**URL de rappel** depuis Teable.
+2. **Login Url** : (facultatif) `https://app.teable.ai`
+3. **Application Type** : Web
+4. Cliquez sur **Save**.
+
+## Étape 5 : Obtenir les identifiants client
+
+Accédez à l’onglet **SSO** :
+
+1. Recherchez le champ **Client ID** et copiez sa valeur.
+2. Recherchez le champ **Client Secret** et copiez sa valeur (vous devrez peut-être d’abord cliquer sur « Show »).
+3. Collez les deux valeurs dans la configuration SSO de Teable.
+
+<Warning>Conservez votre secret client en lieu sûr. Vous pouvez le régénérer depuis cette page si nécessaire.</Warning>
+
+## Étape 6 : Configurer les points de terminaison OAuth
+
+Dans l’onglet **SSO**, vous trouverez votre sous-domaine OneLogin. Utilisez-le pour configurer les points de terminaison dans Teable :
+
+- **Authorization URL** : `https://{subdomain}.onelogin.com/oidc/2/auth`
+- **Token URL** : `https://{subdomain}.onelogin.com/oidc/2/token`
+- **User Info URL** : `https://{subdomain}.onelogin.com/oidc/2/me`
+- **Issuer** : `https://{subdomain}.onelogin.com/oidc/2`
+
+<Note>Remplacez `{subdomain}` par votre sous-domaine OneLogin réel (par exemple, `mycompany.onelogin.com`). Vous le trouverez dans l’URL de votre portail OneLogin.</Note>
+
+## Étape 7 : Configurer l’accès à l’application
+
+### Attribuer des rôles
+
+Accédez à l’onglet **Access** :
+
+1. **Roles** : sélectionnez les rôles qui doivent accéder à cette application.
+2. Vous pouvez sélectionner :
+   - Des rôles spécifiques
+   - Tous les utilisateurs
+   - Des conditions personnalisées
+3. Cliquez sur **Save**.
+
+### Attribuer des utilisateurs
+
+Accédez à l’onglet **Users** :
+
+1. Cliquez sur **Add Users** ou **Add Users by Role**.
+2. Sélectionnez les utilisateurs qui doivent accéder à Teable via SSO.
+3. Cliquez sur **Continue**, puis sur **Save**.
+
+## Étape 8 : Configurer les paramètres (facultatif)
+
+Accédez à l’onglet **Parameters** pour mapper les attributs utilisateur :
+
+1. Cliquez sur **Add parameter** pour créer des revendications personnalisées.
+2. Configurez les revendications OIDC standard :
+   - **email** : adresse e-mail de l’utilisateur
+   - **name** : nom complet de l’utilisateur
+   - **given_name** : prénom de l’utilisateur
+   - **family_name** : nom de famille de l’utilisateur
+3. Mappez chaque paramètre au champ utilisateur OneLogin correspondant.
+4. Cliquez sur **Save**.
+
+## Étape 9 : Activer l’application
+
+1. Assurez-vous que toutes les configurations sont enregistrées.
+2. L’application devrait désormais être activée et visible par les utilisateurs auxquels elle est attribuée.
+3. Les utilisateurs verront l’application Teable dans leur portail OneLogin.
+
+## Étape 10 : Tester la connexion SSO
+
+Vous disposez de trois options pour activer la connexion SSO :
+
+**Option 1 : URL d’authentification directe**
+- Utilisez l’URL d’autorisation comme URL de connexion SSO.
+
+**Option 2 : Portail OneLogin**
+- Les utilisateurs peuvent se connecter à leur portail OneLogin et cliquer sur l’icône de l’application Teable.
+
+**Option 3 : Vérification de domaine**
+1. Dans Teable, configurez la vérification de domaine.
+2. Vérifiez votre domaine personnalisé.
+3. Ouvrez https://app.teable.ai.
+4. Cliquez sur le bouton de connexion SSO.
+5. Saisissez votre adresse e-mail associée au domaine vérifié pour vous connecter.
+
+## Configuration supplémentaire (facultatif)
+
+### Configurer MFA
+
+1. Dans le portail d’administration OneLogin, accédez à **Security** → **Multi-Factor Authentication**.
+2. Activez les politiques MFA pour votre organisation ou certains utilisateurs.
+3. Configurez les exigences MFA (par exemple, toujours exiger MFA, l’exiger pour les nouveaux appareils).
+
+### Configurer le provisionnement (SCIM)
+
+Si vous souhaitez provisionner automatiquement les utilisateurs de OneLogin vers Teable :
+
+1. Accédez à l’onglet **Provisioning** dans votre application Teable.
+2. Activez le provisionnement.
+3. Configurez le point de terminaison SCIM (si Teable prend en charge SCIM).
+4. Mappez les attributs utilisateur.
+5. Activez la création, la mise à jour et la suppression des utilisateurs.
+
+### Configurer la durée de session
+
+1. Dans OneLogin, accédez à **Settings** → **Sessions**.
+2. Configurez les paramètres d’expiration de session.
+3. Définissez le délai d’inactivité et la durée maximale de session.
+
+### Identité visuelle personnalisée
+
+1. Dans OneLogin, accédez à **Customization** → **Portal**.
+2. Personnalisez l’apparence du portail OneLogin.
+3. Ajoutez le logo de votre entreprise, ses couleurs et du CSS personnalisé.
+4. Cela détermine ce que les utilisateurs voient lorsqu’ils se connectent à OneLogin.
+
+

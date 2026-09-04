@@ -1,0 +1,103 @@
+---
+title: "E-Mail senden – Übersicht"
+description: "Senden Sie benutzerdefinierte E-Mails aus einem Workflow"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Wir empfehlen dringend, Automatisierungen mit „Skript ausführen“ zu erstellen, da diese Funktion alle Aktionsarten abdecken kann – auch solche, die andernfalls manuell erstellt werden müssten. Beschreiben Sie Ihre Anforderungen einfach im KI-Chat.
+
+Bitte beachten Sie: Wenn Sie Aktionen manuell hinzufügen, kann die KI sie später weder erkennen noch ändern.
+</Tip>
+
+## Mit KI erstellen
+
+Öffnen Sie den KI-Chat in der rechten Seitenleiste Ihrer Tabelle und beschreiben Sie, was Sie erreichen möchten.
+
+Die KI übernimmt alles: Sie wählt den richtigen Auslöser und die passenden Aktionen aus, ordnet die Felder zu und konfiguriert den gesamten Workflow automatisch.
+
+Beschreiben Sie Ihr Ziel einmal, und der Workflow ist einsatzbereit – eine manuelle Einrichtung ist nicht erforderlich.
+
+Diese Aktion sendet eine E-Mail an einen oder mehrere Empfänger. Sie können Empfänger, Betreff, Text und Antwortadresse anpassen und jede Nachricht mit dynamischen Werten aus vorherigen Schritten personalisieren.
+
+Standardmäßig werden E-Mails über den integrierten E-Mail-Dienst von Teable gesendet. Wenn Sie von Ihrer eigenen Domain senden möchten, konfigurieren Sie einen [benutzerdefinierten SMTP-Server](/de/basic/automation/actions/communication/smtp-sender).
+
+## Konfiguration
+
+| Einstellung | Erforderlich | Beschreibung |
+|---|---|---|
+| An | Ja* | E-Mail-Adresse(n) der Empfänger. Trennen Sie mehrere Adressen durch Kommas |
+| Betreff | Ja | Die Betreffzeile. Unterstützt dynamische Variablen über **+** |
+| Text | Ja | Der E-Mail-Text. Unterstützt Markdown, HTML und dynamische Variablen |
+| Absendername | Nein | Der im Posteingang des Empfängers angezeigte Name (z. B. „Acme Support“) |
+| CC | Nein | Empfänger einer Kopie |
+| BCC | Nein | Empfänger einer Blindkopie |
+| Antwort an | Nein | Die Adresse, an die Empfänger antworten (falls sie vom Absender abweicht) |
+
+\* Mindestens eines der Felder **An** oder **BCC** ist erforderlich.
+
+**Ratenbegrenzung:** 5 E-Mails/Sekunde/Base.
+
+## Einrichtung
+
+1. Fügen Sie Ihrem Workflow die Aktion **E-Mail senden** hinzu.
+2. Geben Sie im Feld **An** eine feste E-Mail-Adresse ein oder klicken Sie auf **+**, um einen dynamischen Wert einzufügen (z. B. das E-Mail-Feld aus dem auslösenden Datensatz).
+3. Verfassen Sie den **Betreff**. Klicken Sie auf **+**, um dynamische Werte wie den Namen oder Status des Datensatzes einzufügen. Beispiel: `Neue Bestellung von {{Customer Name}} – #{{Order ID}}`.
+4. Verfassen Sie den **Text**. Sie können Folgendes verwenden:
+   - **Nur Text** – geben Sie einfach Ihre Nachricht ein.
+   - **Markdown** – verwenden Sie `**fett**`, `*kursiv*`, `- Listen`, `[Links](url)` usw.
+   - **HTML** – schreiben Sie HTML-Tags direkt, um die Formatierung vollständig zu steuern.
+   - **Dynamische Variablen** – klicken Sie an einer beliebigen Stelle im Text auf **+**, um Werte aus vorherigen Schritten einzufügen.
+5. (Optional) Legen Sie nach Bedarf **Absendername**, **CC**, **BCC** oder **Antwort an** fest.
+6. Speichern Sie die Aktion.
+
+## Variablen in Betreff und Text verwenden
+
+Mit Variablen können Sie jede E-Mail personalisieren. Klicken Sie in einem beliebigen Textfeld auf die Schaltfläche **+**, um die Variablenauswahl zu öffnen. Sie können auf Folgendes verweisen:
+
+- **Auslöserdaten:** Felder aus dem Datensatz, der die Automatisierung ausgelöst hat (z. B. Kundenname, E-Mail-Adresse, Bestellwert).
+- **Ausgabe vorheriger Aktionen:** Daten aus früheren Schritten, etwa eine neu erstellte Datensatz-ID oder KI-generierter Text.
+
+Beispieltext mit Variablen:
+
+```
+Hallo {{Customer Name}},
+
+Ihre Bestellung #{{Order ID}} wurde bestätigt.
+
+**Gesamtbetrag:** ${{Order Amount}}
+**Voraussichtliche Lieferung:** {{Delivery Date}}
+
+Vielen Dank für Ihren Einkauf!
+```
+
+## Formatierungsoptionen für den Text
+
+| Format | Verwendung | Am besten geeignet für |
+|---|---|---|
+| Nur Text | Geben Sie einfach Ihre Nachricht ein | Einfache Benachrichtigungen |
+| Markdown | Verwenden Sie Markdown-Syntax (`**fett**`, `# Überschrift` usw.) | Strukturierte Nachrichten mit Formatierung |
+| HTML | Schreiben Sie HTML-Tags (`<h1>`, `<p>`, `<table>` usw.) | Vollständig gestaltete E-Mails mit benutzerdefinierten Layouts |
+
+Sie können Markdown und dynamische Variablen im selben Text kombinieren. Bei komplexen E-Mail-Designs bietet HTML die meiste Kontrolle.
+
+## Verwendung
+
+- **Bestellbestätigungen senden.** Senden Sie beim Erstellen einer neuen Bestellung eine E-Mail mit den Bestelldetails und einer Dankesnachricht.
+- **Teammitglieder über Statusänderungen benachrichtigen.** Wenn eine Aufgabe in den Status „Blockiert“ wechselt, senden Sie der zuständigen Person und deren Führungskraft eine E-Mail.
+- **Geplante Berichte zustellen.** Kombinieren Sie einen zeitgesteuerten Auslöser mit „Datensätze abrufen“, um eine wöchentliche Zusammenfassung per E-Mail zu senden.
+- **Personalisierte Kontaktaufnahme senden.** Passen Sie Betreff und Text anhand von Datensatzdaten an jeden Empfänger an.
+- **Formulareinreichungen bestätigen.** Senden Sie der einreichenden Person nach dem Absenden eines Formulars eine Bestätigung mit ihren Antworten.
+
+## Tipps zur Zustellbarkeit
+
+- **Verwenden Sie einen benutzerdefinierten SMTP-Server**, wenn Sie ein hohes Volumen oder geschäftskritische E-Mails versenden. Der integrierte Dienst von Teable eignet sich für einfache Benachrichtigungen; E-Mails von Ihrer eigenen Domain landen jedoch mit höherer Wahrscheinlichkeit im Posteingang der Empfänger.
+- **Vermeiden Sie Spam-verdächtige Inhalte** in Betreff und Text – übermäßige Großschreibung, Ausrufezeichen oder sehr viele Links können Spamfilter auslösen.
+- **Legen Sie eine Antwortadresse fest**, damit Empfänger an ein echtes Postfach statt an eine Nicht-Antwort-Adresse antworten können.
+- **Testen Sie Ihre E-Mails**, bevor Sie die Automatisierung in der Produktionsumgebung aktivieren. Führen Sie die Automatisierung manuell mit Testdaten aus, um Formatierung und Zustellung zu überprüfen.
+
+## Verwandte Themen
+
+- [SMTP und Absender einrichten](/de/basic/automation/actions/communication/smtp-sender) – E-Mails von Ihrer eigenen Domain senden
+- [Schleife (Stapelverarbeitung)](../logic/loop-run) – E-Mails massenhaft senden, indem eine Liste von Datensätzen durchlaufen wird
+- [Mit KI generieren](/de/basic/automation/actions/ai/ai-generate) – personalisierte E-Mail-Inhalte mit KI generieren

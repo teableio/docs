@@ -1,0 +1,78 @@
+---
+title: "Wenn Schaltfläche angeklickt wird"
+description: "Lösen Sie einen Workflow aus, wenn ein Schaltflächenfeld angeklickt wird"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Bitte beachten Sie: Die gesamte Einrichtung von Auslösern kann im KI-Chat erfolgen. Teilen Sie der KI mit, was der Workflow tun soll, und sie übernimmt den Rest.</Tip>
+
+Dieser Auslöser wird ausgeführt, wenn ein Benutzer in einer Tabellenzeile auf ein Schaltflächenfeld klickt. Der Workflow empfängt die Daten dieser Zeile.
+
+## Mit KI erstellen
+
+Öffnen Sie den KI-Chat in der rechten Seitenleiste Ihrer Tabelle und beschreiben Sie, was Sie möchten.
+
+Die KI übernimmt alles: Sie wählt den richtigen Auslöser aus, ordnet die relevanten Felder zu und richtet automatisch alle Aktionen ein.
+
+Beschreiben Sie Ihr Ziel einmal, und der Workflow ist bereit – eine manuelle Einrichtung ist nicht erforderlich.
+
+**Beispiel:** *„Wenn ich auf die Schaltfläche Genehmigen klicke, aktualisiere den Status und benachrichtige das Team.“*
+
+## Konfiguration
+
+| Einstellung | Erforderlich | Beschreibung |
+|---|---|---|
+| Tabelle | Ja | Die Tabelle, die das Schaltflächenfeld enthält |
+| Überwachte Felder | Ja | Die auf Klicks zu überwachenden Schaltflächenfelder |
+| Filter | Nein | Nur auslösen, wenn der Datensatz beim Anklicken der Schaltfläche diese Bedingungen erfüllt |
+
+## Schaltflächenfeld erstellen
+
+Bevor Sie diesen Auslöser verwenden können, benötigen Sie ein Schaltflächenfeld in Ihrer Tabelle:
+
+1. Öffnen Sie die Tabelle, in der Sie die Schaltfläche verwenden möchten.
+2. Klicken Sie auf **+**, um ein neues Feld hinzuzufügen.
+3. Navigieren Sie im Feldtypmenü zu **Erweitert** und wählen Sie **Schaltfläche** aus.
+4. Geben Sie dem Feld einen Namen (z. B. „Genehmigen“, „Rechnung senden“, „Exportieren“).
+5. Speichern Sie das Feld. Nun wird in jeder Zeile dieser Spalte eine anklickbare Schaltfläche angezeigt.
+
+## Einrichtung
+
+1. Öffnen Sie Ihre Automatisierung und fügen Sie einen neuen Auslöser hinzu.
+2. Wählen Sie **Wenn Schaltfläche angeklickt wird** aus.
+3. Wählen Sie die **Tabelle** aus, die das Schaltflächenfeld enthält.
+4. Wählen Sie unter **Überwachte Felder** das zu überwachende Schaltflächenfeld aus. Bei Bedarf können Sie mehrere Schaltflächenfelder auswählen.
+5. (Optional) Fügen Sie einen **Filter** hinzu, um einzuschränken, welche Zeilen die Automatisierung auslösen können. Beispielsweise verhindert `Status` ist nicht gleich `Abgeschlossen`, dass die Schaltfläche bei bereits abgeschlossenen Datensätzen eine Ausführung auslöst.
+6. Speichern und aktivieren Sie die Automatisierung.
+7. Fügen Sie Ihre Aktionsschritte hinzu. Klicken Sie in einem beliebigen Aktionsfeld auf **+**, um Daten aus der angeklickten Zeile einzufügen.
+
+## Welche Daten für nachfolgende Schritte verfügbar sind
+
+Wenn eine Schaltfläche angeklickt wird, stellt der Auslöser Folgendes bereit:
+
+- **Datensatz-ID** – die eindeutige Kennung der Zeile, in der die Schaltfläche angeklickt wurde.
+- **Alle Feldwerte** – jedes Feld der angeklickten Zeile ist als Variable verfügbar. Dazu gehören Text, Zahlen, Datumsangaben, verknüpfte Datensätze, Anhänge und mehr.
+
+Sie können die Daten der Zeile somit verwenden, um E-Mails zu befüllen, andere Datensätze zu aktualisieren oder Daten an externe APIs zu senden – jeweils basierend auf der konkreten Zeile, die der Benutzer angeklickt hat.
+
+## Anwendungsfälle
+
+- **Genehmigungs-Workflows mit einem Klick.** Fügen Sie jeder Zeile eine Schaltfläche „Genehmigen“ hinzu. Aktualisieren Sie beim Anklicken den Status auf „Genehmigt“ und senden Sie eine Benachrichtigung an die anfragende Person.
+- **Bericht oder Dokument bei Bedarf erzeugen.** Eine Schaltfläche „Bericht erzeugen“ löst eine KI-Aktion oder HTTP-Anfrage aus, um eine PDF-Datei oder Zusammenfassung für diesen Datensatz zu erstellen.
+- **Datensatz an ein externes System übertragen.** Eine Schaltfläche „Mit CRM synchronisieren“ sendet die Daten der Zeile über eine HTTP-Anfrage an Salesforce, HubSpot oder eine andere Plattform.
+- **Personalisierte E-Mail senden.** Eine Schaltfläche „Erinnerung senden“ verfasst und sendet anhand der Kontaktinformationen und relevanten Details der Zeile eine E-Mail.
+- **Manuellen Prüfschritt auslösen.** Eine Schaltfläche „Zur Prüfung markieren“ markiert den Datensatz und benachrichtigt eine Führungskraft. So entscheiden Menschen ausdrücklich, welche Elemente eskaliert werden.
+
+## Tipps
+
+- Das Schaltflächenfeld selbst speichert keine Daten – es dient ausschließlich als Auslösemechanismus. In der Zelle wird kein Wert angezeigt, sondern lediglich eine anklickbare Schaltfläche.
+- Wenn eine Tabelle mehrere Schaltflächenfelder enthält, können Sie für jedes eine separate Automatisierung erstellen oder mit einer einzigen Automatisierung mehrere Schaltflächen überwachen und bedingte Logik verwenden.
+- Der Filter wird in dem Moment ausgewertet, in dem die Schaltfläche angeklickt wird. Wenn der Datensatz den Filter nicht erfüllt, wird die Automatisierung einfach nicht ausgeführt – dem Benutzer wird kein Fehler angezeigt.
+- Schaltflächenauslöser eignen sich hervorragend für Workflows, bei denen vor einer Aktion menschliches Urteilsvermögen gefragt ist, statt den Vorgang vollständig automatisch zu verarbeiten.
+
+## Verwandte Themen
+
+- [Wenn Formular übermittelt wird](/de/basic/automation/trigger/forms/form-submitted) – wird bei Formularübermittlungen statt bei Schaltflächenklicks ausgelöst
+- [Wenn Datensatz aktualisiert wird](/de/basic/automation/trigger/records/record-updated) – wird automatisch bei Feldänderungen ausgelöst, ohne dass eine Benutzeraktion erforderlich ist
+- [Aktion „Datensatz aktualisieren“](/de/basic/automation/actions/records/update-record) – wird häufig mit Schaltflächenklicks kombiniert, um den Status der Zeile zu ändern
+- [E-Mail senden](/de/basic/automation/actions/communication/send-email-overview)

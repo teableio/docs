@@ -1,0 +1,78 @@
+---
+title: "Créer un enregistrement"
+description: "Créez un nouvel enregistrement dans n’importe quelle table au sein d’un workflow"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Nous vous recommandons vivement d’utiliser Exécuter un script pour créer des automatisations, car cette action peut couvrir tous les comportements, y compris ceux qui devraient autrement être configurés manuellement. Décrivez simplement vos besoins à l’IA dans le chat.
+
+Remarque : si vous ajoutez des actions manuellement, l’IA ne pourra ni les reconnaître ni les modifier par la suite.
+</Tip>
+
+## Créer avec l’IA
+
+Ouvrez le Chat IA dans la barre latérale droite de votre table et décrivez ce que vous souhaitez obtenir.
+
+L’IA s’occupe de tout : elle sélectionne le bon déclencheur, choisit les actions appropriées, associe les champs et configure automatiquement l’ensemble du workflow.
+
+Décrivez une seule fois votre objectif : le workflow est prêt, sans aucune configuration manuelle.
+
+Crée un nouvel enregistrement dans une table donnée. Vous pouvez associer les données des étapes précédentes aux champs du nouvel enregistrement. Après sa création, le nouvel ID d’enregistrement et toutes les valeurs de champ sont accessibles aux étapes suivantes.
+
+## Configuration
+
+| Paramètre | Obligatoire | Description |
+|---|---|---|
+| Table | Oui | Table cible dans laquelle le nouvel enregistrement sera créé |
+| Champs | Oui | Associez chaque champ à une valeur : texte/nombre fixe ou variable dynamique provenant des étapes précédentes |
+
+## Configuration de l’action
+
+1. Ajoutez une action **Créer un enregistrement** à votre workflow.
+2. Choisissez la **Table** dans laquelle créer l’enregistrement. Par défaut, il s’agit d’une table de la même base, mais vous pouvez utiliser l’[Accès inter-base](/fr/basic/automation/actions/records/cross-base) pour cibler une table d’une autre base.
+3. La zone d’association des champs affiche tous les champs de la table cible. Pour chaque champ à remplir :
+   - **Valeur fixe :** saisissez directement une valeur dans le champ (par exemple, « Nouveau » pour un champ Statut).
+   - **Valeur dynamique :** cliquez sur le bouton **+** près du champ pour insérer une variable provenant d’une étape précédente. Par exemple, insérez le champ « Nom » du déclencheur pour copier le nom de l’enregistrement déclencheur.
+4. Vous pouvez combiner des valeurs fixes et dynamiques. Par exemple, définissez Statut sur la valeur fixe « En attente » et Nom du client sur une valeur dynamique provenant du déclencheur.
+5. Enregistrez l’action.
+
+<Tip>Vous pouvez combiner plusieurs variables dans un seul champ de texte. Par exemple, insérez `Nom du client de l’enregistrement déclencheur - ID de commande de l’enregistrement déclencheur` dans un champ « Résumé ».</Tip>
+
+## Comportement des champs obligatoires
+
+Si un champ obligatoire possède une valeur par défaut et que vous ne l’associez pas, Teable utilise cette valeur lors de la création de l’enregistrement. Si un champ obligatoire n’a pas de valeur par défaut, ou si une valeur associée est vide au moment de l’exécution, l’action échoue.
+
+Pour savoir quels champs sont obligatoires, consultez la configuration des champs de votre table cible. Les champs obligatoires sont généralement signalés par un astérisque ou le libellé « Obligatoire ».
+
+## Résultat : utiliser l’enregistrement créé dans les étapes suivantes
+
+Une fois l’action Créer un enregistrement exécutée, le nouvel enregistrement est accessible à toutes les étapes suivantes. Cela comprend :
+
+- **ID de l’enregistrement** — identifiant unique attribué au nouvel enregistrement.
+- **Toutes les valeurs de champ** — chaque valeur de champ de l’enregistrement créé, y compris les valeurs calculées automatiquement ou par défaut.
+
+Cette fonction est utile pour enchaîner des actions. Par exemple : créez un enregistrement, puis envoyez immédiatement un e-mail contenant un lien vers celui-ci, ou mettez à jour un enregistrement associé avec le nouvel ID.
+
+## Quand l’utiliser
+
+- **Consigner les envois de formulaire dans une table distincte.** Lorsqu’un formulaire est envoyé, créez dans une table « Journal des envois » un enregistrement contenant les données envoyées et un horodatage.
+- **Créer automatiquement des tâches de suivi.** Lorsqu’un projet est créé, créez un ensemble de tâches par défaut dans une table Tâches associée.
+- **Dupliquer des enregistrements entre des tables.** Copiez des données d’une table à une autre, par exemple en transférant un prospect de « Prospects » vers « Clients actifs » à la conclusion d’une affaire.
+- **Générer des enregistrements à partir de données externes.** Lorsqu’un webhook transmet des données de commande, créez dans votre table Commandes un enregistrement contenant les détails de la commande.
+- **Créer des entrées de piste d’audit.** Après l’exécution d’une automatisation, créez dans une table Journal d’audit un enregistrement décrivant ce qui s’est passé.
+
+## Conseils
+
+- Si vous créez des enregistrements dans la même table que celle associée à un déclencheur **Lorsqu’un enregistrement est créé**, prenez garde aux boucles infinies. Ajoutez au déclencheur un filtre qui exclut les enregistrements créés par l’automatisation (par exemple, vérifiez qu’un champ « Source » a pour valeur « Automatisation »).
+- Vous pouvez créer des enregistrements en masse en associant cette action à [Boucle (traitement par lots)](../logic/loop-run). Par exemple, récupérez 50 enregistrements d’une table et créez 50 enregistrements correspondants dans une autre.
+- Les champs non associés utilisent les valeurs par défaut de la table, le cas échéant, ou restent vides.
+- Les champs d’enregistrements liés attendent des ID d’enregistrement, et non des valeurs d’affichage. Pour créer un lien vers un enregistrement, veillez à transmettre son ID, et non son nom.
+- Utilisez l’[Accès inter-base](/fr/basic/automation/actions/records/cross-base) lorsque la table cible se trouve dans une autre base que l’automatisation.
+
+## Pages connexes
+
+- [Mettre à jour un enregistrement](/fr/basic/automation/actions/records/update-record) — modifiez des enregistrements existants au lieu d’en créer
+- [Obtenir des enregistrements](/fr/basic/automation/actions/records/get-records) — récupérez des enregistrements à utiliser comme données d’entrée pour en créer de nouveaux
+- [Accès inter-base](/fr/basic/automation/actions/records/cross-base) — créez des enregistrements dans des tables extérieures à la base actuelle
+- [Boucle (traitement par lots)](../logic/loop-run) — créez plusieurs enregistrements au cours d’une seule étape d’action

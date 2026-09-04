@@ -1,0 +1,62 @@
+---
+title: "API-Übersicht"
+description: "Alles, was Sie für den Einstieg mit der Teable API benötigen: Basis-URL, Authentifizierung, IDs und gängige Anfragemuster."
+---
+
+Dieser Abschnitt hilft Ihnen, die Teable API schnell und sicher zu verwenden.
+
+## Basis-URL
+
+- **Teable Cloud**: `https://app.teable.ai`
+- **Self-hosted**: Verwenden Sie Ihre eigene Domain (zum Beispiel `https://teable.example.com`)
+
+Alle API-Pfade in dieser Dokumentation sind relativ zur Basis-URL und beginnen mit `/api`.
+
+## Authentifizierung
+
+Teable APIs verwenden **Bearer-Tokens**:
+
+```bash
+curl -H 'Authorization: Bearer __token__' \
+  'https://app.teable.ai/api/table/__tableId__/record'
+```
+
+Sie können Folgendes verwenden:
+
+- **Personal Access Token**: Am besten für Skripte, interne Tools und serverseitige Integrationen. Siehe [Access Token](/de/api-doc/token).
+- **OAuth Access Token**: Am besten für mandantenfähige Integrationen, bei denen Endnutzer Zugriff gewähren. Siehe [OAuth App](/de/api-doc/oauth).
+
+## IDs (spaceId / baseId / tableId / viewId / fieldId / recordId)
+
+Die meisten Endpunkte benötigen IDs wie `tbl...` oder `rec...`. Siehe [IDs ermitteln](/de/api-doc/get-id).
+
+## Scopes und Berechtigungen
+
+Sowohl Personal Access Tokens als auch OAuth-Tokens sind auf Berechtigungen beschränkt. Wenn Sie einen Fehler 403 erhalten, fehlt dem Token in der Regel der erforderliche Scope.
+
+- Siehe [Fehlercodes](/de/api-doc/error-code)
+- Referenz zu OAuth-Scopes: [OAuth App](/de/api-doc/oauth#available-scopes)
+
+## Paginierung (take / skip)
+
+Viele Listenendpunkte unterstützen:
+
+- `take`: Anzahl der zurückzugebenden Elemente (bei einigen Endpunkten gilt ein Limit, z. B. maximal 100 Datensätze pro Anfrage; verwenden Sie daher `skip` für die Paginierung)
+- `skip`: Anzahl der zu überspringenden Elemente
+
+## Feldschlüssel und Zellenformat
+
+In einigen APIs können Sie steuern, wie Datensatzfelder dargestellt werden:
+
+- `fieldKeyType`: `name` (Standard) / `id` / `dbFieldName`
+- `cellFormat`: `json` (Standard) / `text`
+
+Informationen zu Wertstrukturen für Datensatzfelder finden Sie unter [Datensatzfeld-Schnittstelle](/de/api-doc/record/interface).
+
+## Nächste Schritte
+
+- **Sie möchten nur Daten abrufen**: [Datensätze abrufen](/de/api-doc/record/get)
+- **Datensätze erstellen, aktualisieren oder löschen**: [Datensätze erstellen](/de/api-doc/record/create), [Datensatz aktualisieren](/de/api-doc/record/update), [Datensätze löschen](/de/api-doc/record/delete)
+- **Anhänge hochladen**: [Anhang hochladen](/de/api-doc/record/upload-attachment)
+- **Vollständige Endpunktliste**: Verwenden Sie die linke Navigation unter **API Reference**
+

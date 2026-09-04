@@ -1,0 +1,37 @@
+---
+title: "Eseguire azioni diverse in base ai valori dei Record"
+description: "Usa la logica condizionale per ramificare il workflow ed eseguire azioni diverse in base ai valori dei Campi"
+---
+
+<Tip>Consigliamo di creare gli esempi di Automazione direttamente in AI Chat. Descrivi il workflow desiderato e l'IA si occuperà dell'intera configurazione, inclusi trigger, azioni, script e impostazioni.</Tip>
+
+## Creare con l'IA
+
+Apri AI Chat nella barra laterale destra della Tabella e spiega all'IA cosa desideri. Ad esempio, puoi dire:
+
+*"Quando viene creato un nuovo ticket, controlla il Campo Priorità. Se è Urgente, invia un'email al team di reperibilità. Altrimenti, invia un'email alla coda generale dell'assistenza"*
+
+L'IA creerà automaticamente il workflow completo. Puoi esaminare lo script generato, provarlo con dati reali e abilitare il workflow quando è pronto.
+
+## Configurazione manuale
+
+1. **Crea un workflow** con il trigger **Quando viene creato un Record**.
+2. Seleziona la Tabella **Ticket**.
+3. Fai clic su **Test** per ottenere un Record di esempio.
+4. **Aggiungi un nodo Condizione**.
+5. Imposta la regola: **Priorità** `è` **Urgente**.
+6. Fai clic su **Test**.
+7. **Nel percorso vero** → aggiungi un'azione **Invia email**:
+   - A: `oncall@yourcompany.com`
+   - Oggetto: `Ticket urgente: ` + titolo del ticket (tramite **+**)
+   - Corpo: descrizione del ticket (tramite **+**)
+8. **Nel percorso falso** → aggiungi un'azione **Invia email**:
+   - A: `support@yourcompany.com`
+   - Oggetto: `Nuovo ticket: ` + titolo del ticket
+   - Corpo: descrizione del ticket
+9. Prova entrambi i percorsi, quindi **abilita** il workflow.
+
+## Suggerimenti
+
+- Puoi annidare le condizioni: aggiungi un'altra condizione nel percorso falso per separare la priorità "Alta" da quella "Bassa".
+- Combina le regole con E/O, ad esempio `Priorità è Urgente E Assegnatario è vuoto`.

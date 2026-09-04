@@ -1,0 +1,85 @@
+---
+title: "レコードを取得"
+---
+
+<Tip>既存のテーブルをもとにカスタムリクエストを作成できる、開発者向けの組み込み[クエリパラメータービルダー](https://app.teable.ai/developer/tool/query-builder)を提供しています。</Tip>
+
+### パス
+GET /api/table/\{tableId\}/record
+​
+### リクエスト
+#### パスパラメーター
+tableId (string): テーブルの一意の識別子です（[取得方法](/ja/api-doc/get-id#tableid)）。
+
+#### 基本クエリパラメーター
+すべてのパラメーターは任意です。
+
+<ParamField query="viewId" type="string">
+  レコードを取得するビューIDを指定します。指定しない場合は、すべてのレコードとフィールドが作成日時順に返されます。
+</ParamField>
+
+<ParamField query="take" type="number">
+  取得するレコード数を指定します。最大値は100です。さらに多くのレコードを読み取るには、`skip`と`take`を使用してデータをページ分割してください（[ページネーション](/ja/api-doc/overview)を参照）。
+
+  100レコードの上限は、2026年9月10日以降に作成されたTeable CloudのパーソナルAPIキーに適用されます。それ以前に作成されたキー、OAuthトークン、プラグイントークン、セルフホストインスタンスでは引き続き最大1000件まで取得できますが、1ページ100件を推奨します。
+</ParamField>
+
+<ParamField query="skip" type="number">
+  ページネーションでスキップするレコード数を指定します。
+</ParamField>
+
+<ParamField query="fieldKeyType" type="string" default="name">
+  レコード内のフィールドに使用するキーの種類を定義します。指定できる値は次のとおりです。
+  - `name`: フィールド名をキーとして使用します（デフォルト）
+  - `id`: フィールドIDをキーとして使用します
+  - `dbFieldName`: フィールドのdbFieldNameをキーとして使用します
+</ParamField>
+
+<ParamField query="cellFormat" type="string" default="json">
+  セル値の返却形式を定義します。指定できる値は次のとおりです。
+  - `json`: 構造化されたJSONデータを返します（デフォルト）
+  - `text`: プレーンテキスト形式で返します
+</ParamField>
+
+<ParamField query="projection" type="string[]">
+  特定のフィールドだけが必要な場合は、このパラメーターで指定します。指定しない場合は、表示されているすべてのフィールドを取得します。パラメーターの値はfieldKeyTypeの設定によって異なります（フィールド名、ID、またはdbFieldNameを使用します）。
+</ParamField>
+
+<ParamField query="orderBy" type="string">
+  レコードの並び順を指定するソートオブジェクトの配列です。
+</ParamField>
+
+<ParamField query="filter" type="string">
+  結果を絞り込むための複合クエリ条件オブジェクトです。フィールド、演算子、値に基づく複合クエリ条件を使用できます。
+</ParamField>
+
+<ParamField query="search" type="string[]">
+  指定したフィールドと値に一致するレコードを検索します。
+</ParamField>
+
+<Accordion title="高度なクエリパラメーター">
+<ParamField query="groupBy" type="string">
+  レコードのグループ化方法を指定するグループオブジェクトの配列です。
+</ParamField>
+
+<ParamField query="collapsedGroupIds" type="string[]">
+  折りたたむグループIDの配列です。
+</ParamField>
+
+<ParamField query="selectedRecordIds" type="string[]">
+  レコードIDを使用して、選択したレコードを絞り込みます。
+</ParamField>
+
+<ParamField query="ignoreViewQuery" type="boolean">
+  viewIdを指定したとき、この値をtrueに設定すると、ビューのフィルター、並べ替え、その他の設定を無視します。
+</ParamField>
+
+<ParamField query="filterLinkCellCandidate" type="string[]">
+  指定したリンクセルで選択できるリンク先テーブルのレコードを絞り込みます。たとえば、一対多または一対一のリレーションフィールドでは、すでに選択されているレコードIDは表示されません。
+</ParamField>
+
+<ParamField query="filterLinkCellSelected" type="string[]">
+  このリンクセルですでに選択されているリンク先テーブルのレコードを絞り込みます。この場合、選択済みレコードには独自の順序があるため、viewId、filter、orderByは適用されません。
+</ParamField>
+</Accordion>
+

@@ -1,0 +1,110 @@
+---
+title: Benutzerdefiniertes KI-Modell
+description: Fügen Sie benutzerdefinierte Modellanbieter für KI-Felder, Automatisierungen, KI-Chat, App-Builder und andere unterstützte KI-Funktionen hinzu.
+---
+
+<Tip>Für den Pro-Plan und höher verfügbar</Tip>
+
+## Wo Sie es konfigurieren
+
+1. Öffnen Sie den gewünschten Space.
+2. Klicken Sie oben rechts auf **Einstellungen**.
+3. Wechseln Sie zu **KI-Einstellungen**.
+
+<img
+  src="/images/docs/ai/2026-05-21-custom-model-ai-settings.png"
+  alt="Seite für KI-Einstellungen"
+  className="docs-screenshot"
+/>
+
+## Einrichtungsschritte
+
+Aktivieren Sie unter **KI-Funktionen**, was Sie benötigen:
+
+- **KI-Feld**
+- **KI-Chat**
+
+Die Aktivierung von **KI-Chat** legt fest, ob die Chatfunktion im Space verfügbar ist.
+
+Die Zeile **Gleichzeitigkeit** unter **KI-Feld** legt fest, wie viele KI-Feld-Generierungen dieser Space gleichzeitig ausführt; die übrigen warten in der Warteschlange. Verringern Sie den Wert, wenn die Massenbefüllungen mit KI in diesem Space die Arbeit anderer Personen verlangsamen, und erhöhen Sie ihn, wenn eine große Befüllung schneller abgeschlossen werden soll.
+
+### LLM-Anbieter hinzufügen
+
+<Note>
+Wenn Sie einen neuen LLM-Anbieter hinzufügen, wählen Sie **OpenAI**, **Anthropic** oder **OpenAI-kompatibel** als Anbietertyp. Verwenden Sie **OpenAI-kompatibel** für Dienste, die einen OpenAI-kompatiblen API-Endpunkt bereitstellen. Wenn eine Aufgabe Bilder, Screenshots oder andere visuelle Eingaben verwendet, wählen Sie ein Modell mit Bildunterstützung. Modelle ohne Bildunterstützung schlagen bei diesen multimodalen Aufgaben fehl.
+</Note>
+
+Klicken Sie auf **LLM-Anbieter hinzufügen** und füllen Sie Folgendes aus:
+
+- **Name**: Dient zur Unterscheidung verschiedener Anbieter.
+- **Anbietertyp**: Wählen Sie den Anbietertyp.
+- **Basis-URL**: Geben Sie den API-Endpunkt des Anbieters ein.
+- **API-Schlüssel**: Geben Sie den API-Schlüssel des Anbieters ein.
+- **Modelle**: Geben Sie die Namen der Modelle ein, die Sie verbinden möchten. Trennen Sie mehrere Modelle durch englische Kommas.
+
+<img
+  src="/images/docs/ai/2026-05-21-custom-model-add-provider.png"
+  alt="Dialog zum Hinzufügen eines LLM-Anbieters"
+  className="docs-screenshot"
+/>
+
+### Modellfunktionen testen
+
+Derzeit gibt es drei Testmöglichkeiten:
+
+- Klicken Sie in der Zeile des LLM-Anbieters auf **Testen**.
+- Klicken Sie in einer einzelnen Modellzeile auf **Testen**.
+- Klicken Sie oben rechts in der Liste auf **Modellfunktionen testen**, um alle konfigurierten Modelle stapelweise zu testen.
+
+Wenn ein Modell für die Bildgenerierung vorgesehen ist, aktivieren Sie vor dem Test **Bildgenerierungsmodell**. Nach der Aktivierung testet Teable es als Bildmodell auf Text-zu-Bild- und Bild-zu-Bild-Funktionen. Ist es nicht aktiviert, wird das Modell als reguläres Textmodell getestet.
+
+## Konfigurationstipps
+
+### Basis-URL und Modelle
+
+<Warning>Einige Schlüssel für Coding-Pläne funktionieren möglicherweise nur in bestimmten Programmierwerkzeugen und sind möglicherweise keine Standard-API-Schlüssel. Prüfen Sie die Bedingungen des Anbieters, bevor Sie sie mit Diensten von Drittanbietern verwenden. Verwenden Sie zum Verbinden mit Teable einen Standard-API-Schlüssel, den Sie im Anbieter-Dashboard erstellt haben.</Warning>
+
+Häufige Beispiele:
+
+| Anbietertyp | Format der Basis-URL | Beispielmodelle |
+|----------|----------------|----------------|
+| OpenAI | `https://api.openai.com/v1` | `gpt-5.5,o3,gpt-5-mini` |
+| Anthropic | `https://api.anthropic.com/v1` | `claude-opus-4-8,claude-sonnet-5,claude-haiku-4-5` |
+| OpenAI-kompatibel | Der OpenAI-kompatible `/v1`-Endpunkt des Anbieters | `gpt-5.5,gpt-5.4,o3,gpt-5-mini` |
+
+<Note>Modellnamen müssen exakt mit der Anbieter-Dokumentation übereinstimmen und unterscheiden zwischen Groß- und Kleinschreibung. Trennen Sie mehrere Modelle durch englische Kommas.</Note>
+
+Hinweise:
+
+- Bei Modellnamen wird zwischen Groß- und Kleinschreibung unterschieden. Verwenden Sie die exakten Namen aus der Anbieter-Dokumentation.
+- Einige Anbieter erfordern keine Leerzeichen nach Kommas, zum Beispiel `gpt-5.5,o3`.
+- Verwenden Sie bei **OpenAI-kompatiblen** Anbietern das vom jeweiligen Anbieter benötigte Format für Modellnamen. Einige Dienste verwenden `provider/model-name`.
+
+## Häufige Fragen
+
+<AccordionGroup>
+<Accordion title="Alle Modelltests sind fehlgeschlagen">
+Prüfen Sie, ob die **Basis-URL** korrekt ist, ob versehentlich die Homepage-URL des Anbieters eingetragen wurde oder ob am Ende ein zusätzliches `/` steht. Wenn Sie einen OpenAI-kompatiblen Endpunkt verwenden, bestätigen Sie außerdem, dass `/v1` nicht fehlt.
+</Accordion>
+
+<Accordion title="Ich erhalte den Fehler „Test fehlgeschlagen“">
+Prüfen Sie, ob der **API-Schlüssel** gültig ist und ob das Konto noch Credits oder die Berechtigung zum Aufrufen des Modells hat.
+</Accordion>
+
+<Accordion title="Zeitüberschreitung der Verbindung">
+Prüfen Sie, ob die **Basis-URL** korrekt ist und ob Ihre aktuelle Umgebung diese Adresse erreichen kann.
+</Accordion>
+
+<Accordion title="Modell nicht gefunden">
+Stellen Sie sicher, dass der Wert unter **Modelle** exakt mit der Anbieter-Dokumentation übereinstimmt, einschließlich Groß- und Kleinschreibung sowie Trennzeichenformat.
+</Accordion>
+
+<Accordion title="Der Test schlägt fehl, wenn ich einen Schlüssel für einen Coding-Plan verwende">
+Diese Art von Schlüssel unterstützt möglicherweise keine Standard-API-Aufrufe oder die Bedingungen des Anbieters erlauben die Nutzung durch Dienste von Drittanbietern nicht. Prüfen Sie zuerst die Bedingungen des Coding-Plans des Anbieters. Verwenden Sie zum Verbinden mit Teable einen Standard-**API-Schlüssel**, den Sie im Anbieter-Dashboard erstellt haben.
+</Accordion>
+
+<Accordion title="Das Testergebnis für das Bildgenerierungsmodell sieht falsch aus">
+Wenn das Modell für die Bildgenerierung vorgesehen ist, aktivieren Sie zuerst **Bildgenerierungsmodell** und testen Sie dann erneut. Nach der Aktivierung testet Teable stattdessen Text-zu-Bild- und Bild-zu-Bild-Funktionen.
+</Accordion>
+</AccordionGroup>
+

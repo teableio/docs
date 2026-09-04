@@ -1,0 +1,118 @@
+---
+title: "Búsqueda condicional"
+description: "Busca datos entre tablas con condiciones de filtrado y devuelve los valores de los registros coincidentes."
+---
+
+La Búsqueda condicional puede obtener datos coincidentes de una Tabla de destino sin crear antes una relación de enlace. Resulta útil cuando la búsqueda debe cambiar según los valores de los campos del registro actual, por ejemplo, para encontrar el producto más vendido de la misma categoría o buscar datos de un período coincidente.
+
+## Casos de uso
+
+| Escenario | Ideal para |
+| --- | --- |
+| Análisis por categorías | Encontrar el producto más vendido de la misma categoría |
+| Comparación entre períodos | Buscar el importe de ventas del período anterior para realizar cálculos entre períodos |
+| Correspondencia de clientes | Encontrar datos de clientes por número de teléfono, correo electrónico o ID de cliente |
+| Búsqueda de detalles | Devolver registros de detalle coincidentes según condiciones del registro actual |
+
+## Procedimiento
+
+<Steps>
+  <Step title="Crea un campo de búsqueda condicional">
+    Haz clic en el icono `+` situado a la derecha del nombre de un campo, elige **Búsqueda condicional** e introduce un título para el campo, como "Pedidos relacionados".
+  </Step>
+  <Step title="Elige la Tabla de destino">
+    En el menú desplegable de tablas de destino, elige la Tabla que quieras consultar.
+  </Step>
+  <Step title="Configura el campo de búsqueda">
+    Elige el campo que se va a extraer y confirma el tipo de datos devuelto.
+  </Step>
+  <Step title="Define las condiciones de filtrado">
+    Añade condiciones de filtrado y elige el campo, el tipo de condición y el valor de comparación. El valor de comparación puede ser un valor estático o un campo de la Tabla actual.
+  </Step>
+  <Step title="Configura la ordenación y los límites">
+    Define el campo de ordenación, la dirección de ordenación y el número de registros que se mostrarán cuando sea necesario.
+  </Step>
+</Steps>
+
+Se requiere al menos una condición de filtrado. Si hay varias, elige "Se cumplen todas las condiciones (AND)" o "Se cumple alguna condición (OR)".
+
+## Práctica con escenarios
+
+### Análisis de ventas entre períodos
+
+**Tablas**
+
+- Tabla de resumen de ventas por período, con campos como período, fecha de inicio, fecha de finalización e importe de ventas
+- Tabla de detalles de ventas, con campos como importe de ventas y fecha de venta
+
+En la Tabla de resumen de ventas por período, calcula el crecimiento entre períodos de cada período. Primero, usa una Acumulación condicional para calcular las ventas del período actual; después, usa una Búsqueda condicional para obtener las ventas del período anterior y, por último, usa un campo Fórmula para calcular la tasa de crecimiento.
+
+**Pasos**
+
+**Crear un campo de acumulación condicional para las ventas del período actual**
+
+1. En la Tabla de resumen de ventas por período, crea un campo Acumulación condicional llamado "Ventas del período actual"
+2. Tabla de destino: Tabla de detalles de ventas
+3. Campo de acumulación: Importe de ventas
+4. Condiciones de filtrado:
+   - Campo: Fecha de venta -> Condición: Anterior o igual a -> Valor: Campo Fecha de finalización de la Tabla actual
+   - Campo: Fecha de venta -> Condición: Posterior o igual a -> Valor: Campo Fecha de inicio de la Tabla actual
+5. Función de acumulación: Suma
+
+**Crear un campo de búsqueda condicional para las ventas del período anterior**
+
+1. Crea un campo Búsqueda condicional llamado "Ventas del período anterior"
+2. Tabla de destino: Tabla de resumen de ventas por período (esta Tabla)
+3. Campo: Ventas del período actual
+4. Condición de filtrado:
+   - Campo: Fecha de finalización -> Condición: Es igual a -> Valor: Campo Fecha de finalización del período anterior de la Tabla actual
+5. Función de acumulación: Suma
+
+**Crear un campo de fórmula para el crecimiento entre períodos**
+
+1. Crea un campo Fórmula llamado "Tasa de crecimiento entre períodos"
+2. Define la fórmula como `(Ventas del período actual - Ventas del período anterior) / Ventas del período anterior * 100`
+3. Aplica formato de porcentaje con 2 decimales
+
+### Análisis de productos por datos de ventas
+
+**Tablas**
+
+- Tabla de productos, con campos como ID de categoría, nombre del producto y volumen de ventas
+- Tabla de categorías, con campos como ID de categoría y nombre de la categoría
+
+En la Tabla de categorías, encuentra el producto más vendido de cada categoría para identificar su producto principal.
+
+**Pasos**
+
+**Producto más vendido**
+
+1. En la Tabla de categorías, crea un campo Búsqueda condicional llamado "Producto más vendido"
+2. Tabla de destino: Tabla de productos
+3. Campo de búsqueda: Nombre del producto
+4. Condición de filtrado:
+   - Campo: ID de categoría -> Condición: Es igual a -> Valor: Campo ID de categoría de la Tabla actual
+5. Ordenación: Campo Volumen de ventas -> Descendente
+6. Límite de visualización: 1 registro
+
+**Volumen de ventas**
+
+1. Crea otro campo Búsqueda condicional llamado "Volumen de ventas"
+2. Tabla de destino: Tabla de productos
+3. Campo de búsqueda: Volumen de ventas
+4. Condición de filtrado:
+   - Campo: ID de categoría -> Condición: Es igual a -> Valor: Campo ID de categoría de la Tabla actual
+5. Ordenación: Campo Volumen de ventas -> Descendente
+6. Límite de visualización: 1 registro
+
+## Preguntas frecuentes
+
+<AccordionGroup>
+  <Accordion title="¿Por qué algunos campos no se pueden usar como condiciones de filtrado?">
+    Es posible que algunos tipos de campo complejos, como las imágenes y los adjuntos, no admitan condiciones de filtrado.
+  </Accordion>
+
+  <Accordion title="¿Cuál es la diferencia entre una Búsqueda condicional y un campo Búsqueda normal?">
+    Un campo Búsqueda normal requiere primero un campo Enlace. La Búsqueda condicional puede buscar coincidencias directamente en la Tabla de destino mediante condiciones de filtrado.
+  </Accordion>
+</AccordionGroup>

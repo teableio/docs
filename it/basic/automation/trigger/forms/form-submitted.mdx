@@ -1,0 +1,75 @@
+---
+title: "Quando viene inviato un modulo"
+description: "Attiva un workflow quando viene inviata una Vista modulo"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Nota: puoi configurare tutti i trigger in AI Chat. Spiega all'IA cosa deve fare il workflow e si occuperà del resto.</Tip>
+
+Questo trigger viene eseguito quando qualcuno invia una specifica Vista modulo. Tutti i Campi inviati sono disponibili nei passaggi successivi.
+
+## Creare con l'IA
+
+Apri AI Chat nella barra laterale destra della Tabella e descrivi ciò che desideri.
+
+L'IA si occupa di tutto: sceglie il trigger corretto, mappa i Campi pertinenti e configura automaticamente tutte le azioni.
+
+Descrivi l'obiettivo una sola volta e il workflow è pronto, senza alcuna configurazione manuale.
+
+**Esempio:** *"Quando qualcuno invia il modulo di contatto, invia un'email di conferma."*
+
+## Configurazione
+
+| Impostazione | Obbligatoria | Descrizione |
+|---|---|---|
+| Tabella | Sì | La Tabella a cui appartiene il modulo |
+| Modulo | Sì | La specifica Vista modulo di cui monitorare gli invii |
+
+## Come configurarlo
+
+1. Assicurati che nella Tabella esista già una Vista modulo. In caso contrario, creane una facendo clic su **+** nella barra delle Viste e selezionando **Modulo**.
+2. Apri l'Automazione e aggiungi un nuovo trigger.
+3. Seleziona **Quando viene inviato un modulo**.
+4. Scegli la **Tabella** che contiene il modulo.
+5. Scegli la Vista **Modulo** da monitorare.
+6. Salva e attiva l'Automazione.
+7. Aggiungi i passaggi delle azioni. Fai clic su **+** in qualsiasi Campo di un'azione per fare riferimento ai dati inviati: sono disponibili tutti i Campi del modulo.
+
+## Dati disponibili per i passaggi successivi
+
+Quando viene inviato un modulo, al workflow vengono passati i dati seguenti:
+
+- **ID Record** — identificatore univoco del Record appena creato.
+- **Tutti i valori dei Campi inviati** — puoi fare riferimento a ogni Campo incluso nel modulo (testo, email, numeri, date, selezioni, allegati e così via) facendo clic su **+** nelle azioni successive.
+
+I Campi non inclusi nel modulo (Campi nascosti) non avranno valori provenienti dall'invio, ma potrebbero avere valori predefiniti impostati nella Tabella.
+
+## L'invio del modulo crea anche un Record
+
+È importante comprendere che, a livello dei dati, l'invio di un modulo e la creazione di un Record sono lo stesso evento. Quando qualcuno invia un modulo, viene aggiunto un nuovo Record alla Tabella. Di conseguenza:
+
+- Se nella stessa Tabella è presente anche un'Automazione **Quando viene creato un Record**, con l'invio del modulo si attiveranno *entrambe* le Automazioni.
+- Per evitare un'elaborazione duplicata, usa esclusivamente il trigger Modulo inviato oppure aggiungi al trigger Record creato un filtro che escluda i Record provenienti dai moduli.
+
+<Note>L'invio di un modulo equivale essenzialmente alla creazione di un Record. Se nella stessa Tabella è configurato anche un trigger "Quando viene creato un Record", verranno eseguiti entrambi i workflow.</Note>
+
+## Quando utilizzarlo
+
+- **Inviare un'email di conferma dopo l'invio.** Quando un cliente compila un modulo di contatto, inviagli automaticamente un'email di ringraziamento con i dettagli forniti.
+- **Classificare automaticamente con l'IA i nuovi ticket di assistenza.** Usa l'azione Genera con l'IA per classificare il ticket in base alla descrizione inviata dall'utente.
+- **Avvisare il team delle candidature ricevute.** Quando qualcuno invia un modulo di candidatura, pubblica una notifica su Slack o invia un'email al team di selezione.
+- **Creare Record collegati in altre Tabelle.** Quando viene inviato un modulo d'ordine, crea automaticamente Record in una Tabella "Articoli dell'ordine" o "Spedizioni".
+- **Convalidare e contrassegnare gli invii.** Controlla se le informazioni obbligatorie sono complete o se un valore non rientra nell'intervallo previsto, quindi imposta il Campo dello stato su "Da rivedere" se qualcosa non è corretto.
+
+## Suggerimenti
+
+- Questo trigger si attiva una volta per invio. Se la stessa persona invia due volte il modulo, si attiva due volte.
+- Se devi attivare il workflow per tutti i nuovi Record, indipendentemente dall'origine (inserimento manuale, API o modulo), usa invece [Quando viene creato un Record](/it/basic/automation/trigger/records/record-created).
+- Puoi avere più Automazioni che monitorano lo stesso modulo. Ad esempio, una può inviare un'email di conferma mentre un'altra crea un'attività collegata.
+- Le Viste modulo rispettano le impostazioni di visibilità dei Campi. Soltanto i Campi visibili nel modulo vengono compilati dall'invio; quelli nascosti mantengono i valori predefiniti o rimangono vuoti.
+
+## Contenuti correlati
+
+- [Quando viene creato un Record](/it/basic/automation/trigger/records/record-created) — si attiva per qualsiasi nuovo Record, non soltanto per gli invii dei moduli
+- [Quando viene fatto clic su un pulsante](/it/basic/automation/trigger/forms/button-click) — si attiva quando un utente fa clic su un Campo pulsante in una riga esistente
+- [Azione Invia email](/it/basic/automation/actions/communication/send-email-overview) — spesso abbinata agli invii dei moduli per le conferme

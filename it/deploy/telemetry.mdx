@@ -1,0 +1,40 @@
+---
+title: "Telemetria"
+description: "Scopri come funziona la telemetria self-hosted di Teable, quali dati vengono inviati e come disabilitarla."
+---
+
+## Panoramica
+
+Dopo aver ottenuto e inserito una Chiave di licenza valida, l'attivazione della licenza può funzionare offline.
+
+Se un'istanza self-hosted può accedere a Internet, potrebbe inviare un report di telemetria minimo per la conformità della licenza, le verifiche di sicurezza, la prevenzione delle frodi e l'analisi delle distribuzioni non autorizzate.
+
+Questa telemetria è distinta dall'analisi facoltativa del prodotto. È pensata per l'amministrazione e la conformità delle installazioni self-hosted, in modo analogo alle comuni pratiche di ping del servizio, convalida delle licenze e segnalazione anonima dell'utilizzo adottate nel software gestito autonomamente.
+
+## Dati che possono essere inviati
+
+I report di telemetria possono includere identificatori di autorizzazione del prodotto, come l'ID istanza e, quando è installata una licenza, l'ID licenza; il piano della licenza, il limite di posti e le date di scadenza, quando disponibili; l'edizione del software, la versione dell'applicazione, la versione della build, il digest dell'immagine e il canale di build; conteggi e fasce di utilizzo aggregati; l'ora dell'ultima attività dell'istanza; l'hash dell'hostname dell'origine pubblica e della macchina; la piattaforma, l'architettura della CPU e la versione di Node.js; nonché segnali di rischio per la conformità.
+
+Gli identificatori di autorizzazione del prodotto, come l'ID istanza e l'ID licenza, possono essere inviati nella loro forma originale perché vengono utilizzati per convalidare il deployment e lo stato della licenza.
+
+I valori che identificano il cliente o l'host, come l'hostname dell'origine pubblica e quello della macchina, vengono sottoposti ad hash prima della trasmissione.
+
+## Dati che non vengono inviati
+
+I report di telemetria non includono il contenuto delle aree di lavoro dei clienti, i Record delle Tabelle, i nomi degli schemi, i valori dei Campi, le query SQL, i segreti delle applicazioni, le credenziali di accesso, i token di autenticazione, le Chiavi di licenza, gli elenchi di indirizzi email degli utenti, i nomi degli utenti o l'URL completo dell'origine pubblica.
+
+## Trasmissione e conservazione
+
+I report di telemetria vengono crittografati durante la trasmissione.
+
+Teable conserva gli eventi di telemetria non elaborati soltanto per il tempo ragionevolmente necessario ai fini della conformità delle licenze, delle verifiche di sicurezza, della prevenzione delle frodi, della gestione delle controversie e dei controlli. Teable può conservare lo stato di conformità aggregato o derivato per tutta la durata del rapporto con il cliente e per qualsiasi periodo di conservazione previsto dalla legge.
+
+## Disabilitare l'invio della telemetria
+
+Gli amministratori delle istanze self-hosted possono disabilitare l'invio della telemetria impostando:
+
+```env
+TELEMETRY_REPORT_DISABLED=true
+```
+
+La disabilitazione dell'invio della telemetria non impedisce di per sé l'attivazione offline della licenza, ma può limitare la capacità di Teable di verificare la conformità della licenza, rilevare distribuzioni non autorizzate o indagare sulle controversie relative alle licenze.

@@ -1,0 +1,96 @@
+---
+title: "Quando viene aggiornato un Record"
+description: "Attiva un workflow quando viene modificato un Record esistente"
+---
+
+<Tip>Nota: puoi configurare tutti i trigger in AI Chat. Spiega all'IA cosa deve fare il workflow e si occuperà del resto.</Tip>
+
+Questo trigger viene eseguito quando viene modificato un Record esistente. Non si attiva durante la creazione.
+
+## Creare con l'IA
+
+Apri AI Chat nella barra laterale destra della Tabella e descrivi ciò che desideri.
+
+L'IA si occupa di tutto: sceglie il trigger corretto, mappa i Campi pertinenti e configura automaticamente tutte le azioni.
+
+Descrivi l'obiettivo una sola volta e il workflow è pronto, senza alcuna configurazione manuale.
+
+**Esempio:** *"Quando cambia il Campo dello stato, invia un'email all'assegnatario."*
+
+## Configurazione
+
+| Impostazione | Obbligatoria | Descrizione |
+|---|---|---|
+| Tabella | Sì | La Tabella da monitorare per rilevare le modifiche |
+| Campi monitorati | Sì | Scegli Campi specifici da monitorare oppure seleziona "Tutti i Campi" per attivare il workflow con qualsiasi modifica |
+| Filtro | No | Attiva il workflow soltanto se, dopo la modifica, il Record aggiornato soddisfa queste condizioni |
+
+## Come configurarlo
+
+1. Apri l'Automazione e aggiungi un nuovo trigger.
+2. Seleziona **Quando viene aggiornato un Record**.
+3. Scegli la **Tabella** da monitorare.
+4. In **Campi monitorati**, seleziona uno o più Campi specifici. Ad esempio, scegli soltanto "Stato" se vuoi reagire alle modifiche dello stato.
+5. (Facoltativo) Aggiungi un **Filtro** per limitare ulteriormente gli aggiornamenti che attivano il trigger. Ad esempio, `Stato` uguale a `Completato` attiverà il workflow soltanto quando lo stato di un Record passa a "Completato".
+6. Salva e attiva l'Automazione.
+7. Aggiungi i passaggi delle azioni. Fai clic su **+** in qualsiasi Campo di un'azione per inserire valori provenienti dal Record aggiornato.
+
+## Comprendere i Campi monitorati
+
+L'impostazione Campi monitorati è la parte più importante di questo trigger:
+
+- **Campi specifici (consigliato):** seleziona soltanto i Campi che ti interessano. Il trigger si attiva esclusivamente quando cambia uno di questi Campi. Tutte le altre modifiche apportate al Record vengono ignorate.
+- **Tutti i Campi:** il trigger si attiva ogni volta che cambia *qualsiasi* Campo del Record. Sono inclusi i Campi calcolati, i timestamp dell'ultima modifica e le modifiche minori che potrebbero non interessarti.
+
+**Perché nella maggior parte dei casi è preferibile scegliere Campi specifici:**
+
+- Riduce le esecuzioni non necessarie dei trigger e, di conseguenza, lo spreco di esecuzioni delle Automazioni.
+- Previene i cicli accidentali (vedi sotto).
+- Rende più chiaro lo scopo dell'Automazione a chiunque la consulti.
+
+Scegli "Tutti i Campi" soltanto quando devi realmente reagire a ogni possibile modifica, ad esempio per un log di controllo completo.
+
+<Tip>È vivamente consigliato selezionare Campi monitorati specifici. Se selezioni "Tutti i Campi", il workflow potrebbe attivarsi a causa di modifiche non correlate, sprecare esecuzioni delle Automazioni e produrre comportamenti imprevisti.</Tip>
+
+### Campi calcolati
+
+I valori di [Formula](/it/basic/field/formula), [Lookup](/it/basic/field/lookup), [Rollup](/it/basic/field/rollup), [Lookup condizionale](/it/basic/field/conditional-lookup) e [Rollup condizionale](/it/basic/field/conditional-rollup) derivano dai calcoli di Teable anziché dall'immissione manuale; un ricalcolo attiva questo trigger soltanto se indichi il Campo calcolato in **Campi monitorati**. Tutti e cinque funzionano allo stesso modo.
+
+In questo modo puoi reagire a un risultato derivato anziché agli input non elaborati da cui proviene. Monitora un Campo Formula `Importo totale` e il workflow viene eseguito ogni volta che il totale cambia realmente, indipendentemente dal Campo sottostante che è stato modificato. Monitora il Rollup delle attività collegate e il workflow viene eseguito quando cambia il valore aggregato, anche se la modifica deriva da un aggiornamento nella Tabella collegata.
+
+## Errore comune: cicli di aggiornamento
+
+<Warning>Se il workflow include un'azione Aggiorna Record che scrive nella stessa Tabella e aggiorna un Campo monitorato, il trigger si attiverà nuovamente, creando un ciclo infinito.</Warning>
+
+Se l'Automazione viene attivata dagli aggiornamenti di una Tabella e include anche un'azione **Aggiorna Record** che scrive nella *stessa Tabella*, puoi creare un ciclo infinito:
+
+1. Un Campo cambia → il trigger si attiva.
+2. L'Automazione aggiorna un altro Campo dello stesso Record → il trigger si attiva nuovamente.
+3. Il processo si ripete all'infinito.
+
+**Come evitarlo:**
+
+- Monitora soltanto Campi specifici e assicurati che l'azione Aggiorna Record scriva in Campi *diversi* da quelli monitorati.
+- Usa una condizione di filtro per interrompere il ciclo. Ad esempio, attiva il workflow soltanto quando `Stato` è diverso da `Elaborato` e configura l'azione affinché imposti `Stato` su `Elaborato`.
+- Se l'azione deve aggiornare lo stesso Campo, valuta invece l'uso del trigger [Quando un Record soddisfa le condizioni](/it/basic/automation/trigger/records/record-matches-conditions), che si attiva soltanto durante le transizioni.
+
+## Quando utilizzarlo
+
+- **Sincronizzare le variazioni di prezzo con un sistema esterno.** Monitora il Campo "Prezzo". Quando cambia, invia una richiesta HTTP per aggiornare il prezzo nella piattaforma di e-commerce.
+- **Inviare una notifica quando cambia lo stato di un'attività.** Monitora il Campo "Stato". Quando un'attività passa a "Bloccata" o "Completata", avvisa l'assegnatario o il responsabile.
+- **Registrare le modifiche dei Campi per i controlli.** Monitora "Tutti i Campi" e crea un Record in una Tabella del log di controllo con i valori precedenti e nuovi.
+- **Aggiornare un Record collegato quando cambia il Record principale.** Monitora i Campi chiave di un Record di progetto. Quando cambia la scadenza del progetto, aggiorna tutte le attività collegate.
+- **Attivare un ricalcolo in un altro sistema.** Monitora Campi numerici come "Quantità" o "Prezzo unitario". Quando cambiano, chiama un'API per ricalcolare i totali.
+
+## Suggerimenti
+
+- Inizia con Campi monitorati specifici. Se scopri che mancano alcuni eventi, puoi sempre aggiungerne altri in seguito.
+- Il filtro viene valutato *dopo* l'aggiornamento. Ciò significa che controlla i nuovi valori del Record, non quelli precedenti.
+- Questo trigger non indica il valore precedente, ma soltanto l'aspetto attuale del Record. Se devi eseguire un confronto prima/dopo, valuta di mantenere un Campo "Valore precedente" aggiornato dall'Automazione.
+- Il trigger si attiva una volta per ogni salvataggio, anche se nella stessa modifica cambiano più Campi monitorati.
+
+## Contenuti correlati
+
+- [Quando un Record soddisfa le condizioni](/it/basic/automation/trigger/records/record-matches-conditions) — si attiva soltanto durante le transizioni di stato, non a ogni modifica
+- [Quando viene creato un Record](/it/basic/automation/trigger/records/record-created) — si attiva per i nuovi Record, non per gli aggiornamenti
+- [Azione Aggiorna Record](/it/basic/automation/actions/records/update-record) — l'azione corrispondente per modificare i Record nei workflow

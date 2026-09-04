@@ -1,0 +1,80 @@
+---
+title: "API ile programlı olarak otomasyon oluşturma"
+description: "Teable API'sini ve JavaScript'i kullanarak iş akışları oluşturup yapılandırın"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Otomasyon örneklerini doğrudan AI Chat'te oluşturmanızı öneririz. İstediğiniz iş akışını açıklamanız yeterlidir; AI tetikleyici, eylemler, komut dosyası ve yapılandırma dahil tüm kurulumu sizin için tamamlar.</Tip>
+
+## AI ile oluşturma
+
+Tablonuzun sağ kenar çubuğunda AI Chat'i açın ve AI'a ne istediğinizi söyleyin. Örneğin şöyle diyebilirsiniz:
+
+*"Sipariş durumu değişikliklerini izleyen ve sipariş sevk edildiğinde webhook bildirimi gönderen bir otomasyon oluştur"*
+
+AI, iş akışının tamamını otomatik olarak oluşturur. Oluşturulan komut dosyasını inceleyebilir, gerçek verilerle test edebilir ve hazır olduğunuzda iş akışını etkinleştirebilirsiniz.
+
+## Ön koşullar
+
+- Bir Kişisel Erişim Belirteci (PAT). Bkz. [Erişim Belirteci](/tr/api-doc/token).
+- Veritabanı kimliğiniz, tablo kimliğiniz ve alan kimlikleriniz. Bkz. [Kimlikleri Alma](/tr/api-doc/get-id).
+
+## Yardımcı İşlevler
+
+```javascript
+const baseUrl = "https://app.teable.ai/api";
+const token = process.env.TEABLE_TOKEN;
+const baseId = "bserxxxxxx";
+
+const headers = {
+  Authorization: `Bearer ${token}`,
+  "Content-Type": "application/json",
+};
+
+async function api(method, path, body) {
+  const res = await fetch(`${baseUrl}${path}`, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!res.ok) throw new Error(`${method} ${path} → ${res.status}`);
+  return res.json();
+}
+```
+
+## İş Akışını Oluşturma
+
+```javascript
+// 1. Bir iş akışı oluşturun
+const wf = await api("POST", `/base/${baseId}/workflow`, {
+  name: "Sevkiyatta bildirim gönder",
+  description: "Sipariş durumu Sevk Edildi olduğunda webhook gönder",
+});
+
+// 2. Bir tetikleyici ekleyin
+const trigger = await api("POST", `/base/${baseId}/workflow/${wf.id}/trigger`, {
+  type: "recordUpdated",
+  config: { tableId: "tblOrders", watchFieldIds: ["fldStatus"] },
+});
+
+// 3. Tetikleyiciyi test edin
+await api("POST", `/base/${baseId}/workflow/${wf.id}/test/${trigger.id}`);
+
+// 4. Bir HTTP İsteği eylemi ekleyin
+const action = await api("POST", `/base/${baseId}/workflow/${wf.id}/action`, {
+  type: "httpRequest",
+  parentNodeId: trigger.id,
+});
+
+// 5. Etkinleştirin
+await api("PUT", `/base/${baseId}/workflow/${wf.id}/active`, {
+  method: "activate",
+});
+```
+
+## En İyi Uygulamalar
+
+- En az ayrıcalığa sahip PAT'yi kullanın; erişimi yalnızca ihtiyaç duyduğu Alanlar ve Veritabanlarıyla sınırlandırın.
+- Belirteçleri ortam değişkenlerinde saklayın, asla kod içine sabitlemeyin.
+- Etkinleştirmeden önce doğrulama yapmak için **Düğümü Test Et**'i kullanın.
+- [Otomasyon API Başvurusu](/tr/api-reference/automation/put-base-workflow-action) belgesinin tamamına bakın.

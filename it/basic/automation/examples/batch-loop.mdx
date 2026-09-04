@@ -1,0 +1,33 @@
+---
+title: "Elaborare i Record in batch con un ciclo"
+description: "Usa Ottieni Record + Ciclo per elaborare più Record in una singola esecuzione del workflow"
+---
+
+<Tip>Consigliamo di creare gli esempi di Automazione direttamente in AI Chat. Descrivi il workflow desiderato e l'IA si occuperà dell'intera configurazione, inclusi trigger, azioni, script e impostazioni.</Tip>
+
+## Creare con l'IA
+
+Apri AI Chat nella barra laterale destra della Tabella e spiega all'IA cosa desideri. Ad esempio, puoi dire:
+
+*"Ogni giorno alle 8:00, trova tutte le attività la cui data di scadenza è trascorsa e il cui stato non è Scaduto, quindi aggiorna il loro stato a Scaduto"*
+
+L'IA creerà automaticamente il workflow completo. Puoi esaminare lo script generato, provarlo con dati reali e abilitare il workflow quando è pronto.
+
+## Configurazione manuale
+
+1. **Crea un workflow** con il trigger **All'orario pianificato**, ogni giorno alle 08:00.
+2. **Aggiungi un'azione** → **Ottieni Record**.
+   - Tabella: **Attività**
+   - Filtro: `Data di scadenza` **è precedente a** `oggi` E `Stato` **non è** `Scaduto`
+3. Fai clic su **Test** per vedere i Record corrispondenti.
+4. **Aggiungi un'azione** → **Aggiorna Record**.
+5. Fai clic su **Esecuzione in ciclo** sotto il selettore della Tabella.
+6. Seleziona l'output array del passaggio Ottieni Record.
+7. Esegui la mappatura:
+   - ID Record → l'ID Record dell'elemento corrente (tramite **+**)
+   - Stato → `Scaduto`
+8. Fai clic su **Test**, quindi **abilita** il workflow.
+
+## Come funziona
+
+Il passaggio Ottieni Record restituisce un array. Il passaggio Aggiorna Record con Ciclo abilitato scorre in ordine ogni elemento e lo aggiorna singolarmente.

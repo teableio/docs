@@ -1,0 +1,244 @@
+---
+title: "Barra de herramientas de la Vista"
+description: "Utiliza filtros, grupos, criterios de ordenación, opciones para compartir y ajustes de colaboración en la Vista actual."
+---
+
+La barra de herramientas de la Vista controla cómo se muestran y comparten los Registros en la Vista actual. Los filtros, los grupos, los criterios de ordenación, los Campos visibles, la altura de las filas y otros ajustes relacionados solo afectan a la Vista actual. No eliminan Registros ni modifican otras Vistas.
+
+<Note>Los ajustes de filtros, grupos y ordenación son independientes en cada Vista. Los cambios realizados en una Vista no afectan a las demás.</Note>
+
+## Descripción general de la barra de herramientas
+
+| Herramienta | Utilidad | Situaciones habituales |
+| --- | --- | --- |
+| Filtro | Mostrar únicamente los Registros que cumplan determinadas condiciones | Tareas abiertas, tus propios Registros o Registros de un intervalo de fechas |
+| Grupo | Agrupar Registros por los valores de un Campo | Carga de trabajo por responsable, progreso por estado o Registros por fecha |
+| Ordenar | Reordenar los Registros según los valores de un Campo | Registros actualizados recientemente, prioridad de tareas o clasificación de ventas |
+| Compartir | Publicar la Vista actual mediante un enlace | Compartir un resultado filtrado, ordenado, agrupado, con Campos ocultos o con un diseño concreto |
+| Colaboración en la Vista | Elegir si los ajustes de la Vista se sincronizan para todos o solo se aplican a ti | Cambios temporales en la Vista o una Vista de equipo que todos utilizan |
+
+## Filtro
+
+Los filtros muestran los Registros que cumplen condiciones concretas en la Vista actual y ocultan los que no las cumplen. No eliminan Registros.
+
+<Steps>
+  <Step title="Abre el panel de filtros">
+    Haz clic en `Filtro` en la barra de herramientas de la Vista.
+  </Step>
+  <Step title="Añade una condición">
+    Elige un Campo, un operador y un valor de comparación.
+  </Step>
+  <Step title="Elige cómo se combinan las condiciones">
+    Si hay varias condiciones, elige **Cumplir todas las condiciones** o **Cumplir alguna condición**.
+  </Step>
+</Steps>
+
+| Relación | Descripción |
+| --- | --- |
+| Cumplir todas las condiciones | Un Registro solo aparece cuando se cumplen todas las condiciones de ese nivel |
+| Cumplir alguna condición | Un Registro aparece cuando se cumple cualquier condición de ese nivel |
+
+<img
+  src="/images/docs/base/2026-05-26-view-filter-conditions.png"
+  alt="Condiciones de filtrado de una Vista"
+  className="docs-screenshot"
+/>
+
+### Grupos de condiciones
+
+Utiliza **grupos de condiciones** para crear una lógica de filtros más compleja. Por ejemplo, «A y B, o C y D» se puede expresar mediante dos grupos.
+
+- Haz clic en `Añadir grupo de condiciones` para crear un grupo.
+- Los grupos pueden utilizar **Cumplir todas las condiciones** o **Cumplir alguna condición**.
+- Un grupo puede contener grupos anidados.
+- Los grupos de condiciones admiten hasta **3 niveles**.
+
+<img
+  src="/images/docs/base/2026-05-26-view-filter-condition-groups.png"
+  alt="Grupos de condiciones de filtrado de una Vista"
+  className="docs-screenshot"
+/>
+
+### Operadores de filtro habituales
+
+| Tipo de Campo | Operadores habituales | Entrada |
+| --- | --- | --- |
+| Texto de una línea, Texto largo | Es igual a, No es igual a, Contiene, No contiene, Está vacío, No está vacío | Entrada de texto |
+| Usuario | Es igual a, No es igual a, Contiene alguno, No contiene ninguno, Está vacío, No está vacío | Lista de usuarios, usuario actual |
+| Adjunto | Está vacío, No está vacío | Sin entrada |
+| Selección múltiple | Contiene alguno, Contiene todos, Coincide exactamente, No contiene ninguno, Está vacío, No está vacío | Lista de opciones |
+| Selección única | Es igual a, No es igual a, Contiene alguno, No contiene ninguno | Lista de opciones |
+| Fecha, Fecha de creación, Fecha de última modificación | Es igual a, No es igual a, Dentro de, Antes de, Después de, En la fecha o antes, En la fecha o después, Está vacío, No está vacío | Intervalo predefinido o fecha exacta |
+| Número, Valoración, Numeración automática | `=`, `≠`, `>`, `≥`, `<`, `≤`, Está vacío, No está vacío | Número |
+| Enlace | Es igual a, No es igual a, Contiene, No contiene, Contiene alguno, Contiene todos, Coincide exactamente, No contiene ninguno, Está vacío, No está vacío | Selector de Registros enlazados |
+| Creado por, Última modificación por | Es igual a, No es igual a | Lista de usuarios, usuario actual |
+
+Los operadores de Fórmula y Acumulación dependen del tipo de resultado.
+
+### Avisos de condiciones no válidas
+
+Si cambia el tipo de un Campo, se elimina un Campo o una configuración de filtros antigua deja de ser compatible, Teable ignora la condición no válida para que la Vista pueda seguir abriéndose.
+
+- El botón `Filtro` de la barra de herramientas muestra un icono de advertencia.
+- Después de abrir el panel de filtros, la condición no válida muestra un icono de advertencia.
+- Pasa el cursor sobre el icono para consultar el motivo y corregir la condición.
+
+## Grupo
+
+Agrupar los Registros por los valores de un Campo permite revisar su distribución, los resúmenes y la jerarquía.
+
+<Steps>
+  <Step title="Abre el panel de grupos">
+    Haz clic en `Grupo` en la barra de herramientas de la Vista.
+  </Step>
+  <Step title="Elige un Campo">
+    Elige el Campo por el que quieras agrupar.
+  </Step>
+  <Step title="Añade más grupos">
+    Haz clic en `Añadir otro grupo` cuando necesites varios niveles de agrupación.
+  </Step>
+</Steps>
+
+| Tipo de Campo | Uso recomendado |
+| --- | --- |
+| Selección única, Selección múltiple | Agrupar por opciones fijas, como el estado, la prioridad o el tipo |
+| Usuario | Agrupar por responsable, colaborador o persona que envió el formulario |
+| Fecha | Agrupar Registros por periodo de tiempo |
+| Casilla de verificación, Enlace, Número, Valoración | Agrupar por valores o resultados claros |
+
+- La agrupación admite hasta **3 niveles**.
+- Puedes contraer o expandir grupos. Los Registros de cada grupo siguen respetando el orden actual.
+- Cada grupo muestra una barra de resumen en la parte superior para que puedas consultar sus resultados agregados.
+- Los valores vacíos se colocan en grupos independientes sin categoría, sin asignar o vacíos, según el tipo de Campo.
+
+## Ordenar
+
+La ordenación reorganiza los Registros según los valores de un Campo. Cambia el orden de visualización en la Vista actual, pero no modifica el contenido de los Registros.
+
+<Steps>
+  <Step title="Abre el panel de ordenación">
+    Haz clic en `Ordenar` en la barra de herramientas de la Vista.
+  </Step>
+  <Step title="Elige un Campo">
+    Elige el Campo por el que quieras ordenar.
+  </Step>
+  <Step title="Elige una dirección">
+    Elige orden ascendente o descendente. Añade más condiciones cuando necesites una ordenación de varios niveles.
+  </Step>
+</Steps>
+
+La ordenación de varios niveles sigue el orden de las condiciones. Teable ordena primero según la primera condición y, si varios Registros tienen el mismo valor, aplica la siguiente.
+
+| Tipo de Campo | Comportamiento de la ordenación |
+| --- | --- |
+| Texto, Adjunto | Ordena alfabéticamente o en orden inverso. Los adjuntos se ordenan por nombre de archivo |
+| Número, Duración, Valoración | Ordena por valor de forma ascendente o descendente |
+| Fecha, Fecha de creación, Fecha de última modificación | Ordena de la fecha más antigua a la más reciente o a la inversa |
+| Casilla de verificación | Ordena de las casillas sin marcar a las marcadas o a la inversa |
+| Selección única, Selección múltiple | Ordena según el orden de las opciones en la configuración del Campo o a la inversa |
+
+Los Campos de Fórmula y Acumulación se ordenan según su tipo de resultado.
+
+Utiliza el interruptor `Ordenar Registros automáticamente` del menú de ordenación.
+
+| Estado | Comportamiento |
+| --- | --- |
+| Activado | Los Registros permanecen ordenados según las reglas actuales. Cuando cambia el valor de un Campo, el Registro se desplaza a su nueva posición. No puedes arrastrar manualmente los Registros mientras la ordenación automática esté activada |
+| Desactivado | Los Registros solo vuelven a ordenarse cuando aplicas de nuevo la ordenación. Puedes arrastrarlos manualmente y las actualizaciones de los datos no los desplazan de forma automática |
+
+## Compartir una Vista
+
+**Compartir vista** publica la Vista actual mediante un enlace. Los visitantes ven los datos y el diseño de esa Vista. Esto no equivale a invitarlos como colaboradores de la Base.
+
+<Note>Para compartir una Base completa, una Tabla concreta o una carpeta, utiliza las opciones para compartir Bases descritas en [Base](/es/basic/base).</Note>
+
+| Opción para compartir | Uso recomendado |
+| --- | --- |
+| Compartir tabla | Conceder a personas externas un acceso más amplio a la Tabla actual |
+| Compartir vista | Publicar únicamente la Vista actual, por ejemplo, un resultado filtrado, ordenado, agrupado, con Campos ocultos o con un diseño concreto |
+
+Los enlaces para compartir Vistas respetan la configuración actual de la Vista. Si más adelante cambias los filtros, la ordenación, la agrupación, los Campos ocultos o el diseño, la página compartida también cambiará.
+
+<Steps>
+  <Step title="Abre la Vista">
+    Ve a la Vista que quieras compartir.
+  </Step>
+  <Step title="Abre las opciones para compartir">
+    Haz clic en **Compartir** en la barra de herramientas de la Vista.
+  </Step>
+  <Step title="Elige Compartir vista">
+    Cambia a **Compartir vista**.
+  </Step>
+  <Step title="Activa el uso compartido público">
+    Activa **Compartir vista en la web**.
+  </Step>
+  <Step title="Copia el enlace">
+    Copia el enlace generado o comparte el código QR.
+  </Step>
+</Steps>
+
+Si no tienes permiso para compartir la Vista, el interruptor correspondiente no estará disponible. Después de desactivar **Compartir vista en la web**, los enlaces compartidos existentes dejarán de abrirse.
+
+<Warning>Los enlaces públicos se pueden reenviar. Antes de activar el uso compartido, confirma que la Vista actual no contenga Campos o Registros que no deban ser públicos.</Warning>
+
+Los distintos tipos de Vista muestran opciones avanzadas diferentes.
+
+| Opción | Se aplica a | Descripción |
+| --- | --- | --- |
+| Permitir a los visualizadores copiar datos de esta Vista | Vista de cuadrícula | Controla si los visitantes pueden copiar datos de la Vista de cuadrícula compartida |
+| Mostrar todos los Campos en los Registros expandidos | Vista de cuadrícula | Controla si los visitantes pueden ver los Campos ocultos al abrir los detalles de un Registro |
+| Permitir que los visualizadores con sesión iniciada editen los datos visibles | Todas las Vistas | Permite que los visitantes con sesión iniciada editen Registros y Campos dentro del ámbito de la Vista compartida |
+| Restringir con contraseña | Todas las Vistas compartidas | Añade una contraseña al enlace compartido. Los visitantes deben introducirla correctamente antes de abrirlo |
+| Exigir inicio de sesión para enviar | Vista de formulario | Exige que los visitantes inicien sesión antes de enviar el formulario |
+
+Cuando está activada la opción **Permitir que los visualizadores con sesión iniciada editen los datos visibles**, los visitantes anónimos conservan el acceso de solo lectura y ven un mensaje para iniciar sesión. Los visitantes que hayan iniciado sesión solo pueden crear, actualizar o eliminar Registros dentro de los datos visibles de la Vista compartida. Los Registros que no cumplan el filtro actual de la Vista y los Campos ocultos no se pueden editar mediante el enlace compartido.
+
+Las Vistas compartidas se pueden insertar en otras páginas web. Haz clic en **Configuración de inserción** para obtener una vista previa, copiar el código del iframe, ocultar la barra de herramientas y elegir un tema.
+
+```html
+<iframe
+  src="https://app.teable.ai/share/[share-id]/view?hideToolBar=true&embed=true"
+  width="100%"
+  height="533"
+  style="border: 0">
+</iframe>
+```
+
+| Opción de inserción | Descripción |
+| --- | --- |
+| Ocultar barra de herramientas | Añade `hideToolBar=true` al enlace y oculta los controles de filtros, ordenación, búsqueda y otros controles de la barra de herramientas. No se aplica a la Vista de formulario |
+| Tema | Admite los temas del sistema, claro y oscuro |
+
+## Colaboración en la Vista
+
+La colaboración en la Vista controla si sus ajustes se comparten con todos o se conservan como ajustes personales. Afecta a los filtros, la ordenación, los grupos, los Campos visibles, la altura de las filas y otros ajustes de la Vista. No afecta a los datos de los Registros.
+
+| Modo | Caso de uso | Comportamiento de los ajustes |
+| --- | --- | --- |
+| Modo de colaboración | El equipo necesita utilizar la misma configuración de la Vista | Los ajustes de la Vista se sincronizan para todos los que la utilizan |
+| Modo personal | Quieres una configuración temporal de la Vista o consultar los datos a tu manera | Los filtros, la ordenación, los grupos, los Campos visibles y la altura de las filas solo se aplican a ti |
+
+Haz clic en `Personal` en la barra de herramientas para alternar entre el modo de colaboración y el modo personal.
+
+Si la Vista no está bloqueada y tienes permiso para actualizarla, al desactivar el modo personal dispondrás de dos opciones.
+
+| Opción | Resultado |
+| --- | --- |
+| `Salir y sincronizar` | Sincroniza con todos tus ajustes de la Vista en modo personal |
+| `Confirmar salida` | Descarta tus ajustes de la Vista en modo personal y abandona ese modo |
+
+Si la Vista está bloqueada o no tienes permiso para editarla, puedes seguir utilizando el modo personal para realizar ajustes temporales propios, pero no sincronizarlos con otros usuarios.
+
+## Preguntas frecuentes
+
+<AccordionGroup>
+  <Accordion title="¿Cómo funciona Restringir ámbito para los Campos de enlace de una Vista compartida?">
+    Si la Vista compartida incluye Campos de enlace, utiliza **Restringir ámbito** en el panel para compartir a fin de limitar qué Registros y Campos enlazados pueden ver o seleccionar los visitantes desde esos Campos de enlace.
+  </Accordion>
+</AccordionGroup>
+
+## Notas
+
+- Los cambios en los filtros, los grupos, la ordenación, los Campos visibles o la altura de las filas afectan a todos los usuarios de la Vista actual, salvo que estés en modo personal.
+- Compartir una Vista publica el resultado de la Vista actual, no todos los permisos de la Base. Para una colaboración continua, utiliza los permisos de miembros o las opciones para compartir la Base.
+- En ambos modos, las modificaciones de los valores de las celdas se sincronizan para todos.

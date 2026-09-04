@@ -1,0 +1,200 @@
+---
+title: "Leitfaden zur Authority Matrix"
+description: "Konfigurieren Sie Rollen der Authority Matrix für ein Vertriebsteam, das gemeinsame Daten, inhaberbasierte Datensatzberechtigungen und eingeschränkte Dateneingabe benötigt."
+---
+
+{/* mintlify-resync: 2026-05-28 */}
+Dieser Leitfaden verwendet eine Vertriebs-Base mit drei Tabellen: `Kunden`, `Verkaufsaufträge` und `Produkte`. Ziel ist es, jeder Rolle die Arbeit mit den benötigten Daten zu ermöglichen, ohne die gesamte Base offenzulegen.
+
+| Rolle | Zugriffsziele |
+| --- | --- |
+| Vertriebsleitung | Kunden- und Verkaufsdaten anzeigen, Produkte kommentieren und Produktpreise nicht ändern. |
+| Vertriebsmitarbeitende | Nur eigene Kunden und Aufträge anzeigen und aktualisieren, neue Kunden erstellen und abgeschlossene Aufträge nicht löschen. |
+| Datenerfassung | Neue Produkte hinzufügen, ohne vorhandene Produkte, Kunden oder Aufträge zu sehen. |
+
+<Info>Aktivieren Sie die Authority Matrix, bevor Sie sich auf Rollenberechtigungen verlassen.</Info>
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-enable-en.png"
+  alt="Authority Matrix aktivieren"
+  className="docs-screenshot"
+/>
+
+## Rollen erstellen
+
+<Steps>
+  <Step title="Authority Matrix aktivieren">
+    Öffnen Sie die Seite der Authority Matrix in der Base und aktivieren Sie den Hauptschalter. Der Nutzer, der sie aktiviert, wird als Administrator hinzugefügt.
+  </Step>
+  <Step title="Benutzerdefinierte Rollen hinzufügen">
+    Klicken Sie auf `Rolle hinzufügen` und erstellen Sie `Vertriebsleitung`, `Vertriebsmitarbeitende` und `Datenerfassung`.
+  </Step>
+</Steps>
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-create-roles-en.png"
+  alt="Drei Rollen erstellen: Vertriebsleitung, Vertriebsmitarbeitende, Datenerfassung"
+  className="docs-screenshot"
+/>
+
+## Vertriebsleitung konfigurieren
+
+Die Vertriebsleitung benötigt umfassende Sichtbarkeit, Produktpreise sollen jedoch vor versehentlichen Änderungen geschützt bleiben.
+
+| Knoten | Einstellung |
+| --- | --- |
+| Kunden | Setzen Sie die Tabelle auf `Kann bearbeiten`. Lassen Sie die Datensatz- und Feldberechtigungen offen, damit die Rolle Kundendaten anzeigen kann. |
+| Verkaufsaufträge | Setzen Sie die Tabelle auf `Kann bearbeiten`. Lassen Sie die Datensatz- und Feldberechtigungen offen, damit die Rolle Vertriebsaktivitäten prüfen kann. |
+| Produkte | Setzen Sie die Tabelle auf `Kann bearbeiten` und erlauben Sie dann in den Datensatzberechtigungen nur `Datensatz lesen` und `Datensatz kommentieren`. |
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-director-permissions-en.png"
+  alt="Berechtigungen für Vertriebsleitung konfigurieren"
+  className="docs-screenshot"
+/>
+
+Weisen Sie Mitglieder in der Rollenliste über `Nutzer hinzufügen` oder `Aus Organisation hinzufügen` zu und stellen Sie anschließend sicher, dass der Rollenschalter aktiviert ist.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-director-members-en.png"
+  alt="Mitglieder zur Rolle Vertriebsleitung hinzufügen"
+  className="docs-screenshot"
+/>
+
+Nach der Einrichtung kann die Vertriebsleitung Kunden- und Auftragsdaten prüfen, Produkte kommentieren und Produktdatensätze nicht ändern.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-director-view-en.webp"
+  alt="Ansicht der Vertriebsleitung nach der Konfiguration der Berechtigungen"
+  className="docs-screenshot"
+/>
+
+## Vertriebsmitarbeitende konfigurieren
+
+Die Rolle Vertriebsmitarbeitende verwendet Datensatzfilter, damit jede Person nur mit Datensätzen arbeitet, deren Inhaber sie ist.
+
+### Kunden
+
+Setzen Sie `Kunden` auf `Kann bearbeiten`.
+
+| Berechtigungsbereich | Einstellung |
+| --- | --- |
+| Datensatzberechtigungen | Wählen Sie Datensätze, die bestimmten Bedingungen entsprechen. Fügen Sie einen Filter wie `Vertriebsmitarbeitende` `ist` `Ich (aktueller Nutzer)` hinzu. |
+| Datensatzoperationen | Erlauben Sie `Datensatz lesen`, `Datensatz aktualisieren` und `Datensatz erstellen`. Lassen Sie `Datensatz löschen` deaktiviert, wenn Vertriebsmitarbeitende keine Kundendatensätze löschen sollen. |
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-filter-en.webp"
+  alt="Inhaberbasierten Datensatzfilter für Vertriebsmitarbeitende konfigurieren"
+  className="docs-screenshot"
+/>
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-customer-permissions-en.png"
+  alt="Kundenberechtigungen für Vertriebsmitarbeitende konfigurieren"
+  className="docs-screenshot"
+/>
+
+### Verkaufsaufträge
+
+Setzen Sie `Verkaufsaufträge` auf `Kann bearbeiten`.
+
+| Berechtigungsbereich | Einstellung |
+| --- | --- |
+| Datensatzberechtigungen | Verwenden Sie denselben inhaberbasierten Filter, beispielsweise `Vertriebsmitarbeitende` `ist` `Ich (aktueller Nutzer)`. |
+| Datensatzoperationen | Erlauben Sie `Datensatz lesen` und `Datensatz erstellen`. Lassen Sie `Datensatz aktualisieren` und `Datensatz löschen` deaktiviert, wenn abgeschlossene Aufträge unverändert bleiben sollen. |
+| Feldberechtigungen | Blenden Sie sensible Felder wie `Zahlungsmethode` aus, indem Sie `Datensatz lesen` für dieses Feld deaktivieren. |
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-order-permissions-en.png"
+  alt="Auftragsberechtigungen für Vertriebsmitarbeitende konfigurieren"
+  className="docs-screenshot"
+/>
+
+Weisen Sie Vertriebsmitarbeitende der Rolle zu und lassen Sie die Rolle aktiviert.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-members-en.png"
+  alt="Mitglieder zur Rolle Vertriebsmitarbeitende hinzufügen"
+  className="docs-screenshot"
+/>
+
+Jede vertriebliche Person sieht nun nur die Kunden- und Auftragsdatensätze, die dem Inhaberfilter entsprechen.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-view-en.webp"
+  alt="Vorschau der Ansicht für Vertriebsmitarbeitende"
+  className="docs-screenshot"
+/>
+
+## Datenerfassung konfigurieren
+
+Die Datenerfassung muss nur Produkte hinzufügen.
+
+| Knoten | Einstellung |
+| --- | --- |
+| Produkte | Setzen Sie die Tabelle auf `Kann bearbeiten`. Erlauben Sie in den Datensatzberechtigungen nur `Datensatz erstellen`. |
+| Produktfelder | Falls verknüpfte Auftragsdaten ausgeblendet bleiben sollen, deaktivieren Sie `Datensatz lesen` für das verknüpfte Feld `Aufträge`. |
+| Kunden und Verkaufsaufträge | Lassen Sie diese Tabellen auf `Kein Zugriff`. |
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-data-entry-permissions-en.png"
+  alt="Berechtigungen für Datenerfassung konfigurieren"
+  className="docs-screenshot"
+/>
+
+Weisen Sie Mitarbeitende der Rolle zu und lassen Sie die Rolle aktiviert.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-data-entry-members-en.png"
+  alt="Mitglieder zur Rolle Datenerfassung hinzufügen"
+  className="docs-screenshot"
+/>
+
+Nach der Einrichtung kann die Datenerfassung neue Produktdatensätze hinzufügen, aber keine vorhandenen Produkt-, Kunden- oder Auftragsdaten durchsuchen.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-data-entry-view-en.webp"
+  alt="Vorschau der Ansicht für Datenerfassung"
+  className="docs-screenshot"
+/>
+
+## Ansicht für Vertriebsprüfungen
+
+<Tip>Verwenden Sie diese Einrichtung für Vertriebsprüfungen: Mitarbeitende können die vollständige Kundenliste sehen, aber nur Kunden bearbeiten, deren Inhaber sie sind.</Tip>
+
+Während einer Prüfung müssen Vertriebsmitarbeitende möglicherweise jeden Kundendatensatz sehen, um Nachfassmuster und Kundenstatus zu vergleichen. Die tägliche Bearbeitung sollte weiterhin auf die eigenen Kunden beschränkt bleiben, damit nicht versehentlich die Datensätze anderer Mitarbeitender geändert werden.
+
+Behalten Sie die vorhandene Rolle `Vertriebsmitarbeitende` bei und fügen Sie dann eine schreibgeschützte Rolle für unternehmensweite Kundensichtbarkeit hinzu. Eine Person kann die schreibgeschützte Rolle verwenden, um alle Kunden anzuzeigen, und die Rolle `Vertriebsmitarbeitende`, um nur ihre eigenen Kunden zu aktualisieren.
+
+### Schreibgeschützte Rolle erstellen
+
+Klicken Sie auf `Rolle hinzufügen` und erstellen Sie eine schreibgeschützte Rolle, beispielsweise `Globaler Kundenbetrachter`.
+
+### Kundenzugriff konfigurieren
+
+Setzen Sie `Kunden` auf `Kann bearbeiten`. Erlauben Sie in den Datensatzberechtigungen nur `Datensatz lesen`. Aktivieren Sie nicht `Datensatz aktualisieren`, `Datensatz löschen` oder `Datensatz erstellen`. Lassen Sie den Datensatzfilter leer, damit diese Rolle alle Kundendatensätze anzeigen kann.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-global-customer-viewer-permissions-en.png"
+  alt="Schreibgeschützte Kundenberechtigungen für Globaler Kundenbetrachter konfigurieren"
+  className="docs-screenshot"
+/>
+
+### Vertriebsmitarbeitende zuweisen
+
+Kehren Sie zur Rollenliste zurück und fügen Sie die Vertriebsmitarbeitenden, die Prüfzugriff benötigen, zu `Globaler Kundenbetrachter` hinzu.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-global-customer-viewer-members-en.png"
+  alt="Mitglieder zur Rolle Globaler Kundenbetrachter hinzufügen"
+  className="docs-screenshot"
+/>
+
+Wenn ein Nutzer sowohl `Vertriebsmitarbeitende` als auch `Globaler Kundenbetrachter` hat, kombiniert Teable die Berechtigungen. Der Nutzer kann alle Kundendatensätze anzeigen, aber nur Datensätze aktualisieren, die durch die inhaberbasierte Rolle `Vertriebsmitarbeitende` erlaubt sind.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-global-customer-viewer-result-en.webp"
+  alt="Ansicht für Vertriebsmitarbeitende mit Berechtigungen von Globaler Kundenbetrachter"
+  className="docs-screenshot"
+/>
+

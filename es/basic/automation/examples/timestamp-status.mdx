@@ -1,0 +1,36 @@
+---
+title: "Registrar automáticamente la hora de un cambio de estado"
+description: "Escribe automáticamente una marca de tiempo cuando el estado de un Registro cambie a un valor específico"
+---
+
+<Tip>Recomendamos crear los ejemplos de Automatización directamente en el Chat de IA. Describe el flujo de trabajo que quieres y la IA se encargará de configurarlo por completo, incluidos el disparador, las acciones, el script y la configuración.</Tip>
+
+## Crear con IA
+
+Abre el Chat de IA en la barra lateral derecha de tu Tabla y dile a la IA lo que quieres. Por ejemplo, puedes decir:
+
+*"Cuando el estado de una tarea cambie a Completado, escribe la fecha y hora actuales en el Campo Completado el"*
+
+La IA creará automáticamente el flujo de trabajo completo. Puedes revisar el script generado, probarlo con datos reales y habilitar el flujo de trabajo cuando esté listo.
+
+## Configuración manual
+
+1. **Crea un flujo de trabajo** con el disparador **Cuando el Registro cumple las condiciones**.
+2. Selecciona tu Tabla **Tareas**.
+3. Establece el filtro: `Estado` **es** `Completado`.
+4. Haz clic en **Probar**.
+5. **Añade una acción** → **Actualizar Registro**.
+6. Asigna:
+   - ID del Registro → ID del Registro del disparador (mediante **+**)
+   - Completado el → usa una expresión o establece la marca de tiempo del disparador
+7. Haz clic en **Probar** y, después, en **Habilitar**.
+
+## ¿Por qué «Cuando el Registro cumple las condiciones»?
+
+Este disparador se activa **una sola vez**, cuando el Registro pasa a cumplir las condiciones. Si más adelante alguien modifica la Descripción (mientras el Estado sigue siendo «Completado»), el flujo de trabajo **no** vuelve a activarse. Esto evita que se sobrescriba la marca de tiempo.
+
+## Variaciones
+
+- **«Iniciado el»** — se activa cuando Estado cambia a «En curso».
+- **«Escalado el»** — se activa cuando Prioridad cambia a «Urgente».
+- **«Aprobado el»** — se activa cuando Aprobación cambia a «Sí».

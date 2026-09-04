@@ -1,0 +1,40 @@
+---
+title: "Classificare automaticamente con l'IA le nuove voci dei moduli"
+description: "Usa Genera con l'IA per classificare automaticamente gli invii dei moduli"
+---
+
+<Tip>Consigliamo di creare gli esempi di Automazione direttamente in AI Chat. Descrivi il workflow desiderato e l'IA si occuperà dell'intera configurazione, inclusi trigger, azioni, script e impostazioni.</Tip>
+
+## Creare con l'IA
+
+Apri AI Chat nella barra laterale destra della Tabella e spiega all'IA cosa desideri. Ad esempio, puoi dire:
+
+*"Quando qualcuno invia il modulo di feedback, classifica il feedback come Segnalazione di bug, Richiesta di funzionalità o Feedback generale e scrivi la categoria nel Record"*
+
+L'IA creerà automaticamente il workflow completo. Puoi esaminare lo script generato, provarlo con dati reali e abilitare il workflow quando è pronto.
+
+## Configurazione manuale
+
+1. **Crea un workflow** con il trigger **Quando viene inviato un modulo**.
+2. Seleziona la Tabella e il modulo **Feedback**.
+3. Fai clic su **Test**.
+4. **Aggiungi un'azione** → **Genera con l'IA**.
+   - Prompt:
+     ```
+     Classifica questo feedback in una sola delle seguenti categorie:
+     Segnalazione di bug, Richiesta di funzionalità o Feedback generale.
+
+     Rispondi esclusivamente con il nome della categoria.
+
+     Feedback: <inserisci il Campo del feedback tramite +>
+     ```
+   - Tipo di output: **Testo**
+5. **Aggiungi un'azione** → **Aggiorna Record**.
+   - ID Record: l'ID del Record del trigger (tramite **+**)
+   - Campo Categoria → l'output di Genera con l'IA (tramite **+**)
+6. Prova ogni passaggio, quindi **abilita** il workflow.
+
+## Suggerimenti
+
+- Per una classificazione più articolata, aumenta il numero di categorie nel prompt.
+- Usa il tipo di output **JSON** se vuoi che l'IA restituisca più Campi (ad esempio, categoria + sentiment + riepilogo) in un'unica chiamata.

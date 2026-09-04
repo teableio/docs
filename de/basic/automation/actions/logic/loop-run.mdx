@@ -1,0 +1,104 @@
+---
+title: "Schleife (Stapelverarbeitung)"
+description: "Verarbeiten Sie mehrere Elemente in einer Aktion, indem Sie ein Array durchlaufen"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Wir empfehlen dringend, Automatisierungen mit „Skript ausführen“ zu erstellen, da diese Funktion alle Aktionsarten abdecken kann – auch solche, die andernfalls manuell erstellt werden müssten. Beschreiben Sie Ihre Anforderungen einfach im KI-Chat.
+
+Bitte beachten Sie: Wenn Sie Aktionen manuell hinzufügen, kann die KI sie später weder erkennen noch ändern.
+</Tip>
+
+Mit einer Schleife können Sie eine Aktion **einmal pro Element** eines Arrays ausführen. Statt einen einzelnen Datensatz zu verarbeiten oder eine einzelne E-Mail zu senden, wiederholt die Schleife die Aktion für jedes Element einer Liste – etwa um Datensätze massenhaft zu erstellen, personalisierte E-Mails an eine Kontaktliste zu senden oder für jedes Element einen API-Aufruf durchzuführen.
+
+Die Elemente werden der Reihe nach verarbeitet. Die Ergebnisse aller Iterationen werden als Array zurückgegeben, das nachfolgende Schritte verwenden können.
+
+## Unterstützte Aktionen
+
+| Aktion | Schleifenunterstützung |
+|---|---|
+| Datensatz erstellen | Ja |
+| Datensatz aktualisieren | Ja |
+| E-Mail senden | Ja |
+| HTTP-Anfrage | Ja |
+| Mit KI generieren | Ja |
+
+## Herkunft von Arrays
+
+Für eine Schleife benötigen Sie ein Array als Eingabe. Häufige Quellen sind:
+
+| Quelle | Ergebnis |
+|---|---|
+| Aktion **Datensätze abrufen** | Ein Array mit Datensätzen aus einer Tabellenabfrage |
+| Auslöser **Webhook empfangen** | Der JSON-Text kann Arrays enthalten (z. B. eine Liste von Bestellpositionen) |
+| Aktion **Mit KI generieren** (JSON-Ausgabe) | Die KI kann ein Array strukturierter Elemente zurückgeben |
+| Aktion **HTTP-Anfrage** | Eine API-Antwort, die ein Array enthält |
+| Aktion **Skript** | Ein Skript kann über `output.set()` ein beliebiges Array ausgeben |
+
+## Einrichtung
+
+1. Öffnen Sie eine unterstützte Aktion (z. B. „Datensatz erstellen“ oder „E-Mail senden“).
+2. Klicken Sie unter der Tabellenauswahl (oder im Konfigurationsbereich der Aktion) auf **Schleifenausführung**.
+3. Wählen Sie in der Datenquellenauswahl eine **Array-Variable** aus einem vorherigen Schritt aus, beispielsweise das Datensatz-Array aus einem Schritt „Datensätze abrufen“.
+4. Im Bereich für die Feldzuordnung werden nun die Eigenschaften jedes einzelnen Elements angezeigt (nicht das vollständige Array). Klicken Sie auf **+**, um auf Eigenschaften des **aktuellen Elements** zu verweisen – beispielsweise Name, E-Mail-Adresse oder Status des aktuellen Datensatzes.
+5. Speichern Sie die Aktion. Beim Ausführen des Workflows wird die Aktion einmal pro Element des Arrays ausgeführt.
+
+## Auf das aktuelle Element verweisen
+
+Wenn die Schleife aktiv ist, zeigt die Variablenauswahl **+** die Eigenschaften des aktuellen Elements der Iteration an. Beispiel:
+
+- Beim Durchlaufen der Ausgabe von „Datensätze abrufen“ können Sie auf `aktuelles Element → Felder → Name`, `aktuelles Element → Felder → E-Mail` usw. verweisen.
+- Beim Durchlaufen eines Webhook-Arrays können Sie auf `aktuelles Element → product_name`, `aktuelles Element → quantity` usw. verweisen.
+
+Dies unterscheidet sich vom Modus ohne Schleife, in dem Sie auf das vollständige Array oder einen bestimmten Index verweisen.
+
+## Konkretes Beispiel: Erinnerungs-E-Mails für überfällige Aufgaben senden
+
+1. **Auslöser:** Zum geplanten Zeitpunkt – täglich um 9:00 Uhr.
+2. **Aktion 1:** Datensätze abrufen – aus der Tabelle „Aufgaben“ mit dem Filter: Fälligkeitsdatum liegt vor heute UND Status ist nicht „Erledigt“.
+3. **Aktion 2:** E-Mail senden mit aktivierter **Schleife**, Datenquelle = Datensatz-Array aus Aktion 1.
+   - **An:** Feld „E-Mail der zuständigen Person“ des aktuellen Elements.
+   - **Betreff:** `Erinnerung: „{{current item → Task Name}}“ ist überfällig`
+   - **Text:** `Hallo {{current item → Assignee Name}}, deine Aufgabe „{{current item → Task Name}}“ war am {{current item → Due Date}} fällig. Bitte aktualisiere sie.`
+
+Ergebnis: eine personalisierte E-Mail pro überfälliger Aufgabe.
+
+## HTTP-Array-Body
+
+Für HTTP-Anfrageaktionen bietet die Schleife einen speziellen Modus **Array-Body**. Statt pro Element eine HTTP-Anfrage zu senden – was langsam sein und Ratenbegrenzungen erreichen kann –, sendet „Array-Body“ das **gesamte Array als ein einzelnes JSON-Array** in einer Anfrage.
+
+Dies ist nützlich, wenn die externe API Stapeloperationen unterstützt – beispielsweise mehrere Datensätze in einem API-Aufruf erstellen oder einen Stapel von Ereignissen an einen Analysedienst senden.
+
+So verwenden Sie „Array-Body“:
+1. Aktivieren Sie die Schleife für eine HTTP-Anfrageaktion.
+2. Wählen Sie statt des standardmäßigen Modus pro Element den Modus **Array-Body**.
+3. Das gesamte Array wird als JSON-Array serialisiert und im Anfragetext gesendet.
+
+## Hinweise zur Leistung
+
+- Die Schleife verarbeitet Elemente **sequenziell**, nicht parallel. Eine Schleife über 100 Elemente dauert ungefähr 100-mal so lange wie eine einzelne Ausführung.
+- Prüfen Sie bei großen Arrays mit Hunderten oder Tausenden Elementen, ob die externe Aktion Stapeleingaben verarbeiten kann. Verwenden Sie „HTTP-Array-Body“, wenn die API dies unterstützt.
+- Beachten Sie die Ratenbegrenzungen der externen API, wenn Sie die Ausgabe von „Datensätze abrufen“ durchlaufen und für jeden Datensatz HTTP-Anfragen stellen.
+- Teilen Sie bei sehr großen Datensätzen die Arbeit mithilfe der Paginierung in „Datensätze abrufen“ (Skip/Take) und mehrerer Automatisierungsausführungen in kleinere Stapel auf.
+
+## Verwendung
+
+- **Datensätze massenhaft erstellen.** Rufen Sie Datensätze aus einer Tabelle ab und erstellen Sie in einer Schleife entsprechende Datensätze in einer anderen Tabelle.
+- **Personalisierte E-Mails an eine Liste senden.** Rufen Sie eine Kontaktliste ab und senden Sie jedem Kontakt in der Schleife eine angepasste E-Mail.
+- **Mehrere Datensätze aktualisieren.** Rufen Sie Datensätze ab, die eine Bedingung erfüllen, und aktualisieren Sie jeden davon in einer Schleife (z. B. alle überfälligen Aufgaben als „Eskaliert“ markieren).
+- **API-Aufrufe für jeden Datensatz durchführen.** Übertragen Sie die Daten jedes Datensatzes einzeln an ein externes System.
+- **Einen Stapel von Datensätzen mit KI verarbeiten.** Durchlaufen Sie Datensätze und verwenden Sie „Mit KI generieren“, um jeden einzelnen zu klassifizieren, zusammenzufassen oder Daten daraus zu extrahieren.
+
+## Tipps
+
+- Prüfen Sie stets die Größe Ihres Arrays, bevor Sie die Schleife aktivieren. Gibt „Datensätze abrufen“ 1.000 Datensätze zurück, wird Ihre Schleife 1.000-mal ausgeführt.
+- Wenn Ihre Schleife Datensätze in derselben Tabelle erstellt oder aktualisiert, die die Automatisierung ausgelöst hat, achten Sie darauf, die Automatisierung nicht erneut auszulösen. Verwenden Sie Filter am Auslöser, um Schleifen zu vermeiden.
+- Die Ergebnisse aller Schleifeniterationen stehen nachfolgenden Schritten als Array zur Verfügung. Bei sehr großen Schleifen kann dieses Array jedoch groß sein. Verweisen Sie nur auf das, was Sie benötigen.
+
+## Verwandte Themen
+
+- [Datensätze abrufen](/de/basic/automation/actions/records/get-records) – die häufigste Quelle von Arrays für Schleifen
+- [Datensatz erstellen](/de/basic/automation/actions/records/create-record) – wird häufig innerhalb einer Schleife verwendet, um Datensätze massenhaft zu erstellen
+- [HTTP-Anfrage](/de/basic/automation/actions/logic/http-request) – wird häufig innerhalb einer Schleife für API-Aufrufe pro Element verwendet
+- [E-Mail senden](/de/basic/automation/actions/communication/send-email-overview) – wird häufig innerhalb einer Schleife für den Massenversand von E-Mails verwendet

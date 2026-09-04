@@ -1,0 +1,72 @@
+---
+title: "Rollup"
+description: "Aggrega i valori dei Record collegati, ad esempio somma, conteggio, media, massimo e minimo."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+I Campi Rollup calcolano statistiche da più Record collegati. Un Campo Rollup parte in genere da un Campo **Collegamento a Record** esistente, seleziona un Campo di destinazione nei Record collegati e calcola il risultato mediante una funzione scelta.
+
+## Casi d'uso
+
+| Scenario | Utile per |
+| --- | --- |
+| Importo dell'ordine | Aggregare i prezzi delle voci di un ordine per calcolarne il totale |
+| Avanzamento delle attività | Contare le attività collegate, le attività completate o le valutazioni medie |
+| Valore del cliente | Aggregare la spesa totale o il numero di ordini dagli ordini dei clienti |
+| Pulizia dei tag | Combinare tag, partecipanti o canali di origine dai Record collegati |
+
+## Creare e configurare
+
+<Steps>
+  <Step title="Crea una relazione di collegamento">
+    Prima di creare un Campo Rollup, crea un Campo **Collegamento a Record**.
+  </Step>
+  <Step title="Scegli il tipo di Campo">
+    Fai clic su `+` nell'intestazione della Tabella per aggiungere un Campo e scegli **Rollup**.
+  </Step>
+  <Step title="Scegli il Campo di collegamento e quello di destinazione">
+    Scegli il Campo di collegamento che fornisce l'origine dati, quindi scegli il Campo di destinazione da calcolare.
+  </Step>
+  <Step title="Scegli la funzione di rollup">
+    Scegli una funzione in base al tipo di Campo di destinazione, ad esempio somma, conteggio, media, massimo o minimo.
+  </Step>
+</Steps>
+
+## Formattazione e visualizzazione
+
+I risultati dei Rollup possono in genere utilizzare le impostazioni di formattazione e visualizzazione interattiva:
+
+- **Formattazione**: imposta la precisione decimale, i simboli di valuta o le percentuali.
+- **Visualizzazione interattiva**: mostra i risultati numerici come barre, anelli o altri stili di visualizzazione.
+
+Per i dettagli, consulta [formattazione](/it/basic/field/common/formatter) e [visualizzazione interattiva](/it/basic/field/common/show-as).
+
+## Utilizzi comuni
+
+- **Totali degli ordini di una libreria**: in una Tabella `Ordini`, usa il Campo di collegamento `Libri selezionati` per aggregare il Campo `Prezzo` dalla Tabella `Libri`. Scegli **SUM** per calcolare il totale dell'ordine.
+- **Statistiche delle attività di progetto**: in una Tabella `Progetti`, conta le attività collegate o calcola il tasso di completamento delle attività.
+- **Spesa totale dei clienti**: in una Tabella `Clienti`, aggrega gli importi degli ordini correlati per vedere la spesa totale di ciascun cliente.
+
+## Formule Rollup supportate
+
+| Nome formula | Spiegazione |
+| --- | --- |
+| COUNTALL | Conta tutti i valori, inclusi i valori di testo e quelli vuoti |
+| COUNTA | Conta i valori non vuoti |
+| COUNT | Conta gli elementi numerici |
+| SUM | Calcola la somma di tutti i valori numerici |
+| MAX | Restituisce il valore numerico più grande |
+| MIN | Restituisce il valore numerico più piccolo |
+| AND | Restituisce true se tutti i valori sono veri |
+| OR | Restituisce true se almeno un valore è vero |
+| XOR | Restituisce true se è vero un numero dispari di valori |
+| ARRAY_JOIN | Unisce tutti i valori di una matrice in una stringa |
+| ARRAY_UNIQUE | Rimuove i valori duplicati e restituisce una matrice di valori univoci |
+| ARRAY_COMPACT | Rimuove i valori vuoti e restituisce una nuova matrice |
+| CONCATENATE | Unisce più valori in una stringa |
+
+## Note
+
+- **Aggiornamenti dinamici**: i Campi Rollup eseguono i calcoli in tempo reale. Se cambiano i dati di origine o le relazioni di collegamento, il risultato del rollup viene aggiornato.
+- **Limiti dei tipi di dati**: alcune funzioni sono compatibili soltanto con tipi di Campo specifici. Ad esempio, **SUM** funziona soltanto con i Campi Numero. Se scegli un Campo di testo, Teable non propone la somma tra le opzioni.
+- **Prestazioni**: molti Campi Rollup possono influire sulle prestazioni, soprattutto quando coinvolgono numerosi Record. Pianifica con attenzione le relazioni di collegamento e controlla periodicamente le impostazioni dei rollup.

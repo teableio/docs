@@ -1,0 +1,56 @@
+---
+title: "Casella di controllo"
+description: "Archivia stati binari come sì/no o completato/non completato."
+---
+
+Un Campo **Casella di controllo** registra uno stato binario, ad esempio sì/no, attivo/disattivo o completato/non completato. Gli utenti possono fare clic su una cella per alternare tra selezionato e deselezionato.
+
+## Casi d'uso
+
+| Scenario | Ideale per |
+| --- | --- |
+| Completamento delle attività | Completato, elaborato, archiviato |
+| Indicatori rapidi | VIP, bloccato, da riassortire |
+| Punti di controllo del processo | Immagine caricata, testo revisionato, approvazione ottenuta |
+| Attivazione di automazioni | Inviare una notifica, aggiornare uno stato o avviare il passaggio successivo dopo la selezione della casella |
+
+## Creazione e configurazione
+
+<Steps>
+  <Step title="Scegli il tipo di Campo">
+    Fai clic sul `+` sul lato destro dell'intestazione della Tabella, quindi scegli **Casella di controllo** dall'elenco dei tipi di Campo.
+  </Step>
+  <Step title="Assegna un nome al Campo">
+    Inserisci un nome per il Campo, ad esempio "Completato", "VIP" o "Approvato".
+  </Step>
+  <Step title="Imposta il valore predefinito">
+    Scegli se, per impostazione predefinita, i nuovi Record devono avere la casella selezionata o deselezionata.
+  </Step>
+  <Step title="Salva il Campo">
+    Dopo il salvataggio, gli utenti possono fare clic sulle celle per cambiare lo stato.
+  </Step>
+</Steps>
+
+## Utilizzi comuni
+
+- **Stato dell'attività**: usa un Campo "Completato" in una Tabella di attività, quindi crea una Vista "Attività incomplete" che mostri solo i Record deselezionati.
+- **Indicatori rapidi**: contrassegna "VIP" in una Tabella dei clienti o "Da riassortire" in una Tabella di inventario.
+- **Punti di controllo del processo**: aggiungi Campi come "Immagine caricata" o "Testo revisionato" in un calendario dei contenuti, affinché i collaboratori possano vedere quali passaggi sono stati completati.
+
+## Utilizzo dei valori delle caselle di controllo nelle formule
+
+I Campi Casella di controllo possono essere usati come valori booleani nelle formule. Ad esempio, restituisci un testo diverso in base allo stato di completamento:
+
+```js
+IF({Done}, "Done", "In progress")
+```
+
+## Statistiche e automazioni
+
+- **Monitora il completamento**: usa la barra di riepilogo per contare i valori selezionati. Con questi conteggi puoi calcolare le percentuali di completamento.
+- **Attiva un'automazione**: quando "Approvato" è selezionato, l'automazione può inviare un'email o aggiornare altri Campi.
+
+## Note
+
+- Un Campo Casella di controllo rappresenta solo due stati. Se hai bisogno di più stati, ad esempio "Non iniziata", "In corso" e "Completata", usa un Campo **Selezione singola**.
+- Usa i Campi Casella di controllo per opzioni binarie chiare. Non usarli per note, motivazioni o spiegazioni.

@@ -1,0 +1,274 @@
+---
+title: "Procedure consigliate per App Builder"
+description: "Suggerimenti pratici e schemi per sfruttare al meglio Teable App Builder."
+---
+
+## Suggerimenti per la creazione
+
+### 1. Definisci prima i dati
+
+Teable App Builder opera sulle Tabelle Teable esistenti: **le Tabelle e i Campi costituiscono lo schema** e l'IA li legge direttamente durante la generazione dell'interfaccia utente e della logica.
+
+Prima di iniziare la creazione, definisci quindi chiaramente il modello di dati. Quanto più precisi sono i tipi di Campo, i collegamenti e i percorsi di lettura/scrittura, tanto maggiore sarà la qualità di ciò che l'IA produce.
+
+### 2. Pianifica prima di creare
+
+Anche quando il modello di dati è pronto, resisti alla tentazione di passare immediatamente alla creazione dell'interfaccia utente. Esegui prima una fase di pianificazione con l'IA.
+
+Scrivi qualcosa come: *«Non scriviamo ancora codice: prepariamo un piano».* Descrivi il problema da risolvere, gli utenti destinatari e le funzionalità generali. Lascia che l'IA prepari una proposta strutturata. Esaminala, correggila e inizia a creare soltanto quando ritieni che il piano sia valido.
+
+<Tip>Qualche minuto in più dedicato inizialmente ad allineare la direzione evita ore di rifacimenti in seguito.</Tip>
+
+### 3. Inizia in piccolo
+
+Non tentare di inserire ogni funzionalità in un unico prompt. Descrivi prima la funzionalità principale, avvia una versione minima funzionante e aggiungi poi un elemento alla volta: un'interazione, una modifica dello stile o un componente della logica.
+
+Verifica ogni modifica prima di procedere. Quando qualcosa si interrompe, dovrai annullare soltanto una piccola modifica anziché ricominciare.
+
+### 4. Sii specifico, non astratto
+
+Descrizioni come *«rendilo più bello»* o *«rendi le interazioni più naturali»* forniscono pochissime informazioni all'IA.
+
+I prompt efficaci sono concreti: **quale pagina, quale area, quale comportamento desideri e quale non desideri**. Allegare screenshot o interfacce di riferimento è molto utile.
+
+<Tip>Considera il prompt come una descrizione destinata a una persona intelligente che non sa nulla del tuo progetto. Quanto più precise sono le istruzioni, tanto più l'output si avvicina a ciò che avevi immaginato.</Tip>
+
+### 5. Esegui la diagnosi prima della correzione
+
+Quando l'app si comporta in modo imprevisto, resisti alla tentazione di dire all'IA di *«correggerla e basta»*. Istruzioni di correzione vaghe spingono l'IA ad applicare modifiche alla cieca, spesso introducendo nuovi bug.
+
+Un approccio migliore prevede due passaggi:
+
+<Steps>
+  <Step title="Chiedi prima all'IA di eseguire l'analisi">
+    Descrivi i sintomi e chiedi all'IA di elencare le probabili cause e i possibili approcci, senza ancora modificare il codice.
+  </Step>
+  <Step title="Scegli una direzione, quindi implementala">
+    Decidi quale spiegazione sia più plausibile e indica all'IA di procedere lungo quel percorso.
+  </Step>
+</Steps>
+
+<Warning>Se diversi tentativi consecutivi di correzione non riescono, torna all'ultima versione sicuramente funzionante e ricomincia. In genere è più rapido che applicare correzioni sopra altre correzioni.</Warning>
+
+### 6. Sfrutta il ripristino delle versioni
+
+Ogni conversazione con l'IA produce modifiche. Il ritmo consigliato è: completa un modulo funzionale, conferma che funzioni, quindi procedi. **Non gestire contemporaneamente più funzionalità non completate.**
+
+Una modifica successiva ha causato un problema? Torna all'ultima versione stabile e riprova con un prompt più chiaro.
+
+## Domande frequenti
+
+### App Builder supporta soltanto Next.js
+
+L'ambiente runtime di App Builder (sandbox, anteprima e build) è basato su **Next.js** e attualmente **non supporta** altri framework frontend, tra cui Astro, Vite, Create React App, Vue, Svelte e così via.
+
+Se chiedi all'IA di utilizzare un framework diverso da Next.js, potrebbe non rifiutarsi sistematicamente e persino tentare di generare il codice corrispondente. Tuttavia, poiché l'ambiente sottostante non è compatibile, **l'anteprima non si avvierà**: rimarrai bloccato indefinitamente su «Avvio dell'anteprima...» e nel frattempo le conversazioni continueranno a consumare Crediti.
+
+<Warning>
+Se devi utilizzare un framework diverso da Next.js, ti consigliamo di sviluppare nel tuo ambiente locale e collegarti ai dati tramite l'API di Teable.
+</Warning>
+
+### Gestire gli errori 429
+
+<Warning>
+L'API di Teable è attualmente limitata a **10 QPS** (10 richieste al secondo). Le app generate da App Builder possono riscontrare errori 429 durante il normale utilizzo se la gestione delle richieste non è ottimizzata. Il nostro team di progettazione sta lavorando attivamente all'ottimizzazione delle prestazioni dell'API e potremmo modificare questo limite in futuro.
+</Warning>
+
+Esistono quattro strategie generali per affrontare il problema:
+
+<CardGroup cols={4}>
+  <Card title="Memorizzazione nella cache" icon="database">
+    Riduce le richieste duplicate
+  </Card>
+  <Card title="Paginazione e operazioni in blocco" icon="layer-group">
+    Riduce i payload delle singole richieste
+  </Card>
+  <Card title="Debounce e limitazione" icon="gauge-high">
+    Riduce la frequenza delle richieste
+  </Card>
+  <Card title="Compatibilità di rendering" icon="window-restore">
+    Riduce gli errori di anteprima
+  </Card>
+</CardGroup>
+
+Ogni sezione seguente elenca scenari comuni, la correzione e un prompt di riferimento riutilizzabile.
+
+**Memorizzazione nella cache: ridurre le richieste duplicate**
+
+<AccordionGroup>
+  <Accordion title="Le pagine ricche di contenuti e le dashboard possono attivare troppe richieste al caricamento" icon="bolt">
+    **Scenario**: una pagina dashboard contiene diversi grafici, schede statistiche ed elenchi, ognuno dei quali interroga una Tabella diversa. Oppure la pagina serve principalmente alla visualizzazione, ma a ogni visita chiama comunque direttamente l'API. In entrambi i casi, la concorrenza al caricamento della pagina può aumentare bruscamente e i picchi di traffico hanno maggiori probabilità di causare errori 429.
+
+    **Correzione**: preferisci schemi di rendering compatibili con la cache. Memorizza i dati nella memoria dell'app dopo il caricamento (un TTL di 1-3 minuti è un buon punto di partenza) e riutilizzali nelle visite successive. Carica in modo differito i componenti sotto la piega per distribuire le richieste. Se la pagina continua a recuperare nuovamente i dati a ogni visita, chiedi esplicitamente all'IA di rafforzare la strategia di memorizzazione nella cache.
+
+    <Tip>
+    **Prompt di riferimento**: «Questa pagina è ricca di contenuti visualizzati. Preferisci un approccio di rendering compatibile con la cache. Memorizza i dati localmente dopo il caricamento della pagina con un TTL di 1 minuto, non richiedere nuovamente l'API entro la finestra TTL e ritarda di 500 ms i componenti sotto la piega.»
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Più componenti interrogano la stessa Tabella" icon="copy">
+    **Scenario**: tre componenti nella stessa pagina richiedono dati dalla stessa Tabella e ognuno invia una richiesta separata, quando ne basterebbe una.
+
+    **Correzione**: centralizza il recupero dei dati affinché lo stesso set di dati venga caricato una volta e condiviso tra i componenti.
+
+    <Tip>
+    **Prompt di riferimento**: «Se più componenti richiedono dati dalla stessa Tabella, recuperali una volta e condividili tra tutti. Non inviare richieste duplicate.»
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Nuovo recupero durante la navigazione tra pagine" icon="arrows-rotate">
+    **Scenario**: gli utenti si spostano avanti e indietro tra le pagine. Ogni ritorno attiva un nuovo recupero, anche quando nulla è cambiato.
+
+    **Correzione**: entro il TTL della cache, riutilizza i dati caricati in precedenza anziché richiederli nuovamente.
+
+    <Tip>
+    **Prompt di riferimento**: «Quando un utente torna a una pagina, se è trascorso meno di 1 minuto dall'ultimo caricamento, usa i dati nella cache. Non richiedere nuovamente l'API.»
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Menu a discesa che caricano enormi elenchi di opzioni" icon="list">
+    **Scenario**: un menu a discesa mostra come opzione ogni Record di una Tabella. Con molti Record, anche questa singola richiesta è pesante.
+
+    **Correzione**: trasformalo in un selettore con ricerca, recuperando i Record corrispondenti soltanto dopo che l'utente ha digitato. In alternativa, memorizza nella cache l'elenco delle opzioni.
+
+    <Tip>
+    **Prompt di riferimento**: «I menu a discesa non devono caricare tutte le opzioni in anticipo. Passa a una ricerca per parole chiave che recuperi i Record corrispondenti durante l'input, applicando il debounce.»
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Selettori a cascata che concatenano le richieste" icon="sitemap">
+    **Scenario**: la scelta di un Campo attiva il caricamento delle opzioni del livello successivo. Le cascate multilivello accumulano diverse richieste per ogni interazione.
+
+    **Correzione**: precarica una volta i dati correlati e filtrali localmente oppure memorizza nella cache i dati della cascata dopo il primo caricamento.
+
+    <Tip>
+    **Prompt di riferimento**: «Memorizza localmente nella cache i dati delle opzioni del selettore a cascata dopo il caricamento. Quando l'utente modifica un'opzione principale, filtra dalla cache anziché inviare una nuova richiesta.»
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Nuovi rendering che attivano richieste duplicate" icon="repeat">
+    **Scenario**: una gestione inadeguata dello stato fa sì che i componenti recuperino nuovamente i dati a ogni rendering.
+
+    **Correzione**: attiva il recupero dei dati in occasione di eventi specifici (montaggio iniziale, azione esplicita dell'utente), non a ogni rendering. Usa la cache come rete di sicurezza.
+
+    <Tip>
+    **Prompt di riferimento**: «Recupera i dati soltanto al primo caricamento della pagina o in seguito ad azioni esplicite dell'utente. Non recuperarli nuovamente durante i nuovi rendering: usa invece i dati nella cache.»
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+**Paginazione e operazioni in blocco: ridurre i payload delle singole richieste**
+
+<AccordionGroup>
+  <Accordion title="Elenchi o Tabelle senza paginazione" icon="table-list">
+    **Scenario**: il caricamento contemporaneo di tutti i Record produce un'ondata di chiamate API quando il set di dati cresce.
+
+    **Correzione**: utilizza la paginazione. Recupera soltanto i dati della pagina corrente.
+
+    <Tip>
+    **Prompt di riferimento**: «Mostra 20 righe per pagina. Carica la pagina successiva soltanto quando l'utente vi accede. Non caricare tutto contemporaneamente.»
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Recupero per riga dei dati collegati (N+1)" icon="link">
+    **Scenario**: dopo aver caricato un elenco, recuperi uno alla volta i dettagli della Tabella collegata per ogni Record. Il caricamento di 50 progetti seguito da 50 lookup dei responsabili produce 50 richieste aggiuntive in un istante.
+
+    **Correzione**: recupera tutti i dati collegati in un'unica operazione in blocco, non riga per riga.
+
+    <Tip>
+    **Prompt di riferimento**: «Durante il caricamento di un elenco, recupera in blocco tutti i dati collegati con un'unica richiesta. Non scorrere i Record per recuperare singolarmente le relative informazioni collegate.»
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Scritture per riga durante gli aggiornamenti in blocco" icon="pen-to-square">
+    **Scenario**: aggiorni in blocco più Record inviando una richiesta di aggiornamento per ogni Record anziché un'unica richiesta in blocco.
+
+    **Correzione**: usa l'API di aggiornamento in blocco per inviare tutte le modifiche con una sola chiamata.
+
+    <Tip>
+    **Prompt di riferimento**: «Per le operazioni in blocco, unisci le modifiche di più Record in un'unica richiesta in blocco. Non inviare un aggiornamento per ogni Record.»
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Chiamate API all'interno dei cicli" icon="rotate">
+    **Scenario**: un ciclo `for` elabora i Record uno alla volta, chiamando l'API a ogni iterazione.
+
+    **Correzione**: raccogli prima tutti gli ID, quindi invia un'unica richiesta in blocco.
+
+    <Tip>
+    **Prompt di riferimento**: «Non chiamare l'API all'interno di un ciclo. Raccogli prima tutti gli ID necessari, quindi invia un'unica richiesta in blocco.»
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+**Debounce e limitazione: ridurre la frequenza delle richieste**
+
+<AccordionGroup>
+  <Accordion title="Ricerche o filtri senza debounce" icon="magnifying-glass">
+    **Scenario**: ogni pressione di un tasto in una casella di ricerca invia una richiesta. Digitare una query di 4 caratteri produce 4 richieste.
+
+    **Correzione**: applica il debounce all'input; attendi 300-500 ms dopo che l'utente ha smesso di digitare prima di inviare la richiesta.
+
+    <Tip>
+    **Prompt di riferimento**: «Applica il debounce all'input di ricerca. Invia una richiesta soltanto 300 ms dopo che l'utente ha smesso di digitare. Non inviare richieste mentre sta digitando.»
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Azioni rapide e ripetute dell'utente" icon="hand-pointer">
+    **Scenario**: clic ripetuti e rapidi sul pulsante di invio, modifiche rapide dei filtri, paginazione veloce: ogni azione invia immediatamente una richiesta.
+
+    **Correzione**: applica il debounce o la limitazione. Disabilita i pulsanti di invio fino al completamento della richiesta per evitare doppi invii.
+
+    <Tip>
+    **Prompt di riferimento**: «Disabilita il pulsante di invio dopo il clic e riabilitalo quando la richiesta viene completata. Applica il debounce alle modifiche dei filtri, affinché le modifiche rapide entro 300 ms inviino una sola richiesta.»
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Salvataggio automatico dei moduli eccessivamente aggressivo" icon="floppy-disk">
+    **Scenario**: ogni modifica di un Campo viene salvata immediatamente. La compilazione di un modulo può attivare una dozzina di scritture.
+
+    **Correzione**: passa al salvataggio esplicito tramite clic su un pulsante oppure applica il debounce al salvataggio automatico affinché avvenga una sola volta dopo una pausa nelle modifiche.
+
+    <Tip>
+    **Prompt di riferimento**: «Non salvare a ogni modifica di un Campo. Salva in seguito al clic esplicito sul pulsante oppure esegui un solo salvataggio automatico dopo che l'utente ha interrotto le modifiche per 2 secondi.»
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Intervalli di polling troppo brevi" icon="clock">
+    **Scenario**: i dati vengono aggiornati ogni pochi secondi, generando traffico sostenuto ad alta frequenza.
+
+    **Correzione**: aumenta l'intervallo di polling a un valore ragionevole (almeno 30 secondi) oppure passa all'aggiornamento manuale.
+
+    <Tip>
+    **Prompt di riferimento**: «Imposta l'intervallo di aggiornamento automatico su 60 secondi. Aggiungi un pulsante di aggiornamento manuale affinché gli utenti possano recuperare su richiesta i dati più recenti.»
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Più componenti eseguono il polling in modo indipendente" icon="timer">
+    **Scenario**: diversi componenti di una pagina configurano ciascuno il proprio timer di polling. Il carico complessivo supera facilmente il limite.
+
+    **Correzione**: centralizza il polling. Esegui un solo recupero periodico, quindi distribuisci il risultato a ogni componente che ne ha bisogno.
+
+    <Tip>
+    **Prompt di riferimento**: «Non consentire a ogni componente di configurare il proprio timer di polling. Usa un unico meccanismo di aggiornamento che recuperi tutto a intervalli programmati e distribuisca i dati ai componenti.»
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+**Compatibilità di rendering: ridurre gli errori di anteprima**
+
+<AccordionGroup>
+  <Accordion title="Grafici, mappe o componenti solo browser non funzionano nell'anteprima" icon="chart-line">
+    **Scenario**: la pagina utilizza grafici, mappe o librerie che dipendono da `window`, misurazioni DOM o altre API disponibili soltanto nel browser e l'anteprima mostra errori, una schermata vuota o mancata corrispondenza dell'idratazione.
+
+    **Correzione**: spesso è più sicuro caricare questi componenti nel browser anziché eseguirne il rendering direttamente sul server. Se i problemi di anteprima persistono, chiedi esplicitamente all'IA di passare a uno schema di caricamento riservato al browser.
+
+    <Tip>
+    **Prompt di riferimento**: «Questo componente dipende dall'ambiente del browser. Caricalo soltanto sul client per evitare errori di rendering dell'anteprima o mancata corrispondenza dell'idratazione.»
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+<Note>
+L'IA può commettere errori. Verifica attentamente le risposte.
+</Note>

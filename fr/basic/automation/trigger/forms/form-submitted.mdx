@@ -1,0 +1,75 @@
+---
+title: "Lorsqu’un formulaire est soumis"
+description: "Déclenchez un flux de travail lors de la soumission d’une vue Formulaire"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Remarque : vous pouvez configurer tous les déclencheurs dans le Chat IA. Indiquez à l’IA ce que le flux de travail doit accomplir et elle se chargera du reste.</Tip>
+
+Ce déclencheur s’exécute lorsqu’une personne soumet une vue Formulaire précise. Tous les champs soumis sont accessibles aux étapes suivantes.
+
+## Créer avec l’IA
+
+Ouvrez le Chat IA dans la barre latérale droite de votre table et décrivez ce que vous souhaitez.
+
+L’IA s’occupe de tout : elle choisit le bon déclencheur, associe les champs pertinents et configure automatiquement toutes les actions.
+
+Décrivez une seule fois votre objectif et le flux de travail est prêt, sans aucune configuration manuelle.
+
+**Exemple :** *"Lorsqu’une personne soumet le formulaire de contact, envoie un e-mail de confirmation."*
+
+## Configuration
+
+| Paramètre | Obligatoire | Description |
+|---|---|---|
+| Table | Oui | Table à laquelle appartient le formulaire |
+| Formulaire | Oui | Vue Formulaire précise dont les soumissions doivent être surveillées |
+
+## Procédure de configuration
+
+1. Assurez-vous que votre table comporte déjà une vue Formulaire. Sinon, créez-en une en cliquant sur **+** dans la barre des vues, puis en sélectionnant **Formulaire**.
+2. Ouvrez votre automatisation et ajoutez un nouveau déclencheur.
+3. Sélectionnez **Lorsqu’un formulaire est soumis**.
+4. Choisissez la **Table** qui contient le formulaire.
+5. Choisissez la vue **Formulaire** à surveiller.
+6. Enregistrez et activez l’automatisation.
+7. Ajoutez vos étapes d’action. Cliquez sur **+** dans n’importe quel champ d’action pour référencer les données soumises : tous les champs du formulaire sont disponibles.
+
+## Données accessibles aux étapes suivantes
+
+Lorsqu’un formulaire est soumis, les données suivantes sont transmises à votre flux de travail :
+
+- **ID de l’enregistrement** — identifiant unique de l’enregistrement qui vient d’être créé.
+- **Toutes les valeurs de champ soumises** — chaque champ inclus dans le formulaire (texte, e-mail, nombres, dates, sélections, pièces jointes, etc.) peut être référencé en cliquant sur **+** dans les actions suivantes.
+
+Les champs absents du formulaire (champs masqués) ne reçoivent aucune valeur de la soumission, mais peuvent conserver les valeurs par défaut définies dans la table.
+
+## La soumission d’un formulaire crée également un enregistrement
+
+Il est important de comprendre qu’au niveau des données, la soumission d’un formulaire et la création d’un enregistrement correspondent au même événement. Lorsqu’une personne soumet un formulaire, un nouvel enregistrement est ajouté à la table. Par conséquent :
+
+- Si vous disposez également d’une automatisation **Lorsqu’un enregistrement est créé** sur la même table, les *deux* automatisations s’exécutent lors de la soumission d’un formulaire.
+- Pour éviter un traitement en double, utilisez exclusivement le déclencheur Lorsqu’un formulaire est soumis, ou ajoutez au déclencheur Lorsqu’un enregistrement est créé un filtre qui exclut les enregistrements provenant d’un formulaire.
+
+<Note>La soumission d’un formulaire équivaut essentiellement à la création d’un enregistrement. Si un déclencheur « Lorsqu’un enregistrement est créé » est également configuré sur la même table, les deux flux de travail s’exécutent.</Note>
+
+## Cas d’utilisation
+
+- **Envoyer un e-mail de confirmation après la soumission.** Lorsqu’un client remplit un formulaire de contact, envoyez-lui automatiquement un e-mail de remerciement contenant les détails de sa soumission.
+- **Classer automatiquement les nouveaux tickets d’assistance avec l’IA.** Utilisez l’action Générer avec l’IA pour classer le ticket en fonction de la description soumise par l’utilisateur.
+- **Informer votre équipe des nouvelles candidatures.** Lorsqu’une personne soumet un formulaire de candidature, publiez une notification sur Slack ou envoyez un e-mail à l’équipe de recrutement.
+- **Créer des enregistrements liés dans d’autres tables.** Lorsqu’un formulaire de commande est soumis, créez automatiquement des enregistrements dans une table « Articles de commande » ou « Expéditions ».
+- **Valider et signaler les soumissions.** Vérifiez que les informations obligatoires sont complètes et que les valeurs sont dans les plages attendues, puis définissez un champ Statut sur « À vérifier » en cas d’anomalie.
+
+## Conseils
+
+- Ce déclencheur s’exécute une fois par soumission. Si une même personne soumet deux fois le formulaire, il s’exécute deux fois.
+- Si vous souhaitez déclencher le flux pour tous les nouveaux enregistrements, quelle que soit leur origine (saisie manuelle, API ou formulaire), utilisez plutôt [Lorsqu’un enregistrement est créé](/fr/basic/automation/trigger/records/record-created).
+- Plusieurs automatisations peuvent surveiller le même formulaire. Par exemple, l’une peut envoyer un e-mail de confirmation tandis qu’une autre crée une tâche liée.
+- Les vues Formulaire respectent les paramètres de visibilité des champs. Seuls les champs visibles dans le formulaire sont renseignés lors de la soumission ; les champs masqués conservent leurs valeurs par défaut ou restent vides.
+
+## Pages associées
+
+- [Lorsqu’un enregistrement est créé](/fr/basic/automation/trigger/records/record-created) — s’exécute pour tout nouvel enregistrement, et pas seulement pour les soumissions de formulaires
+- [Lorsqu’un bouton est cliqué](/fr/basic/automation/trigger/forms/button-click) — s’exécute lorsqu’un utilisateur clique sur un champ Bouton dans une ligne existante
+- [Action Envoyer un e-mail](/fr/basic/automation/actions/communication/send-email-overview) — souvent associée aux soumissions de formulaires pour envoyer des confirmations

@@ -1,0 +1,63 @@
+---
+title: "Enlace a Registro"
+description: "Crea relaciones entre Tablas y selecciona Registros de otra Tabla en el Registro actual."
+---
+
+{/* mintlify-resync: 2026-05-26 */}
+El Campo Enlace a Registro conecta dos Tablas. Con un Campo Enlace a Registro, puedes seleccionar Registros de otra Tabla en la Tabla actual y abrir los Registros enlazados cuando sea necesario. Los Campos Enlace a Registro también son necesarios para poder usar los Campos **Búsqueda** y **Acumulación**.
+
+## Casos de uso
+
+| Escenario | Adecuado para |
+| --- | --- |
+| Clientes y pedidos | Enlazar clientes en la Tabla de pedidos y ver los pedidos relacionados desde la Tabla de clientes |
+| Proyectos y tareas | Enlazar una tarea con su proyecto y ver todas las tareas de un proyecto |
+| Estudiantes y cursos | Realizar un seguimiento de las matrículas en cursos, los miembros de proyectos u otras relaciones de varios a varios |
+| Líneas de pedido y Registros principales | Enlazar las líneas de pedido con un pedido y, después, buscar precios o acumular totales |
+
+## Crear y configurar
+
+<Steps>
+  <Step title="Elegir el tipo de Campo">
+    En la Tabla actual, haz clic en añadir Campo y elige **Enlace a Registro**.
+  </Step>
+  <Step title="Elegir la Tabla de destino">
+    En el cuadro de diálogo de configuración, elige la Tabla con la que quieres crear el enlace; por ejemplo, enlaza la Tabla de pedidos con la Tabla de clientes.
+  </Step>
+  <Step title="Elegir el modo de enlace">
+    Elige un enlace unidireccional o bidireccional según sea necesario.
+  </Step>
+  <Step title="Configurar las reglas de la relación">
+    Usa **Permitir selección múltiple** y **Permitir valores duplicados** para configurar relaciones uno a uno, uno a varios, varios a uno o varios a varios.
+  </Step>
+</Steps>
+
+## Enlaces unidireccionales y bidireccionales
+
+| Modo | Descripción | Ideal para |
+| --- | --- | --- |
+| Enlace bidireccional | Está activado de forma predeterminada. Cuando creas un Campo Enlace a Registro, Teable crea el Campo de enlace correspondiente en la Tabla de destino y ambos lados permanecen sincronizados | Relaciones que deben consultarse desde ambas Tablas, como pedidos y clientes o proyectos y tareas |
+| Enlace unidireccional | Cuando la opción bidireccional está desactivada, solo la Tabla actual muestra los Registros enlazados. La Tabla de destino no recibe un Campo inverso | Casos en los que solo necesitas hacer referencia a otra Tabla y no quieres cambiar la estructura de la Tabla de destino |
+
+## Tipos de relación
+
+Usa **Permitir selección múltiple** y **Permitir valores duplicados** conjuntamente para definir cuatro tipos habituales de relación:
+
+| Relación | Ejemplo empresarial | Configuración |
+| :--- | :--- | :--- |
+| **Uno a uno (1:1)** | **Empleado - Perfil**<br />Un empleado tiene un perfil y cada perfil pertenece a un empleado | ☐ Permitir selección múltiple<br />☐ Permitir valores duplicados<br />*(ambas opciones desactivadas)* |
+| **Uno a varios (1:N)** | **Departamento - Empleado**<br />Un departamento tiene varios empleados, pero cada empleado pertenece a un departamento | ☑ Permitir selección múltiple<br />☐ Permitir valores duplicados<br />*(solo está activada la selección múltiple)* |
+| **Varios a uno (N:1)** | **Tarea - Proyecto**<br />Varias tareas pertenecen a un proyecto, pero cada tarea pertenece a un único proyecto | ☐ Permitir selección múltiple<br />☑ Permitir valores duplicados<br />*(solo están permitidos los valores duplicados)* |
+| **Varios a varios (N:N)** | **Estudiante - Curso**<br />Un estudiante puede cursar varios cursos y un curso puede tener varios estudiantes | ☑ Permitir selección múltiple<br />☑ Permitir valores duplicados<br />*(ambas opciones activadas)* |
+
+## Usos habituales
+
+- **Gestión de clientes en un CRM**: en una Tabla `Empresas`, crea un Campo de enlace con una Tabla `Contactos` para que una empresa pueda enlazarse con varios contactos.
+- **Asignación de tareas de proyectos**: en una Tabla `Tareas`, crea un Campo de enlace con una Tabla `Proyectos` para que cada tarea pertenezca a un proyecto y la Tabla de proyectos pueda mostrar las tareas relacionadas.
+- **Líneas de pedido**: en una Tabla `Pedidos`, crea un enlace con una Tabla `Productos`; después, usa Campos de Búsqueda para mostrar los precios y Campos de Acumulación para calcular los totales de los pedidos.
+
+## Notas
+
+- **Límites de las relaciones uno a varios**: en una relación estricta de uno a varios, cuando la selección múltiple está desactivada en el lado de la Tabla B, un Registro de la Tabla B enlazado por un Registro de la Tabla A no puede ser seleccionado por otros Registros de la Tabla A. Esto resulta útil para datos que no deben reutilizarse, como números de identificación o perfiles de empleados.
+
+<Info>Los Campos Enlace a Registro solo pueden conectar Tablas del mismo Espacio. Los Campos Búsqueda, Acumulación, Búsqueda condicional y Acumulación condicional también requieren datos de origen del mismo Espacio.</Info>

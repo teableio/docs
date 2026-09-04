@@ -1,0 +1,112 @@
+---
+title: "KI-Einstellungen"
+description: "Konfigurieren Sie AI Chat, KI-Felder, KI-Automatisierung und App Builder für eine selbst gehostete Instanz."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Verfügbar ab dem selbst gehosteten Business-Tarif</Tip>
+
+Pfad: Admin-Panel → KI-Einstellungen
+
+Die Seite **KI-Einstellungen** dient zur Konfiguration von **AI Chat**, **KI-Feldern**, **KI-Automatisierung** und **App Builder**. Der Bereich **Ausstehende Konfiguration** rechts zeigt, welche erforderlichen Punkte noch fehlen.
+
+## Bevor Sie beginnen
+
+Bevor Sie die Seite KI-Einstellungen öffnen, stellen Sie sicher, dass die folgenden Punkte bereit sind.
+
+| Voraussetzung | Erforderlich? | Hinweise |
+|------|------|------|
+| **Einrichtung der Agent-Laufzeit** | Erforderlich für AI Chat und App Builder | Wird von AI Chat und App Builder verwendet |
+| **Benutzerdefinierter Anbieter** | Erforderlich, wenn AI Chat oder App Builder Ihren eigenen Schlüssel verwendet (BYOK) | Verwenden Sie einen Anbieter vom Typ **OpenAI Compatible** oder **Anthropic** |
+| **OpenAI API Key** | Optional | Nur erforderlich, wenn Sie die **Spracheingabe** in AI Chat aktivieren möchten |
+| **Öffentlicher Zugriff** | Erforderlich, wenn die Deployment-Engine **Vercel** ausgewählt ist | Ihre **Teable-Instanz** und der **Objektspeicher (MinIO / S3)** müssen für Vercel öffentlich erreichbar sein |
+
+## Einrichtungsschritte
+
+Beginnen Sie mit der AI Chat-Laufzeit, der App-Bereitstellung und der Modelleinrichtung:
+
+<Steps>
+  <Step title="AI Chat-Laufzeit und App-Bereitstellung konfigurieren">
+    Wählen Sie eine [Bereitstellungsoption](/de/deploy/choose) und schließen Sie die Bereitstellung ab. Klicken Sie anschließend auf **Test ausführen** und **Verbindung testen**.
+  </Step>
+  <Step title="LLM API konfigurieren">
+    Richten Sie Ihre Modellverbindung ein und schließen Sie den ersten Test ab.
+  </Step>
+  <Step title="Empfohlene Modelle konfigurieren">
+    Wählen Sie die empfohlenen Modelle für KI-Felder und KI-Automatisierung.
+  </Step>
+  <Step title="Chat-Modell festlegen">
+    Wählen Sie das Standardmodell für AI Chat.
+  </Step>
+</Steps>
+
+### Laufzeit konfigurieren
+
+Klicken Sie auf **Test ausführen**, um die AI Chat-Laufzeit zu überprüfen.
+
+### LLM API konfigurieren
+
+Fügen Sie unter **LLM API** einen Modellanbieter hinzu und testen Sie dessen Modelle. Wenn Sie Ihren eigenen Schlüssel (BYOK) verwenden, wählen Sie **OpenAI Compatible** oder **Anthropic** als Anbietertyp.
+
+Öffnen Sie für ein Modell die **Modelleinstellungen**, wenn Sie diese Werte prüfen oder überschreiben müssen:
+
+| Einstellung | Wirkung |
+|------|------|
+| **Kontext** | Optional. Legt die maximale Anzahl an Eingabe-Tokens für die Kontextkomprimierung fest. |
+| **Maximale Ausgabe** | Optional. Legt die maximale Anzahl an Tokens fest, die das Modell in einer Antwort generieren kann. |
+
+### Empfohlene Modelle konfigurieren
+
+Wählen Sie die empfohlenen Modelle aus, die Nutzer in **KI-Feldern** und **KI-Automatisierung** auswählen können.
+
+### Chat-Modell festlegen
+
+Wählen Sie das Standardmodell für **AI Chat** in der Seitenleiste. Das Chat-Modell muss aus der Liste der empfohlenen Modelle stammen.
+
+### KI-Funktionen aktivieren
+
+Aktivieren Sie unter **KI-Funktionen** nach Bedarf **KI-Feld** und **AI Chat**. Konfigurieren Sie die Laufzeit, bevor Sie **AI Chat** verwenden.
+
+### App Builder konfigurieren
+
+Wählen Sie unter **Deployment-Engine**, wie Apps bereitgestellt werden:
+
+| Deployment-Engine | Einrichtungsanforderungen |
+|------|------|
+| **Vercel** | Geben Sie ein Vercel-Zugriffstoken ein, klicken Sie auf **Verbindung testen** und verwenden Sie **Öffentlichen Zugriff testen**, um zu bestätigen, dass Vercel Ihre Teable-Instanz und den Objektspeicher erreichen kann. |
+| **Teable Infra** | Verwendet die konfigurierte Teable-Infra-Containerlaufzeit. Hier sind keine zusätzlichen Anmeldedaten oder Tests des öffentlichen Zugriffs erforderlich. |
+
+Bei Bedarf können Sie diese optionalen App-Builder-Einstellungen hinzufügen:
+
+| Optionales Element | Wann Sie es benötigen |
+|------|------|
+| **Benutzerdefinierte Domain** | Wenn Sie Apps unter Ihrer eigenen Domain veröffentlichen möchten |
+| **App-Authentifizierung** | Wenn generierte Apps die Anmeldung per **E-Mail-OTP** oder **Google** benötigen |
+
+Unter **App-Authentifizierung** können Sie Anmeldeanbieter für generierte Apps konfigurieren:
+
+- **E-Mail-OTP** verwendet ein unabhängiges SMTP-Postfach für Bestätigungs-E-Mails zur App-Anmeldung.
+- **Google OAuth** erfordert eine Client-ID und ein Client-Secret. Fügen Sie den auf dieser Seite angezeigten Umleitungs-URI zur Liste autorisierter Umleitungs-URIs in der Google Cloud Console hinzu.
+
+Die Anmeldung mit **Teable** ist standardmäßig verfügbar. **E-Mail-OTP** wird im App Builder erst angezeigt, nachdem die SMTP-Einstellungen abgeschlossen sind. **Google** wird erst angezeigt, nachdem beide OAuth-Anmeldedaten konfiguriert wurden.
+
+**KI-API-Schlüssel automatisch in Apps einfügen** ist standardmäßig aktiviert, damit Apps die KI-Modelle der Plattform aufrufen können. Wenn Sie die Option deaktivieren, können Apps sie nicht mehr erreichen.
+
+### Optional: Spracheingabe konfigurieren
+
+Um die Spracheingabe in AI Chat zu verwenden, aktivieren Sie die Funktion und geben Sie einen **OpenAI API Key** ein. Konfigurieren Sie den **Transkriptionsendpunkt** nur bei Verwendung eines benutzerdefinierten Transkriptionsdienstes. Sie können außerdem die Aufnahmelänge und die Anfragen pro Minute begrenzen.
+
+### Einrichtung überprüfen
+
+Bestätigen Sie nach Abschluss der Einrichtung zunächst, dass alle erforderlichen Punkte im Bereich **Ausstehende Konfiguration** grün sind. Testen Sie anschließend **AI Chat**, **KI-Felder**, **KI-Automatisierung** und **App Builder** einzeln.
+
+## FAQ
+
+<AccordionGroup>
+<Accordion title="Ich erhalte einen Fehler wegen überschrittenem Guthaben">
+
+Prüfen Sie das Konto oder den Anbieter, der für Ihren konfigurierten Modelldienst verwendet wird. Laden Sie bei Bedarf Guthaben auf oder ändern Sie die Modellkonfiguration.
+</Accordion>
+
+</AccordionGroup>
+

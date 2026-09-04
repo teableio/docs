@@ -1,0 +1,288 @@
+---
+title: Chat de IA
+description: Interactúa con tus datos mediante lenguaje natural para analizarlos, visualizarlos y crearlos.
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Note>Disponible en todos los planes de Cloud; la versión autoalojada requiere el plan Business o uno superior.</Note>
+
+El Chat de IA ayuda a analizar la Tabla actual, explicar el contenido de los Registros, generar gráficos e informes y crear o actualizar Tablas, Vistas, aplicaciones y automatizaciones.
+
+La IA da prioridad a la página actual. Para hacer referencia a otras Tablas, Vistas, aplicaciones, automatizaciones o carpetas, escribe `@` en el cuadro de entrada y selecciona el nodo correspondiente.
+
+## Cómo abrirlo
+
+Abre una Tabla o Vista y haz clic en <img src="/images/docs/ai/cuppy-icon.svg" alt="Cuppy" className="docs-inline-icon" /> en la esquina superior derecha para abrir el Chat de IA. Describe la pregunta o tarea en el cuadro de entrada. Si la tarea modificará datos o creará nodos, pide primero a la IA que enumere el plan y confirma antes de ejecutarlo.
+
+## Información que puede consultar la IA
+
+La IA da prioridad a la información de la página actual:
+
+- **Tabla y Vista actuales**: La Tabla actual, la Vista actual y los resultados filtrados u ordenados de esa Vista.
+- **Filas, columnas y celdas seleccionadas**: Si se seleccionan filas, columnas, una sola celda o un rango de celdas en la Vista de cuadrícula, la IA usa esa selección como contexto principal.
+- **Archivos cargados**: Añade archivos PDF y Excel, documentos de Word, imágenes y otros archivos a la conversación.
+- **Más nodos con `@`**: Escribe `@` en el cuadro de entrada para añadir Tablas, Vistas, aplicaciones, automatizaciones o carpetas del árbol.
+
+También puedes pegar o soltar archivos directamente en el cuadro de entrada. Primero aparecen como etiquetas de archivos adjuntos y quedan disponibles para la IA cuando se envía el mensaje.
+
+Cuando pegas un bloque largo de texto sin formato, Teable lo convierte en un archivo adjunto Markdown para que el mensaje siga siendo fácil de leer. Puedes obtener una vista previa de los archivos adjuntos de texto y Markdown desde sus etiquetas.
+
+## Controles de entrada
+
+- **Entrada de voz**: Haz clic en el botón del micrófono del cuadro de entrada y permite el acceso al micrófono para comenzar a grabar. Durante la grabación, elige **Finalizar entrada de voz** o **Descartar entrada de voz**. Al finalizar, Teable transcribe la grabación en el cuadro de entrada.
+- **Modelo**: Usa el menú de modelos para elegir el modelo de la conversación. Usa un modelo más ligero para consultas sencillas, limpieza o reescritura, y uno más potente para planificación compleja, análisis entre Tablas y creación de aplicaciones.
+- **Inteligencia**: Elige el nivel de **Inteligencia** por separado en el menú de modelos. Este controla la profundidad del razonamiento; los niveles superiores producen razonamientos más exhaustivos.
+- **Secretos**: Abre el menú **+** y elige **Secretos** para almacenar claves de API u otras credenciales del Chat de IA. El Chat de IA puede leer estos valores como variables de entorno. Los valores guardados son de solo escritura; introduce un valor nuevo para actualizar un secreto.
+- **Integraciones**: Cuando la IA necesita acceso a una cuenta externa, puede mostrar en la conversación una tarjeta como **Conectar Slack**. Haz clic en **Conectar** para autorizar mediante OAuth. Haz clic en **Omitir** para cancelar la autorización; la IA continuará con las partes que pueda completar sin esa conexión.
+- **Habilidades**: Abre el menú **+** y elige **Habilidades** para importar, habilitar, deshabilitar o probar habilidades en el chat actual. Cuando importes una, elige quién puede usarla: **Personal** la reserva para ti, **Base** la ofrece a los colaboradores de esta Base y **Espacio** la ofrece a todos los usuarios de este Espacio. Escribe `/` en el cuadro de entrada para elegir una habilidad habilitada. Para conectar o migrar un sistema externo, consulta [Conecta y migra todo](/es/basic/ai/connect-everything).
+- **Uso del contexto**: El anillo situado junto al cuadro de entrada muestra qué proporción de la ventana de contexto del modelo está usando la conversación. Haz clic en él para consultar el porcentaje y el número de tokens. Cuando se llena el contexto, Teable compacta la conversación; inicia un chat nuevo si quieres partir de un contexto limpio.
+- **Administrar archivos**: Abre **+** → **Más** → **Administrar archivos** para consultar los archivos del entorno aislado del chat actual. Puedes obtener una vista previa de los archivos compatibles, descargarlos o eliminar los archivos y carpetas que ya no necesites. Debe existir una conversación para poder administrar sus archivos.
+- **Cola de mensajes**: Enviar otro mensaje mientras la IA está trabajando no la interrumpe. El mensaje espera en una cola sobre el cuadro de entrada y se envía cuando termina la ejecución actual. Los elementos en cola conservan las mismas etiquetas de Tabla, Vista, archivo adjunto y selección que la entrada del chat; **Eliminar** descarta uno, **...** → **Editar mensaje** lo devuelve al cuadro de entrada y los elementos que solo contienen texto también ofrecen **Redirigir** para entregar el texto al turno en ejecución en lugar de esperar.
+
+## Usos habituales
+
+<CardGroup cols={2}>
+  <Card title="Crear Tablas y automatizaciones" icon="sitemap">
+    Planifica una base de datos empresarial, crea Tablas, Vistas, aplicaciones y automatizaciones, o actualiza Registros existentes.
+  </Card>
+  <Card title="Analizar datos" icon="chart-line">
+    Resume los datos de la Tabla o Vista actual, o analiza varios nodos relacionados.
+  </Card>
+  <Card title="Gráficos e informes" icon="chart-pie">
+    Convierte los datos consultados en un gráfico, informe o pequeña página interactiva que puedas volver a abrir y compartir.
+  </Card>
+  <Card title="Leer archivos" icon="file-lines">
+    Responde preguntas mediante archivos PDF y Excel, documentos de Word, imágenes y otros archivos adjuntos.
+  </Card>
+</CardGroup>
+
+### Crear Tablas y automatizaciones
+
+El Chat de IA puede ayudarte a crear, actualizar y organizar datos, no solo a responder preguntas. Para un flujo de trabajo empresarial nuevo, analiza primero la estructura de los datos y pide después a la IA que cree las Tablas, Vistas, aplicaciones y automatizaciones.
+
+Algunas instrucciones adecuadas son:
+
+- Ayúdame a planificar un sistema de seguimiento de clientes. ¿Qué Tablas y Campos necesito?
+- A partir del plan anterior, crea estas Tablas, Vistas y Campos.
+- Añade Campos de prioridad, responsable, fecha límite y estado a la Tabla de tareas; después, crea Vistas habituales.
+- Cambia los Registros seleccionados a Completados.
+- Crea una Tabla nueva a partir de este archivo de Excel y comprueba si los tipos de Campo son adecuados.
+- Crea una aplicación de CRM a partir de esta Tabla de clientes, con páginas de lista de clientes, detalles del cliente y Registros de seguimiento.
+- Cuando se cree un pedido nuevo, notifica al responsable e incluye el número del pedido, el nombre del cliente y el importe.
+
+Para crear una base de datos empresarial completa, comienza pidiendo a la IA que planifique la estructura de las Tablas. Tras revisar el plan, continúa con la creación de Tablas, Vistas, aplicaciones y automatizaciones.
+
+<Steps>
+  <Step title="Planificar primero">
+    Describe el objetivo empresarial, como crear un sistema de seguimiento de clientes, y pide a la IA que indique las Tablas, Campos, Vistas y automatizaciones necesarios.
+  </Step>
+  <Step title="Confirmar la estructura">
+    Revisa las Tablas, los Campos, los tipos de Campo y las relaciones propuestos. Añade cualquier regla o detalle del flujo de trabajo que falte.
+  </Step>
+  <Step title="Crear a continuación">
+    Pide a la IA que cree las Tablas y Vistas confirmadas y continúa después con las aplicaciones o automatizaciones.
+  </Step>
+</Steps>
+
+Para obtener más información sobre la creación de aplicaciones, consulta [App Builder](/es/basic/ai/app-builder). Para obtener más información sobre las automatizaciones, consulta [Automatización](/es/basic/automation).
+
+### Analizar datos
+
+Haz preguntas sobre los datos de la Tabla actual, por ejemplo:
+
+- Cuenta las tareas completadas este mes por responsable.
+- Encuentra los clientes con las ventas más altas durante los últimos 30 días.
+- Analiza los Registros inusuales de esta Vista.
+
+Si la pregunta abarca varias Tablas, usa `@` para añadir a la conversación las Tablas o Vistas relacionadas.
+
+En la Vista de cuadrícula también puedes seleccionar filas, columnas, una sola celda o un rango de celdas y usar **Añadir al Chat** en el menú contextual. La selección aparece como una etiqueta en el cuadro de entrada; al hacer clic en ella, se vuelve a resaltar el área correspondiente de la cuadrícula. Las etiquetas de columnas usan los nombres de los Campos cuando están disponibles y acortan las selecciones largas después de los primeros nombres.
+
+### Crear gráficos e informes
+
+Pide a la IA que convierta los datos consultados en un gráfico, un informe escrito o una pequeña página interactiva:
+
+- Genera un gráfico con la tendencia semanal de ventas.
+- Convierte el resultado de esta consulta en un gráfico circular.
+- Crea un informe resumido a partir de estos Registros.
+
+La IA crea estos elementos como **artefactos**: aparecen como una tarjeta en la conversación, se abren en su propio visor y siguen disponibles después de que termine la conversación. Consulta [Artefactos](#artifacts) para saber qué puedes hacer con ellos.
+
+<Info>
+Un artefacto conserva los datos que la IA incluyó en él al crearlo, por lo que no se actualiza automáticamente. Para crear una página que siga leyendo datos activos de una Tabla o que recopile entradas y almacene estados, crea una aplicación con [App Builder](/es/basic/ai/app-builder).
+</Info>
+
+### Leer archivos
+
+Después de cargar archivos, la IA puede responder preguntas usando tanto su contenido como los datos de las Tablas:
+
+- Resume este PDF y relaciónalo con el Registro de cliente actual.
+- Lee este archivo de Excel e identifica los Campos que deberían importarse.
+- Genera una descripción del producto a partir de esta imagen.
+
+Los archivos cargados en la conversación y los generados durante ella se guardan en el entorno aislado del chat actual. Usa **Administrar archivos** para examinarlos más adelante.
+
+Cuando una respuesta incluya varios archivos a la vez, usa **Descargar todo** debajo de sus tarjetas para guardarlos en un único archivo ZIP.
+
+### Memoria
+
+La memoria almacena la información que pides explícitamente a Cuppy que recuerde. Su ámbito se define por usuario y Base: cada usuario de cada Base tiene un contexto de memoria independiente, y la memoria guardada en otra Base no aparece automáticamente en la actual.
+
+- Guardar memoria en la Base actual
+
+Indica en la conversación lo que Cuppy debe recordar:
+
+```text
+Recuerda xxx.
+```
+
+- Reutilizar la memoria de otra Base
+
+Pide a Cuppy que lea otra Base y guarde las partes pertinentes en la Base actual:
+
+```text
+Cuppy, lee la memoria de la Base con ID bsexxxxxxxxxxxx y guarda la memoria pertinente en esta Base actual.
+```
+
+### Gestionar tareas largas
+
+El Chat de IA puede mantener disponible el entorno de una conversación durante unas 24 horas, tiempo suficiente para la mayoría de las tareas de análisis de datos, procesamiento de archivos y creación de aplicaciones. Mantén el trabajo de larga duración en la conversación actual para poder seguir su progreso y aportar información cuando sea necesario.
+
+<Steps>
+  <Step title="Seguir el progreso en la conversación actual">
+    Si la interfaz muestra `Thinking` o sigue ofreciendo actualizaciones de progreso, la tarea todavía está en ejecución. Si muestra `Completed`, la ejecución actual ha terminado.
+  </Step>
+  <Step title="Guardar los resultados en puntos de control útiles">
+    En trabajos de varias fases, pide a Cuppy que escriba los resultados en Teable, los exporte o genere un archivo descargable en los puntos de control principales. El trabajo guardado sigue disponible aunque el entorno de la conversación se libere más adelante.
+  </Step>
+  <Step title="Saber cuándo se libera el entorno">
+    El entorno de una conversación tiene una duración máxima aproximada de 24 horas. Cuando termina la ejecución en primer plano, los entornos inactivos se liberan después de unos 30 minutos. Los archivos temporales y los resultados intermedios sin guardar no se conservan si el entorno se reinicia.
+  </Step>
+</Steps>
+
+Para trabajos de larga duración o repetibles, usa la función que corresponda al flujo de trabajo:
+
+<CardGroup cols={2}>
+  <Card title="Campos de IA" icon="sparkles" href="/es/basic/field/ai/ai-field">
+    Úsalos para trabajar Registro por Registro, por ejemplo, para procesar Tablas grandes, clasificar por lotes, procesar contenido o rellenar Campos.
+  </Card>
+  <Card title="Automatización" icon="bolt" href="/es/basic/automation">
+    Úsala para trabajos repetibles después de crear o actualizar Registros, enviar notificaciones o procesar datos de forma programada.
+  </Card>
+</CardGroup>
+
+## Artefactos {#artifacts}
+
+Cuando la IA crea un gráfico, informe, página similar a un panel o pequeña herramienta interactiva, guarda el resultado como un **artefacto**: una página independiente que se representa fuera de la conversación. Los artefactos aparecen como una tarjeta en el chat y siguen disponibles posteriormente. Cada uno es una página HTML interactiva o un informe Markdown.
+
+Haz clic en la tarjeta para abrir el artefacto. Desde el visor puedes:
+
+- Usar **Pantalla completa** o **Abrir en una página nueva** para dar más espacio al artefacto.
+- **Descargar** la versión actual como archivo.
+- Abrir la lista de versiones para consultar una versión anterior y usar **Restaurar esta versión** para convertirla de nuevo en la actual.
+- **Eliminar** el artefacto. Sus tarjetas de la conversación se convierten en un marcador de posición de elemento eliminado, así que elimínalo solo cuando ya no necesites el resultado.
+
+Para cambiar un artefacto, pídeselo a la IA en la misma conversación. Cada revisión se convierte en una nueva versión del mismo artefacto, no en uno independiente, por lo que el enlace para compartir sigue funcionando y aún puedes volver a una versión anterior. Si la página no se ejecuta, el visor muestra el error y ofrece **Corregir con IA**, que envía el error al chat para que la IA pueda corregirlo.
+
+### Compartir un artefacto
+
+Los artefactos son privados para la persona que los creó, por lo que debes usar un enlace para compartir si quieres que otra persona pueda abrirlos.
+
+<Steps>
+  <Step title="Activar el uso compartido">
+    Haz clic en **Compartir** en el visor y habilita **Habilitar uso compartido**. Teable genera el enlace.
+  </Step>
+  <Step title="Elegir quién puede verlo">
+    Establece **Quién puede ver** en **Cualquiera que tenga el enlace** o en **Miembros del Espacio** para que solo puedan abrirlo los miembros del Espacio que hayan iniciado sesión.
+  </Step>
+  <Step title="Añadir una contraseña (opcional)">
+    En los ajustes avanzados, activa **Protección con contraseña** y establece una contraseña. Los usuarios deben introducirla antes de que se cargue el artefacto.
+  </Step>
+  <Step title="Enviar el enlace">
+    Usa **Copiar enlace** para copiarlo. Si el enlace se ha difundido demasiado, **Restablecer enlace** genera uno nuevo y hace que el anterior deje de funcionar.
+  </Step>
+</Steps>
+
+### Encontrar artefactos más adelante
+
+Abre **+** → **Más** → **Administrar artefactos** para explorar todo lo que has creado en tus chats. Busca por nombre y abre un elemento para verlo o volver a compartirlo.
+
+## Consejos para redactar instrucciones
+
+- **Indica primero el objetivo**: En el primer mensaje, describe qué debe hacerse, las condiciones pertinentes y el resultado esperado. Por ejemplo, analiza las tendencias semanales de ventas de los últimos 3 meses, agrupadas por región, y devuelve una Tabla de tendencias con una conclusión breve.
+- **Usa nombres de Campos**: Por ejemplo, ordena por `Hora de creación`, para que la IA pueda identificar la columna de destino.
+- **Proporciona varios ejemplos**: Para obtener un resultado con formato fijo, proporciona entre 3 y 5 ejemplos de entrada -> resultado esperado.
+- **Usa `@` para seleccionar nodos**: Cuando la IA necesite consultar Tablas, Vistas, aplicaciones, automatizaciones o carpetas, escribe `@` y selecciónalas directamente.
+- **Confirma antes de ejecutar**: En tareas que modifiquen datos, creen Tablas o aplicaciones, o habiliten automatizaciones, pide a la IA que describa los cambios antes de ejecutarlos.
+- **Elige el modelo según la tarea**: Si el Espacio permite seleccionar modelos, usa uno más ligero para consultas sencillas, limpieza o reescritura, y uno más potente para planificación compleja, análisis entre Tablas y creación de aplicaciones.
+- **Ajusta el nivel de Inteligencia**: **Inteligencia** controla la profundidad del razonamiento; los niveles superiores producen razonamientos más exhaustivos.
+- **Inicia un chat nuevo cuando cambie el tema**: Se recomienda iniciar un chat nuevo cuando cambie el tema, la conversación sea demasiado larga o quieras reducir el uso del contexto.
+
+## Preguntas frecuentes
+
+<AccordionGroup>
+  <Accordion title="¿Cómo permito que el Chat de IA consulte otra Tabla, Vista, aplicación o automatización?">
+    Escribe `@` en el cuadro de entrada y selecciona el nodo que quieras que consulte el Chat de IA. Para las selecciones de la Vista de cuadrícula, también puedes seleccionar filas, columnas, una sola celda o un rango de celdas y usar **Añadir al Chat** en el menú contextual.
+  </Accordion>
+
+  <Accordion title="¿Puede el Chat de IA trabajar en otra Base?">
+    Sí. La IA no está limitada a la Base a la que pertenece el chat; puede buscar y trabajar en las demás Bases a las que tienes acceso. Indica la Base en tu solicitud, por ejemplo: "compara esta Tabla con la Tabla de pedidos de la Base Ventas". `@` solo enumera los nodos de la Base actual, y cualquier acción para la que no indiques otro destino se ejecutará en la propia Base del chat.
+  </Accordion>
+
+  <Accordion title="¿Se guardan los gráficos e informes que crea la IA?">
+    Sí. Se guardan como artefactos, con historial de versiones y un enlace opcional para compartir, y puedes volver a abrirlos desde **+** → **Más** → **Administrar artefactos**. Un artefacto conserva los datos con los que se creó y no se actualiza automáticamente. Para crear una página que lea datos activos de una Tabla, crea una aplicación con [App Builder](/es/basic/ai/app-builder).
+  </Accordion>
+  <Accordion title="¿Pueden mis compañeros de equipo abrir un artefacto que he creado?">
+    De forma predeterminada, no. Solo tú puedes abrir tus propios artefactos. Activa **Habilitar uso compartido** en el visor y envía el enlace; elige **Miembros del Espacio** si el artefacto debe permanecer dentro del Espacio.
+  </Accordion>
+
+  <Accordion title="¿Se comparte la memoria entre Bases?">
+    No. El ámbito de la memoria se define por usuario y Base. Si quieres reutilizar la memoria de otra Base, pide a Cuppy que lea la memoria de esa Base y guarde las partes pertinentes en la actual.
+  </Accordion>
+
+  <Accordion title="¿Puede el Chat de IA seguir trabajando en segundo plano después de que me vaya?">
+    No uses el Chat de IA como ejecutor de tareas en segundo plano. Sigue trabajando en la conversación visible y pide a Cuppy que escriba los resultados en Teable, los exporte o genere un archivo descargable.
+  </Accordion>
+
+  <Accordion title="¿Por qué indica Teable que Cuppy está ocupado en otra conversación?">
+    Cada usuario puede ejecutar hasta 3 agentes al mismo tiempo, incluidos el Chat de IA y App Builder. Si ves `El agente está ocupado en otra conversación. Espera.`, significa que todavía se está ejecutando otra tarea. Espera a que Cuppy termine la tarea anterior antes de continuar.
+  </Accordion>
+
+  <Accordion title="¿Cómo se reembolsan los Créditos cuando falla una ejecución de IA?">
+    Un turno del Chat de IA puede incluir varios pasos de procesamiento. Tanto la conversación como la página de facturación muestran el total de Créditos de ese turno. El trabajo que Cuppy ya haya completado y guardado se puede seguir usando. Si el último paso se interrumpe por un error inesperado, los Créditos de ese paso se reembolsan automáticamente. Puedes seguir trabajando en la misma conversación.
+  </Accordion>
+
+  <Accordion title="¿Qué ocurre si envío otro mensaje mientras la IA está trabajando?">
+    Se añade a la cola de envío situada sobre el cuadro de entrada en lugar de interrumpir la ejecución, y Teable envía toda la cola como un solo mensaje cuando termina la ejecución. La cola reside en el servidor, por lo que sobrevive a las actualizaciones y se muestra igual en todas las pestañas o dispositivos donde esté abierta la conversación.
+
+    Mientras un elemento espera, puedes **Eliminarlo** o usar **Editar mensaje** para devolverlo al cuadro de entrada. Los elementos que solo contienen texto también se pueden redirigir: **Redirigir** los entrega de inmediato al turno en ejecución y después aparecen en la conversación con la etiqueta **Conversación redirigida**.
+
+    Una conversación admite hasta 30 mensajes en cola. A partir de ese límite, el mensaje no se añade a la cola y Teable responde `La cola de envío está llena. Espera a que Cuppy se ponga al día.`
+  </Accordion>
+
+  <Accordion title="¿Por qué indica la cola que está en pausa?">
+    Detener una ejecución también retiene la cola, para evitar que una detención destinada a la respuesta actual envíe lo que habías puesto en cola. El encabezado de la cola muestra entonces `La cola se ha pausado porque interrumpiste la respuesta`. Haz clic en **Reanudar** para liberarla o simplemente envía el siguiente mensaje: iniciar una ejecución nueva también libera la cola.
+  </Accordion>
+
+  <Accordion title="¿Cómo uso las habilidades en el Chat de IA?">
+    Abre el menú **+** y elige **Habilidades** para importar o administrar habilidades, o escribe `/` en el cuadro de entrada para elegir una habilidad habilitada. Al importarla, elige quién puede usarla: personal para tus propios chats, Base cuando la necesiten los colaboradores de la misma Base y Espacio cuando la necesiten todos los usuarios de ese Espacio. Los usuarios que pueden administrar la Base pueden añadir habilidades de Base, y los propietarios y creadores del Espacio pueden añadir habilidades de Espacio. Si el Chat de IA presenta un archivo `.skill`, usa **Instalar** en la tarjeta del archivo para añadirlo.
+  </Accordion>
+
+  <Accordion title="¿Qué habilidad se aplica cuando dos comparten el mismo nombre?">
+    Solo se aplica una versión, y la versión compartida con el equipo tiene prioridad sobre una copia personal: las habilidades de Base tienen prioridad sobre las de Espacio, y las de Espacio sobre las personales. En una conversación de una aplicación o bot, la habilidad añadida para esa aplicación o bot tiene prioridad. Para trasladar a todos a una versión nueva, actualiza la copia de la Base o el Espacio.
+  </Accordion>
+
+  <Accordion title="¿Qué archivos permanecen en Administrar archivos?">
+    **Administrar archivos** contiene dos carpetas: `uploads` para los archivos que has añadido y `outputs` para los archivos generados en la conversación. Cada una usa su propio almacenamiento, por lo que sobreviven cuando el entorno aislado se libera o reconstruye y puedes volver más adelante para obtener una vista previa, descargarlos o eliminarlos.
+
+    Todo lo que Cuppy escribe fuera de esas dos carpetas es temporal, como los resultados intermedios de un script. No aparece en **Administrar archivos** y desaparece cuando se reinicia el entorno aislado. Para conservar los resultados, pide a Cuppy que los escriba en `outputs` o en Teable, o descárgalos mientras la conversación esté abierta; usa **Descargar todo** cuando una respuesta haya generado varios archivos.
+  </Accordion>
+
+  <Accordion title="¿Qué ocurre cuando copio un mensaje con etiquetas?">
+    Cuando copias un mensaje de usuario, las Tablas, Vistas, aplicaciones, automatizaciones, carpetas, selecciones y archivos adjuntos se conservan como texto de marcadores. Cuando vuelves a pegar el texto en el Chat de IA, Teable restaura como etiquetas los marcadores que puede reconocer.
+  </Accordion>
+
+  <Accordion title="¿Dónde debo colocar las claves de API del Chat de IA?">
+    Usa **+** → **Secretos** en la entrada del chat. El Chat de IA puede usar esos valores durante la conversación sin incluir el texto sin formato en tu instrucción.
+  </Accordion>
+</AccordionGroup>

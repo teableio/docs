@@ -1,0 +1,33 @@
+---
+title: "Kayıtları döngüyle toplu işleme"
+description: "Tek bir iş akışı çalıştırmasında birden fazla kaydı işlemek için Kayıtları Getir + Döngüyü kullanın"
+---
+
+<Tip>Otomasyon örneklerini doğrudan AI Chat'te oluşturmanızı öneririz. İstediğiniz iş akışını açıklamanız yeterlidir; AI tetikleyici, eylemler, komut dosyası ve yapılandırma dahil tüm kurulumu sizin için tamamlar.</Tip>
+
+## AI ile oluşturma
+
+Tablonuzun sağ kenar çubuğunda AI Chat'i açın ve AI'a ne istediğinizi söyleyin. Örneğin şöyle diyebilirsiniz:
+
+*"Her gün saat 08.00'de son tarihi geçmiş ve durumu Gecikmiş olmayan tüm görevleri bul, ardından durumlarını Gecikmiş olarak güncelle"*
+
+AI, iş akışının tamamını otomatik olarak oluşturur. Oluşturulan komut dosyasını inceleyebilir, gerçek verilerle test edebilir ve hazır olduğunuzda iş akışını etkinleştirebilirsiniz.
+
+## Elle yapılandırma
+
+1. Her gün saat 08.00'de çalışacak **Zamanlanan Saatte** tetikleyicisiyle bir **iş akışı oluşturun**.
+2. **Eylem ekleyin** → **Kayıtları Getir**.
+   - Tablo: **Görevler**
+   - Filtre: `Son Tarih` **öncesindedir** `bugün` VE `Durum` **eşit değildir** `Gecikmiş`
+3. Eşleşen kayıtları görmek için **Test et**'e tıklayın.
+4. **Eylem ekleyin** → **Kaydı Güncelle**.
+5. Tablo seçicinin altındaki **Döngü Çalıştırması**'na tıklayın.
+6. Kayıtları Getir adımındaki dizi çıktısını seçin.
+7. Eşleyin:
+   - Kayıt Kimliği → geçerli öğenin kayıt kimliği (**+** üzerinden)
+   - Durum → `Gecikmiş`
+8. **Test et**'e, ardından **etkinleştir**'e tıklayın.
+
+## Nasıl Çalışır?
+
+Kayıtları Getir adımı bir dizi döndürür. Döngü etkinleştirilmiş Kaydı Güncelle adımı, her öğe üzerinde sırayla yinelenir ve öğeleri tek tek günceller.

@@ -1,0 +1,63 @@
+---
+title: "Panoramica dell'API"
+description: "Tutto ciò che serve per iniziare a chiamare l'API di Teable: URL di base, autenticazione, ID e schemi di richiesta comuni."
+---
+
+Questa sezione ti aiuta a iniziare a utilizzare l'API di Teable in modo rapido e sicuro.
+
+## URL di base
+
+- **Teable Cloud**: `https://app.teable.ai`
+- **Self-hosted**: usa il tuo dominio (ad esempio `https://teable.example.com`)
+
+Tutti i percorsi API presenti in questa documentazione sono relativi all'URL di base e iniziano con `/api`.
+
+## Autenticazione
+
+Le API di Teable utilizzano **token Bearer**:
+
+```bash
+curl -H 'Authorization: Bearer __token__' \
+  'https://app.teable.ai/api/table/__tableId__/record'
+```
+
+Puoi utilizzare:
+
+- **Token di accesso personale**: ideale per script, strumenti interni e integrazioni lato server. Consulta [Token di accesso](/it/api-doc/token).
+- **Token di accesso OAuth**: ideale per integrazioni multi-tenant in cui gli utenti finali concedono l'accesso. Consulta [App OAuth](/it/api-doc/oauth).
+
+## ID (spaceId / baseId / tableId / viewId / fieldId / recordId)
+
+La maggior parte degli endpoint richiede ID come `tbl...`, `rec...`. Consulta [Ottenere gli ID](/it/api-doc/get-id).
+
+## Ambiti e autorizzazioni
+
+Sia i token di accesso personali sia i token OAuth dispongono di ambiti di autorizzazione. Se ricevi un errore 403, in genere al token manca l'ambito richiesto.
+
+- Consulta [Codici di errore](/it/api-doc/error-code)
+- Riferimento degli ambiti OAuth: [App OAuth](/it/api-doc/oauth#available-scopes)
+
+## Paginazione (take / skip)
+
+Molti endpoint di elenco supportano:
+
+- `take`: numero di elementi da restituire (alcuni endpoint applicano un limite; ad esempio, per i Record il massimo è 100 per richiesta, quindi usa `skip` per suddividere i risultati in pagine)
+- `skip`: numero di elementi da ignorare
+
+## Chiavi dei Campi e formato delle celle
+
+Alcune API consentono di controllare il modo in cui vengono rappresentati i Campi dei Record:
+
+- `fieldKeyType`: `name` (predefinito) / `id` / `dbFieldName`
+- `cellFormat`: `json` (predefinito) / `text`
+
+Per le strutture dei valori dei Campi dei Record, consulta [Interfaccia dei Campi dei Record](/it/api-doc/record/interface).
+
+## Passaggi successivi
+
+- **Vuoi soltanto recuperare i dati**: [Ottenere i Record](/it/api-doc/record/get)
+- **Creare, aggiornare o eliminare Record**: [Creare Record](/it/api-doc/record/create), [Aggiornare un Record](/it/api-doc/record/update), [Eliminare Record](/it/api-doc/record/delete)
+- **Caricare allegati**: [Caricare un allegato](/it/api-doc/record/upload-attachment)
+- **Elenco completo degli endpoint**: usa la navigazione a sinistra sotto **Riferimento API**
+
+

@@ -1,0 +1,145 @@
+---
+title: "SQL Sorgusu (Kullanımdan Kaldırıldı)"
+noindex: true
+---
+
+<Tip>
+**Yalnızca kendi sunucunuzda barındırılan sürüm**: Sınırsız bağlantıyla tüm sürümlerde kullanılabilir.
+</Tip>
+
+Teable, salt okunur sorgular için harici araçlar aracılığıyla temelindeki PostgreSQL veritabanına bağlanmanıza olanak tanır. Böylece BI araçları (PowerBI, Metabase, Superset), veritabanı istemcileri (DataGrip, Navicat, TablePlus), düşük kodlu platformlar (Appsmith, Budibase) ve uygulama koduyla entegrasyon sağlanabilir.
+
+### Veritabanı Bağlantısı Oluşturma
+
+1. **Bir Tablo Açın**: Önce bağlanmak istediğiniz Veritabanındaki herhangi bir Tabloyu açın.
+2. **Tasarım Sayfasına Girin**: Veritabanı Tasarımı sayfasına girmek için sağ üst köşedeki ⚙️ simgesine tıklayın.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-open-design-page-en.png"
+  alt="Veritabanı Tasarımı sayfasını açma"
+  className="docs-screenshot"
+/>
+
+3. **Veritabanı Bağlantısı Panelini Bulun**: Tasarım sayfasında "Veritabanı Bağlantısı" panelini bulun.
+4. **Bağlantı Oluşturun**: Oluştur'a tıklayın. Sistem; kullanıcı adı, parola ve ana bilgisayar adresi içeren salt okunur bir PostgreSQL bağlantısını otomatik olarak oluşturur.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-database-connection-panel-en.png"
+  alt="Veritabanı Bağlantısı paneli"
+  className="docs-screenshot"
+/>
+
+### Veritabanına Bağlanma
+
+Tercih ettiğiniz araç üzerinden bağlanmak için kimlik bilgilerini kullanın. Aşağıda bir örnek verilmiştir:
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-connection-example.png"
+  alt="Harici veritabanı bağlantısı örneği"
+  className="docs-screenshot"
+/>
+
+### Verileri Sorgulama
+
+Bağlantı kurulduktan sonra SQL kullanarak verileri sorgulayabilirsiniz:
+
+```sql
+SELECT * FROM "bseamGnQT65TVSCzIaC"."clients" LIMIT 100
+```
+
+**Not:** Büyük/küçük harf duyarlılığını korumak için PostgreSQL'de şema ve Tablo adlarının çevresinde çift tırnak `"` kullanın.
+
+Bu sorguyu yazmak için üç bilgiyi bilmeniz gerekir:
+- **Şema adı (BaseId)**: `bse` ile başlayan Veritabanı tanımlayıcısı
+- **Tablo adı**: PostgreSQL'deki fiziksel Tablo adı
+- **Alan adları**: Veritabanındaki gerçek sütun adları
+
+Aşağıdaki bölümlerde bunların her birini nasıl bulacağınız açıklanmaktadır.
+
+### BaseId'yi (Şema Adını) Bulma
+
+Teable'daki her Veritabanı, PostgreSQL'deki bir **şemaya** karşılık gelir. BaseId, SQL sorgularında kullanılan şema adıdır.
+
+**Yöntem 1:** URL'ye bakın; `bse` ile başlayan dize BaseId'dir.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-base-id-url.png"
+  alt="URL'deki Veritabanı kimliği"
+  className="docs-screenshot"
+/>
+
+**Yöntem 2:** Veritabanı Tasarımı arayüzünde gösterilen şema adı BaseId'dir.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-design-page-schema.png"
+  alt="Veritabanı Tasarımı sayfasındaki şema adı"
+  className="docs-screenshot"
+/>
+
+### Tablo Adlarını Bulma
+
+Teable arayüzündeki Tablo adları, fiziksel veritabanı Tablo adlarıyla otomatik olarak eşitlenmez. Gerçek veritabanı Tablo adını Veritabanı Tasarımı arayüzünden kontrol edin.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-table-info.png"
+  alt="Tasarım sayfasındaki fiziksel Tablo adı"
+  className="docs-screenshot"
+/>
+
+**İpucu:** Gerekirse fiziksel Tablo adını tasarım arayüzünde değiştirebilirsiniz.
+
+### Alan Adlarını Bulma
+
+Veritabanındaki Alan (sütun) adları Teable arayüzündekilerden farklı olabilir. Tasarım arayüzündeki `dbFieldName` değerini kontrol edin.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-db-field-name.png"
+  alt="Tasarım sayfasındaki veritabanı Alan adı"
+  className="docs-screenshot"
+/>
+
+**İpucu:** Teable'da Alan adlarının değiştirilmesi otomatik olarak eşitlenmez. PostgreSQL'deki gerçek sütun adını değiştirmek için `dbFieldName` değerini açıkça düzenleyin.
+
+### Sistem Alanları
+
+Teable aşağıdaki sistem Alanlarını otomatik olarak oluşturur (yeniden adlandırılamaz):
+
+| Alan | Açıklama |
+|-------|-------------|
+| `__id` | Benzersiz kimlik |
+| `__version` | Sürüm numarası |
+| `__auto_number` | Otomatik artan sayı, birincil anahtar |
+| `__created_time` | Oluşturulma zamanı |
+| `__last_modified_time` | Son değiştirilme zamanı |
+| `__created_by` | Oluşturanın kimliği |
+| `__last_modified_by` | Son değiştirenin kimliği |
+| `__row*` | Kayıt sırasını korumak için kullanılan Görünüm dizini Alanları |
+| `__fk*` | İlişki Alanlarının yabancı anahtarları |
+
+### Birleşim Tabloları
+
+`junction_` ile başlayan Tablolar, ManyToMany ve tek yönlü ilişkileri işlemek için sistem tarafından oluşturulur.
+
+### İzin Notları
+
+Veritabanı bağlantısının kapsamı yalnızca geçerli Veritabanıyla sınırlıdır. PostgreSQL şemaları izin yalıtımı sağlayarak yalnızca kendi Veritabanınızdaki Tablolara erişebilmenizi güvence altına alır.
+
+Bağlanırken başka baseId'ler (şema adları) görebilirsiniz ancak bunların içeriğine erişemezsiniz.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-tableplus-base-id.png"
+  alt="TablePlus'taki Veritabanı kimliği"
+  className="docs-screenshot"
+/>
+
+### Bağlantı Sınırları
+
+Varsayılan sınır, aynı anda 20 bağlantıdır.
+
+### Veri Yazma
+
+Teable, harici bağlantılar üzerinden veritabanına doğrudan yazmaya izin vermez. Verileri değiştirmek için bunun yerine [Teable API'yi](/tr/api-doc/token) kullanın.
+
+### Bağlantıyı Kapatma
+
+Bağlantıyı kapatmak için Veritabanı Bağlantısı panelinde Sil'e tıklayın. Eski parola temizlenir ve yeni bir bağlantı oluşturulduğunda yeni kimlik bilgileri üretilir.

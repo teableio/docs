@@ -1,0 +1,40 @@
+---
+title: "Neue Formulareinträge automatisch mit KI klassifizieren"
+description: "Verwenden Sie „Mit KI generieren“, um Formulareinreichungen automatisch zu kategorisieren"
+---
+
+<Tip>Wir empfehlen, Automatisierungsbeispiele direkt im KI-Chat zu erstellen. Beschreiben Sie einfach den gewünschten Workflow, und die KI übernimmt die vollständige Einrichtung einschließlich Auslöser, Aktionen, Skript und Konfiguration.</Tip>
+
+## Mit KI erstellen
+
+Öffnen Sie den KI-Chat in der rechten Seitenleiste Ihrer Tabelle und teilen Sie der KI mit, was Sie erreichen möchten. Sie können beispielsweise Folgendes sagen:
+
+*„Wenn jemand das Feedbackformular absendet, klassifiziere das Feedback als Fehlerbericht, Funktionswunsch oder allgemeines Feedback und schreibe die Kategorie in den Datensatz zurück.“*
+
+Die KI erstellt automatisch den vollständigen Workflow. Sie können das generierte Skript prüfen, mit echten Daten testen und den Workflow aktivieren, sobald er bereit ist.
+
+## Manuelle Einrichtung
+
+1. **Erstellen Sie einen Workflow** mit dem Auslöser **Wenn Formular übermittelt wird**.
+2. Wählen Sie Ihre Tabelle und Ihr Formular **Feedback** aus.
+3. Klicken Sie auf **Testen**.
+4. **Aktion hinzufügen** → **Mit KI generieren**.
+   - Prompt:
+     ```
+     Klassifiziere dieses Feedback in genau eine Kategorie:
+     Fehlerbericht, Funktionswunsch oder allgemeines Feedback.
+
+     Antworte nur mit dem Namen der Kategorie.
+
+     Feedback: <feedbackfeld über + einfügen>
+     ```
+   - Ausgabetyp: **Text**
+5. **Aktion hinzufügen** → **Datensatz aktualisieren**.
+   - Datensatz-ID: die ID des auslösenden Datensatzes (über **+**)
+   - Feld „Kategorie“ → Ausgabe von „Mit KI generieren“ (über **+**)
+6. Testen Sie jeden Schritt und **aktivieren** Sie anschließend den Workflow.
+
+## Tipps
+
+- Erhöhen Sie für eine differenziertere Klassifizierung die Anzahl der Kategorien im Prompt.
+- Verwenden Sie den Ausgabetyp **JSON**, wenn die KI mehrere Felder (z. B. Kategorie + Stimmung + Zusammenfassung) in einem Aufruf zurückgeben soll.

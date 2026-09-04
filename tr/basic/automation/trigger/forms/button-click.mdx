@@ -1,0 +1,78 @@
+---
+title: "Düğmeye tıklandığında"
+description: "Bir düğme alanına tıklandığında iş akışını tetikleyin"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Lütfen unutmayın: tüm tetikleyici yapılandırması AI Chat'te yapılabilir. İş akışının ne yapmasını istediğinizi AI'a söyleyin; gerisini o halleder.</Tip>
+
+Bu tetikleyici, kullanıcı bir tablo satırındaki Düğme alanına tıkladığında çalışır. İş akışı ilgili satırın verilerini alır.
+
+## AI ile oluşturma
+
+Tablonuzun sağ kenar çubuğunda AI Chat'i açın ve ne istediğinizi açıklayın.
+
+AI her şeyi halleder: doğru tetikleyiciyi seçer, ilgili alanları eşler ve tüm eylemleri otomatik olarak yapılandırır.
+
+Hedefinizi bir kez açıklayın; iş akışınız elle yapılandırma gerektirmeden hazır olur.
+
+**Örnek:** *"Onayla düğmesine tıkladığımda durumu güncelle ve ekibe bildirim gönder."*
+
+## Yapılandırma
+
+| Ayar | Zorunlu | Açıklama |
+|---|---|---|
+| Tablo | Evet | Düğme alanını içeren tablo |
+| İzlenen Alanlar | Evet | Tıklamaları izlenecek düğme alanları |
+| Filtre | Hayır | Yalnızca düğmeye tıklandığında kayıt bu koşullarla eşleşiyorsa tetiklenir |
+
+## Düğme alanı nasıl oluşturulur?
+
+Bu tetikleyiciyi kullanabilmek için önce tablonuzda bir Düğme alanı bulunmalıdır:
+
+1. Düğmeyi eklemek istediğiniz tabloyu açın.
+2. Yeni bir alan eklemek için **+** simgesine tıklayın.
+3. Alan türü menüsünde **Gelişmiş** bölümüne gidip **Düğme**'yi seçin.
+4. Alana bir ad verin (ör. "Onayla", "Faturayı Gönder", "Dışa Aktar").
+5. Alanı kaydedin. Artık bu sütunun her satırında tıklanabilir bir düğme görünür.
+
+## Nasıl yapılandırılır?
+
+1. Otomasyonunuzu açıp yeni bir tetikleyici ekleyin.
+2. **Düğmeye tıklandığında** seçeneğini belirleyin.
+3. Düğme alanını içeren **Tabloyu** seçin.
+4. **İzlenen Alanlar** bölümünde izlemek istediğiniz düğme alanını seçin. Gerekirse birden fazla düğme alanı seçebilirsiniz.
+5. (İsteğe bağlı) Hangi satırların otomasyonu tetikleyebileceğini sınırlandırmak için bir **Filtre** ekleyin. Örneğin `Durum`, `Tamamlandı` değerine eşit değil filtresi, düğmenin zaten tamamlanmış kayıtlarda çalışmasını önler.
+6. Otomasyonu kaydedip etkinleştirin.
+7. Eylem adımlarınızı ekleyin. Tıklanan satırdaki verileri eklemek için herhangi bir eylem alanında **+** simgesine tıklayın.
+
+## Sonraki adımlarda kullanılabilen veriler
+
+Bir düğmeye tıklandığında tetikleyici şunları sağlar:
+
+- **Kayıt Kimliği** — düğmeye tıklanan satırın benzersiz tanımlayıcısı.
+- **Tüm alan değerleri** — tıklanan satırdaki her alan değişken olarak kullanılabilir. Metin, sayı, tarih, bağlantılı kayıt, ek ve diğer alanlar buna dahildir.
+
+Böylece kullanıcının tıkladığı belirli satıra göre satır verilerini e-postaları doldurmak, diğer kayıtları güncellemek veya harici API'lere veri göndermek için kullanabilirsiniz.
+
+## Ne zaman kullanılır?
+
+- **Tek tıklamalı onay iş akışları.** Her satıra "Onayla" düğmesi ekleyin. Tıklandığında durumu "Onaylandı" olarak güncelleyin ve talep sahibine bildirim gönderin.
+- **İstek üzerine rapor veya belge oluşturun.** "Rapor Oluştur" düğmesi, ilgili kayıt için PDF veya özet oluşturacak AI eylemini ya da HTTP isteğini tetikler.
+- **Bir kaydı harici sisteme aktarın.** "CRM ile Eşitle" düğmesi, satır verilerini HTTP isteğiyle Salesforce, HubSpot veya başka bir platforma gönderir.
+- **Kişiselleştirilmiş e-posta gönderin.** "Hatırlatma Gönder" düğmesi, satırdaki iletişim bilgilerini ve ilgili ayrıntıları kullanarak e-posta oluşturup gönderir.
+- **Elle inceleme adımını tetikleyin.** "İnceleme İçin İşaretle" düğmesi kaydı işaretler ve yöneticiye bildirim göndererek hangi öğelerin üst birime aktarılacağı konusunda insanlara açık denetim sağlar.
+
+## İpuçları
+
+- Düğme alanının kendisi veri saklamaz; yalnızca tetikleme mekanizmasıdır. Hücrede bir değer değil, yalnızca tıklanabilir düğme görürsünüz.
+- Bir tabloda birden fazla düğme alanınız varsa her biri için ayrı otomasyon oluşturabilir veya birden fazla düğmeyi izleyen ve koşullu mantık kullanan tek bir otomasyon oluşturabilirsiniz.
+- Filtre, düğmeye tıklanan anda değerlendirilir. Kayıt filtreyle eşleşmiyorsa otomasyon çalışmaz ve kullanıcı hata görmez.
+- Düğme tetikleyicileri, tamamen otomatik işleme yerine bir eylemden önce insan kararının gerektiği iş akışları için idealdir.
+
+## İlgili konular
+
+- [Form gönderildiğinde](/tr/basic/automation/trigger/forms/form-submitted) — düğme tıklamaları yerine form gönderimlerinde çalışır
+- [Kayıt güncellendiğinde](/tr/basic/automation/trigger/records/record-updated) — kullanıcı eylemi gerektirmeden alan değişikliklerinde otomatik olarak çalışır
+- [Kaydı güncelle eylemi](/tr/basic/automation/actions/records/update-record) — satırın durumunu değiştirmek için düğme tıklamalarıyla yaygın olarak kullanılır
+- [E-posta gönder](/tr/basic/automation/actions/communication/send-email-overview)

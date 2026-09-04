@@ -1,0 +1,62 @@
+---
+title: "Valor único y valores múltiples"
+description: "Explica si una celda de un campo almacena un valor o un grupo de valores."
+---
+
+Los conceptos de valor único y valores múltiples describen si una celda almacena un valor o un grupo de valores. Comprender este concepto ayuda a entender por qué los enlaces, las búsquedas, las acumulaciones y las fórmulas pueden devolver varios resultados.
+
+## Conceptos básicos
+
+| Tipo | Descripción | Ejemplo |
+| --- | --- | --- |
+| Valor único | Un dato concreto | "la fecha de hoy", "el número de teléfono de Juan" |
+| Valores múltiples | Un grupo de valores, también entendido como un array | "todas las fechas de este mes", "todos los números de teléfono de Juan" |
+
+## Estados predeterminados de valor único y valores múltiples
+
+| Tipo de campo | Estado predeterminado |
+| --- | --- |
+| Texto de una línea, texto largo | Único |
+| Selección única, casilla de verificación, fecha, número, valoración | Único |
+| Fecha de creación, fecha de última modificación, creado por, última modificación por, numeración automática, botón | Único |
+| Selección múltiple, adjunto | Múltiple |
+| Usuario | Opcional |
+| Enlace | Opcional |
+| Fórmula, acumulación | Dinámico |
+
+Aquí, "estado predeterminado" se refiere al estado habitual del campo por sí solo. **Opcional** significa que puedes decidir en la configuración del campo si este contiene un valor único o varios valores. **Dinámico** significa que el resultado depende de la lógica de la fórmula, de las funciones de acumulación y de si los campos referenciados contienen varios valores. Después de que un valor pase por un enlace, una búsqueda, una acumulación o una referencia de fórmula, su estado puede cambiar.
+
+## Cambios de estado provocados por enlaces y referencias
+
+- **Campos Enlace**: Si un campo Enlace contiene varios valores, los campos referenciados a través de ese enlace también pueden pasar a contener varios valores. Por ejemplo, si una tarea se puede asignar a varios empleados, buscar los números de teléfono de los empleados mediante ese enlace puede devolver varios números.
+- **Fórmulas y acumulaciones**: Las fórmulas y las acumulaciones suelen devolver un valor único, pero pueden devolver varios valores cuando hacen referencia a campos con valores múltiples.
+
+### Ejemplo
+
+Supongamos que gestionas una empresa en Teable con dos tablas: `Información de empleados` y `Tareas del proyecto`.
+
+**Tabla Información de empleados**
+
+| Nombre | Teléfono | Correo electrónico | Tareas |
+| --- | --- | --- | --- |
+| Juan | 123456 | juan@empresa.com | Tarea 1, Tarea 2 |
+| María | 789012 | maria@empresa.com | Tarea 3 |
+
+**Tabla Tareas del proyecto**
+
+| Nombre de la tarea | Responsable | Fecha límite | Progreso |
+| --- | --- | --- | --- |
+| Tarea 1 | Juan | 2023-11-20 | 50% |
+| Tarea 2 | Juan | 2023-12-01 | 30% |
+| Tarea 3 | María | 2023-11-15 | 80% |
+
+En este ejemplo:
+
+- El campo "Tareas" de la Tabla **Información de empleados** contiene varios valores porque un empleado puede ser responsable de varias tareas.
+- El campo "Responsable" de la Tabla **Tareas del proyecto** contiene un único valor porque cada tarea tiene un solo responsable.
+
+Cuando creas una tarea nueva en la Tabla "Tareas del proyecto" y se la asignas a un empleado, el campo "Tareas" de ese empleado en la Tabla "Información de empleados" se actualiza para incluir todas las tareas asignadas.
+
+### Minigráficos numéricos
+
+En ocasiones, los campos numéricos muestran varias líneas o barras en lugar de un solo número. Esto suele significar que el campo ha pasado a contener varios valores, a menudo debido a un enlace, una búsqueda, una acumulación o una referencia de fórmula.

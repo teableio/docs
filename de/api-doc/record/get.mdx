@@ -1,0 +1,85 @@
+---
+title: "Datensätze abrufen"
+---
+
+<Tip>Wir stellen Entwicklern einen integrierten [Abfrageparameter-Builder](https://app.teable.ai/developer/tool/query-builder) bereit, der dabei helfen kann, benutzerdefinierte Anfragen auf Grundlage Ihrer bestehenden Tabellen zu erstellen.</Tip>
+
+### Pfad
+GET /api/table/\{tableId\}/record
+​
+### Anfrage
+#### Pfadparameter
+tableId (string): Die eindeutige Kennung der Tabelle [(so erhalten Sie sie)](/de/api-doc/get-id#tableid).
+
+#### Grundlegende Abfrageparameter
+Alle Parameter sind optional
+
+<ParamField query="viewId" type="string">
+  Gibt die Ansichts-ID an, aus der Datensätze abgerufen werden sollen. Wenn keine angegeben ist, werden Datensätze in der Reihenfolge ihrer Erstellungszeit zurückgegeben, einschließlich aller Datensätze und Felder.
+</ParamField>
+
+<ParamField query="take" type="number">
+  Gibt die Anzahl der abzurufenden Datensätze an; der Höchstwert beträgt 100. Um weitere Datensätze zu lesen, paginieren Sie die Daten mit `skip` und `take` (siehe [Paginierung](/de/api-doc/overview)).
+
+  Die Begrenzung auf 100 Datensätze gilt für persönliche Teable-Cloud-API-Schlüssel, die am oder nach dem 10. September 2026 erstellt wurden. Vor diesem Datum erstellte Schlüssel, OAuth- und Plugin-Tokens sowie selbstgehostete Instanzen akzeptieren weiterhin bis zu 1000, wobei Seiten mit 100 Einträgen die empfohlene Größe bleiben.
+</ParamField>
+
+<ParamField query="skip" type="number">
+  Gibt die Anzahl der zu überspringenden Datensätze an und wird für die Paginierung verwendet.
+</ParamField>
+
+<ParamField query="fieldKeyType" type="string" default="name">
+  Definiert den Schlüsseltyp für Felder in Datensätzen; mögliche Werte:
+  - `name`: Feldnamen als Schlüssel verwenden (Standard)
+  - `id`: Feld-IDs als Schlüssel verwenden
+  - `dbFieldName`: dbFieldName des Feldes als Schlüssel verwenden
+</ParamField>
+
+<ParamField query="cellFormat" type="string" default="json">
+  Definiert das Rückgabeformat für Zellenwerte; mögliche Werte:
+  - `json`: Gibt strukturierte JSON-Daten zurück (Standard)
+  - `text`: Gibt das Nur-Text-Format zurück
+</ParamField>
+
+<ParamField query="projection" type="string[]">
+  Wenn Sie nur bestimmte Felder benötigen, geben Sie sie über diesen Parameter an. Andernfalls werden alle sichtbaren Felder abgerufen. Die Parameterwerte hängen von der fieldKeyType-Einstellung ab (Feldnamen, IDs oder dbFieldName verwenden).
+</ParamField>
+
+<ParamField query="orderBy" type="string">
+  Array von Sortierobjekten, das festlegt, wie Datensätze sortiert werden sollen.
+</ParamField>
+
+<ParamField query="filter" type="string">
+  Komplexes Abfragebedingungsobjekt zum Filtern von Ergebnissen. Unterstützt komplexe Abfragebedingungen auf Grundlage von Feldern, Operatoren und Werten.
+</ParamField>
+
+<ParamField query="search" type="string[]">
+  Sucht nach Datensätzen, die den angegebenen Feldern und Werten entsprechen.
+</ParamField>
+
+<Accordion title="Erweiterte Abfrageparameter">
+<ParamField query="groupBy" type="string">
+  Array von Gruppenobjekten, das festlegt, wie Datensätze gruppiert werden sollen.
+</ParamField>
+
+<ParamField query="collapsedGroupIds" type="string[]">
+  Array der einzuklappenden Gruppen-IDs.
+</ParamField>
+
+<ParamField query="selectedRecordIds" type="string[]">
+  Filtert ausgewählte Datensätze nach Datensatz-IDs.
+</ParamField>
+
+<ParamField query="ignoreViewQuery" type="boolean">
+  Wenn viewId angegeben ist, werden durch die Einstellung auf true die Filter, die Sortierung und andere Einstellungen der Ansicht ignoriert.
+</ParamField>
+
+<ParamField query="filterLinkCellCandidate" type="string[]">
+  Filtert Datensätze aus der verknüpften Tabelle, die über die angegebene Verknüpfungszelle ausgewählt werden können. Beispielsweise werden bei Eins-zu-viele- oder Eins-zu-eins-Beziehungsfeldern bereits ausgewählte Datensatz-IDs nicht angezeigt.
+</ParamField>
+
+<ParamField query="filterLinkCellSelected" type="string[]">
+  Filtert Datensätze aus der verknüpften Tabelle, die bereits durch diese Verknüpfungszelle ausgewählt sind. Hinweis: viewId, filter und orderBy haben in diesem Fall keine Wirkung, da ausgewählte Datensätze ihre eigene Reihenfolge haben.
+</ParamField>
+</Accordion>
+

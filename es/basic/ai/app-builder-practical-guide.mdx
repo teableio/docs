@@ -1,0 +1,274 @@
+---
+title: "Prácticas recomendadas de App Builder"
+description: "Consejos y patrones prácticos para aprovechar al máximo App Builder de Teable."
+---
+
+## Consejos de creación
+
+### 1. Define primero los datos
+
+App Builder de Teable trabaja sobre tus Tablas existentes de Teable: **tus Tablas y Campos conforman el esquema**, y la IA los lee directamente al generar la interfaz y la lógica.
+
+Por tanto, antes de empezar a crear, define claramente el modelo de datos. Cuanto más precisos sean los tipos de Campo, los enlaces y las rutas de lectura y escritura, mayor será la calidad de lo que produzca la IA.
+
+### 2. Planifica antes de crear
+
+Aunque ya tengas preparado el modelo de datos, evita comenzar directamente por la interfaz. Primero, realiza una fase de planificación con la IA.
+
+Di algo como: *«Todavía no escribamos código; hagamos un plan»*. Describe el problema que quieres resolver, los usuarios de destino y el conjunto aproximado de funciones. Deja que la IA redacte una propuesta estructurada. Revísala, ajústala y no empieces a crear hasta que estés de acuerdo con el plan.
+
+<Tip>Dedicar unos minutos más a alinear la dirección al principio ahorra horas de trabajo posterior.</Tip>
+
+### 3. Empieza por algo pequeño
+
+No intentes incluir todas las funciones en una sola instrucción. Describe primero la función principal, consigue una versión mínima que funcione y añade después un elemento cada vez: una interacción, un ajuste de estilo o una parte de la lógica.
+
+Verifica cada cambio antes de continuar. Si algo se rompe, solo tendrás que revertir un cambio pequeño en lugar de comenzar de nuevo.
+
+### 4. Sé concreto, no abstracto
+
+Las descripciones como *«hazlo más bonito»* o *«haz que las interacciones resulten más naturales»* apenas proporcionan información a la IA.
+
+Las instrucciones eficaces son concretas: **qué página, qué área, qué comportamiento quieres y qué no quieres**. Adjuntar capturas de pantalla o interfaces de referencia resulta muy útil.
+
+<Tip>Trata tu instrucción como un encargo para una persona inteligente que no sabe nada de tu proyecto. Cuanto más precisas sean las indicaciones, más se acercará el resultado a lo que imaginabas.</Tip>
+
+### 5. Diagnostica antes de corregir
+
+Cuando la aplicación se comporte de forma inesperada, evita decirle a la IA que *«simplemente lo arregle»*. Las instrucciones de corrección imprecisas hacen que la IA aplique parches a ciegas, lo que a menudo introduce nuevos errores.
+
+Es preferible seguir dos pasos:
+
+<Steps>
+  <Step title="Pedir primero un análisis a la IA">
+    Describe los síntomas y pide a la IA que enumere las causas probables y los posibles enfoques sin modificar todavía el código.
+  </Step>
+  <Step title="Elegir un enfoque e implementarlo">
+    Decide qué explicación parece más probable e indica a la IA que siga ese camino.
+  </Step>
+</Steps>
+
+<Warning>Si fallan varios intentos de corrección consecutivos, vuelve a la última versión que funcionaba y empieza de nuevo. Suele ser más rápido que acumular parches.</Warning>
+
+### 6. Aprovecha la reversión de versiones
+
+Cada conversación con la IA produce cambios. El ritmo recomendado es terminar un módulo funcional, confirmar que funciona y continuar después. **No trabajes simultáneamente en varias funciones sin terminar.**
+
+¿Un cambio posterior ha roto algo? Vuelve a la última versión estable e inténtalo de nuevo con una instrucción más clara.
+
+## Preguntas frecuentes
+
+### App Builder solo admite Next.js
+
+El entorno de ejecución de App Builder (entorno aislado, vista previa y compilación) está basado en **Next.js** y actualmente **no admite** otros entornos de desarrollo de interfaces, como Astro, Vite, Create React App, Vue o Svelte, entre otros.
+
+Si pides a la IA que use un entorno de desarrollo distinto de Next.js, es posible que no se niegue de forma sistemática e incluso que intente generar el código correspondiente. Sin embargo, como el entorno subyacente no es compatible, **la vista previa no llegará a iniciarse**: permanecerá indefinidamente en «La vista previa se está iniciando...» y las conversaciones seguirán consumiendo Créditos durante ese tiempo.
+
+<Warning>
+Si necesitas usar un framework distinto de Next.js, te recomendamos que desarrolles en tu propio entorno local y te conectes a tus datos mediante la API de Teable.
+</Warning>
+
+### Gestionar errores 429
+
+<Warning>
+Actualmente, la API de Teable está limitada a **10 QPS** (10 solicitudes por segundo). Las aplicaciones generadas por App Builder pueden encontrar errores 429 durante el uso normal si no se optimiza la gestión de solicitudes. Nuestro equipo de ingeniería trabaja activamente para optimizar el rendimiento de la API y es posible que modifiquemos este límite en el futuro.
+</Warning>
+
+Existen cuatro estrategias generales para solucionar este problema:
+
+<CardGroup cols={4}>
+  <Card title="Almacenamiento en caché" icon="database">
+    Reduce las solicitudes duplicadas
+  </Card>
+  <Card title="Paginación y procesamiento por lotes" icon="layer-group">
+    Reduce la carga de cada solicitud
+  </Card>
+  <Card title="Antirrebote y limitación" icon="gauge-high">
+    Reduce la frecuencia de las solicitudes
+  </Card>
+  <Card title="Compatibilidad de representación" icon="window-restore">
+    Reduce los errores de la vista previa
+  </Card>
+</CardGroup>
+
+Cada sección siguiente enumera situaciones habituales, la solución y una instrucción de referencia que puedes reutilizar.
+
+**Almacenamiento en caché: reduce las solicitudes duplicadas**
+
+<AccordionGroup>
+  <Accordion title="Las páginas y los paneles con muchos elementos visuales pueden generar demasiadas solicitudes al cargarse" icon="bolt">
+    **Situación**: Una página de panel contiene varios gráficos, tarjetas de estadísticas y listas, y cada uno consulta una Tabla diferente. O bien la página sirve principalmente para mostrar información, pero cada visita sigue llamando directamente a la API. En ambos casos, la simultaneidad durante la carga de la página puede dispararse, y los picos de tráfico tienen más probabilidades de provocar errores 429.
+
+    **Solución**: Da prioridad a patrones de representación que aprovechen la caché. Almacena los datos en la memoria de la aplicación después de cargarlos —un TTL de 1 a 3 minutos es un buen punto de partida— y reutilízalos en visitas posteriores. Aplica carga diferida a los componentes situados por debajo de la parte visible de la página para escalonar las solicitudes. Si la página continúa volviendo a obtener los datos en cada visita, pide explícitamente a la IA que refuerce la estrategia de caché.
+
+    <Tip>
+    **Instrucción de referencia**: «Esta página contiene muchos elementos visuales. Da prioridad a un enfoque de representación que aproveche la caché. Almacena los datos localmente después de cargar la página con un TTL de 1 minuto, no vuelvas a solicitar la API dentro del periodo del TTL y retrasa 500 ms los componentes situados por debajo de la parte visible de la página».
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Varios componentes consultan la misma Tabla" icon="copy">
+    **Situación**: Tres componentes de una misma página necesitan datos de la misma Tabla y cada uno envía su propia solicitud, aunque una sola habría sido suficiente.
+
+    **Solución**: Centraliza la obtención de datos para que el mismo conjunto se cargue una sola vez y se comparta entre los componentes.
+
+    <Tip>
+    **Instrucción de referencia**: «Si varios componentes necesitan datos de la misma Tabla, obtenlos una sola vez y compártelos entre todos. No envíes solicitudes duplicadas».
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Nueva obtención de datos al navegar entre páginas" icon="arrows-rotate">
+    **Situación**: Los usuarios avanzan y retroceden entre páginas. Cada vez que vuelven se realiza una obtención nueva, aunque nada haya cambiado.
+
+    **Solución**: Dentro del TTL de la caché, reutiliza los datos cargados anteriormente en lugar de volver a solicitarlos.
+
+    <Tip>
+    **Instrucción de referencia**: «Cuando un usuario vuelva a una página, si ha transcurrido menos de 1 minuto desde la última carga, usa los datos almacenados en caché. No vuelvas a solicitar la API».
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Listas desplegables que cargan enormes listas de opciones" icon="list">
+    **Situación**: Una lista desplegable muestra como opciones todos los Registros de una Tabla. Cuando hay muchos Registros, esa única solicitud ya supone una carga elevada.
+
+    **Solución**: Conviértela en un selector con búsqueda: obtén únicamente los Registros coincidentes después de que el usuario escriba. También puedes almacenar en caché la lista de opciones.
+
+    <Tip>
+    **Instrucción de referencia**: «Las listas desplegables no deben cargar todas las opciones de antemano. Cámbialas por una búsqueda de palabras clave que obtenga los Registros coincidentes mientras se escribe y aplica antirrebote».
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Selectores en cascada que encadenan solicitudes" icon="sitemap">
+    **Situación**: Elegir un Campo desencadena la carga de las opciones del nivel siguiente. Las cascadas de varios niveles acumulan varias solicitudes por interacción.
+
+    **Solución**: Precarga una vez los datos relacionados y fíltralos localmente, o almacena en caché los datos de la cascada después de la primera carga.
+
+    <Tip>
+    **Instrucción de referencia**: «Almacena localmente en caché los datos de las opciones de los selectores en cascada después de cargarlos. Cuando el usuario cambie una opción superior, filtra la caché en lugar de volver a solicitar los datos».
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Las nuevas representaciones desencadenan solicitudes duplicadas" icon="repeat">
+    **Situación**: Una gestión de estado deficiente hace que los componentes vuelvan a obtener datos con cada representación.
+
+    **Solución**: Desencadena la obtención de datos en eventos concretos —el montaje inicial o una acción explícita del usuario—, no en cada representación. Usa la caché como medida de seguridad.
+
+    <Tip>
+    **Instrucción de referencia**: «Obtén los datos únicamente en la primera carga de la página o cuando haya acciones explícitas del usuario. No vuelvas a obtenerlos con cada representación; usa los datos de la caché».
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+**Paginación y procesamiento por lotes: reduce la carga de cada solicitud**
+
+<AccordionGroup>
+  <Accordion title="Listas o Tablas sin paginación" icon="table-list">
+    **Situación**: Cargar todos los Registros a la vez produce una avalancha de llamadas a la API cuando crece el conjunto de datos.
+
+    **Solución**: Pagina los datos. Obtén únicamente los de la página actual.
+
+    <Tip>
+    **Instrucción de referencia**: «Muestra 20 filas por página. Carga la página siguiente únicamente cuando el usuario navegue hasta ella. No cargues todo a la vez».
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Obtención por fila de datos enlazados (N+1)" icon="link">
+    **Situación**: Después de cargar una lista, obtienes uno por uno los detalles de la Tabla enlazada correspondientes a cada Registro. Cargar 50 proyectos y después consultar 50 responsables genera 50 solicitudes adicionales al instante.
+
+    **Solución**: Obtén todos los datos enlazados en un único lote, no fila por fila.
+
+    <Tip>
+    **Instrucción de referencia**: «Al cargar una lista, obtén por lotes todos los datos enlazados en una sola solicitud. No recorras los Registros para obtener su información enlazada de forma individual».
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Escrituras por fila durante actualizaciones masivas" icon="pen-to-square">
+    **Situación**: Se actualizan de forma masiva varios Registros enviando una solicitud de actualización por Registro en lugar de una única solicitud por lotes.
+
+    **Solución**: Usa la API de actualización por lotes para enviar todos los cambios en una sola llamada.
+
+    <Tip>
+    **Instrucción de referencia**: «Para operaciones masivas, combina los cambios de varios Registros en una sola solicitud por lotes. No envíes una actualización por Registro».
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Llamadas a la API dentro de bucles" icon="rotate">
+    **Situación**: Un bucle `for` procesa los Registros uno por uno y llama a la API en cada iteración.
+
+    **Solución**: Recopila primero todos los ID y envía después una única solicitud por lotes.
+
+    <Tip>
+    **Instrucción de referencia**: «No llames a la API dentro de un bucle. Recopila primero todos los ID necesarios y envía después una única solicitud por lotes».
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+**Antirrebote y limitación: reduce la frecuencia de las solicitudes**
+
+<AccordionGroup>
+  <Accordion title="Búsquedas o filtros sin antirrebote" icon="magnifying-glass">
+    **Situación**: Cada pulsación de tecla en un cuadro de búsqueda envía una solicitud. Escribir una consulta de 4 caracteres produce 4 solicitudes.
+
+    **Solución**: Aplica antirrebote a la entrada: espera entre 300 y 500 ms después de que el usuario deje de escribir antes de enviar la solicitud.
+
+    <Tip>
+    **Instrucción de referencia**: «Aplica antirrebote a la entrada de búsqueda. Envía una solicitud únicamente 300 ms después de que el usuario deje de escribir. No envíes solicitudes mientras escribe».
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Acciones de usuario rápidas y repetidas" icon="hand-pointer">
+    **Situación**: Clics rápidos y repetidos en Enviar, cambios sucesivos de filtros o una paginación veloz: cada acción envía una solicitud de inmediato.
+
+    **Solución**: Aplica antirrebote o limitación. Deshabilita los botones de envío hasta que termine la solicitud para evitar envíos duplicados.
+
+    <Tip>
+    **Instrucción de referencia**: «Deshabilita el botón de envío después de hacer clic y vuelve a habilitarlo cuando se resuelva la solicitud. Aplica antirrebote a los cambios de filtro para que los cambios rápidos producidos durante 300 ms envíen una sola solicitud».
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Guardado automático de formularios demasiado agresivo" icon="floppy-disk">
+    **Situación**: Cada cambio de Campo se guarda inmediatamente. Completar un formulario puede provocar una docena de escrituras.
+
+    **Solución**: Cambia al guardado explícito mediante un botón o aplica antirrebote al guardado automático para que se ejecute una sola vez después de una pausa durante la edición.
+
+    <Tip>
+    **Instrucción de referencia**: «No guardes después de cada cambio de Campo. Guarda al hacer clic explícitamente en el botón o guarda automáticamente una vez cuando el usuario haya dejado de editar durante 2 segundos».
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Intervalos de consulta demasiado breves" icon="clock">
+    **Situación**: Los datos se actualizan cada pocos segundos, lo que genera un tráfico sostenido de alta frecuencia.
+
+    **Solución**: Amplía el intervalo de consulta a un valor razonable —30 segundos o más— o cambia a la actualización manual.
+
+    <Tip>
+    **Instrucción de referencia**: «Establece el intervalo de actualización automática en 60 segundos. Añade un botón de actualización manual para que los usuarios puedan obtener los datos más recientes cuando los necesiten».
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Varios componentes realizan consultas periódicas de forma independiente" icon="timer">
+    **Situación**: Varios componentes de una página configuran su propio temporizador de consulta. La carga combinada supera fácilmente el límite.
+
+    **Solución**: Centraliza las consultas periódicas. Realiza una obtención periódica y distribuye el resultado a todos los componentes que lo necesiten.
+
+    <Tip>
+    **Instrucción de referencia**: «No permitas que cada componente configure su propio temporizador de consulta. Usa un único mecanismo de actualización que obtenga todos los datos de forma programada y los distribuya a los componentes».
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+**Compatibilidad de representación: reduce los errores de la vista previa**
+
+<AccordionGroup>
+  <Accordion title="Los gráficos, mapas o componentes exclusivos del navegador fallan en la vista previa" icon="chart-line">
+    **Situación**: La página usa gráficos, mapas o bibliotecas que dependen de `window`, medidas del DOM u otras API exclusivas del navegador, y la vista previa muestra errores, una pantalla en blanco o discrepancias de hidratación.
+
+    **Solución**: A menudo resulta más seguro cargar estos componentes en el navegador en lugar de representarlos directamente en el servidor. Si persisten los problemas de la vista previa, pide explícitamente a la IA que los cambie a un patrón de carga exclusivo del navegador.
+
+    <Tip>
+    **Instrucción de referencia**: «Este componente depende del entorno del navegador. Cárgalo únicamente en el cliente para evitar errores de representación o discrepancias de hidratación en la vista previa».
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+<Note>
+La IA puede cometer errores. Comprueba las respuestas.
+</Note>

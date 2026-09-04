@@ -1,0 +1,40 @@
+---
+title: "Classer automatiquement les nouvelles réponses de formulaire avec l’IA"
+description: "Utilisez Générer avec l’IA pour catégoriser automatiquement les envois de formulaire"
+---
+
+<Tip>Nous vous recommandons de créer les exemples d’automatisation directement dans le Chat IA. Décrivez simplement le workflow souhaité : l’IA se charge de toute la configuration, notamment du déclencheur, des actions, du script et des paramètres.</Tip>
+
+## Créer avec l’IA
+
+Ouvrez le Chat IA dans la barre latérale droite de votre table et indiquez à l’IA ce que vous souhaitez. Vous pouvez par exemple dire :
+
+*« Lorsqu’une personne envoie le formulaire de commentaires, classe le commentaire dans la catégorie Rapport de bug, Demande de fonctionnalité ou Commentaire général, puis enregistre cette catégorie dans l’enregistrement »*
+
+L’IA créera automatiquement le workflow complet. Vous pourrez examiner le script généré, le tester avec des données réelles, puis activer le workflow lorsqu’il sera prêt.
+
+## Configuration manuelle
+
+1. **Créez un workflow** avec le déclencheur **Lorsqu’un formulaire est envoyé**.
+2. Sélectionnez votre table et votre formulaire **Commentaires**.
+3. Cliquez sur **Tester**.
+4. **Ajoutez une action** → **Générer avec l’IA**.
+   - Prompt :
+     ```
+     Classe ce commentaire dans une seule des catégories suivantes :
+     Rapport de bug, Demande de fonctionnalité ou Commentaire général.
+
+     Réponds uniquement avec le nom de la catégorie.
+
+     Commentaire : <insérez le champ de commentaire via +>
+     ```
+   - Type de sortie : **Texte**
+5. **Ajoutez une action** → **Mettre à jour l’enregistrement**.
+   - ID de l’enregistrement : l’ID de l’enregistrement déclencheur (via **+**)
+   - Champ Catégorie → résultat de Générer avec l’IA (via **+**)
+6. Testez chaque étape, puis **activez** le workflow.
+
+## Conseils
+
+- Pour une classification plus nuancée, augmentez le nombre de catégories dans le prompt.
+- Utilisez le type de sortie **JSON** si vous souhaitez que l’IA renvoie plusieurs champs (par exemple, catégorie + sentiment + résumé) en un seul appel.

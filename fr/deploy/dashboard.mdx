@@ -1,0 +1,41 @@
+---
+title: "Activer le Tableau de bord autonome"
+description: "Comment activer la fonctionnalité Tableau de bord autonome pour les déploiements auto-hébergés"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+La fonctionnalité Tableau de bord autonome a été remplacée par App Builder. **Nous recommandons vivement d’utiliser App Builder pour créer des tableaux de bord plus puissants et personnalisables afin de profiter de la meilleure expérience.**
+
+Si vous devez encore utiliser le nœud Tableau de bord hérité, vous pouvez suivre les étapes de configuration ci-dessous pour activer le Tableau de bord autonome. Veuillez noter que nous n’avons actuellement aucun projet de développement ultérieur de cette fonctionnalité.
+</Tip>
+
+## Vue d’ensemble
+
+Pour les instances Teable auto-hébergées, la fonctionnalité Tableau de bord autonome est désactivée par défaut. Suivez les étapes ci-dessous pour l’activer.
+
+## Étapes
+
+### Étape 1 : Exécuter une instruction SQL
+
+Connectez-vous à la base de données PostgreSQL utilisée par Teable et exécutez l’instruction SQL suivante afin de définir `disallowDashboard` sur `false` :
+
+```sql
+UPDATE setting SET content = 'false' WHERE name = 'disallowDashboard';
+```
+
+### Étape 2 : Vider le cache de la table des paramètres
+
+Après avoir exécuté le SQL, vous devez vider le cache de la table `setting` pour que la configuration prenne effet.
+
+Comme il n’existe pas de point d’entrée direct pour vider le cache, vous pouvez déclencher une actualisation du cache en **activant puis désactivant n’importe quelle option de paramètre d’instance**. Par exemple :
+
+1. Accédez à **Panneau d’administration** > **Paramètres de l’instance**
+2. **Activez** l’option de vérification des e-mails
+3. **Désactivez** de nouveau l’option de vérification des e-mails
+
+<Callout type="info">
+L’objectif de cette étape est de déclencher une actualisation du cache de la table des paramètres. Il suffit d’activer puis de désactiver n’importe quelle option de paramètre : vous n’avez pas besoin de modifier durablement une configuration.
+</Callout>
+
+Après avoir effectué les deux étapes, actualisez la page et la fonctionnalité Tableau de bord autonome sera activée.

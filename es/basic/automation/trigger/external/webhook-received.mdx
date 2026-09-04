@@ -1,0 +1,155 @@
+---
+title: "Cuando se recibe un webhook"
+description: "Activa un flujo de trabajo al recibir una solicitud HTTP de cualquier sistema externo"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Ten en cuenta que toda la configuración del disparador puede realizarse en el Chat de IA. Dile a la IA qué quieres que haga el flujo de trabajo y se encargará del resto.</Tip>
+
+Este disparador genera una URL única. Cuando un sistema externo envía una solicitud HTTP POST a esa URL, se ejecuta el flujo de trabajo.
+
+## Crear con IA
+
+Abre el Chat de IA en la barra lateral derecha de tu Tabla y describe lo que quieres.
+
+La IA se encarga de todo: elige el disparador adecuado, asigna los Campos pertinentes y configura automáticamente todas las acciones.
+
+Describe el objetivo una sola vez y el flujo de trabajo estará listo, sin necesidad de configuración manual.
+
+**Ejemplo:** *"Cuando reciba un webhook de pago de Stripe, crea un Registro de pedido".*
+
+## Configuración
+
+| Ajuste | Obligatorio | Descripción |
+|---|---|---|
+| Autorización | No | **Ninguna** (pública: cualquiera que tenga la URL puede activarla) o **Token Bearer** (se requiere el token generado automáticamente en la cabecera de la solicitud) |
+| Respuesta | No | **Predeterminada** (Teable devuelve su propia confirmación) o **Personalizada** (tú decides el código de estado, el tipo de contenido y el cuerpo) |
+
+## Cómo configurarlo
+
+1. Abre tu Automatización y añade un disparador nuevo.
+2. Selecciona **Cuando se recibe un webhook**.
+3. El disparador genera inmediatamente una **URL de webhook** única. Copia esta URL; la necesitarás para el sistema externo.
+4. (Opcional, pero recomendado) Haz clic en **Generar token** para habilitar la autorización mediante Token Bearer. Se generará un token que deberá incluirse en la cabecera `Authorization` de las solicitudes entrantes.
+5. Guarda y activa la Automatización.
+6. Configura tu sistema externo para que envíe una solicitud POST a la URL del webhook. Incluye el token en la cabecera si habilitaste la autorización.
+7. Envía una solicitud de prueba (consulta los ejemplos siguientes). Comprueba el historial de ejecuciones de la Automatización para verificar que los datos se recibieron correctamente.
+8. Añade los pasos de acción. Haz clic en **+** en cualquier Campo de acción para hacer referencia a valores del cuerpo JSON del webhook.
+
+## Datos disponibles para los pasos siguientes
+
+Todo el cuerpo JSON de la solicitud POST entrante está disponible como variables. Por ejemplo, si envías:
+
+```json
+{
+  "order_id": "12345",
+  "customer": "Alice",
+  "amount": 99.95
+}
+```
+
+En tus acciones, puedes hacer referencia individualmente a `order_id`, `customer` y `amount` haciendo clic en **+** y desplazándote hasta los Campos de salida del disparador.
+
+Teable analiza automáticamente el JSON y crea variables con nombre para cada clave de nivel superior. También se puede acceder a los objetos anidados.
+
+## Personalizar la respuesta
+
+De forma predeterminada, Teable responde a cada solicitud entrante con su propia confirmación. Algunas plataformas no la aceptan: verifican una URL de suscripción enviando una solicitud de prueba y exigen que el endpoint devuelva uno de sus Campos. Slack funciona de este modo, por lo que sus eventos solo pueden llegar a una Automatización cuando el webhook responde al protocolo de enlace.
+
+En el panel del disparador, cambia **Respuesta** de **Predeterminada** a **Personalizada**:
+
+| Campo | Descripción |
+|---|---|
+| **Código de estado** | Cualquier código del 200 al 299. El valor predeterminado es 200. |
+| **Tipo de contenido** | **JSON** o **texto sin formato**. El valor predeterminado es JSON. |
+| **Cuerpo de la respuesta** | Texto que se devolverá. Usa `{{body.<path>}}` para insertar valores de la solicitud entrante. |
+
+Al cambiar a **Personalizada**, el cuerpo se rellena previamente con la respuesta del protocolo de enlace que necesitan la mayoría de los clientes:
+
+```json
+{"challenge":"{{body.challenge}}"}
+```
+
+Las rutas dentro de `{{ }}` son las mismas que el disparador expone como variables de salida, por lo que puedes copiar una ruta directamente de una carga útil que ya hayas visto en una ejecución de prueba. Los valores anidados también funcionan; por ejemplo, `{{body.event.type}}`. En un cuerpo JSON, una ruta que no esté presente en la solicitud se representa como `null`, por lo que la respuesta sigue siendo un JSON válido.
+
+<Info>Slack no puede enviar una cabecera `Authorization`, así que mantén **Autorización** establecida en **Ninguna** cuando lo conectes. El panel del disparador muestra una advertencia si ambas opciones están activadas a la vez.</Info>
+
+Vuelve a cambiar **Respuesta** a **Predeterminada** en cualquier momento para usar de nuevo la confirmación de Teable. Las Automatizaciones que nunca modifican este ajuste no se ven afectadas.
+
+## Probar el webhook
+
+La forma más sencilla de probarlo es usar `curl` desde la línea de comandos. Copia la URL real del panel del disparador en lugar de escribirla: contiene los ID de la Base y del flujo de trabajo.
+
+**Sin autorización:**
+
+```bash
+curl -X POST https://your-teable-instance.com/api/webhook/base/bseXXXXXXXXXXXX/workflow/wflXXXXXXXXXXXX \
+  -H "Content-Type: application/json" \
+  -d '{"test": true, "message": "Hola desde curl"}'
+```
+
+**Con autorización mediante Token Bearer:**
+
+```bash
+curl -X POST https://your-teable-instance.com/api/webhook/base/bseXXXXXXXXXXXX/workflow/wflXXXXXXXXXXXX \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-generated-token" \
+  -d '{"order_id": "12345", "status": "paid"}'
+```
+
+**Enviar datos más complejos:**
+
+```bash
+curl -X POST https://your-teable-instance.com/api/webhook/base/bseXXXXXXXXXXXX/workflow/wflXXXXXXXXXXXX \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-generated-token" \
+  -d '{
+    "event": "invoice.paid",
+    "data": {
+      "invoice_id": "INV-001",
+      "amount": 250.00,
+      "currency": "USD",
+      "customer_email": "alice@example.com"
+    }
+  }'
+```
+
+Después de enviar una solicitud de prueba, comprueba el historial de ejecuciones de la Automatización para confirmar que los datos se recibieron y analizaron correctamente.
+
+## Límites de frecuencia
+
+| Ámbito | Límite |
+|---|---|
+| Por Base | 50 solicitudes/segundo |
+| Por flujo de trabajo | 2 solicitudes/segundo |
+
+Las solicitudes que superen el límite de frecuencia recibirán una respuesta HTTP 429. Si tu sistema externo envía ráfagas de solicitudes, considera implementar una lógica de reintentos con espera exponencial.
+
+## Prácticas recomendadas de seguridad
+
+- **Usa siempre la autorización mediante Token Bearer** para los webhooks de producción. Cualquiera que descubra una URL de webhook pública puede activarla.
+- **Mantén privada la URL del webhook.** Trátala como una contraseña. No la incluyas en repositorios públicos ni la compartas en canales abiertos.
+- **Regenera el token** si sospechas que ha quedado expuesto. Puedes generar uno nuevo en cualquier momento desde el panel del disparador.
+- **Valida los datos en el flujo de trabajo.** No des por hecho que los datos entrantes tienen el formato correcto. Usa filtros o pasos de script para comprobar que los Campos obligatorios estén presentes antes de procesarlos.
+- **Supervisa el historial de ejecuciones.** Revisa periódicamente los registros de ejecución de la Automatización para detectar solicitudes inesperadas o no autorizadas.
+
+## Cuándo usarlo
+
+- **Recibir eventos de pago de Stripe o PayPal.** Configura un webhook de Stripe para enviar eventos `invoice.paid` a tu Automatización de Teable y crear o actualizar automáticamente Registros de pedidos.
+- **Aceptar envíos de formularios de tu sitio web.** Dirige el formulario de contacto o registro de tu sitio web a la URL del webhook para crear Registros directamente en Teable.
+- **Ingerir datos de dispositivos IoT.** Los sensores o dispositivos capaces de enviar solicitudes HTTP pueden transmitir datos a Teable para su supervisión y generar alertas.
+- **Conectar pipelines de CI/CD.** Activa flujos de trabajo cuando una compilación se complete correctamente o falle: crea Registros, envía notificaciones o actualiza el estado del proyecto.
+- **Recibir eventos de cualquier herramienta SaaS.** Muchas herramientas (GitHub, Jira, Shopify, Twilio, etc.) admiten notificaciones mediante webhook. Dirígelas a tu webhook de Teable para automatizar flujos de trabajo entre herramientas.
+
+## Consejos
+
+- El webhook solo acepta solicitudes **POST**. GET, PUT y otros métodos no activarán la Automatización.
+- Envía siempre una cabecera `Content-Type: application/json`. Si el cuerpo no es un JSON válido, es posible que el disparador no analice correctamente los datos.
+- Si necesitas enviar datos desde un sistema que no admite cabeceras personalizadas (para la autenticación Bearer), considera usar el modo público, pero añade una clave secreta al cuerpo JSON para que el flujo de trabajo la valide mediante un filtro o script.
+- Para depurar, puedes usar servicios como [webhook.site](https://webhook.site) para inspeccionar lo que envía realmente tu sistema externo antes de dirigirlo a Teable.
+
+## Contenido relacionado
+
+- [Acción Solicitud HTTP](/es/basic/automation/actions/logic/http-request) — la operación de salida equivalente: llama a API externas desde tu flujo de trabajo
+- [Ejecutar script](/es/basic/automation/ai/scripting/runscript) — para el procesamiento avanzado de cargas útiles de webhooks
+- [Acción Bucle (lote)](/es/basic/automation/actions/logic/loop-run) — procesa matrices de las cargas útiles de webhooks

@@ -1,0 +1,218 @@
+---
+title: "Linee guida per la Matrice di autorità"
+description: "Configura i ruoli della Matrice di autorità per un team di vendita che necessita di dati condivisi, accesso ai Record basato sulla proprietà e inserimento dati limitato."
+---
+
+{/* mintlify-resync: 2026-05-28 */}
+Questa guida utilizza una Base di vendita con tre Tabelle: `Clienti`, `Ordini di vendita`
+e `Prodotti`. L'obiettivo è consentire a ogni ruolo di lavorare con i dati necessari
+senza esporre l'intera Base.
+
+| Ruolo | Obiettivo di accesso |
+| --- | --- |
+| Direttore vendite | Visualizzare i dati di clienti e vendite, commentare i prodotti ed evitare di modificare i prezzi dei prodotti. |
+| Rappresentante commerciale | Visualizzare e aggiornare soltanto i propri clienti e ordini, creare nuovi clienti ed evitare di eliminare gli ordini completati. |
+| Addetto all'inserimento dati | Aggiungere nuovi prodotti senza visualizzare prodotti, clienti od ordini esistenti. |
+
+<Info>Abilita la Matrice di autorità prima di fare affidamento sulle autorizzazioni dei ruoli.</Info>
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-enable-en.png"
+  alt="Abilitazione della Matrice di autorità"
+  className="docs-screenshot"
+/>
+
+## Creare i ruoli
+
+<Steps>
+  <Step title="Abilita la Matrice di autorità">
+    Apri la pagina Matrice di autorità nella Base e attiva l'interruttore principale. L'utente
+    che la abilita viene aggiunto come amministratore.
+  </Step>
+  <Step title="Aggiungi ruoli personalizzati">
+    Fai clic su `Aggiungi ruolo` e crea `Direttore vendite`, `Rappresentante vendite` e `Data Entry
+    Clerk`.
+  </Step>
+</Steps>
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-create-roles-en.png"
+  alt="Creazione di tre ruoli: Direttore vendite, Rappresentante commerciale e Addetto all'inserimento dati"
+  className="docs-screenshot"
+/>
+
+## Configurare il Direttore vendite
+
+Il Direttore vendite necessita di un'ampia visibilità, ma i prezzi dei prodotti devono rimanere
+protetti da modifiche accidentali.
+
+| Nodo | Impostazione |
+| --- | --- |
+| Clienti | Imposta la Tabella su `Può modificare`. Mantieni aperte le autorizzazioni di Record e Campi affinché il ruolo possa visualizzare i dati dei clienti. |
+| Ordini di vendita | Imposta la Tabella su `Può modificare`. Mantieni aperte le autorizzazioni di Record e Campi affinché il ruolo possa esaminare l'attività di vendita. |
+| Prodotti | Imposta la Tabella su `Può modificare`, quindi consenti soltanto `Leggi record` e `Commenta record` nelle autorizzazioni dei Record. |
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-director-permissions-en.png"
+  alt="Configurazione delle autorizzazioni del Direttore vendite"
+  className="docs-screenshot"
+/>
+
+Assegna i membri dall'elenco dei ruoli usando `Aggiungi utente` o `Aggiungi dall'organizzazione`,
+quindi assicurati che l'interruttore del ruolo sia attivo.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-director-members-en.png"
+  alt="Aggiunta di membri al ruolo Direttore vendite"
+  className="docs-screenshot"
+/>
+
+Dopo la configurazione, un Direttore vendite può esaminare i dati di clienti e ordini, commentare i
+prodotti ed evitare di modificare i relativi Record.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-director-view-en.webp"
+  alt="Vista del Direttore vendite dopo la configurazione delle autorizzazioni"
+  className="docs-screenshot"
+/>
+
+## Configurare il Rappresentante commerciale
+
+Il ruolo Rappresentante commerciale utilizza i filtri dei Record affinché ogni rappresentante lavori soltanto con i Record
+di cui è proprietario.
+
+### Clienti
+
+Imposta `Clienti` su `Può modificare`.
+
+| Area di autorizzazione | Impostazione |
+| --- | --- |
+| Autorizzazioni dei Record | Scegli i Record che soddisfano condizioni specifiche. Aggiungi un filtro come `Rappresentante vendite` `è` `Io (utente corrente)`. |
+| Operazioni sui Record | Consenti `Leggi record`, `Aggiorna record` e `Crea record`. Lascia disattivato `Elimina record` se i rappresentanti non devono eliminare i Record dei clienti. |
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-filter-en.webp"
+  alt="Configurazione di un filtro dei Record basato sul proprietario per il Rappresentante commerciale"
+  className="docs-screenshot"
+/>
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-customer-permissions-en.png"
+  alt="Configurazione delle autorizzazioni dei clienti per il Rappresentante commerciale"
+  className="docs-screenshot"
+/>
+
+### Ordini di vendita
+
+Imposta `Ordini di vendita` su `Può modificare`.
+
+| Area di autorizzazione | Impostazione |
+| --- | --- |
+| Autorizzazioni dei Record | Usa lo stesso filtro basato sul proprietario, ad esempio `Rappresentante vendite` `è` `Io (utente corrente)`. |
+| Operazioni sui Record | Consenti `Leggi record` e `Crea record`. Lascia disattivati `Aggiorna record` e `Elimina record` se gli ordini completati devono rimanere invariati. |
+| Autorizzazioni dei Campi | Nascondi i Campi sensibili come `Metodo di pagamento` disattivando `Leggi record` per tale Campo. |
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-order-permissions-en.png"
+  alt="Configurazione delle autorizzazioni degli ordini per il Rappresentante commerciale"
+  className="docs-screenshot"
+/>
+
+Assegna i rappresentanti commerciali al ruolo e mantienilo abilitato.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-members-en.png"
+  alt="Aggiunta di membri al ruolo Rappresentante commerciale"
+  className="docs-screenshot"
+/>
+
+Ogni rappresentante commerciale ora vede soltanto i Record dei clienti e degli ordini che soddisfano il
+filtro del proprietario.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-view-en.webp"
+  alt="Anteprima della Vista del Rappresentante commerciale"
+  className="docs-screenshot"
+/>
+
+## Configurare l'Addetto all'inserimento dati
+
+L'Addetto all'inserimento dati deve soltanto aggiungere prodotti.
+
+| Nodo | Impostazione |
+| --- | --- |
+| Prodotti | Imposta la Tabella su `Può modificare`. Nelle autorizzazioni dei Record, consenti soltanto `Crea record`. |
+| Campi dei prodotti | Se i dati degli ordini collegati devono rimanere nascosti, disattiva `Leggi record` per il Campo collegato `Ordini`. |
+| Clienti e Ordini di vendita | Mantieni queste Tabelle su `Nessun accesso`. |
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-data-entry-permissions-en.png"
+  alt="Configurazione delle autorizzazioni dell'Addetto all'inserimento dati"
+  className="docs-screenshot"
+/>
+
+Assegna gli addetti al ruolo e mantienilo abilitato.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-data-entry-members-en.png"
+  alt="Aggiunta di membri al ruolo Addetto all'inserimento dati"
+  className="docs-screenshot"
+/>
+
+Dopo la configurazione, l'Addetto all'inserimento dati può aggiungere nuovi Record di prodotto, ma non può esplorare
+i dati esistenti di prodotti, clienti od ordini.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-data-entry-view-en.webp"
+  alt="Anteprima della Vista dell'Addetto all'inserimento dati"
+  className="docs-screenshot"
+/>
+
+## Vista di revisione delle vendite
+
+<Tip>Usa questa configurazione per le revisioni delle vendite: i rappresentanti possono vedere l'intero elenco dei clienti, ma possono modificare soltanto i clienti di cui sono proprietari.</Tip>
+
+Durante una revisione, i rappresentanti potrebbero dover visualizzare tutti i Record dei clienti per confrontare gli schemi
+di follow-up e lo stato dei clienti. La modifica quotidiana deve comunque rimanere limitata
+ai clienti di cui sono proprietari, per evitare che modifichino accidentalmente i Record di un altro rappresentante.
+
+Mantieni il ruolo `Rappresentante vendite` esistente, quindi aggiungi un ruolo di sola lettura per la visibilità dei clienti
+in tutta l'azienda. Un rappresentante può utilizzare il ruolo di sola lettura per visualizzare tutti i clienti e
+il ruolo `Rappresentante vendite` per aggiornare soltanto quelli di cui è proprietario.
+
+### Creare un ruolo di sola lettura
+
+Fai clic su `Aggiungi ruolo` e crea un ruolo di sola lettura, ad esempio `Visualizzatore globale clienti`.
+
+### Configurare l'accesso ai clienti
+
+Imposta `Clienti` su `Può modificare`. Nelle autorizzazioni dei Record, consenti soltanto `Leggi record`.
+Non abilitare `Aggiorna record`, `Elimina record` o `Crea record`. Lascia vuoto il
+filtro dei Record affinché questo ruolo possa visualizzare tutti i Record dei clienti.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-global-customer-viewer-permissions-en.png"
+  alt="Configurazione delle autorizzazioni di sola lettura dei clienti per il Visualizzatore globale dei clienti"
+  className="docs-screenshot"
+/>
+
+### Assegnare i rappresentanti commerciali
+
+Torna all'elenco dei ruoli e aggiungi i rappresentanti commerciali che necessitano dell'accesso di revisione a
+`Visualizzatore globale clienti`.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-global-customer-viewer-members-en.png"
+  alt="Aggiunta di membri al ruolo Visualizzatore globale dei clienti"
+  className="docs-screenshot"
+/>
+
+Quando un utente dispone sia di `Rappresentante vendite` sia di `Visualizzatore globale clienti`, Teable combina
+le autorizzazioni. L'utente può visualizzare tutti i Record dei clienti, ma può aggiornare soltanto
+quelli consentiti dal ruolo `Rappresentante vendite` basato sul proprietario.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-global-customer-viewer-result-en.webp"
+  alt="Vista del Rappresentante commerciale con le autorizzazioni del Visualizzatore globale dei clienti"
+  className="docs-screenshot"
+/>
