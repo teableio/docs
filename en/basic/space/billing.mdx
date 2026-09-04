@@ -29,10 +29,11 @@ Shows your current subscription status including:
 
 - **Subscription level** (Free, Pro, or Business)
 - **Price per seat** (monthly or yearly)
-- **Number of seats**
-- **Renewal date** or cancellation date if applicable
+- **Number of seats** you have purchased
+- **Renewal date**, or the cancellation date when the subscription is set to cancel
+- A plan change already scheduled for the end of the current period
 
-Click **Change plan** to upgrade, downgrade, or modify your subscription.
+Click **Change plan** to open the Plan page, where you can change the plan level, the number of seats, and the credit tier.
 
 ### Usage Statistics
 
@@ -60,16 +61,17 @@ To continue, upgrade the plan or free up room by deleting records or attachments
 
 Credits are Teable's usage units for AI-powered features. Consumption is based on the AI tokens used by the underlying language models, and you can review the details on the Billing page. Credits reset every billing period and do not roll over.
 
-**Monthly credit allocation per plan:**
-- **Free**: 200 credits/month
-- **Pro**: 1,000 credits/seat/month
-- **Business**: 2,000 credits/seat/month
+On paid plans, credits are bought per seat. Each plan card carries a **credits/seat/month** tier, and the space's monthly credits are the purchased seats multiplied by that tier, shared by everyone in the space.
 
-**Add-on credits:** Pro and above users can purchase additional credits.
+| Plan | Monthly credits |
+|------|-----------------|
+| **Free** | 200 credits for the space |
+| **Pro** | 2,000 to 6,000 credits per seat |
+| **Business** | 3,000 to 1,000,000 credits per seat |
 
-When you add new billable collaborators, the seat count is updated at the start of the next billing cycle. Credits for new seats are allocated at that point on a prorated basis. If credits are needed before then, add-on credits can be purchased for instant use.
+To get more credits, buy more seats or choose a higher credit tier on the plan card. The bigger the tier, the less each credit costs.
 
-**What happens when credits run out:** Once your monthly credits are exhausted, AI features will be limited until the next billing cycle or until you purchase additional credits.
+**What happens when credits run out:** Once your monthly credits are exhausted, AI features will be limited until the next billing cycle or until you raise the credit tier.
 
 <Note>Credits only apply to Teable Cloud; self-hosted editions don't consume Teable Cloud credits and are instead limited by your own infrastructure and any external AI providers you use.</Note>
 
@@ -108,13 +110,14 @@ The invoice table shows:
 To upgrade, downgrade, or modify your plan:
 
 1. Go to **Settings** → **Plan**
-2. Review the available plan cards: **Free**, **Pro**, and **Business**
-3. Click **Subscribe** on the plan you want
-4. Choose a billing cycle (Monthly or Yearly)
-5. Adjust the number of seats if needed
-6. Complete the checkout process
+2. Choose the billing period (Monthly or Yearly) at the top of the page
+3. On the plan card you want, pick the **credits/seat/month** tier and set the number of seats. The card shows the resulting monthly credits and the total price
+4. Click **Subscribe**, or **Modify subscription** on your current plan
+5. Complete the checkout or confirmation
 
-<Tip>Yearly billing saves approximately 17% compared to monthly billing.</Tip>
+<Tip>Yearly billing is cheaper than monthly. The Plan page shows the current saving on the Yearly tab.</Tip>
+
+Changing an existing subscription goes through a confirmation page in the billing portal and then returns you to the Billing page. An upgrade applies immediately and is prorated, while a downgrade is scheduled for the end of the current billing period. A scheduled change or a pending cancellation appears in a banner above the plan cards, with **Undo** to keep the subscription as it is.
 
 ### Available Plans
 
@@ -124,11 +127,18 @@ To upgrade, downgrade, or modify your plan:
 | **Pro** | Small teams & professionals |
 | **Business** | Scaling businesses |
 
+### Seats
+
+Seats are purchased up front, and buying ahead of your team is fine. A seat is taken by collaborators with the **Owner**, **Creator**, or **Editor** role in the space and its bases. **Commenter** and **Viewer** are free.
+
+On cloud plans the purchased seats are a hard limit. Teable blocks any action that would push the space past it and offers to add seats. This covers email invitations, creating an invite link with a billable role or switching a link to one, joining through such a link, adding collaborators directly, and promoting someone to a billable role. Someone who already holds a seat can join another base or change role without taking a new one.
+
+To continue, add seats on the Plan page, or give the person the free Commenter or Viewer role. Only the space owner can buy seats.
+
 ### Add-on Usage Subscriptions
 
 In the **Plan** tab, **Add-on usage subscriptions** lets you purchase extra usage without changing the main plan. Available add-ons include:
 
-- **Credits**
 - **Automation**
 - **Records**
 - **Attachments storage**
@@ -163,7 +173,7 @@ After cancellation:
   <Accordion title="How does Teable's pricing work?">
     Seats are counted based on collaborators with **Editor** role or higher (Owner, Creator, Editor). Collaborators with **Commenter** or **Viewer** (Read-only) roles are free of charge.
     
-    - **Cloud version**: Teable Cloud plans are billed per seat on a space basis. Seats are counted across the space. Charges are prorated: if you add billable collaborators partway through a billing period, you only pay for the remaining time in that period.
+    - **Cloud version**: Teable Cloud plans are billed per seat on a space basis, and seats are bought up front for the whole space. Charges are prorated: if you buy seats partway through a billing period, you only pay for the remaining time in that period. Collaborators cannot exceed the purchased seats.
     - **Self-hosted version**: Pricing is based on a monthly or annual pre-paid seat license with no storage, row, or other usage limits. Seats are counted across the entire instance. If the number of users exceeds your license limit, you will need to upgrade your plan to add more seats. See [License Activation](/en/deploy/activate) for details.
     
     For Business plans with Authority Matrix enabled, users assigned through Authority Matrix are counted as billable users.
@@ -171,8 +181,12 @@ After cancellation:
     Have more questions about products or pricing? [Contact sales](https://contact.teable.ai/).
   </Accordion>
 
-  <Accordion title="Why do I need to confirm when adding a collaborator or changing a role?">
-    In a paid space, Teable asks for confirmation before an invitation or role change increases the number of subscription seats.
+  <Accordion title="Why was my invitation rejected for lack of seats?">
+    On cloud plans, purchased seats are a hard limit. An invitation, invite link, or role change that would need a seat you have not bought is rejected, and Teable offers to add seats. Buy seats on the Plan page, or give the person the free Commenter or Viewer role. Within the seats you already own, inviting someone costs nothing extra and needs no confirmation. Adding a member through the authority matrix still asks for confirmation, because that path bills automatically.
+  </Accordion>
+
+  <Accordion title="Can I undo a cancellation or a scheduled plan change?">
+    Yes, until it takes effect. The banner above the plan cards names the pending change and the date it applies. Click **Undo**, and the subscription keeps renewing as it is.
   </Accordion>
 
   <Accordion title="Why is a bulk paste or import rejected as a whole instead of partly applied?">
@@ -208,10 +222,7 @@ After cancellation:
   </Accordion>
   
   <Accordion title="What are credits used for?">
-    AI-powered features in Teable use credits. See the credit usage details on the Billing page for the specific usage. Each plan includes a monthly credit allocation:
-    - **Free**: 200 credits
-    - **Pro**: 1,000 credits per seat
-    - **Business**: 2,000 credits per seat
+    AI-powered features in Teable use credits. See the credit usage details on the Billing page for the specific usage. Free spaces get 200 credits a month. On Pro and Business, you choose a credits/seat/month tier when you subscribe, and the space's monthly credits are that tier multiplied by the purchased seats.
   </Accordion>
 
   <Accordion title="Credits Wasted / Used Without Consent">
@@ -247,11 +258,11 @@ After cancellation:
 
     The notification opens **Space Settings** → **Billing**. When available, it shows the main sources of credit usage.
 
-    If the usage is expected, consider buying extra credits or changing your plan. If it is unexpected, review the top contributor and adjust or pause the related workflow, app, or AI feature.
+    If the usage is expected, consider raising the credit tier or changing your plan. If it is unexpected, review the top contributor and adjust or pause the related workflow, app, or AI feature.
   </Accordion>
   
   <Accordion title="Why didn't my credits increase after adding a new collaborator?">
-    Credits are allocated based on your billed seat count. When you add new billable collaborators, the seat count is updated at the start of the next billing cycle. Credits for new seats are allocated at that point on a prorated basis. If credits are needed before then, add-on credits can be purchased for instant use.
+    Credits follow the seats you have purchased, not the number of people using them. Filling a seat you already own changes nothing. To get more credits, buy seats or raise the credit tier on the Plan page.
   </Accordion>
 </AccordionGroup>
 
