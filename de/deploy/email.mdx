@@ -1,0 +1,144 @@
+---
+title: "E-Mail-Dienst konfigurieren"
+description: "Aktivieren Sie den E-Mail-Dienst, um In-App-E-Mail-Benachrichtigungen, das Zurücksetzen von Passwörtern im Self-Service, Einladungs-E-Mails und weitere Funktionen zu aktivieren."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+## Konfigurationsmethoden
+
+Teable unterstützt zwei Möglichkeiten zur Konfiguration des E-Mail-Dienstes:
+
+<CardGroup cols={2}>
+  <Card title="Systemverwaltung (Empfohlen)" icon="sliders" href="#option-1-admin-panel-recommended">
+    Visuelle Konfiguration mit Live-Tests. Kein Neustart erforderlich.
+  </Card>
+  <Card title="Umgebungsvariablen" icon="code" href="#option-2-environment-variables">
+    Herkömmliche Konfiguration über die Datei `.env`. Erfordert einen Neustart des Containers.
+  </Card>
+</CardGroup>
+
+---
+
+## Option 1: Systemverwaltung (Empfohlen) {#option-1-admin-panel-recommended}
+
+Am einfachsten konfigurieren Sie E-Mail über die Systemverwaltung:
+
+1. Melden Sie sich als Administrator an (als erster registrierter Benutzer)
+2. Gehen Sie zu **Systemverwaltung** → **Instanzeinstellungen**
+3. Suchen Sie den Bereich **E-Mail**
+4. Konfigurieren Sie **Benachrichtigungs-E-Mail** und **Automatisierungs-E-Mail** nach Bedarf
+
+<Tip>
+Die Konfiguration in der Systemverwaltung unterstützt **Live-Tests** — Sie können prüfen, ob Ihre SMTP-Einstellungen funktionieren, bevor Sie sie speichern.
+</Tip>
+
+- **Benachrichtigungs-E-Mail**: Wird für Benutzerverifizierung, das Zurücksetzen von Passwörtern, Einladungen, Systembenachrichtigungen und ähnliche E-Mails verwendet.
+- **Automatisierungs-E-Mail**: Wird als Standard-E-Mail-Dienst für Aktionen zum Senden von E-Mails in Automatisierungen verwendet. Eine einzelne Aktion zum Senden von E-Mails kann auch einen eigenen [benutzerdefinierten SMTP-Server](/de/basic/automation/actions/communication/smtp-sender) konfigurieren.
+
+### Konfigurationsquellen und Priorität
+
+Wir empfehlen, den E-Mail-Dienst zuerst unter **Systemverwaltung → Instanzeinstellungen → E-Mail** zu konfigurieren. Die wirksame Priorität ist:
+
+1. **Benutzerdefinierter E-Mail-Server innerhalb der Aktion zum Senden von E-Mails**: Gilt nur für diese spezifische Aktion zum Senden von E-Mails in der aktuellen Automatisierung.
+2. **Systemverwaltung → Instanzeinstellungen → E-Mail → Automatisierungs-E-Mail**: Wird für Automatisierungs-E-Mails verwendet, wenn die Aktion zum Senden von E-Mails keinen eigenen E-Mail-Server konfiguriert.
+3. **Systemverwaltung → Instanzeinstellungen → E-Mail → Benachrichtigungs-E-Mail**: Wird für Benutzerverifizierung, das Zurücksetzen von Passwörtern, Einladungen, Systembenachrichtigungen und ähnliche E-Mails verwendet. Sie dient auch als Fallback für Automatisierungs-E-Mails, wenn keine Automatisierungs-E-Mail konfiguriert ist.
+4. **`BACKEND_MAIL_*`-Umgebungsvariablen**: Standard-E-Mail-Konfiguration auf Bereitstellungsebene. Wird nur als Fallback verwendet, wenn das entsprechende Postfach nicht in der Systemverwaltung konfiguriert ist.
+
+### Konfigurationsfelder
+
+| Feld | Beschreibung | Beispiel |
+|-------|-------------|---------|
+| Serveradresse | SMTP-Serveradresse | `smtp.gmail.com` |
+| Port | SMTP-Port | `465` (SSL) oder `587` (TLS) |
+| SSL/TLS | Ob SSL/TLS verwendet werden soll | `true` |
+| Benutzername | SMTP-Authentifizierungsbenutzer | `noreply@company.com` |
+| Passwort | SMTP-Passwort oder App-Passwort | `xxxxxxxxxxxxxx` |
+| Absenderadresse | Absenderadresse | `noreply@company.com` |
+| Absendername | Anzeigename | `Teable-Benachrichtigung` |
+
+---
+
+## Option 2: Umgebungsvariablen {#option-2-environment-variables}
+
+Verwenden Sie Umgebungsvariablen für Bereitstellungen, bei denen Sie eine dateibasierte Konfiguration bevorzugen:
+
+<Note>
+Wir empfehlen, Benachrichtigungs-E-Mail und Automatisierungs-E-Mail zuerst unter **Systemverwaltung → Instanzeinstellungen → E-Mail** zu konfigurieren. Umgebungsvariablen werden hauptsächlich als Standardwerte auf Bereitstellungsebene und als Fallback-Konfiguration verwendet.
+</Note>
+
+```sh
+BACKEND_MAIL_HOST=smtp.example.com
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=noreply@company.com
+BACKEND_MAIL_SENDER_NAME=Teable
+BACKEND_MAIL_AUTH_USER=username
+BACKEND_MAIL_AUTH_PASS=your_password
+```
+
+<Note>
+Nach dem Ändern von Umgebungsvariablen müssen Sie den Teable-Container **neu starten**, damit die Änderungen wirksam werden.
+</Note>
+
+---
+
+## Beispiele für SMTP-Anbieter
+
+<Accordion title="AWS SES">
+```sh
+# So erhalten Sie die Zugangsdaten: AWS Console → Simple Email Service → SMTP Settings → Create SMTP Credentials
+BACKEND_MAIL_HOST=email-smtp.us-east-1.amazonaws.com  # Replace with your region
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=noreply@yourdomain.com  # Must be a verified sender address
+BACKEND_MAIL_SENDER_NAME=Teable-Benachrichtigung
+BACKEND_MAIL_AUTH_USER=your_smtp_username   # AWS SMTP username
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx       # AWS SMTP password
+```
+</Accordion>
+
+<Accordion title="Gmail">
+```sh
+# So erhalten Sie die Zugangsdaten: Google Account → Security → 2-Step Verification → App Passwords
+BACKEND_MAIL_HOST=smtp.gmail.com
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=you@gmail.com
+BACKEND_MAIL_SENDER_NAME=Teable-Benachrichtigung
+BACKEND_MAIL_AUTH_USER=you@gmail.com
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # 16-digit app password
+```
+</Accordion>
+
+<Accordion title="Microsoft 365 / Outlook">
+```sh
+# So erhalten Sie die Zugangsdaten: Microsoft 365 admin center → Security → Policies & rules → Email authentication
+BACKEND_MAIL_HOST=smtp.office365.com
+BACKEND_MAIL_PORT=587
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=your.name@yourdomain.com
+BACKEND_MAIL_SENDER_NAME=Teable-Benachrichtigung
+BACKEND_MAIL_AUTH_USER=your.name@yourdomain.com
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # Your Microsoft 365 password or app password
+```
+</Accordion>
+
+<Accordion title="SendGrid">
+```sh
+# So erhalten Sie die Zugangsdaten: SendGrid Dashboard → Settings → API Keys → Create API Key
+BACKEND_MAIL_HOST=smtp.sendgrid.net
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=noreply@yourdomain.com
+BACKEND_MAIL_SENDER_NAME=Teable-Benachrichtigung
+BACKEND_MAIL_AUTH_USER=apikey
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # Your SendGrid API Key
+```
+</Accordion>
+
+---
+
+## Weiterführende Dokumentation
+
+- [Referenz zu Umgebungsvariablen](/de/deploy/env)
+- [Überblick über die Systemverwaltung](/de/basic/admin-panel/overview)

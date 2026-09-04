@@ -1,0 +1,145 @@
+---
+title: "Gestione dei tenant organizzativi"
+description: "Crea e gestisci più tenant organizzativi in un'unica istanza Teable e assegna un amministratore a ciascun tenant."
+hidden: true
+noindex: true
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Disponibile per il piano Enterprise Self-hosted</Tip>
+
+Un'istanza Teable può contenere più tenant organizzativi, ciascuno con membri, reparti, Spazi e impostazioni separati per un cliente, un'unità aziendale o un team.
+
+## Gerarchia dei tenant organizzativi
+
+```text
+Istanza Teable
+├── Tenant organizzativo A
+│   ├── Amministratori dell'organizzazione, membri e reparti
+│   └── Spazi, Base e impostazioni a livello di organizzazione
+├── Tenant organizzativo B
+│   ├── Amministratori dell'organizzazione, membri e reparti
+│   └── Spazi, Base e impostazioni a livello di organizzazione
+└── Tenant organizzativo C
+```
+
+I tenant organizzativi condividono la stessa distribuzione Teable e la stessa configurazione dell'istanza, ma gestiscono separatamente gli elementi seguenti:
+
+| Ambito | Descrizione |
+| --- | --- |
+| **Membri e reparti** | Ogni organizzazione mantiene i propri membri, amministratori e la propria struttura dei reparti |
+| **Spazi** | Ogni organizzazione gestisce gli Spazi a essa associati |
+| **Autenticazione e sicurezza** | Ogni organizzazione può configurare i propri provider di autenticazione e domini email verificati |
+| **Impostazioni dell'organizzazione** | Il nome dell'organizzazione, l'accesso automatico agli Spazi e l'ambito dei reparti vengono configurati separatamente |
+| **Configurazione dell'istanza** | Licenze, impostazioni di sistema e creazione ed eliminazione dei tenant organizzativi rimangono sotto il controllo dell'amministratore dell'istanza |
+
+<Info>I tenant organizzativi non forniscono a ogni organizzazione un database PostgreSQL separato. Per archiviare i dati di uno Spazio in un database PostgreSQL separato, consulta [Tenant di database](/it/basic/admin-panel/database-tenant).</Info>
+
+## Due punti di accesso alla gestione
+
+| Punto di accesso | Ruolo di gestione | Scopo |
+| --- | --- | --- |
+| **Amministrazione di sistema → Organizzazioni** | Amministratore dell'istanza | Creare, visualizzare ed eliminare tenant organizzativi e assegnare gli amministratori dell'organizzazione |
+| **Pannello dell'organizzazione** | Amministratore dell'organizzazione | Gestire utenti, reparti, Spazi, autenticazione, sicurezza e impostazioni all'interno del tenant corrente |
+
+Gli amministratori dell'organizzazione possono gestire soltanto l'organizzazione assegnata. Non possono creare o eliminare altri tenant organizzativi né modificare le impostazioni dell'intera istanza.
+
+## Aprire Organizzazioni
+
+1. Accedi a Teable come amministratore dell'istanza.
+2. Seleziona **Amministrazione di sistema** nell'angolo in alto a sinistra.
+3. Apri **Organizzazioni** dalla barra di navigazione a sinistra.
+
+<img
+  src="/images/selfhosted/admin-panel/2026-05-29-admin-panel-organizations-entry-en.png"
+  alt="Voce Organizzazioni nell'Amministrazione di sistema"
+  className="docs-screenshot"
+/>
+
+<Tip>Il primo utente registrato in un'istanza diventa automaticamente amministratore dell'istanza.</Tip>
+
+## Creare un tenant organizzativo
+
+1. Seleziona **Crea organizzazione**.
+2. Inserisci il **Nome dell'organizzazione**.
+3. Seleziona **Crea**.
+
+La nuova organizzazione viene visualizzata nell'elenco delle organizzazioni. Dopo l'assegnazione di un amministratore dell'organizzazione, quest'ultimo può configurare membri, reparti e Spazi dal Pannello dell'organizzazione.
+
+## Visualizzare l'elenco delle organizzazioni
+
+L'elenco può essere cercato per nome e include:
+
+| Colonna | Descrizione |
+| --- | --- |
+| **Nome dell'organizzazione** | Nome e ID del tenant organizzativo |
+| **Numero di utenti** | Totale degli utenti nell'organizzazione |
+| **Numero di Spazi** | Totale degli Spazi associati all'organizzazione |
+| **Amministratori** | Amministratori dell'organizzazione assegnati |
+| **Data di creazione** | Momento di creazione del tenant organizzativo |
+
+<img
+  src="/images/selfhosted/admin-panel/2026-05-29-admin-panel-organizations-list-en.png"
+  alt="Elenco delle organizzazioni nell'Amministrazione di sistema"
+  className="docs-screenshot"
+/>
+
+## Assegnare gli amministratori dell'organizzazione
+
+1. Apri il menu delle azioni per l'organizzazione desiderata.
+2. Seleziona **Gestisci amministratori**.
+3. Cerca un utente nell'istanza.
+4. Seleziona **Imposta come amministratore** o **Rimuovi amministratore**.
+
+Qualsiasi utente dell'istanza, eccetto un utente eliminato, può essere assegnato come amministratore dell'organizzazione. L'utente ottiene l'accesso alla gestione dell'organizzazione corrente, ma non diventa amministratore dell'istanza.
+
+| Ruolo | Gestire tutti i tenant organizzativi | Gestire le impostazioni dell'istanza | Gestire l'organizzazione corrente | Gestire gli Spazi nell'organizzazione corrente |
+| --- | --- | --- | --- | --- |
+| **Amministratore dell'istanza** | Sì | Sì | Sì | Sì |
+| **Amministratore dell'organizzazione** | No | No | Sì | Sì |
+| **Membro normale** | No | No | No | Dipende dal ruolo nello Spazio |
+
+## Gestire internamente un tenant
+
+Dal selettore degli Spazi, un amministratore dell'organizzazione può aprire il **Pannello dell'organizzazione** e gestire:
+
+| Pagina | Funzionalità di gestione |
+| --- | --- |
+| **Utenti** | Visualizzare e gestire gli utenti nell'organizzazione corrente |
+| **Organizzazione** | Creare, spostare, rinominare ed eliminare reparti e gestirne i membri |
+| **Gestione degli Spazi** | Aggiungere Spazi all'organizzazione o rimuoverli e visualizzare il numero di Spazi e Base |
+| **Impostazioni di autenticazione** | Configurare provider di autenticazione di terze parti per l'organizzazione |
+| **Impostazioni di sicurezza** | Verificare i domini email affinché i nuovi utenti con tali domini entrino automaticamente nell'organizzazione |
+| **Impostazioni dell'istanza** | Modificare il nome dell'organizzazione, l'accesso automatico agli Spazi e l'ambito dei reparti |
+
+Per istruzioni dettagliate sulle **Impostazioni dell'istanza**, consulta [Impostazioni del Pannello dell'organizzazione](/it/basic/organization-panel/settings).
+
+## Eliminare un tenant organizzativo
+
+1. Apri il menu delle azioni per l'organizzazione desiderata.
+2. Seleziona **Elimina**.
+3. Esamina la conferma e conferma l'eliminazione.
+
+<Warning>L'eliminazione di un'organizzazione rimuove definitivamente l'organizzazione e tutti i relativi dati. Prima di continuare, verifica l'organizzazione di destinazione, gli Spazi associati e i backup.</Warning>
+
+## Modelli comuni di tenant
+
+| Scenario | Modello di tenant organizzativo |
+| --- | --- |
+| Fornire un unico servizio Teable a più clienti | Creare un tenant organizzativo separato per ciascun cliente |
+| Mantenere una distribuzione di gruppo con società controllate indipendenti | Creare un tenant organizzativo per ciascuna società controllata |
+| Isolare le unità aziendali in una grande impresa | Creare un tenant organizzativo per ogni unità che necessita di appartenenza, Spazi e criteri di gestione indipendenti |
+
+## Domande frequenti
+
+<AccordionGroup>
+  <Accordion title="Qual è la differenza tra un tenant organizzativo e un tenant di database?">
+    Un tenant organizzativo separa membri, reparti, Spazi e autorizzazioni di gestione. Un tenant di database controlla quale database PostgreSQL archivia i dati di uno Spazio specifico. Un tenant organizzativo può contenere più Spazi e il database dei dati utilizzato da ciascuno Spazio viene configurato separatamente.
+  </Accordion>
+  <Accordion title="Perché assegnare un amministratore dell'organizzazione dopo aver creato un'organizzazione?">
+    L'amministratore dell'istanza crea ed elimina i tenant e gestisce l'istanza. L'amministratore dell'organizzazione si occupa della gestione quotidiana all'interno di un tenant. L'assegnazione di un amministratore dell'organizzazione delega la gestione di membri, reparti, Spazi e autenticazione senza concedere l'accesso a livello di istanza.
+  </Accordion>
+  <Accordion title="Un'istanza può servire più clienti?">
+    Sì. Crea un tenant organizzativo separato per ogni cliente. L'amministratore dell'istanza mantiene la distribuzione condivisa e le impostazioni di sistema, mentre ogni cliente dispone dei propri amministratori dell'organizzazione.
+  </Accordion>
+</AccordionGroup>

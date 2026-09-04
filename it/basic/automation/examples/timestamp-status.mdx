@@ -1,0 +1,36 @@
+---
+title: "Registrare automaticamente l'ora quando cambia uno stato"
+description: "Scrivi automaticamente un timestamp quando lo stato di un Record passa a un valore specifico"
+---
+
+<Tip>Consigliamo di creare gli esempi di Automazione direttamente in AI Chat. Descrivi il workflow desiderato e l'IA si occuperà dell'intera configurazione, inclusi trigger, azioni, script e impostazioni.</Tip>
+
+## Creare con l'IA
+
+Apri AI Chat nella barra laterale destra della Tabella e spiega all'IA cosa desideri. Ad esempio, puoi dire:
+
+*"Quando lo stato di un'attività passa a Completato, scrivi la data e l'ora correnti nel Campo Completato il"*
+
+L'IA creerà automaticamente il workflow completo. Puoi esaminare lo script generato, provarlo con dati reali e abilitare il workflow quando è pronto.
+
+## Configurazione manuale
+
+1. **Crea un workflow** con il trigger **Quando un Record soddisfa le condizioni**.
+2. Seleziona la Tabella **Attività**.
+3. Imposta il filtro: `Stato` **è** `Completato`.
+4. Fai clic su **Test**.
+5. **Aggiungi un'azione** → **Aggiorna Record**.
+6. Esegui la mappatura:
+   - ID Record → l'ID del Record del trigger (tramite **+**)
+   - Completato il → usa un'espressione oppure imposta il valore sul timestamp del trigger
+7. Fai clic su **Test**, quindi **abilita** il workflow.
+
+## Perché usare "Quando un Record soddisfa le condizioni"?
+
+Questo trigger si attiva **una sola volta**, nel momento in cui il Record passa a soddisfare le condizioni. Se in seguito qualcuno modifica la Descrizione mentre Stato è ancora "Completato", il workflow **non** si attiva nuovamente. In questo modo si evita di sovrascrivere il timestamp.
+
+## Varianti
+
+- **"Iniziato il"** — attiva il workflow quando Stato passa a "In corso".
+- **"Inoltrato il"** — attiva il workflow quando Priorità passa a "Urgente".
+- **"Approvato il"** — attiva il workflow quando Approvazione passa a "Sì".

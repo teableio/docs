@@ -1,0 +1,75 @@
+---
+title: "Wenn Formular übermittelt wird"
+description: "Lösen Sie einen Workflow aus, wenn eine Formularansicht übermittelt wird"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Bitte beachten Sie: Die gesamte Einrichtung von Auslösern kann im KI-Chat erfolgen. Teilen Sie der KI mit, was der Workflow tun soll, und sie übernimmt den Rest.</Tip>
+
+Dieser Auslöser wird ausgeführt, wenn jemand eine bestimmte Formularansicht übermittelt. Alle übermittelten Felder stehen den nächsten Schritten zur Verfügung.
+
+## Mit KI erstellen
+
+Öffnen Sie den KI-Chat in der rechten Seitenleiste Ihrer Tabelle und beschreiben Sie, was Sie möchten.
+
+Die KI übernimmt alles: Sie wählt den richtigen Auslöser aus, ordnet die relevanten Felder zu und richtet automatisch alle Aktionen ein.
+
+Beschreiben Sie Ihr Ziel einmal, und der Workflow ist bereit – eine manuelle Einrichtung ist nicht erforderlich.
+
+**Beispiel:** *„Wenn jemand das Kontaktformular übermittelt, sende eine Bestätigungs-E-Mail.“*
+
+## Konfiguration
+
+| Einstellung | Erforderlich | Beschreibung |
+|---|---|---|
+| Tabelle | Ja | Die Tabelle, zu der das Formular gehört |
+| Formular | Ja | Die konkrete Formularansicht, deren Übermittlungen überwacht werden sollen |
+
+## Einrichtung
+
+1. Stellen Sie sicher, dass Ihre Tabelle bereits eine Formularansicht enthält. Andernfalls erstellen Sie eine, indem Sie in der Ansichtsleiste auf **+** klicken und **Formular** auswählen.
+2. Öffnen Sie Ihre Automatisierung und fügen Sie einen neuen Auslöser hinzu.
+3. Wählen Sie **Wenn Formular übermittelt wird** aus.
+4. Wählen Sie die **Tabelle** aus, die das Formular enthält.
+5. Wählen Sie die zu überwachende **Formularansicht** aus.
+6. Speichern und aktivieren Sie die Automatisierung.
+7. Fügen Sie Ihre Aktionsschritte hinzu. Klicken Sie in einem beliebigen Aktionsfeld auf **+**, um auf die übermittelten Daten zu verweisen – alle Formularfelder sind verfügbar.
+
+## Welche Daten für nachfolgende Schritte verfügbar sind
+
+Wenn ein Formular übermittelt wird, werden folgende Daten an Ihren Workflow übergeben:
+
+- **Datensatz-ID** – die eindeutige Kennung des neu erstellten Datensatzes.
+- **Alle übermittelten Feldwerte** – jedes im Formular enthaltene Feld (Text, E-Mail, Zahlen, Datumsangaben, Auswahlwerte, Anhänge usw.) kann durch Klicken auf **+** in nachfolgenden Aktionen referenziert werden.
+
+Felder, die nicht im Formular enthalten sind (ausgeblendete Felder), erhalten durch die Übermittlung keine Werte. Sie können jedoch in der Tabelle festgelegte Standardwerte besitzen.
+
+## Eine Formularübermittlung erstellt auch einen Datensatz
+
+Es ist wichtig zu verstehen, dass eine Formularübermittlung und die Erstellung eines Datensatzes auf Datenebene dasselbe Ereignis darstellen. Wenn jemand ein Formular übermittelt, wird der Tabelle ein neuer Datensatz hinzugefügt. Das bedeutet:
+
+- Wenn für dieselbe Tabelle auch eine Automatisierung **Wenn Datensatz erstellt wird** vorhanden ist, werden bei einer Formularübermittlung *beide* Automatisierungen ausgeführt.
+- Um eine doppelte Verarbeitung zu vermeiden, verwenden Sie entweder ausschließlich den Auslöser „Wenn Formular übermittelt wird“ oder fügen Sie dem Auslöser „Wenn Datensatz erstellt wird“ einen Filter hinzu, der aus Formularen stammende Datensätze ausschließt.
+
+<Note>Eine Formularübermittlung entspricht im Wesentlichen der Erstellung eines Datensatzes. Wenn für dieselbe Tabelle auch ein Auslöser „Wenn Datensatz erstellt wird“ konfiguriert ist, werden beide Workflows ausgeführt.</Note>
+
+## Anwendungsfälle
+
+- **Nach der Übermittlung eine Bestätigungs-E-Mail senden.** Wenn ein Kunde ein Kontaktformular ausfüllt, senden Sie ihm automatisch eine Dankes-E-Mail mit den Einzelheiten seiner Übermittlung.
+- **Neue Support-Tickets automatisch mit KI klassifizieren.** Verwenden Sie die Aktion „Mit KI generieren“, um das Ticket anhand der vom Benutzer übermittelten Beschreibung zu kategorisieren.
+- **Ihr Team über eingehende Bewerbungen benachrichtigen.** Wenn jemand ein Bewerbungsformular übermittelt, senden Sie eine Benachrichtigung an Slack oder eine E-Mail an das Recruiting-Team.
+- **Verknüpfte Datensätze in anderen Tabellen erstellen.** Wenn ein Bestellformular übermittelt wird, erstellen Sie automatisch Datensätze in einer Tabelle „Bestellpositionen“ oder „Sendungen“.
+- **Übermittlungen validieren und kennzeichnen.** Prüfen Sie, ob erforderliche Informationen vollständig sind oder ein Wert außerhalb des zulässigen Bereichs liegt, und aktualisieren Sie ein Statusfeld auf „Prüfung erforderlich“, wenn etwas nicht stimmt.
+
+## Tipps
+
+- Dieser Auslöser wird einmal pro Übermittlung ausgeführt. Wenn dieselbe Person das Formular zweimal übermittelt, wird er zweimal ausgeführt.
+- Wenn Sie alle neuen Datensätze unabhängig von ihrer Quelle (manuelle Eingabe, API, Formular) erfassen möchten, verwenden Sie stattdessen [Wenn Datensatz erstellt wird](/de/basic/automation/trigger/records/record-created).
+- Mehrere Automatisierungen können dasselbe Formular überwachen. Beispielsweise kann eine Automatisierung eine Bestätigungs-E-Mail senden, während eine andere eine verknüpfte Aufgabe erstellt.
+- Formularansichten berücksichtigen die Sichtbarkeitseinstellungen der Felder. Nur die im Formular sichtbaren Felder werden durch die Übermittlung ausgefüllt – ausgeblendete Felder behalten ihre Standardwerte oder bleiben leer.
+
+## Verwandte Themen
+
+- [Wenn Datensatz erstellt wird](/de/basic/automation/trigger/records/record-created) – wird bei jedem neuen Datensatz ausgelöst, nicht nur bei Formularübermittlungen
+- [Wenn Schaltfläche angeklickt wird](/de/basic/automation/trigger/forms/button-click) – wird ausgelöst, wenn ein Benutzer in einer vorhandenen Zeile auf ein Schaltflächenfeld klickt
+- [Aktion „E-Mail senden“](/de/basic/automation/actions/communication/send-email-overview) – wird häufig mit Formularübermittlungen für Bestätigungen kombiniert

@@ -1,0 +1,80 @@
+---
+title: "حذف السجلات"
+---
+
+### المسار
+
+DELETE /api/table/\{tableId\}/record
+
+### الطلب
+
+**معلمات المسار**
+
+* tableId (string): المعرّف الفريد للجدول [(كيفية الحصول عليه)](/ar/api-doc/get-id#tableid).
+
+**معلمات الاستعلام**
+
+* **recordIds (مطلوب)** [(كيفية الحصول عليها)](/ar/api-doc/get-id#recordid)
+  * الوصف: مصفوفة معرّفات السجلات المطلوب حذفها
+  * النوع: مصفوفة
+  * مثال: `["rec123456", "rec789012"]`
+  * ملاحظة: كل عنصر عبارة عن سلسلة تمثل معرّف سجل مطلوب حذفه.
+
+#### الاستجابة
+
+**استجابة النجاح**
+
+* رمز الحالة: 200 OK
+* نص الاستجابة: لا يوجد محتوى
+
+#### استجابات الأخطاء
+
+* رمز الحالة: 400 Bad Request: خطأ في تنسيق معلمات الطلب أو غياب المعلمات المطلوبة.
+* رمز الحالة: 404 Not Found: قيمة tableId المحددة غير موجودة أو بعض معرّفات السجلات غير موجودة.
+
+#### مثال على الشيفرة
+
+<CodeGroup>
+  ```bash CURL
+  curl -X DELETE 'https://app.teable.ai/api/table/__tableId__/record?recordIds[]=rec123456&recordIds[]=rec789012' \
+    -H 'Authorization: Bearer __token__'
+  ```
+
+  ```js JS SDK
+  import { configApi, deleteRecords } from '@teable/openapi';
+
+  configApi({
+    endpoint: 'https://app.teable.ai',
+    token: '__token__',
+  });
+
+  await deleteRecords('__tableId__', ['rec123456', 'rec789012']);
+  ```
+
+  ```ts TypeScript
+  const response = await fetch('https://app.teable.ai/api/table/__tableId__/record?recordIds[]=rec123456&recordIds[]=rec789012', {
+    method: 'DELETE',
+    headers: {
+      'Authorization': 'Bearer __token__'
+    }
+  });
+
+  console.log(response.status); // 200 عند النجاح
+  ```
+
+  ```python Python
+  import requests
+
+  response = requests.delete(
+      'https://app.teable.ai/api/table/__tableId__/record',
+      headers={
+          'Authorization': 'Bearer __token__'
+      },
+      params={
+          'recordIds': ['rec123456', 'rec789012']
+      }
+  )
+
+  print(response.status_code) # 200 عند النجاح
+  ```
+</CodeGroup>

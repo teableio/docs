@@ -1,0 +1,34 @@
+---
+title: "Enviar recordatorios antes de que venzan las tareas"
+description: "Envía automáticamente correos electrónicos a los responsables sobre las tareas próximas a vencer"
+---
+
+<Tip>Recomendamos crear los ejemplos de Automatización directamente en el Chat de IA. Describe el flujo de trabajo que quieres y la IA se encargará de configurarlo por completo, incluidos el disparador, las acciones, el script y la configuración.</Tip>
+
+## Crear con IA
+
+Abre el Chat de IA en la barra lateral derecha de tu Tabla y dile a la IA lo que quieres. Por ejemplo, puedes decir:
+
+*"Cada mañana a las 8:00, busca las tareas que venzan en los próximos 2 días y que no estén completadas, y envía un recordatorio por correo electrónico a cada responsable"*
+
+La IA creará automáticamente el flujo de trabajo completo. Puedes revisar el script generado, probarlo con datos reales y habilitar el flujo de trabajo cuando esté listo.
+
+## Configuración manual
+
+1. **Crea un flujo de trabajo** con el disparador **A la hora programada** — todos los días a las 08:00.
+2. **Añade una acción** → **Obtener Registros**.
+   - Tabla: **Tareas**
+   - Filtro: `Fecha de vencimiento` **está dentro de** `los próximos 2 días` Y `Estado` **no es** `Completado`
+3. Haz clic en **Probar** para ver los Registros coincidentes.
+4. **Añade una acción** → **Enviar correo electrónico** con **Bucle** habilitado.
+5. Selecciona como origen del bucle la matriz del paso Obtener Registros.
+6. Asigna:
+   - Para → correo electrónico del responsable (mediante **+**, haciendo referencia al elemento actual del bucle)
+   - Asunto: `Recordatorio: «<título de la tarea>» vence pronto`
+   - Cuerpo: `Tu tarea «<título de la tarea>» vence el <fecha de vencimiento>. Actualiza el estado cuando la termines.`
+7. Haz clic en **Probar** y, después, en **Habilitar**.
+
+## Consejos
+
+- Ajusta el intervalo del filtro («próximos 2 días», «próximos 7 días») según la urgencia habitual de las tareas.
+- Añade una condición para enviar correos únicamente cuando el Responsable no esté vacío.

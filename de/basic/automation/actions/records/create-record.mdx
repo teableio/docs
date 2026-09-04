@@ -1,0 +1,78 @@
+---
+title: "Datensatz erstellen"
+description: "Erstellen Sie als Teil eines Workflows einen neuen Datensatz in einer beliebigen Tabelle"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Wir empfehlen dringend, Automatisierungen mit „Skript ausführen“ zu erstellen, da diese Funktion alle Aktionsarten abdecken kann – auch solche, die andernfalls manuell erstellt werden müssten. Beschreiben Sie Ihre Anforderungen einfach im KI-Chat.
+
+Bitte beachten Sie: Wenn Sie Aktionen manuell hinzufügen, kann die KI sie später weder erkennen noch ändern.
+</Tip>
+
+## Mit KI erstellen
+
+Öffnen Sie den KI-Chat in der rechten Seitenleiste Ihrer Tabelle und beschreiben Sie, was Sie erreichen möchten.
+
+Die KI übernimmt alles: Sie wählt den richtigen Auslöser und die passenden Aktionen aus, ordnet die Felder zu und konfiguriert den gesamten Workflow automatisch.
+
+Beschreiben Sie Ihr Ziel einmal, und der Workflow ist einsatzbereit – eine manuelle Einrichtung ist nicht erforderlich.
+
+Erstellt einen neuen Datensatz in einer angegebenen Tabelle. Sie können Daten aus vorherigen Schritten den Feldern des neuen Datensatzes zuordnen. Nach der Erstellung stehen die neue Datensatz-ID und alle Feldwerte nachfolgenden Schritten zur Verfügung.
+
+## Konfiguration
+
+| Einstellung | Erforderlich | Beschreibung |
+|---|---|---|
+| Tabelle | Ja | Die Zieltabelle, in der der neue Datensatz erstellt wird |
+| Felder | Ja | Ordnen Sie jedem Feld einen Wert zu – statischen Text bzw. Zahlen oder dynamische Variablen aus vorherigen Schritten |
+
+## Einrichtung
+
+1. Fügen Sie Ihrem Workflow die Aktion **Datensatz erstellen** hinzu.
+2. Wählen Sie die **Tabelle**, in der der Datensatz erstellt werden soll. Standardmäßig handelt es sich um eine Tabelle in derselben Base. Mit [Base-übergreifendem Zugriff](/de/basic/automation/actions/records/cross-base) können Sie jedoch eine Tabelle in einer anderen Base als Ziel festlegen.
+3. Im Bereich für die Feldzuordnung werden alle Felder der Zieltabelle angezeigt. Für jedes auszufüllende Feld:
+   - **Statischer Wert:** Geben Sie einen Wert direkt in das Feld ein (z. B. „Neu“ für ein Statusfeld).
+   - **Dynamischer Wert:** Klicken Sie neben dem Feld auf die Schaltfläche **+**, um eine Variable aus einem vorherigen Schritt einzufügen. Fügen Sie beispielsweise das Feld „Name“ des Auslösers ein, um den Namen aus dem auslösenden Datensatz zu kopieren.
+4. Sie können statische und dynamische Werte kombinieren. Legen Sie beispielsweise für „Status“ den statischen Wert „Ausstehend“ fest und für „Kundenname“ einen dynamischen Wert aus dem Auslöser.
+5. Speichern Sie die Aktion.
+
+<Tip>Sie können mehrere Variablen in einem einzelnen Textfeld kombinieren. Fügen Sie beispielsweise `Kundenname des auslösenden Datensatzes - Bestell-ID des auslösenden Datensatzes` in ein Feld „Zusammenfassung“ ein.</Tip>
+
+## Verhalten bei erforderlichen Feldern
+
+Besitzt ein erforderliches Feld einen Standardwert und Sie ordnen ihm keinen Wert zu, trägt Teable beim Erstellen des Datensatzes den Standardwert ein. Besitzt ein erforderliches Feld keinen Standardwert oder ist ein zugeordneter Wert zur Laufzeit leer, schlägt die Aktion fehl.
+
+Welche Felder erforderlich sind, sehen Sie in der Feldkonfiguration Ihrer Zieltabelle. Erforderliche Felder sind üblicherweise mit einem Sternchen oder der Beschriftung „Erforderlich“ gekennzeichnet.
+
+## Ausgabe: Den erstellten Datensatz in späteren Schritten verwenden
+
+Nach der Ausführung der Aktion „Datensatz erstellen“ steht der neu erstellte Datensatz allen nachfolgenden Schritten zur Verfügung. Dazu gehören:
+
+- **Datensatz-ID** – die eindeutige Kennung, die dem neuen Datensatz zugewiesen wurde.
+- **Alle Feldwerte** – jeder Feldwert des erstellten Datensatzes, einschließlich automatisch berechneter Werte und Standardwerte.
+
+Dies ist nützlich, wenn Sie Aktionen verketten möchten. Sie können beispielsweise einen Datensatz erstellen und unmittelbar danach eine E-Mail mit einem Link zu diesem Datensatz senden oder einen verknüpften Datensatz mit der neuen Datensatz-ID aktualisieren.
+
+## Verwendung
+
+- **Formulareinreichungen in einer separaten Tabelle protokollieren.** Erstellen Sie beim Absenden eines Formulars in einer Tabelle „Einreichungsprotokoll“ einen Datensatz mit den übermittelten Daten und einem Zeitstempel.
+- **Folgeaufgaben automatisch erstellen.** Erstellen Sie beim Anlegen eines Projekts eine Reihe von Standardaufgaben in einer verknüpften Aufgabentabelle.
+- **Datensätze zwischen Tabellen duplizieren.** Kopieren Sie Daten von einer Tabelle in eine andere, etwa um einen Lead beim Abschluss eines Geschäfts von „Interessenten“ zu „Aktive Kunden“ zu verschieben.
+- **Datensätze aus externen Daten generieren.** Erstellen Sie beim Empfang von Bestelldaten über einen Webhook einen neuen Datensatz mit den Bestelldetails in Ihrer Bestelltabelle.
+- **Einträge für einen Audit-Trail erstellen.** Erstellen Sie nach jeder Automatisierungsausführung in einer Tabelle „Auditprotokoll“ einen Datensatz, der den Vorgang dokumentiert.
+
+## Tipps
+
+- Wenn Sie Datensätze in derselben Tabelle erstellen, die einen Auslöser **Wenn Datensatz erstellt wird** besitzt, achten Sie auf Endlosschleifen. Schließen Sie von Automatisierungen erstellte Datensätze mit einem Filter am Auslöser aus (prüfen Sie z. B., ob ein Feld „Quelle“ auf „Automatisierung“ gesetzt ist).
+- Sie können Datensätze massenhaft erstellen, indem Sie diese Aktion mit [Schleife (Stapelverarbeitung)](../logic/loop-run) kombinieren. Rufen Sie beispielsweise 50 Datensätze aus einer Tabelle ab und erstellen Sie 50 entsprechende Datensätze in einer anderen.
+- Felder, denen Sie keinen Wert zuordnen, verwenden die Standardwerte der Tabelle (falls vorhanden) oder bleiben leer.
+- Felder für verknüpfte Datensätze erwarten Datensatz-IDs, keine Anzeigewerte. Wenn Sie einen Datensatz verknüpfen möchten, müssen Sie die Datensatz-ID und nicht den Namen des Datensatzes übergeben.
+- Verwenden Sie [Base-übergreifenden Zugriff](/de/basic/automation/actions/records/cross-base), wenn sich die Zieltabelle in einer anderen Base als die Automatisierung befindet.
+
+## Verwandte Themen
+
+- [Datensatz aktualisieren](/de/basic/automation/actions/records/update-record) – vorhandene Datensätze ändern, statt neue zu erstellen
+- [Datensätze abrufen](/de/basic/automation/actions/records/get-records) – Datensätze abrufen, um sie als Eingabe beim Erstellen neuer Datensätze zu verwenden
+- [Base-übergreifender Zugriff](/de/basic/automation/actions/records/cross-base) – Datensätze in Tabellen außerhalb der aktuellen Base erstellen
+- [Schleife (Stapelverarbeitung)](../logic/loop-run) – mehrere Datensätze in einem einzigen Aktionsschritt erstellen

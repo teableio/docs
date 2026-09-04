@@ -1,0 +1,78 @@
+---
+title: "Bedingungslogik"
+description: "Fügen Sie Wenn/Sonst-Verzweigungen hinzu, um zu steuern, welche Aktionen ausgeführt werden"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Wir empfehlen dringend, Automatisierungen mit „Skript ausführen“ zu erstellen, da diese Funktion alle Aktionsarten abdecken kann – auch solche, die andernfalls manuell erstellt werden müssten. Beschreiben Sie Ihre Anforderungen einfach im KI-Chat.
+
+Bitte beachten Sie: Wenn Sie Aktionen manuell hinzufügen, kann die KI sie später weder erkennen noch ändern.
+</Tip>
+
+Mit Bedingungen können Sie Entscheidungspunkte hinzufügen. Der Workflow teilt sich in einen **wahren** und einen **falschen** Pfad.
+
+## Verwendung
+
+1. Fügen Sie zwischen den Schritten einen Knoten **Bedingung** hinzu.
+2. Definieren Sie eine oder mehrere Regeln.
+3. Klicken Sie zum Validieren auf **Testen**.
+
+## Operatoren nach Feldtyp
+
+### Text
+
+| Operator | Bedeutung |
+|---|---|
+| ist / ist nicht | Exakte Übereinstimmung |
+| enthält / enthält nicht | Übereinstimmung mit Teilzeichenfolge |
+| ist leer / ist nicht leer | Nullprüfung |
+
+### Zahl
+
+| Operator | Bedeutung |
+|---|---|
+| = / ≠ | Gleich / ungleich |
+| > / ≥ / < / ≤ | Vergleich |
+| ist leer / ist nicht leer | Nullprüfung |
+
+### Datum
+
+| Operator | Bedeutung |
+|---|---|
+| ist / ist nicht | Exaktes Datum |
+| ist vor / ist nach | Vergleich |
+| ist am oder vor / ist am oder nach | Einschließlich |
+| liegt innerhalb | Relativer Zeitraum |
+| ist leer / ist nicht leer | Nullprüfung |
+
+**Relative Datumsangaben:** heute, morgen, gestern, vor/in einer Woche, vor/in einem Monat, vor/in X Tagen.
+
+**Zeiträume (für „liegt innerhalb“):** vergangene/nächste Woche, vergangener/nächster Monat, vergangenes/nächstes Jahr, vergangene/nächste N Tage.
+
+### Einfachauswahl / Mehrfachauswahl
+
+| Operator | Bedeutung |
+|---|---|
+| enthält eines von / enthält alle / enthält keines von | Mengenzugehörigkeit |
+| ist exakt / ist nicht exakt | Exakte Übereinstimmung |
+| ist leer / ist nicht leer | Nullprüfung |
+
+### Boolesch
+
+| Operator |
+|---|
+| ist (wahr / falsch) |
+
+## Regeln kombinieren
+
+- **UND** – alle Regeln müssen wahr sein
+- **ODER** – mindestens eine Regel kann wahr sein
+- **NICHT** – eine Regel oder Gruppe negieren
+
+Gruppen können verschachtelt werden:
+
+```
+(Status ist "Aktiv" ODER Status ist "Ausstehend")
+UND Betrag > 1000
+```

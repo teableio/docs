@@ -1,0 +1,113 @@
+---
+title: "Formelkurzübersicht"
+description: "Finden Sie schnell Formelfunktionen, Parameter, Ausgabetypen und grundlegende Beispiele."
+mode: "wide"
+---
+
+Die Formelkurzübersicht hilft Ihnen, verfügbare Funktionen, Parameter, Ausgabetypen und Beispiele zu finden. Verwenden Sie beim Schreiben einer Formel die Funktionskategorie, um die benötigte Funktion zu finden.
+
+## Numerische Funktionen
+
+Numerische Funktionen verarbeiten mathematische Operationen, statistische Berechnungen und Zahlenformatierungen.
+
+| Funktionsname | Beschreibung | Eingabe | Ausgabe | Beispiel |
+| ------------ | ----------- | ----- | ------ | ------- |
+| SUM | Addiert Zahlen. Entspricht number1 + number2 + ... | `number1, [number2, ...]` | Zahl | `SUM(100, 200, 300) => 600` |
+| AVERAGE | Gibt den Durchschnitt von Zahlen zurück. | `number1, [number2, ...]` | Zahl | `AVERAGE(100, 200, 300) => 200` |
+| MAX | Gibt den größten der angegebenen Zahlenwerte zurück. | `number1, [number2, ...]` | Zahl | `MAX(100, 200, 300) => 300` |
+| MIN | Gibt den kleinsten der angegebenen Zahlenwerte zurück. | `number1, [number2, ...]` | Zahl | `MIN(100, 200, 300) => 100` |
+| ROUND | Rundet einen Wert auf die durch „precision“ angegebene Anzahl von Dezimalstellen. | `value, [precision]` | Zahl | `ROUND(1.99, 0) => 2` `ROUND(16.8, -1) => 20` |
+| ROUNDUP | Rundet immer von null weg auf. | `value, [precision]` | Zahl | `ROUNDUP(1.1, 0) => 2` `ROUNDUP(-1.1, 0) => -2` |
+| ROUNDDOWN | Rundet immer in Richtung null ab. | `value, [precision]` | Zahl | `ROUNDDOWN(1.9, 0) => 1` `ROUNDDOWN(-1.9, 0) => -1` |
+| CEILING | Gibt das nächstgelegene ganzzahlige Vielfache zurück, das größer oder gleich dem Wert ist. | `value, [significance]` | Zahl | `CEILING(2.49) => 3` `CEILING(2.49, 1) => 2.5` |
+| FLOOR | Gibt das nächstgelegene ganzzahlige Vielfache zurück, das kleiner oder gleich dem Wert ist. | `value, [significance]` | Zahl | `FLOOR(2.49) => 2` `FLOOR(2.49, 1) => 2.4` |
+| EVEN | Gibt die kleinste gerade Zahl zurück, die größer oder gleich dem angegebenen Wert ist. | `value` | Zahl | `EVEN(0.1) => 2` `EVEN(-0.1) => -2` |
+| ODD | Rundet positive Werte auf die nächstgelegene ungerade Zahl auf und negative Werte auf die nächstgelegene ungerade Zahl ab. | `value` | Zahl | `ODD(0.1) => 1` `ODD(-0.1) => -1` |
+| INT | Gibt den ganzzahligen Anteil einer Zahl zurück. | `value` | Zahl | `INT(1.9) => 1` `INT(-1.9) => -2` |
+| ABS | Gibt den Absolutwert zurück. | `value` | Zahl | `ABS(-1) => 1` |
+| SQRT | Gibt die Quadratwurzel einer nicht negativen Zahl zurück. | `value` | Zahl | `SQRT(4) => 2` |
+| POWER | Potenziert die angegebene Basis mit dem angegebenen Exponenten. | `base, exponent` | Zahl | `POWER(2, 2) => 4` |
+| EXP | Potenziert die Eulersche Zahl (e) mit dem angegebenen Exponenten. | `value` | Zahl | `EXP(0) => 1` `EXP(1) => 2.718` |
+| LOG | Berechnet den Logarithmus eines Werts zur angegebenen Basis. Wenn keine Basis angegeben ist, wird standardmäßig 10 verwendet. | `value, [base=10]` | Zahl | `LOG(100) => 2` `LOG(1024, 2) => 10` |
+| MOD | Gibt den Rest zurück, der nach der Division des ersten Parameters durch den zweiten verbleibt. | `value, divisor` | Zahl | `MOD(9, 2) => 1` `MOD(9, 3) => 0` |
+| VALUE | Konvertiert eine Textzeichenfolge in eine Zahl. | `text` | Zahl | `VALUE("$1,000,000") => 1000000` |
+
+## Textfunktionen
+
+Textfunktionen verarbeiten das Verbinden, Suchen, Ersetzen, Extrahieren und Aufteilen von Zeichenfolgen.
+
+| Funktionsname | Beschreibung | Eingabe | Ausgabe | Beispiel |
+| ------------ | ----------- | ----- | ------ | ------- |
+| CONCATENATE | Verbindet mehrere Parameter verschiedener Werttypen zu einem einzigen Textwert. | `text1, [text2, ...]` | Text | `CONCATENATE("Hello ", "Teable") => Hello Teable` |
+| FIND | Ermittelt die Position einer Teilzeichenfolge im angegebenen Text. Gibt 0 zurück, wenn die Teilzeichenfolge nicht gefunden wird. | `stringToFind, whereToSearch, [startFromPosition]` | Zahl | `FIND("Teable", "Hello Teable") => 7` |
+| SEARCH | Ermittelt die Position einer Teilzeichenfolge im angegebenen Text. Gibt einen leeren Wert zurück, wenn die Teilzeichenfolge nicht gefunden wird. Ähnlich wie FIND, gibt jedoch einen leeren Wert statt 0 zurück. | `stringToFind, whereToSearch, [startFromPosition]` | Text oder leer | `SEARCH("Teable", "Hello Teable") => 7` |
+| MID | Extrahiert ab einer angegebenen Position eine bestimmte Anzahl von Zeichen aus einer Textzeichenfolge. | `text, whereToStart, count` | Text | `MID("Hello Teable", 6, 6) => "Teable"` |
+| LEFT | Extrahiert eine angegebene Anzahl von Zeichen vom Anfang einer Zeichenfolge. | `text, count` | Text | `LEFT("2023-09-06", 4) => "2023"` |
+| RIGHT | Extrahiert eine angegebene Anzahl von Zeichen vom Ende einer Zeichenfolge. | `text, count` | Text | `RIGHT("2023-09-06", 5) => "09-06"` |
+| REPLACE | Ersetzt ab einer angegebenen Position eine bestimmte Anzahl von Zeichen durch einen Ersatztext. | `text, whereToStart, count, replacement` | Text | `REPLACE("Hello Table", 7, 5, "Teable") => "Hello Teable"` |
+| REGEXP_REPLACE | Ersetzt alle Teilzeichenfolgen, die einem regulären Ausdruck entsprechen, durch einen Ersatztext. | `text, regular_expression, replacement` | Text | `REGEXP_REPLACE("Hello Table", "H.* ", "") => "Teable"` |
+| SUBSTITUTE | Ersetzt alten Text durch neuen Text. Mit einem Index kann ein bestimmtes Vorkommen des alten Texts ersetzt werden. Wenn kein Index angegeben ist, werden alle Vorkommen ersetzt. | `text, oldText, newText, [index]` | Text | `SUBSTITUTE("Hello Table", "Table", "Teable") => "Hello Teable"` |
+| TEXTBEFORE | Gibt den Text vor dem angegebenen Trennzeichen zurück. | `text, delimiter` | Text | `TEXTBEFORE("20, 04, 79", ",") => "20"` |
+| TEXTSPLIT | Teilt Text anhand des angegebenen Trennzeichens auf und gibt mehrere Textwerte zurück. | `text, delimiter` | Array | `TEXTSPLIT("20, 04, 79", ",") => ["20", " 04", " 79"]` |
+| LOWER | Wandelt eine Zeichenfolge in Kleinbuchstaben um. | `text` | Text | `LOWER("Hello Teable") => "hello teable"` |
+| UPPER | Wandelt eine Zeichenfolge in Großbuchstaben um. | `text` | Text | `UPPER("Hello Teable") => "HELLO TEABLE"` |
+| REPT | Wiederholt Text eine angegebene Anzahl von Malen. | `text, number` | Text | `REPT("Hello!", 3) => "Hello!Hello!Hello!"` |
+| TRIM | Entfernt Leerzeichen am Anfang und Ende einer Zeichenfolge. | `text` | Text | `TRIM(" Hello ") => "Hello"` |
+| LEN | Zählt die Zeichen in einer Zeichenfolge. | `text` | Zahl | `LEN("Hello") => 5` |
+| T | Gibt den Parameter zurück, wenn es sich um Text handelt, andernfalls einen leeren Wert. | `value` | Text oder leer | `T("Hello") => "Hello"` `T(100) => null` |
+| ENCODE_URL_COMPONENT | Ersetzt bestimmte Zeichen durch codierte Entsprechungen, um URLs oder URIs zu erstellen. Folgende Zeichen werden nicht codiert: - _ . ~ | `value` | Text | `ENCODE_URL_COMPONENT("Hello Teable") => "Hello%20Teable"` |
+
+## Logische Funktionen
+
+Logische Funktionen verarbeiten Bedingungen und logische Operationen wie `IF`, `AND` und `OR`.
+
+| Funktionsname | Beschreibung | Eingabe | Ausgabe | Beispiel |
+| ------------ | ----------- | ----- | ------ | ------- |
+| IF | Gibt value1 zurück, wenn der logische Parameter wahr ist, andernfalls value2. Kann für verschachtelte IF-Anweisungen und zum Prüfen auf leere Zellen verwendet werden. | `logical, value1, value2` | Zeichenfolge \| Zahl \| Boolescher Wert \| Datum/Uhrzeit | `IF(2 > 1, "A", "B") => "A"` `IF(2 > 1, TRUE, FALSE) => TRUE` |
+| SWITCH | Vergleicht einen Eingabeausdruck mit einer Reihe von Werten und gibt das entsprechende Ergebnis zurück. Kann einen Standardwert zurückgeben, wenn keine Übereinstimmung gefunden wird. Kann häufig verschachtelte IF()-Formeln ersetzen. | `expression, [pattern, result]..., [default]` | Zeichenfolge \| Zahl \| Boolescher Wert \| Datum/Uhrzeit | `SWITCH("B", "A", "Value A", "B", "Value B", "Default Value") => "Value B"` |
+| AND | Gibt „true“ zurück, wenn alle Parameter wahr sind, andernfalls „false“. | `logical1, [logical2, ...]` | Boolescher Wert | `AND(1 < 2, 5 > 3) => true` `AND(1 < 2, 5 < 3) => false` |
+| OR | Gibt „true“ zurück, wenn mindestens ein Parameter wahr ist. | `logical1, [logical2, ...]` | Boolescher Wert | `OR(1 < 2, 5 < 3) => true` `OR(1 > 2, 5 < 3) => false` |
+| XOR | Gibt „true“ zurück, wenn eine ungerade Anzahl von Parametern wahr ist. | `logical1, [logical2, ...]` | Boolescher Wert | `XOR(1 < 2, 5 < 3, 8 < 10) => false` `XOR(1 > 2, 5 < 3, 8 < 10) => true` |
+| NOT | Kehrt den logischen Wert seines Parameters um. | `boolean` | Boolescher Wert | `NOT(1 < 2) => false` `NOT(1 > 2) => true` |
+| BLANK | Gibt einen Nullwert zurück. Kann auch verwendet werden, um zu prüfen, ob ein Feld leer ist. | `-` | null | `BLANK() => null` `IF({Weight}=BLANK(), 1, 2) => 1` |
+| ERROR | Gibt einen Fehlerwert zurück. | `message` | Fehler | `IF(2 > 3, "Yes", ERROR("Calculation")) => "#ERROR: Calculation"` |
+| IS_ERROR | Gibt „true“ zurück, wenn der Ausdruck einen Fehler verursacht. | `expr` | Boolescher Wert | `IS_ERROR(ERROR()) => true` |
+
+## Datumsfunktionen
+
+Datumsfunktionen verarbeiten und konvertieren Datums- und Zeitwerte, beispielsweise um das aktuelle Datum abzurufen, Datumsdifferenzen zu berechnen und Datumswerte zu vergleichen.
+
+| Funktionsname | Beschreibung | Eingabe | Ausgabe | Beispiel |
+| ------------ | ----------- | ----- | ------ | ------- |
+| TODAY | Gibt das aktuelle Datum zurück. | `-` | Datum/Uhrzeit | `TODAY() => "2023-09-08 00:00"` |
+| NOW | Gibt das aktuelle Datum und die aktuelle Uhrzeit zurück. | `-` | Datum/Uhrzeit | `NOW() => "2023-09-08 16:50"` |
+| YEAR | Gibt das vierstellige Jahr eines Datums zurück. | `date` | Zahl | `YEAR("2023-09-08") => 2023` |
+| MONTH | Gibt den Monat eines Datums als Zahl zwischen 1 (Januar) und 12 (Dezember) zurück. | `date` | Zahl | `MONTH("2023-09-08") => 9` |
+| WEEKNUM | Gibt die Kalenderwoche des Jahres zurück. | `date` | Zahl | `WEEKNUM("2023-09-08") => 36` |
+| WEEKDAY | Gibt den Wochentag als Ganzzahl zwischen 0 und 6 zurück. Optional können Sie als zweiten Parameter („Sunday“ oder „Monday“) den Tag angeben, an dem die Woche beginnen soll. | `date, [startDayOfWeek]` | Zahl | `WEEKDAY("2023-09-08", "Monday") => 5` |
+| DAY | Gibt den Tag des Monats als Zahl zwischen 1 und 31 zurück. | `date` | Zahl | `DAY("2023-09-08") => 8` |
+| HOUR | Gibt die Stunde eines Datums als Zahl zwischen 0 (00:00 Uhr) und 23 (23:00 Uhr) zurück. | `date` | Zahl | `HOUR("2023-09-08 16:50") => 16` |
+| MINUTE | Gibt die Minute eines Datums als Ganzzahl zwischen 0 und 59 zurück. | `date` | Zahl | `MINUTE("2023-09-08 16:50") => 50` |
+| SECOND | Gibt die Sekunden eines Datums als Ganzzahl zwischen 0 und 59 zurück. | `date` | Zahl | `SECOND("2023-09-08 16:50:30") => 30` |
+| FROMNOW | Berechnet die Anzahl der Tage zwischen dem aktuellen Datum und einem anderen Datum. | `date, unit` | Zahl | `FROMNOW({Date}, "day") => 25` |
+| TONOW | Berechnet die Anzahl der Tage zwischen dem aktuellen Datum und einem anderen Datum. | `date, unit` | Zahl | `TONOW({Date}, "day") => 25` |
+| DATETIME_DIFF | Gibt die Datums-/Zeitdifferenz in den angegebenen Einheiten zurück. Die Standardeinheit ist Sekunden. (Siehe Liste der Einheitenbezeichner.) | `date1, date2, [unit]` | Zahl | `DATETIME_DIFF("2022-08-01", "2023-09-08", "day") => 403` |
+| WORKDAY | Gibt das vom Startdatum versetzte Arbeitstagsdatum zurück, wobei angegebene Feiertage ausgeschlossen werden | `date, count, [holidayStr]` | Datum/Uhrzeit | `WORKDAY("2023-09-08", 200) => "2024-06-14 00:00:00"` |
+| WORKDAY_DIFF | Gibt die Anzahl der Arbeitstage zwischen date1 und date2 zurück. Arbeitstage schließen Wochenenden und eine optionale Feiertagsliste aus, die als kommagetrennte Zeichenfolge mit Datumswerten im ISO-Format angegeben wird. | `date1, date2, [holidayStr]` | Zahl | `WORKDAY_DIFF("2023-06-18", "2023-10-01") => 75` |
+| IS_SAME | Vergleicht zwei Datumswerte bis zu einer Einheit und bestimmt, ob sie identisch sind. Gibt „true“ zurück, wenn dies der Fall ist, andernfalls „false“. | `date1, date2, [unit]` | Boolescher Wert | `IS_SAME("2023-09-08", "2023-09-10") => false` |
+| IS_AFTER | Bestimmt, ob date1 später als date2 liegt. Gibt „true“ zurück, wenn dies der Fall ist, andernfalls „false“. | `date1, date2, [unit]` | Boolescher Wert | `IS_AFTER("2023-09-10", "2023-09-08") => true` `IS_AFTER("2023-09-10", "2023-09-08", "month") => false` |
+
+## Array- und weitere Funktionen
+
+Array- und weitere Funktionen verarbeiten Rollup-Arrays, Deduplizierung, Verknüpfung, Bereinigung leerer Werte und Datensatz-IDs.
+
+| Funktionsname | Beschreibung | Eingabe | Ausgabe | Beispiel |
+| ------------ | ----------- | ----- | ------ | ------- |
+| COUNTALL | Gibt die Anzahl aller Elemente einschließlich Text und leerer Werte zurück. | `value1, [value2, ...]` | Zahl | `COUNTALL(100, 200, "", "Teable", TRUE()) => 5` |
+| COUNTA | Gibt die Anzahl der nicht leeren Werte zurück. Diese Funktion zählt sowohl Zahlen- als auch Textwerte. | `value1, [value2, ...]` | Zahl | `COUNTA(100, 200, 300, "", "Teable", TRUE) => 4` |
+| COUNT | Gibt die Anzahl der numerischen Elemente zurück. | `value1, [value2, ...]` | Zahl | `COUNT(100, 200, 300, "", "Teable", TRUE) => 3` |
+| ARRAY_JOIN | Verbindet ein Array von Rollup-Elementen mithilfe eines Trennzeichens zu einer Zeichenfolge. | `array, [separator]` | Zeichenfolge | `ARRAY_JOIN(["Tom", "Jerry", "Mike"], "; ") => "Tom; Jerry; Mike"` |
+| ARRAY_UNIQUE | Gibt nur die eindeutigen Elemente eines Arrays zurück. | `array` | Array | `ARRAY_UNIQUE([1, 2, 3, 2, 1]) => [1, 2, 3]` |
+| ARRAY_FLATTEN | Glättet ein Array, indem alle Array-Verschachtelungen entfernt werden. Alle Elemente werden zu Elementen eines einzigen Arrays. | `array` | Array | `ARRAY_FLATTEN([1, 2, " ", 3, true], ["ABC"]) => [1, 2, 3, " ", true, "ABC"]` |
+| ARRAY_COMPACT | Entfernt leere Zeichenfolgen und Nullwerte aus einem Array. „false“ und Zeichenfolgen mit mindestens einem Leerzeichen bleiben erhalten. | `array` | Array | `ARRAY_COMPACT([1, 2, 3, "", null, "ABC"]) => [1, 2, 3, "ABC"]` |
+| RECORD_ID | Gibt die ID des aktuellen Datensatzes zurück. | `-` | Zeichenfolge | `RECORD_ID() => "recxxxxxx"` |

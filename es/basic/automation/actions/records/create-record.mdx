@@ -1,0 +1,78 @@
+---
+title: "Crear Registro"
+description: "Crea un nuevo Registro en cualquier Tabla como parte de un flujo de trabajo"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Recomendamos encarecidamente usar Ejecutar script para crear automatizaciones, ya que permite cubrir el comportamiento de todas las acciones, incluidas aquellas que, de otro modo, tendrían que crearse manualmente. Solo tienes que describir tus requisitos a la IA en el chat.
+
+Ten en cuenta que, si añades acciones manualmente, la IA no podrá reconocerlas ni modificarlas más adelante.
+</Tip>
+
+## Crear con IA
+
+Abre el Chat de IA en la barra lateral derecha de tu Tabla y describe lo que quieres.
+
+La IA se encarga de todo: elige el desencadenador adecuado, selecciona las acciones correspondientes, asigna los Campos y configura automáticamente todo el flujo de trabajo.
+
+Describe el objetivo una sola vez y el flujo de trabajo estará listo, sin necesidad de configuración manual.
+
+Crea un Registro nuevo en una Tabla determinada. Puedes asignar datos de pasos anteriores a los Campos del Registro nuevo. Tras crearlo, el ID del Registro nuevo y todos los valores de sus Campos estarán disponibles para los pasos posteriores.
+
+## Configuración
+
+| Ajuste | Obligatorio | Descripción |
+|---|---|---|
+| Tabla | Sí | La Tabla de destino en la que se creará el Registro nuevo |
+| Campos | Sí | Asigna un valor a cada Campo: texto o números estáticos, o variables dinámicas de pasos anteriores |
+
+## Cómo configurarla
+
+1. Añade una acción **Crear Registro** a tu flujo de trabajo.
+2. Elige la **Tabla** en la que quieres crear el Registro. De forma predeterminada, es una Tabla de la misma Base, pero puedes utilizar [Acceso entre Bases](/es/basic/automation/actions/records/cross-base) para seleccionar una Tabla de otra Base.
+3. El área de asignación de Campos muestra todos los Campos de la Tabla de destino. Para cada Campo que quieras rellenar:
+   - **Valor estático:** escribe un valor directamente en el Campo (p. ej., escribe «Nuevo» en un Campo Estado).
+   - **Valor dinámico:** haz clic en el botón **+** situado junto al Campo para insertar una variable de un paso anterior. Por ejemplo, inserta el Campo «Nombre» del desencadenador para copiar el nombre del Registro que activó el flujo.
+4. Puedes combinar valores estáticos y dinámicos. Por ejemplo, establece Estado en el valor estático «Pendiente» y Nombre del cliente en un valor dinámico del desencadenador.
+5. Guarda la acción.
+
+<Tip>Puedes combinar varias variables en un solo Campo de texto. Por ejemplo, inserta `Nombre del cliente del Registro desencadenador - ID del pedido del Registro desencadenador` en un Campo «Resumen».</Tip>
+
+## Qué ocurre con los Campos obligatorios
+
+Si un Campo obligatorio tiene un valor predeterminado y lo dejas sin asignar, Teable lo rellena con ese valor cuando se crea el Registro. Si un Campo obligatorio no tiene ningún valor predeterminado o un valor asignado está vacío durante la ejecución, la acción falla.
+
+Para comprobar qué Campos son obligatorios, consulta su configuración en la Tabla de destino. Los Campos obligatorios suelen estar marcados con un asterisco o la etiqueta «Obligatorio».
+
+## Salida: usar el Registro creado en pasos posteriores
+
+Después de ejecutar la acción Crear Registro, el Registro recién creado está disponible para todos los pasos posteriores. Esto incluye:
+
+- **ID de Registro** — el identificador único asignado al Registro nuevo.
+- **Todos los valores de los Campos** — cada valor de Campo del Registro creado, incluidos los valores calculados automáticamente o predeterminados.
+
+Esto resulta útil cuando necesitas encadenar acciones. Por ejemplo: crea un Registro e inmediatamente después envía un correo electrónico que incluya un enlace a él, o actualiza un Registro relacionado con el ID del Registro nuevo.
+
+## Cuándo usarla
+
+- **Registrar formularios enviados en una Tabla independiente.** Cuando se envíe un formulario, crea un Registro en una Tabla «Registro de envíos» con los datos enviados y una marca de tiempo.
+- **Crear automáticamente tareas de seguimiento.** Cuando se cree un proyecto, crea un conjunto de tareas predeterminadas en una Tabla Tareas relacionada.
+- **Duplicar Registros entre Tablas.** Copia datos de una Tabla a otra; por ejemplo, mueve un cliente potencial de «Prospectos» a «Clientes activos» al cerrar un acuerdo.
+- **Generar Registros a partir de datos externos.** Cuando un webhook entregue datos de un pedido, crea un Registro nuevo en tu Tabla Pedidos con los detalles del pedido.
+- **Crear entradas de seguimiento de auditoría.** Después de ejecutar cualquier Automatización, crea un Registro en una Tabla Registro de auditoría que documente lo sucedido.
+
+## Consejos
+
+- Si creas Registros en la misma Tabla que tiene un desencadenador **Cuando se crea un Registro**, ten cuidado con los bucles infinitos. Utiliza un filtro en el desencadenador para excluir los Registros creados por la Automatización (p. ej., comprueba si el Campo «Origen» tiene el valor «Automatización»).
+- Puedes crear Registros en lote combinando esta acción con [Bucle (lote)](../logic/loop-run). Por ejemplo, obtén 50 Registros de una Tabla y crea los 50 Registros correspondientes en otra.
+- Los Campos que no asignes utilizarán los valores predeterminados de la Tabla (si existen) o permanecerán vacíos.
+- Los Campos de Registros enlazados requieren ID de Registro, no valores para mostrar. Si necesitas enlazar un Registro, asegúrate de proporcionar su ID y no su nombre.
+- Utiliza [Acceso entre Bases](/es/basic/automation/actions/records/cross-base) cuando la Tabla de destino esté en una Base distinta de la Automatización.
+
+## Contenido relacionado
+
+- [Actualizar Registro](/es/basic/automation/actions/records/update-record) — modifica Registros existentes en vez de crear otros
+- [Obtener Registros](/es/basic/automation/actions/records/get-records) — recupera Registros para utilizarlos como entrada al crear otros nuevos
+- [Acceso entre Bases](/es/basic/automation/actions/records/cross-base) — crea Registros en Tablas que se encuentran fuera de la Base actual
+- [Bucle (lote)](../logic/loop-run) — crea varios Registros en un solo paso de acción

@@ -1,0 +1,171 @@
+---
+title: "Vue d’ensemble"
+description: "Créez, importez, partagez et gérez des tables dans une base."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+Chaque base peut contenir plusieurs tables pour stocker et gérer des données associées. Les tables Teable sont équivalentes aux tables de base de données — comprendre [leurs différences avec les feuilles de calcul](/fr/compare/teable-vs-excel) vous aidera à tirer le meilleur parti de Teable.
+
+## Créer et gérer des tables
+
+### Ajouter des tables
+
+Dans une base, cliquez sur le bouton `+` dans le répertoire et choisissez de :
+
+<img
+  src="/images/docs/base/2026-05-22-table-create-menu.png"
+  alt="Menu d’ajout de table"
+  className="docs-screenshot"
+/>
+
+1. Créer une nouvelle table vide
+2. Importer à partir d’un fichier CSV
+3. Importer à partir d’un fichier Excel
+4. Importer depuis Airtable, si l’intégration Airtable est configurée
+
+Consultez la [section Importer](/fr/basic/table/import) pour plus de détails.
+
+### Renommer et supprimer
+
+- **Renommer** : double-cliquez sur le nom de la table dans le répertoire, modifiez-le, puis cliquez n’importe où à l’extérieur pour enregistrer.
+- **Supprimer** : survolez la table dans le répertoire, cliquez sur `...`, puis sélectionnez **Supprimer**.
+
+<img
+  src="/images/docs/base/2026-05-22-table-rename-delete.png"
+  alt="Renommer ou supprimer une table"
+  className="docs-screenshot"
+/>
+
+Lorsque d’autres tables sont liées à la table que vous supprimez, la boîte de dialogue de confirmation répertorie les champs concernés par la suppression, ainsi que la Base et la table auxquelles ils appartiennent. La suppression de la table convertit ces champs de liaison en champs de texte sur une ligne qui conservent les titres des enregistrements liés ; les champs de recherche ou de cumul créés à partir de ceux-ci cessent alors de fonctionner.
+
+### Corbeille
+
+Cliquez sur l’icône de corbeille en haut à gauche de la base pour gérer les tables supprimées.
+
+<img
+  src="/images/docs/base/2026-05-22-table-trash.png"
+  alt="Corbeille des tables"
+  className="docs-screenshot"
+/>
+
+- **Restaurer** : replace la table dans la base avec toutes ses données intactes
+- **Vider la corbeille** : supprime définitivement toutes les tables mises à la corbeille
+
+<Note>La restauration d’une table n’annule pas la conversion des liaisons. Les champs de liaison des autres tables restent des champs de texte ; recréez-les si vous devez rétablir la connexion.</Note>
+
+## Concevoir des tables
+
+Cliquez sur **Conception** dans le menu de la table pour afficher les propriétés de base de la table :
+
+<img
+  src="/images/docs/base/2026-05-22-table-design.png"
+  alt="Conception de la table"
+  className="docs-screenshot"
+/>
+
+**Informations sur la table**
+
+Schéma, nom de la table physique, description et date de dernière modification
+
+**Propriétés des champs**
+
+| Propriété | Description |
+| :--- | :--- |
+| **id** | ID du champ |
+| **name** | Nom du champ |
+| **dbFieldName** | Nom du champ dans la base de données physique |
+| **type** | Type de champ |
+| **description** | Description du champ |
+| **graph** | Afficher les dépendances actuelles du champ |
+| **cellValueType** | Type de valeur actuel du champ |
+| **isLookup** | Indique s’il s’agit d’un champ recherché depuis une table liée |
+| **isMultipleCellValue** | Indique s’il s’agit d’un [champ de valeur de tableau](/fr/basic/field/common/is-multiple-value) |
+| **isComputed** | Indique s’il s’agit d’un champ calculé (les valeurs des enregistrements des champs calculés ne peuvent pas être modifiées) |
+| **isPending** | Indique si le calcul est en cours |
+| **hasError** | Indique s’il existe des erreurs de calcul |
+| **notNull** | Indique si la validation des valeurs non nulles est activée |
+| **unique** | Indique si la validation des valeurs uniques est activée |
+
+## Partager et accéder aux tables
+
+### Partager une table
+
+Dans une table, cliquez sur **Partager** dans l’angle supérieur droit, passez à **Partager la table**, puis activez **Partager sur le Web** pour générer un lien de partage.
+
+<img
+  src="/images/docs/base/2026-05-22-table-share-entry.png"
+  alt="Point d’entrée du partage de table"
+  className="docs-screenshot"
+/>
+<img
+  src="/images/docs/base/2026-05-22-table-share-web.png"
+  alt="Partager une table sur le Web"
+  className="docs-screenshot"
+/>
+
+<Note>Une fois le partage de table activé, le bouton **Partager** apparaît dans un état partagé gris dans chaque vue de cette table. Cet état provient du partage de la table ; il ne signifie pas que chaque vue a été partagée séparément.</Note>
+
+Autorisations du lien :
+
+<img
+  src="/images/docs/base/2026-05-22-table-share-permissions.png"
+  alt="Autorisations de partage de table"
+  className="docs-screenshot"
+/>
+
+- **Peut afficher** : toute personne disposant du lien peut afficher les données de la table
+- **Peut modifier** : les utilisateurs connectés peuvent modifier les enregistrements de la table partagée
+- **Peut enregistrer en tant que copie** : toute personne disposant du lien peut enregistrer une copie dans son espace
+
+Vous pouvez également configurer **Autoriser les lecteurs à copier les données**, **Restreindre par mot de passe**, régénérer ou supprimer le lien, et copier la configuration d’intégration.
+
+Pour ne partager que la vue actuelle, passez à **Partager la vue**. Pour plus de détails, consultez la [barre d’outils de la vue](/fr/basic/view/toolbar).
+
+### Façons d’accéder aux tables
+
+Les tables utilisent par défaut une [vue Grille](/fr/basic/view/grid) et sont également accessibles via l’[API](/fr/api-doc/overview). Vous pouvez créer des vues supplémentaires — telles que Kanban — pour répondre à différents besoins de flux de travail.
+
+## Recherche et téléchargements
+
+### Recherche globale
+
+<img
+  src="/images/docs/base/2026-05-22-table-global-search.png"
+  alt="Recherche globale de table"
+  className="docs-screenshot"
+/>
+
+- Activez **Champ de recherche** pour choisir les champs à rechercher. Ce mode prend en charge les champs de date en plus des champs de texte.
+- Désactivez **Champ de recherche** pour lancer une recherche approximative dans tous les champs pris en charge. La recherche globale n’inclut pas les champs de date, de case à cocher ou de bouton. Votre instance peut également limiter le nombre de champs couverts par la recherche globale.
+- Activez **Masquer les lignes non correspondantes** pour n’afficher que les enregistrements correspondants. Désactivez-la pour conserver toutes les lignes visibles et mettre en surbrillance les correspondances.
+- Pour les grandes tables, les éditeurs peuvent activer **Index** pour améliorer la vitesse de recherche. La création ou la mise à jour de l’index peut temporairement affecter les performances de lecture et d’écriture.
+
+### Téléchargements de pièces jointes
+
+Les téléchargements groupés de pièces jointes respectent les résultats de recherche actuels et incluent uniquement les pièces jointes des enregistrements correspondants.
+
+<img
+  src="/images/docs/base/2026-05-22-table-attachment-download-menu.png"
+  alt="Point d’entrée du téléchargement groupé de pièces jointes"
+  className="docs-screenshot"
+/>
+
+Dans la boîte de dialogue de téléchargement groupé, utilisez **Préfixe du nom de pièce jointe** pour nommer les fichiers ZIP selon l’index par défaut, un champ choisi, ou **Aucun préfixe** pour conserver les noms de fichiers d’origine ; un suffixe est automatiquement ajouté aux doublons.
+
+<img
+  src="/images/docs/base/2026-05-22-table-attachment-download-options.png"
+  alt="Options de téléchargement groupé de pièces jointes"
+  className="docs-screenshot"
+/>
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Pourquoi ne puis-je pas saisir de texte dans une colonne Nombre ?">
+    Teable est plus strict qu’Excel — chaque colonne possède un type de données fixe, et une colonne Nombre ne stocke que des nombres. Cette contrainte garantit l’intégrité des données et constitue la base du filtrage avancé et de l’automatisation. Consultez [Teable vs Excel](/fr/compare/teable-vs-excel) pour plus de détails.
+  </Accordion>
+  <Accordion title="Que dois-je vérifier avant de supprimer une table ?">
+    Vérifiez si la table est référencée par des **champs liés** dans d’autres tables. La suppression de la table source peut entraîner des problèmes d’affichage des données dans les tables liées.
+  </Accordion>
+</AccordionGroup>
+

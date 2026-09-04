@@ -1,0 +1,290 @@
+---
+title: "スクリプトを実行"
+description: "組み込みアクションでは対応できないロジックを、安全なサンドボックスでカスタムJavaScriptとして実行します"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+「スクリプトを実行」は、手動で構築する必要があるものも含め、すべてのアクションの動作を実現できるため、オートメーションの構築に使用することを強く推奨します。チャットで要件をAIに説明するだけです。
+
+アクションを手動で追加した場合、後からAIが認識または変更することはできません。
+</Tip>
+
+「スクリプトを実行」アクションでは、組み込みアクションでは対応できないロジックをカスタム JavaScript で処理できます。安全なサンドボックス環境内で、データの変換、外部APIの呼び出し、計算、条件分岐などを実行できます。
+
+スクリプトは `input` オブジェクトを介して前のステップからデータを受け取り、`output.set()` 関数を介して後続ステップへ結果を渡します。
+
+## 「スクリプトを実行」と組み込みアクションの使い分け
+
+| シナリオ | 組み込みアクションを使用 | スクリプトを実行 |
+|---|---|---|
+| レコードの作成、更新、取得 | はい | 複雑なロジックが必要な場合のみ |
+| 簡単なメールの送信 | はい | いいえ |
+| 1つのAPIエンドポイントを呼び出す | はい（HTTP リクエスト） | レスポンスを複雑な方法で処理する場合のみ |
+| ステップ間でデータを変換する | 場合による | はい — 条件分岐、ループ、文字列操作が必要な場合 |
+| 複雑な JSON 構造を解析する | いいえ | はい |
+| 日付を計算し、数値を整形する | いいえ | はい |
+| ロジックを使用して複数のAPI呼び出しを連結する | 組み込みでは扱いにくい | はい |
+| 多数の条件を持つビジネスルールを実装する | 実用的でない | はい |
+
+一般に、必要な処理に合う場合は組み込みアクションを使用します。カスタムロジック、データ変換、複雑なAPI連携が必要な場合は「スクリプトを実行」を使用します。
+
+## 環境
+
+| プロパティ | 値 |
+|---|---|
+| 言語 | JavaScript（ES6+）、トップレベルの `await` に対応 |
+| ランタイム | 60秒でタイムアウトする安全なサンドボックス |
+| モジュール | CommonJS（`require()`）、npmパッケージに対応 |
+| ネットワーク | `fetch()` による HTTP リクエスト |
+
+## 設定方法
+
+1. ワークフローに**スクリプトを実行**アクションを追加します。
+2. 空のスクリプトエディターが開きます。ここに JavaScript コードを記述します。
+3. 以下の説明に従い、`input` オブジェクトを使用して前のステップからデータを読み取ります。
+4. `output.set(key, value)` を使用して後続ステップへ結果を渡します。
+5. （任意）外部ライブラリが必要な場合は、設定パネルで npm の依存関係を追加します。
+6. **テスト**をクリックし、直近のトリガー実行から得られた実際のデータでスクリプトを実行します。
+7. テスト出力とコンソールログを確認し、スクリプトが正しく動作することを確かめます。
+8. アクションを保存します。
+
+## 入力データを読み取る
+
+`input` オブジェクトには、ワークフロー内の前のすべてのステップから得られたデータが含まれます。各ステップはアクションIDで識別されます。
+
+### 入力の構造
+
+```javascript
+// input はアクションIDをキーとするオブジェクトです
+// 各キーには、そのステップの出力が含まれます
+
+const actionIds = Object.keys(input);
+// actionIds の例：["triggerStep1", "actionStep2", "actionStep3"]
+```
+
+### トリガーデータ（レコードフィールド）を取得する
+
+```javascript
+const actionIds = Object.keys(input);
+const triggerData = input[actionIds[0]]; // 通常、最初の項目がトリガーです
+
+// レコードベースのトリガー（作成、更新、ボタンクリック、フォーム送信）の場合：
+const recordId = triggerData.record.id;
+const fields = triggerData.record.fields;
+
+// フィールドIDで特定のフィールドへアクセス
+const customerName = fields.fldXXXXXXX;  // 実際のフィールドIDに置き換えます
+const orderAmount = fields.fldYYYYYYY;
+```
+
+### 「レコードを取得」ステップからデータを取得する
+
+```javascript
+const actionIds = Object.keys(input);
+const getRecordsData = input[actionIds[1]]; // 例：2番目のステップ
+
+const records = getRecordsData.records;
+records.forEach(record => {
+  console.log(record.id, record.fields.fldName);
+});
+```
+
+### 他のアクションの出力からデータを取得する
+
+```javascript
+const actionIds = Object.keys(input);
+const previousOutput = input[actionIds[2]]; // 3番目のステップの出力
+// 構造は、そのアクションが出力する内容によって異なります
+```
+
+<Tip>テスト中に `console.log(JSON.stringify(input, null, 2))` を使用すると、入力データの正確な構造を確認できます。利用可能なデータを把握する最も速い方法です。</Tip>
+
+## 出力を書き込む
+
+後続ステップでデータを利用できるようにするには、`output.set(key, value)` を使用します。複数のキーを設定できます。
+
+```javascript
+// 単純な値を設定
+output.set("status", "success");
+output.set("count", 42);
+
+// オブジェクトを設定
+output.set("result", {
+  name: "アリス",
+  score: 95,
+  passed: true
+});
+
+// 配列を設定
+output.set("items", [
+  { id: 1, name: "項目A" },
+  { id: 2, name: "項目B" }
+]);
+```
+
+設定した各キーは、後続ステップで **+** の変数選択から参照できる個別の変数になります。たとえば、`output.set("status", "success")` を呼び出すと、次のステップでこのスクリプトの出力にある `status` を参照できます。
+
+## console.logでデバッグする
+
+開発中は `console.log()` を使用してデータを確認し、実行の流れを追跡します。**テスト**をクリックすると、ログ出力がテストパネルに表示されます。
+
+```javascript
+const actionIds = Object.keys(input);
+console.log("アクションID：", actionIds);
+
+const data = input[actionIds[0]];
+console.log("トリガーデータ：", JSON.stringify(data, null, 2));
+
+// 中間結果を記録
+const processed = data.record.fields.fldName.toUpperCase();
+console.log("処理済みの名前：", processed);
+
+output.set("name", processed);
+```
+
+コンソールログはテスト中にだけ表示され、本番環境の実行履歴には表示されません。スクリプトの構築中は積極的に使用してください。
+
+## npmパッケージの管理
+
+スクリプトでは npm パッケージを使用できます。設定パネルで依存関係を宣言します。
+
+```json
+[
+  { "name": "lodash", "version": "4.17.21" },
+  { "name": "dayjs", "version": "1.11.10" }
+]
+```
+
+その後、スクリプト内で `require()` を使用します。
+
+```javascript
+const _ = require("lodash");
+const dayjs = require("dayjs");
+
+const actionIds = Object.keys(input);
+const records = input[actionIds[0]].records;
+
+const grouped = _.groupBy(records, r => r.fields.fldCategory);
+const today = dayjs().format("YYYY-MM-DD");
+
+output.set("grouped", grouped);
+output.set("date", today);
+```
+
+<Tip>可能な場合は、npmパッケージより JavaScript の組み込み機能を使用してください。最新の JavaScript には、`Array.map()`、`Array.filter()`、`Object.entries()`、テンプレートリテラル、分割代入など、多くの機能が組み込まれています。大きな利点がある場合にのみ npm パッケージを追加してください。</Tip>
+
+## 組み込み変数
+
+| 変数 | 説明 |
+|---|---|
+| `process.env.AUTOMATION_TOKEN` | Teable API の呼び出しに使用する Bearer トークン。現在のオートメーションの権限に限定されます |
+| `process.env.PUBLIC_ORIGIN` | Teable インスタンスのベースURL（例：`https://app.teable.io`） |
+
+### セキュリティ：AUTOMATION_TOKEN の範囲
+
+`AUTOMATION_TOKEN` はオートメーションの実行ごとに自動生成されます。オートメーション作成者と同じ権限を持ち、現在の実行に限定されます。主な点は次のとおりです。
+
+- オートメーション作成者がアクセスできるすべてのテーブルにアクセスできます。
+- スクリプトの実行中（60秒のタイムアウト）だけ有効です。
+- このトークンを外部システムへ公開しないでください。スクリプト内から Teable API を呼び出すためのものです。
+
+### Teable APIを呼び出す
+
+```javascript
+const base = process.env.PUBLIC_ORIGIN + "/api";
+const token = process.env.AUTOMATION_TOKEN;
+
+// 例：テーブルからレコードを取得
+const res = await fetch(`${base}/table/tblXXXXXXX/record?take=10`, {
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json"
+  }
+});
+
+const data = await res.json();
+console.log("取得したレコード：", data);
+output.set("records", data);
+```
+
+### スクリプトからAIを呼び出す
+
+`POST /api/automation/runtime/ai` は、ベースのAIモデルへプロンプトを送信します。ベースはオートメーションのコンテキストから取得されるため、ベースIDは不要です。本文には `prompt` のほか、任意の `attachments`、`modelKey`、`temperature`、`outputType` を指定でき、レスポンスは `{ "message": ... }` です。
+
+添付ファイルは `{ url, mimetype, name }` の項目で、1回の呼び出しにつき最大10件、各20MB未満、ダウンロード時間30秒以内で、画像、PDF、Office文書に対応します。デフォルトのチャットモデルでは画像などの添付ファイルを読み取れない場合があるため、ファイルを送る際は `modelKey` を指定してください。呼び出しごとにクレジットを消費します。
+
+## エラー処理
+
+リスクのある操作は必ず try/catch ブロックで囲み、ワークフローがエラーを適切に処理できるようにします。
+
+```javascript
+try {
+  const res = await fetch("https://api.example.com/data");
+  
+  if (!res.ok) {
+    throw new Error(`API が ${res.status} を返しました：${res.statusText}`);
+  }
+  
+  const data = await res.json();
+  output.set("success", true);
+  output.set("data", data);
+} catch (error) {
+  console.log("エラー：", error.message);
+  output.set("success", false);
+  output.set("error", error.message);
+}
+```
+
+エラー処理がないと、取得の失敗や予期しないデータ形式によってスクリプトが停止し、後続ステップへ出力が渡されません。
+
+## 完全な例：サポートチケットを処理して振り分ける
+
+```javascript
+const actionIds = Object.keys(input);
+const record = input[actionIds[0]].record;
+
+const subject = record.fields.fldSubject || "";
+const body = record.fields.fldBody || "";
+const email = record.fields.fldEmail || "";
+
+// キーワードに基づく簡単な振り分け
+const text = (subject + " " + body).toLowerCase();
+
+let category = "一般";
+let priority = "通常";
+
+if (text.includes("請求") || text.includes("請求書") || text.includes("支払い")) {
+  category = "請求";
+} else if (text.includes("不具合") || text.includes("エラー") || text.includes("クラッシュ")) {
+  category = "技術";
+  priority = "高";
+} else if (text.includes("解約") || text.includes("返金")) {
+  category = "アカウント";
+  priority = "高";
+}
+
+// VIP顧客を確認
+const vipDomains = ["bigcorp.com", "enterprise.io"];
+const domain = email.split("@")[1] || "";
+if (vipDomains.includes(domain)) {
+  priority = "緊急";
+}
+
+output.set("category", category);
+output.set("priority", priority);
+output.set("isVIP", vipDomains.includes(domain));
+```
+
+## ヒント
+
+- **console.logから始める。** 新しいスクリプトを構築するときは、まず `input` オブジェクト全体をログへ出力して構造を把握します。
+- **スクリプトの目的を絞る。** 複数のタスクを1つのスクリプトへ詰め込まず、1つの処理を適切に実行します。必要に応じて複数の「スクリプトを実行」アクションを連結します。
+- **60秒のタイムアウトに注意する。** 大量のデータ処理や多数の連続API呼び出しなど、時間のかかる処理はタイムアウトする可能性があります。大きなタスクを小さく分割してください。
+- **実際のデータでテストする。** テストパネルでは直近のトリガー実行から得られた実データを使用するため、現実的な結果を確認できます。
+- **欠損データを処理する。** 空または未定義の可能性があるフィールドには、デフォルト値（`||` 演算子）を使用します。
+
+## 関連ページ
+
+- [AI生成](/ja/basic/automation/actions/ai/ai-generate) — カスタムコードを必要としない、プロンプトベースのAIタスクに使用します
+- [HTTP リクエスト](/ja/basic/automation/actions/logic/http-request) — スクリプトを必要としない単純なAPI呼び出しに使用します

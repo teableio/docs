@@ -1,0 +1,34 @@
+---
+title: "Görevlerin son tarihinden önce hatırlatma gönderme"
+description: "Son tarihi yaklaşan görevler hakkında sorumlu kişilere otomatik olarak e-posta gönderin"
+---
+
+<Tip>Otomasyon örneklerini doğrudan AI Chat'te oluşturmanızı öneririz. İstediğiniz iş akışını açıklamanız yeterlidir; AI tetikleyici, eylemler, komut dosyası ve yapılandırma dahil tüm kurulumu sizin için tamamlar.</Tip>
+
+## AI ile oluşturma
+
+Tablonuzun sağ kenar çubuğunda AI Chat'i açın ve AI'a ne istediğinizi söyleyin. Örneğin şöyle diyebilirsiniz:
+
+*"Her sabah saat 08.00'de önümüzdeki 2 gün içinde tamamlanması gereken ve henüz tamamlanmamış görevleri bul, ardından her sorumlu kişiye hatırlatma e-postası gönder"*
+
+AI, iş akışının tamamını otomatik olarak oluşturur. Oluşturulan komut dosyasını inceleyebilir, gerçek verilerle test edebilir ve hazır olduğunuzda iş akışını etkinleştirebilirsiniz.
+
+## Elle yapılandırma
+
+1. Her gün saat 08.00'de çalışacak **Zamanlanan Saatte** tetikleyicisiyle bir **iş akışı oluşturun**.
+2. **Eylem ekleyin** → **Kayıtları Getir**.
+   - Tablo: **Görevler**
+   - Filtre: `Son Tarih` **aralığındadır** `önümüzdeki 2 gün` VE `Durum` **eşit değildir** `Tamamlandı`
+3. Eşleşen kayıtları görmek için **Test et**'e tıklayın.
+4. **Eylem ekleyin** → **E-posta Gönder** ve **Döngü** seçeneğini etkinleştirin.
+5. Döngü kaynağı olarak Kayıtları Getir adımındaki diziyi seçin.
+6. Eşleyin:
+   - Kime → Sorumlu kişinin e-postası (**+** üzerinden geçerli döngü öğesine başvurarak)
+   - Konu: `Hatırlatma: "<görev başlığı>" görevinin son tarihi yaklaşıyor`
+   - Gövde: `"<görev başlığı>" görevinizin son tarihi <son tarih>. Tamamlandığında lütfen durumu güncelleyin.`
+7. **Test et**'e, ardından **etkinleştir**'e tıklayın.
+
+## İpuçları
+
+- Görevlerin genel aciliyetine göre filtre aralığını ("önümüzdeki 2 gün", "önümüzdeki 7 gün") ayarlayın.
+- Yalnızca Sorumlu alanı boş olmayan görevler için e-posta göndermek üzere bir koşul ekleyin.

@@ -1,0 +1,244 @@
+---
+title: "Barre d’outils de la Vue"
+description: "Utilisez les filtres, les groupes, le tri, le partage et les paramètres de collaboration de la Vue actuelle."
+---
+
+La barre d’outils de la Vue contrôle la manière dont la Vue actuelle affiche et partage les Enregistrements. Les filtres, les groupes, les tris, les Champs visibles, la hauteur des lignes et les paramètres associés affectent uniquement la Vue actuelle. Ils ne suppriment pas d’Enregistrements et ne modifient pas les autres Vues.
+
+<Note>Les paramètres de filtrage, de regroupement et de tri sont indépendants dans chaque Vue. Les modifications apportées à une Vue n’affectent pas les autres Vues.</Note>
+
+## Présentation de la barre d’outils
+
+| Outil | Utilité | Scénarios courants |
+| --- | --- | --- |
+| Filtrer | Afficher uniquement les Enregistrements qui correspondent aux conditions | Tâches ouvertes, vos propres Enregistrements, Enregistrements compris dans une plage de dates |
+| Regrouper | Regrouper les Enregistrements selon les valeurs d’un Champ | Charge de travail par responsable, progression par statut, Enregistrements par date |
+| Trier | Réorganiser les Enregistrements selon les valeurs d’un Champ | Enregistrements récemment mis à jour, priorité des tâches, classement des ventes |
+| Partager | Publier la Vue actuelle sous forme de lien | Partager un résultat filtré, trié, regroupé, comportant des Champs masqués ou utilisant une mise en page particulière |
+| Collaboration de la Vue | Choisir si les paramètres de la Vue sont synchronisés pour tous ou s’appliquent uniquement à vous | Modifications temporaires d’une Vue ou Vue d’équipe utilisée par tous |
+
+## Filtrer
+
+Les filtres affichent les Enregistrements qui correspondent à des conditions précises dans la Vue actuelle. Ils masquent les Enregistrements qui ne correspondent pas. Ils ne suppriment aucun Enregistrement.
+
+<Steps>
+  <Step title="Ouvrir le panneau de filtrage">
+    Cliquez sur `Filtrer` dans la barre d’outils de la Vue.
+  </Step>
+  <Step title="Ajouter une condition">
+    Choisissez un Champ, un opérateur et une valeur de comparaison.
+  </Step>
+  <Step title="Choisir comment combiner les conditions">
+    Pour plusieurs conditions, choisissez **Toutes les conditions sont remplies** ou **Au moins une condition est remplie**.
+  </Step>
+</Steps>
+
+| Relation | Description |
+| --- | --- |
+| Toutes les conditions sont remplies | Un Enregistrement apparaît uniquement lorsque toutes les conditions de ce niveau sont remplies |
+| Au moins une condition est remplie | Un Enregistrement apparaît lorsqu’au moins une condition de ce niveau est remplie |
+
+<img
+  src="/images/docs/base/2026-05-26-view-filter-conditions.png"
+  alt="Conditions de filtrage de la Vue"
+  className="docs-screenshot"
+/>
+
+### Groupes de conditions
+
+Utilisez des **groupes de conditions** pour créer une logique de filtrage plus complexe. Par exemple, « A et B, ou C et D » peut être exprimé sous forme de deux groupes.
+
+- Cliquez sur `Ajouter un groupe de conditions` pour créer un groupe.
+- Les groupes peuvent utiliser **Toutes les conditions sont remplies** ou **Au moins une condition est remplie**.
+- Un groupe peut contenir des groupes imbriqués.
+- Les groupes de conditions prennent en charge jusqu’à **3 niveaux**.
+
+<img
+  src="/images/docs/base/2026-05-26-view-filter-condition-groups.png"
+  alt="Groupes de conditions de filtrage de la Vue"
+  className="docs-screenshot"
+/>
+
+### Opérateurs de filtrage courants
+
+| Type de Champ | Opérateurs courants | Saisie |
+| --- | --- | --- |
+| Texte sur une ligne, Texte long | Est égal à, N’est pas égal à, Contient, Ne contient pas, Est vide, N’est pas vide | Saisie de texte |
+| Utilisateur | Est égal à, N’est pas égal à, Contient l’un des éléments, Ne contient aucun des éléments, Est vide, N’est pas vide | Liste d’utilisateurs, utilisateur actuel |
+| Pièce jointe | Est vide, N’est pas vide | Aucune saisie |
+| Sélection multiple | Contient l’un des éléments, Contient tous les éléments, Correspond exactement, Ne contient aucun des éléments, Est vide, N’est pas vide | Liste d’options |
+| Sélection unique | Est égal à, N’est pas égal à, Contient l’un des éléments, Ne contient aucun des éléments | Liste d’options |
+| Date, Date de création, Date de dernière modification | Est égal à, N’est pas égal à, Est compris dans, Est antérieur à, Est postérieur à, Est antérieur ou égal à, Est postérieur ou égal à, Est vide, N’est pas vide | Plage prédéfinie ou date exacte |
+| Nombre, Évaluation, Numéro automatique | `=`, `≠`, `>`, `≥`, `<`, `≤`, Est vide, N’est pas vide | Nombre |
+| Lien | Est égal à, N’est pas égal à, Contient, Ne contient pas, Contient l’un des éléments, Contient tous les éléments, Correspond exactement, Ne contient aucun des éléments, Est vide, N’est pas vide | Sélecteur d’Enregistrements liés |
+| Créé par, Dernière modification par | Est égal à, N’est pas égal à | Liste d’utilisateurs, utilisateur actuel |
+
+Les opérateurs des Champs Formule et Agrégation dépendent du type de résultat.
+
+### Avertissements relatifs aux conditions non valides
+
+Si le type d’un Champ change, si un Champ est supprimé ou si une ancienne configuration de filtre n’est plus compatible, Teable ignore la condition non valide afin que la Vue puisse toujours s’ouvrir.
+
+- Le bouton `Filtrer` de la barre d’outils affiche une icône d’avertissement.
+- Après l’ouverture du panneau de filtrage, la condition non valide affiche une icône d’avertissement.
+- Survolez l’icône pour connaître la raison et corriger la condition.
+
+## Regrouper
+
+Le regroupement des Enregistrements selon les valeurs des Champs facilite l’examen de leur répartition, de leurs synthèses et de leur hiérarchie.
+
+<Steps>
+  <Step title="Ouvrir le panneau de regroupement">
+    Cliquez sur `Regrouper` dans la barre d’outils de la Vue.
+  </Step>
+  <Step title="Choisir un Champ">
+    Choisissez le Champ selon lequel vous souhaitez effectuer le regroupement.
+  </Step>
+  <Step title="Ajouter d’autres groupes">
+    Cliquez sur `Ajouter un autre groupe` lorsque plusieurs niveaux de regroupement sont nécessaires.
+  </Step>
+</Steps>
+
+| Type de Champ | Utilisation recommandée |
+| --- | --- |
+| Sélection unique, Sélection multiple | Regrouper selon des options fixes telles que le statut, la priorité ou le type |
+| Utilisateur | Regrouper par responsable, collaborateur ou répondant |
+| Date | Regrouper les Enregistrements par période |
+| Case à cocher, Lien, Nombre, Évaluation | Regrouper selon des valeurs ou des résultats explicites |
+
+- Le regroupement prend en charge jusqu’à **3 niveaux**.
+- Vous pouvez réduire ou développer les groupes. Les Enregistrements de chaque groupe continuent de suivre l’ordre de tri actuel.
+- Chaque groupe affiche une barre de synthèse en haut afin de vous permettre d’en examiner les résultats récapitulatifs.
+- Les valeurs vides sont placées dans des groupes distincts sans catégorie, sans attribution ou vides, selon le type de Champ.
+
+## Trier
+
+Le tri réorganise les Enregistrements selon les valeurs des Champs. Il modifie l’ordre d’affichage dans la Vue actuelle sans modifier le contenu des Enregistrements.
+
+<Steps>
+  <Step title="Ouvrir le panneau de tri">
+    Cliquez sur `Trier` dans la barre d’outils de la Vue.
+  </Step>
+  <Step title="Choisir un Champ">
+    Choisissez le Champ selon lequel vous souhaitez effectuer le tri.
+  </Step>
+  <Step title="Choisir un sens">
+    Choisissez l’ordre croissant ou décroissant. Ajoutez d’autres conditions de tri lorsqu’un tri à plusieurs niveaux est nécessaire.
+  </Step>
+</Steps>
+
+Le tri à plusieurs niveaux suit l’ordre des conditions. Teable trie d’abord selon la première condition ; si plusieurs Enregistrements ont la même valeur, il applique ensuite la condition suivante.
+
+| Type de Champ | Comportement du tri |
+| --- | --- |
+| Texte, Pièce jointe | Trie par ordre alphabétique ou dans l’ordre inverse. Les pièces jointes sont triées selon leur nom de fichier |
+| Nombre, Durée, Évaluation | Trie par valeur dans l’ordre croissant ou décroissant |
+| Date, Date de création, Date de dernière modification | Trie de la date la plus ancienne à la plus récente, ou de la plus récente à la plus ancienne |
+| Case à cocher | Trie des cases décochées aux cases cochées, ou dans l’ordre inverse |
+| Sélection unique, Sélection multiple | Trie selon l’ordre des options dans la configuration du Champ, ou dans l’ordre inverse |
+
+Les Champs Formule et Agrégation sont triés selon leur type de résultat.
+
+Utilisez l’option `Trier automatiquement les Enregistrements` dans le menu de tri.
+
+| Statut | Comportement |
+| --- | --- |
+| Activé | Les Enregistrements restent triés selon les règles actuelles. Lorsqu’une valeur de Champ change, l’Enregistrement rejoint sa nouvelle position. Vous ne pouvez pas déplacer manuellement les Enregistrements lorsque le tri automatique est activé |
+| Désactivé | Les Enregistrements ne sont triés de nouveau qu’après une nouvelle application du tri. Vous pouvez déplacer manuellement les Enregistrements et les mises à jour de données ne les déplacent pas automatiquement |
+
+## Partager la Vue
+
+**Partager la Vue** publie la Vue actuelle sous forme de lien. Les visiteurs voient les données et la mise en page de cette Vue. Cela ne revient pas à les inviter en tant que collaborateurs de la Base.
+
+<Note>Pour partager une Base entière, une Table précise ou un dossier, utilisez le partage de Base dans [Base](/fr/basic/base).</Note>
+
+| Option de partage | Idéal pour |
+| --- | --- |
+| Partager la Table | Accorder à des personnes externes un accès plus large à la Table actuelle |
+| Partager la Vue | Publier uniquement la Vue actuelle, par exemple un résultat filtré, trié, regroupé, comportant des Champs masqués ou utilisant une mise en page particulière |
+
+Un lien de partage de Vue suit la configuration actuelle de la Vue. Si vous modifiez ensuite les filtres, le tri, le regroupement, les Champs masqués ou la mise en page, la page partagée est également modifiée.
+
+<Steps>
+  <Step title="Ouvrir la Vue">
+    Accédez à la Vue que vous souhaitez partager.
+  </Step>
+  <Step title="Ouvrir le partage">
+    Cliquez sur **Partager** dans la barre d’outils de la Vue.
+  </Step>
+  <Step title="Choisir Partager la Vue">
+    Passez à **Partager la Vue**.
+  </Step>
+  <Step title="Activer le partage public">
+    Activez **Partager la Vue sur le Web**.
+  </Step>
+  <Step title="Copier le lien">
+    Copiez le lien généré ou partagez le code QR.
+  </Step>
+</Steps>
+
+Si vous ne disposez pas de l’autorisation nécessaire pour partager la Vue, le bouton de partage est indisponible. Une fois **Partager la Vue sur le Web** désactivé, les liens de partage existants ne peuvent plus être ouverts.
+
+<Warning>Les liens publics peuvent être transférés. Avant d’activer le partage, vérifiez que la Vue actuelle ne contient aucun Champ ou Enregistrement qui ne devrait pas être public.</Warning>
+
+Les différents types de Vues proposent différentes options avancées.
+
+| Option | S’applique à | Description |
+| --- | --- | --- |
+| Autoriser les visiteurs à copier les données de cette Vue | Vue Grille | Détermine si les visiteurs peuvent copier les données de la Vue Grille partagée |
+| Afficher tous les Champs dans les Enregistrements développés | Vue Grille | Détermine si les visiteurs peuvent voir les Champs masqués lorsqu’ils ouvrent les détails d’un Enregistrement |
+| Autoriser les visiteurs connectés à modifier les données visibles | Toutes les Vues | Permet aux visiteurs connectés de modifier les Enregistrements et les Champs dans le périmètre de la Vue partagée |
+| Limiter par mot de passe | Tous les partages de Vue | Ajoute un mot de passe au lien de partage. Les visiteurs doivent saisir le bon mot de passe avant de l’ouvrir |
+| Exiger une connexion pour envoyer | Vue Formulaire | Oblige les visiteurs à se connecter avant d’envoyer le formulaire |
+
+Lorsque l’option **Autoriser les visiteurs connectés à modifier les données visibles** est activée, les visiteurs anonymes restent en lecture seule et voient une invite de connexion. Les visiteurs connectés peuvent créer, mettre à jour ou supprimer des Enregistrements uniquement dans les données visibles de la Vue partagée. Les Enregistrements exclus par le filtre de la Vue actuelle et les Champs masqués dans cette Vue ne peuvent pas être modifiés via le lien de partage.
+
+Les Vues partagées peuvent être intégrées à d’autres pages Web. Cliquez sur **Configuration de l’intégration** pour prévisualiser l’intégration, copier le code iframe, masquer la barre d’outils et choisir un thème.
+
+```html
+<iframe
+  src="https://app.teable.ai/share/[share-id]/view?hideToolBar=true&embed=true"
+  width="100%"
+  height="533"
+  style="border: 0">
+</iframe>
+```
+
+| Option d’intégration | Description |
+| --- | --- |
+| Masquer la barre d’outils | Ajoute `hideToolBar=true` au lien et masque le filtre, le tri, la recherche et les autres commandes de la barre d’outils. Cela ne s’applique pas à la Vue Formulaire |
+| Thème | Prend en charge les thèmes système, clair et sombre |
+
+## Collaboration de la Vue
+
+La collaboration de la Vue détermine si les paramètres de la Vue sont partagés avec tous ou conservés comme ajustements personnels. Elle affecte les filtres, les tris, les groupes, les Champs visibles, la hauteur des lignes et les autres paramètres de la Vue. Elle n’affecte pas les données des Enregistrements.
+
+| Mode | Cas d’utilisation | Comportement des paramètres |
+| --- | --- | --- |
+| Mode Collaboration | L’équipe doit utiliser la même configuration de Vue | Les paramètres de la Vue sont synchronisés pour tous ses utilisateurs |
+| Mode Personnel | Vous souhaitez une configuration temporaire de la Vue ou afficher les données à votre manière | Les filtres, les tris, les groupes, les Champs visibles et la hauteur des lignes s’appliquent uniquement à vous |
+
+Cliquez sur `Personnel` dans la barre d’outils pour basculer entre le mode Collaboration et le mode Personnel.
+
+Si la Vue n’est pas verrouillée et que vous êtes autorisé à la mettre à jour, la désactivation du mode Personnel vous offre deux possibilités.
+
+| Option | Résultat |
+| --- | --- |
+| `Quitter et synchroniser` | Synchronise vos paramètres de Vue du mode Personnel pour tous les utilisateurs |
+| `Confirmer la sortie` | Abandonne vos paramètres de Vue du mode Personnel et quitte ce mode |
+
+Si la Vue est verrouillée ou si vous n’êtes pas autorisé à la modifier, vous pouvez tout de même utiliser le mode Personnel pour effectuer vos propres ajustements temporaires, mais vous ne pouvez pas synchroniser ces modifications avec les autres utilisateurs.
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Comment fonctionne Limiter le périmètre pour les Champs Lien dans une Vue partagée ?">
+    Si la Vue partagée comporte des Champs Lien, utilisez **Limiter le périmètre** dans le panneau de partage pour limiter les Enregistrements liés et les Champs que les visiteurs peuvent voir ou sélectionner à partir de ces Champs Lien.
+  </Accordion>
+</AccordionGroup>
+
+## Remarques
+
+- La modification des filtres, des groupes, des tris, des Champs visibles ou de la hauteur des lignes affecte tous les utilisateurs de la Vue actuelle, sauf si vous êtes en mode Personnel.
+- Partager la Vue publie le résultat de la Vue actuelle, et non l’ensemble des autorisations de la Base. Pour une collaboration continue, utilisez les autorisations des membres ou le partage de Base.
+- Dans les deux modes, les modifications apportées aux valeurs des cellules restent synchronisées pour tous.

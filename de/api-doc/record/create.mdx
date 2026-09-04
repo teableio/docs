@@ -1,0 +1,243 @@
+---
+title: "Datensätze erstellen"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+### Pfad
+
+POST /api/table/\{tableId\}/record
+
+### Anfrage
+
+#### Pfadparameter
+
+* tableId (string): Die eindeutige Kennung der Tabelle.
+
+#### Anfragekörper
+
+* **records (erforderlich)**
+  * Beschreibung: Array der zu erstellenden Datensätze
+  * Typ: Array
+  * Beispiel:
+    ```json
+    [
+      {
+        "fields": {
+          "Name": "John Doe",
+          "Age": 30,
+          "Email": "john@example.com"
+        }
+      },
+      {
+        "fields": {
+          "Name": "Jane Smith",
+          "Age": 28,
+          "Email": "jane@example.com"
+        }
+      }
+    ]
+    ```
+  * Hinweis: Jeder Datensatz ist ein Element, das ein `fields`-Objekt enthält. Das `fields`-Objekt enthält Feldnamen und die entsprechenden Werte. Jeder Feldtyp hat eine andere Wertstruktur; Details finden Sie unter [Werttypen für Datensatzfelder](/de/api-doc/record/interface).
+  * Standardwerte: Felder, die in `fields` ausgelassen werden, verwenden den Standardwert der Tabelle, sofern einer konfiguriert ist. Wenn ein erforderliches Feld keinen Standardwert hat oder Sie einem erforderlichen Feld ausdrücklich `null` übergeben, schlägt die Anfrage fehl.
+* **fieldKeyType (optional)**
+  * Beschreibung: Legt den Typ des Feldschlüssels fest
+  * Typ: String
+  * Mögliche Werte:
+    * "name": Feldname als Schlüssel verwenden
+    * "id": Feld-ID als Schlüssel verwenden
+    * "dbFieldName": dbFieldName des Feldes als Schlüssel verwenden
+  * Beispiel: `"name"` oder `"id"` oder `"dbFieldName"`
+  * Hinweis: Wenn nicht angegeben, wird standardmäßig der Feldname als Schlüssel verwendet.
+  * Verwendung:
+    * Bei Einstellung auf "name":
+      ```json
+      {
+        "fields": {
+          "Name": "John Doe",
+          "Age": 30
+        }
+      }
+      ```
+    * Bei Einstellung auf "id":
+      ```json
+      {
+        "fields": {
+          "fldABCDEFGHIJKLMN": "John Doe",
+          "fldOPQRSTUVWXYZ12": 30
+        }
+      }
+      ```
+* **typecast (optional)**
+  * Beschreibung: Gibt an, ob Feldwerttypen automatisch konvertiert werden sollen. Standardmäßig wird eine strikte Validierung erzwungen, bei der Eingabewerte dem Datentyp des aktuellen Felds entsprechen müssen. Wenn aktiviert, versucht das System eine automatische Konvertierung.
+  * Typ: Boolean
+  * Mögliche Werte: true oder false
+  * Beispiel: `true`
+  * Hinweis: Wenn auf true gesetzt, versucht das System, Eingabewerte in den korrekten Feldwerttyp zu konvertieren.
+  * Anwendungsbeispiele:
+    * Verknüpfungsfeld: Für die Verknüpfung kann direkt der Primärschlüsseltext verwendet werden
+      ```json
+      {
+        "User table": "John Smith"
+      }
+      ```
+    * Datumsfeld: Datumszeichenfolgen in nicht standardisiertem Format können verwendet werden
+      ```json
+      {
+        "Date": "2023-05-15"
+      }
+      ```
+    * Benutzerfeld: Der Benutzername kann direkt verwendet werden
+      ```json
+      {
+        "Assigned To": "John Doe"
+      }
+      ```
+* **order (optional)**
+  * Beschreibung: Legt die Position neuer Datensätze in einer bestimmten Ansicht fest
+  * Typ: Object
+  * Eigenschaften:
+    * viewId
+      * Beschreibung: Ansichts-ID [(so erhalten Sie sie)](/de/api-doc/get-id#viewid)
+      * Typ: String
+      * Beispiel: `"viwABCDEFGHIJKLMN"`
+    * anchorId
+      * Beschreibung: Anker-Datensatz-ID [(so erhalten Sie sie)](/de/api-doc/get-id#recordid)
+      * Typ: String
+      * Beispiel: `"rec123456789ABCDE"`
+    * position
+      * Beschreibung: Position relativ zum Anker-Datensatz
+      * Typ: String
+      * Mögliche Werte:
+        * "before": Vor dem Anker-Datensatz
+        * "after": Nach dem Anker-Datensatz
+      * Beispiel: `"after"`
+  * Vollständiges Beispiel:
+    ```json
+    {
+      "viewId": "viwABCDEFGHIJKLMN",
+      "anchorId": "rec123456789ABCDE",
+      "position": "after"
+    }
+    ```
+  * Hinweis: Durch die Verwendung von order können Sie die Position neuer Datensätze in einer bestimmten Ansicht präzise steuern.
+
+### Antwort
+
+#### Erfolgsantwort
+
+* Statuscode: 201 Created
+* Antwortkörper: Gibt die Daten der erstellten Datensätze zurück.
+
+**Beispiel für den Antwortkörper**
+
+```json
+{
+  "records": [
+    {
+      "id": "record789",
+      "fields": {
+        "single line text": "text value 1"
+      }
+    },
+    {
+      "id": "record567",
+      "fields": {
+        "single line text": "text value 2"
+      }
+    }
+  ]
+}
+```
+
+### Fehlerantworten
+
+* Statuscode: 400 Bad Request: Fehler im Format des Anfragekörpers oder erforderliche Felder fehlen.
+* Statuscode: 404 Not Found: Die angegebene tableId existiert nicht.
+
+### Beispielcode
+
+<CodeGroup>
+  ```bash CURL
+  curl -X POST 'https://app.teable.ai/api/table/__tableId__/record' \
+    -H 'Authorization: Bearer __token__' \
+    -H 'Content-Type: application/json' \
+    -d '{
+      "records": [
+        {
+          "fields": {
+            "Name": "John Doe",
+            "Age": 30
+          }
+        }
+      ]
+    }'
+  ```
+
+  ```js JS SDK
+  import { configApi, createRecords } from '@teable/openapi';
+
+  configApi({
+    endpoint: 'https://app.teable.ai',
+    token,
+  });
+
+  const response = await createRecords('__tableId__', {
+    records: [
+      {
+        fields: {
+          Name: 'John Doe',
+          Age: 30
+        }
+      }
+    ]
+  });
+
+  console.log(response.data);
+  ```
+
+  ```ts TypeScript
+  const response = await fetch('https://app.teable.ai/api/table/__tableId__/record', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer __token__',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      records: [
+        {
+          fields: {
+            Name: 'John Doe',
+            Age: 30
+          }
+        }
+      ]
+    })
+  });
+
+  console.log(await response.json());
+  ```
+
+  ```python Python
+  import requests
+
+  response = requests.post(
+      'https://app.teable.ai/api/table/__tableId__/record',
+      headers={
+          'Authorization': 'Bearer __token__',
+          'Content-Type': 'application/json'
+      },
+      json={
+          'records': [
+              {
+                  'fields': {
+                      'Name': 'John Doe',
+                      'Age': 30
+                  }
+              }
+          ]
+      }
+  )
+
+  print(response.json())
+  ```
+</CodeGroup>

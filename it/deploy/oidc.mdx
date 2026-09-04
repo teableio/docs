@@ -1,0 +1,85 @@
+---
+title: "Single Sign-On OIDC"
+description: "Configura l'autenticazione OpenID Connect (OIDC) per la tua istanza self-hosted di Teable."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+Teable supporta il Single Sign-On OIDC, che consente di integrare provider di identità esterni per l'autenticazione degli utenti.
+
+## Variabili d'ambiente
+
+Per abilitare OIDC nella tua istanza self-hosted di Teable, configura queste variabili d'ambiente:
+
+```sh
+# Configurazione OIDC principale
+BACKEND_OIDC_CLIENT_ID=your_client_id
+BACKEND_OIDC_CLIENT_SECRET=your_client_secret
+BACKEND_OIDC_CALLBACK_URL=https://your-teable-domain.com/api/auth/oidc/callback
+
+# Endpoint OAuth (forniti dal tuo IdP)
+BACKEND_OIDC_AUTHORIZATION_URL=https://your-idp.com/authorize
+BACKEND_OIDC_TOKEN_URL=https://your-idp.com/token
+BACKEND_OIDC_USER_INFO_URL=https://your-idp.com/userinfo
+BACKEND_OIDC_ISSUER=https://your-idp.com
+
+# Opzioni aggiuntive
+BACKEND_OIDC_OTHER={"scope":["email","profile"]}
+
+# Abilita OIDC come provider di autenticazione
+SOCIAL_AUTH_PROVIDERS=oidc
+```
+
+## Riferimento per la configurazione
+
+| Variabile | Descrizione |
+|----------|-------------|
+| `BACKEND_OIDC_CLIENT_ID` | ID client fornito dal provider di identità |
+| `BACKEND_OIDC_CLIENT_SECRET` | Segreto client fornito dal provider di identità |
+| `BACKEND_OIDC_CALLBACK_URL` | URL di callback di Teable (deve corrispondere alla configurazione dell'IdP) |
+| `BACKEND_OIDC_AUTHORIZATION_URL` | Endpoint di autorizzazione dell'IdP |
+| `BACKEND_OIDC_TOKEN_URL` | Endpoint del token dell'IdP |
+| `BACKEND_OIDC_USER_INFO_URL` | Endpoint delle informazioni utente dell'IdP |
+| `BACKEND_OIDC_ISSUER` | Identificatore dell'emittente dell'IdP |
+| `BACKEND_OIDC_OTHER` | Opzioni aggiuntive in formato JSON (ad esempio, gli ambiti) |
+| `SOCIAL_AUTH_PROVIDERS` | Includi `oidc` per abilitare il pulsante di accesso OIDC |
+
+## Abilitare più provider di autenticazione
+
+Puoi abilitare più metodi di autenticazione:
+
+```sh
+SOCIAL_AUTH_PROVIDERS=github,google,oidc
+```
+
+In questo modo gli utenti possono accedere tramite GitHub, Google o il tuo provider OIDC.
+
+---
+
+## Requisiti di sicurezza del provider di identità {#identity-provider-security-requirements}
+
+Teable considera attendibile l'indirizzo email restituito dall'IdP e lo usa per collegare automaticamente gli accessi OIDC agli account esistenti con lo stesso indirizzo email. Il provider di identità collegato **deve garantire che gli indirizzi email degli utenti siano verificati**.
+
+<Warning>
+Non collegare provider di identità che consentono agli utenti di impostare indirizzi email arbitrari e non verificati (ad esempio, IdP multi-tenant con registrazione aperta). Con questi provider, un utente malintenzionato può registrare un account usando l'indirizzo email di un utente esistente nell'istanza e assumere il controllo di tale account accedendo tramite OIDC. Il rischio è particolarmente elevato quando nella stessa istanza è abilitato anche l'accesso locale con password.
+</Warning>
+
+Consigli:
+
+- Collega soltanto IdP di livello enterprise sotto il tuo controllo (come Okta, Azure Entra ID, Google Workspace o Keycloak) con la verifica dell'email abilitata.
+- Se l'istanza usa esclusivamente l'SSO, imposta [`PASSWORD_LOGIN_DISABLED=true`](/it/deploy/env) per disabilitare l'accesso locale con password e ridurre ulteriormente la superficie di attacco.
+
+---
+
+## Note importanti
+
+1. **HTTPS obbligatorio**: in produzione, tutti gli URL devono usare HTTPS
+2. **L'URL di callback deve corrispondere**: l'URL di callback in Teable deve corrispondere esattamente a quello configurato nell'IdP
+3. **Riavvio obbligatorio**: dopo aver modificato le variabili d'ambiente, riavvia Teable affinché le modifiche abbiano effetto
+4. **Storage sicuro**: non eseguire mai il commit dei segreti nel controllo di versione; usa variabili d'ambiente o strumenti di gestione dei segreti
+5. **L'IdP deve verificare le email**: consulta i [Requisiti di sicurezza del provider di identità](#identity-provider-security-requirements) sopra
+
+---
+
+## Documentazione correlata
+
+- [Riferimento delle variabili d'ambiente](/it/deploy/env)

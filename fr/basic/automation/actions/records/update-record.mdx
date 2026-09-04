@@ -1,0 +1,103 @@
+---
+title: "Mettre à jour un enregistrement"
+description: "Modifiez les champs d’un enregistrement existant au sein d’un workflow"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Nous vous recommandons vivement d’utiliser Exécuter un script pour créer des automatisations, car cette action peut couvrir tous les comportements, y compris ceux qui devraient autrement être configurés manuellement. Décrivez simplement vos besoins à l’IA dans le chat.
+
+Remarque : si vous ajoutez des actions manuellement, l’IA ne pourra ni les reconnaître ni les modifier par la suite.
+</Tip>
+
+## Créer avec l’IA
+
+Ouvrez le Chat IA dans la barre latérale droite de votre table et décrivez ce que vous souhaitez obtenir.
+
+L’IA s’occupe de tout : elle sélectionne le bon déclencheur, choisit les actions appropriées, associe les champs et configure automatiquement l’ensemble du workflow.
+
+Décrivez une seule fois votre objectif : le workflow est prêt, sans aucune configuration manuelle.
+
+Met à jour un ou plusieurs champs d’un enregistrement existant. Seuls les champs que vous associez sont modifiés ; tous les autres restent inchangés.
+
+## Configuration
+
+| Paramètre | Obligatoire | Description |
+|---|---|---|
+| Table | Oui | Table contenant l’enregistrement à mettre à jour |
+| ID de l’enregistrement | Oui | Enregistrement à mettre à jour. Prend en charge les variables dynamiques et les ID séparés par des virgules pour plusieurs enregistrements |
+| Champs | Oui | Associez chaque champ à sa nouvelle valeur, fixe ou dynamique |
+
+## Configuration de l’action
+
+1. Ajoutez une action **Mettre à jour un enregistrement** à votre workflow.
+2. Choisissez la **Table** contenant l’enregistrement à modifier.
+3. Définissez l’**ID de l’enregistrement**. Cliquez sur **+** pour insérer une variable dynamique :
+   - Depuis un **déclencheur d’enregistrement** (création, mise à jour, clic sur un bouton) : le déclencheur fournit directement l’ID de l’enregistrement.
+   - Depuis une action **Obtenir des enregistrements** : référencez l’ID de l’enregistrement dans les résultats récupérés.
+   - Vous pouvez également saisir un ID d’enregistrement fixe ou utiliser une liste séparée par des virgules afin de mettre à jour plusieurs enregistrements à la fois (par exemple, `rec123,rec456,rec789`).
+4. Associez les champs à modifier. Pour chaque champ :
+   - **Valeur fixe :** saisissez directement la nouvelle valeur.
+   - **Valeur dynamique :** cliquez sur **+** pour insérer une valeur provenant d’une étape précédente.
+5. Laissez les champs que vous ne souhaitez pas modifier sans association : ils conserveront leurs valeurs actuelles.
+6. Enregistrez l’action.
+
+## Obtenir l’ID de l’enregistrement
+
+L’ID de l’enregistrement est l’information essentielle dont cette action a besoin. Voici où le trouver selon votre déclencheur :
+
+| Déclencheur / étape précédente | Comment obtenir l’ID de l’enregistrement |
+|---|---|
+| Lorsqu’un enregistrement est créé | Accessible directement comme variable de résultat du déclencheur |
+| Lorsqu’un enregistrement est mis à jour | Accessible directement comme variable de résultat du déclencheur |
+| Lorsqu’un bouton est cliqué | Accessible directement : il s’agit de la ligne dans laquelle le bouton a été cliqué |
+| Lorsqu’un formulaire est envoyé | Accessible directement : il s’agit de l’enregistrement créé par l’envoi |
+| Action Obtenir des enregistrements | Chaque enregistrement des résultats possède un ID. Dans une Boucle, référencez l’ID de l’élément actuel |
+| Lorsqu’un webhook est reçu | Vous devez inclure l’ID de l’enregistrement dans la charge utile du webhook ou le rechercher avec Obtenir des enregistrements |
+
+<Tip>Vous devez mettre à jour plusieurs enregistrements à la fois ? Transmettez des ID séparés par des virgules ou utilisez [Boucle (traitement par lots)](../logic/loop-run) avec le résultat d’Obtenir des enregistrements pour effectuer une mise à jour en masse.</Tip>
+
+## Mises à jour partielles
+
+Cette action effectue une mise à jour partielle. Cela signifie que :
+
+- **Les champs associés** sont remplacés par les nouvelles valeurs indiquées.
+- **Les champs non associés** restent exactement tels quels.
+
+Vous n’avez pas besoin de renvoyer toutes les valeurs de champ, mais uniquement celles que vous souhaitez modifier. Cette méthode est sûre et efficace.
+
+## Avertissement : boucles de déclenchement
+
+<Warning>Si votre workflow utilise un déclencheur « Lorsqu’un enregistrement est mis à jour » et qu’une étape suivante met à jour les mêmes champs surveillés dans la même table, le workflow se déclenche de nouveau et crée une boucle infinie.</Warning>
+
+Si votre automatisation est déclenchée par **Lorsqu’un enregistrement est mis à jour** et que l’action Mettre à jour un enregistrement écrit dans la **même table**, vous pouvez créer une boucle infinie :
+
+1. L’enregistrement change → le déclencheur s’active → l’automatisation met à jour l’enregistrement → le déclencheur s’active de nouveau → et ainsi de suite.
+
+**Comment éviter les boucles :**
+
+- **Surveillez dans le déclencheur des champs précis** qui sont *différents* de ceux que vous mettez à jour. Par exemple, surveillez « Statut », mais mettez à jour « Date de traitement ».
+- **Ajoutez un filtre** au déclencheur. Par exemple, déclenchez l’automatisation uniquement lorsque `Traité` n’est pas `true`, puis définissez `Traité` sur `true` dans votre action.
+- Envisagez plutôt d’utiliser [Lorsqu’un enregistrement remplit les conditions](/fr/basic/automation/trigger/records/record-matches-conditions), qui ne se déclenche que lors des transitions d’état.
+
+## Quand l’utiliser
+
+- **Marquer une tâche comme terminée après approbation.** Lorsqu’un bouton est cliqué, définissez Statut sur « Approuvée » et renseignez la date d’approbation.
+- **Mettre à jour un champ de statut en fonction d’événements externes.** Lorsqu’un webhook signale un paiement, recherchez l’enregistrement de commande et définissez son statut sur « Payée ».
+- **Écrire un horodatage lorsqu’un élément change.** Lorsqu’un enregistrement est mis à jour, définissez un champ de date « Dernière modification par l’automatisation » sur l’heure actuelle.
+- **Resynchroniser des données depuis un système externe.** Après avoir appelé une API externe, réécrivez les données de réponse (par exemple, un numéro de suivi) dans l’enregistrement.
+- **Mettre à jour des enregistrements par lots.** Associez Obtenir des enregistrements à Boucle afin de mettre plusieurs enregistrements à jour, par exemple pour définir toutes les tâches en retard sur « À escalader ».
+
+## Conseils
+
+- La mise à jour d’un enregistrement peut déclencher d’autres automatisations surveillant la même table. Tenez compte des effets en cascade.
+- Lorsque vous mettez à jour plusieurs enregistrements avec des ID séparés par des virgules, tous reçoivent les mêmes valeurs de champ. Pour appliquer des valeurs différentes à chacun, utilisez plutôt une étape [Boucle](../logic/loop-run).
+- Pour effacer un champ, associez-le à une valeur vide. Le laisser simplement sans association ne l’effacera *pas*.
+- Utilisez l’[Accès inter-base](/fr/basic/automation/actions/records/cross-base) pour mettre à jour les enregistrements d’une table située dans une autre base.
+
+## Pages connexes
+
+- [Créer un enregistrement](/fr/basic/automation/actions/records/create-record) — ajoutez de nouveaux enregistrements au lieu de modifier ceux qui existent
+- [Obtenir des enregistrements](/fr/basic/automation/actions/records/get-records) — récupérez des enregistrements afin de trouver leurs ID avant une mise à jour
+- [Accès inter-base](/fr/basic/automation/actions/records/cross-base) — mettez à jour des enregistrements dans des tables extérieures à la base actuelle
+- [Boucle (traitement par lots)](../logic/loop-run) — mettez à jour plusieurs enregistrements avec des valeurs différentes

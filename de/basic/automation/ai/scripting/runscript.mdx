@@ -1,0 +1,290 @@
+---
+title: "Skript ausführen"
+description: "Führen Sie benutzerdefiniertes JavaScript in einer sicheren Sandbox für Logik aus, die über integrierte Aktionen hinausgeht"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Wir empfehlen dringend, Automatisierungen mit „Skript ausführen“ zu erstellen, da diese Funktion alle Aktionsarten abdecken kann – auch solche, die andernfalls manuell erstellt werden müssten. Beschreiben Sie Ihre Anforderungen einfach im KI-Chat.
+
+Bitte beachten Sie: Wenn Sie Aktionen manuell hinzufügen, kann die KI sie später weder erkennen noch ändern.
+</Tip>
+
+Mit der Aktion „Skript ausführen“ können Sie benutzerdefiniertes JavaScript schreiben, um Logik umzusetzen, die integrierte Aktionen nicht abdecken. Sie können Daten transformieren, externe APIs aufrufen, Berechnungen durchführen, bedingte Verzweigungen implementieren und vieles mehr – alles in einer sicheren Sandbox-Umgebung.
+
+Skripte empfangen Daten aus vorherigen Schritten über das Objekt `input` und übergeben Ergebnisse mit der Funktion `output.set()` an nachfolgende Schritte.
+
+## „Skript ausführen“ oder integrierte Aktionen verwenden
+
+| Szenario | Integrierte Aktionen verwenden | „Skript ausführen“ verwenden |
+|---|---|---|
+| Datensätze erstellen, aktualisieren oder abrufen | Ja | Nur, wenn Sie dafür komplexe Logik benötigen |
+| Eine einfache E-Mail senden | Ja | Nein |
+| Einen einzelnen API-Endpunkt aufrufen | Ja (HTTP-Anfrage) | Nur, wenn Sie die Antwort auf komplexe Weise verarbeiten müssen |
+| Daten zwischen Schritten transformieren | Manchmal | Ja – wenn Sie Bedingungslogik, Schleifen oder Zeichenfolgenbearbeitung benötigen |
+| Komplexe JSON-Strukturen parsen | Nein | Ja |
+| Datumsangaben berechnen, Zahlen formatieren | Nein | Ja |
+| Mehrere API-Aufrufe mit Logik verketten | Mit integrierten Aktionen umständlich | Ja |
+| Geschäftsregeln mit vielen Bedingungen implementieren | Nicht praktikabel | Ja |
+
+Verwenden Sie grundsätzlich integrierte Aktionen, wenn diese Ihre Anforderungen erfüllen. Verwenden Sie „Skript ausführen“, wenn Sie benutzerdefinierte Logik, Datentransformationen oder komplexe API-Interaktionen benötigen.
+
+## Umgebung
+
+| Eigenschaft | Wert |
+|---|---|
+| Sprache | JavaScript (ES6+), `await` auf oberster Ebene wird unterstützt |
+| Laufzeit | Sichere Sandbox mit einer Zeitüberschreitung von 60 Sekunden |
+| Module | CommonJS (`require()`), npm-Pakete werden unterstützt |
+| Netzwerk | HTTP-Anfragen über `fetch()` |
+
+## Einrichtung
+
+1. Fügen Sie Ihrem Workflow die Aktion **Skript ausführen** hinzu.
+2. Der Skripteditor wird mit einer leeren Arbeitsfläche geöffnet. Schreiben Sie hier Ihren JavaScript-Code.
+3. Ihr Skript kann mit dem Objekt `input` Daten aus vorherigen Schritten lesen (siehe unten).
+4. Verwenden Sie `output.set(key, value)`, um Ergebnisse an nachfolgende Schritte zu übergeben.
+5. (Optional) Fügen Sie im Konfigurationsbereich npm-Abhängigkeiten hinzu, wenn Ihr Skript externe Bibliotheken benötigt.
+6. Klicken Sie auf **Testen**, um das Skript mit echten Daten aus der letzten Ausführung des Auslösers zu starten.
+7. Prüfen Sie Testausgabe und Konsolenprotokolle, um die korrekte Funktion Ihres Skripts zu bestätigen.
+8. Speichern Sie die Aktion.
+
+## Eingabedaten lesen
+
+Das Objekt `input` enthält Daten aus allen vorherigen Schritten des Workflows. Jeder Schritt wird anhand seiner Aktions-ID identifiziert.
+
+### Eingabestruktur
+
+```javascript
+// input ist ein Objekt, dessen Schlüssel Aktions-IDs sind
+// Jeder Schlüssel enthält die Ausgabe des jeweiligen Schritts
+
+const actionIds = Object.keys(input);
+// actionIds könnte so aussehen: ["triggerStep1", "actionStep2", "actionStep3"]
+```
+
+### Auslöserdaten abrufen (Datensatzfelder)
+
+```javascript
+const actionIds = Object.keys(input);
+const triggerData = input[actionIds[0]]; // Der erste Eintrag ist normalerweise der Auslöser
+
+// Für datensatzbasierte Auslöser (erstellt, aktualisiert, Schaltfläche angeklickt, Formular übermittelt):
+const recordId = triggerData.record.id;
+const fields = triggerData.record.fields;
+
+// Über die Feld-ID auf bestimmte Felder zugreifen
+const customerName = fields.fldXXXXXXX;  // Durch die tatsächliche Feld-ID ersetzen
+const orderAmount = fields.fldYYYYYYY;
+```
+
+### Daten aus einem Schritt „Datensätze abrufen“ erhalten
+
+```javascript
+const actionIds = Object.keys(input);
+const getRecordsData = input[actionIds[1]]; // Zum Beispiel der zweite Schritt
+
+const records = getRecordsData.records;
+records.forEach(record => {
+  console.log(record.id, record.fields.fldName);
+});
+```
+
+### Daten aus den Ausgaben anderer Aktionen abrufen
+
+```javascript
+const actionIds = Object.keys(input);
+const previousOutput = input[actionIds[2]]; // Ausgabe des dritten Schritts
+// Die Struktur hängt von der Ausgabe dieser Aktion ab
+```
+
+<Tip>Verwenden Sie beim Testen `console.log(JSON.stringify(input, null, 2))`, um die genaue Struktur Ihrer Eingabedaten zu sehen. So erkennen Sie am schnellsten, welche Daten verfügbar sind.</Tip>
+
+## Ausgabe schreiben
+
+Verwenden Sie `output.set(key, value)`, um Daten für nachfolgende Schritte verfügbar zu machen. Sie können mehrere Schlüssel festlegen.
+
+```javascript
+// Einfache Werte festlegen
+output.set("status", "success");
+output.set("count", 42);
+
+// Objekte festlegen
+output.set("result", {
+  name: "Alice",
+  score: 95,
+  passed: true
+});
+
+// Arrays festlegen
+output.set("items", [
+  { id: 1, name: "Element A" },
+  { id: 2, name: "Element B" }
+]);
+```
+
+Jeder von Ihnen festgelegte Schlüssel wird zu einer separaten Variable, auf die nachfolgende Schritte über die Variablenauswahl **+** verweisen können. Wenn Sie beispielsweise `output.set("status", "success")` aufrufen, kann der nächste Schritt aus der Ausgabe dieses Skripts auf `status` verweisen.
+
+## Debugging mit console.log
+
+Verwenden Sie während der Entwicklung `console.log()`, um Daten zu prüfen und den Ausführungsablauf nachzuverfolgen. Wenn Sie auf **Testen** klicken, erscheint die Protokollausgabe im Testbereich.
+
+```javascript
+const actionIds = Object.keys(input);
+console.log("Aktions-IDs:", actionIds);
+
+const data = input[actionIds[0]];
+console.log("Auslöserdaten:", JSON.stringify(data, null, 2));
+
+// Zwischenergebnisse protokollieren
+const processed = data.record.fields.fldName.toUpperCase();
+console.log("Verarbeiteter Name:", processed);
+
+output.set("name", processed);
+```
+
+Konsolenprotokolle sind nur während Tests sichtbar – sie erscheinen nicht im Ausführungsverlauf der Produktionsumgebung. Nutzen Sie sie beim Erstellen Ihres Skripts ausgiebig.
+
+## Verwaltung von npm-Paketen
+
+Sie können npm-Pakete in Ihren Skripten verwenden. Deklarieren Sie Abhängigkeiten im Konfigurationsbereich:
+
+```json
+[
+  { "name": "lodash", "version": "4.17.21" },
+  { "name": "dayjs", "version": "1.11.10" }
+]
+```
+
+Verwenden Sie sie anschließend mit `require()` in Ihrem Skript:
+
+```javascript
+const _ = require("lodash");
+const dayjs = require("dayjs");
+
+const actionIds = Object.keys(input);
+const records = input[actionIds[0]].records;
+
+const grouped = _.groupBy(records, r => r.fields.fldCategory);
+const today = dayjs().format("YYYY-MM-DD");
+
+output.set("grouped", grouped);
+output.set("date", today);
+```
+
+<Tip>Bevorzugen Sie nach Möglichkeit integrierte JavaScript-Funktionen gegenüber npm-Paketen. Modernes JavaScript bietet bereits viele Hilfsmittel – `Array.map()`, `Array.filter()`, `Object.entries()`, Template-Literale, Destrukturierung usw. Fügen Sie npm-Pakete nur hinzu, wenn sie einen deutlichen Mehrwert bieten.</Tip>
+
+## Integrierte Variablen
+
+| Variable | Beschreibung |
+|---|---|
+| `process.env.AUTOMATION_TOKEN` | Ein Bearer-Token zum Aufrufen der Teable-API. Auf die Berechtigungen der aktuellen Automatisierung beschränkt |
+| `process.env.PUBLIC_ORIGIN` | Die Basis-URL Ihrer Teable-Instanz (z. B. `https://app.teable.io`) |
+
+### Sicherheit: Gültigkeitsbereich von AUTOMATION_TOKEN
+
+Das `AUTOMATION_TOKEN` wird für jede Automatisierungsausführung automatisch generiert. Es besitzt dieselben Berechtigungen wie der Ersteller der Automatisierung und ist auf die aktuelle Ausführung beschränkt. Wichtige Punkte:
+
+- Es kann auf jede Tabelle zugreifen, auf die der Ersteller der Automatisierung Zugriff hat.
+- Es ist nur für die Dauer der Skriptausführung gültig (Zeitüberschreitung nach 60 Sekunden).
+- Geben Sie dieses Token nicht an externe Systeme weiter – es ist für Aufrufe der Teable-API aus Ihrem Skript bestimmt.
+
+### Teable-API aufrufen
+
+```javascript
+const base = process.env.PUBLIC_ORIGIN + "/api";
+const token = process.env.AUTOMATION_TOKEN;
+
+// Beispiel: Datensätze aus einer Tabelle abrufen
+const res = await fetch(`${base}/table/tblXXXXXXX/record?take=10`, {
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json"
+  }
+});
+
+const data = await res.json();
+console.log("Abgerufene Datensätze:", data);
+output.set("records", data);
+```
+
+### KI aus einem Skript aufrufen
+
+`POST /api/automation/runtime/ai` sendet einen Prompt an das KI-Modell Ihrer Base. Die Base stammt aus dem Kontext der Automatisierung, daher ist keine Base-ID erforderlich. Der Text erwartet `prompt` sowie optional `attachments`, `modelKey`, `temperature` und `outputType`; die Antwort lautet `{ "message": ... }`.
+
+Anhänge sind Elemente des Formats `{ url, mimetype, name }`: bis zu 10 pro Aufruf, jeweils unter 20 MB und mit 30 Sekunden Zeit zum Herunterladen. Unterstützt werden Bilder, PDFs und Office-Dokumente. Das Standard-Chatmodell kann Bilder und ähnliche Anhänge möglicherweise nicht lesen; übergeben Sie daher `modelKey`, wenn Sie Dateien senden. Jeder Aufruf verbraucht Guthaben.
+
+## Fehlerbehandlung
+
+Schließen Sie riskante Vorgänge immer in try/catch-Blöcke ein, damit Ihr Workflow Fehler kontrolliert behandeln kann:
+
+```javascript
+try {
+  const res = await fetch("https://api.example.com/data");
+  
+  if (!res.ok) {
+    throw new Error(`API gab ${res.status} zurück: ${res.statusText}`);
+  }
+  
+  const data = await res.json();
+  output.set("success", true);
+  output.set("data", data);
+} catch (error) {
+  console.log("Fehler:", error.message);
+  output.set("success", false);
+  output.set("error", error.message);
+}
+```
+
+Ohne Fehlerbehandlung bringt ein fehlgeschlagener Abruf oder ein unerwartetes Datenformat das Skript zum Absturz, und nachfolgende Schritte erhalten keine Ausgabe.
+
+## Vollständiges Beispiel: Support-Tickets verarbeiten und weiterleiten
+
+```javascript
+const actionIds = Object.keys(input);
+const record = input[actionIds[0]].record;
+
+const subject = record.fields.fldSubject || "";
+const body = record.fields.fldBody || "";
+const email = record.fields.fldEmail || "";
+
+// Einfache schlüsselwortbasierte Weiterleitung
+const text = (subject + " " + body).toLowerCase();
+
+let category = "Allgemein";
+let priority = "Normal";
+
+if (text.includes("abrechnung") || text.includes("rechnung") || text.includes("zahlung")) {
+  category = "Abrechnung";
+} else if (text.includes("fehler") || text.includes("problem") || text.includes("absturz")) {
+  category = "Technik";
+  priority = "Hoch";
+} else if (text.includes("kündigen") || text.includes("erstattung")) {
+  category = "Konto";
+  priority = "Hoch";
+}
+
+// Auf VIP-Kunden prüfen
+const vipDomains = ["bigcorp.com", "enterprise.io"];
+const domain = email.split("@")[1] || "";
+if (vipDomains.includes(domain)) {
+  priority = "Dringend";
+}
+
+output.set("category", category);
+output.set("priority", priority);
+output.set("isVIP", vipDomains.includes(domain));
+```
+
+## Tipps
+
+- **Beginnen Sie mit console.log.** Protokollieren Sie beim Erstellen eines neuen Skripts zunächst das gesamte Objekt `input`, um dessen Struktur zu verstehen.
+- **Beschränken Sie Skripte auf eine klare Aufgabe.** Erledigen Sie eine Aufgabe gut, statt mehrere Aufgaben in ein Skript zu packen. Verketten Sie bei Bedarf mehrere Aktionen „Skript ausführen“.
+- **Beachten Sie die Zeitüberschreitung von 60 Sekunden.** Langwierige Vorgänge – umfangreiche Datenverarbeitung oder viele sequenzielle API-Aufrufe – können die Zeitüberschreitung erreichen. Teilen Sie große Aufgaben in kleinere Abschnitte auf.
+- **Testen Sie mit echten Daten.** Der Testbereich verwendet tatsächliche Daten aus der letzten Ausführung des Auslösers und liefert dadurch realistische Ergebnisse.
+- **Behandeln Sie fehlende Daten.** Verwenden Sie Standardwerte (Operator `||`) für Felder, die leer oder nicht definiert sein können.
+
+## Verwandte Themen
+
+- [Mit KI generieren](/de/basic/automation/actions/ai/ai-generate) – für promptbasierte KI-Aufgaben, die keinen benutzerdefinierten Code benötigen
+- [HTTP-Anfrage](/de/basic/automation/actions/logic/http-request) – für einfache API-Aufrufe, die kein Skript benötigen

@@ -1,0 +1,98 @@
+---
+title: "Zamanlanan saatte"
+description: "Bir iş akışını yinelenen veya tek seferlik bir zamanlamayla çalıştırın"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Lütfen unutmayın: tüm tetikleyici yapılandırması AI Chat'te yapılabilir. İş akışının ne yapmasını istediğinizi AI'a söyleyin; gerisini o halleder.</Tip>
+
+Bu tetikleyici tanımladığınız zamanlamaya göre çalışır: birkaç dakikada bir, ayda bir veya yalnızca bir kez.
+
+## AI ile oluşturma
+
+Tablonuzun sağ kenar çubuğunda AI Chat'i açın ve ne istediğinizi açıklayın.
+
+AI her şeyi halleder: doğru tetikleyiciyi seçer, ilgili alanları eşler ve tüm eylemleri otomatik olarak yapılandırır.
+
+Hedefinizi bir kez açıklayın; iş akışınız elle yapılandırma gerektirmeden hazır olur.
+
+**Örnek:** *"Her pazartesi saat 09.00'da vadesi geçmiş görevlerin listesini bana e-postayla gönder."*
+
+## Yapılandırma
+
+| Ayar | Zorunlu | Açıklama |
+|---|---|---|
+| Başlangıç Zamanı | Evet | Zamanlamanın başlayacağı zaman |
+| Bitiş Zamanı | Hayır | Zamanlamanın duracağı zaman (süresiz çalışması için boş bırakın) |
+| Saat Dilimi | Evet | Varsayılan olarak geçerli saat diliminiz kullanılır. Tüm saatler bu dilime göre yorumlanır |
+| Sıklık | Evet | Tetikleyicinin çalışma sıklığı; aşağıdaki seçeneklere bakın |
+
+## Sıklık seçenekleri
+
+| Sıklık | Aralık | Ek Ayarlar |
+|---|---|---|
+| Dakika | Her 10–60 dakikada bir | — |
+| Saat | Her 1–24 saatte bir | — |
+| Gün | Her 1–31 günde bir | Tetikleme saati (saat + dakika) |
+| Hafta | Her 1–52 haftada bir | Haftanın günleri (Pzt–Paz) + tetikleme saati |
+| Ay | Her 1–12 ayda bir | Ayın günleri + tetikleme saati |
+| Tek sefer | — | Belirtilen zamanda bir kez çalışır, ardından otomatik olarak devre dışı kalır |
+
+Ayın 28, 30 veya 31 gün sürmesinden bağımsız olarak son gününü hedeflemek için ayın günü olarak **-1** kullanın.
+
+## Nasıl yapılandırılır?
+
+1. Otomasyonunuzu açıp yeni bir tetikleyici ekleyin.
+2. **Zamanlanan saatte** seçeneğini belirleyin.
+3. **Saat Dilimini** ayarlayın. Ekibiniz birden fazla saat diliminde çalışıyorsa bu özellikle önemlidir; zamanlama burada seçtiğiniz dilimde çalışır.
+4. Bir **Sıklık** seçin. Örneğin her pazartesi saat 09.00'da çalıştırmak için:
+   - Sıklığı **Hafta** olarak ayarlayın.
+   - Aralığı **1** (her 1 haftada bir) olarak ayarlayın.
+   - Haftanın günü seçicisinde **Pazartesi**'yi işaretleyin.
+   - Tetikleme saatini **09.00** olarak ayarlayın.
+5. Bir **Başlangıç Zamanı** (zamanlamanın etkinleşeceği zaman) belirleyin.
+6. (İsteğe bağlı) Zamanlamanın sona ermesini istiyorsanız bir **Bitiş Zamanı** belirleyin.
+7. Otomasyonu kaydedip etkinleştirin.
+8. Kayıt verisi olmadığından ilk eyleminiz genellikle ihtiyaç duyduğunuz verileri yükleyen bir **Kayıtları Getir** adımı olacaktır.
+
+## Somut örnek: haftalık pazartesi sabahı raporu
+
+Hedef: Her pazartesi saat 09.00'da bu hafta tamamlanması gereken tüm görevleri alıp özet e-postası gönderin.
+
+1. **Tetikleyici:** Zamanlanan saatte — Hafta, her 1 haftada bir, Pazartesi, 09.00, kendi saat diliminiz.
+2. **1. Eylem:** Kayıtları Getir — Görevler tablosundan; filtre: Son Tarih bu hafta aralığındadır.
+3. **2. Eylem:** E-posta Gönder — ekibinize; alınan görevler gövdede listelenir.
+
+## Tek seferlik zamanlamalar
+
+**Tek sefer** sıklığını seçtiğinizde otomasyon belirtilen tarih ve saatte bir kez çalışır, ardından kendisini otomatik olarak devre dışı bırakır. Şu durumlarda kullanışlıdır:
+
+- Belirli bir tarihte takip için hatırlatma.
+- Bir kez gerçekleşmesi gereken gecikmeli bir eylem (ör. gelecekteki bir tarihte lansman duyurusu gönderme).
+- Yalnızca bir kez tetiklenen, süre sınırlı bir kampanya.
+
+Tek seferlik tetikleyici çalıştıktan sonra otomasyon devre dışı olarak işaretlenir. Gerekirse yeni bir zaman belirleyerek yeniden etkinleştirebilirsiniz.
+
+## Ne zaman kullanılır?
+
+- **Günlük özet raporu oluşturun.** Her gün saat 08.00'de çalıştırın, dün güncellenen tüm kayıtları alın ve özeti e-postayla gönderin.
+- **Her pazartesi yinelenen görevler oluşturun.** Haftalık çalıştırın ve yeni hafta için görev tablonuzda kayıtlar oluşturun.
+- **Aylık fatura hatırlatmaları gönderin.** Her ayın ilk günü çalıştırın, ödenmemiş faturaları bulun ve hatırlatma e-postaları gönderin.
+- **Eski kayıtları temizleyin.** Her gün çalıştırın, "Taslak" durumunda olan ve 90 günden eski kayıtları bulup arşivleyin veya silin.
+- **Verileri zamanlamayla eşitleyin.** Güncellenen kayıtları harici bir API'ye aktarmak için her saat çalıştırın.
+
+<Warning>Zamanlama tetikleyicileri herhangi bir kayda bağlı değildir; bu nedenle sonraki adımlarda kullanılabilecek kayıt verisi yoktur. Kayıtları işlemeniz gerekiyorsa ilk adım olarak bir Kayıtları Getir eylemi ekleyin ve gereken kayıtları seçmek için filtreleri kullanın.</Warning>
+
+## İpuçları
+
+- Zamanlama tetikleyicilerinde "geçerli kayıt" olmadığından kayıt tabanlı tetikleyicilerde olduğu gibi eylemlerde tetikleyici verilerine başvuramazsınız. Veriye ihtiyacınız varsa her zaman bir **Kayıtları Getir** eylemiyle başlayın.
+- Özellikle farklı bölgelerde çalışan ekiplerde saat dilimlerine dikkat edin. Tetikleyicinin ne zaman çalışacağını görüntüleyenin yerel saati değil, tetikleyicideki saat dilimi ayarı belirler.
+- Yüksek sıklıklı zamanlamalarda (birkaç dakikada bir) çalıştırmaların çakışmasını önlemek için iş akışınızı hafif tutun.
+- Otomasyonunuz zamana duyarlıysa (ör. günlük toplantıdan önce çalışması gerekiyorsa) işlem süresine olanak tanımak için birkaç dakika erkene ayarlayın.
+- Ayın günü için **-1** kullanma yöntemi ay sonu raporları veya işlemleri için kullanışlıdır. -1, "ayın son günü" anlamına gelir; dolayısıyla 31 Ocak, 28 (veya 29) Şubat, 31 Mart vb. tarihlerde doğru şekilde çalışır.
+
+## İlgili konular
+
+- [Kayıtları getir eylemi](/tr/basic/automation/actions/records/get-records) — genellikle zamanlama tetikleyicisinden sonraki ilk adımdır
+- [E-posta gönder eylemi](/tr/basic/automation/actions/communication/send-email-overview) — dönemsel bildirimler için zamanlamalarla yaygın olarak kullanılır
+- [Döngü (toplu) eylemi](/tr/basic/automation/actions/logic/loop-run) — Kayıtları Getir'in döndürdüğü kayıt dizisini işlemek için kullanışlıdır

@@ -1,0 +1,78 @@
+---
+title: "Crea Record"
+description: "Crea un nuovo Record in qualsiasi Tabella come parte di un workflow"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Consigliamo vivamente di usare Esegui script per creare automazioni, perché può coprire il comportamento di tutte le azioni, comprese quelle che altrimenti dovrebbero essere create manualmente. Descrivi semplicemente le tue esigenze all'IA nella chat.
+
+Nota: se aggiungi azioni manualmente, in seguito l'IA non sarà in grado di riconoscerle o modificarle.
+</Tip>
+
+## Crea con l'IA
+
+Apri AI Chat nella barra laterale destra della Tabella e descrivi ciò che desideri.
+
+L'IA si occupa di tutto: sceglie il trigger corretto, seleziona le azioni appropriate, associa i Campi e configura automaticamente l'intero workflow.
+
+Descrivi una sola volta l'obiettivo e il workflow sarà pronto, senza alcuna configurazione manuale.
+
+Crea un nuovo Record in una Tabella specifica. Puoi associare i dati dei passaggi precedenti ai Campi del nuovo Record. Dopo la creazione, l'ID del nuovo Record e tutti i valori dei Campi sono disponibili per i passaggi successivi.
+
+## Configurazione
+
+| Impostazione | Obbligatoria | Descrizione |
+|---|---|---|
+| Tabella | Sì | La Tabella di destinazione in cui verrà creato il nuovo Record |
+| Campi | Sì | Associa ogni Campo a un valore: testo o numeri statici oppure variabili dinamiche provenienti dai passaggi precedenti |
+
+## Come configurarla
+
+1. Aggiungi un'azione **Crea Record** al workflow.
+2. Scegli la **Tabella** in cui vuoi creare il Record. Per impostazione predefinita è una Tabella della stessa Base, ma puoi usare l'[Accesso tra Base](/it/basic/automation/actions/records/cross-base) per scegliere una Tabella di un'altra Base.
+3. L'area di associazione dei Campi mostra tutti i Campi della Tabella di destinazione. Per ogni Campo da compilare:
+   - **Valore statico:** digita un valore direttamente nel Campo, ad esempio "Nuovo" in un Campo Stato.
+   - **Valore dinamico:** fai clic sul pulsante **+** accanto al Campo per inserire una variabile proveniente da un passaggio precedente. Ad esempio, inserisci il Campo "Nome" del trigger per copiare il nome dal Record che ha attivato il workflow.
+4. Puoi combinare valori statici e dinamici. Ad esempio, imposta Stato sul valore statico "In sospeso" e Nome cliente su un valore dinamico del trigger.
+5. Salva l'azione.
+
+<Tip>Puoi combinare più variabili in un unico Campo di testo. Ad esempio, inserisci `Nome cliente del Record del trigger - ID ordine del Record del trigger` in un Campo "Riepilogo".</Tip>
+
+## Cosa accade con i Campi obbligatori
+
+Se un Campo obbligatorio ha un valore predefinito e non lo associ, Teable inserisce tale valore alla creazione del Record. Se un Campo obbligatorio non ha un valore predefinito oppure un valore associato risulta vuoto durante l'esecuzione, l'azione non riesce.
+
+Per verificare quali Campi sono obbligatori, consulta la configurazione dei Campi nella Tabella di destinazione. In genere i Campi obbligatori sono contrassegnati da un asterisco o dall'etichetta "Obbligatorio".
+
+## Output: uso del Record creato nei passaggi successivi
+
+Dopo l'esecuzione dell'azione Crea Record, il Record appena creato è disponibile per tutti i passaggi successivi. Ciò include:
+
+- **ID Record** — l'identificatore univoco assegnato al nuovo Record.
+- **Tutti i valori dei Campi** — ogni valore dei Campi del Record creato, inclusi i valori predefiniti o calcolati automaticamente.
+
+È utile quando devi concatenare più azioni. Ad esempio, puoi creare un Record e inviare subito un'email contenente un link a tale Record oppure aggiornare un Record collegato con il nuovo ID Record.
+
+## Quando utilizzarla
+
+- **Registrare gli invii di moduli in una Tabella separata.** Quando viene inviato un modulo, crea un Record in una Tabella "Registro invii" contenente i dati inviati e una marca temporale.
+- **Creare automaticamente attività di follow-up.** Quando viene creato un progetto, genera un insieme di attività predefinite in una Tabella Attività correlata.
+- **Duplicare Record tra Tabelle.** Copia i dati da una Tabella a un'altra, ad esempio spostando un lead da "Potenziali clienti" a "Clienti attivi" quando si conclude un accordo.
+- **Generare Record da dati esterni.** Quando un webhook trasmette i dati di un ordine, crea un nuovo Record nella Tabella Ordini con i relativi dettagli.
+- **Creare voci nel registro di controllo.** Dopo l'esecuzione di un'automazione, crea un Record in una Tabella Registro di controllo che documenti quanto accaduto.
+
+## Suggerimenti
+
+- Se crei Record nella stessa Tabella che usa un trigger **Quando viene creato un Record**, fai attenzione ai cicli infiniti. Usa un filtro nel trigger per escludere i Record creati dall'automazione, ad esempio verificando che il Campo "Origine" sia impostato su "Automazione".
+- Puoi creare Record in blocco combinando questa azione con [Ciclo (batch)](../logic/loop-run). Ad esempio, ottieni 50 Record da una Tabella e creane 50 corrispondenti in un'altra.
+- I Campi che non associ useranno i valori predefiniti della Tabella, se presenti, oppure rimarranno vuoti.
+- I Campi dei Record collegati richiedono ID Record, non valori visualizzati. Se devi creare un collegamento a un Record, assicurati di passare l'ID Record e non il nome del Record.
+- Usa [Accesso tra Base](/it/basic/automation/actions/records/cross-base) quando la Tabella di destinazione si trova in una Base diversa da quella dell'automazione.
+
+## Contenuti correlati
+
+- [Aggiorna Record](/it/basic/automation/actions/records/update-record) — modifica Record esistenti invece di crearne di nuovi
+- [Ottieni Record](/it/basic/automation/actions/records/get-records) — recupera Record da usare come input per crearne di nuovi
+- [Accesso tra Base](/it/basic/automation/actions/records/cross-base) — crea Record in Tabelle esterne alla Base corrente
+- [Ciclo (batch)](../logic/loop-run) — crea più Record in un singolo passaggio di azione

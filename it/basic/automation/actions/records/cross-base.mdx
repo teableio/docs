@@ -1,0 +1,83 @@
+---
+title: "Accesso tra Base"
+description: "Leggi e scrivi dati tra Base diverse in un unico workflow"
+---
+
+{/* mintlify-resync: 2026-05-26 */}
+<Tip>
+Consigliamo vivamente di usare Esegui script per creare automazioni, perché può coprire il comportamento di tutte le azioni, comprese quelle che altrimenti dovrebbero essere create manualmente. Descrivi semplicemente le tue esigenze all'IA nella chat.
+
+Nota: se aggiungi azioni manualmente, in seguito l'IA non sarà in grado di riconoscerle o modificarle.
+</Tip>
+
+Per impostazione predefinita, le azioni di automazione operano sulle Tabelle appartenenti alla stessa Base del workflow. Accesso tra Base consente a un workflow di leggere e scrivere in un'altra Base. Usalo per workflow che coinvolgono reparti, progetti o set di dati diversi.
+
+Ad esempio, un'automazione della Base Vendite può creare un Record di evasione in una Base Operazioni separata, oppure un workflow di reportistica può raccogliere dati da più Base di progetto in un unico riepilogo.
+
+## Azioni supportate
+
+| Azione | Supporto tra Base |
+|---|---|
+| Crea Record | Sì |
+| Aggiorna Record | Sì |
+| Ottieni Record | Sì |
+
+Queste sono le tre azioni dedicate ai Record. Le altre azioni, come Invia email e Richiesta HTTP, non richiedono l'accesso tra Base perché non hanno come destinazione una Tabella specifica.
+
+## Come configurarlo
+
+1. Apri nel workflow un'azione supportata: Crea Record, Aggiorna Record oppure Ottieni Record.
+2. Accanto al selettore **Tabella**, fai clic su **Accesso tra Base**.
+3. Si apre un pannello che mostra tutti gli Spazi e le Base accessibili dal tuo account. Seleziona lo **Spazio** e quindi la **Base** di destinazione.
+4. Scegli la **Tabella** all'interno della Base. Se l'azione lo supporta, puoi anche selezionare una **Vista** specifica.
+5. Associa i Campi e configura l'azione come di consueto. L'elenco dei Campi riflette ora quelli della Tabella di destinazione, non quelli della Base corrente.
+6. Salva l'azione.
+
+## Esempio concreto: dalle Vendite all'Evasione
+
+Immagina di avere due Base:
+
+- **Base Vendite** — contiene una Tabella "Trattative" in cui il team commerciale tiene traccia degli accordi conclusi.
+- **Base Operazioni** — contiene una Tabella "Evasione" in cui il team operativo gestisce le spedizioni.
+
+Vuoi creare automaticamente un Record di evasione quando si conclude una trattativa:
+
+1. **Trigger:** nella Base Vendite, usa "Quando un Record soddisfa le condizioni" con il filtro: `Fase` è uguale a `Conclusa con successo`.
+2. **Azione:** Crea Record con Accesso tra Base indirizzato alla Tabella Evasione della Base Operazioni.
+3. **Associazione dei Campi:** associa Nome cliente, Prodotto, Quantità e Indirizzo di spedizione della trattativa ai Campi corrispondenti nella Tabella Evasione.
+
+Ora, ogni volta che una trattativa viene conclusa, viene creato automaticamente un Record di evasione nella Base Operazioni, senza alcun passaggio manuale.
+
+## Modello delle autorizzazioni
+
+Quando crei, modifichi o applichi gli aggiornamenti di un workflow, Teable verifica ogni azione tra Base rispetto alle autorizzazioni dell'utente che sta apportando la modifica:
+
+| Azione | Autorizzazione richiesta nella Base di destinazione |
+|---|---|
+| Ottieni Record | Lettura di Campi e Record |
+| Crea Record | Lettura di Campi e Record e creazione di Record |
+| Aggiorna Record | Lettura di Campi e Record e aggiornamento di Record |
+
+Le esecuzioni del workflow attivo usano l'identità di runtime dell'automazione Teable per la Base di destinazione. I Record creati o aggiornati da un'azione tra Base vengono indicati come **Robot di automazione** nei metadati dei Record e nelle schermate di controllo.
+
+### Cosa accade quando cambia l'accesso
+
+Se l'utente che apporta la modifica non dispone dell'autorizzazione richiesta nella Base di destinazione, Teable gli impedisce di aggiungere o modificare azioni tra Base indirizzate a quella Base. Se una bozza contiene già azioni tra Base alle quali l'utente non può accedere, Teable impedisce anche di applicare la bozza. La versione già attiva continua a essere eseguita; Teable controllerà nuovamente le autorizzazioni quando qualcuno modificherà o applicherà il workflow.
+
+Per risolvere un errore di autorizzazione durante la modifica o l'applicazione di un workflow:
+
+1. Chiedi a una persona con accesso a entrambe le Base di modificare e applicare il workflow.
+2. In alternativa, ripristina le autorizzazioni necessarie nella Base di destinazione, quindi applica nuovamente il workflow.
+
+## Suggerimenti
+
+- L'accesso tra Base può raggiungere Base in **Spazi** diversi. L'utente che configura o applica il workflow deve disporre delle autorizzazioni necessarie nella Base di destinazione.
+- Quando associ Campi tra Base diverse, i tipi di Campo devono essere compatibili. Ad esempio, non puoi associare un Campo di testo a un Campo allegato.
+- Se ristrutturi una Base di destinazione, rinominando Tabelle o eliminando Campi, le azioni tra Base che fanno riferimento a tali Tabelle e Campi smetteranno di funzionare. Aggiorna il workflow dopo le modifiche strutturali.
+- Per i workflow complessi tra Base, valuta la possibilità di centralizzare le automazioni in una Base "hub" per mantenerle organizzate.
+
+## Contenuti correlati
+
+- [Crea Record](/it/basic/automation/actions/records/create-record) — crea Record nella Base corrente o in un'altra Base
+- [Aggiorna Record](/it/basic/automation/actions/records/update-record) — aggiorna Record nella Base corrente o in un'altra Base
+- [Ottieni Record](/it/basic/automation/actions/records/get-records) — recupera Record dalla Base corrente o da un'altra Base

@@ -1,0 +1,109 @@
+---
+title: "Praxisleitfaden für Schaltflächen"
+description: "Verwenden Sie ein Schaltflächenfeld, um Automatisierungen auszulösen und feste Arbeitsabläufe wie die Lead-Konvertierung oder Aufgabenerinnerungen mit einem Klick auszuführen."
+---
+
+Schaltflächenfelder eignen sich für feste, wiederkehrende Arbeitsabläufe, die ausgeführt werden sollen, nachdem eine Person die Aktion bestätigt hat. Typische Beispiele sind die Umwandlung eines Leads in eine Verkaufschance, die Planung freigegebener Inhalte, das Senden von Aufgabenerinnerungen oder die Synchronisierung des aktuellen Datensatzes mit einem externen System.
+
+Dieser Leitfaden verwendet die Lead-Konvertierung als Hauptbeispiel und zeigt, wie Sie eine Schaltfläche mit einer Automatisierung verbinden.
+
+## Anwendungsfälle
+
+| Szenario | Funktion der Schaltfläche |
+| --- | --- |
+| Lead-Konvertierung | Einen Datensatz in der Tabelle „Verkaufschancen“ erstellen und den ursprünglichen Lead als konvertiert markieren |
+| Inhaltsplanung | Einen Veröffentlichungsplan erstellen und das für die Veröffentlichung zuständige Teammitglied benachrichtigen |
+| Aufgabenerinnerungen | Der zuständigen Person eine E-Mail oder Teamnachricht senden |
+| Synchronisierung mit externen Systemen | Den aktuellen Datensatz über eine HTTP-Anfrage an ein anderes System senden |
+
+## Beispiel: Einen Lead in eine Verkaufschance umwandeln
+
+In einer CRM-Tabelle klickt ein Vertriebsmitarbeiter auf die Schaltfläche „In Verkaufschance umwandeln“, nachdem er entschieden hat, dass ein Lead bereit ist. Die Automatisierung führt zwei Aktionen aus:
+
+- In der Tabelle „Verkaufschancen“ einen neuen Datensatz mit wichtigen Informationen wie Unternehmen und Kontakt erstellen.
+- Den Status des ursprünglichen Leads in der Tabelle „Leads“ auf „Konvertiert“ setzen.
+
+### Tabellen vorbereiten
+
+Dieses Beispiel verwendet zwei Tabellen:
+
+| Tabelle | Zweck | Beispielfelder |
+| --- | --- | --- |
+| Tabelle „Leads“ | Speichert nachzuverfolgende Leads. Hier wird das Schaltflächenfeld erstellt | Unternehmensname, Kontakt, zuständige Person, Status |
+| Tabelle „Verkaufschancen“ | Speichert konvertierte Verkaufschancen | Name der Verkaufschance, zugehöriger Kunde, zuständige Person, Quell-Lead |
+
+### Schaltflächenfeld erstellen
+
+Fügen Sie in der Tabelle „Leads“ ein Schaltflächenfeld hinzu:
+
+<Steps>
+  <Step title="Feldtyp auswählen">
+    Erstellen Sie ein Feld und wählen Sie **Schaltfläche** als Feldtyp.
+  </Step>
+  <Step title="Schaltflächentext festlegen">
+    Legen Sie als Schaltflächentext „In Verkaufschance umwandeln“ fest und wählen Sie eine gut erkennbare Farbe.
+  </Step>
+  <Step title="Klickbestätigung aktivieren">
+    Um versehentliche Klicks zu vermeiden, aktivieren Sie **Vor dem Klicken bestätigen** und füllen Sie Dialogtitel, Nachricht und Text der Bestätigungsschaltfläche aus.
+  </Step>
+</Steps>
+
+### Automatisierungsaktionen konfigurieren
+
+Konfigurieren Sie nach dem Erstellen des Schaltflächenfelds die Automatisierung, die beim Klicken auf die Schaltfläche ausgeführt wird.
+
+<Steps>
+  <Step title="Automatisierung erstellen">
+    Klicken Sie in den Einstellungen des Schaltflächenfelds auf **Benutzerdefinierte Automatisierung** und erstellen Sie einen Arbeitsablauf.
+  </Step>
+  <Step title="Datensatz für eine Verkaufschance erstellen">
+    Fügen Sie die Aktion **Datensatz erstellen** hinzu und wählen Sie die Tabelle „Verkaufschancen“ als Zieltabelle.
+  </Step>
+  <Step title="Felder zuordnen">
+    Schreiben Sie wichtige Lead-Felder in die neue Verkaufschance. Beispiel:
+    - `Name der Verkaufschance` = `Unternehmensname` aus dem auslösenden Datensatz
+    - `Zugehöriger Kunde` = `Kontakt` aus dem auslösenden Datensatz
+    - `Zuständige Person` = `Zuständige Person` aus dem auslösenden Datensatz
+  </Step>
+  <Step title="Status des ursprünglichen Leads aktualisieren">
+    Fügen Sie die Aktion **Datensatz aktualisieren** hinzu. Wählen Sie die Tabelle „Leads“ als Zieltabelle, verwenden Sie die ID des auslösenden Datensatzes als Datensatz-ID und setzen Sie `Status` auf „Konvertiert“.
+  </Step>
+</Steps>
+
+Nach dem Speichern der Automatisierung kann der Vertriebsmitarbeiter auf „In Verkaufschance umwandeln“ klicken, um die Verkaufschance zu erstellen und den Status des ursprünglichen Leads zu aktualisieren.
+
+### Benachrichtigungen hinzufügen
+
+Wenn nach der Konvertierung ein Vertriebsleiter oder der Verantwortliche für die Verkaufschance benachrichtigt werden soll, fügen Sie der Automatisierung die Aktion **E-Mail senden** oder eine Aktion für Teamnachrichten hinzu.
+
+Übliche Einstellungen:
+
+- **Empfänger**: Eine feste E-Mail-Adresse oder ein Benutzerfeld aus dem aktuellen Datensatz.
+- **Betreff und Text**: Fügen Sie Feldwerte aus dem auslösenden Datensatz ein, etwa Unternehmensname, zuständige Person oder Lead-Quelle.
+
+Beispiel für einen E-Mail-Text:
+
+> Neue Verkaufschance konvertiert: [Unternehmensname] wurde von [Zuständige Person] konvertiert. Bitte nachverfolgen.
+
+### Externe Systeme verbinden
+
+Wenn konvertierte Verkaufschancen zusätzlich mit einem CRM-, Finanzsystem oder internen Tool synchronisiert werden müssen, fügen Sie der Automatisierung eine HTTP-Anfrageaktion hinzu.
+
+HTTP-Anfragen funktionieren am besten, wenn das Zielsystem über eine stabile API verfügt. Prüfen Sie vor dem Konfigurieren der Aktion Endpunkt, Anfragemethode, Authentifizierungsmethode und Feldformat.
+
+### Doppelte Klicks begrenzen
+
+Eine Lead-Konvertierung sollte für denselben Lead in der Regel nicht mehr als einmal erfolgen. Aktivieren Sie im Schaltflächenfeld **Anzahl der Klicks begrenzen**:
+
+| Einstellung | Empfehlung |
+| --- | --- |
+| Maximale Klicks | Auf `1` setzen |
+| Zurücksetzen zulassen | In der Regel deaktiviert lassen, um doppelte Verkaufschancen zu vermeiden |
+
+Nach Erreichen des Klicklimits wird die Schaltfläche in diesem Datensatz deaktiviert.
+
+## Hinweise
+
+- Ob ein Klick auf die Schaltfläche erfolgreich ausgeführt wird, hängt davon ab, ob die verknüpfte Automatisierung aktiviert ist und funktioniert.
+- Jede erfolgreiche Auslösung einer Automatisierung wird auf das Kontingent für Automatisierungsausführungen des Workspace angerechnet.
+- Wenn die Schaltfläche wichtige Daten ändert, aktivieren Sie die Klickbestätigung und begrenzen Sie die Anzahl der Klicks.

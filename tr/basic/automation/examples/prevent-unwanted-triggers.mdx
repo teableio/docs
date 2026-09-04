@@ -1,0 +1,45 @@
+---
+title: "Filtreler ve izlenen alanlarla istenmeyen tetiklemeleri önleme"
+description: "Otomasyonlarınızın çalışmaması gereken durumlarda tetiklenmesini önleyin"
+---
+
+<Tip>Otomasyon örneklerini doğrudan AI Chat'te oluşturmanızı öneririz. İstediğiniz iş akışını açıklamanız yeterlidir; AI tetikleyici, eylemler, komut dosyası ve yapılandırma dahil tüm kurulumu sizin için tamamlar.</Tip>
+
+## AI ile oluşturma
+
+Tablonuzun sağ kenar çubuğunda AI Chat'i açın ve AI'a ne istediğinizi söyleyin. Örneğin şöyle diyebilirsiniz:
+
+*"Durum alanı Onaylandı olarak değiştiğinde sorumlu kişiye bildirim e-postası gönder. Yalnızca Durum değişikliklerinde tetikle, diğer alan düzenlemelerini yok say"*
+
+AI, iş akışının tamamını otomatik olarak oluşturur. Oluşturulan komut dosyasını inceleyebilir, gerçek verilerle test edebilir ve hazır olduğunuzda iş akışını etkinleştirebilirsiniz.
+
+Çok sık tetiklenen bir iş akışı çalıştırma kotasını boşa harcar, istenmeyen e-postalar gönderir ve gereksiz bildirimler oluşturur. Tetikleyicileri şu şekilde hassaslaştırabilirsiniz.
+
+## İzlenen Alanları Kullanın
+
+**Kayıt Güncellendiğinde** tetikleyicisini kullanırken "Tüm Alanlar" yerine her zaman belirli alanları seçin.
+
+**Sorun:** Bir iş akışı Durum alanı değiştiğinde bildirim gönderiyor. "Tüm Alanlar" seçili olduğunda birisi Açıklamayı düzenlediğinde veya yorum eklediğinde de tetikleniyor.
+
+**Çözüm:** İzlenen Alanları yalnızca **Durum** olarak ayarlayın. İş akışı artık diğer tüm değişiklikleri yok sayar.
+
+## Filtreleri Kullanın
+
+İş akışını hangi kayıtların etkinleştireceğini daraltmak için herhangi bir kayıt tetikleyicisine filtre ekleyin.
+
+**Sorun:** Bir iş akışı tüm yeni kayıtları işliyor ancak bazıları test kaydı.
+
+**Çözüm:** Şu filtreyi ekleyin: `Tür` **eşit değildir** `Test`. Yalnızca gerçek kayıtlar iş akışını tetikler.
+
+## İkisini Birlikte Kullanın
+
+En yüksek denetim için izlenen alanlarla filtreyi **birlikte** kullanın:
+
+- İzlenen Alanlar: `Durum`
+- Filtre: `Durum` **eşittir** `Onaylandı`
+
+Bunun anlamı şudur: yalnızca Durum alanı değiştiğinde **ve** yeni değer "Onaylandı" olduğunda tetiklenir.
+
+## Durum Değişiklikleri İçin "Kayıt Koşullarla Eşleştiğinde" Seçeneğini Kullanın
+
+Yalnızca **geçiş sırasında** (ör. "Beklemede" durumundan "Onaylandı" durumuna) tetiklemek istiyorsanız bunun yerine **Kayıt Koşullarla Eşleştiğinde** tetikleyicisini kullanın. Bu tetikleyici, kayıt eşleşmeye başladığı anda bir kez çalışır; sonraki her düzenlemede yeniden çalışmaz.

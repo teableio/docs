@@ -1,0 +1,138 @@
+---
+title: "Importer"
+description: "Importez des données CSV, Excel, Airtable ou Google Sheets dans Teable."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+Utilisez l’importation pour initialiser une nouvelle Table, ajouter de nouvelles données à une Table existante ou importer des Tables depuis Airtable ou Google Sheets dans une Base Teable. Airtable et Google Sheets sont également disponibles lorsque vous importez une Base entière.
+
+<Card title="Migrer depuis Airtable ou une autre plateforme" icon="sparkles" href="/fr/basic/ai/connect-everything">
+  Utilisez Connect Everything dans AI Chat pour migrer Airtable, Baserow, NocoDB, SmartSuite et d’autres systèmes vers Teable.
+</Card>
+
+<Info>
+Les fichiers Excel sont limités à **5 Mo**. Si vous devez importer un jeu de données plus volumineux, enregistrez-le d’abord au format **CSV**, puis importez-le.
+</Info>
+
+<Steps>
+  <Step title="Choisir une méthode d’importation">
+    Pour créer une nouvelle Table, cliquez sur `+` en haut du répertoire de gauche et choisissez **Fichier CSV** ou **Fichier Excel** sous **Ajouter depuis d’autres sources**. Pour ajouter des données à une Table existante, choisissez **Importer des données** dans le menu de la Table cible.
+  </Step>
+  <Step title="Importer le fichier">
+    Sélectionnez le fichier CSV ou Excel que vous souhaitez importer. Les fichiers Excel doivent faire **5 Mo** ou moins.
+  </Step>
+  <Step title="Vérifier les paramètres des Champs">
+    Examinez l’aperçu après le téléversement. Lors de la création d’une nouvelle Table, vous pouvez ajuster les types de Champs. Lors de l’ajout à une Table existante, confirmez la correspondance entre les colonnes du fichier et les Champs cibles.
+  </Step>
+  <Step title="Démarrer l’importation">
+    Cliquez sur **Importer** et laissez la boîte de dialogue ouverte jusqu’à la fin de l’importation. Elle indique le nombre de lignes importées et, pour un fichier Excel comportant plusieurs feuilles, la feuille en cours de traitement.
+  </Step>
+</Steps>
+
+<Warning>
+Avant l’arrivée de la notification de fin, ne supprimez pas la Table en cours de génération, ne supprimez pas de Champs et ne modifiez pas les types de Champs. Ces modifications peuvent affecter le résultat de l’importation.
+</Warning>
+
+## Flux d’importation
+
+Cliquez sur `+` en haut du répertoire de gauche, ou sur `+` du dossier qui doit contenir la nouvelle Table, puis sélectionnez **Fichier CSV** ou **Fichier Excel** selon votre type de fichier.
+
+<img
+  src="/images/docs/base/2026-05-22-table-create-menu.png"
+  alt="Importer une nouvelle Table depuis le menu"
+  className="docs-screenshot"
+/>
+
+Après le téléversement, Teable prédit les types de Champs à partir des 5 000 premières lignes de données. Vous pouvez les ajuster avant l’importation.
+
+<img
+  src="/images/docs/base/2026-05-22-table-import-preview.png"
+  alt="Aperçu de l’importation et paramètres des Champs"
+  className="docs-screenshot"
+/>
+
+Pour ajouter des données à une Table existante, ouvrez le menu de la Table, sélectionnez **Importer des données**, puis choisissez le type de fichier.
+
+<img
+  src="/images/docs/base/2026-05-22-table-import-data-menu.png"
+  alt="Importer des données depuis le menu de la Table"
+  className="docs-screenshot"
+/>
+
+Après le téléversement, associez les colonnes du fichier aux Champs de la Table cible, puis cliquez sur **Importer**. Teable traite les données en arrière-plan et vous informe lorsque l’importation réussit ou échoue.
+
+## Importer depuis Airtable
+
+Si l’intégration Airtable est configurée pour votre instance, vous pouvez utiliser l’importation Airtable de deux manières :
+
+- Pour créer une nouvelle Base Teable, ouvrez le menu de l’Espace cible, cliquez sur **Importer**, puis choisissez **Importer depuis Airtable**.
+- Pour importer des Tables dans la Base Teable que vous consultez, utilisez le menu des ressources de la Base :
+
+1. Ouvrez la Base Teable cible.
+2. Cliquez sur `+` en haut du répertoire de gauche.
+3. Sous **Ajouter depuis d’autres sources**, choisissez **Airtable**.
+
+<img
+  src="/images/docs/base/2026-06-24-table-import-airtable-menu.png"
+  alt="Point d’entrée de l’importation Airtable dans le menu de la Base"
+  className="docs-screenshot"
+/>
+
+4. Connectez votre compte Airtable si nécessaire, puis choisissez la Base Airtable à importer.
+5. Choisissez d’importer ou non les Enregistrements, de télécharger et importer les pièces jointes, ainsi que d’importer les filtres, tris et regroupements des Vues.
+6. Cliquez sur **Démarrer l’importation**.
+
+<Info>
+Lorsque l’option **Importer les filtres, tris et regroupements des Vues** est activée, Teable demande un lien de Base partagée Airtable en lecture seule, car l’API Airtable n’expose pas les paramètres des Vues. Dans Airtable, ouvrez le menu **Partager** de la Base, utilisez **Partager sur le Web** avec un accès complet à la Base, collez ce lien de Base partagée dans Teable, puis désactivez le lien partagé une fois l’importation terminée.
+</Info>
+
+Pendant l’importation, Teable affiche la progression par Table. Si certains Champs, Vues ou valeurs doivent être ajustés, le journal d’importation répertorie les modifications avant d’afficher **Importation terminée**.
+
+## Importer depuis Google Sheets
+
+Commencez depuis l’un ou l’autre point d’entrée :
+
+- Pour créer une nouvelle Base Teable, ouvrez le menu de l’Espace cible, cliquez sur **Importer**, puis choisissez **Importer depuis Google Sheets**.
+- Pour ajouter des Tables à la Base que vous consultez, cliquez sur `+` en haut du répertoire de gauche et choisissez **Google Sheets** sous **Ajouter depuis d’autres sources**.
+
+<Steps>
+  <Step title="Connecter votre compte Google">
+    Lors de votre première importation, cliquez sur **Connecter un compte Google** et terminez l’autorisation dans la fenêtre contextuelle. Teable mémorise la connexion pour les importations suivantes.
+  </Step>
+  <Step title="Choisir une feuille de calcul">
+    Cliquez sur **Sélectionner une feuille de calcul depuis Google Drive** et choisissez un fichier dans le sélecteur de fichiers Google. Teable lit ensuite sa structure. Utilisez **Modifier** pour passer à une autre feuille de calcul.
+  </Step>
+  <Step title="Choisir les onglets">
+    Chaque onglet est affiché sous forme de carte avec son nombre de lignes et de colonnes. Sélectionnez les onglets souhaités. Désactivez **Importer les Enregistrements** si vous souhaitez uniquement la structure des Champs sans les données.
+  </Step>
+  <Step title="Démarrer l’importation">
+    Cliquez sur **Démarrer l’importation** et laissez la boîte de dialogue ouverte. Elle indique la progression Table par Table et, à la fin, le nombre d’Enregistrements reçus par chaque Table. Après l’importation d’une nouvelle Base, utilisez **Ouvrir la Base** pour accéder directement au résultat.
+  </Step>
+</Steps>
+
+<Info>
+Teable peut lire uniquement les feuilles de calcul que vous sélectionnez dans le sélecteur de fichiers Google, et non l’ensemble de votre Drive. Pour importer un autre fichier ultérieurement, ouvrez à nouveau le sélecteur et sélectionnez-le.
+</Info>
+
+Lorsque des valeurs ou des colonnes doivent être ajustées, la boîte de dialogue liste chaque cas : un onglet vide est ignoré, les colonnes au-delà de la limite de 300 colonnes pour un onglet ne sont pas importées, et toute valeur incompatible avec le type que Teable a déduit pour sa colonne est ignorée. Si l’importation échoue en cours de route, les Tables déjà terminées sont conservées et la boîte de dialogue indique leur nombre.
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Pourquoi seule une partie d’une feuille a-t-elle été importée ?">
+    La Table a atteint sa limite de lignes. Cette feuille conserve les lignes qui peuvent y tenir et ignore les autres, tandis que les autres feuilles du fichier sont tout de même importées. La liste des résultats dans la boîte de dialogue indique quelle feuille a été tronquée. Importez les lignes restantes dans une autre Table ou augmentez la limite de lignes de votre forfait ou de votre instance.
+  </Accordion>
+  <Accordion title="Les noms de colonnes sont incorrects après l’importation. Que dois-je faire ?">
+    Il est probable qu’une colonne de la ligne d’en-tête n’ait pas de nom ; Teable a donc utilisé un Enregistrement comme en-tête à la place. Nommez chaque colonne de la ligne d’en-tête, supprimez les notes parasites des cellules situées à côté de la Table, puis importez de nouveau.
+  </Accordion>
+  <Accordion title="Pourquoi l’importation a-t-elle échoué ?">
+    Lorsqu’une feuille échoue, la liste des résultats dans la boîte de dialogue affiche la raison pour cette feuille. Avant le début de l’importation, Teable bloque également le fichier lorsque son format ne correspond pas à l’option choisie, lorsqu’un fichier Excel dépasse 5 Mo, ou lorsqu’un nom de Champ dans l’aperçu est vide ou dupliqué. Corrigez le fichier ou les noms de Champs, puis importez de nouveau.
+  </Accordion>
+</AccordionGroup>
+
+## Notes
+
+- **Détection de la ligne d’en-tête** : un fichier CSV utilise la première ligne comme en-tête. Dans un fichier Excel, Teable ignore les titres et les lignes vides au-dessus de la Table pour trouver la ligne d’en-tête, à condition que l’en-tête soit sur sa propre ligne et que chaque colonne ait un nom. Vérifiez les noms de colonnes dans l’aperçu avant l’importation.
+- **Format de date** : Teable peut reconnaître les formats de date courants tels que `YYYY-MM-DD`. Pour les formats inhabituels, standardisez-les avant l’importation, ou importez-les en tant que texte et convertissez le type de Champ ultérieurement.
+- **Types de Champs Google Sheets** : Teable lit les formats de cellule de chaque colonne pour choisir un type de Champ ; les valeurs mises en forme comme des dates ou des nombres dans Google Sheets arrivent donc dans des Champs Date et Nombre. Les lignes vides de début et les bannières situées au-dessus de la Table sont ignorées lorsque Teable recherche la ligne d’en-tête. Vérifiez les types de Champs après l’importation.
+- **Options de sélection Airtable** : si les noms des options de sélection Airtable deviennent identiques après suppression des espaces, Teable conserve la première option et y associe les valeurs d’Enregistrement correspondantes. Cela évite les noms d’options dupliqués pendant l’importation.

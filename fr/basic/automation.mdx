@@ -1,0 +1,88 @@
+---
+title: "Présentation"
+description: "Créez des workflows d’automatisation avec l’IA ou une configuration manuelle."
+---
+
+{/* mintlify-resync: 2026-05-26 */}
+L’Automatisation Teable rend les workflows puissants simples. Pas de code, pas de glisser-déposer, pas de configuration compliquée. Dites simplement à l’IA ce dont vous avez besoin en langage naturel, et Teable s’occupe du travail répétitif pour vous.
+
+## Créer avec l’IA (à partir de zéro)
+
+La façon la plus simple de commencer. Ouvrez n’importe quelle table, cliquez sur le **chat IA** dans la barre latérale droite et décrivez ce que vous voulez :
+
+- *« Lorsqu’une nouvelle commande arrive, envoie une notification Slack avec le nom et le montant du client. »*
+- *« Chaque lundi matin, envoie-moi par e-mail un récapitulatif des tâches en retard. »*
+- *« Lorsqu’une personne soumet le formulaire de commentaires, classe-les et mets à jour le champ de catégorie. »*
+
+L’IA crée et teste toute l’automatisation pour vous — déclencheur, actions et mappages de champs. Examinez les résultats dans le panneau Automatisation et activez-la.
+
+## Créer avec l’IA (à partir d’un déclencheur)
+
+Vous pouvez également commencer avec un déclencheur spécifique et laisser l’IA créer les actions :
+
+1. **Ajouter un déclencheur** — choisissez un type de déclencheur (par ex. « Lorsqu’un Enregistrement est créé ») et configurez-le.
+2. **Ajouter une action** — cliquez sur **+**, accédez à **Créer avec l’IA**, puis sélectionnez **Exécuter le script**.
+3. Dans le panneau de configuration, cliquez sur **Ouvrir l’éditeur**.
+4. Choisissez parmi les **suggestions** pour commencer rapidement, ou décrivez vos besoins avec vos propres mots.
+5. L’IA génère le code JavaScript. Examinez-le, puis cliquez sur **Appliquer**.
+6. Cliquez sur **Tester** pour exécuter le script avec des données réelles, puis **Activez** le workflow.
+
+## Créer manuellement
+
+Vous pouvez également créer des automatisations étape par étape à l’aide des actions intégrées :
+
+1. **Ajouter un déclencheur** — choisissez un type de déclencheur, sélectionnez la table, configurez les champs. Cliquez sur **Tester**.
+2. **Ajouter une action** — choisissez un type d’action (Créer un Enregistrement, Envoyer un e-mail, Requête HTTP, etc.), mappez les valeurs des champs à l’aide de **+** pour insérer des variables dynamiques. Cliquez sur **Générer un aperçu** ou **Exécuter selon la configuration**.
+3. **Activer** — cliquez sur le bouton bascule dans l’angle supérieur gauche.
+
+## Modifier un workflow actif
+
+Les modifications sont enregistrées comme brouillon. Le workflow actif continue de s’exécuter avec la version précédente jusqu’à ce que vous cliquiez sur **Appliquer la mise à jour**.
+
+## Secrets
+
+Utilisez **Secrets** pour stocker les clés API, identifiants et configurations dont une automatisation a besoin au moment de l’exécution. Ouvrez le workflow dans l’onglet d’édition, puis cliquez sur **Secrets** à côté des contrôles de test.
+
+Les secrets sont limités à l’automatisation actuelle. Les actions de script peuvent les lire à partir de variables d’environnement telles que `process.env.EXTERNAL_API_KEY`. Les valeurs enregistrées sont accessibles en écriture uniquement ; saisissez une nouvelle valeur pour mettre à jour un secret.
+
+## Historique des exécutions
+
+Ouvrez un workflow → **Historique des exécutions**. Le panneau d’historique répertorie chaque exécution avec son état, sa durée et les détails des étapes. Cliquez sur une exécution pour examiner les entrées/sorties de chaque étape.
+
+Utilisez les filtres de l’historique pour restreindre la liste par état, durée ou plage de dates. Pour les exécutions ayant échoué, utilisez le panneau de détails de l’exécution pour diagnostiquer ou relancer :
+
+- **Diagnostiquer** ouvre le chat IA avec l’exécution ayant échoué comme contexte, afin que vous puissiez demander à Cuppy d’expliquer l’échec.
+- **Relance complète** exécute à nouveau toutes les étapes et peut créer des enregistrements, e-mails ou notifications en double.
+- **Reprendre à partir de l’étape ayant échoué** est disponible lorsque Teable peut reprendre sans risque à partir de l’étape ayant échoué.
+
+Lorsque **Reprendre à partir de l’étape ayant échoué** n’est pas disponible, Teable explique pourquoi seule la **Relance complète** peut être utilisée. Cela peut se produire lorsque le workflow a été modifié après l’exécution ayant échoué, lorsque le workflow est désactivé, lorsqu’aucune étape ne s’est terminée avec succès avant l’échec, ou lorsque les données d’une étape de contrôle sont manquantes.
+
+Les tentatives de relance sont marquées comme réessais et renvoient à l’exécution d’origine.
+
+## Limites
+
+| Élément | Limite |
+|---|---|
+| Débit d’envoi d’e-mails | 5 / seconde / base |
+| Débit de réception des webhooks | 50 / seconde / base, 2 / seconde / workflow |
+| Taille de la charge utile du webhook | 4 MB |
+| Quota d’exécutions et conservation de l’historique | Varie selon le forfait |
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Pourquoi ai-je reçu une alerte d’utilisation des exécutions d’automatisation ?">
+    Dans Teable Cloud, Teable envoie des notifications d’utilisation des exécutions d’automatisation aux propriétaires d’Espace lorsqu’un espace est proche de son quota d’exécutions ou le dépasse, ou lorsque les exécutions augmentent fortement en peu de temps.
+
+    Pour les rappels de quota, Teable envoie une notification lorsque la période de facturation actuelle atteint 80 % ou 90 % du quota d’exécutions disponible.
+
+    Les forfaits Pro et supérieurs peuvent recevoir des alertes après que les exécutions d’automatisation ont dépassé le quota. Teable peut envoyer un rappel environ toutes les 6 heures.
+
+    Teable Cloud peut également envoyer des notifications critiques en cas d’utilisation inhabituelle, telle qu’une forte hausse quotidienne ou une augmentation soudaine sur une courte période. Le système utilise les tendances récentes d’exécution quotidiennes et horaires, et les seuils exacts peuvent changer.
+
+    La notification ouvre **Paramètres de l’Espace** → **Facturation**. Lorsqu’elles sont disponibles, elle indique quel workflow et quelle Base ont contribué au plus grand nombre d’exécutions. Les rappels de quota sont basés sur les exécutions comptabilisées dans la limite de votre forfait ; les vérifications d’utilisation inhabituelle peuvent également prendre en compte les exécutions récentes avec l’état **success**, **failed** ou **pending**.
+
+    Si l’utilisation est attendue, envisagez d’acheter un quota d’automatisation supplémentaire ou de changer de forfait. Si elle est inattendue, examinez le principal workflow et ajustez ou suspendez l’automatisation concernée.
+  </Accordion>
+</AccordionGroup>
+

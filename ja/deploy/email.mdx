@@ -1,0 +1,144 @@
+---
+title: "メールサービスを設定する"
+description: "メールサービスを有効にし、アプリ内のメール通知、ユーザー自身によるパスワードのリセット、招待メールなどの機能を利用できるようにします。"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+## 設定方法
+
+Teable では、メールサービスを2つの方法で設定できます。
+
+<CardGroup cols={2}>
+  <Card title="システム管理（推奨）" icon="sliders" href="#option-1-admin-panel-recommended">
+    動作確認をしながら画面上で設定できます。再起動は不要です。
+  </Card>
+  <Card title="環境変数" icon="code" href="#option-2-environment-variables">
+    `.env` ファイルを使用する従来の設定方法です。コンテナの再起動が必要です。
+  </Card>
+</CardGroup>
+
+---
+
+## オプション1：システム管理（推奨） {#option-1-admin-panel-recommended}
+
+メールを設定する最も簡単な方法は、システム管理を使用することです。
+
+1. 管理者（最初に登録したユーザー）としてログインします
+2. **システム管理** → **インスタンス設定**を開きます
+3. **メール**セクションを探します
+4. 必要に応じて**通知メール**と**オートメーションメール**を設定します
+
+<Tip>
+システム管理の設定では**その場でテスト**できるため、保存前に SMTP 設定が機能するか確認できます。
+</Tip>
+
+- **通知メール**：ユーザー認証、パスワードのリセット、招待、システム通知などのメールに使用します。
+- **オートメーションメール**：オートメーションの「メールを送信」アクションで、デフォルトのメールサービスとして使用します。「メールを送信」アクションごとに独自の[カスタム SMTP サーバー](/ja/basic/automation/actions/communication/smtp-sender)を設定することもできます。
+
+### 設定元と優先順位
+
+まず、**システム管理 → インスタンス設定 → メール**でメールサービスを設定することを推奨します。実際の優先順位は次のとおりです。
+
+1. **「メールを送信」アクション内のカスタムメールサーバー**：現在のオートメーションにある、その「メールを送信」アクションだけに適用されます。
+2. **システム管理 → インスタンス設定 → メール → オートメーションメール**：「メールを送信」アクションに独自のメールサーバーが設定されていない場合、オートメーションメールに使用されます。
+3. **システム管理 → インスタンス設定 → メール → 通知メール**：ユーザー認証、パスワードのリセット、招待、システム通知などのメールに使用されます。オートメーションメールが設定されていない場合は、その代替としても使用されます。
+4. **`BACKEND_MAIL_*` 環境変数**：デプロイ単位のデフォルトメール設定です。対応するメールボックスがシステム管理で設定されていない場合にのみ、代替として使用されます。
+
+### 設定フィールド
+
+| フィールド | 説明 | 例 |
+|-------|-------------|---------|
+| サーバーアドレス | SMTP サーバーのアドレス | `smtp.gmail.com` |
+| ポート | SMTP ポート | `465`（SSL）または `587`（TLS） |
+| SSL/TLS | SSL/TLS を使用するかどうか | `true` |
+| ユーザー名 | SMTP 認証ユーザー | `noreply@company.com` |
+| パスワード | SMTP パスワードまたはアプリパスワード | `xxxxxxxxxxxxxx` |
+| 送信元アドレス | From アドレス | `noreply@company.com` |
+| 送信者名 | 表示名 | `Teable 通知` |
+
+---
+
+## オプション2：環境変数 {#option-2-environment-variables}
+
+ファイルによる設定を使用するデプロイでは、環境変数を使用します。
+
+<Note>
+まず、**システム管理 → インスタンス設定 → メール**で通知メールとオートメーションメールを設定することを推奨します。環境変数は主に、デプロイ単位のデフォルト設定と代替設定として使用します。
+</Note>
+
+```sh
+BACKEND_MAIL_HOST=smtp.example.com
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=noreply@company.com
+BACKEND_MAIL_SENDER_NAME=Teable
+BACKEND_MAIL_AUTH_USER=username
+BACKEND_MAIL_AUTH_PASS=your_password
+```
+
+<Note>
+環境変数を変更した後は、変更を反映するために Teable コンテナを**再起動**する必要があります。
+</Note>
+
+---
+
+## SMTP プロバイダーの例
+
+<Accordion title="AWS SES">
+```sh
+# 取得方法：AWS Console → Simple Email Service → SMTP Settings → Create SMTP Credentials
+BACKEND_MAIL_HOST=email-smtp.us-east-1.amazonaws.com  # 使用するリージョンに置き換えます
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=noreply@yourdomain.com  # 認証済みの送信元アドレスである必要があります
+BACKEND_MAIL_SENDER_NAME=Teable 通知
+BACKEND_MAIL_AUTH_USER=your_smtp_username   # AWS SMTP ユーザー名
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx       # AWS SMTP パスワード
+```
+</Accordion>
+
+<Accordion title="Gmail">
+```sh
+# 取得方法：Google アカウント → セキュリティ → 2段階認証プロセス → アプリパスワード
+BACKEND_MAIL_HOST=smtp.gmail.com
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=you@gmail.com
+BACKEND_MAIL_SENDER_NAME=Teable 通知
+BACKEND_MAIL_AUTH_USER=you@gmail.com
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # 16桁のアプリパスワード
+```
+</Accordion>
+
+<Accordion title="Microsoft 365 / Outlook">
+```sh
+# 取得方法：Microsoft 365 管理センター → セキュリティ → ポリシーとルール → メール認証
+BACKEND_MAIL_HOST=smtp.office365.com
+BACKEND_MAIL_PORT=587
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=your.name@yourdomain.com
+BACKEND_MAIL_SENDER_NAME=Teable 通知
+BACKEND_MAIL_AUTH_USER=your.name@yourdomain.com
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # Microsoft 365 のパスワードまたはアプリパスワード
+```
+</Accordion>
+
+<Accordion title="SendGrid">
+```sh
+# 取得方法：SendGrid ダッシュボード → 設定 → API キー → API キーを作成
+BACKEND_MAIL_HOST=smtp.sendgrid.net
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=noreply@yourdomain.com
+BACKEND_MAIL_SENDER_NAME=Teable 通知
+BACKEND_MAIL_AUTH_USER=apikey
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # SendGrid API キー
+```
+</Accordion>
+
+---
+
+## 関連ドキュメント
+
+- [環境変数リファレンス](/ja/deploy/env)
+- [システム管理の概要](/ja/basic/admin-panel/overview)

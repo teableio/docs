@@ -1,0 +1,83 @@
+---
+title: "SMTP ve göndereni yapılandırma"
+description: "Otomasyon e-postaları için özel bir SMTP sunucusu ve gönderen kimliği yapılandırın"
+---
+
+Otomasyon e-postaları varsayılan olarak Teable'ın yerleşik posta hizmetinden gönderilir. Bu hizmet temel bildirimler için yeterli olsa da marka, iletilebilirlik veya uyumluluk nedenleriyle e-postaları kendi alan adınızdan göndermek isteyebilirsiniz. Özel SMTP yapılandırması tam olarak bunu yapmanızı sağlar.
+
+Özel bir SMTP sunucusu yapılandırdığınızda ilgili eylemin gönderdiği tüm e-postalar kendi posta sunucunuzdan ve gönderen adresinizden gelir; alıcılar Teable'ın değil, sizin alan adınızı görür.
+
+## Özel SMTP ne zaman kullanılır?
+
+- Alıcıların göndereni tanıması için **şirketinizin alan adından e-posta gönderin** (ör. `noreply@yourcompany.com` veya `support@yourcompany.com`).
+- **İletilebilirliği artırın.** Doğru SPF, DKIM ve DMARC kayıtlarına sahip kendi alan adınızdan gönderilen e-postaların istenmeyen postaya düşme olasılığı daha düşüktür.
+- **Uyumluluk gereksinimlerini karşılayın.** Bazı sektörler otomatik e-postaların kuruluşun denetimindeki bir alan adından gönderilmesini zorunlu kılar.
+- **Mevcut e-posta altyapınızı kullanın.** Günlük kaydı, arşivleme veya güvenlik taraması için e-postaları şirketinizin posta sunucusu üzerinden yönlendirin.
+- **Daha yüksek gönderim sınırlarından yararlanın.** Teable'ın yerleşik hizmetinde hız sınırları vardır. Kendi SMTP sunucunuz daha yüksek aktarım hızını destekleyebilir.
+
+## Yapılandırma
+
+Özel bir SMTP sunucusu yapılandırmak için **E-posta Gönder** eyleminde aktarım yapılandırması seçeneğine tıklayın:
+
+| Ayar | Zorunlu | Açıklama |
+|---|---|---|
+| SMTP Ana Bilgisayarı | Evet | Posta sunucunuzun adresi (ör. `smtp.gmail.com`) |
+| Bağlantı Noktası | Evet | SMTP bağlantı noktası — genellikle 465 (SSL) veya 587 (STARTTLS) |
+| Kullanıcı Adı | Evet | SMTP hesabının kullanıcı adı (genellikle e-posta adresiniz) |
+| Parola | Evet | SMTP hesabının parolası veya uygulamaya özel parola |
+| Gönderen Adresi | Evet | Alıcılara gösterilen gönderen e-posta adresi |
+
+## Nasıl yapılandırılır?
+
+1. Otomasyonunuzu açın ve **E-posta Gönder** eylemine gidin.
+2. **Aktarım yapılandırması** seçeneğine (dişli simgesi veya gönderen ayarlarının yanındaki bağlantı) tıklayın.
+3. SMTP sunucusu ayrıntılarınızı girin:
+   - **Ana Bilgisayar:** E-posta sağlayıcınızın SMTP sunucusu adresi.
+   - **Bağlantı Noktası:** SSL/TLS için 465, STARTTLS için 587 kullanın. Emin değilseniz önce 465'i deneyin.
+   - **Kullanıcı Adı:** E-posta hesabınız veya SMTP kullanıcı adınız.
+   - **Parola:** E-posta parolanız ya da Gmail gibi sağlayıcılarda uygulamaya özel parola.
+4. **Gönderen Adresi**ni belirleyin; alıcıların gönderen olarak göreceği adres budur.
+5. Bağlantıyı doğrulamak için **Test et**'e tıklayın. Teable, SMTP sunucunuz üzerinden bir test e-postası göndermeyi dener.
+6. Test başarılı olursa yapılandırmayı kaydedin. Bu eylemden gönderilen tüm e-postalar artık SMTP sunucunuzu kullanır.
+
+## Sağlayıcılara göre yaygın SMTP ayarları
+
+| Sağlayıcı | Ana Bilgisayar | Bağlantı Noktası | Notlar |
+|---|---|---|---|
+| **Gmail** | `smtp.gmail.com` | 465 | Uygulama Parolası gerektirir (hesap parolanız değil). Bkz. [Gmail IMAP'i yapılandırma](../../trigger/email/gmail-imap) |
+| **Outlook / Microsoft 365** | `smtp.office365.com` | 587 | Microsoft hesabınızın kimlik bilgilerini kullanın |
+| **Amazon SES** | `email-smtp.{region}.amazonaws.com` | 465 | SES SMTP kimlik bilgilerini kullanın (IAM kimlik bilgilerini değil) |
+| **SendGrid** | `smtp.sendgrid.net` | 465 | Kullanıcı adı `apikey`, parola ise API anahtarınızdır |
+| **Mailgun** | `smtp.mailgun.org` | 465 | Mailgun alan adı ayarlarınızdaki SMTP kimlik bilgilerini kullanın |
+| **Zoho Mail** | `smtp.zoho.com` | 465 | Zoho hesabınızın kimlik bilgilerini kullanın |
+| **Yahoo Mail** | `smtp.mail.yahoo.com` | 465 | Uygulama Parolası gerektirir |
+| **Postmark** | `smtp.postmarkapp.com` | 587 | Postmark sunucusu API belirtecinizi hem kullanıcı adı hem parola olarak kullanın |
+| **Özel / Kendi sunucunuzda** | Sunucu adresiniz | Değişir | Ana bilgisayar, bağlantı noktası ve kimlik bilgileri için BT ekibinize danışın |
+
+## Yaygın hatalar ve çözümleri
+
+Bir çalıştırma e-posta gönderemediğinde iş akışının **Çalıştırma geçmişini** açıp **E-posta Gönder** adımının çıktısını denetleyin. Özel SMTP sunucusunda bu adım, posta sunucunuzun döndürdüğü reddetme bilgisini bildirir: yanıt kodu, başarısız SMTP komutu, reddedilen alıcılar ve ana bilgisayar. Bu bilgileri aşağıdaki nedenlerle eşleştirin.
+
+| Hata | Olası Neden | Çözüm |
+|---|---|---|
+| **Bağlantı reddedildi** | Yanlış ana bilgisayar veya bağlantı noktası | SMTP ana bilgisayarını ve bağlantı noktasını yeniden denetleyin. 465 ile 587 arasında geçiş yapmayı deneyin |
+| **Kimlik doğrulama başarısız** | Yanlış kullanıcı adı veya parola | Kimlik bilgilerini doğrulayın. Gmail/Yahoo için hesap parolanız yerine Uygulama Parolası kullanın |
+| **Sertifika hatası / TLS el sıkışması başarısız** | Bağlantı noktası/şifreleme uyuşmazlığı | 465 numaralı bağlantı noktası SSL, 587 ise STARTTLS bekler. Bağlantı noktasının sunucunuzun şifrelemesiyle eşleştiğinden emin olun |
+| **Gönderen adresi reddedildi** | Gönderen Adresi SMTP hesabıyla eşleşmiyor | Bazı sağlayıcılar Gönderen Adresinin kimliği doğrulanmış hesapla eşleşmesini zorunlu kılar. Sağlayıcınızın politikasını denetleyin |
+| **Hız sınırı aşıldı** | Çok kısa sürede çok fazla e-posta gönderildi | Gönderim sıklığını azaltın veya e-posta planınızı yükseltin. Gerekirse gecikmeli toplu gönderim kullanın |
+| **Zaman aşımı** | Güvenlik duvarı veya ağ sorunu | Ağınızın SMTP bağlantı noktasında dışarıya bağlantılara izin verdiğinden emin olun. Teable'ı kendi sunucusunda barındıran kullanıcılar sunucu güvenlik duvarı kurallarını denetlemelidir |
+
+## İpuçları
+
+- **Canlıya geçmeden önce test edin.** Her şeyin çalıştığını doğrulamak için SMTP'yi yapılandırdıktan sonra mutlaka bir test e-postası gönderin.
+- Gmail, Yahoo ve iki faktörlü kimlik doğrulamayı destekleyen diğer sağlayıcılarda **uygulamaya özel parolalar kullanın**. 2FA etkinse normal hesap parolanız çalışmaz.
+- E-posta iletilebilirliğini artırmak ve iletilerinizin istenmeyen posta olarak işaretlenmesini önlemek için alan adınızın DNS kayıtlarında **SPF, DKIM ve DMARC yapılandırın**.
+- **Kimlik bilgilerini güvende tutun.** SMTP parolaları Teable'da şifreli olarak saklanır ancak hassas kimlik bilgileri içeren otomasyon yapılandırmalarını paylaşmayın.
+- **Teslimatı izleyin.** E-postalar ulaşmamaya başlarsa geri dönen iletiler, hız sınırı uyarıları veya hesap sorunları için SMTP sağlayıcınızın panosunu denetleyin.
+
+<Tip>Gmail için hesap parolanız yerine Uygulama Parolası kullanın. Nasıl oluşturulacağını öğrenmek için [Gmail IMAP'i yapılandırma](../../trigger/email/gmail-imap) sayfasına bakın.</Tip>
+
+## İlgili konular
+
+- [E-posta gönder eylemi](/tr/basic/automation/actions/communication/send-email-overview) — SMTP yapılandırmasını kullanan eylem
+- [Gmail IMAP'i yapılandırma](../../trigger/email/gmail-imap) — Gmail Uygulama Parolalarına ilişkin talimatlar

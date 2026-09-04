@@ -1,0 +1,83 @@
+---
+title: "Veritabanları arası erişim"
+description: "Tek bir iş akışında farklı Veritabanlarındaki verileri okuyun ve yazın"
+---
+
+{/* mintlify-resync: 2026-05-26 */}
+<Tip>
+Otomasyon oluşturmak için Komut dosyası çalıştır'ı kullanmanızı kesinlikle öneririz; bu özellik, aksi hâlde elle oluşturulması gerekecek eylemler dahil tüm eylem davranışlarını kapsayabilir. Gereksinimlerinizi sohbette AI'a açıklamanız yeterlidir.
+
+Lütfen unutmayın: eylemleri elle eklerseniz AI daha sonra bunları tanıyamaz veya değiştiremez.
+</Tip>
+
+Otomasyon eylemleri varsayılan olarak iş akışının bulunduğu Veritabanındaki tablolar üzerinde çalışır. Veritabanları Arası Erişim, bir iş akışının başka bir Veritabanındaki verileri okumasını ve bu Veritabanına veri yazmasını sağlar. Departmanları, projeleri veya veri kümelerini kapsayan iş akışlarında kullanın.
+
+Örneğin Satış Veritabanındaki bir otomasyon, ayrı bir Operasyon Veritabanında sipariş karşılama kaydı oluşturabilir; bir raporlama iş akışı da birden fazla proje Veritabanındaki verileri tek bir özette birleştirebilir.
+
+## Desteklenen eylemler
+
+| Eylem | Veritabanları Arası Destek |
+|---|---|
+| Kayıt Oluştur | Evet |
+| Kaydı Güncelle | Evet |
+| Kayıtları Getir | Evet |
+
+Bunlar kayıt odaklı üç eylemdir. Diğer eylemler (E-posta Gönder, HTTP İsteği vb.) belirli bir tabloyu hedeflemediğinden Veritabanları arası erişime ihtiyaç duymaz.
+
+## Nasıl yapılandırılır?
+
+1. İş akışınızda desteklenen bir eylemi (Kayıt Oluştur, Kaydı Güncelle veya Kayıtları Getir) açın.
+2. **Tablo** seçicinin yanındaki **Veritabanları Arası Erişim** seçeneğine tıklayın.
+3. Hesabınızın erişebildiği tüm Alanları ve Veritabanlarını gösteren bir panel açılır. Hedef **Alanı**, ardından hedef **Veritabanını** seçin.
+4. Bu Veritabanındaki **Tabloyu** seçin. Eylem destekliyorsa belirli bir **Görünüm** de seçebilirsiniz.
+5. Alanları eşleyin ve eylemi her zamanki gibi yapılandırın. Alan listesi artık geçerli Veritabanının alanlarını değil, hedef tablonun alanlarını gösterir.
+6. Eylemi kaydedin.
+
+## Somut örnek: Satıştan Sipariş Karşılamaya
+
+İki Veritabanınız olduğunu düşünün:
+
+- **Satış Veritabanı** — satış ekibinin tamamlanan anlaşmaları izlediği bir "Anlaşmalar" tablosu içerir.
+- **Operasyon Veritabanı** — operasyon ekibinin sevkiyatı yönettiği bir "Sipariş Karşılama" tablosu içerir.
+
+Bir anlaşma tamamlandığında otomatik olarak sipariş karşılama kaydı oluşturmak istiyorsunuz:
+
+1. **Tetikleyici:** Satış Veritabanında "Kayıt koşullarla eşleştiğinde" tetikleyicisini şu filtreyle kullanın: `Aşama`, `Kazanılarak Tamamlandı` değerine eşittir.
+2. **Eylem:** Operasyon Veritabanı > Sipariş Karşılama tablosunu gösteren Veritabanları Arası Erişim ile Kayıt Oluştur.
+3. **Alan eşleme:** Anlaşmanın Müşteri Adı, Ürün, Miktar ve Teslimat Adresi değerlerini Sipariş Karşılama tablosundaki karşılık gelen alanlarla eşleyin.
+
+Artık her anlaşma tamamlandığında Operasyon Veritabanında otomatik olarak bir sipariş karşılama kaydı oluşturulur; elle devir gerekmez.
+
+## İzin modeli
+
+İş akışı güncellemelerini oluşturduğunuzda, düzenlediğinizde veya uyguladığınızda Teable, Veritabanları arası her eylemi geçerli düzenleyicinin izinlerine göre denetler:
+
+| Eylem | Hedef Veritabanında zorunlu izin |
+|---|---|
+| Kayıtları Getir | Alanları ve kayıtları okuma |
+| Kayıt Oluştur | Alanları ve kayıtları okumanın yanı sıra kayıt oluşturma |
+| Kaydı Güncelle | Alanları ve kayıtları okumanın yanı sıra kayıtları güncelleme |
+
+Etkin iş akışı çalıştırmaları hedef Veritabanı için Teable'ın otomasyon çalışma zamanı kimliğini kullanır. Veritabanları arası eylemle oluşturulan veya güncellenen kayıtlar, kayıt meta verilerinde ve denetim yüzeylerinde **Otomasyon Robotu** olarak görünür.
+
+### Erişim değiştiğinde ne olur?
+
+Geçerli düzenleyici hedef Veritabanında gerekli izne sahip değilse Teable, bu düzenleyicinin söz konusu Veritabanını gösteren Veritabanları arası eylemler eklemesini veya değiştirmesini engeller. Bir taslakta düzenleyicinin erişemediği Veritabanları arası eylemler zaten varsa Teable bu taslağın uygulanmasını da engeller. Hâlihazırda etkin olan sürüm çalışmaya devam eder; Teable, bir sonraki düzenleme veya uygulama sırasında izinleri yeniden denetler.
+
+Bir iş akışını düzenlerken veya uygularken oluşan izin hatasını gidermek için:
+
+1. Her iki Veritabanına da erişimi olan birinden iş akışını düzenleyip uygulamasını isteyin.
+2. Ya da hedef Veritabanındaki gerekli izinleri geri yükleyip iş akışını yeniden uygulayın.
+
+## İpuçları
+
+- Veritabanları arası erişim, farklı **Alanlardaki** Veritabanlarına ulaşabilir. İş akışını yapılandıran veya uygulayan düzenleyici, hedef Veritabanında gerekli izinlere sahip olmalıdır.
+- Alanları Veritabanları arasında eşlerken alan türleri uyumlu olmalıdır. Örneğin bir metin alanını ek alanıyla eşleyemezsiniz.
+- Hedef Veritabanının yapısını değiştirirseniz (tabloları yeniden adlandırma, alanları silme) bu tablo ve alanlara başvuran Veritabanları arası eylemler bozulur. Yapısal değişikliklerin ardından iş akışınızı güncelleyin.
+- Karmaşık Veritabanları arası iş akışlarını düzenli tutmak için otomasyonlarınızı tek bir "merkez" Veritabanında toplamayı değerlendirin.
+
+## İlgili konular
+
+- [Kayıt oluştur](/tr/basic/automation/actions/records/create-record) — geçerli veya başka bir Veritabanında kayıt oluşturun
+- [Kaydı güncelle](/tr/basic/automation/actions/records/update-record) — geçerli veya başka bir Veritabanındaki kayıtları güncelleyin
+- [Kayıtları getir](/tr/basic/automation/actions/records/get-records) — geçerli veya başka bir Veritabanındaki kayıtları alın

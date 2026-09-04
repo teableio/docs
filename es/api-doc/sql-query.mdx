@@ -1,0 +1,145 @@
+---
+title: "Consulta SQL (obsoleta)"
+noindex: true
+---
+
+<Tip>
+**Solo para Autoalojado**: Disponible en todas las versiones con conexiones ilimitadas.
+</Tip>
+
+Teable permite conectarse a su base de datos PostgreSQL subyacente mediante herramientas externas para realizar consultas de solo lectura. Esto permite la integración con herramientas de BI (PowerBI, Metabase, Superset), clientes de bases de datos (DataGrip, Navicat, TablePlus), plataformas de código bajo (Appsmith, Budibase) y código de aplicaciones.
+
+### Crear una conexión a la base de datos
+
+1. **Abre una Tabla**: Primero, abre cualquier Tabla de la Base a la que quieras conectarte.
+2. **Entra en la página de diseño**: Haz clic en el icono ⚙️ de la esquina superior derecha para acceder a la página de diseño de la Base.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-open-design-page-en.png"
+  alt="Abrir la página de diseño de la Base"
+  className="docs-screenshot"
+/>
+
+3. **Busca el panel de conexión a la base de datos**: En la página de diseño, localiza el panel "Conexión a la base de datos".
+4. **Crea la conexión**: Haz clic en crear y el sistema generará automáticamente una conexión de solo lectura a PostgreSQL con nombre de usuario, contraseña y dirección del host.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-database-connection-panel-en.png"
+  alt="Panel de conexión a la base de datos"
+  className="docs-screenshot"
+/>
+
+### Conectarse a la base de datos
+
+Usa las credenciales para conectarte mediante la herramienta que prefieras. Este es un ejemplo:
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-connection-example.png"
+  alt="Ejemplo de conexión externa a la base de datos"
+  className="docs-screenshot"
+/>
+
+### Consultar datos
+
+Una vez establecida la conexión, puedes consultar los datos mediante SQL:
+
+```sql
+SELECT * FROM "bseamGnQT65TVSCzIaC"."clients" LIMIT 100
+```
+
+**Nota:** En PostgreSQL, usa comillas dobles `"` alrededor de los nombres de esquemas y tablas para conservar la distinción entre mayúsculas y minúsculas.
+
+Para escribir esta consulta, necesitarás conocer tres elementos:
+- **Nombre del esquema (BaseId)**: El identificador de la Base que comienza por `bse`
+- **Nombre de la Tabla**: El nombre físico de la Tabla en PostgreSQL
+- **Nombres de los Campos**: Los nombres reales de las columnas en la base de datos
+
+Las siguientes secciones explican cómo encontrar cada uno de ellos.
+
+### Encontrar el BaseId (nombre del esquema)
+
+Cada Base de Teable corresponde a un **esquema** en PostgreSQL. El BaseId es el nombre de esquema utilizado en las consultas SQL.
+
+**Método 1:** Consulta la URL: la cadena que comienza por `bse` es el BaseId.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-base-id-url.png"
+  alt="ID de la Base en la URL"
+  className="docs-screenshot"
+/>
+
+**Método 2:** En la interfaz de diseño de la Base, el nombre de esquema que se muestra es el BaseId.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-design-page-schema.png"
+  alt="Nombre del esquema en la página de diseño de la Base"
+  className="docs-screenshot"
+/>
+
+### Encontrar los nombres de las Tablas
+
+Los nombres de las Tablas en la interfaz de Teable no se sincronizan automáticamente con los nombres físicos de las tablas de la base de datos. Consulta la interfaz de diseño de la Base para conocer el nombre real de la tabla en la base de datos.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-table-info.png"
+  alt="Nombre físico de la tabla en la página de diseño"
+  className="docs-screenshot"
+/>
+
+**Consejo:** Si es necesario, puedes modificar el nombre físico de la tabla en la interfaz de diseño.
+
+### Encontrar los nombres de los Campos
+
+Los nombres de los Campos (columnas) en la base de datos pueden diferir de los que aparecen en la interfaz de Teable. Consulta el valor de `dbFieldName` en la interfaz de diseño.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-db-field-name.png"
+  alt="Nombre del Campo de la base de datos en la página de diseño"
+  className="docs-screenshot"
+/>
+
+**Consejo:** Los cambios en los nombres de los Campos de Teable no se sincronizan automáticamente. Modifica `dbFieldName` de forma explícita para cambiar el nombre real de la columna en PostgreSQL.
+
+### Campos del sistema
+
+Teable crea automáticamente estos Campos del sistema (no se pueden cambiar de nombre):
+
+| Campo | Descripción |
+|-------|-------------|
+| `__id` | ID único |
+| `__version` | Número de versión |
+| `__auto_number` | Número autoincremental, clave primaria |
+| `__created_time` | Hora de creación |
+| `__last_modified_time` | Hora de la última modificación |
+| `__created_by` | ID del creador |
+| `__last_modified_by` | ID del último autor de una modificación |
+| `__row*` | Campos de índice de la Vista, utilizados para mantener el orden de los Registros |
+| `__fk*` | Claves externas de los Campos de relación |
+
+### Tablas de unión
+
+Las Tablas cuyos nombres comienzan por `junction_` son Tablas generadas por el sistema para gestionar relaciones ManyToMany y unidireccionales.
+
+### Notas sobre permisos
+
+La conexión a la base de datos está limitada únicamente a la Base actual. Los esquemas de PostgreSQL aíslan los permisos, lo que garantiza que solo puedas acceder a las Tablas de tu Base.
+
+Es posible que veas otros baseIds (nombres de esquemas) al conectarte, pero no podrás acceder a su contenido.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-tableplus-base-id.png"
+  alt="ID de la Base en TablePlus"
+  className="docs-screenshot"
+/>
+
+### Límites de conexión
+
+El límite predeterminado es de 20 conexiones simultáneas.
+
+### Escribir datos
+
+Teable no permite escribir directamente en la base de datos mediante conexiones externas. Para modificar los datos, usa en su lugar la [API de Teable](/es/api-doc/token).
+
+### Cerrar la conexión
+
+En el panel de conexión a la base de datos, haz clic en eliminar para cerrar la conexión. La contraseña anterior se borrará y, al crear una conexión nueva, se generarán credenciales nuevas.

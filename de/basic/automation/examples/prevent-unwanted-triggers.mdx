@@ -1,0 +1,45 @@
+---
+title: "Unerwünschte Auslösungen mit Filtern und überwachten Feldern vermeiden"
+description: "Verhindern Sie, dass Ihre Automatisierungen ausgeführt werden, wenn dies nicht vorgesehen ist"
+---
+
+<Tip>Wir empfehlen, Automatisierungsbeispiele direkt im KI-Chat zu erstellen. Beschreiben Sie einfach den gewünschten Workflow, und die KI übernimmt die vollständige Einrichtung für Sie – einschließlich Auslöser, Aktionen, Skript und Konfiguration.</Tip>
+
+## Mit KI erstellen
+
+Öffnen Sie den KI-Chat in der rechten Seitenleiste Ihrer Tabelle und teilen Sie der KI mit, was Sie möchten. Sie können zum Beispiel sagen:
+
+*„Wenn sich das Feld Status in Genehmigt ändert, sende der zugewiesenen Person eine Benachrichtigung per E-Mail. Löse den Workflow nur bei Änderungen am Status aus und ignoriere Änderungen an anderen Feldern.“*
+
+Die KI erstellt automatisch den vollständigen Workflow. Sie können das erzeugte Skript überprüfen, mit echten Daten testen und den Workflow aktivieren, sobald er bereit ist.
+
+Ein Workflow, der zu häufig ausgelöst wird, verbraucht unnötig Ausführungen, versendet unerwünschte E-Mails und erzeugt störende Meldungen. So halten Sie Auslöser präzise.
+
+## Überwachte Felder verwenden
+
+Wählen Sie bei **Wenn Datensatz aktualisiert wird** immer bestimmte Felder anstelle von „Alle Felder“ aus.
+
+**Problem:** Ein Workflow sendet eine Benachrichtigung, wenn sich das Feld Status ändert. Wenn „Alle Felder“ ausgewählt ist, wird er auch ausgelöst, wenn jemand die Beschreibung bearbeitet oder einen Kommentar hinzufügt.
+
+**Lösung:** Legen Sie ausschließlich **Status** als überwachtes Feld fest. Nun ignoriert der Workflow alle anderen Änderungen.
+
+## Filter verwenden
+
+Fügen Sie jedem Datensatzauslöser einen Filter hinzu, um einzugrenzen, welche Datensätze den Workflow aktivieren.
+
+**Problem:** Ein Workflow verarbeitet alle neuen Datensätze, darunter jedoch auch Testeinträge.
+
+**Lösung:** Fügen Sie einen Filter hinzu: `Typ` **ist nicht** `Test`. Nur echte Datensätze lösen den Workflow aus.
+
+## Beides kombinieren
+
+Verwenden Sie für maximale Kontrolle überwachte Felder **und** einen Filter gemeinsam:
+
+- Überwachte Felder: `Status`
+- Filter: `Status` **ist** `Genehmigt`
+
+Das bedeutet: Der Workflow wird nur ausgelöst, wenn sich das Feld Status ändert **und** der neue Wert „Genehmigt“ lautet.
+
+## „Wenn Datensatz Bedingungen erfüllt“ für Statusübergänge verwenden
+
+Wenn Sie den Workflow **nur beim Übergang** auslösen möchten (z. B. von „Ausstehend“ zu „Genehmigt“), verwenden Sie stattdessen den Auslöser **Wenn Datensatz Bedingungen erfüllt**. Er wird einmal in dem Moment ausgelöst, in dem der Datensatz die Bedingungen erstmals erfüllt – nicht bei jeder nachfolgenden Bearbeitung.

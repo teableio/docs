@@ -1,0 +1,139 @@
+---
+title: "Auth0 SSO"
+description: "Auth0'ı Teable için SSO kimlik doğrulama sağlayıcınız olarak yapılandırın"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Business planı ve üzerindeki planlarda kullanılabilir</Tip>
+
+## 1. Adım: Teable'da Kimlik Doğrulama Sağlayıcısı Oluşturma
+
+1. Teable SSO ayarlarınıza gidin
+2. Yeni bir kimlik doğrulama sağlayıcısı oluşturun, adını **Auth0** olarak belirleyin ve **OpenID Connect**'i seçin
+
+## 2. Adım: Auth0 Panosuna Erişme
+
+1. [Auth0 Panonuza](https://manage.auth0.com) giriş yapın
+2. Auth0 kiracınızı seçin
+3. Sol menüden **Uygulamalar** → **Uygulamalar** bölümüne gidin
+
+## 3. Adım: Yeni Bir Uygulama Oluşturma
+
+1. **Uygulama Oluştur**'a tıklayın
+2. Uygulama ayrıntılarını girin:
+   - **Ad**: Teable SSO
+   - **Uygulama Türü**: **Normal Web Uygulamaları**'nı seçin
+3. **Oluştur**'a tıklayın
+
+## 4. Adım: Uygulama Ayarlarını Yapılandırma
+
+Uygulamayı oluşturduktan sonra **Ayarlar** sekmesine gidin:
+
+### Temel Bilgiler
+
+1. **Alan Adı** değerinizi kopyalayın (ör. `your-tenant.auth0.com` veya `your-tenant.us.auth0.com`)
+2. **İstemci Kimliği** değerini kopyalayın
+3. **İstemci Gizli Anahtarı** değerini kopyalayın
+4. Bu değerleri Teable SSO yapılandırmasına yapıştırın
+
+### Uygulama URI'leri
+
+Sayfayı aşağı kaydırarak **Uygulama URI'leri** bölümüne gidin:
+
+1. **İzin Verilen Geri Çağırma URL'leri**: Teable'daki **Geri Çağırma URL'si** değerini yapıştırın
+2. **İzin Verilen Oturumu Kapatma URL'leri**: (İsteğe bağlı) `https://app.teable.ai`
+3. **İzin Verilen Web Kaynakları**: (İsteğe bağlı) `https://app.teable.ai`
+4. Sayfanın altındaki **Değişiklikleri Kaydet**'e tıklayın
+
+<Warning>Sayfadan ayrılmadan önce değişikliklerinizi kaydettiğinizden emin olun.</Warning>
+
+## 5. Adım: OAuth Uç Noktalarını Yapılandırma
+
+Teable'da Auth0 alan adınızı kullanarak aşağıdaki OAuth uç noktalarını doldurun:
+
+- **Yetkilendirme URL'si**: `https://{yourDomain}/authorize`
+- **Belirteç URL'si**: `https://{yourDomain}/oauth/token`
+- **Kullanıcı Bilgileri URL'si**: `https://{yourDomain}/userinfo`
+- **Veren**: `https://{yourDomain}/`
+
+<Note>`{yourDomain}` değerini 4. Adımdaki gerçek Auth0 alan adınızla değiştirin.</Note>
+
+## 6. Adım: Bağlantıları Yapılandırma (İsteğe Bağlı)
+
+Auth0, birden fazla kimlik sağlayıcısını etkinleştirmenize olanak tanır. Kullanılabilir oturum açma yöntemlerini yapılandırmak için:
+
+1. Uygulama ayarlarınızda **Bağlantılar** sekmesine gidin
+2. Desteklemek istediğiniz kimlik doğrulama yöntemlerini etkinleştirin:
+   - **Veritabanı**: Kullanıcı adı/parola ile kimlik doğrulama
+   - **Sosyal**: Google, Microsoft, GitHub vb.
+   - **Kurumsal**: SAML, Active Directory vb.
+3. Her bağlantıyı gerektiği gibi yapılandırın
+
+## 7. Adım: Oturum Açma Deneyimini Özelleştirme (İsteğe Bağlı)
+
+### Evrensel Oturum Açma Sayfası
+
+1. Auth0 panosunda **Markalama** → **Evrensel Oturum Açma** bölümüne gidin
+2. Oturum açma sayfasının görünümünü özelleştirin
+3. Şirket logonuzu ve marka renklerinizi ekleyin
+
+### E-posta Şablonları
+
+1. **Markalama** → **E-posta Şablonları** bölümüne gidin
+2. Doğrulama, parola sıfırlama vb. işlemler için e-posta şablonlarını özelleştirin
+
+## 8. Adım: Kullanıcı İzinlerini Yapılandırma
+
+### Kapsamları Tanımlama
+
+1. Auth0 panosunda **Uygulamalar** → **API'ler** bölümüne gidin
+2. **Auth0 Management API**'yi seçin veya özel bir API oluşturun
+3. Uygulamanız için gereken kapsamları/izinleri tanımlayın
+
+### Roller Atama (İsteğe Bağlı)
+
+1. **Kullanıcı Yönetimi** → **Roller** bölümüne gidin
+2. Farklı kullanıcı türleri için roller oluşturun
+3. Her role izinler atayın
+4. Kullanıcıları uygun rollere atayın
+
+## 9. Adım: SSO ile Oturum Açmayı Test Etme
+
+SSO ile oturum açmayı etkinleştirmek için iki seçeneğiniz vardır:
+
+**1. Seçenek: Doğrudan Kimlik Doğrulama URL'si**
+- Yetkilendirme URL'sini SSO oturum açma URL'niz olarak kullanın
+
+**2. Seçenek: Alan Adı Doğrulaması**
+1. Teable'da alan adı doğrulamasını yapılandırın
+2. Özel alan adınızı doğrulayın
+3. https://app.teable.ai adresini ziyaret edin
+4. SSO ile oturum açma düğmesine tıklayın
+5. Oturum açmak için doğrulanmış alan adındaki e-posta adresinizi girin
+
+## Ek Yapılandırma (İsteğe Bağlı)
+
+### Çok Faktörlü Kimlik Doğrulamayı Etkinleştirme
+
+1. Auth0 panosunda **Güvenlik** → **Çok Faktörlü Kimlik Doğrulama** bölümüne gidin
+2. Tercih ettiğiniz MFA yöntemlerini (SMS, kimlik doğrulama uygulaması vb.) etkinleştirin
+3. MFA ilkelerini ve kurallarını tanımlayın
+
+### Özel Mantık için Kuralları Yapılandırma
+
+1. **Kimlik Doğrulama İşlem Hattı** → **Kurallar** bölümüne gidin
+2. Aşağıdakiler için özel kurallar oluşturun:
+   - Belirteçlere özel talepler ekleme
+   - Koşullu erişimi zorunlu kılma
+   - Harici hizmetlerle entegrasyon kurma
+   - Kullanıcı profillerini zenginleştirme
+
+### Kuruluşları Ayarlama (Auth0 Organizations Özelliği)
+
+Auth0 Organizations kullanıyorsanız:
+
+1. Auth0 panosunda **Kuruluşlar** bölümüne gidin
+2. Farklı kiracılar/şirketler için kuruluşlar oluşturun
+3. Kuruluşa özgü marka ve bağlantıları yapılandırın
+4. Teable uygulamanızda kuruluş desteğini etkinleştirin
+ 

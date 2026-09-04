@@ -1,0 +1,82 @@
+---
+title: "Tabellenabfrage-Operationen"
+description: "Prüfen Sie Empfehlungen zum Abfragerisiko für langsame Tabellen und bestätigen Sie Datenbankverbesserungen."
+---
+
+<Tip>Verfügbar ab dem selbst gehosteten Business-Tarif</Tip>
+
+Pfad: Admin-Panel → Tabellenabfrage-Operationen
+
+Verwenden Sie **Tabellenabfrage-Operationen**, wenn Ansichten, Filter, Beziehungen oder Suchen in einer großen Tabelle langsam werden. Ein Hintergrundanalysator überwacht die Abfragelast und erstellt aus seinen Beobachtungen Empfehlungen. Die Seite führt diese auf, damit Instanzadministratoren die Nachweise prüfen, eine bestimmte Tabelle eingehender analysieren und jede Datenbankänderung bestätigen können.
+
+Die Zähler über der Liste fassen die aktuelle Lage zusammen: Beobachtungsfenster, Anfragen, langsame Abfragen, Zeitüberschreitungen, offene und angenommene Empfehlungen, laufende und fehlgeschlagene Aufgaben sowie die Anzahl der bereiten oder beeinträchtigten Suchzugriffspfade.
+
+## Empfehlungen prüfen
+
+Die Seite öffnet sich mit **Empfehlungen**, nach Priorität sortiert. Der Analysator bewertet das Risiko einer Abfrage im Verhältnis dazu, wie stark die Tabelle genutzt wird. Daher stehen die Einträge mit dem größten Handlungsbedarf zuerst.
+
+Suchen Sie nach Tabellen-, Base- oder Space-ID, um alle Empfehlungen zu filtern; anderer Text filtert, was bereits auf dem Bildschirm angezeigt wird. Die Status- und Risikofilter grenzen die Liste weiter ein.
+
+Jeder Eintrag nennt den zugehörigen Space, die Base und die Tabelle. Klappen Sie eine Zeile auf, um die Nachweise hinter der Empfehlung, die Systementscheidung und die SQL-Diagnostik zu lesen:
+
+| Abschnitt | Aussage |
+| --- | --- |
+| **Auslöser** | Woher die Empfehlung stammt: beobachteter Abfrageverkehr, eine gespeicherte Ansichtskonfiguration oder eine Beziehungskonfiguration für ein Feld. Ein Auslöser durch eine gespeicherte Ansicht bedeutet, dass noch keine langsame Abfrage beobachtet wurde; allein die Konfiguration hat das Risiko ausgelöst. |
+| **Zugriffspfad** | Wie häufig diese Tabelle über einen sequenziellen Scan gegenüber einem Indexscan erreicht wurde. |
+| **Gründe** | Verständliche Ursachen wie eine große Tabelle, kein nützlicher Index für die Filter- oder Sortierfelder, aufwendige Sortierung oder beobachtete Zeitüberschreitungen. |
+| **Abfragestruktur** | Die konkret gefilterten und sortierten Felder sowie die jeweils verwendete Art der Übereinstimmung. |
+| **Vorgeschlagener Index** | Die Felder, die die Empfehlung indexieren würde, und warum. |
+
+**Tiefenanalyse** öffnet den Analysearbeitsbereich mit dieser Tabelle bereits vorausgefüllt.
+
+Wenn der Analysator umfangreiche Teilzeichenfolgensuchen in einer Tabelle erkennt, erstellt er für die gesamte Tabelle eine **erzeugter-Text-GIN**-Empfehlung statt eines Indexes pro Feld. Eine solche Zeile bietet **Suchpfad erstellen** anstelle von **Tiefenanalyse**; **Index hinzufügen** wird nicht angezeigt, weil ein Suchzugriffspfad im Analysearbeitsbereich angewendet wird und zuvor eine **EXPLAIN-Beispielsuche** benötigt. Die Empfehlung wird automatisch abgeschlossen, sobald die Tabelle über den Pfad verfügt.
+
+Daneben befinden sich zwei weitere Tabs:
+
+| Tab | Inhalt |
+| --- | --- |
+| **Häufig genutzte Tabellen** | Die am stärksten genutzten Tabellen mit Anfragen, langsamen Abfragen, Zeitüberschreitungen und längster Abfragedauer. |
+| **Aufgaben** | Von Teable erstellte Behebungsaufgaben mit Status, Versuchen, Worker und dem letzten Fehler. |
+
+Über der Liste wird ein Banner angezeigt, wenn ein Konfigurationsproblem den Vorgang aufhält: Suchzugriffspfade sind konfiguriert, während das Laufzeit-Flag deaktiviert ist; manche Tabellen haben einen veralteten oder zur Neuerstellung ausstehenden Zugriffspfad und ihre Suche ist unbemerkt auf den langsameren `ILIKE`-Scan zurückgefallen; oder die älteste in die Warteschlange gestellte Aufgabe wartet lange genug, um darauf hinzuweisen, dass kein Worker sie verarbeitet. Beheben Sie die im Banner gemeldeten Probleme, bevor Sie die darunterstehenden Empfehlungen bearbeiten.
+
+### Das Entscheidungs-Badge lesen
+
+Jede Empfehlung trägt die letzte Systementscheidung dazu:
+
+| Badge | Bedeutung |
+| --- | --- |
+| **Manuelle Bestätigung erforderlich** | Nur ein Administrator kann diese Empfehlung anwenden. |
+| **Schattenmodus · würde automatisch ausgeführt** | Die Empfehlung erfüllt die Annahmekriterien, aber die automatische Ausführung ist nicht aktiviert; daher wurde nichts geändert. |
+| **Wird automatisch ausgeführt** / **Automatisch ausgeführt** | Die automatische Ausführung hat die Empfehlung angenommen und angewendet. |
+| **Nachprüfung fehlgeschlagen · Wartezeit wird erhöht** | Eine automatische Änderung hat die Überprüfung nicht bestanden. Teable wartet länger, bevor es diese Tabelle erneut versucht. |
+| **Abkühlphase** | Derselbe Bereich wurde kürzlich geändert; daher wartet das System ab. |
+| **Zurückgestellt** / **Automatische Ausführung nicht angewendet** | Die Plan-Nachweise oder die Tabellengröße erfüllten nicht die Voraussetzungen für die automatische Ausführung. |
+
+<Info>Standardmäßig zeichnet Teable nur Entscheidungen auf und erstellt Empfehlungs- und Aufgabenaufzeichnungen; es ändert Ihre Datenbank nicht selbstständig. Die automatische Ausführung ist über `V2_TABLE_QUERY_OPS_AUTO_ACCEPT=auto` optional aktivierbar und gilt selbst dann nur für kleine Tabellen, deren Ausführungsplan eine eindeutige Kostenverbesserung zeigt. Alles andere wartet auf einen Administrator.</Info>
+
+### Den vorgeschlagenen Index hinzufügen
+
+Wenn eine Empfehlung einen Index vorschlägt, dem Sie zustimmen, klicken Sie in der Zeile auf **Index hinzufügen**. Die Bestätigung nimmt die Empfehlung an und führt `CREATE INDEX CONCURRENTLY` in der zugrunde liegenden PostgreSQL-Tabelle aus; wenn die Planvalidierung übersprungen wurde, erstellt Teable den Index dennoch aus den empfohlenen Feldern. Der Dialog wiederholt die Nachweise, damit Sie sie ein letztes Mal prüfen können.
+
+Bei einer Tabelle mit geschätzten 50.000 Zeilen oder mehr fordert der Dialog Sie auf zu bestätigen, dass ein Wartungsfenster eingerichtet ist, bevor die Schaltfläche verfügbar wird. Eine parallele Erstellung für eine große Tabelle benötigt Zeit und verursacht während der Ausführung zusätzliche Last.
+
+Teable meldet anschließend entweder **Index erstellt** oder **Empfehlung angenommen und eingereiht**. Im zweiten Fall verfolgen Sie die Aufgabe unter **Aufgaben**. Wenn die Empfehlung keine ausführbare physische Spalte enthält, bleibt **Index hinzufügen** deaktiviert und weist darauf hin; verwenden Sie stattdessen den Analysearbeitsbereich zur weiteren Untersuchung.
+
+## Eine Tiefenanalyse ausführen
+
+Öffnen Sie den **Analysearbeitsbereich**, um einen Bereich bei Bedarf zu analysieren, beispielsweise wenn ein Nutzer eine langsame Tabelle meldet, für die noch keine Empfehlung vorliegt.
+
+| Analysetyp | Verwenden für |
+| --- | --- |
+| **Abfragen und Indizes** | Abfragerisiken und mögliche Indexverbesserungen finden. |
+| **Teilzeichenfolgensuche** | Prüfen, ob ein Suchzugriffspfad für Teilzeichenfolgen Enthält-Suchen beschleunigen kann, ohne deren Übereinstimmungsverhalten zu ändern. |
+
+Wählen Sie **Tabelle**, **Base** oder **Space**, geben Sie die entsprechende ID ein und wählen Sie einen Analysetyp. Beginnen Sie mit **Tabelle**, wenn Sie bereits wissen, welche Tabelle langsam ist.
+
+Klicken Sie auf **Abfragebericht erstellen** oder **Suchbericht erstellen**. Der Bericht fasst erkannte Risiken und empfohlene nächste Schritte zusammen. Für einen Suchbericht ist **EXPLAIN-Beispielsuche** optional. Fügen Sie ein Beispiel hinzu, um Ergebnis-Kompatibilität, Abfragepläne und wiederholte Abfragezeiten für den vorgeschlagenen Suchzugriffspfad für Teilzeichenfolgen zu prüfen. Teable speichert den Beispielwert nicht.
+
+<Info>Der Abfragebericht ändert die Datenbank nicht. Das Anwenden einer Empfehlung für die Teilzeichenfolgensuche erfordert eine **EXPLAIN-Beispielsuche** und die Bestätigung durch einen Administrator.</Info>
+
+Prüfen Sie bei einer großen Tabelle die Auswirkungen und planen Sie jede bestätigte Änderung für ein geeignetes Wartungsfenster ein.
+

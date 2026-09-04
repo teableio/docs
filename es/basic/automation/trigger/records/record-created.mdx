@@ -1,0 +1,77 @@
+---
+title: "Cuando se crea un Registro"
+description: "Activa un flujo de trabajo cuando se añade un Registro nuevo a una Tabla"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Ten en cuenta que toda la configuración del disparador puede realizarse en el Chat de IA. Dile a la IA qué quieres que haga el flujo de trabajo y se encargará del resto.</Tip>
+
+Este disparador se ejecuta cuando se añade un Registro nuevo a la Tabla, independientemente de cómo se haya creado.
+
+## Crear con IA
+
+Abre el Chat de IA en la barra lateral derecha de tu Tabla y describe lo que quieres.
+
+La IA se encarga de todo: elige el disparador adecuado, asigna los Campos pertinentes y configura automáticamente todas las acciones.
+
+Describe el objetivo una sola vez y el flujo de trabajo estará listo, sin necesidad de configuración manual.
+
+**Ejemplo:** *"Cuando se cree un pedido nuevo, notifica al equipo en Slack".*
+
+## Configuración
+
+| Ajuste | Obligatorio | Descripción |
+|---|---|---|
+| Tabla | Sí | Tabla en la que se supervisarán los Registros nuevos |
+| Filtro | No | Activa el flujo únicamente si el Registro nuevo cumple estas condiciones. Usa el mismo generador de filtros que las Vistas |
+
+## Cómo configurarlo
+
+1. Abre tu Automatización y añade un disparador nuevo.
+2. Selecciona **Cuando se crea un Registro**.
+3. Elige la **Tabla** que quieres supervisar.
+4. (Opcional) Añade un **Filtro** si solo quieres reaccionar a determinados Registros nuevos. Por ejemplo, `Prioridad` es igual a `Alta` ignorará los Registros nuevos con otros valores de prioridad.
+5. Guarda y activa la Automatización.
+6. Añade los pasos de acción. En cada acción, haz clic en el botón **+** de cualquier Campo para insertar valores del disparador; verás enumerados todos los Campos del Registro nuevo.
+
+## Datos disponibles para los pasos siguientes
+
+Cuando se activa este disparador, todos los Campos del Registro recién creado están disponibles como variables en los pasos posteriores:
+
+- **ID del Registro** — identificador único del Registro nuevo
+- **Todos los valores de los Campos** — se puede hacer referencia a todos los Campos de la Tabla (texto, número, fecha, archivos adjuntos, Registros enlazados, etc.) haciendo clic en **+** en la asignación de Campos de cualquier acción
+
+Esto significa que, si tu Tabla tiene Campos como Nombre, Correo electrónico, Estado y Fecha de creación, los cuatro valores estarán listos para usarlos en tus acciones sin ninguna configuración adicional.
+
+## Cómo funciona el filtro
+
+El filtro opcional permite limitar qué Registros nuevos activan realmente la Automatización:
+
+- Si **no se establece ningún filtro**, todos los Registros nuevos activan el disparador.
+- Si **se establece un filtro**, el disparador solo se activa cuando el Registro nuevo cumple todas las condiciones. Los Registros que no las cumplan se ignoran sin mostrar ningún aviso.
+
+Esto resulta útil si solo quieres actuar sobre un subconjunto de Registros nuevos; por ejemplo, únicamente tareas de alta prioridad, Registros asignados a un equipo específico o pedidos que superen un importe determinado.
+
+<Note>El filtro se evalúa a partir de los valores de los Campos en el momento de crear el Registro. Si un Campo está vacío al crearlo y se rellena más tarde, la Automatización no se activará de forma retroactiva.</Note>
+
+## Cuándo usarlo
+
+- **Enviar un correo de bienvenida a un contacto nuevo.** Cuando se añada un contacto a tu Tabla de CRM, envía automáticamente un correo de bienvenida personalizado con su nombre y dirección de correo electrónico.
+- **Crear una tarea enlazada al añadir un proyecto nuevo.** Cuando se cree un Registro de proyecto, crea automáticamente un conjunto predeterminado de tareas en una Tabla Tareas enlazada al proyecto nuevo.
+- **Notificar al equipo sobre pedidos nuevos.** Publica un mensaje en Slack o envía un correo al equipo de ventas cada vez que llegue un pedido nuevo.
+- **Clasificar automáticamente con IA los Registros entrantes.** Cuando se cree un ticket de soporte, usa la acción Generar con IA para clasificarlo según el Campo de descripción.
+- **Registrar Registros nuevos en un sistema externo.** Usa una acción Solicitud HTTP para enviar los datos de los Registros nuevos a un CRM, ERP o almacén de datos.
+
+## Consejos
+
+- Este disparador se activa con los Registros creados mediante *cualquier* método, incluidas otras Automatizaciones. Si tienes una Automatización que crea Registros en la misma Tabla, evita los bucles infinitos. Usa un filtro para excluir los Registros creados mediante Automatización (por ejemplo, comprobando un Campo indicador).
+- El disparador se activa una vez por Registro. Si se importan 10 Registros en bloque, se activa 10 veces por separado.
+- Si necesitas reaccionar únicamente a los Registros creados mediante un formulario concreto, usa en su lugar el disparador [Cuando se envía un formulario](/es/basic/automation/trigger/forms/form-submitted), que ofrece un control más preciso.
+- Los Campos que estén vacíos cuando se cree el Registro seguirán estando disponibles como variables, pero sus valores estarán en blanco. Asegúrate de que tus acciones gestionen correctamente los valores vacíos.
+
+## Contenido relacionado
+
+- [Cuando se envía un formulario](/es/basic/automation/trigger/forms/form-submitted) — se activa solo con los envíos de formularios, no con todos los métodos de creación de Registros
+- [Cuando se actualiza un Registro](/es/basic/automation/trigger/records/record-updated) — se activa cuando cambian Registros existentes
+- [Acción Crear Registro](/es/basic/automation/actions/records/create-record) — acción equivalente para crear Registros en flujos de trabajo
+- [Enviar correo electrónico](/es/basic/automation/actions/communication/send-email-overview)

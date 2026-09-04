@@ -1,0 +1,449 @@
+---
+title: "Datensatzfeld-Schnittstelle"
+---
+
+<Note>Ein Lookup-Feld ist kein spezifischer Feldtyp. Sie können jeden Feldtyp aus einer verknüpften Base nachschlagen. Der Typ eines Lookup-Felds wird durch das ursprüngliche Feld in der verknüpften Base bestimmt und verfügt über die Eigenschaft isLookup. Lookup-Felder können nicht bearbeitet werden.</Note>
+
+<Note>
+Alle Feldrückgabewerte können in bestimmten Fällen `isMultipleCellValue: true` enthalten:
+
+1. Dies tritt auf, wenn das Feld ein Lookup-Feld ist. Wenn der verknüpfte Wert Mehrfachauswahl zulässt, ist der Lookup-Feldwert zwangsläufig ein Array.
+
+2. Felder können konfiguriert werden – Benutzerfelder und Verknüpfungsfelder können beispielsweise als Einzel- oder Mehrfachauswahl konfiguriert werden. In Ihrem Code können Sie mit `field.isMultipleCellValue` feststellen, ob ein Feld mehrere Werte akzeptiert.
+</Note>
+
+<Note>
+Verwenden Sie nicht den Feldtyp, um Schreibberechtigungen zu bestimmen. Verwenden Sie stattdessen die Eigenschaft isComputed des Felds.
+</Note>
+
+### 1. Zahlenfeld
+* type: number
+* Schreibtyp: `number`
+* Rückgabetyp:
+  * `isMultipleCellValue: false`: `number`
+  * `isMultipleCellValue: true`: `number[]`
+
+Beispiel:
+```js
+// Schreibwert
+42
+
+// Rückgabewert (isMultipleCellValue: false)
+42
+
+// Rückgabewert (isMultipleCellValue: true)
+[42, 17, 99]
+```
+
+### 2. Einzeiliges Textfeld
+* type: singleLineText
+* Schreibtyp: `string`
+* Rückgabetyp:
+  * `isMultipleCellValue: false`: `string`
+  * `isMultipleCellValue: true`: `string[]`
+
+Beispiel:
+```js
+// Schreibwert
+"Hello, Teable!"
+
+// Rückgabewert (isMultipleCellValue: false)
+"Hello, Teable!"
+
+// Rückgabewert (isMultipleCellValue: true)
+["Hello, Teable!", "Welcome", "Good day"]
+```
+
+### 3. Langtextfeld
+* type: longText
+* Schreibtyp: `string`
+* Rückgabetyp:
+  * `isMultipleCellValue: false`: `string`
+  * `isMultipleCellValue: true`: `string[]`
+
+Beispiel:
+```js
+// Schreibwert
+"Dies ist ein Langtextfeld, das mehrere Absätze enthalten kann..."
+
+// Rückgabewert (isMultipleCellValue: false)
+"Dies ist ein Langtextfeld, das mehrere Absätze enthalten kann..."
+
+// Rückgabewert (isMultipleCellValue: true)
+["Dies ist ein langer Text...", "Ein weiterer langer Text...", "Noch ein langer Text..."]
+```
+
+### 4. Einzelauswahlfeld
+* type: singleSelect
+* Schreibtyp: `string` (Optionswert)
+* Rückgabetyp:
+  * `isMultipleCellValue: false`: `string`
+  * `isMultipleCellValue: true`: `string[]`
+
+Beispiel:
+```js
+// Schreibwert
+"Option A"
+
+// Rückgabewert (isMultipleCellValue: false)
+"Option A"
+
+// Rückgabewert (isMultipleCellValue: true)
+["Option A", "Option B", "Option C"]
+```
+
+### 5. Mehrfachauswahlfeld
+* type: multipleSelect
+* Schreibtyp: `string[]` (Array von Optionswerten)
+* Rückgabetyp: `string[]`
+
+Beispiel:
+```js
+// Schreibwert
+["Red", "Blue", "Green"]
+
+// Rückgabewert
+["Red", "Blue", "Green"]
+```
+
+### 6. Verknüpfungsfeld
+* type: link
+* Schreibtyp:
+  * `isMultipleCellValue: false`: `{ id: string }`
+  * `isMultipleCellValue: true`: `{ id: string }[]`
+* Rückgabetyp:
+  * `isMultipleCellValue: false`: `{ id: string, title?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title?: string }[]`
+
+Beispiel:
+```js
+// Schreibwert (isMultipleCellValue: false)
+{ id: "rec123456" }
+
+// Schreibwert (isMultipleCellValue: true)
+[{ id: "rec123456" }, { id: "rec789012" }]
+
+// Rückgabewert (isMultipleCellValue: false)
+{ id: "rec123456", title: "Related Record 1" }
+
+// Rückgabewert (isMultipleCellValue: true)
+[
+  { id: "rec123456", title: "Related Record 1" },
+  { id: "rec789012", title: "Related Record 2" }
+]
+```
+
+### 7. Formelfeld
+* type: formula
+* Schreibtyp: Kann nicht direkt beschrieben werden
+* Rückgabetyp: Hängt vom Formelergebnis ab; kann `string | number | boolean` oder deren Array-Formen sein
+
+Beispiel:
+```js
+// Rückgabewert (isMultipleCellValue: false)
+42 // or "Result" or true
+
+// Rückgabewert (isMultipleCellValue: true)
+[42, 17, 99] // or ["Result1", "Result2"] or [true, false, true]
+```
+
+### 8. Anhangsfeld
+Um einen Anhang in ein Anhangsfeld hochzuladen, verwenden Sie die dafür vorgesehene API. Details finden Sie im Abschnitt [Anhang hochladen](/de/api-doc/record/upload-attachment).
+* type: attachment
+* Schreibtyp:
+  ```ts
+  {
+    id: string;
+    name: string;
+    path: string;
+    token: string; // Unique identifier
+    size: number; // File size in bytes
+    mimetype: string; // File type
+    presignedUrl?: string; // File preview/download URL
+    width?: number; // Image width
+    height?: number; // Image height
+  }[]
+  ```
+
+* Rückgabetyp:
+```ts
+{
+  id: string;
+  name: string;
+  path: string;
+  token: string; // Unique identifier
+  size: number; // File size in bytes
+  mimetype: string; // File type
+  presignedUrl?: string; // File preview/download URL
+  width?: number; // Image width
+  height?: number; // Image height
+}[]
+```
+
+Beispiel:
+```js
+// Schreibwert
+[
+  {
+    name: "document.pdf",
+    type: "application/pdf",
+    token: "abc123",
+    size: 1024000
+  }
+]
+
+// Rückgabewert
+[
+  {
+    id: "att123",
+    name: "document.pdf",
+    path: "/uploads/document.pdf",
+    token: "abc123",
+    size: 1024000,
+    mimetype: "application/pdf",
+    presignedUrl: "https://app.teable.ai/preview/document.pdf",
+  },
+  {
+    id: "att456",
+    name: "image.jpg",
+    path: "/uploads/image.jpg",
+    token: "def456",
+    size: 2048000,
+    mimetype: "image/jpeg",
+    presignedUrl: "https://app.teable.ai/preview/image.jpg",
+    width: 1920,
+    height: 1080
+  }
+]
+```
+
+### 9. Datumsfeld
+* type: date
+* Schreibtyp: `string` (ISO-8601-Format)
+* Rückgabetyp:
+  * `isMultipleCellValue: false`: `string` (ISO-8601-Format)
+  * `isMultipleCellValue: true`: `string[]` (ISO-8601-Format)
+Sie können `new Date().toISOString()` verwenden, um die Uhrzeit im ISO-8601-Format abzurufen.
+
+Beispiel:
+```js
+// Schreibwert
+"2024-09-02T02:51:03.875Z"
+
+// Rückgabewert (isMultipleCellValue: false)
+"2024-09-02T02:51:03.875Z"
+
+// Rückgabewert (isMultipleCellValue: true)
+["2024-09-02T02:51:03.875Z", "2024-09-02T02:51:03.875Z"]
+```
+
+### 10. Erstellungszeitfeld
+* type: createdTime
+* Schreibtyp: Kann nicht direkt beschrieben werden
+* Rückgabetyp:
+  * `isMultipleCellValue: false`: `string` (ISO-8601-Format)
+  * `isMultipleCellValue: true`: `string[]` (ISO-8601-Format)
+
+Beispiel:
+```js
+// Rückgabewert (isMultipleCellValue: false)
+"2024-09-02T02:51:03.875Z"
+
+// Rückgabewert (isMultipleCellValue: true)
+["2024-09-02T02:51:03.875Z", "2024-09-02T02:51:03.875Z"]
+```
+
+### 11. Feld für letzte Änderung
+* type: lastModifiedTime
+* Schreibtyp: Kann nicht direkt beschrieben werden
+* Rückgabetyp:
+  * `isMultipleCellValue: false`: `string` (ISO-8601-Format)
+  * `isMultipleCellValue: true`: `string[]` (ISO-8601-Format)
+
+Beispiel:
+```js
+// Rückgabewert (isMultipleCellValue: false)
+"2023-04-15T10:30:00Z"
+
+// Rückgabewert (isMultipleCellValue: true)
+["2023-04-15T10:30:00Z", "2023-04-16T14:45:00Z"]
+```
+
+### 12. Kontrollkästchenfeld
+* type: checkbox
+* Schreibtyp: `boolean`
+* Rückgabetyp:
+  * `isMultipleCellValue: false`: `boolean`
+  * `isMultipleCellValue: true`: `boolean[]`
+
+Beispiel:
+```js
+// Schreibwert
+true
+
+// Rückgabewert (isMultipleCellValue: false)
+true
+
+// Rückgabewert (isMultipleCellValue: true)
+[true, false, true]
+```
+
+### 13. Rollup-Feld
+* type: rollup
+* Schreibtyp: Kann nicht direkt beschrieben werden
+* Rückgabetyp: Hängt von der Rollup-Konfiguration ab; kann `number | string` oder deren Array-Formen sein
+
+Beispiel:
+```js
+// Rückgabewert (isMultipleCellValue: false)
+42 // or "Summary Result"
+
+// Rückgabewert (isMultipleCellValue: true)
+[42, 17, 99] // or ["Summary 1", "Summary 2"]
+```
+
+### 14. Bewertungsfeld
+* type: rating
+* Schreibtyp: `number`
+* Rückgabetyp:
+  * `isMultipleCellValue: false`: `number`
+  * `isMultipleCellValue: true`: `number[]`
+
+Beispiel:
+```js
+// Schreibwert
+4
+
+// Rückgabewert (isMultipleCellValue: false)
+4
+
+// Rückgabewert (isMultipleCellValue: true)
+[4, 3, 5]
+```
+
+### 15. Automatische Nummerierung
+* type: autoNumber
+* Schreibtyp: Kann nicht direkt beschrieben werden
+* Rückgabetyp:
+  * `isMultipleCellValue: false`: `number`
+  * `isMultipleCellValue: true`: `number[]`
+
+Beispiel:
+```js
+// Rückgabewert (isMultipleCellValue: false)
+42
+
+// Rückgabewert (isMultipleCellValue: true)
+[42, 43, 44]
+```
+
+### 16. Benutzerfeld
+
+* type: user
+* Schreibtyp:
+  * `isMultipleCellValue: false`: `{ id: string, title: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string }[]`
+* Rückgabetyp:
+  * `isMultipleCellValue: false`: `{ id: string, title: string, email?: string, avatar?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string, email?: string, avatar?: string }[]`
+
+Beispiel:
+```js
+// Schreibwert (isMultipleCellValue: false)
+{ id: "user123", title: "John Doe" }
+
+// Schreibwert (isMultipleCellValue: true)
+[
+  { id: "user123", title: "John Doe" },
+  { id: "user456", title: "Jane Smith" }
+]
+
+// Rückgabewert (isMultipleCellValue: false)
+{
+  id: "user123",
+  title: "John Doe",
+  email: "john@example.com",
+  avatar: "https://example.com/avatar.jpg"
+}
+
+// Rückgabewert (isMultipleCellValue: true)
+[
+  {
+    id: "user123",
+    title: "John Doe",
+    email: "john@example.com",
+    avatar: "https://example.com/avatar1.jpg"
+  },
+  {
+    id: "user456",
+    title: "Jane Smith",
+    email: "jane@example.com",
+    avatar: "https://example.com/avatar2.jpg"
+  }
+]
+```
+
+### 17. Feld „Erstellt von“
+* Schreibtyp: Kann nicht direkt beschrieben werden
+* Rückgabetyp:
+  * `isMultipleCellValue: false`: `{ id: string, title: string, email?: string, avatar?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string, email?: string, avatar?: string }[]`
+Beispiel:
+```js
+// Rückgabewert (isMultipleCellValue: false)
+{
+  id: "user123",
+  title: "John Doe",
+  email: "john@example.com",
+  avatar: "https://example.com/avatar.jpg"
+}
+
+// Rückgabewert (isMultipleCellValue: true)
+[
+  {
+    id: "user123",
+    title: "John Doe",
+    email: "john@example.com",
+    avatar: "https://example.com/avatar1.jpg"
+  },
+  {
+    id: "user456",
+    title: "Jane Smith",
+    email: "jane@example.com",
+    avatar: "https://example.com/avatar2.jpg"
+  }
+]
+```
+
+### 18. Feld „Zuletzt geändert von“
+* Schreibtyp: Kann nicht direkt beschrieben werden
+* Rückgabetyp:
+  * `isMultipleCellValue: false`: `{ id: string, title: string, email?: string, avatar?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string, email?: string, avatar?: string }[]`
+
+Beispiel:
+```js
+// Rückgabewert (isMultipleCellValue: false)
+{
+  id: "user123",
+  title: "John Doe",
+  email: "john@example.com",
+  avatar: "https://example.com/avatar.jpg"
+}
+
+// Rückgabewert (isMultipleCellValue: true)
+[
+  {
+    id: "user123",
+    title: "John Doe",
+    email: "john@example.com",
+    avatar: "https://example.com/avatar1.jpg"
+  },
+  {
+    id: "user456",
+    title: "Jane Smith",
+    email: "jane@example.com",
+    avatar: "https://example.com/avatar2.jpg"
+  }
+]
+```

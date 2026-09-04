@@ -1,0 +1,78 @@
+---
+title: "Lorsqu’un bouton est cliqué"
+description: "Déclenchez un flux de travail lorsqu’un champ Bouton est cliqué"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Remarque : vous pouvez configurer tous les déclencheurs dans le Chat IA. Indiquez à l’IA ce que le flux de travail doit accomplir et elle se chargera du reste.</Tip>
+
+Ce déclencheur s’exécute lorsqu’un utilisateur clique sur un champ Bouton dans une ligne de table. Le flux de travail reçoit les données de cette ligne.
+
+## Créer avec l’IA
+
+Ouvrez le Chat IA dans la barre latérale droite de votre table et décrivez ce que vous souhaitez.
+
+L’IA s’occupe de tout : elle choisit le bon déclencheur, associe les champs pertinents et configure automatiquement toutes les actions.
+
+Décrivez une seule fois votre objectif et le flux de travail est prêt, sans aucune configuration manuelle.
+
+**Exemple :** *"Lorsque je clique sur le bouton Approuver, mets à jour le statut et informe l’équipe."*
+
+## Configuration
+
+| Paramètre | Obligatoire | Description |
+|---|---|---|
+| Table | Oui | Table qui contient le champ Bouton |
+| Champs surveillés | Oui | Champs Bouton dont les clics doivent être surveillés |
+| Filtre | Non | Déclenche le flux uniquement si l’enregistrement remplit ces conditions au moment du clic sur le bouton |
+
+## Créer un champ Bouton
+
+Avant de pouvoir utiliser ce déclencheur, vous devez disposer d’un champ Bouton dans votre table :
+
+1. Ouvrez la table dans laquelle vous souhaitez ajouter le bouton.
+2. Cliquez sur **+** pour ajouter un nouveau champ.
+3. Dans le menu des types de champ, accédez à **Avancé** et sélectionnez **Bouton**.
+4. Donnez un nom au champ (par exemple, « Approuver », « Envoyer la facture », « Exporter »).
+5. Enregistrez le champ. Un bouton cliquable apparaît désormais sur chaque ligne de cette colonne.
+
+## Procédure de configuration
+
+1. Ouvrez votre automatisation et ajoutez un nouveau déclencheur.
+2. Sélectionnez **Lorsqu’un bouton est cliqué**.
+3. Choisissez la **Table** qui contient le champ Bouton.
+4. Dans **Champs surveillés**, sélectionnez le champ Bouton à surveiller. Vous pouvez en sélectionner plusieurs si nécessaire.
+5. (Facultatif) Ajoutez un **Filtre** pour limiter les lignes qui peuvent déclencher l’automatisation. Par exemple, la condition `Statut` différent de `Terminé` empêchera le bouton de déclencher le flux pour les enregistrements déjà terminés.
+6. Enregistrez et activez l’automatisation.
+7. Ajoutez vos étapes d’action. Cliquez sur **+** dans n’importe quel champ d’action pour insérer les données de la ligne sur laquelle l’utilisateur a cliqué.
+
+## Données accessibles aux étapes suivantes
+
+Lorsqu’un bouton est cliqué, le déclencheur fournit :
+
+- **ID de l’enregistrement** — identifiant unique de la ligne sur laquelle le bouton a été cliqué.
+- **Toutes les valeurs de champ** — chaque champ de la ligne concernée est disponible sous forme de variable. Cela inclut le texte, les nombres, les dates, les enregistrements liés, les pièces jointes et bien plus encore.
+
+Vous pouvez ainsi utiliser les données de la ligne pour renseigner des e-mails, mettre à jour d’autres enregistrements ou envoyer des données à des API externes, toujours en fonction de la ligne précise sur laquelle l’utilisateur a cliqué.
+
+## Cas d’utilisation
+
+- **Flux d’approbation en un clic.** Ajoutez un bouton « Approuver » à chaque ligne. Lorsqu’il est cliqué, mettez le statut à jour sur « Approuvé » et envoyez une notification au demandeur.
+- **Générer un rapport ou un document à la demande.** Un bouton « Générer le rapport » déclenche une action IA ou une requête HTTP afin de créer un PDF ou un résumé pour cet enregistrement précis.
+- **Transmettre un enregistrement à un système externe.** Un bouton « Synchroniser avec le CRM » envoie les données de la ligne à Salesforce, HubSpot ou une autre plateforme au moyen d’une requête HTTP.
+- **Envoyer un e-mail personnalisé.** Un bouton « Envoyer un rappel » compose et envoie un e-mail à partir des coordonnées et des informations pertinentes de la ligne.
+- **Déclencher une étape de vérification manuelle.** Un bouton « Signaler pour vérification » marque l’enregistrement et informe un responsable, ce qui permet aux utilisateurs de choisir explicitement les éléments à transmettre au niveau supérieur.
+
+## Conseils
+
+- Le champ Bouton lui-même ne stocke aucune donnée : il sert uniquement de mécanisme de déclenchement. La cellule n’affiche aucune valeur, mais seulement un bouton cliquable.
+- Si votre table comporte plusieurs champs Bouton, vous pouvez créer une automatisation distincte pour chacun d’eux, ou utiliser une seule automatisation qui surveille plusieurs boutons et applique une logique conditionnelle.
+- Le filtre est évalué au moment où l’utilisateur clique sur le bouton. Si l’enregistrement ne remplit pas les conditions du filtre, l’automatisation ne s’exécute tout simplement pas et aucune erreur ne s’affiche.
+- Les déclencheurs associés aux boutons sont particulièrement adaptés aux flux de travail dans lesquels une décision humaine doit précéder une action, plutôt qu’à un traitement entièrement automatique.
+
+## Pages associées
+
+- [Lorsqu’un formulaire est soumis](/fr/basic/automation/trigger/forms/form-submitted) — s’exécute lors de la soumission d’un formulaire plutôt que lors d’un clic sur un bouton
+- [Lorsqu’un enregistrement est mis à jour](/fr/basic/automation/trigger/records/record-updated) — s’exécute automatiquement lors de la modification d’un champ, sans intervention de l’utilisateur
+- [Action Mettre à jour l’enregistrement](/fr/basic/automation/actions/records/update-record) — souvent associée aux clics sur des boutons pour modifier le statut d’une ligne
+- [Envoyer un e-mail](/fr/basic/automation/actions/communication/send-email-overview)

@@ -1,0 +1,243 @@
+---
+title: "Crear Registros"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+### Ruta
+
+POST /api/table/\{tableId\}/record
+
+### Solicitud
+
+#### Parámetros de ruta
+
+* tableId (string): El identificador único de la Tabla.
+
+#### Cuerpo de la solicitud
+
+* **records (obligatorio)**
+  * Descripción: Matriz de Registros que se crearán
+  * Tipo: Matriz
+  * Ejemplo:
+    ```json
+    [
+      {
+        "fields": {
+          "Name": "John Doe",
+          "Age": 30,
+          "Email": "john@example.com"
+        }
+      },
+      {
+        "fields": {
+          "Name": "Jane Smith",
+          "Age": 28,
+          "Email": "jane@example.com"
+        }
+      }
+    ]
+    ```
+  * Nota: Cada Registro es un elemento que contiene un objeto `fields`. El objeto `fields` contiene los nombres de los Campos y sus valores correspondientes. Cada tipo de Campo tiene una estructura de valores diferente; consulta [Tipos de valores de Campo de Registro](/es/api-doc/record/interface) para obtener más información.
+  * Valores predeterminados: Los Campos omitidos de `fields` usan el valor predeterminado de la Tabla cuando hay uno configurado. Si un Campo obligatorio no tiene un valor predeterminado, o si pasas explícitamente `null` a un Campo obligatorio, la solicitud falla.
+* **fieldKeyType (opcional)**
+  * Descripción: Especifica el tipo de clave del Campo
+  * Tipo: Cadena
+  * Valores posibles:
+    * "name": Usa el nombre del Campo como clave
+    * "id": Usa el ID del Campo como clave
+    * "dbFieldName": Usa el dbFieldName del Campo como clave
+  * Ejemplo: `"name"` o `"id"` o `"dbFieldName"`
+  * Nota: Si no se especifica, se usa de forma predeterminada el nombre del Campo como clave.
+  * Uso:
+    * Cuando se establece en "name":
+      ```json
+      {
+        "fields": {
+          "Name": "John Doe",
+          "Age": 30
+        }
+      }
+      ```
+    * Cuando se establece en "id":
+      ```json
+      {
+        "fields": {
+          "fldABCDEFGHIJKLMN": "John Doe",
+          "fldOPQRSTUVWXYZ12": 30
+        }
+      }
+      ```
+* **typecast (opcional)**
+  * Descripción: Indica si se deben convertir automáticamente los tipos de valores de Campo. De forma predeterminada, se aplica una validación estricta que exige que los valores de entrada coincidan con el tipo de datos del Campo actual. Si se habilita, el sistema intentará realizar la conversión automática.
+  * Tipo: Booleano
+  * Valores posibles: true o false
+  * Ejemplo: `true`
+  * Nota: Si se establece en true, el sistema intentará convertir los valores de entrada al tipo de valor de Campo correcto.
+  * Ejemplos de uso:
+    * Campo de enlace: Puede usarse directamente el texto de la clave principal para crear el enlace
+      ```json
+      {
+        "User table": "John Smith"
+      }
+      ```
+    * Campo de fecha: Pueden usarse cadenas de fecha con un formato no estándar
+      ```json
+      {
+        "Date": "2023-05-15"
+      }
+      ```
+    * Campo de usuario: Puede usarse directamente el nombre de usuario
+      ```json
+      {
+        "Assigned To": "John Doe"
+      }
+      ```
+* **order (opcional)**
+  * Descripción: Especifica la posición de los nuevos Registros en una Vista concreta
+  * Tipo: Objeto
+  * Propiedades:
+    * viewId
+      * Descripción: ID de la Vista [(cómo obtenerlo)](/es/api-doc/get-id#viewid)
+      * Tipo: Cadena
+      * Ejemplo: `"viwABCDEFGHIJKLMN"`
+    * anchorId
+      * Descripción: ID del Registro de anclaje [(cómo obtenerlo)](/es/api-doc/get-id#recordid)
+      * Tipo: Cadena
+      * Ejemplo: `"rec123456789ABCDE"`
+    * position
+      * Descripción: Posición con respecto al Registro de anclaje
+      * Tipo: Cadena
+      * Valores posibles:
+        * "before": Antes del Registro de anclaje
+        * "after": Después del Registro de anclaje
+      * Ejemplo: `"after"`
+  * Ejemplo completo:
+    ```json
+    {
+      "viewId": "viwABCDEFGHIJKLMN",
+      "anchorId": "rec123456789ABCDE",
+      "position": "after"
+    }
+    ```
+  * Nota: El uso de order permite controlar con precisión las posiciones de los nuevos Registros en una Vista concreta.
+
+### Respuesta
+
+#### Respuesta correcta
+
+* Código de estado: 201 Creado
+* Cuerpo de la respuesta: Devuelve los datos de los Registros creados.
+
+**Ejemplo del cuerpo de la respuesta**
+
+```json
+{
+  "records": [
+    {
+      "id": "record789",
+      "fields": {
+        "single line text": "text value 1"
+      }
+    },
+    {
+      "id": "record567",
+      "fields": {
+        "single line text": "text value 2"
+      }
+    }
+  ]
+}
+```
+
+### Respuestas de error
+
+* Código de estado: 400 Solicitud incorrecta: Error en el formato del cuerpo de la solicitud o faltan Campos obligatorios.
+* Código de estado: 404 No encontrado: El tableId especificado no existe.
+
+### Código de ejemplo
+
+<CodeGroup>
+  ```bash CURL
+  curl -X POST 'https://app.teable.ai/api/table/__tableId__/record' \
+    -H 'Authorization: Bearer __token__' \
+    -H 'Content-Type: application/json' \
+    -d '{
+      "records": [
+        {
+          "fields": {
+            "Name": "John Doe",
+            "Age": 30
+          }
+        }
+      ]
+    }'
+  ```
+
+  ```js JS SDK
+  import { configApi, createRecords } from '@teable/openapi';
+
+  configApi({
+    endpoint: 'https://app.teable.ai',
+    token,
+  });
+
+  const response = await createRecords('__tableId__', {
+    records: [
+      {
+        fields: {
+          Name: 'John Doe',
+          Age: 30
+        }
+      }
+    ]
+  });
+
+  console.log(response.data);
+  ```
+
+  ```ts TypeScript
+  const response = await fetch('https://app.teable.ai/api/table/__tableId__/record', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer __token__',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      records: [
+        {
+          fields: {
+            Name: 'John Doe',
+            Age: 30
+          }
+        }
+      ]
+    })
+  });
+
+  console.log(await response.json());
+  ```
+
+  ```python Python
+  import requests
+
+  response = requests.post(
+      'https://app.teable.ai/api/table/__tableId__/record',
+      headers={
+          'Authorization': 'Bearer __token__',
+          'Content-Type': 'application/json'
+      },
+      json={
+          'records': [
+              {
+                  'fields': {
+                      'Name': 'John Doe',
+                      'Age': 30
+                  }
+              }
+          ]
+      }
+  )
+
+  print(response.json())
+  ```
+</CodeGroup>

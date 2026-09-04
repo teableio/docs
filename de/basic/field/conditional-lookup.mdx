@@ -1,0 +1,118 @@
+---
+title: "Bedingte Suche"
+description: "Suchen Sie tabellenübergreifend anhand von Filterbedingungen nach Daten und geben Sie Werte übereinstimmender Datensätze zurück."
+---
+
+Die bedingte Suche kann passende Daten aus einer Zieltabelle abrufen, ohne zuvor eine Verknüpfungsbeziehung zu erstellen. Sie ist nützlich, wenn sich die Suche abhängig von Feldwerten im aktuellen Datensatz ändern soll, etwa um das meistverkaufte Produkt derselben Kategorie zu finden oder Daten für einen übereinstimmenden Zeitraum abzurufen.
+
+## Anwendungsfälle
+
+| Szenario | Geeignet für |
+| --- | --- |
+| Kategorieanalyse | Das meistverkaufte Produkt derselben Kategorie finden |
+| Periodenvergleich | Den Umsatzbetrag der vorherigen Periode für Berechnungen im Periodenvergleich abrufen |
+| Kundenabgleich | Kundendetails anhand von Telefonnummer, E-Mail-Adresse oder Kunden-ID finden |
+| Detailsuche | Passende Detaildatensätze anhand von Bedingungen aus dem aktuellen Datensatz zurückgeben |
+
+## Vorgehensweise
+
+<Steps>
+  <Step title="Feld für eine bedingte Suche erstellen">
+    Klicken Sie rechts neben einem Feldnamen auf das Symbol `+`, wählen Sie **Bedingte Suche** und geben Sie einen Feldtitel ein, beispielsweise „Zugehörige Bestellungen“.
+  </Step>
+  <Step title="Zieltabelle auswählen">
+    Wählen Sie im Dropdown-Menü für die Zieltabelle die abzufragende Tabelle aus.
+  </Step>
+  <Step title="Suchfeld konfigurieren">
+    Wählen Sie das zu extrahierende Feld aus und bestätigen Sie den zurückgegebenen Datentyp.
+  </Step>
+  <Step title="Filterbedingungen festlegen">
+    Fügen Sie Filterbedingungen hinzu und wählen Sie Feld, Bedingungstyp und Vergleichswert aus. Der Vergleichswert kann ein statischer Wert oder ein Feld aus der aktuellen Tabelle sein.
+  </Step>
+  <Step title="Sortierung und Begrenzungen konfigurieren">
+    Legen Sie bei Bedarf Sortierfeld, Sortierrichtung und Anzahl der anzuzeigenden Datensätze fest.
+  </Step>
+</Steps>
+
+Mindestens eine Filterbedingung ist erforderlich. Wählen Sie bei mehreren Bedingungen „Alle Bedingungen sind erfüllt (UND)“ oder „Eine beliebige Bedingung ist erfüllt (ODER)“.
+
+## Praxisbeispiele
+
+### Periodenvergleich von Verkaufsdaten
+
+**Tabellen**
+
+- Tabelle mit Zusammenfassungen der Periodenverkäufe und Feldern wie Periode, Startdatum, Enddatum und Umsatzbetrag
+- Tabelle mit Verkaufsdetails und Feldern wie Umsatzbetrag und Verkaufsdatum
+
+Berechnen Sie in der Tabelle mit den Zusammenfassungen der Periodenverkäufe das Wachstum gegenüber der vorherigen Periode. Verwenden Sie zunächst ein bedingtes Rollup, um den Umsatz der aktuellen Periode zu berechnen, anschließend eine bedingte Suche, um den Umsatz der vorherigen Periode abzurufen, und schließlich ein Formelfeld, um die Wachstumsrate zu berechnen.
+
+**Schritte**
+
+**Bedingtes Rollup-Feld für den Umsatz der aktuellen Periode erstellen**
+
+1. Erstellen Sie in der Tabelle mit den Zusammenfassungen der Periodenverkäufe ein Feld vom Typ „Bedingtes Rollup“ mit dem Namen „Umsatz der aktuellen Periode“
+2. Zieltabelle: Tabelle mit Verkaufsdetails
+3. Rollup-Feld: Umsatzbetrag
+4. Filterbedingungen:
+   - Feld: Verkaufsdatum -> Bedingung: Früher oder gleich -> Wert: Feld „Enddatum“ aus der aktuellen Tabelle
+   - Feld: Verkaufsdatum -> Bedingung: Später oder gleich -> Wert: Feld „Startdatum“ aus der aktuellen Tabelle
+5. Aggregatfunktion: Summe
+
+**Feld für eine bedingte Suche nach dem Umsatz der vorherigen Periode erstellen**
+
+1. Erstellen Sie ein Feld vom Typ „Bedingte Suche“ mit dem Namen „Umsatz der vorherigen Periode“
+2. Zieltabelle: Tabelle mit Zusammenfassungen der Periodenverkäufe (diese Tabelle)
+3. Feld: Umsatz der aktuellen Periode
+4. Filterbedingung:
+   - Feld: Enddatum -> Bedingung: Ist gleich -> Wert: Feld „Enddatum der vorherigen Periode“ aus der aktuellen Tabelle
+5. Aggregatfunktion: Summe
+
+**Formelfeld für das Wachstum gegenüber der vorherigen Periode erstellen**
+
+1. Erstellen Sie ein Formelfeld mit dem Namen „Wachstumsrate gegenüber der vorherigen Periode“
+2. Legen Sie die Formel auf `(Umsatz der aktuellen Periode - Umsatz der vorherigen Periode) / Umsatz der vorherigen Periode * 100` fest
+3. Formatieren Sie das Ergebnis als Prozentsatz mit 2 Dezimalstellen
+
+### Produktanalyse von Verkaufsdaten
+
+**Tabellen**
+
+- Tabelle „Produkte“ mit Feldern wie Kategorie-ID, Produktname und Verkaufsmenge
+- Tabelle „Kategorien“ mit Feldern wie Kategorie-ID und Kategoriename
+
+Ermitteln Sie in der Tabelle „Kategorien“ das meistverkaufte Produkt jeder Kategorie, um das Hauptprodukt der jeweiligen Kategorie zu bestimmen.
+
+**Schritte**
+
+**Meistverkauftes Produkt**
+
+1. Erstellen Sie in der Tabelle „Kategorien“ ein Feld vom Typ „Bedingte Suche“ mit dem Namen „Meistverkauftes Produkt“
+2. Zieltabelle: Tabelle „Produkte“
+3. Suchfeld: Produktname
+4. Filterbedingung:
+   - Feld: Kategorie-ID -> Bedingung: Ist gleich -> Wert: Feld „Kategorie-ID“ aus der aktuellen Tabelle
+5. Sortierung: Feld „Verkaufsmenge“ -> Absteigend
+6. Anzeige begrenzen: 1 Datensatz
+
+**Verkaufsmenge**
+
+1. Erstellen Sie ein weiteres Feld vom Typ „Bedingte Suche“ mit dem Namen „Verkaufsmenge“
+2. Zieltabelle: Tabelle „Produkte“
+3. Suchfeld: Verkaufsmenge
+4. Filterbedingung:
+   - Feld: Kategorie-ID -> Bedingung: Ist gleich -> Wert: Feld „Kategorie-ID“ aus der aktuellen Tabelle
+5. Sortierung: Feld „Verkaufsmenge“ -> Absteigend
+6. Anzeige begrenzen: 1 Datensatz
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Warum können einige Felder nicht als Filterbedingungen verwendet werden?">
+    Einige komplexe Feldtypen wie Bilder und Anhänge unterstützen möglicherweise keine Filterbedingungen.
+  </Accordion>
+
+  <Accordion title="Worin besteht der Unterschied zwischen einer bedingten Suche und einem regulären Suchfeld?">
+    Ein reguläres Suchfeld erfordert zunächst ein Verknüpfungsfeld. Die bedingte Suche kann Daten in der Zieltabelle direkt anhand von Filterbedingungen abgleichen.
+  </Accordion>
+</AccordionGroup>

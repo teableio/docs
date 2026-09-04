@@ -1,0 +1,36 @@
+---
+title: "Kayıtları birden fazla Veritabanında eşitlenmiş tutma"
+description: "Yeni veya güncellenmiş kayıtları Veritabanları Arası Erişim ile başka bir Veritabanına otomatik olarak çoğaltın"
+---
+
+<Tip>Otomasyon örneklerini doğrudan AI Chat'te oluşturmanızı öneririz. İstediğiniz iş akışını açıklamanız yeterlidir; AI tetikleyici, eylemler, komut dosyası ve yapılandırma dahil tüm kurulumu sizin için tamamlar.</Tip>
+
+## AI ile oluşturma
+
+Tablonuzun sağ kenar çubuğunda AI Chat'i açın ve AI'a ne istediğinizi söyleyin. Örneğin şöyle diyebilirsiniz:
+
+*"Satış Veritabanında yeni bir sipariş oluşturulduğunda Sipariş Karşılama Veritabanında sipariş kimliğini, müşteri adını ve tutarı içeren, durumu Beklemede olarak ayarlanmış eşleşen bir kayıt oluştur"*
+
+AI, iş akışının tamamını otomatik olarak oluşturur. Oluşturulan komut dosyasını inceleyebilir, gerçek verilerle test edebilir ve hazır olduğunuzda iş akışını etkinleştirebilirsiniz.
+
+## Elle yapılandırma
+
+1. **Satış** Veritabanında **Kayıt Oluşturulduğunda** tetikleyicisiyle bir **iş akışı oluşturun**.
+2. **Siparişler** tablonuzu seçin.
+3. **Test et**'e tıklayın.
+4. **Eylem ekleyin** → **Kayıt Oluştur**.
+5. Tablo seçicinin yanındaki **Veritabanları Arası Erişim** seçeneğine tıklayın.
+6. **Sipariş Karşılama** Veritabanına gidip **Siparişler** tablosunu seçin.
+7. Alanları eşleyin:
+   - Sipariş Kimliği → tetikleyicinin Sipariş Kimliği (**+** üzerinden)
+   - Müşteri → tetikleyicinin Müşteri değeri
+   - Tutar → tetikleyicinin Tutar değeri
+   - Durum → `Karşılanmayı Bekliyor`
+8. **Test et**'e, ardından **etkinleştir**'e tıklayın.
+
+## İki Yönlü Eşitleme
+
+Güncellemeleri her iki yönde eşitlemek için:
+1. **Sipariş Karşılama** Veritabanında ikinci bir iş akışı oluşturun.
+2. Satış Veritabanını gösteren Veritabanları Arası Erişim ile **Kayıt Güncellendiğinde** → **Kaydı Güncelle** adımlarını kullanın.
+3. Sonsuz döngülerden kaçınmak için filtre kullanın; örneğin yalnızca belirli alanlar değiştiğinde tetikleyin ve güncellemeden önce değerin gerçekten farklı olduğunu denetleyin.

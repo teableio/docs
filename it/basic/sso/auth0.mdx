@@ -1,0 +1,139 @@
+---
+title: "SSO con Auth0"
+description: "Configura Auth0 come provider di autenticazione SSO per Teable"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Disponibile con il piano Business e superiori</Tip>
+
+## Passaggio 1: creare il provider di autenticazione in Teable
+
+1. Vai alle impostazioni SSO di Teable
+2. Crea un nuovo provider di autenticazione, chiamalo **Auth0** e seleziona **OpenID Connect**
+
+## Passaggio 2: accedere alla dashboard di Auth0
+
+1. Accedi alla [dashboard di Auth0](https://manage.auth0.com)
+2. Seleziona il tuo tenant Auth0
+3. Nel menu a sinistra, vai a **Applicazioni** → **Applicazioni**
+
+## Passaggio 3: creare una nuova applicazione
+
+1. Fai clic su **Crea applicazione**
+2. Inserisci i dettagli dell'applicazione:
+   - **Nome**: Teable SSO
+   - **Tipo di applicazione**: seleziona **Applicazioni web tradizionali**
+3. Fai clic su **Crea**
+
+## Passaggio 4: configurare le impostazioni dell'applicazione
+
+Dopo aver creato l'applicazione, apri la scheda **Impostazioni**:
+
+### Informazioni di base
+
+1. Copia il tuo **Dominio** (ad esempio, `your-tenant.auth0.com` o `your-tenant.us.auth0.com`)
+2. Copia l'**ID client**
+3. Copia il **Segreto client**
+4. Incolla questi valori nella configurazione SSO di Teable
+
+### URI dell'applicazione
+
+Scorri fino alla sezione **URI dell'applicazione**:
+
+1. **URL di callback consentiti**: incolla l'**URL di callback** fornito da Teable
+2. **URL di disconnessione consentiti**: (facoltativo) `https://app.teable.ai`
+3. **Origini web consentite**: (facoltativo) `https://app.teable.ai`
+4. Fai clic su **Salva modifiche** in fondo alla pagina
+
+<Warning>Assicurati di salvare le modifiche prima di lasciare la pagina.</Warning>
+
+## Passaggio 5: configurare gli endpoint OAuth
+
+In Teable, compila i seguenti endpoint OAuth usando il tuo dominio Auth0:
+
+- **URL di autorizzazione**: `https://{yourDomain}/authorize`
+- **URL del token**: `https://{yourDomain}/oauth/token`
+- **URL delle informazioni utente**: `https://{yourDomain}/userinfo`
+- **Emittente**: `https://{yourDomain}/`
+
+<Note>Sostituisci `{yourDomain}` con il dominio Auth0 effettivo ottenuto nel passaggio 4.</Note>
+
+## Passaggio 6: configurare le connessioni (facoltativo)
+
+Auth0 consente di abilitare più provider di identità. Per configurare i metodi di accesso disponibili:
+
+1. Nelle impostazioni dell'applicazione, apri la scheda **Connessioni**
+2. Abilita i metodi di autenticazione che vuoi supportare:
+   - **Database**: autenticazione con nome utente e password
+   - **Social**: Google, Microsoft, GitHub e così via
+   - **Aziendale**: SAML, Active Directory e così via
+3. Configura ogni connessione secondo necessità
+
+## Passaggio 7: personalizzare l'esperienza di accesso (facoltativo)
+
+### Pagina di accesso universale
+
+1. Nella dashboard di Auth0, vai a **Branding** → **Accesso universale**
+2. Personalizza l'aspetto della pagina di accesso
+3. Aggiungi il logo e i colori del marchio della tua azienda
+
+### Modelli di email
+
+1. Vai a **Branding** → **Modelli di email**
+2. Personalizza i modelli di email per la verifica, la reimpostazione della password e altre operazioni
+
+## Passaggio 8: configurare le autorizzazioni degli utenti
+
+### Definire gli ambiti
+
+1. Nella dashboard di Auth0, vai ad **Applicazioni** → **API**
+2. Seleziona **API di gestione Auth0** oppure crea un'API personalizzata
+3. Definisci gli ambiti e le autorizzazioni necessari per la tua applicazione
+
+### Assegnare i ruoli (facoltativo)
+
+1. Vai a **Gestione utenti** → **Ruoli**
+2. Crea ruoli per i diversi tipi di utente
+3. Assegna le autorizzazioni a ogni ruolo
+4. Assegna gli utenti ai ruoli appropriati
+
+## Passaggio 9: provare l'accesso SSO
+
+Hai due opzioni per abilitare l'accesso SSO:
+
+**Opzione 1: URL di autenticazione diretto**
+- Usa l'URL di autorizzazione come URL di accesso SSO
+
+**Opzione 2: verifica del dominio**
+1. In Teable, configura la verifica del dominio
+2. Verifica il tuo dominio personalizzato
+3. Visita https://app.teable.ai
+4. Fai clic sul pulsante di accesso SSO
+5. Per accedere, inserisci il tuo indirizzo email appartenente al dominio verificato
+
+## Configurazione aggiuntiva (facoltativa)
+
+### Abilitare l'autenticazione a più fattori
+
+1. Nella dashboard di Auth0, vai a **Sicurezza** → **Autenticazione a più fattori**
+2. Abilita i metodi MFA che preferisci (SMS, app di autenticazione e così via)
+3. Definisci criteri e regole MFA
+
+### Configurare regole per la logica personalizzata
+
+1. Vai a **Pipeline di autenticazione** → **Regole**
+2. Crea regole personalizzate per:
+   - Aggiungere claim personalizzati ai token
+   - Applicare l'accesso condizionale
+   - Integrare servizi esterni
+   - Arricchire i profili utente
+
+### Configurare le organizzazioni (funzionalità Organizzazioni di Auth0)
+
+Se utilizzi Organizzazioni di Auth0:
+
+1. Nella dashboard di Auth0, vai a **Organizzazioni**
+2. Crea organizzazioni per tenant o aziende differenti
+3. Configura il branding e le connessioni specifici di ogni organizzazione
+4. Abilita il supporto delle organizzazioni nella tua applicazione Teable
+

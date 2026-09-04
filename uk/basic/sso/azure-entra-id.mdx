@@ -1,0 +1,179 @@
+---
+title: "SSO через Azure Entra ID"
+description: "Налаштуйте Azure Entra ID як постачальника автентифікації SSO для Teable"
+---
+
+{/* mintlify-resync: 2026-05-28 */}
+<Tip>Доступно в плані Business і вище</Tip>
+
+## Крок 1. Створіть постачальника автентифікації в Teable
+
+1. Перейдіть до налаштувань SSO у Teable
+2. Створіть нового постачальника автентифікації, назвіть його **Azure Entra ID** і виберіть **OpenID Connect**
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-create-provider.png"
+  alt="Крок 1 налаштування SSO через Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+## Крок 2. Відкрийте Azure Entra ID
+
+1. Увійдіть до свого облікового запису Azure
+2. Перейдіть до **Microsoft Entra ID** (раніше — Azure Active Directory)
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-open-entra-id.png"
+  alt="Крок 2 налаштування SSO через Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+## Крок 3. Налаштуйте кінцеві точки OAuth
+
+Заповніть у Teable наведені нижче кінцеві точки OAuth, використовуючи свій **Tenant ID**:
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-oauth-endpoints.png"
+  alt="Крок 3 налаштування SSO через Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+- **Authorization URL**: `https://login.microsoftonline.com/_YOUR_TENANT_ID_/oauth2/v2.0/authorize`
+- **Token URL**: `https://login.microsoftonline.com/_YOUR_TENANT_ID_/oauth2/v2.0/token`
+- **User Info URL**: `https://graph.microsoft.com/oidc/userinfo`
+- **Issuer**: `https://login.microsoftonline.com/_YOUR_TENANT_ID_/v2.0`
+
+<Note>Замініть `_YOUR_TENANT_ID_` фактичним ідентифікатором орендаря Azure.</Note>
+
+## Крок 4. Зареєструйте новий застосунок
+
+1. В Azure Entra ID натисніть **App registrations** у меню ліворуч
+2. Натисніть **+ New registration**
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-app-registration-entry.png"
+  alt="Реєстрація застосунку в Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+## Крок 5. Налаштуйте реєстрацію застосунку
+
+Заповніть форму реєстрації застосунку:
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-app-registration-form.png"
+  alt="Крок 5 налаштування SSO через Azure Entra ID"
+  className="docs-screenshot"
+/>
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-redirect-uri.png"
+  alt="Крок 6 налаштування SSO через Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+- **Name**: SSO Teable
+- **Supported account types**: виберіть відповідно до своїх потреб
+- **Platform**: Web
+- **Redirect URI**: вставте **Callback URL** із Teable
+
+Натисніть **Register**, щоб створити застосунок.
+
+## Крок 6. Збережіть Client ID
+
+1. Скопіюйте **Application (client) ID** зі сторінки огляду застосунку
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-application-client-id.png"
+  alt="Крок 7 налаштування SSO через Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+2. Вставте Client ID у конфігурацію SSO в Teable
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-teable-client-id.png"
+  alt="Крок 8 налаштування SSO через Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+## Крок 7. Створіть Client Secret
+
+1. У своєму застосунку натисніть **Certificates & secrets** у меню ліворуч
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-certificates-secrets.png"
+  alt="Крок 9 налаштування SSO через Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+2. Натисніть **+ Add a certificate or secret**
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-add-client-secret.png"
+  alt="Крок 10 налаштування SSO через Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+3. Додайте опис і задайте строк дії
+4. Натисніть **Add**
+5. **Важливо**: негайно скопіюйте **Value** секрету й збережіть його як Client Secret у Teable
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-client-secret-value.png"
+  alt="Крок 11 налаштування SSO через Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+<Warning>Значення секрету відображається лише один раз. Обов’язково збережіть його негайно.</Warning>
+
+## Крок 8. Налаштуйте дозволи API
+
+1. Натисніть **API permissions** у меню ліворуч
+2. Натисніть **+ Add a permission**
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-add-api-permission.png"
+  alt="Крок 12 налаштування SSO через Azure Entra ID"
+  className="docs-screenshot"
+/>
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-microsoft-graph-permissions.png"
+  alt="Крок 13 налаштування SSO через Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+3. Виберіть **Microsoft Graph**
+4. Виберіть **Delegated permissions**
+5. Додайте такі дозволи:
+   - `email`
+   - `openid`
+   - `profile`
+6. Натисніть **Add permissions**
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-delegated-permissions.png"
+  alt="Крок 14 налаштування SSO через Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+7. Натисніть **Grant admin consent for [Your Directory]**, щоб схвалити дозволи
+
+## Крок 9. Перевірте вхід через SSO
+
+Увімкнути вхід через SSO можна двома способами:
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-login-options.png"
+  alt="Крок 15 налаштування SSO через Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+**Варіант 1. Пряма URL-адреса автентифікації**
+- Використовуйте URL-адресу автентифікації як адресу входу через SSO
+
+**Варіант 2. Перевірка домену**
+1. Натисніть **Domain verification** у меню ліворуч
+2. Підтвердьте свій домен
+3. Відкрийте сторінку входу Teable
+4. Натисніть кнопку входу через SSO
+5. Щоб увійти, введіть адресу електронної пошти в підтвердженому домені

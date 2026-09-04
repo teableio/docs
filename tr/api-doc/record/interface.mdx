@@ -1,0 +1,449 @@
+---
+title: "Kayıt Alanı Arayüzü"
+---
+
+<Note>Arama Alanı belirli bir Alan türü değildir. Bağlantılı bir Veritabanındaki her tür Alan için arama yapabiliriz. Arama Alanının türünü, bağlantılı Veritabanındaki özgün Alan belirler ve bu Alan isLookup özelliğine sahiptir. Arama Alanları düzenlenemez.</Note>
+
+<Note>
+Tüm Alanların dönüş değerleri belirli durumlarda `isMultipleCellValue: true` değerine sahip olabilir:
+
+1. Bu durum, Alan bir arama Alanı olduğunda ortaya çıkar. Bağlantılı değer birden fazla seçime izin veriyorsa arama Alanının değeri zorunlu olarak bir dizi olur.
+
+2. Alanlar yapılandırılabilir; örneğin kullanıcı Alanları ve bağlantı Alanları tekli veya çoklu seçim olarak ayarlanabilir. Kodunuzda bir Alanın birden fazla değer kabul edip etmediğini belirlemek için `field.isMultipleCellValue` kullanabilirsiniz.
+</Note>
+
+<Note>
+Yazma izinlerini belirlemek için Alan türünü kullanmayın. Bunun yerine Alanın isComputed özelliğini kullanın.
+</Note>
+
+### 1. Sayı Alanı
+* tür: number
+* Yazma türü: `number`
+* Dönüş türü:
+  * `isMultipleCellValue: false`: `number`
+  * `isMultipleCellValue: true`: `number[]`
+
+Örnek:
+```js
+// Yazma değeri
+42
+
+// Dönen değer (isMultipleCellValue: false)
+42
+
+// Dönen değer (isMultipleCellValue: true)
+[42, 17, 99]
+```
+
+### 2. Tek Satırlık Metin Alanı
+* tür: singleLineText
+* Yazma türü: `string`
+* Dönüş türü:
+  * `isMultipleCellValue: false`: `string`
+  * `isMultipleCellValue: true`: `string[]`
+
+Örnek:
+```js
+// Yazma değeri
+"Merhaba, Teable!"
+
+// Dönen değer (isMultipleCellValue: false)
+"Merhaba, Teable!"
+
+// Dönen değer (isMultipleCellValue: true)
+["Merhaba, Teable!", "Hoş geldiniz", "İyi günler"]
+```
+
+### 3. Uzun Metin Alanı
+* tür: longText
+* Yazma türü: `string`
+* Dönüş türü:
+  * `isMultipleCellValue: false`: `string`
+  * `isMultipleCellValue: true`: `string[]`
+
+Örnek:
+```js
+// Yazma değeri
+"Bu, birden fazla paragraf içerebilen uzun bir metin alanıdır..."
+
+// Dönen değer (isMultipleCellValue: false)
+"Bu, birden fazla paragraf içerebilen uzun bir metin alanıdır..."
+
+// Dönen değer (isMultipleCellValue: true)
+["Bu uzun bir metindir...", "Başka bir uzun metin...", "Bir başka uzun metin daha..."]
+```
+
+### 4. Tek Seçim Alanı
+* tür: singleSelect
+* Yazma türü: `string` (seçenek değeri)
+* Dönüş türü:
+  * `isMultipleCellValue: false`: `string`
+  * `isMultipleCellValue: true`: `string[]`
+
+Örnek:
+```js
+// Yazma değeri
+"Seçenek A"
+
+// Dönen değer (isMultipleCellValue: false)
+"Seçenek A"
+
+// Dönen değer (isMultipleCellValue: true)
+["Seçenek A", "Seçenek B", "Seçenek C"]
+```
+
+### 5. Çoklu Seçim Alanı
+* tür: multipleSelect
+* Yazma türü: `string[]` (seçenek değerleri dizisi)
+* Dönüş türü: `string[]`
+
+Örnek:
+```js
+// Yazma değeri
+["Kırmızı", "Mavi", "Yeşil"]
+
+// Dönen değer
+["Kırmızı", "Mavi", "Yeşil"]
+```
+
+### 6. Bağlantı Alanı
+* tür: link
+* Yazma türü:
+  * `isMultipleCellValue: false`: `{ id: string }`
+  * `isMultipleCellValue: true`: `{ id: string }[]`
+* Dönüş türü:
+  * `isMultipleCellValue: false`: `{ id: string, title?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title?: string }[]`
+
+Örnek:
+```js
+// Yazma değeri (isMultipleCellValue: false)
+{ id: "rec123456" }
+
+// Yazma değeri (isMultipleCellValue: true)
+[{ id: "rec123456" }, { id: "rec789012" }]
+
+// Dönen değer (isMultipleCellValue: false)
+{ id: "rec123456", title: "İlişkili Kayıt 1" }
+
+// Dönen değer (isMultipleCellValue: true)
+[
+  { id: "rec123456", title: "İlişkili Kayıt 1" },
+  { id: "rec789012", title: "İlişkili Kayıt 2" }
+]
+```
+
+### 7. Formül Alanı
+* tür: formula
+* Yazma türü: Doğrudan yazılamaz
+* Dönüş türü: Formülün sonucuna bağlıdır; `string | number | boolean` veya bunların dizi biçimleri olabilir
+
+Örnek:
+```js
+// Dönen değer (isMultipleCellValue: false)
+42 // veya "Sonuç" veya true
+
+// Dönen değer (isMultipleCellValue: true)
+[42, 17, 99] // veya ["Sonuç1", "Sonuç2"] veya [true, false, true]
+```
+
+### 8. Ek Alanı
+Bir Ek Alanına ek yüklemek için bu işleme özel API'yi kullanın. Ayrıntılar için [Ek Yükleme](/tr/api-doc/record/upload-attachment) bölümüne bakın.
+* tür: attachment
+* Yazma türü:
+  ```ts
+  {
+    id: string;
+    name: string;
+    path: string;
+    token: string; // Benzersiz tanımlayıcı
+    size: number; // Bayt cinsinden dosya boyutu
+    mimetype: string; // Dosya türü
+    presignedUrl?: string; // Dosya önizleme/indirme URL’si
+    width?: number; // Görsel genişliği
+    height?: number; // Görsel yüksekliği
+  }[]
+  ```
+
+* Dönüş türü:
+```ts
+{
+  id: string;
+  name: string;
+  path: string;
+  token: string; // Benzersiz tanımlayıcı
+  size: number; // Bayt cinsinden dosya boyutu
+  mimetype: string; // Dosya türü
+  presignedUrl?: string; // Dosya önizleme/indirme URL’si
+  width?: number; // Görsel genişliği
+  height?: number; // Görsel yüksekliği
+}[]
+```
+
+Örnek:
+```js
+// Yazma değeri
+[
+  {
+    name: "document.pdf",
+    type: "application/pdf",
+    token: "abc123",
+    size: 1024000
+  }
+]
+
+// Dönen değer
+[
+  {
+    id: "att123",
+    name: "document.pdf",
+    path: "/uploads/document.pdf",
+    token: "abc123",
+    size: 1024000,
+    mimetype: "application/pdf",
+    presignedUrl: "https://app.teable.ai/preview/document.pdf",
+  },
+  {
+    id: "att456",
+    name: "image.jpg",
+    path: "/uploads/image.jpg",
+    token: "def456",
+    size: 2048000,
+    mimetype: "image/jpeg",
+    presignedUrl: "https://app.teable.ai/preview/image.jpg",
+    width: 1920,
+    height: 1080
+  }
+]
+```
+
+### 9. Tarih Alanı
+* tür: date
+* Yazma türü: `string` (ISO 8601 biçimi)
+* Dönüş türü:
+  * `isMultipleCellValue: false`: `string` (ISO 8601 biçimi)
+  * `isMultipleCellValue: true`: `string[]` (ISO 8601 biçimi)
+ISO 8601 zaman biçimini almak için `new Date().toISOString()` kullanabilirsiniz
+
+Örnek:
+```js
+// Yazma değeri
+"2024-09-02T02:51:03.875Z"
+
+// Dönen değer (isMultipleCellValue: false)
+"2024-09-02T02:51:03.875Z"
+
+// Dönen değer (isMultipleCellValue: true)
+["2024-09-02T02:51:03.875Z", "2024-09-02T02:51:03.875Z"]
+```
+
+### 10. Oluşturulma Zamanı Alanı
+* tür: createdTime
+* Yazma türü: Doğrudan yazılamaz
+* Dönüş türü:
+  * `isMultipleCellValue: false`: `string` (ISO 8601 biçimi)
+  * `isMultipleCellValue: true`: `string[]` (ISO 8601 biçimi)
+
+Örnek:
+```js
+// Dönen değer (isMultipleCellValue: false)
+"2024-09-02T02:51:03.875Z"
+
+// Dönen değer (isMultipleCellValue: true)
+["2024-09-02T02:51:03.875Z", "2024-09-02T02:51:03.875Z"]
+```
+
+### 11. Son Değiştirilme Zamanı Alanı
+* tür: lastModifiedTime
+* Yazma türü: Doğrudan yazılamaz
+* Dönüş türü:
+  * `isMultipleCellValue: false`: `string` (ISO 8601 biçimi)
+  * `isMultipleCellValue: true`: `string[]` (ISO 8601 biçimi)
+
+Örnek:
+```js
+// Dönen değer (isMultipleCellValue: false)
+"2023-04-15T10:30:00Z"
+
+// Dönen değer (isMultipleCellValue: true)
+["2023-04-15T10:30:00Z", "2023-04-16T14:45:00Z"]
+```
+
+### 12. Onay Kutusu Alanı
+* tür: checkbox
+* Yazma türü: `boolean`
+* Dönüş türü:
+  * `isMultipleCellValue: false`: `boolean`
+  * `isMultipleCellValue: true`: `boolean[]`
+
+Örnek:
+```js
+// Yazma değeri
+true
+
+// Dönen değer (isMultipleCellValue: false)
+true
+
+// Dönen değer (isMultipleCellValue: true)
+[true, false, true]
+```
+
+### 13. Özet Alanı
+* tür: rollup
+* Yazma türü: Doğrudan yazılamaz
+* Dönüş türü: Özet yapılandırmasına bağlıdır; `number | string` veya bunların dizi biçimleri olabilir
+
+Örnek:
+```js
+// Dönen değer (isMultipleCellValue: false)
+42 // veya "Özet Sonucu"
+
+// Dönen değer (isMultipleCellValue: true)
+[42, 17, 99] // veya ["Özet 1", "Özet 2"]
+```
+
+### 14. Derecelendirme Alanı
+* tür: rating
+* Yazma türü: `number`
+* Dönüş türü:
+  * `isMultipleCellValue: false`: `number`
+  * `isMultipleCellValue: true`: `number[]`
+
+Örnek:
+```js
+// Yazma değeri
+4
+
+// Dönen değer (isMultipleCellValue: false)
+4
+
+// Dönen değer (isMultipleCellValue: true)
+[4, 3, 5]
+```
+
+### 15. Otomatik Numara Alanı
+* tür: autoNumber
+* Yazma türü: Doğrudan yazılamaz
+* Dönüş türü:
+  * `isMultipleCellValue: false`: `number`
+  * `isMultipleCellValue: true`: `number[]`
+
+Örnek:
+```js
+// Dönen değer (isMultipleCellValue: false)
+42
+
+// Dönen değer (isMultipleCellValue: true)
+[42, 43, 44]
+```
+
+### 16. Kullanıcı Alanı
+
+* tür: user
+* Yazma türü:
+  * `isMultipleCellValue: false`: `{ id: string, title: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string }[]`
+* Dönüş türü:
+  * `isMultipleCellValue: false`: `{ id: string, title: string, email?: string, avatar?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string, email?: string, avatar?: string }[]`
+
+Örnek:
+```js
+// Yazma değeri (isMultipleCellValue: false)
+{ id: "user123", title: "John Doe" }
+
+// Yazma değeri (isMultipleCellValue: true)
+[
+  { id: "user123", title: "John Doe" },
+  { id: "user456", title: "Jane Smith" }
+]
+
+// Dönen değer (isMultipleCellValue: false)
+{
+  id: "user123",
+  title: "John Doe",
+  email: "john@example.com",
+  avatar: "https://example.com/avatar.jpg"
+}
+
+// Dönen değer (isMultipleCellValue: true)
+[
+  {
+    id: "user123",
+    title: "John Doe",
+    email: "john@example.com",
+    avatar: "https://example.com/avatar1.jpg"
+  },
+  {
+    id: "user456",
+    title: "Jane Smith",
+    email: "jane@example.com",
+    avatar: "https://example.com/avatar2.jpg"
+  }
+]
+```
+
+### 17. Oluşturan Alanı
+* Yazma türü: Doğrudan yazılamaz
+* Dönüş türü:
+  * `isMultipleCellValue: false`: `{ id: string, title: string, email?: string, avatar?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string, email?: string, avatar?: string }[]`
+Örnek:
+```js
+// Dönen değer (isMultipleCellValue: false)
+{
+  id: "user123",
+  title: "John Doe",
+  email: "john@example.com",
+  avatar: "https://example.com/avatar.jpg"
+}
+
+// Dönen değer (isMultipleCellValue: true)
+[
+  {
+    id: "user123",
+    title: "John Doe",
+    email: "john@example.com",
+    avatar: "https://example.com/avatar1.jpg"
+  },
+  {
+    id: "user456",
+    title: "Jane Smith",
+    email: "jane@example.com",
+    avatar: "https://example.com/avatar2.jpg"
+  }
+]
+```
+
+### 18. Son Değiştiren Alanı
+* Yazma türü: Doğrudan yazılamaz
+* Dönüş türü:
+  * `isMultipleCellValue: false`: `{ id: string, title: string, email?: string, avatar?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string, email?: string, avatar?: string }[]`
+
+Örnek:
+```js
+// Dönen değer (isMultipleCellValue: false)
+{
+  id: "user123",
+  title: "John Doe",
+  email: "john@example.com",
+  avatar: "https://example.com/avatar.jpg"
+}
+
+// Dönen değer (isMultipleCellValue: true)
+[
+  {
+    id: "user123",
+    title: "John Doe",
+    email: "john@example.com",
+    avatar: "https://example.com/avatar1.jpg"
+  },
+  {
+    id: "user456",
+    title: "Jane Smith",
+    email: "jane@example.com",
+    avatar: "https://example.com/avatar2.jpg"
+  }
+]
+```

@@ -1,0 +1,191 @@
+---
+title: "Generazione IA"
+description: "Usa i modelli IA per generare testo o dati strutturati in un workflow"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Consigliamo vivamente di usare Esegui script per creare automazioni, perché può coprire il comportamento di tutte le azioni, comprese quelle che altrimenti dovrebbero essere create manualmente. Descrivi semplicemente le tue esigenze all'IA nella chat.
+
+Nota: se aggiungi azioni manualmente, in seguito l'IA non sarà in grado di riconoscerle o modificarle.
+</Tip>
+
+## Crea con l'IA
+
+Apri AI Chat nella barra laterale destra della Tabella e descrivi ciò che desideri.
+
+L'IA si occupa di tutto: sceglie il trigger corretto, seleziona le azioni appropriate, associa i Campi e configura automaticamente l'intero workflow.
+
+Descrivi una sola volta l'obiettivo e il workflow sarà pronto, senza alcuna configurazione manuale.
+
+Invia un prompt a un modello linguistico di grandi dimensioni e restituisce testo o JSON strutturato. Usalo per classificare, estrarre, riepilogare o generare dati in base ai tuoi Record.
+
+## Configurazione
+
+| Impostazione | Obbligatoria | Descrizione |
+|---|---|---|
+| Prompt | Sì | Le istruzioni per l'IA. Fai clic su **+** per inserire variabili dinamiche provenienti dai passaggi precedenti |
+| Modello | No | Scegli un modello. Per impostazione predefinita viene usato il modello di sistema. Sono disponibili anche modelli di Visione e Ragionamento |
+| Temperatura | No | Controlla la casualità: 0 = risultato più deterministico, 1 = risultato più creativo. Il valore predefinito è in genere circa 0,7 |
+| Tipo di output | No | **Testo** (predefinito): restituisce testo in formato libero. **JSON**: restituisce JSON strutturato conforme allo schema definito |
+| Allegati | No | Carica immagini, PDF, documenti Word o file Excel. Richiede un modello con funzionalità di visione |
+
+## Funzionalità dei modelli
+
+| Tag | Significato |
+|---|---|
+| **Visione** | Può leggere e analizzare immagini, PDF, documenti Word e file Excel allegati al prompt |
+| **Ragionamento** | Restituisce sia la risposta sia il ragionamento dettagliato, utile per analisi complesse |
+
+Puoi collegare modelli IA di terze parti tramite **Spazio → Impostazioni → Integrazioni**. In questo modo puoi usare modelli di OpenAI, Anthropic, Google e altri fornitori.
+
+## Come configurarlo
+
+1. Aggiungi un'azione **Generazione IA** al workflow.
+2. Scrivi il **Prompt**, ovvero le istruzioni che l'IA seguirà. Fai clic su **+** per inserire valori dinamici, ad esempio il testo di un ticket di assistenza, il contenuto di un modulo inviato o la descrizione di un prodotto.
+3. (Facoltativo) Seleziona un **Modello** se desideri usarne uno specifico anziché quello predefinito.
+4. (Facoltativo) Regola la **Temperatura**. I valori più bassi (0–0,3) producono risultati più coerenti e prevedibili; quelli più alti (0,7–1,0) producono risultati più vari e creativi.
+5. (Facoltativo) Imposta **Tipo di output** su **JSON** se hai bisogno di dati strutturati. Definisci lo schema JSON affinché l'IA sappia quale formato restituire.
+6. (Facoltativo) Aggiungi **Allegati** se vuoi che l'IA legga documenti o immagini; è necessario un modello con funzionalità di visione.
+7. Salva l'azione. La risposta dell'IA sarà disponibile per i passaggi successivi tramite il selettore di variabili **+**.
+
+## Suggerimenti per scrivere i prompt
+
+La qualità dell'output dell'IA dipende in larga misura dal prompt. Ecco alcune indicazioni pratiche:
+
+- **Sii specifico.** Invece di "Classifica questo", scrivi "Classifica questo ticket di assistenza in una di queste categorie: Fatturazione, Tecnico, Account, Altro".
+- **Fornisci esempi nel prompt.** Mostra all'IA il risultato che ti aspetti:
+  ```
+  Classifica il seguente ticket di assistenza. Restituisci solo il nome della categoria.
+
+  Categorie: Fatturazione, Tecnico, Account, Altro
+
+  Esempi:
+  - "Non riesco ad accedere al mio account" → Account
+  - "L'importo della fattura è errato" → Fatturazione
+  - "L'API restituisce un errore 500" → Tecnico
+
+  Ticket: {{Ticket Description}}
+  ```
+- **Definisci il formato di output.** Se desideri un formato specifico, indicalo chiaramente: "Restituisci solo il nome della categoria, nient'altro" oppure "Restituisci un oggetto JSON con le chiavi: category, confidence, reason".
+- **Mantieni il prompt mirato.** Un'unica attività per prompt funziona meglio rispetto alla richiesta di eseguire più operazioni contemporaneamente.
+
+## Output JSON
+
+Quando imposti Tipo di output su **JSON**, l'IA restituisce dati strutturati anziché testo libero. È utile quando devi estrarre più informazioni e usarle separatamente nei passaggi successivi.
+
+Esempio di prompt per un output JSON:
+
+```
+Estrai le seguenti informazioni da questa email contenente una fattura. Restituisci un JSON con queste chiavi:
+- vendor_name (string)
+- invoice_number (string)
+- amount (number)
+- due_date (string in formato YYYY-MM-DD)
+
+Corpo dell'email: {{Email Body}}
+```
+
+L'IA restituisce un risultato simile al seguente:
+
+```json
+{
+  "vendor_name": "Acme Corp",
+  "invoice_number": "INV-2024-001",
+  "amount": 1250.00,
+  "due_date": "2024-03-15"
+}
+```
+
+Ogni chiave del JSON è quindi disponibile come variabile separata nei passaggi successivi: puoi associare `vendor_name` a un Campo, `amount` a un altro e così via.
+
+## Modelli di visione e allegati
+
+I modelli di visione possono analizzare immagini e documenti. Allega i file al prompt e l'IA li "leggerà":
+
+- **Immagini:** schermate, foto, diagrammi, grafici.
+- **PDF:** fatture, contratti, report.
+- **File Word/Excel:** documenti e fogli di calcolo.
+
+Casi d'uso: estrarre testo da documenti scansionati, leggere dati da immagini di fatture, analizzare immagini di grafici ed elaborare moduli caricati.
+
+Assicurati di selezionare un modello con il tag **Visione**. I modelli senza funzionalità di visione ignoreranno gli allegati.
+
+## Sistema dei Crediti
+
+Ogni chiamata a Generazione IA consuma Crediti in base a:
+
+- Il **modello** usato: i modelli più potenti costano più Crediti per token.
+- Il **numero di token** elaborati, sia in input sia in output.
+
+Il costo esatto in Crediti viene mostrato nel pannello di test dopo un'esecuzione di prova. Controlla l'utilizzo dei Crediti nelle impostazioni dell'account, soprattutto se usi Generazione IA all'interno di un Ciclo su molti Record.
+
+## Esempi concreti di prompt
+
+### Classificazione
+
+```
+Classifica il feedback di questo cliente come: Positivo, Negativo o Neutro.
+Restituisci solo la classificazione.
+
+Opinione del cliente: {{Feedback Text}}
+```
+
+### Estrazione dei dati
+
+```
+Estrai tutti gli indirizzi email menzionati nel testo seguente.
+Restituiscili come array JSON di stringhe.
+
+Testo: {{Message Body}}
+```
+
+### Riepilogo
+
+```
+Riassumi le seguenti note della riunione in 3 punti elenco.
+Concentrati sulle attività da svolgere e sulle decisioni prese.
+
+Note: {{Meeting Notes}}
+```
+
+### Generazione di contenuti
+
+```
+Scrivi un'email professionale di follow-up a {{Customer Name}} in merito alla richiesta su {{Product Name}}.
+Non superare le 150 parole. Indica che risponderemo entro 24 ore.
+```
+
+### Traduzione
+
+```
+Traduci il testo seguente da {{Source Language}} a {{Target Language}}.
+Mantieni la formattazione originale.
+
+Testo: {{Content}}
+```
+
+## Quando utilizzarla
+
+- **Classificare i ticket di assistenza per argomento.** Categorizza automaticamente i ticket in arrivo affinché vengano indirizzati al team corretto.
+- **Estrarre dati strutturati da fatture o email.** Inserisce importi, date, nomi e numeri di riferimento in Campi separati.
+- **Riassumere Campi di testo lunghi.** Condensa note di riunioni, descrizioni o commenti in brevi riepiloghi.
+- **Generare contenuti email personalizzati.** Crea testi personalizzati per il corpo delle email in base ai dati dei Record.
+- **Analizzare immagini e documenti.** Usa modelli di visione per leggere fatture, ricevute o schermate caricate.
+
+## Suggerimenti
+
+- Usa il **pannello di test** per perfezionare il prompt prima di attivare l'automazione. Esegui test con dati reali per verificare il formato e la qualità dell'output.
+- Per risultati coerenti, soprattutto nelle classificazioni, imposta Temperatura su 0 o su un valore prossimo a 0.
+- La modalità di output JSON è più affidabile quando fornisci uno schema chiaro nel prompt. Elenca sempre le chiavi previste e i relativi tipi.
+- Se elabori molti Record in un [Ciclo](../logic/loop-run), mantieni i prompt concisi per ridurre l'utilizzo dei token e il costo in Crediti.
+- Collega altri fornitori IA tramite **Spazio → Impostazioni → Impostazioni IA** se i modelli predefiniti non soddisfano le tue esigenze. Per maggiori dettagli, consulta [Modelli IA personalizzati](/it/basic/ai/custom-model).
+
+<Tip>Collega modelli IA di terze parti tramite **Spazio → Impostazioni → Impostazioni IA**.</Tip>
+
+## Contenuti correlati
+
+- [Ciclo (batch)](../logic/loop-run) — elabora più Record con l'IA in una singola esecuzione dell'automazione
+- [Esegui script](/it/basic/automation/ai/scripting/runscript) — per una logica personalizzata che va oltre la generazione basata su prompt
+- [Invia email](/it/basic/automation/actions/communication/send-email-overview)
+- [Aggiorna Record](/it/basic/automation/actions/records/update-record)

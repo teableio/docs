@@ -1,0 +1,113 @@
+---
+title: "関数チートシート"
+description: "数式関数、引数、出力型、基本的な例をすばやく確認できます。"
+mode: "wide"
+---
+
+関数チートシートでは、利用できる関数、引数、出力型、例を確認できます。数式を記述するときは、関数カテゴリーから必要な関数を探してください。
+
+## 数値関数
+
+数値関数は、算術演算、統計計算、数値の書式設定を行います。
+
+| 関数名 | 説明 | 入力 | 出力 | 例 |
+| ------------ | ----------- | ----- | ------ | ------- |
+| SUM | 数値を加算します。number1 + number2 + ... と同等です。 | `number1, [number2, ...]` | Number | `SUM(100, 200, 300) => 600` |
+| AVERAGE | 数値の平均を返します。 | `number1, [number2, ...]` | Number | `AVERAGE(100, 200, 300) => 200` |
+| MAX | 指定した数値のうち最大の値を返します。 | `number1, [number2, ...]` | Number | `MAX(100, 200, 300) => 300` |
+| MIN | 指定した数値のうち最小の値を返します。 | `number1, [number2, ...]` | Number | `MIN(100, 200, 300) => 100` |
+| ROUND | 値を「precision」で指定した小数点以下の桁数に丸めます。 | `value, [precision]` | Number | `ROUND(1.99, 0) => 2` `ROUND(16.8, -1) => 20` |
+| ROUNDUP | 常にゼロから離れる方向へ切り上げます。 | `value, [precision]` | Number | `ROUNDUP(1.1, 0) => 2` `ROUNDUP(-1.1, 0) => -2` |
+| ROUNDDOWN | 常にゼロに近づく方向へ切り捨てます。 | `value, [precision]` | Number | `ROUNDDOWN(1.9, 0) => 1` `ROUNDDOWN(-1.9, 0) => -1` |
+| CEILING | 値以上となる最も近い整数倍を返します。 | `value, [significance]` | Number | `CEILING(2.49) => 3` `CEILING(2.49, 1) => 2.5` |
+| FLOOR | 値以下となる最も近い整数倍を返します。 | `value, [significance]` | Number | `FLOOR(2.49) => 2` `FLOOR(2.49, 1) => 2.4` |
+| EVEN | 指定した値以上となる最小の偶数を返します。 | `value` | Number | `EVEN(0.1) => 2` `EVEN(-0.1) => -2` |
+| ODD | 正の値を最も近い奇数へ切り上げ、負の値を最も近い奇数へ切り下げます。 | `value` | Number | `ODD(0.1) => 1` `ODD(-0.1) => -1` |
+| INT | 数値の整数部分を返します。 | `value` | Number | `INT(1.9) => 1` `INT(-1.9) => -2` |
+| ABS | 絶対値を返します。 | `value` | Number | `ABS(-1) => 1` |
+| SQRT | 0以上の数値の平方根を返します。 | `value` | Number | `SQRT(4) => 2` |
+| POWER | 指定した底を指定した指数で累乗します。 | `base, exponent` | Number | `POWER(2, 2) => 4` |
+| EXP | オイラー数（e）を指定した指数で累乗します。 | `value` | Number | `EXP(0) => 1` `EXP(1) => 2.718` |
+| LOG | 指定した底に対する値の対数を計算します。底を省略した場合は10になります。 | `value, [base=10]` | Number | `LOG(100) => 2` `LOG(1024, 2) => 10` |
+| MOD | 第1引数を第2引数で割った余りを返します。 | `value, divisor` | Number | `MOD(9, 2) => 1` `MOD(9, 3) => 0` |
+| VALUE | テキスト文字列を数値へ変換します。 | `text` | Number | `VALUE("$1,000,000") => 1000000` |
+
+## テキスト関数
+
+テキスト関数は、文字列の結合、検索、置換、抽出、分割を行います。
+
+| 関数名 | 説明 | 入力 | 出力 | 例 |
+| ------------ | ----------- | ----- | ------ | ------- |
+| CONCATENATE | 複数の値型の引数を1つのテキスト値に結合します。 | `text1, [text2, ...]` | Text | `CONCATENATE("Hello ", "Teable") => Hello Teable` |
+| FIND | 指定したテキスト内で部分文字列の位置を検索します。見つからない場合は0を返します。 | `stringToFind, whereToSearch, [startFromPosition]` | Number | `FIND("Teable", "Hello Teable") => 7` |
+| SEARCH | 指定したテキスト内で部分文字列の位置を検索します。見つからない場合は空を返します。FINDと似ていますが、0ではなく空を返します。 | `stringToFind, whereToSearch, [startFromPosition]` | Text or Empty | `SEARCH("Teable", "Hello Teable") => 7` |
+| MID | テキスト文字列の指定位置から、指定した文字数を抽出します。 | `text, whereToStart, count` | Text | `MID("Hello Teable", 6, 6) => "Teable"` |
+| LEFT | 文字列の先頭から指定した文字数を抽出します。 | `text, count` | Text | `LEFT("2023-09-06", 4) => "2023"` |
+| RIGHT | 文字列の末尾から指定した文字数を抽出します。 | `text, count` | Text | `RIGHT("2023-09-06", 5) => "09-06"` |
+| REPLACE | 指定位置から指定した文字数を置換テキストに置き換えます。 | `text, whereToStart, count, replacement` | Text | `REPLACE("Hello Table", 7, 5, "Teable") => "Hello Teable"` |
+| REGEXP_REPLACE | 正規表現に一致するすべての部分文字列を置換テキストに置き換えます。 | `text, regular_expression, replacement` | Text | `REGEXP_REPLACE("Hello Table", "H.* ", "") => "Teable"` |
+| SUBSTITUTE | 古いテキストを新しいテキストに置き換えます。インデックスを指定すると、古いテキストの特定の出現箇所だけを置換できます。省略した場合はすべての出現箇所を置換します。 | `text, oldText, newText, [index]` | Text | `SUBSTITUTE("Hello Table", "Table", "Teable") => "Hello Teable"` |
+| TEXTBEFORE | 指定した区切り文字より前のテキストを返します。 | `text, delimiter` | Text | `TEXTBEFORE("20, 04, 79", ",") => "20"` |
+| TEXTSPLIT | 指定した区切り文字でテキストを分割し、複数のテキスト値を返します。 | `text, delimiter` | Array | `TEXTSPLIT("20, 04, 79", ",") => ["20", " 04", " 79"]` |
+| LOWER | 文字列を小文字に変換します。 | `text` | Text | `LOWER("Hello Teable") => "hello teable"` |
+| UPPER | 文字列を大文字に変換します。 | `text` | Text | `UPPER("Hello Teable") => "HELLO TEABLE"` |
+| REPT | テキストを指定した回数だけ繰り返します。 | `text, number` | Text | `REPT("Hello!", 3) => "Hello!Hello!Hello!"` |
+| TRIM | 文字列の先頭と末尾から空白文字を削除します。 | `text` | Text | `TRIM(" Hello ") => "Hello"` |
+| LEN | 文字列の文字数を数えます。 | `text` | Number | `LEN("Hello") => 5` |
+| T | 引数がテキストの場合はその値を返し、それ以外の場合は空を返します。 | `value` | Text or Empty | `T("Hello") => "Hello"` `T(100) => null` |
+| ENCODE_URL_COMPONENT | URLまたはURIを構築するため、一部の文字をエンコード表現へ置き換えます。- _ . ~ はエンコードしません。 | `value` | Text | `ENCODE_URL_COMPONENT("Hello Teable") => "Hello%20Teable"` |
+
+## 論理関数
+
+論理関数は、`IF`、`AND`、`OR` などの条件判定や論理演算を行います。
+
+| 関数名 | 説明 | 入力 | 出力 | 例 |
+| ------------ | ----------- | ----- | ------ | ------- |
+| IF | logical引数がtrueの場合はvalue1を返し、それ以外の場合はvalue2を返します。IF文の入れ子や、セルが空かどうかの確認にも使用できます。 | `logical, value1, value2` | String \| Number \| Boolean \| Datetime | `IF(2 > 1, "A", "B") => "A"` `IF(2 > 1, TRUE, FALSE) => TRUE` |
+| SWITCH | 入力式を一連の値と照合し、対応する結果を返します。一致しない場合のデフォルト値も返せます。入れ子になったIF()数式の代わりとして使用できることがあります。 | `expression, [pattern, result]..., [default]` | String \| Number \| Boolean \| Datetime | `SWITCH("B", "A", "Value A", "B", "Value B", "Default Value") => "Value B"` |
+| AND | すべての引数がtrueの場合はtrueを返し、それ以外の場合はfalseを返します。 | `logical1, [logical2, ...]` | Boolean | `AND(1 < 2, 5 > 3) => true` `AND(1 < 2, 5 < 3) => false` |
+| OR | いずれかの引数がtrueの場合にtrueを返します。 | `logical1, [logical2, ...]` | Boolean | `OR(1 < 2, 5 < 3) => true` `OR(1 > 2, 5 < 3) => false` |
+| XOR | trueの引数が奇数個の場合にtrueを返します。 | `logical1, [logical2, ...]` | Boolean | `XOR(1 < 2, 5 < 3, 8 < 10) => false` `XOR(1 > 2, 5 < 3, 8 < 10) => true` |
+| NOT | 引数の論理値を反転します。 | `boolean` | Boolean | `NOT(1 < 2) => false` `NOT(1 > 2) => true` |
+| BLANK | null値を返します。フィールドが空かどうかの判定にも使用できます。 | `-` | null | `BLANK() => null` `IF({Weight}=BLANK(), 1, 2) => 1` |
+| ERROR | エラー値を返します。 | `message` | Error | `IF(2 > 3, "Yes", ERROR("Calculation")) => "#ERROR: Calculation"` |
+| IS_ERROR | 式でエラーが発生する場合にtrueを返します。 | `expr` | Boolean | `IS_ERROR(ERROR()) => true` |
+
+## 日付関数
+
+日付関数は、現在の日付の取得、日付間の差の計算、日付の比較など、日付と時刻の値を処理・変換します。
+
+| 関数名 | 説明 | 入力 | 出力 | 例 |
+| ------------ | ----------- | ----- | ------ | ------- |
+| TODAY | 現在の日付を返します。 | `-` | Datetime | `TODAY() => "2023-09-08 00:00"` |
+| NOW | 現在の日付と時刻を返します。 | `-` | Datetime | `NOW() => "2023-09-08 16:50"` |
+| YEAR | 日付の4桁の年を返します。 | `date` | Number | `YEAR("2023-09-08") => 2023` |
+| MONTH | 日付の月を1（1月）から12（12月）までの数値で返します。 | `date` | Number | `MONTH("2023-09-08") => 9` |
+| WEEKNUM | その日付が年の第何週かを返します。 | `date` | Number | `WEEKNUM("2023-09-08") => 36` |
+| WEEKDAY | 曜日を0から6までの整数で返します。第2引数に「Sunday」または「Monday」を指定して、週の開始曜日を設定することもできます。 | `date, [startDayOfWeek]` | Number | `WEEKDAY("2023-09-08", "Monday") => 5` |
+| DAY | 日付の日を1～31の数値で返します。 | `date` | Number | `DAY("2023-09-08") => 8` |
+| HOUR | 日付の時を0（午前12:00）から23（午後11:00）までの数値で返します。 | `date` | Number | `HOUR("2023-09-08 16:50") => 16` |
+| MINUTE | 日付の分を0から59までの整数で返します。 | `date` | Number | `MINUTE("2023-09-08 16:50") => 50` |
+| SECOND | 日付の秒を0から59までの整数で返します。 | `date` | Number | `SECOND("2023-09-08 16:50:30") => 30` |
+| FROMNOW | 現在の日付と別の日付の間の日数を計算します。 | `date, unit` | Number | `FROMNOW({Date}, "day") => 25` |
+| TONOW | 現在の日付と別の日付の間の日数を計算します。 | `date, unit` | Number | `TONOW({Date}, "day") => 25` |
+| DATETIME_DIFF | 指定した単位で日時の差を返します。デフォルトの単位は秒です。（単位指定子の一覧を参照） | `date1, date2, [unit]` | Number | `DATETIME_DIFF("2022-08-01", "2023-09-08", "day") => 403` |
+| WORKDAY | 指定した休日を除き、開始日から指定した営業日数だけ移動した日付を返します | `date, count, [holidayStr]` | Datetime | `WORKDAY("2023-09-08", 200) => "2024-06-14 00:00:00"` |
+| WORKDAY_DIFF | date1とdate2の間の営業日数を返します。営業日からは週末と、ISO形式の日付をカンマで区切った任意の休日一覧が除外されます。 | `date1, date2, [holidayStr]` | Number | `WORKDAY_DIFF("2023-06-18", "2023-10-01") => 75` |
+| IS_SAME | 2つの日付を指定単位で比較し、同じかどうかを判定します。同じ場合はtrue、それ以外の場合はfalseを返します。 | `date1, date2, [unit]` | Boolean | `IS_SAME("2023-09-08", "2023-09-10") => false` |
+| IS_AFTER | date1がdate2より後かどうかを判定します。後の場合はtrue、それ以外の場合はfalseを返します。 | `date1, date2, [unit]` | Boolean | `IS_AFTER("2023-09-10", "2023-09-08") => true` `IS_AFTER("2023-09-10", "2023-09-08", "month") => false` |
+
+## 配列関数とその他の関数
+
+配列関数とその他の関数は、ロールアップ配列、重複の除去、結合、空の値の整理、レコードIDを処理します。
+
+| 関数名 | 説明 | 入力 | 出力 | 例 |
+| ------------ | ----------- | ----- | ------ | ------- |
+| COUNTALL | テキストと空白を含む、すべての要素の数を返します。 | `value1, [value2, ...]` | Number | `COUNTALL(100, 200, "", "Teable", TRUE()) => 5` |
+| COUNTA | 空でない値の数を返します。数値とテキスト値の両方を数えます。 | `value1, [value2, ...]` | Number | `COUNTA(100, 200, 300, "", "Teable", TRUE) => 4` |
+| COUNT | 数値項目の数を返します。 | `value1, [value2, ...]` | Number | `COUNT(100, 200, 300, "", "Teable", TRUE) => 3` |
+| ARRAY_JOIN | 区切り文字を使用して、ロールアップ項目の配列を文字列に結合します。 | `array, [separator]` | String | `ARRAY_JOIN(["Tom", "Jerry", "Mike"], "; ") => "Tom; Jerry; Mike"` |
+| ARRAY_UNIQUE | 配列内の一意の項目だけを返します。 | `array` | Array | `ARRAY_UNIQUE([1, 2, 3, 2, 1]) => [1, 2, 3]` |
+| ARRAY_FLATTEN | 配列の入れ子をすべて取り除き、平坦化します。すべての項目が1つの配列の要素になります。 | `array` | Array | `ARRAY_FLATTEN([1, 2, " ", 3, true], ["ABC"]) => [1, 2, 3, " ", true, "ABC"]` |
+| ARRAY_COMPACT | 配列から空文字列とnull値を削除します。「false」と、1文字以上の空白を含む文字列は保持します。 | `array` | Array | `ARRAY_COMPACT([1, 2, 3, "", null, "ABC"]) => [1, 2, 3, "ABC"]` |
+| RECORD_ID | 現在のレコードのIDを返します。 | `-` | String | `RECORD_ID() => "recxxxxxx"` |

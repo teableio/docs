@@ -1,0 +1,109 @@
+---
+title: Modelo de IA personalizado
+description: Añade proveedores de modelos personalizados para Campos de IA, automatizaciones, Chat de IA, App Builder y otras funciones de IA compatibles.
+---
+
+<Tip>Disponible para el plan Pro y los planes superiores</Tip>
+
+## Dónde configurarlo
+
+1. Abre el Espacio de destino.
+2. Haz clic en **Ajustes** en la esquina superior derecha.
+3. Ve a **Ajustes de IA**.
+
+<img
+  src="/images/docs/ai/2026-05-21-custom-model-ai-settings.png"
+  alt="Página de Ajustes de IA"
+  className="docs-screenshot"
+/>
+
+## Pasos de configuración
+
+En **Funciones de IA**, activa las que necesites:
+
+- **Campo de IA**
+- **Chat de IA**
+
+Al habilitar el **Chat de IA**, se controla si la función de chat está disponible en el Espacio.
+
+La fila **Simultaneidad** situada bajo **Campo de IA** establece cuántas generaciones de Campos de IA ejecuta al mismo tiempo este Espacio; las demás esperan en la cola. Reduce el valor cuando las operaciones masivas de IA de este Espacio estén ralentizando el trabajo de otras personas y auméntalo cuando quieras que una operación de gran tamaño termine más rápido.
+
+### Añadir un proveedor de LLM
+
+<Note>
+Cuando añadas un proveedor de LLM, elige **OpenAI**, **Anthropic** o **Compatible con OpenAI** como tipo de proveedor. Usa **Compatible con OpenAI** para los servicios que ofrecen un punto de conexión de API compatible con OpenAI. Si una tarea usa imágenes, capturas de pantalla u otras entradas visuales, elige un modelo que admita visión. Los modelos que no admiten visión fallarán en estas tareas multimodales.
+</Note>
+
+Haz clic en **Añadir proveedor de LLM** y completa los campos siguientes:
+
+- **Nombre**: Se utiliza para distinguir los distintos proveedores.
+- **Tipo de proveedor**: Selecciona el tipo de proveedor.
+- **URL base**: Introduce el punto de conexión de la API del proveedor.
+- **Clave de API**: Introduce la clave de API del proveedor.
+- **Modelos**: Introduce los nombres de los modelos que quieras conectar. Separa varios modelos con comas estándar.
+
+<img
+  src="/images/docs/ai/2026-05-21-custom-model-add-provider.png"
+  alt="Cuadro de diálogo para añadir un proveedor de LLM"
+  className="docs-screenshot"
+/>
+
+### Probar las funciones del modelo
+
+Actualmente hay tres formas de realizar pruebas:
+
+- Haz clic en **Probar** en la fila del proveedor de LLM.
+- Haz clic en **Probar** en la fila de un modelo concreto.
+- Haz clic en **Probar funciones del modelo**, en la esquina superior derecha de la lista, para probar por lotes todos los modelos configurados.
+
+Si un modelo está destinado a generar imágenes, marca **Modelo de generación de imágenes** antes de ejecutar la prueba. Una vez marcada esta opción, Teable lo prueba como modelo de imágenes para las funciones de texto a imagen y de imagen a imagen. Si no está marcada, el modelo se prueba como un modelo de texto normal.
+
+## Consejos de configuración
+
+### URL base y Modelos
+
+<Warning>Es posible que algunas claves de Planes de programación solo funcionen en herramientas de programación concretas y no sean claves de API estándar. Consulta las condiciones del proveedor antes de usarlas con servicios externos. Para conectar Teable, usa una clave de API estándar creada en el panel del proveedor.</Warning>
+
+Ejemplos habituales:
+
+| Tipo de proveedor | Formato de URL base | Modelos de ejemplo |
+|----------|----------------|----------------|
+| OpenAI | `https://api.openai.com/v1` | `gpt-5.5,o3,gpt-5-mini` |
+| Anthropic | `https://api.anthropic.com/v1` | `claude-opus-4-8,claude-sonnet-5,claude-haiku-4-5` |
+| Compatible con OpenAI | El punto de conexión `/v1` del proveedor compatible con OpenAI | `gpt-5.5,gpt-5.4,o3,gpt-5-mini` |
+
+<Note>Los nombres de los modelos deben coincidir exactamente con la documentación del proveedor y distinguen entre mayúsculas y minúsculas. Separa varios modelos con comas estándar.</Note>
+
+Notas:
+
+- Los nombres de los modelos distinguen entre mayúsculas y minúsculas. Usa los nombres exactos de la documentación del proveedor.
+- Algunos proveedores exigen que no haya espacios después de las comas, por ejemplo, `gpt-5.5,o3`.
+- Para los proveedores **Compatibles con OpenAI**, usa el formato de nombres de modelos que requiera el proveedor. Algunos servicios usan `provider/model-name`.
+
+## Preguntas frecuentes
+
+<AccordionGroup>
+<Accordion title="Todas las pruebas de modelos han fallado">
+Comprueba si la **URL base** es correcta, si se ha introducido por error la URL de la página de inicio del proveedor o si contiene una `/` adicional al final. Si usas un punto de conexión compatible con OpenAI, confirma también que no falte `/v1`.
+</Accordion>
+
+<Accordion title="Aparece el error «Prueba fallida»">
+Comprueba si la **Clave de API** es válida y si la cuenta aún tiene Créditos o permiso para llamar al modelo.
+</Accordion>
+
+<Accordion title="Tiempo de espera de conexión agotado">
+Comprueba si la **URL base** es correcta y si tu entorno actual puede acceder a esa dirección.
+</Accordion>
+
+<Accordion title="Modelo no encontrado">
+Asegúrate de que el valor de **Modelos** coincida exactamente con la documentación del proveedor, incluido el uso de mayúsculas y minúsculas y el formato del separador.
+</Accordion>
+
+<Accordion title="Las pruebas fallan cuando uso una clave de un Plan de programación">
+Es posible que este tipo de clave no admita llamadas de API estándar o que las condiciones del proveedor no permitan usarla con servicios externos. Consulta primero las condiciones del Plan de programación del proveedor. Para conectar Teable, usa una **Clave de API** estándar creada en el panel del proveedor.
+</Accordion>
+
+<Accordion title="El resultado de la prueba del modelo de generación de imágenes parece incorrecto">
+Si el modelo está destinado a generar imágenes, marca primero **Modelo de generación de imágenes** y vuelve a realizar la prueba. Una vez marcada esta opción, Teable prueba las funciones de texto a imagen y de imagen a imagen.
+</Accordion>
+</AccordionGroup>

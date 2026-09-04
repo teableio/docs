@@ -1,0 +1,134 @@
+---
+title: "Solicitud HTTP"
+description: "Llama a cualquier API externa desde un flujo de trabajo"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Recomendamos encarecidamente usar Ejecutar script para crear automatizaciones, ya que permite cubrir el comportamiento de todas las acciones, incluidas aquellas que, de otro modo, tendrían que crearse manualmente. Solo tienes que describir tus requisitos a la IA en el chat.
+
+Ten en cuenta que, si añades acciones manualmente, la IA no podrá reconocerlas ni modificarlas más adelante.
+</Tip>
+
+## Crear con IA
+
+Abre el Chat de IA en la barra lateral derecha de tu Tabla y describe lo que quieres.
+
+La IA se encarga de todo: elige el desencadenador adecuado, selecciona las acciones correspondientes, asigna los Campos y configura automáticamente todo el flujo de trabajo.
+
+Describe el objetivo una sola vez y el flujo de trabajo estará listo, sin necesidad de configuración manual.
+
+Envía una solicitud HTTP a cualquier URL y devuelve la respuesta. Úsala para llamar a API REST, enviar notificaciones a Slack o Discord, transferir datos a sistemas CRM o interactuar con cualquier servicio que tenga una API HTTP.
+
+## Configuración
+
+| Ajuste | Obligatorio | Descripción |
+|---|---|---|
+| URL | Sí | El endpoint de destino. Admite variables dinámicas mediante **+** |
+| Método | Sí | GET, POST, PUT, PATCH, DELETE o HEAD |
+| Encabezados | No | Encabezados HTTP personalizados como pares clave-valor |
+| Content-Type | No | El formato del cuerpo de la solicitud (consulta la información siguiente) |
+| Cuerpo | No | La carga útil de la solicitud: texto o pares clave-valor, según el Content-Type |
+
+## Cómo configurarla
+
+1. Añade una acción **Solicitud HTTP** a tu flujo de trabajo.
+2. Introduce la **URL** del endpoint de la API. Puedes utilizar **+** para insertar valores dinámicos (p. ej., incluir un ID de Registro en la ruta de la URL).
+3. Elige el **Método**:
+   - **GET** — recupera datos.
+   - **POST** — envía datos para crear algo.
+   - **PUT / PATCH** — actualiza datos existentes.
+   - **DELETE** — elimina datos.
+4. Añade **Encabezados** si la API los requiere (p. ej., tokens de autorización o encabezados personalizados).
+5. Elige un **Content-Type** y escribe el **Cuerpo** si es necesario (para POST, PUT y PATCH).
+6. Guarda la acción.
+
+## Explicación de las opciones de Content-Type
+
+| Content-Type | Cuándo usarlo | Formato del cuerpo |
+|---|---|---|
+| `application/json` | La mayoría de las API REST. Envía datos estructurados | Texto JSON (p. ej., `{"key": "value"}`) |
+| `application/x-www-form-urlencoded` | Envíos de formularios tradicionales y algunas API heredadas | Pares clave-valor, codificados como URL automáticamente |
+| `multipart/form-data` | Subidas de archivos o datos combinados | Pares clave-valor compatibles con archivos |
+| `text/plain` | Cargas útiles de texto sencillas | Cadena de texto sin formato |
+
+<Tip>Si no sabes qué Content-Type utilizar, elige `application/json`. La mayoría de las API modernas utilizan JSON.</Tip>
+
+Si no sabes cuál utilizar, `application/json` es la opción adecuada para la mayoría de las API modernas.
+
+## Ejemplos de autenticación
+
+Muchas API requieren autenticación. Estos son algunos patrones habituales que puedes configurar en la sección Encabezados:
+
+### Token Bearer
+
+Añade un encabezado:
+- **Clave:** `Authorization`
+- **Valor:** `Bearer your-api-token-here`
+
+Esto funciona con API como las de Slack, GitHub, Notion y muchas otras.
+
+### Clave de API en el encabezado
+
+Añade un encabezado:
+- **Clave:** `X-API-Key` (o el que espere la API, p. ej., `api-key` o `x-api-token`)
+- **Valor:** `your-api-key`
+
+### Autenticación básica
+
+Añade un encabezado:
+- **Clave:** `Authorization`
+- **Valor:** `Basic base64encoded(username:password)`
+
+Tendrás que codificar tus credenciales en Base64 fuera de Teable o utilizar una acción Script para generar el valor del encabezado.
+
+## Ejemplo concreto: enviar una notificación de Slack
+
+Objetivo: publicar un mensaje en un canal de Slack cuando se cree un Registro.
+
+1. **Desencadenador:** Cuando se crea un Registro.
+2. **Acción:** Solicitud HTTP con:
+   - **URL:** `https://hooks.slack.com/services/T00/B00/xxxx` (la URL de tu webhook de Slack)
+   - **Método:** POST
+   - **Content-Type:** `application/json`
+   - **Cuerpo:**
+     ```json
+     {
+       "text": "Nueva tarea creada: {{Task Name}} — Prioridad: {{Priority}}"
+     }
+     ```
+   Sustituye `{{Task Name}}` y `{{Priority}}` por variables dinámicas del desencadenador haciendo clic en **+**.
+
+## Usar los datos de respuesta en los pasos siguientes
+
+Después de ejecutar la solicitud HTTP, la respuesta queda disponible para las acciones posteriores:
+
+- **Código de estado** — el estado HTTP (200, 201, 404, etc.).
+- **Cuerpo de la respuesta** — los datos devueltos por la API, analizados como JSON cuando corresponde.
+
+Puedes hacer referencia a Campos específicos de la respuesta mediante el selector de variables **+** en pasos posteriores. Por ejemplo, si la API devuelve `{"id": "abc123", "status": "created"}`, puedes hacer referencia a `id` y `status` por separado. Al insertar valores dinámicos con **+**, también puedes utilizar rutas de Campos y opciones de formato cuando una API externa requiera un formato de solicitud específico.
+
+Esto resulta útil para encadenar llamadas a API: por ejemplo, crear algo mediante POST, recibir un ID y luego utilizarlo en una acción posterior Actualizar Registro o en otra solicitud HTTP.
+
+## Cuándo usarla
+
+- **Publicar mensajes en Slack o Discord.** Envía notificaciones a canales mediante URL de webhooks entrantes.
+- **Sincronizar datos con un CRM o ERP.** Transfiere Registros nuevos o actualizados a Salesforce, HubSpot o cualquier sistema con una API.
+- **Llamar a cualquier API de terceros.** Interactúa con procesadores de pagos, servicios de envío, herramientas de análisis o API internas personalizadas.
+- **Desencadenar flujos de trabajo externos.** Llama a webhooks de Zapier, escenarios de Make (Integromat) u otras plataformas de Automatización.
+- **Obtener datos de fuentes externas.** Utiliza solicitudes GET para incorporar al flujo de trabajo tipos de cambio, datos meteorológicos o datos de cualquier API pública.
+
+## Consejos
+
+- Consulta siempre la documentación de la API para conocer los encabezados y la autenticación necesarios, así como el formato esperado del cuerpo.
+- Utiliza `application/json` como Content-Type para la mayoría de las API modernas. Si la API espera datos de formulario, cambia a `x-www-form-urlencoded`.
+- Si la API devuelve un error (estado 4xx o 5xx), la acción se completa de todos modos, pero los pasos posteriores verán la respuesta de error. Comprueba el código de estado en el flujo de trabajo si necesitas un tratamiento condicional.
+- En el caso de API que devuelvan respuestas grandes, haz referencia únicamente a los Campos concretos que necesites en los pasos posteriores.
+- Combínala con [Bucle (lote)](/es/basic/automation/actions/logic/loop-run) para realizar varias llamadas a la API, una por Registro. Ten en cuenta los límites de velocidad de la API externa.
+- Utiliza la función [Cuerpo de matriz HTTP](/es/basic/automation/actions/logic/loop-run) cuando necesites enviar varios elementos en una sola solicitud en lugar de una solicitud por elemento.
+
+## Contenido relacionado
+
+- [Bucle (lote)](/es/basic/automation/actions/logic/loop-run) — realiza solicitudes HTTP para cada elemento de una matriz
+- [Cuando se recibe un webhook](/es/basic/automation/trigger/external/webhook-received) — la operación de entrada equivalente: recibe solicitudes HTTP de sistemas externos
+- [Ejecutar script](/es/basic/automation/ai/scripting/runscript) — para interacciones más complejas con API mediante código personalizado

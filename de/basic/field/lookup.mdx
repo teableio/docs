@@ -1,0 +1,51 @@
+---
+title: "Suche"
+description: "Verweisen Sie über eine vorhandene Verknüpfungsbeziehung auf Feldwerte aus einer verknüpften Tabelle und halten Sie die Daten synchron."
+---
+
+Suchfelder bauen auf **Verknüpfungsfeldern** auf. Ein Suchfeld verweist auf ein ausgewähltes Feld aus einer verknüpften Tabelle, sodass die aktuelle Tabelle Daten aus einer anderen Tabelle anzeigen kann, ohne sie erneut einzugeben.
+
+## Anwendungsfälle
+
+| Szenario | Geeignet für |
+| --- | --- |
+| Bestellpositionen | Nach der Verknüpfung eines Produkts dessen Preis, SKU oder Kategorie anzeigen |
+| Ticketbearbeitung | Nach der Verknüpfung eines Kunden Telefonnummer, Kundenstufe oder verantwortliche Person anzeigen |
+| Buchverwaltung | In einer Büchertabelle Geburtstag, Nationalität oder Biografie des Autors anzeigen |
+| Projektmanagement | Aus verknüpften Aufgaben zuständige Person, Fälligkeitsdatum oder Status anzeigen |
+
+## Erstellen und konfigurieren
+
+<Steps>
+  <Step title="Verknüpfungsbeziehung erstellen">
+    Erstellen Sie vor der Verwendung eines Suchfelds ein **Verknüpfungsfeld** zwischen den beiden Tabellen.
+  </Step>
+  <Step title="Feldtyp auswählen">
+    Klicken Sie in der Tabellenansicht auf `+`, um ein Feld hinzuzufügen, und wählen Sie **Suche** aus.
+  </Step>
+  <Step title="Verknüpfungsfeld auswählen">
+    Wählen Sie ein vorhandenes Verknüpfungsfeld in der aktuellen Tabelle als Suchpfad aus.
+  </Step>
+  <Step title="Zielfeld auswählen">
+    Wählen Sie das Feld aus, das aus der Quelltabelle gelesen werden soll, beispielsweise das Geburtsdatum eines Autors, die Telefonnummer eines Kunden oder einen Produktpreis.
+  </Step>
+</Steps>
+
+## Automatische Synchronisierung
+
+Nach der Einrichtung füllt Teable das Suchergebnis anhand der vorhandenen Verknüpfungsbeziehung aus:
+
+- Wenn sich der verknüpfte Datensatz ändert, beispielsweise durch die Auswahl eines anderen Autors, wird der Suchwert aktualisiert.
+- Wenn sich Quelldaten ändern, beispielsweise durch die Bearbeitung des Geburtstags eines Autors, wird der Suchwert aktualisiert.
+
+## Häufige Verwendungszwecke
+
+- **Buchverwaltung**: Verwenden Sie in einer Tabelle `Bücher` ein Verknüpfungsfeld `Autor`, um das `Geburtsdatum` aus einer Tabelle mit Autorendetails nachzuschlagen.
+- **Bestellberechnung**: Schlagen Sie in einer Tabelle `Bestellpositionen` den Produktpreis nach und berechnen Sie anschließend mit einer Formel die Gesamtsumme.
+- **Kundeninformationen synchronisieren**: Verknüpfen Sie in einer Tickettabelle einen Kunden und schlagen Sie Telefonnummer, E-Mail-Adresse oder Kundenstufe nach.
+
+## Hinweise
+
+- **Schreibgeschütztes Feld**: Suchfelder sind **schreibgeschützt**. Sie können den nachgeschlagenen Wert nicht in der aktuellen Tabelle bearbeiten. Bearbeiten Sie zum Ändern des Werts das ursprüngliche Feld in der Quelltabelle.
+- **Einzelwert und mehrere Werte**: Bei einer Eins-zu-eins-Verknüpfung ist das Suchergebnis ein einzelner Wert. Bei einer Eins-zu-viele-Beziehung wird das Suchergebnis zu einem Array mit mehreren Werten, die durch Kommas getrennt angezeigt werden.
+- **Datenabhängigkeiten**: Suchfelder hängen vom Verknüpfungsfeld und vom Quellfeld ab. Wenn das Verknüpfungsfeld oder das Zielfeld in der Quelltabelle gelöscht wird, funktioniert das Suchfeld nicht mehr.

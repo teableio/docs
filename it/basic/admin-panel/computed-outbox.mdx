@@ -1,0 +1,106 @@
+---
+title: "Outbox dei calcoli"
+description: "Monitora la consegna BullMQ e l'arretrato delle attività di calcolo nell'Amministrazione di sistema."
+---
+
+<Tip>Disponibile per il piano Business Self-hosted e versioni successive</Tip>
+
+Percorso: Amministrazione di sistema → Outbox dei calcoli
+
+Usa **Outbox dei calcoli** quando i valori delle formule, dei lookup o di altri Campi calcolati smettono di aggiornarsi oppure impiegano molto più tempo del previsto. La pagina mostra lo stato complessivo delle attività, i processi in transito nella coda, le attività che potrebbero richiedere un ripristino e gli eventuali Spazi le cui attività di calcolo sono attualmente in pausa.
+
+## Consultare lo stato di integrità
+
+Lo stato accanto al titolo della pagina indica se le attività di calcolo richiedono attenzione:
+
+| Stato | Significato |
+| --- | --- |
+| **Integro** | Le attività di calcolo funzionano normalmente. |
+| **Degradato** | Teable ha rilevato errori, attività scadute o un arretrato in crescita. |
+| **Critico** | BullMQ non è disponibile oppure nessun worker è disponibile per elaborare le attività. |
+
+Quando lo stato richiede attenzione, la pagina ne elenca il motivo.
+
+## Trovare un'attività nella coda
+
+La **Coda BullMQ in tempo reale** elenca i processi ancora conservati da Teable, così puoi seguire una singola attività di calcolo o cercare quelle lente.
+
+Per impostazione predefinita, ogni riga rappresenta un'attività e cambia stato nella stessa posizione mentre Teable ripete i tentativi. Passa a **Consegne** quando ti serve la cronologia completa dei tentativi di un'attività o vuoi individuare esecuzioni lente.
+
+Per restringere l'elenco:
+
+- Fai clic sui riquadri di stato sopra la Tabella per filtrare in base allo stato: **In attesa**, **Attivo**, **Ritardato**, **Non riuscito**, **Completato (conservato)** e così via. Puoi selezionarne più di uno contemporaneamente; passando il puntatore su un riquadro viene spiegato il significato dello stato.
+- Filtra per **Spazio**, **Base**, **Causa** o **Esito**, cerca un'attività, una Base, uno Spazio o un errore oppure imposta un tempo minimo di elaborazione per far emergere le attività lente.
+- Fai clic su una riga per aprire la **Discendenza dei calcoli**: timestamp della coda, ritardo di consegna, tempo di elaborazione, motivo completo dell'errore con SQL oscurato per una consegna non riuscita e i dettagli di propagazione descritti di seguito.
+
+<Info>**Completato** non significa che l'attività abbia eseguito operazioni. Il badge dell'esito indica cosa ha effettivamente fatto la consegna: **Elaborato** ha eseguito l'attività, **Nessuna operazione** non ha trovato altro da fare, **Rinviato** l'ha riprogrammata per un momento successivo e **Parcheggiato** indica che il suo ambito è in pausa. Il filtro **Esito** restringe l'elenco in base a tale risultato e mostra quante consegne comprende ciascuno, pertanto abbinando **Completato (conservato)** a **Elaborato** rimangono soltanto le consegne che hanno realmente eseguito l'attività.</Info>
+
+Una riga non riuscita rappresenta la cronologia di un tentativo di consegna, non un'attività bloccata. L'attività persistente ripete i tentativi autonomamente, quindi consulta la colonna **Stato del registro** per decidere se intervenire: **Risolto** indica che un tentativo successivo è riuscito, mentre **Lettera morta** rimanda alla manutenzione delle anomalie. Gli errori risolti sono nascosti per impostazione predefinita; un banner ne indica il numero e consente di visualizzarli.
+
+**Cancella cronologia degli errori** rimuove soltanto dalla coda i Record conservati dei processi non riusciti. Non ripara nulla e le lettere morte rimangono in **Manutenzione anomalie**.
+
+Un riquadro di stato può anche conteggiare voci i cui dati di processo non esistono più in Redis, in genere residui lasciati dopo un'espulsione o una perdita di dati. L'elenco non può mostrarle, quindi la pagina spiega la discrepanza sotto la Tabella. Teable elimina autonomamente questi residui dallo stato di errore; **Cancella cronologia degli errori** li rimuove immediatamente.
+
+## Tracciare la propagazione di un valore
+
+Quando un valore calcolato appare errato o arriva in ritardo, apri **Discendenza dei calcoli** per vedere l'intera catena che lo ha prodotto. Fai clic su una riga della coda oppure su **Discendenza** accanto all'ID di un'attività nei dettagli dell'anomalia.
+
+| Sezione | Domanda a cui risponde |
+| --- | --- |
+| Riepilogo | Latenza end-to-end, momento della modifica dell'origine, momento della convergenza del valore e Tabella e Campi che hanno attivato l'esecuzione. Il badge **Calcolo in corso** indica che la catena è ancora in esecuzione. |
+| **Sequenza temporale** | Quando l'esecuzione è stata accodata, avviata e completata o non è riuscita. |
+| **Catena di attività** | Ogni attività della cascata, nidificata sotto quella che l'ha accodata, per mostrare l'origine di ciascun ramo. Ogni riga mostra stato, passaggi del piano, **Destinazione di scrittura** (la Tabella e i Campi aggiornati dall'attività), **Righe da aggiornare**, profondità della cascata, ora di accodamento e durata. |
+| **Propagazione dei Campi** | Quali Campi sono stati letti e scritti dall'esecuzione e come la modifica si è propagata tra essi. Il blu tratteggiato rappresenta l'origine che ha condotto alla scrittura, il grigio un input non scritto in questa esecuzione, il verde un elemento scritto in questa esecuzione e le frecce le dipendenze tra Campi o i passaggi attraverso collegamenti, non l'ordine dei passaggi. Vengono disegnate soltanto le origini che raggiungono effettivamente le scritture di questa esecuzione. Usa **Espandi** per aprire il grafico a schermo intero quando una catena ampia è difficile da seguire nel contenuto. |
+
+<Info>Il registro della discendenza registra soltanto le attività create dopo il rilascio di questa funzionalità e conserva 7 giorni di cronologia. Un'attività più vecchia mostra i dati della coda senza un grafico di propagazione. Un'attività iniziale non ancora pianificata dal worker mostra soltanto i Campi di attivazione. Quando una modifica non ha prodotto scritture calcolate a valle, il grafico lo segnala: nessun elemento dipendeva da quei Campi tramite formula, lookup, rollup o titolo del collegamento.</Info>
+
+## Gestire le attività anomale
+
+<Info>Il conteggio **Non riuscite** e la **Manutenzione anomalie** mostrano tipi di problemi differenti, pertanto i numeri possono non coincidere.</Info>
+
+**Manutenzione anomalie** raccoglie le anomalie in gruppi di problemi, uno per Base, Tabella di origine ed errore, rendendo semplice individuare un'unica causa principale. Esamina il motivo dell'errore e correggi il problema sottostante prima di eseguire qualsiasi ripristino. Espandi un gruppo per leggerne i dettagli dell'errore e le attività incluse; tali righe servono all'ispezione e il ripristino viene sempre eseguito sull'intero gruppo.
+
+Le azioni offerte da un gruppo dipendono dal relativo tipo:
+
+| Tipo di anomalia | Azione | Risultato |
+| --- | --- | --- |
+| **Lettera morta** | **Ripristina intero gruppo** | Ripristina nella coda persistente ogni lettera morta attualmente presente nel gruppo e ne ripete la consegna. Tutti gli altri gruppi rimangono invariati. |
+| **Lettera morta** | **Elimina gruppo** (nel menu **Altre azioni**) | Elimina definitivamente le lettere morte del gruppo. In seguito non potranno essere recuperate né riprodotte, quindi usalo soltanto quando una nuova esecuzione sarebbe inutile. |
+| **Scaduto** | **Riattiva timeout più recente** | Riattiva la coda per l'attività più recente del gruppo affinché un worker possa prenderla in carico. |
+
+Dopo il ripristino di un gruppo, Teable indica quante attività ha ripristinato, quante sono state appena accodate o erano già in coda e quante sono state consegnate o rinviate. I worker elaborano quindi il gruppo nel rispetto dei limiti correnti di concorrenza e suddivisione delle attività.
+
+Un gruppo contrassegnato come **Base eliminata** appartiene a una Base non più esistente. Il suo ripristino fallirebbe di nuovo immediatamente, pertanto **Elimina gruppo** è l'unica azione disponibile.
+
+Lo spostamento di una Tabella nel cestino non crea più anomalie in questa sezione. Un'attività di calcolo che fa ancora riferimento a una Tabella nel cestino ignora i passaggi che la leggono, completa quelli destinati alle Tabelle attive e termina.
+
+Il ripristino non è disponibile nemmeno quando l'errore è causato dai dati stessi, ad esempio da un valore che supera un limite di dimensione o viola un vincolo del Campo. La ripetizione della stessa attività fallirebbe allo stesso modo, quindi elimina il gruppo e correggi invece i dati di origine o la definizione del Campo; le scritture successive ricalcoleranno automaticamente tali Campi.
+
+## Mettere in pausa le attività di calcolo per uno Spazio
+
+Quando le attività di calcolo di uno Spazio aggravano un incidente, metti in pausa tale Spazio in **Pause delle attività di calcolo** anziché arrestare l'intera istanza.
+
+<Steps>
+  <Step title="Apri la finestra di dialogo di pausa">Fai clic su **Metti in pausa uno Spazio**.</Step>
+  <Step title="Trova lo Spazio">Cerca per ID o nome dello Spazio, quindi selezionalo nei risultati.</Step>
+  <Step title="Scegli la durata">Imposta **Durata pausa** su 15, 30, 60 o 120 minuti.</Step>
+  <Step title="Registra il motivo (facoltativo)">Annota l'incidente o la finestra di manutenzione in **Motivo**.</Step>
+  <Step title="Conferma">Fai clic su **Conferma pausa**.</Step>
+</Steps>
+
+Una pausa impedisce soltanto ai worker di acquisire nuove attività di calcolo per tale Spazio. Le attività già in esecuzione non vengono interrotte e quelle corrispondenti attendono la fine della pausa anziché essere eliminate.
+
+Una pausa scade sempre automaticamente e la durata massima impostabile è di due ore. Se l'incidente dura più a lungo, metti nuovamente in pausa lo Spazio da questa pagina. L'elenco mostra ogni pausa attiva, chi l'ha creata, il motivo e quando avverrà la ripresa automatica, oltre al numero di attività in sospeso trattenute dalle pause attive, così puoi valutare l'arretrato che verrà rilasciato alla ripresa. Per terminarne una in anticipo, fai clic su **Riprendi** nella relativa riga e conferma.
+
+## Regolare la concorrenza
+
+La sezione della coda include due controlli di concorrenza. Ciascuno imposta una sostituzione a livello di cluster, acquisita da ogni processo entro circa 15 secondi senza riavvio, e può essere reimpostato affinché i processi tornino alla propria impostazione di ambiente. Il badge **Sostituito** contrassegna un controllo che non utilizza più il valore predefinito.
+
+| Controllo | Elemento limitato |
+| --- | --- |
+| **Concorrenza per processo** | Numero di attività di calcolo gestite contemporaneamente da ciascun processo worker. |
+| **Limiti di acquisizione per Base** | Numero di attività di calcolo eseguite contemporaneamente per una Base (**Per Base**) e per una Tabella di origine al suo interno (**Per Tabella iniziale**). Entrambi hanno come valore predefinito 2 e accettano valori da 1 a 16. |
+
+Aumenta i limiti di acquisizione quando il collo di bottiglia è una singola Base molto attiva, e la concorrenza per processo quando sono accodate contemporaneamente molte Base.
+
+<Warning>Una concorrenza maggiore aumenta il carico sul database. Gli Spazi che archiviano i dati in un [tenant di database](/it/basic/admin-panel/database-tenant) mantengono i valori predefiniti dell'ambiente per i limiti di acquisizione, poiché i relativi pool di connessioni sono dimensionati per tali valori.</Warning>

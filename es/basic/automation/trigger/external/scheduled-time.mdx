@@ -1,0 +1,98 @@
+---
+title: "A la hora programada"
+description: "Ejecuta un flujo de trabajo con una programación periódica o una sola vez"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Ten en cuenta que toda la configuración del disparador puede realizarse en el Chat de IA. Dile a la IA qué quieres que haga el flujo de trabajo y se encargará del resto.</Tip>
+
+Este disparador se ejecuta según la programación que definas: desde cada pocos minutos hasta una vez al mes, o en una única ejecución.
+
+## Crear con IA
+
+Abre el Chat de IA en la barra lateral derecha de tu Tabla y describe lo que quieres.
+
+La IA se encarga de todo: elige el disparador adecuado, asigna los Campos pertinentes y configura automáticamente todas las acciones.
+
+Describe el objetivo una sola vez y el flujo de trabajo estará listo, sin necesidad de configuración manual.
+
+**Ejemplo:** *"Cada lunes a las 9:00, envíame por correo electrónico una lista de las tareas vencidas".*
+
+## Configuración
+
+| Ajuste | Obligatorio | Descripción |
+|---|---|---|
+| Hora de inicio | Sí | Momento en que comienza la programación |
+| Hora de finalización | No | Momento en que se detiene la programación (déjalo en blanco para ejecutarla indefinidamente) |
+| Zona horaria | Sí | De forma predeterminada, tu zona horaria actual. Todas las horas se interpretan en esta zona |
+| Frecuencia | Sí | Frecuencia con la que se activa el disparador; consulta las opciones siguientes |
+
+## Opciones de frecuencia
+
+| Frecuencia | Intervalo | Ajustes adicionales |
+|---|---|---|
+| Minutos | Cada 10–60 min | — |
+| Horas | Cada 1–24 h | — |
+| Días | Cada 1–31 días | Hora del disparador (hora + minuto) |
+| Semanas | Cada 1–52 semanas | Días de la semana (lun.–dom.) + hora del disparador |
+| Meses | Cada 1–12 meses | Días del mes + hora del disparador |
+| Una vez | — | Se activa una vez a la hora especificada y después se desactiva automáticamente |
+
+Usa **-1** como día del mes para seleccionar el último día del mes, independientemente de que tenga 28, 30 o 31 días.
+
+## Cómo configurarlo
+
+1. Abre tu Automatización y añade un disparador nuevo.
+2. Selecciona **A la hora programada**.
+3. Establece la **Zona horaria**. Esto es especialmente importante si tu equipo trabaja en varias zonas horarias: la programación se ejecuta en la zona que selecciones aquí.
+4. Elige una **Frecuencia**. Por ejemplo, para ejecutarla cada lunes a las 9:00:
+   - Establece Frecuencia en **Semanas**.
+   - Establece el intervalo en **1** (cada 1 semana).
+   - Marca **Lunes** en el selector de días de la semana.
+   - Establece la hora del disparador en **09:00**.
+5. Establece una **Hora de inicio** (momento en que se activa la programación).
+6. (Opcional) Establece una **Hora de finalización** si quieres que la programación caduque.
+7. Guarda y activa la Automatización.
+8. Como no hay datos de ningún Registro, la primera acción suele ser un paso **Obtener Registros** para cargar los datos que necesitas.
+
+## Ejemplo concreto: informe semanal del lunes por la mañana
+
+Objetivo: cada lunes a las 9:00, obtener todas las tareas que vencen esa semana y enviar un correo electrónico con un resumen.
+
+1. **Disparador:** A la hora programada — Semanas, cada 1 semana, lunes, 09:00, tu zona horaria.
+2. **Acción 1:** Obtener Registros — de la Tabla Tareas, filtro: Fecha de vencimiento está dentro de esta semana.
+3. **Acción 2:** Enviar correo electrónico — a tu equipo, con las tareas recuperadas enumeradas en el cuerpo.
+
+## Programaciones de una sola vez
+
+Cuando seleccionas la frecuencia **Una vez**, la Automatización se activa una vez en la fecha y hora especificadas y después se desactiva automáticamente. Esto resulta útil para:
+
+- Un recordatorio para realizar un seguimiento en una fecha concreta.
+- Una acción aplazada que solo debe ocurrir una vez (p. ej., enviar el anuncio de un lanzamiento en una fecha futura).
+- Una campaña de duración limitada que se activa una sola vez.
+
+Después de que se active un disparador de una sola vez, la Automatización aparecerá como inactiva. Puedes reactivarla con una hora nueva si es necesario.
+
+## Cuándo usarlo
+
+- **Generar un informe de resumen diario.** Ejecútalo todos los días a las 8:00, obtén todos los Registros actualizados ayer y envía un resumen por correo electrónico.
+- **Crear tareas periódicas cada lunes.** Ejecútalo semanalmente y crea Registros en tu Tabla de tareas para la semana nueva.
+- **Enviar recordatorios mensuales de facturas.** Ejecútalo el primer día de cada mes, busca las facturas sin pagar y envía correos de recordatorio.
+- **Limpiar Registros obsoletos.** Ejecútalo a diario, busca Registros con más de 90 días y estado «Borrador», y archívalos o elimínalos.
+- **Sincronizar datos según una programación.** Ejecútalo cada hora para enviar los Registros actualizados a una API externa.
+
+<Warning>Los disparadores programados no están vinculados a ningún Registro, por lo que los pasos posteriores no disponen de datos de Registros. Si necesitas procesar Registros, añade una acción Obtener Registros como primer paso y usa filtros para seleccionar los Registros que necesitas.</Warning>
+
+## Consejos
+
+- Como los disparadores programados no tienen un «Registro actual», no puedes hacer referencia a los datos del disparador en las acciones como lo harías con los disparadores basados en Registros. Empieza siempre con una acción **Obtener Registros** si necesitas datos.
+- Presta atención a las zonas horarias, especialmente en equipos que trabajan en varias regiones. El ajuste de zona horaria del disparador determina cuándo se activa, no la hora local de quien lo visualiza.
+- Para programaciones de alta frecuencia (cada pocos minutos), procura que el flujo de trabajo sea ligero para evitar que las ejecuciones se solapen.
+- Si tu Automatización depende del tiempo (p. ej., debe ejecutarse antes de una reunión diaria), prográmala unos minutos antes para dejar tiempo suficiente para el procesamiento.
+- El truco del día del mes **-1** resulta útil para informes o procesos de fin de mes. Usar -1 significa «último día del mes», por lo que se activa correctamente el 31 de enero, el 28 (o 29) de febrero, el 31 de marzo, etc.
+
+## Contenido relacionado
+
+- [Acción Obtener Registros](/es/basic/automation/actions/records/get-records) — suele ser el primer paso después de un disparador programado
+- [Acción Enviar correo electrónico](/es/basic/automation/actions/communication/send-email-overview) — suele combinarse con programaciones para enviar notificaciones periódicas
+- [Acción Bucle (lote)](/es/basic/automation/actions/logic/loop-run) — útil para procesar la matriz de Registros devuelta por Obtener Registros

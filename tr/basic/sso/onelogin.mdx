@@ -1,0 +1,156 @@
+---
+title: "OneLogin SSO"
+description: "OneLogin'i Teable için SSO kimlik doğrulama sağlayıcınız olarak yapılandırın"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Business planı ve üzerindeki planlarda kullanılabilir</Tip>
+
+## 1. Adım: Teable'da Kimlik Doğrulama Sağlayıcısı Oluşturma
+
+1. Teable SSO ayarlarınıza gidin
+2. Yeni bir kimlik doğrulama sağlayıcısı oluşturun, adını **OneLogin** olarak belirleyin ve **OpenID Connect**'i seçin
+
+## 2. Adım: OneLogin Yönetici Portalına Erişme
+
+1. [OneLogin Yönetici Portalınızda](https://app.onelogin.com/login) oturum açın
+2. Yönetici ayrıcalıklarına sahip olduğunuzdan emin olun
+3. Üst menüden **Uygulamalar**'a gidin
+
+## 3. Adım: Yeni Bir Uygulama Ekleme
+
+1. Menüde **Uygulamalar** → **Uygulamalar**'a tıklayın
+2. **Uygulama Ekle** düğmesine tıklayın
+3. Arama kutusunda **OpenId Connect (OIDC)** için arama yapın
+4. Sonuçlardan **OpenId Connect (OIDC)**'yi seçin
+5. **Kaydet**'e tıklayın
+
+## 4. Adım: Uygulama Ayarlarını Yapılandırma
+
+### Görüntüleme Bilgileri
+
+**Yapılandırma** sekmesinde:
+
+1. **Görünen Ad**: Teable SSO
+2. **Açıklama**: (İsteğe bağlı) Teable için SSO entegrasyonu
+3. **Logo**: (İsteğe bağlı) Teable logosunu yükleyin
+4. **Kaydet**'e tıklayın
+
+### Yapılandırma Ayarları
+
+**Yapılandırma** sekmesine gidin ve şunları yapılandırın:
+
+1. **Yönlendirme URI'leri**: Teable'daki **Geri Çağırma URL'sini** yapıştırın
+2. **Oturum Açma URL'si**: (İsteğe bağlı) `https://app.teable.ai`
+3. **Uygulama Türü**: Web
+4. **Kaydet**'e tıklayın
+
+## 5. Adım: İstemci Kimlik Bilgilerini Alma
+
+**SSO** sekmesine gidin:
+
+1. **İstemci Kimliği** alanını bulun ve değeri kopyalayın
+2. **İstemci Gizli Anahtarı** alanını bulun ve değeri kopyalayın (önce "Göster"e tıklamanız gerekebilir)
+3. Her iki değeri de Teable SSO yapılandırmasına yapıştırın
+
+<Warning>İstemci Gizli Anahtarınızı güvende tutun. Gerekirse bu sayfadan yeniden oluşturabilirsiniz.</Warning>
+
+## 6. Adım: OAuth Uç Noktalarını Yapılandırma
+
+**SSO** sekmesinde OneLogin alt alan adınızı bulabilirsiniz. Teable'daki uç noktaları yapılandırmak için bunu kullanın:
+
+- **Yetkilendirme URL'si**: `https://{subdomain}.onelogin.com/oidc/2/auth`
+- **Belirteç URL'si**: `https://{subdomain}.onelogin.com/oidc/2/token`
+- **Kullanıcı Bilgileri URL'si**: `https://{subdomain}.onelogin.com/oidc/2/me`
+- **Veren**: `https://{subdomain}.onelogin.com/oidc/2`
+
+<Note>`{subdomain}` değerini gerçek OneLogin alt alan adınızla (ör. `mycompany.onelogin.com`) değiştirin. Bu değeri OneLogin portal URL'nizde bulabilirsiniz.</Note>
+
+## 7. Adım: Uygulama Erişimini Yapılandırma
+
+### Roller Atama
+
+**Erişim** sekmesine gidin:
+
+1. **Roller**: Bu uygulamaya hangi rollerin erişebileceğini seçin
+2. Şunları seçebilirsiniz:
+   - Belirli roller
+   - Tüm kullanıcılar
+   - Özel koşullar
+3. **Kaydet**'e tıklayın
+
+### Kullanıcı Atama
+
+**Kullanıcılar** sekmesine gidin:
+
+1. **Kullanıcı Ekle** veya **Role Göre Kullanıcı Ekle**'ye tıklayın
+2. Teable'a SSO üzerinden erişmesi gereken kullanıcıları seçin
+3. **Devam Et** ve **Kaydet**'e tıklayın
+
+## 8. Adım: Parametreleri Yapılandırma (İsteğe Bağlı)
+
+Kullanıcı özniteliklerini eşlemek için **Parametreler** sekmesine gidin:
+
+1. Özel talepler oluşturmak için **Parametre ekle**'ye tıklayın
+2. Standart OIDC taleplerini yapılandırın:
+   - **email**: Kullanıcının e-posta adresi
+   - **name**: Kullanıcının tam adı
+   - **given_name**: Kullanıcının adı
+   - **family_name**: Kullanıcının soyadı
+3. Her parametreyi ilgili OneLogin kullanıcı alanıyla eşleyin
+4. **Kaydet**'e tıklayın
+
+## 9. Adım: Uygulamayı Etkinleştirme
+
+1. Tüm yapılandırmaların kaydedildiğinden emin olun
+2. Uygulama artık etkinleştirilmiş ve atanmış kullanıcılar tarafından görülebilir olmalıdır
+3. Kullanıcılar Teable uygulamasını OneLogin portallarında görür
+
+## 10. Adım: SSO ile Oturum Açmayı Test Etme
+
+SSO ile oturum açmayı etkinleştirmek için üç seçeneğiniz vardır:
+
+**1. Seçenek: Doğrudan Kimlik Doğrulama URL'si**
+- Yetkilendirme URL'sini SSO oturum açma URL'niz olarak kullanın
+
+**2. Seçenek: OneLogin Portalı**
+- Kullanıcılar OneLogin portallarında oturum açıp Teable uygulama simgesine tıklayabilir
+
+**3. Seçenek: Alan Adı Doğrulaması**
+1. Teable'da alan adı doğrulamasını yapılandırın
+2. Özel alan adınızı doğrulayın
+3. https://app.teable.ai adresini ziyaret edin
+4. SSO ile oturum açma düğmesine tıklayın
+5. Oturum açmak için doğrulanmış alan adındaki e-posta adresinizi girin
+
+## Ek Yapılandırma (İsteğe Bağlı)
+
+### MFA'yı Yapılandırma
+
+1. OneLogin Yönetici Portalında **Güvenlik** → **Çok Faktörlü Kimlik Doğrulama** bölümüne gidin
+2. Kuruluşunuz veya belirli kullanıcılar için MFA ilkelerini etkinleştirin
+3. MFA gereksinimlerini yapılandırın (ör. her zaman zorunlu kılma, yeni cihazlarda zorunlu kılma)
+
+### Kullanıcı Sağlamayı Ayarlama (SCIM)
+
+Kullanıcıları OneLogin'den Teable'a otomatik olarak sağlamak istiyorsanız:
+
+1. Teable uygulamanızda **Sağlama** sekmesine gidin
+2. Sağlamayı etkinleştirin
+3. SCIM uç noktasını yapılandırın (Teable SCIM'i destekliyorsa)
+4. Kullanıcı özniteliklerini eşleyin
+5. Kullanıcı oluşturma, güncelleme ve silme işlemlerini etkinleştirin
+
+### Oturum Süresini Yapılandırma
+
+1. OneLogin'de **Ayarlar** → **Oturumlar** bölümüne gidin
+2. Oturum zaman aşımı ayarlarını yapılandırın
+3. Boşta kalma zaman aşımını ve en uzun oturum süresini ayarlayın
+
+### Özel Markalama
+
+1. OneLogin'de **Özelleştirme** → **Portal** bölümüne gidin
+2. OneLogin portalının görünümünü özelleştirin
+3. Şirket logonuzu, renklerinizi ve özel CSS'nizi ekleyin
+4. Bu, kullanıcıların OneLogin'de oturum açtıklarında gördüklerini etkiler
+ 

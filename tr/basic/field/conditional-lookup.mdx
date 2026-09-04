@@ -1,0 +1,118 @@
+---
+title: "Koşullu Arama"
+description: "Filtre koşullarıyla tablolar arasında veri arayın ve eşleşen kayıt değerlerini döndürün."
+---
+
+Koşullu Arama, önceden bir bağlantı ilişkisi oluşturmadan hedef tablodan eşleşen verileri getirebilir. Aynı kategoride en çok satan ürünü bulmak veya eşleşen bir döneme ait verileri aramak gibi, aramanın geçerli kayıttaki alan değerlerine göre değişmesi gerektiğinde kullanışlıdır.
+
+## Kullanım Alanları
+
+| Senaryo | Uygun olduğu durumlar |
+| --- | --- |
+| Kategori analizi | Aynı kategoride en çok satan ürünü bulma |
+| Dönem karşılaştırması | Dönemler arası hesaplamalar için önceki dönemin satış tutarını arama |
+| Müşteri eşleştirme | Telefon numarası, e-posta veya müşteri kimliğiyle müşteri ayrıntılarını bulma |
+| Ayrıntı arama | Geçerli kayıttaki koşullara göre eşleşen ayrıntı kayıtlarını döndürme |
+
+## İşlem
+
+<Steps>
+  <Step title="Bir koşullu arama alanı oluşturun">
+    Alan adının sağ tarafındaki `+` simgesine tıklayın, **Koşullu Arama**'yı seçin ve "İlişkili siparişler" gibi bir alan başlığı girin.
+  </Step>
+  <Step title="Hedef tabloyu seçin">
+    Hedef tablo açılır listesinden sorgulanacak tabloyu seçin.
+  </Step>
+  <Step title="Arama alanını yapılandırın">
+    Ayıklanacak alanı seçin ve döndürülen veri türünü doğrulayın.
+  </Step>
+  <Step title="Filtre koşullarını ayarlayın">
+    Filtre koşulları ekleyin; alanı, koşul türünü ve karşılaştırma değerini seçin. Karşılaştırma değeri sabit bir değer veya geçerli tablodaki bir alan olabilir.
+  </Step>
+  <Step title="Sıralama ve sınırları yapılandırın">
+    Gerektiğinde sıralama alanını, sıralama yönünü ve gösterilecek kayıt sayısını ayarlayın.
+  </Step>
+</Steps>
+
+En az bir filtre koşulu gereklidir. Birden fazla koşul için "Tüm koşullar karşılanıyor (AND)" veya "Herhangi bir koşul karşılanıyor (OR)" seçeneğini belirleyin.
+
+## Senaryo Uygulaması
+
+### Satış Verilerinin Dönemler Arası Analizi
+
+**Tablolar**
+
+- Dönem, başlangıç tarihi, bitiş tarihi ve satış tutarı gibi alanları içeren dönem satış özeti tablosu
+- Satış tutarı ve satış tarihi gibi alanları içeren satış ayrıntıları tablosu
+
+Dönem satış özeti tablosunda her dönem için dönemler arası büyümeyi hesaplayın. Önce geçerli dönem satışlarını hesaplamak için Koşullu Toplama'yı, ardından önceki dönem satışlarını getirmek için Koşullu Arama'yı ve son olarak büyüme oranını hesaplamak için Formül alanını kullanın.
+
+**Adımlar**
+
+**Geçerli dönem satışları için koşullu toplama alanı oluşturun**
+
+1. Dönem satış özeti tablosunda "Geçerli dönem satışları" adlı bir Koşullu Toplama alanı oluşturun
+2. Hedef tablo: Satış ayrıntıları tablosu
+3. Özet alanı: Satış tutarı
+4. Filtre koşulları:
+   - Alan: Satış tarihi -> Koşul: Önce veya eşit -> Değer: Geçerli tablodaki Bitiş tarihi alanı
+   - Alan: Satış tarihi -> Koşul: Sonra veya eşit -> Değer: Geçerli tablodaki Başlangıç tarihi alanı
+5. Toplama işlevi: Toplam
+
+**Önceki dönem satışları için koşullu arama alanı oluşturun**
+
+1. "Önceki dönem satışları" adlı bir Koşullu Arama alanı oluşturun
+2. Hedef tablo: Dönem satış özeti tablosu (bu tablo)
+3. Alan: Geçerli dönem satışları
+4. Filtre koşulu:
+   - Alan: Bitiş tarihi -> Koşul: Eşittir -> Değer: Geçerli tablodaki Önceki dönem bitiş tarihi alanı
+5. Toplama işlevi: Toplam
+
+**Dönemler arası büyüme için formül alanı oluşturun**
+
+1. "Dönemler arası büyüme oranı" adlı bir Formül alanı oluşturun
+2. Formülü `(Current period sales - Previous period sales) / Previous period sales * 100` olarak ayarlayın
+3. 2 ondalık basamaklı yüzde olarak biçimlendirin
+
+### Satış Verileri Ürün Analizi
+
+**Tablolar**
+
+- Kategori kimliği, ürün adı ve satış hacmi gibi alanları içeren Ürünler tablosu
+- Kategori kimliği ve kategori adı gibi alanları içeren Kategoriler tablosu
+
+Her kategorideki ana ürünü belirlemek için kategoriler tablosunda her kategorinin en çok satan ürününü bulun.
+
+**Adımlar**
+
+**En çok satan ürün**
+
+1. Kategoriler tablosunda "En çok satan ürün" adlı bir Koşullu Arama alanı oluşturun
+2. Hedef tablo: Ürünler tablosu
+3. Arama alanı: Ürün adı
+4. Filtre koşulu:
+   - Alan: Kategori kimliği -> Koşul: Eşittir -> Değer: Geçerli tablodaki Kategori kimliği alanı
+5. Sıralama: Satış hacmi alanı -> Azalan
+6. Görüntüleme sınırı: 1 kayıt
+
+**Satış hacmi**
+
+1. "Satış hacmi" adlı başka bir Koşullu Arama alanı oluşturun
+2. Hedef tablo: Ürünler tablosu
+3. Arama alanı: Satış hacmi
+4. Filtre koşulu:
+   - Alan: Kategori kimliği -> Koşul: Eşittir -> Değer: Geçerli tablodaki Kategori kimliği alanı
+5. Sıralama: Satış hacmi alanı -> Azalan
+6. Görüntüleme sınırı: 1 kayıt
+
+## SSS
+
+<AccordionGroup>
+  <Accordion title="Bazı alanlar neden filtre koşulu olarak kullanılamıyor?">
+    Görseller ve ekler gibi bazı karmaşık alan türleri filtre koşullarını desteklemeyebilir.
+  </Accordion>
+
+  <Accordion title="Koşullu Arama ile normal bir Arama alanı arasındaki fark nedir?">
+    Normal bir Arama alanı önce bir Bağlantı alanı gerektirir. Koşullu Arama, hedef tablodaki verileri filtre koşullarıyla doğrudan eşleştirebilir.
+  </Accordion>
+</AccordionGroup>

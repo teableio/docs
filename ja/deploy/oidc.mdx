@@ -1,0 +1,86 @@
+---
+title: "OIDC シングルサインオン"
+description: "セルフホストの Teable インスタンスに OpenID Connect（OIDC）認証を設定します。"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+Teable は OIDC シングルサインオンに対応しており、外部のIDプロバイダーと連携してユーザーを認証できます。
+
+## 環境変数
+
+セルフホストの Teable で OIDC を有効にするには、次の環境変数を設定します。
+
+```sh
+# OIDC の基本設定
+BACKEND_OIDC_CLIENT_ID=your_client_id
+BACKEND_OIDC_CLIENT_SECRET=your_client_secret
+BACKEND_OIDC_CALLBACK_URL=https://your-teable-domain.com/api/auth/oidc/callback
+
+# OAuth エンドポイント（使用する IdP から取得）
+BACKEND_OIDC_AUTHORIZATION_URL=https://your-idp.com/authorize
+BACKEND_OIDC_TOKEN_URL=https://your-idp.com/token
+BACKEND_OIDC_USER_INFO_URL=https://your-idp.com/userinfo
+BACKEND_OIDC_ISSUER=https://your-idp.com
+
+# 追加オプション
+BACKEND_OIDC_OTHER={"scope":["email","profile"]}
+
+# OIDC を認証プロバイダーとして有効化
+SOCIAL_AUTH_PROVIDERS=oidc
+```
+
+## 設定リファレンス
+
+| 変数 | 説明 |
+|----------|-------------|
+| `BACKEND_OIDC_CLIENT_ID` | IDプロバイダーのクライアントID |
+| `BACKEND_OIDC_CLIENT_SECRET` | IDプロバイダーのクライアントシークレット |
+| `BACKEND_OIDC_CALLBACK_URL` | Teable のコールバックURL（IdP の設定と一致させる必要があります） |
+| `BACKEND_OIDC_AUTHORIZATION_URL` | IdP の認可エンドポイント |
+| `BACKEND_OIDC_TOKEN_URL` | IdP のトークンエンドポイント |
+| `BACKEND_OIDC_USER_INFO_URL` | IdP のユーザー情報エンドポイント |
+| `BACKEND_OIDC_ISSUER` | IdP の発行者識別子 |
+| `BACKEND_OIDC_OTHER` | JSON 形式の追加オプション（スコープなど） |
+| `SOCIAL_AUTH_PROVIDERS` | OIDC ログインボタンを有効にするには `oidc` を含めます |
+
+## 複数の認証プロバイダーを有効にする
+
+複数の認証方法を有効にできます。
+
+```sh
+SOCIAL_AUTH_PROVIDERS=github,google,oidc
+```
+
+これにより、ユーザーは GitHub、Google、または設定した OIDC プロバイダーを介してログインできます。
+
+---
+
+## IDプロバイダーのセキュリティ要件 {#identity-provider-security-requirements}
+
+Teable は IdP から返されたメールアドレスを信頼し、そのアドレスを使用して、同じメールアドレスを持つ既存アカウントに OIDC ログインを自動的に関連付けます。接続するIDプロバイダーは、**ユーザーのメールアドレスが認証済みであることを保証する必要があります**。
+
+<Warning>
+ユーザーが任意の未認証メールアドレスを設定できるIDプロバイダー（自由に登録できるマルチテナント IdP など）には接続しないでください。このようなプロバイダーでは、攻撃者がインスタンス上の既存ユーザーのメールアドレスを使用してアカウントを登録し、OIDC でサインインしてそのアカウントを乗っ取る可能性があります。同じインスタンスでローカルのパスワードログインも有効になっている場合は、特に危険です。
+</Warning>
+
+推奨事項：
+
+- メール認証を有効にした、管理下のエンタープライズ向け IdP（Okta、Azure Entra ID、Google Workspace、Keycloak など）だけに接続してください。
+- インスタンスで SSO だけを使用する場合は、[`PASSWORD_LOGIN_DISABLED=true`](/ja/deploy/env) を設定してローカルのパスワードログインを無効にし、攻撃対象領域をさらに縮小してください。
+
+---
+
+## 重要な注意事項
+
+1. **HTTPS が必須**：本番環境では、すべてのURLに HTTPS を使用する必要があります
+2. **コールバックURLを一致させる**：Teable のコールバックURLは、IdP に設定した内容と完全に一致させる必要があります
+3. **再起動が必要**：環境変数を変更した後は、変更を反映するために Teable を再起動します
+4. **安全な保管**：シークレットをバージョン管理へコミットしないでください。環境変数またはシークレット管理ツールを使用します
+5. **IdP によるメール認証が必須**：上記の[IDプロバイダーのセキュリティ要件](#identity-provider-security-requirements)を参照してください
+
+---
+
+## 関連ドキュメント
+
+- [環境変数リファレンス](/ja/deploy/env)
+

@@ -1,0 +1,85 @@
+---
+title: "OIDC ile Tek Oturum Açma"
+description: "Kendi sunucunuzda barındırılan Teable örneğiniz için OpenID Connect (OIDC) kimlik doğrulamasını yapılandırın."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+Teable, kullanıcı kimlik doğrulaması için harici kimlik sağlayıcılarıyla entegrasyon kurmanıza olanak tanıyan OIDC ile tek oturum açmayı destekler.
+
+## Ortam Değişkenleri
+
+Kendi sunucunuzda barındırdığınız Teable'da OIDC'yi etkinleştirmek için şu ortam değişkenlerini yapılandırın:
+
+```sh
+# Temel OIDC Yapılandırması
+BACKEND_OIDC_CLIENT_ID=your_client_id
+BACKEND_OIDC_CLIENT_SECRET=your_client_secret
+BACKEND_OIDC_CALLBACK_URL=https://your-teable-domain.com/api/auth/oidc/callback
+
+# OAuth Uç Noktaları (IdP'nizden alın)
+BACKEND_OIDC_AUTHORIZATION_URL=https://your-idp.com/authorize
+BACKEND_OIDC_TOKEN_URL=https://your-idp.com/token
+BACKEND_OIDC_USER_INFO_URL=https://your-idp.com/userinfo
+BACKEND_OIDC_ISSUER=https://your-idp.com
+
+# Ek Seçenekler
+BACKEND_OIDC_OTHER={"scope":["email","profile"]}
+
+# OIDC'yi kimlik doğrulama sağlayıcısı olarak etkinleştirin
+SOCIAL_AUTH_PROVIDERS=oidc
+```
+
+## Yapılandırma Başvurusu
+
+| Değişken | Açıklama |
+|----------|-------------|
+| `BACKEND_OIDC_CLIENT_ID` | Kimlik sağlayıcınızdan alınan istemci kimliği |
+| `BACKEND_OIDC_CLIENT_SECRET` | Kimlik sağlayıcınızdan alınan istemci gizli anahtarı |
+| `BACKEND_OIDC_CALLBACK_URL` | Teable'ın geri çağırma URL'si (IdP yapılandırmasıyla eşleşmelidir) |
+| `BACKEND_OIDC_AUTHORIZATION_URL` | IdP'nin yetkilendirme uç noktası |
+| `BACKEND_OIDC_TOKEN_URL` | IdP'nin belirteç uç noktası |
+| `BACKEND_OIDC_USER_INFO_URL` | IdP'nin kullanıcı bilgileri uç noktası |
+| `BACKEND_OIDC_ISSUER` | IdP'nin veren tanımlayıcısı |
+| `BACKEND_OIDC_OTHER` | JSON biçimindeki ek seçenekler (ör. kapsamlar) |
+| `SOCIAL_AUTH_PROVIDERS` | OIDC oturum açma düğmesini etkinleştirmek için `oidc` değerini ekleyin |
+
+## Birden Fazla Kimlik Doğrulama Sağlayıcısını Etkinleştirme
+
+Birden fazla kimlik doğrulama yöntemini etkinleştirebilirsiniz:
+
+```sh
+SOCIAL_AUTH_PROVIDERS=github,google,oidc
+```
+
+Böylece kullanıcılar GitHub, Google veya OIDC sağlayıcınız üzerinden oturum açabilir.
+
+---
+
+## Kimlik Sağlayıcısı Güvenlik Gereksinimleri {#identity-provider-security-requirements}
+
+Teable, IdP'nizin döndürdüğü e-posta adresine güvenir ve OIDC oturumlarını aynı e-posta adresine sahip mevcut hesaplarla otomatik olarak ilişkilendirmek için bu adresi kullanır. Bağlandığınız kimlik sağlayıcısı **kullanıcı e-posta adreslerinin doğrulandığını garanti etmelidir**.
+
+<Warning>
+Kullanıcıların rastgele, doğrulanmamış e-posta adresleri belirlemesine izin veren kimlik sağlayıcılarına bağlanmayın (örneğin, herkese açık kayda izin veren çok kiracılı IdP'ler). Böyle bir sağlayıcıda saldırgan, örneğinizdeki mevcut bir kullanıcının e-posta adresiyle hesap oluşturabilir ve OIDC üzerinden oturum açarak bu hesabı ele geçirebilir. Aynı örnekte yerel parolayla oturum açma da etkinse bu risk özellikle yüksektir.
+</Warning>
+
+Öneriler:
+
+- Yalnızca denetiminizde olan ve e-posta doğrulaması etkinleştirilmiş kurumsal düzeyde IdP'lere (Okta, Azure Entra ID, Google Workspace veya Keycloak gibi) bağlanın.
+- Örneğiniz yalnızca SSO kullanıyorsa yerel parolayla oturum açmayı devre dışı bırakmak ve saldırı yüzeyini daha da küçültmek için [`PASSWORD_LOGIN_DISABLED=true`](/tr/deploy/env) ayarını kullanın.
+
+---
+
+## Önemli Notlar
+
+1. **HTTPS Zorunludur**: Üretimde tüm URL'ler HTTPS kullanmalıdır
+2. **Geri Çağırma URL'si Eşleşmelidir**: Teable'daki geri çağırma URL'si, IdP'nizde yapılandırılan değerle tam olarak eşleşmelidir
+3. **Yeniden Başlatma Gereklidir**: Ortam değişkenlerini değiştirdikten sonra değişikliklerin uygulanması için Teable'ı yeniden başlatın
+4. **Güvenli Depolama**: Gizli anahtarları asla sürüm denetimine göndermeyin; ortam değişkenleri veya gizli anahtar yöneticileri kullanın
+5. **IdP E-postaları Doğrulamalıdır**: Yukarıdaki [Kimlik Sağlayıcısı Güvenlik Gereksinimleri](#identity-provider-security-requirements) bölümüne bakın
+
+---
+
+## İlgili Belgeler
+
+- [Ortam Değişkenleri Başvurusu](/tr/deploy/env)

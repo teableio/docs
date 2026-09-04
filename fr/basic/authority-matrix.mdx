@@ -1,0 +1,119 @@
+---
+title: "Présentation"
+description: "Définissez des périmètres d’accès pour différentes équipes dans la même base, afin que les membres ne puissent voir, modifier ou exporter que les données dont ils ont besoin."
+---
+
+{/* mintlify-resync: 2026-05-28 */}
+<Tip>Disponible avec le forfait Business et les forfaits supérieurs</Tip>
+
+Lorsque les équipes commerciales, financières, opérationnelles et de direction partagent la même base,
+les autorisations déterminent qui peut accéder à la base, quelles données chacun peut consulter ou modifier,
+et si les données peuvent être importées ou exportées. La Matrice d’autorité aide les équipes
+à centraliser les données tout en séparant les accès selon les responsabilités.
+
+Vous pouvez attribuer des rôles personnalisés à des membres ou à des départements, puis permettre à chaque rôle
+d’accéder uniquement aux tables, applications et workflows dont il a besoin. Pour les tables, vous pouvez également
+limiter les vues visibles, les enregistrements visibles, les champs modifiables et les autorisations d’importation ou d’exportation.
+Par exemple, l’équipe commerciale peut gérer ses propres clients, l’équipe financière peut consulter les champs de facturation,
+et la direction peut consulter l’ensemble des données.
+
+## Cas d’utilisation
+
+| Scénario | Adapté à |
+| --- | --- |
+| Accès au niveau des départements | L’équipe commerciale peut gérer les fiches clients, tandis que l’équipe financière ne voit que les champs de facturation. |
+| Enregistrements basés sur l’attribution | Les commerciaux peuvent uniquement consulter et mettre à jour les enregistrements qui leur sont attribués. |
+| Saisie de données restreinte | Les membres peuvent créer de nouveaux enregistrements sans modifier ni supprimer les enregistrements existants. |
+| Champs sensibles dans une base partagée | Les membres peuvent consulter les enregistrements de commande sans voir les champs de paiement ou de coût. |
+| Applications et workflows contrôlés | Les rôles peuvent ouvrir les applications ou workflows sélectionnés, tandis que les nœuds non autorisés restent masqués. |
+
+## Fonctionnement des autorisations
+
+La Matrice d’autorité attribue les accès par rôle. Les utilisateurs peuvent recevoir des autorisations
+des rôles qui leur sont directement attribués ou des rôles de leur département. Lorsque plusieurs
+rôles s’appliquent, Teable combine les autorisations accordées par ces rôles.
+
+<Info>Les utilisateurs de l’Espace disposant de l’autorisation **Gestionnaire** et les administrateurs de la Matrice d’autorité peuvent gérer la Matrice d’autorité et ne sont pas limités par celle-ci.</Info>
+
+La liste des rôles comprend une section `Administrateurs` et une section `Rôles personnalisés` :
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-role-list-en.png"
+  alt="Liste des rôles de la Matrice d’autorité"
+  className="docs-screenshot"
+/>
+
+Utilisez `Ajouter un rôle` pour créer un rôle personnalisé. Dans la page de détail du rôle, attribuez
+des collaborateurs, rédigez une courte description et configurez l’accès à chaque nœud de
+la base :
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-role-detail-en.png"
+  alt="Page de détail du rôle de la Matrice d’autorité"
+  className="docs-screenshot"
+/>
+
+## Configurer l’accès des rôles
+
+Chaque table, application et workflow possède son propre paramètre d’accès.
+
+| Type de nœud | Paramètre disponible |
+| --- | --- |
+| Table | Choisissez `Peut modifier` ou `Aucun accès`. Une fois qu’une table est définie sur `Peut modifier`, configurez ses autorisations détaillées. |
+| Application | Choisissez `Peut accéder` ou `Aucun accès`. Cela détermine si le rôle peut ouvrir l’application. |
+| Workflow | Choisissez `Peut accéder` ou `Aucun accès`. Cela détermine si le rôle peut ouvrir le workflow. |
+| Dossier | Les dossiers sont affichés pour la navigation. Si aucun des nœuds enfants n’est accessible, le dossier est masqué pour le rôle. |
+
+Pour configurer les autorisations détaillées des vues, enregistrements, champs et autres éléments d’une table, définissez
+d’abord la table sur `Peut modifier`. Une table avec `Aucun accès` est masquée pour les membres ayant ce rôle.
+
+## Autorisations de table
+
+Lorsqu’une table est définie sur `Peut modifier`, configurez les zones d’autorisation suivantes :
+
+| Zone d’autorisation | Ce qu’elle contrôle |
+| --- | --- |
+| Autorisations des vues | Si le rôle peut créer, mettre à jour ou supprimer des vues, et s’il peut consulter `Toutes les vues` ou uniquement des `Vues spécifiques`. |
+| Autorisations des enregistrements | Si le rôle peut créer, mettre à jour, supprimer, commenter ou copier des enregistrements. Les enregistrements visibles peuvent être `Tous les enregistrements` ou ceux qui correspondent aux conditions de filtre. |
+| Autorisations des champs | Si le rôle peut consulter, mettre à jour ou créer des valeurs dans des champs spécifiques. Le champ principal doit rester visible. |
+| Autorisations d’importation et d’exportation | Si le rôle peut importer des données dans la table ou exporter les données de la table. |
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-table-permissions-en.png"
+  alt="Autorisations de table de la Matrice d’autorité"
+  className="docs-screenshot"
+/>
+
+Les filtres d’enregistrements conviennent bien aux périmètres d’accès qui changent selon le propriétaire, le département
+ou des champs similaires. Par exemple, une condition telle que `Responsable commercial` `est`
+`utilisateur actuel` permet à chaque commercial de ne voir que ses propres enregistrements. Les autorisations de champ
+peuvent également masquer ou verrouiller les valeurs de champs sensibles dans les enregistrements auxquels le rôle peut accéder.
+
+## Rôle par défaut
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-default-role-en.png"
+  alt="Paramètre de rôle par défaut de la Matrice d’autorité"
+  className="docs-screenshot"
+/>
+
+Utilisez `Rôle par défaut` pour les membres auxquels aucun rôle personnalisé n’a été attribué. Vous
+pouvez sélectionner un rôle personnalisé activé ou choisir `Autorisation refusée` afin que ces
+membres ne puissent pas accéder au contenu contrôlé par la Matrice d’autorité.
+
+## Remarques
+
+- Une fois la Matrice d’autorité activée, les utilisateurs dont l’autorisation d’Espace est inférieure à
+  `Gestionnaire` sont limités par celle-ci, sauf s’ils sont ajoutés comme administrateurs de la Matrice d’autorité.
+- L’utilisateur qui active la Matrice d’autorité est automatiquement ajouté aux
+  `Administrateurs`.
+- Les nouveaux rôles personnalisés sont activés lorsqu’ils sont créés avec `Ajouter un rôle`, mais chaque
+  table, application et workflow nécessite toujours son propre paramètre d’accès.
+- Une table définie sur `Aucun accès` pour un rôle est masquée pour ce rôle, même si ses
+  options d’autorisation détaillées ont été modifiées auparavant.
+- L’attribution d’un rôle depuis `Ajouter un utilisateur` ou `Ajouter depuis l’organisation` peut ajouter les
+  membres ou départements sélectionnés comme collaborateurs de la base. La Matrice d’autorité limite ensuite
+  ce à quoi ils peuvent accéder à l’intérieur de la base.
+
+<Note>Pour en savoir plus sur les niveaux d’autorisation de base des Espaces et des bases, consultez les [Autorisations de collaboration](/fr/basic/space/space-permission).</Note>
+

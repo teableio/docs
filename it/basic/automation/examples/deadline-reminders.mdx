@@ -1,0 +1,34 @@
+---
+title: "Inviare promemoria prima della scadenza delle attività"
+description: "Invia automaticamente email agli assegnatari per le attività in scadenza a breve"
+---
+
+<Tip>Consigliamo di creare gli esempi di Automazione direttamente in AI Chat. Descrivi il workflow desiderato e l'IA si occuperà dell'intera configurazione, inclusi trigger, azioni, script e impostazioni.</Tip>
+
+## Creare con l'IA
+
+Apri AI Chat nella barra laterale destra della Tabella e spiega all'IA cosa desideri. Ad esempio, puoi dire:
+
+*"Ogni mattina alle 8:00, trova le attività in scadenza nei prossimi 2 giorni che non sono state completate e invia un promemoria via email a ogni assegnatario"*
+
+L'IA creerà automaticamente il workflow completo. Puoi esaminare lo script generato, provarlo con dati reali e abilitare il workflow quando è pronto.
+
+## Configurazione manuale
+
+1. **Crea un workflow** con il trigger **All'orario pianificato**, ogni giorno alle 08:00.
+2. **Aggiungi un'azione** → **Ottieni Record**.
+   - Tabella: **Attività**
+   - Filtro: `Data di scadenza` **rientra nei** `prossimi 2 giorni` E `Stato` **non è** `Completato`
+3. Fai clic su **Test** per vedere i Record corrispondenti.
+4. **Aggiungi un'azione** → **Invia email** con **Ciclo** abilitato.
+5. Seleziona come origine del ciclo l'array del passaggio Ottieni Record.
+6. Esegui la mappatura:
+   - A → email dell'assegnatario (tramite **+**, facendo riferimento all'elemento corrente del ciclo)
+   - Oggetto: `Promemoria: "<titolo attività>" è in scadenza`
+   - Corpo: `L'attività "<titolo attività>" scade il <data di scadenza>. Aggiorna lo stato al termine.`
+7. Fai clic su **Test**, quindi **abilita** il workflow.
+
+## Suggerimenti
+
+- Regola l'intervallo del filtro ("prossimi 2 giorni", "prossimi 7 giorni") in base all'urgenza abituale delle attività.
+- Aggiungi una condizione per inviare email soltanto per le attività in cui Assegnatario non è vuoto.

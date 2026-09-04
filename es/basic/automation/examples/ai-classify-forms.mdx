@@ -1,0 +1,40 @@
+---
+title: "Clasificar automáticamente nuevos formularios con IA"
+description: "Usa Generar con IA para categorizar automáticamente los formularios enviados"
+---
+
+<Tip>Recomendamos crear los ejemplos de Automatización directamente en el Chat de IA. Solo tienes que describir el flujo de trabajo que quieres y la IA se encargará de toda la configuración, incluidos el desencadenador, las acciones, el script y la configuración.</Tip>
+
+## Crear con IA
+
+Abre el Chat de IA en la barra lateral derecha de tu Tabla e indica a la IA lo que quieres. Por ejemplo, puedes decir:
+
+*«Cuando alguien envíe el formulario de comentarios, clasifica los comentarios como Informe de errores, Solicitud de función o Comentarios generales y escribe la categoría en el Registro»*
+
+La IA creará automáticamente el flujo de trabajo completo. Puedes revisar el script generado, probarlo con datos reales y activar el flujo de trabajo cuando esté listo.
+
+## Configuración manual
+
+1. **Crea un flujo de trabajo** con el desencadenador **Cuando se envía un formulario**.
+2. Selecciona tu Tabla y formulario de **Comentarios**.
+3. Haz clic en **Probar**.
+4. **Añade una acción** → **Generar con IA**.
+   - Prompt:
+     ```
+     Clasifica estos comentarios en exactamente una categoría:
+     Informe de errores, Solicitud de función o Comentarios generales.
+
+     Responde únicamente con el nombre de la categoría.
+
+     Comentarios: <inserta el Campo de comentarios mediante +>
+     ```
+   - Tipo de salida: **Texto**
+5. **Añade una acción** → **Actualizar Registro**.
+   - ID de Registro: el ID del Registro desencadenador (mediante **+**)
+   - Campo Categoría → la salida de Generar con IA (mediante **+**)
+6. Prueba cada paso y luego **activa** el flujo.
+
+## Consejos
+
+- Para obtener una clasificación con más matices, aumenta el número de categorías del prompt.
+- Utiliza el tipo de salida **JSON** si quieres que la IA devuelva varios Campos (p. ej., categoría + sentimiento + resumen) en una sola llamada.

@@ -1,0 +1,40 @@
+---
+title: "Générer et envoyer un récapitulatif quotidien par e-mail avec l’IA"
+description: "Utilisez un déclencheur planifié et Générer avec l’IA pour résumer l’activité de la journée et l’envoyer par e-mail à votre équipe"
+---
+
+<Tip>Nous vous recommandons de créer les exemples d’automatisation directement dans le Chat IA. Décrivez simplement le workflow souhaité : l’IA se charge de toute la configuration, notamment du déclencheur, des actions, du script et des paramètres.</Tip>
+
+## Créer avec l’IA
+
+Ouvrez le Chat IA dans la barre latérale droite de votre table et indiquez à l’IA ce que vous souhaitez. Vous pouvez par exemple dire :
+
+*« Chaque jour à 18 h, recherche toutes les tâches terminées aujourd’hui, résume-les dans un bref rapport et envoie-le par e-mail à team@yourcompany.com »*
+
+L’IA créera automatiquement le workflow complet. Vous pourrez examiner le script généré, le tester avec des données réelles, puis activer le workflow lorsqu’il sera prêt.
+
+## Configuration manuelle
+
+1. **Créez un workflow** avec le déclencheur **À l’heure planifiée** — tous les jours à 18:00.
+2. **Ajoutez une action** → **Obtenir des enregistrements**.
+   - Table : **Tâches**
+   - Filtre : `Statut` **est** `Terminé` ET `Terminé le` **est** `aujourd’hui`
+3. **Ajoutez une action** → **Générer avec l’IA**.
+   - Prompt :
+     ```
+     Résume ces tâches terminées dans un bref rapport quotidien.
+     Regroupe-les par catégorie si nécessaire. Limite le rapport à 200 mots.
+
+     Tâches : <insérez le résultat d’Obtenir des enregistrements via +>
+     ```
+   - Type de sortie : **Texte**
+4. **Ajoutez une action** → **Envoyer un e-mail**.
+   - À : `team@yourcompany.com`
+   - Objet : `Rapport quotidien des tâches`
+   - Corps : insérez le résultat de Générer avec l’IA (via **+**)
+5. Testez chaque étape, puis **activez** le workflow.
+
+## Variantes
+
+- **Récapitulatif hebdomadaire :** planifiez l’exécution le vendredi et remplacez le filtre par « 7 derniers jours ».
+- **Récapitulatif de l’activité client :** interrogez une table CRM afin de récupérer les nouvelles interactions et de les résumer.

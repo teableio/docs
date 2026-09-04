@@ -1,0 +1,191 @@
+---
+title: "Generar con IA"
+description: "Usa modelos de IA para generar texto o datos estructurados en un flujo de trabajo"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Recomendamos encarecidamente usar Ejecutar script para crear automatizaciones, ya que permite cubrir el comportamiento de todas las acciones, incluidas aquellas que, de otro modo, tendrían que crearse manualmente. Solo tienes que describir tus requisitos a la IA en el chat.
+
+Ten en cuenta que, si añades acciones manualmente, la IA no podrá reconocerlas ni modificarlas más adelante.
+</Tip>
+
+## Crear con IA
+
+Abre el Chat de IA en la barra lateral derecha de tu Tabla y describe lo que quieres.
+
+La IA se encarga de todo: elige el desencadenador adecuado, selecciona las acciones correspondientes, asigna los Campos y configura automáticamente todo el flujo de trabajo.
+
+Describe el objetivo una sola vez y el flujo de trabajo estará listo, sin necesidad de configuración manual.
+
+Envía un prompt a un modelo de lenguaje de gran tamaño y devuelve texto o JSON estructurado. Úsala para clasificar, extraer, resumir o generar datos a partir de tus Registros.
+
+## Configuración
+
+| Ajuste | Obligatorio | Descripción |
+|---|---|---|
+| Prompt | Sí | Tu instrucción para la IA. Haz clic en **+** para insertar variables dinámicas de pasos anteriores |
+| Modelo | No | Elige un modelo. De forma predeterminada se utiliza el modelo del sistema. También hay disponibles modelos de visión y razonamiento |
+| Temperatura | No | Controla la aleatoriedad: 0 = más determinista, 1 = más creativo. El valor predeterminado suele ser aproximadamente 0,7 |
+| Tipo de salida | No | **Texto** (predeterminado): devuelve texto libre. **JSON**: devuelve JSON estructurado que coincide con un esquema que tú defines |
+| Archivos adjuntos | No | Sube imágenes, archivos PDF, documentos de Word o archivos de Excel. Requiere un modelo con capacidad de visión |
+
+## Capacidades de los modelos
+
+| Etiqueta | Significado |
+|---|---|
+| **Visión** | Puede leer y analizar imágenes, archivos PDF, documentos de Word y archivos de Excel adjuntos al prompt |
+| **Razonamiento** | Devuelve tanto la respuesta como el razonamiento paso a paso (cadena de pensamiento), útil para análisis complejos |
+
+Puedes conectar modelos de IA de terceros mediante **Espacio → Configuración → Integraciones**. Esto te permite utilizar modelos de OpenAI, Anthropic, Google y otros proveedores.
+
+## Cómo configurarla
+
+1. Añade una acción **Generar con IA** a tu flujo de trabajo.
+2. Escribe el **Prompt**. Esta es la instrucción que seguirá la IA. Haz clic en **+** para insertar valores dinámicos; por ejemplo, el texto de un ticket de soporte, el contenido de un formulario enviado o la descripción de un producto.
+3. (Opcional) Selecciona un **Modelo** si quieres utilizar uno concreto en lugar del predeterminado.
+4. (Opcional) Ajusta la **Temperatura**. Los valores bajos (0–0,3) producen resultados más coherentes y predecibles. Los valores altos (0,7–1,0) generan resultados más variados y creativos.
+5. (Opcional) Cambia el **Tipo de salida** a **JSON** si necesitas datos estructurados. Define el esquema JSON para que la IA sepa qué formato debe devolver.
+6. (Opcional) Añade **Archivos adjuntos** si quieres que la IA lea documentos o imágenes (requiere un modelo de visión).
+7. Guarda la acción. La respuesta de la IA estará disponible para los pasos posteriores mediante el selector de variables **+**.
+
+## Consejos para redactar prompts
+
+La calidad del resultado de la IA depende en gran medida del prompt. Estas son algunas recomendaciones prácticas:
+
+- **Sé específico.** En lugar de «Clasifica esto», escribe «Clasifica este ticket de soporte en una de estas categorías: Facturación, Técnico, Cuenta, Otro».
+- **Incluye ejemplos en el prompt.** Muestra a la IA lo que esperas:
+  ```
+  Clasifica el siguiente ticket de soporte. Devuelve únicamente el nombre de la categoría.
+
+  Categorías: Facturación, Técnico, Cuenta, Otro
+
+  Ejemplos:
+  - "No puedo iniciar sesión en mi cuenta" → Cuenta
+  - "El importe de mi factura es incorrecto" → Facturación
+  - "La API devuelve un error 500" → Técnico
+
+  Ticket: {{Ticket Description}}
+  ```
+- **Define el formato de salida.** Si quieres un formato específico, indícalo: «Devuelve únicamente el nombre de la categoría, nada más» o «Devuelve un objeto JSON con las claves: category, confidence, reason».
+- **Céntrate en una sola tarea.** Un prompt por tarea funciona mejor que pedir a la IA que haga varias cosas a la vez.
+
+## Salida JSON
+
+Cuando estableces el Tipo de salida en **JSON**, la IA devuelve datos estructurados en lugar de texto libre. Esto resulta útil cuando necesitas extraer varios datos y utilizarlos por separado en pasos posteriores.
+
+Ejemplo de prompt para una salida JSON:
+
+```
+Extrae la siguiente información de este correo electrónico de factura. Devuelve JSON con estas claves:
+- vendor_name (cadena)
+- invoice_number (cadena)
+- amount (número)
+- due_date (cadena con formato YYYY-MM-DD)
+
+Cuerpo del correo electrónico: {{Email Body}}
+```
+
+La IA devuelve algo parecido a esto:
+
+```json
+{
+  "vendor_name": "Acme Corp",
+  "invoice_number": "INV-2024-001",
+  "amount": 1250.00,
+  "due_date": "2024-03-15"
+}
+```
+
+Cada clave del JSON queda disponible como una variable independiente en los pasos posteriores, por lo que puedes asignar `vendor_name` a un Campo, `amount` a otro, y así sucesivamente.
+
+## Modelos de visión y archivos adjuntos
+
+Los modelos de visión pueden analizar imágenes y documentos. Adjunta archivos al prompt y la IA los «leerá»:
+
+- **Imágenes:** capturas de pantalla, fotografías, diagramas y gráficos.
+- **Archivos PDF:** facturas, contratos e informes.
+- **Archivos de Word o Excel:** documentos y hojas de cálculo.
+
+Casos de uso: extraer texto de documentos escaneados, leer datos de imágenes de facturas, analizar imágenes de gráficos y procesar formularios subidos.
+
+Asegúrate de seleccionar un modelo con la etiqueta **Visión**. Los modelos sin visión ignorarán los archivos adjuntos.
+
+## Sistema de créditos
+
+Cada llamada a Generar con IA consume créditos en función de:
+
+- El **modelo** utilizado (los modelos más potentes cuestan más créditos por token).
+- El **número de tokens** procesados (tanto de entrada como de salida).
+
+El coste exacto en créditos aparece en el panel de prueba después de una ejecución de prueba. Supervisa el uso de créditos en la configuración de tu cuenta, sobre todo si utilizas Generar con IA dentro de un Bucle con muchos Registros.
+
+## Ejemplos concretos de prompts
+
+### Clasificación
+
+```
+Clasifica estos comentarios del cliente como Positivos, Negativos o Neutros.
+Devuelve únicamente la clasificación.
+
+Comentarios: {{Feedback Text}}
+```
+
+### Extracción de datos
+
+```
+Extrae todas las direcciones de correo electrónico mencionadas en el texto siguiente.
+Devuélvelas como una matriz JSON de cadenas.
+
+Texto: {{Message Body}}
+```
+
+### Resumen
+
+```
+Resume las siguientes notas de la reunión en 3 viñetas.
+Céntrate en las tareas pendientes y las decisiones tomadas.
+
+Notas: {{Meeting Notes}}
+```
+
+### Generación de contenido
+
+```
+Escribe un correo electrónico profesional de seguimiento para {{Customer Name}} sobre su consulta acerca de {{Product Name}}.
+Limítalo a 150 palabras. Menciona que responderemos en un plazo de 24 horas.
+```
+
+### Traducción
+
+```
+Traduce el siguiente texto de {{Source Language}} a {{Target Language}}.
+Conserva el formato original.
+
+Texto: {{Content}}
+```
+
+## Cuándo usarla
+
+- **Clasificar tickets de soporte por tema.** Categoriza automáticamente los tickets entrantes para dirigirlos al equipo adecuado.
+- **Extraer datos estructurados de facturas o correos electrónicos.** Extrae importes, fechas, nombres y números de referencia en Campos separados.
+- **Resumir Campos de texto largos.** Condensa notas de reuniones, descripciones o comentarios en resúmenes breves.
+- **Generar contenido de correo electrónico personalizado.** Crea un cuerpo de correo personalizado a partir de los datos del Registro.
+- **Analizar imágenes y documentos.** Utiliza modelos de visión para leer facturas, recibos o capturas de pantalla que se hayan subido.
+
+## Consejos
+
+- Utiliza el **panel de prueba** para perfeccionar el prompt antes de activar la Automatización. Ejecuta pruebas con datos reales para comprobar el formato y la calidad de la salida.
+- Para obtener resultados coherentes (especialmente en tareas de clasificación), establece la Temperatura en 0 o cerca de 0.
+- El modo de salida JSON es más fiable cuando proporcionas un esquema claro en el prompt. Enumera siempre las claves esperadas y sus tipos.
+- Si procesas muchos Registros en un [Bucle](../logic/loop-run), procura que los prompts sean concisos para reducir el uso de tokens y el coste en créditos.
+- Conecta otros proveedores de IA mediante **Espacio → Configuración → Configuración de IA** si los modelos predeterminados no satisfacen tus necesidades. Para obtener más información, consulta [Modelos de IA personalizados](/es/basic/ai/custom-model).
+
+<Tip>Conecta modelos de IA de terceros mediante **Espacio → Configuración → Configuración de IA**.</Tip>
+
+## Contenido relacionado
+
+- [Bucle (lote)](../logic/loop-run) — procesa varios Registros con IA en una sola ejecución de la Automatización
+- [Ejecutar script](/es/basic/automation/ai/scripting/runscript) — para lógica personalizada que va más allá de la generación basada en prompts
+- [Enviar correo electrónico](/es/basic/automation/actions/communication/send-email-overview)
+- [Actualizar Registro](/es/basic/automation/actions/records/update-record)

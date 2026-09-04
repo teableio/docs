@@ -1,0 +1,36 @@
+---
+title: "Mantener sincronizados los Registros entre varias Bases"
+description: "Replica automáticamente Registros nuevos o actualizados en otra Base mediante el acceso entre Bases"
+---
+
+<Tip>Recomendamos crear los ejemplos de Automatización directamente en el Chat de IA. Describe el flujo de trabajo que quieres y la IA se encargará de configurarlo por completo, incluidos el disparador, las acciones, el script y la configuración.</Tip>
+
+## Crear con IA
+
+Abre el Chat de IA en la barra lateral derecha de tu Tabla y dile a la IA lo que quieres. Por ejemplo, puedes decir:
+
+*"Cuando se cree un pedido nuevo en la Base Ventas, crea un Registro correspondiente en la Base Cumplimiento con el ID del pedido, el nombre del cliente, el importe y el estado establecido en Pendiente"*
+
+La IA creará automáticamente el flujo de trabajo completo. Puedes revisar el script generado, probarlo con datos reales y habilitar el flujo de trabajo cuando esté listo.
+
+## Configuración manual
+
+1. **Crea un flujo de trabajo** en la Base **Ventas** con el disparador **Cuando se crea un Registro**.
+2. Selecciona tu Tabla **Pedidos**.
+3. Haz clic en **Probar**.
+4. **Añade una acción** → **Crear Registro**.
+5. Haz clic en **Acceso entre Bases** junto al selector de Tabla.
+6. Ve a la Base **Cumplimiento** y selecciona la Tabla **Pedidos**.
+7. Asigna los Campos:
+   - ID del pedido → ID del pedido del disparador (mediante **+**)
+   - Cliente → Cliente del disparador
+   - Importe → Importe del disparador
+   - Estado → `Cumplimiento pendiente`
+8. Haz clic en **Probar** y, después, en **Habilitar**.
+
+## Sincronización bidireccional
+
+Para sincronizar las actualizaciones en ambas direcciones:
+1. Crea un segundo flujo de trabajo en la Base **Cumplimiento**.
+2. Usa **Cuando se actualiza un Registro** → **Actualizar Registro** con el acceso entre Bases apuntando de nuevo a la Base Ventas.
+3. Usa un filtro para evitar bucles infinitos; por ejemplo, activa el flujo únicamente cuando cambien determinados Campos y comprueba que el valor sea realmente distinto antes de actualizar.

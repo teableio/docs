@@ -1,0 +1,83 @@
+---
+title: "Configurar SMTP y remitente"
+description: "Configura un servidor SMTP personalizado y una identidad de remitente para los correos electrónicos de Automatización"
+---
+
+De forma predeterminada, los correos electrónicos de Automatización se envían desde el servicio de correo integrado de Teable. Aunque esto funciona para las notificaciones básicas, quizá quieras enviar correos electrónicos desde tu propio dominio por motivos de marca, entregabilidad o cumplimiento normativo. La configuración de un SMTP personalizado te permite hacerlo.
+
+Cuando configuras un servidor SMTP personalizado, todos los correos electrónicos enviados por esa acción proceden de tu propio servidor de correo y de tu propia dirección de remitente: los destinatarios ven tu dominio, no el de Teable.
+
+## Cuándo usar un SMTP personalizado
+
+- **Enviar correos electrónicos desde el dominio de tu empresa** (p. ej., `noreply@yourcompany.com` o `support@yourcompany.com`) para que los destinatarios reconozcan al remitente.
+- **Mejorar la entregabilidad.** Los correos electrónicos de tu propio dominio con registros SPF, DKIM y DMARC correctamente configurados tienen menos probabilidades de acabar en la carpeta de spam.
+- **Cumplir los requisitos normativos.** Algunos sectores exigen que los correos electrónicos automatizados procedan de un dominio controlado por la organización.
+- **Utilizar tu infraestructura de correo electrónico actual.** Dirige los correos a través del servidor de correo de tu empresa para registrar, archivar o analizar la seguridad.
+- **Obtener límites de envío más altos.** El servicio integrado de Teable tiene límites de velocidad. Tu propio servidor SMTP puede admitir un mayor volumen.
+
+## Configuración
+
+En la acción **Enviar correo electrónico**, haz clic en la opción de configuración del transporte para configurar un servidor SMTP personalizado:
+
+| Ajuste | Obligatorio | Descripción |
+|---|---|---|
+| Host SMTP | Sí | La dirección de tu servidor de correo (p. ej., `smtp.gmail.com`) |
+| Puerto | Sí | El puerto SMTP, normalmente 465 (SSL) o 587 (STARTTLS) |
+| Nombre de usuario | Sí | El nombre de usuario de la cuenta SMTP (a menudo, tu dirección de correo electrónico) |
+| Contraseña | Sí | La contraseña de la cuenta SMTP o una contraseña específica de aplicación |
+| Dirección del remitente | Sí | La dirección de correo electrónico del remitente que se muestra a los destinatarios |
+
+## Cómo configurarlo
+
+1. Abre tu Automatización y ve a la acción **Enviar correo electrónico**.
+2. Haz clic en la opción **configuración del transporte** (el icono de engranaje o el enlace situado cerca de la configuración del remitente).
+3. Introduce los datos de tu servidor SMTP:
+   - **Host:** la dirección del servidor SMTP de tu proveedor de correo electrónico.
+   - **Puerto:** utiliza el 465 para SSL/TLS o el 587 para STARTTLS. Si no estás seguro, prueba primero con el 465.
+   - **Nombre de usuario:** tu cuenta de correo electrónico o nombre de usuario SMTP.
+   - **Contraseña:** tu contraseña de correo electrónico o, en el caso de proveedores como Gmail, una contraseña específica de aplicación.
+4. Establece la **Dirección del remitente**; es la que los destinatarios verán como remitente.
+5. Haz clic en **Probar** para verificar la conexión. Teable intentará enviar un correo electrónico de prueba a través de tu servidor SMTP.
+6. Si la prueba se realiza correctamente, guarda la configuración. A partir de ahora, todos los correos electrónicos de esta acción utilizarán tu servidor SMTP.
+
+## Configuración SMTP habitual por proveedor
+
+| Proveedor | Host | Puerto | Notas |
+|---|---|---|---|
+| **Gmail** | `smtp.gmail.com` | 465 | Requiere una contraseña de aplicación (no la contraseña de tu cuenta). Consulta [Configurar Gmail IMAP](../../trigger/email/gmail-imap) |
+| **Outlook / Microsoft 365** | `smtp.office365.com` | 587 | Utiliza las credenciales de tu cuenta de Microsoft |
+| **Amazon SES** | `email-smtp.{region}.amazonaws.com` | 465 | Utiliza las credenciales SMTP de SES (no las credenciales de IAM) |
+| **SendGrid** | `smtp.sendgrid.net` | 465 | El nombre de usuario es `apikey` y la contraseña es tu clave de API |
+| **Mailgun** | `smtp.mailgun.org` | 465 | Utiliza las credenciales SMTP de la configuración de tu dominio de Mailgun |
+| **Zoho Mail** | `smtp.zoho.com` | 465 | Utiliza las credenciales de tu cuenta de Zoho |
+| **Yahoo Mail** | `smtp.mail.yahoo.com` | 465 | Requiere una contraseña de aplicación |
+| **Postmark** | `smtp.postmarkapp.com` | 587 | Utiliza el token de API de tu servidor Postmark como nombre de usuario y contraseña |
+| **Personalizado / autoalojado** | La dirección de tu servidor | Variable | Consulta al equipo de TI el host, el puerto y las credenciales |
+
+## Errores habituales y soluciones
+
+Cuando una ejecución no pueda realizar el envío, abre el **Historial de ejecuciones** del flujo de trabajo y comprueba la salida del paso **Enviar correo electrónico**. En un servidor SMTP personalizado, el paso muestra el rechazo devuelto por tu servidor de correo: el código de respuesta, el comando SMTP que ha fallado, los destinatarios rechazados y el host. Compáralo con las causas que aparecen a continuación.
+
+| Error | Causa probable | Solución |
+|---|---|---|
+| **Conexión rechazada** | Host o puerto incorrectos | Vuelve a comprobar el host y el puerto SMTP. Prueba a cambiar entre 465 y 587 |
+| **Error de autenticación** | Nombre de usuario o contraseña incorrectos | Comprueba las credenciales. Para Gmail/Yahoo, utiliza una contraseña de aplicación en vez de la contraseña de tu cuenta |
+| **Error de certificado / error en el protocolo de enlace TLS** | El puerto y el cifrado no coinciden | El puerto 465 requiere SSL y el 587, STARTTLS. Asegúrate de que el puerto coincide con el cifrado del servidor |
+| **Dirección del remitente rechazada** | La Dirección del remitente no coincide con la cuenta SMTP | Algunos proveedores exigen que la Dirección del remitente coincida con la cuenta autenticada. Consulta la política de tu proveedor |
+| **Límite de velocidad superado** | Se han enviado demasiados correos electrónicos con demasiada rapidez | Reduce la frecuencia de envío o mejora tu plan de correo electrónico. Si es necesario, utiliza el envío por lotes con pausas |
+| **Tiempo de espera agotado** | Problema de red o del firewall | Asegúrate de que la red permite conexiones salientes en el puerto SMTP. Si utilizas Teable autoalojado, comprueba las reglas del firewall del servidor |
+
+## Consejos
+
+- **Haz una prueba antes de la puesta en marcha.** Envía siempre un correo electrónico de prueba después de configurar SMTP para confirmar que todo funciona.
+- **Utiliza contraseñas específicas de aplicación** para Gmail, Yahoo y otros proveedores compatibles con la autenticación de dos factores. La contraseña habitual de tu cuenta no funcionará si la autenticación en dos pasos está activada.
+- **Configura SPF, DKIM y DMARC** en los registros DNS de tu dominio para mejorar la entregabilidad del correo electrónico y evitar que se marque como spam.
+- **Protege las credenciales.** Las contraseñas SMTP se almacenan cifradas en Teable, pero evita compartir configuraciones de Automatización que contengan credenciales confidenciales.
+- **Supervisa la entrega.** Si dejan de llegar los correos electrónicos, comprueba en el Dashboard de tu proveedor SMTP si hay mensajes rebotados, avisos de límite de velocidad o problemas con la cuenta.
+
+<Tip>Para Gmail, utiliza una contraseña de aplicación en vez de la contraseña de tu cuenta. Consulta [Configurar Gmail IMAP](../../trigger/email/gmail-imap) para saber cómo crear una.</Tip>
+
+## Contenido relacionado
+
+- [Acción Enviar correo electrónico](/es/basic/automation/actions/communication/send-email-overview) — la acción que utiliza la configuración SMTP
+- [Configurar Gmail IMAP](../../trigger/email/gmail-imap) — instrucciones sobre las contraseñas de aplicación de Gmail

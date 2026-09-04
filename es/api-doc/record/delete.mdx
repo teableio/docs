@@ -1,0 +1,80 @@
+---
+title: "Eliminar registros"
+---
+
+### Ruta
+
+DELETE /api/table/\{tableId\}/record
+
+### Solicitud
+
+**Parámetros de ruta**
+
+* tableId (string): El identificador único de la tabla [(cómo obtenerlo)](/es/api-doc/get-id#tableid).
+
+**Parámetros de consulta**
+
+* **recordIds (obligatorio)** [(cómo obtenerlos)](/es/api-doc/get-id#recordid)
+  * Descripción: Matriz de IDs de registros que se eliminarán
+  * Tipo: Matriz
+  * Ejemplo: `["rec123456", "rec789012"]`
+  * Nota: Cada elemento es una cadena que representa el ID de un registro que se eliminará.
+
+#### Respuesta
+
+**Respuesta correcta**
+
+* Código de estado: 200 OK
+* Cuerpo de la respuesta: Sin contenido
+
+#### Respuestas de error
+
+* Código de estado: 400 Bad Request: Error de formato de los parámetros de solicitud o faltan parámetros obligatorios.
+* Código de estado: 404 Not Found: El tableId especificado no existe o algunos IDs de registro no existen.
+
+#### Código de ejemplo
+
+<CodeGroup>
+  ```bash CURL
+  curl -X DELETE 'https://app.teable.ai/api/table/__tableId__/record?recordIds[]=rec123456&recordIds[]=rec789012' \
+    -H 'Authorization: Bearer __token__'
+  ```
+
+  ```js JS SDK
+  import { configApi, deleteRecords } from '@teable/openapi';
+
+  configApi({
+    endpoint: 'https://app.teable.ai',
+    token: '__token__',
+  });
+
+  await deleteRecords('__tableId__', ['rec123456', 'rec789012']);
+  ```
+
+  ```ts TypeScript
+  const response = await fetch('https://app.teable.ai/api/table/__tableId__/record?recordIds[]=rec123456&recordIds[]=rec789012', {
+    method: 'DELETE',
+    headers: {
+      'Authorization': 'Bearer __token__'
+    }
+  });
+
+  console.log(response.status); // 200 si se completa correctamente
+  ```
+
+  ```python Python
+  import requests
+
+  response = requests.delete(
+      'https://app.teable.ai/api/table/__tableId__/record',
+      headers={
+          'Authorization': 'Bearer __token__'
+      },
+      params={
+          'recordIds': ['rec123456', 'rec789012']
+      }
+  )
+
+  print(response.status_code) # 200 si se completa correctamente
+  ```
+</CodeGroup>

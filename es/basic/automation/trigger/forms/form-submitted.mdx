@@ -1,0 +1,75 @@
+---
+title: "Cuando se envía un formulario"
+description: "Activa un flujo de trabajo cuando se envía una Vista de formulario"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Ten en cuenta que toda la configuración del disparador puede realizarse en el Chat de IA. Dile a la IA qué quieres que haga el flujo de trabajo y se encargará del resto.</Tip>
+
+Este disparador se ejecuta cuando alguien envía una Vista de formulario específica. Todos los Campos enviados están disponibles para los pasos siguientes.
+
+## Crear con IA
+
+Abre el Chat de IA en la barra lateral derecha de tu Tabla y describe lo que quieres.
+
+La IA se encarga de todo: elige el disparador adecuado, asigna los Campos pertinentes y configura automáticamente todas las acciones.
+
+Describe el objetivo una sola vez y el flujo de trabajo estará listo, sin necesidad de configuración manual.
+
+**Ejemplo:** *"Cuando alguien envíe el formulario de contacto, envía un correo electrónico de confirmación".*
+
+## Configuración
+
+| Ajuste | Obligatorio | Descripción |
+|---|---|---|
+| Tabla | Sí | Tabla a la que pertenece el formulario |
+| Formulario | Sí | Vista de formulario específica cuyos envíos se supervisarán |
+
+## Cómo configurarlo
+
+1. Asegúrate de que ya tienes una Vista de formulario en tu Tabla. Si no es así, crea una haciendo clic en **+** en la barra de Vistas y seleccionando **Formulario**.
+2. Abre tu Automatización y añade un disparador nuevo.
+3. Selecciona **Cuando se envía un formulario**.
+4. Elige la **Tabla** que contiene el formulario.
+5. Elige la Vista de **Formulario** que quieres supervisar.
+6. Guarda y activa la Automatización.
+7. Añade los pasos de acción. Haz clic en **+** en cualquier Campo de acción para hacer referencia a los datos enviados; todos los Campos del formulario están disponibles.
+
+## Datos disponibles para los pasos siguientes
+
+Cuando se envía un formulario, se transfieren los siguientes datos al flujo de trabajo:
+
+- **ID del Registro** — identificador único del Registro recién creado.
+- **Todos los valores de Campos enviados** — se puede hacer referencia a todos los Campos incluidos en el formulario (texto, correo electrónico, números, fechas, selecciones, archivos adjuntos, etc.) haciendo clic en **+** en las acciones posteriores.
+
+Los Campos que el formulario no incluya (Campos ocultos) no tendrán valores procedentes del envío, pero pueden tener valores predeterminados establecidos en la Tabla.
+
+## El envío de un formulario también crea un Registro
+
+Es importante entender que el envío de un formulario y la creación de un Registro son el mismo evento en el nivel de datos. Cuando alguien envía un formulario, se añade un Registro nuevo a la Tabla. Esto significa que:
+
+- Si también tienes una Automatización **Cuando se crea un Registro** en la misma Tabla, *ambas* Automatizaciones se activarán al enviar un formulario.
+- Para evitar el procesamiento duplicado, usa exclusivamente el disparador Cuando se envía un formulario o añade al disparador Cuando se crea un Registro un filtro que excluya los Registros originados en formularios.
+
+<Note>El envío de un formulario es, en esencia, la creación de un Registro. Si la misma Tabla también tiene configurado un disparador «Cuando se crea un Registro», se ejecutarán ambos flujos de trabajo.</Note>
+
+## Cuándo usarlo
+
+- **Enviar un correo electrónico de confirmación después del envío.** Cuando un cliente rellene un formulario de contacto, envíale automáticamente un correo de agradecimiento con los detalles de su envío.
+- **Clasificar automáticamente con IA los tickets de soporte nuevos.** Usa la acción Generar con IA para clasificar el ticket según la descripción enviada por el usuario.
+- **Notificar al equipo sobre las solicitudes entrantes.** Cuando alguien envíe un formulario de solicitud de empleo, publica una notificación en Slack o envía un correo al equipo de contratación.
+- **Crear Registros enlazados en otras Tablas.** Cuando se envíe un formulario de pedido, crea automáticamente Registros en una Tabla «Artículos del pedido» o «Envíos».
+- **Validar y marcar envíos.** Comprueba si la información obligatoria está completa o si algún valor queda fuera del intervalo y actualiza un Campo de estado a «Necesita revisión» si algo no parece correcto.
+
+## Consejos
+
+- Este disparador se activa una vez por envío. Si la misma persona envía el formulario dos veces, se activa dos veces.
+- Si necesitas activarlo para todos los Registros nuevos con independencia de su origen (entrada manual, API o formulario), usa en su lugar [Cuando se crea un Registro](/es/basic/automation/trigger/records/record-created).
+- Puedes tener varias Automatizaciones supervisando el mismo formulario. Por ejemplo, una envía un correo de confirmación mientras otra crea una tarea enlazada.
+- Las Vistas de formulario respetan la configuración de visibilidad de los Campos. Solo se rellenan con el envío los Campos visibles en el formulario; los Campos ocultos mantienen sus valores predeterminados o permanecen vacíos.
+
+## Contenido relacionado
+
+- [Cuando se crea un Registro](/es/basic/automation/trigger/records/record-created) — se activa con cualquier Registro nuevo, no solo con envíos de formularios
+- [Cuando se hace clic en un botón](/es/basic/automation/trigger/forms/button-click) — se activa cuando un usuario hace clic en un Campo de botón de una fila existente
+- [Acción Enviar correo electrónico](/es/basic/automation/actions/communication/send-email-overview) — suele combinarse con envíos de formularios para enviar confirmaciones

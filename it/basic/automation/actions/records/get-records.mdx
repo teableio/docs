@@ -1,0 +1,90 @@
+---
+title: "Ottieni Record"
+description: "Recupera Record da una Tabella con filtri e paginazione facoltativi"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Consigliamo vivamente di usare Esegui script per creare automazioni, perché può coprire il comportamento di tutte le azioni, comprese quelle che altrimenti dovrebbero essere create manualmente. Descrivi semplicemente le tue esigenze all'IA nella chat.
+
+Nota: se aggiungi azioni manualmente, in seguito l'IA non sarà in grado di riconoscerle o modificarle.
+</Tip>
+
+## Crea con l'IA
+
+Apri AI Chat nella barra laterale destra della Tabella e descrivi ciò che desideri.
+
+L'IA si occupa di tutto: sceglie il trigger corretto, seleziona le azioni appropriate, associa i Campi e configura automaticamente l'intero workflow.
+
+Descrivi una sola volta l'obiettivo e il workflow sarà pronto, senza alcuna configurazione manuale.
+
+Recupera Record da una Tabella e li restituisce come array. Usa i risultati nei passaggi successivi per scorrere i Record, passare dati a uno script o fornirli ad altre azioni.
+
+## Configurazione
+
+| Impostazione | Obbligatoria | Descrizione |
+|---|---|---|
+| Tabella | Sì | La Tabella da interrogare |
+| Vista | No | Limita i risultati ai Record visibili in una Vista specifica, ereditandone filtri, ordinamenti e Campi nascosti |
+| Filtro | No | Condizioni di filtro aggiuntive applicate oltre a quelle della Vista |
+| Ignora | No | Numero di Record da ignorare all'inizio, per la paginazione |
+| Prendi | No | Numero massimo di Record da restituire, per la paginazione |
+
+## Come configurarla
+
+1. Aggiungi un'azione **Ottieni Record** al workflow.
+2. Scegli la **Tabella** da interrogare. Usa [Accesso tra Base](/it/basic/automation/actions/records/cross-base) se la Tabella si trova in una Base diversa.
+3. (Facoltativo) Seleziona una **Vista** per ereditarne le impostazioni relative a filtri, ordinamento e visibilità dei Campi.
+4. (Facoltativo) Aggiungi condizioni di **Filtro** per restringere i risultati. Ad esempio, `Stato` è uguale ad `Attivo` e `Data di scadenza` è precedente a oggi.
+5. (Facoltativo) Imposta **Ignora** e **Prendi** per la paginazione. Ad esempio, Ignora 0 e Prendi 100 per ottenere i primi 100 Record.
+6. Salva l'azione. Quando il workflow viene eseguito, i risultati saranno disponibili come array per i passaggi successivi.
+
+## Output: uso dei risultati
+
+L'output è un **array di Record**. Ogni Record dell'array contiene:
+
+- **ID Record** — l'identificatore univoco.
+- **Tutti i valori dei Campi** — ogni Campo della Tabella o della Vista, se ne hai selezionata una.
+
+### Uso dei risultati nel passaggio successivo
+
+- **Fare riferimento a un singolo Record:** se prevedi un solo risultato o vuoi usare il primo, puoi fare riferimento direttamente ai Campi del primo Record tramite il selettore di variabili **+**.
+- **Scorrere tutti i Record:** aggiungi un'azione [Ciclo (batch)](../logic/loop-run) dopo Ottieni Record e seleziona l'array dei risultati come origine dati. All'interno del ciclo, fai riferimento ai Campi di ogni elemento.
+- **Elaborare i dati in uno script:** passa l'array a un passaggio [Esegui script](/it/basic/automation/actions/ai/ai-script) per eseguire elaborazioni, filtri o trasformazioni personalizzati.
+
+## Paginazione
+
+Se non imposti **Ignora** e **Prendi**, l'azione restituisce i Record fino al limite predefinito del sistema. Per le Tabelle di grandi dimensioni, usa la paginazione per controllare il numero di risultati:
+
+| Impostazione | Scopo | Esempio |
+|---|---|---|
+| Ignora | Numero di Record da ignorare all'inizio | `0` (inizia dal principio) |
+| Prendi | Numero di Record da restituire | `100` (restituisce 100 Record) |
+
+Per elaborare un'intera Tabella di grandi dimensioni, puoi usare più passaggi Ottieni Record con valori Ignora crescenti oppure gestire la paginazione in uno script.
+
+## Quando utilizzarla
+
+- **Trovare attività scadute a cui inviare promemoria.** Filtra le attività la cui Data di scadenza è precedente a oggi e il cui Stato non è "Completata". Scorri i risultati e invia un'email per ciascuna attività.
+- **Raccogliere dati per un riepilogo giornaliero.** Recupera tutti i Record aggiornati nelle ultime 24 ore e riuniscili in un'email di riepilogo.
+- **Cercare Record correlati prima della creazione o dell'aggiornamento.** Prima di creare un duplicato, verifica se esiste già un Record con la stessa email.
+- **Fornire dati a un'azione IA.** Ottieni Record con Campi di testo lunghi, quindi usa Generazione IA in un ciclo per riepilogare o classificare ciascuno di essi.
+- **Sincronizzare Record con un sistema esterno.** Ottieni tutti i Record modificati dall'ultima sincronizzazione e inviali a un CRM o data warehouse tramite richieste HTTP.
+
+## Suggerimenti
+
+- **Usa i filtri.** Più specifico è il filtro, meno Record vengono restituiti e più rapidamente viene eseguita l'azione.
+- **Limita i risultati con Prendi.** Se ti servono solo i primi 10 Record, imposta Prendi su 10. Non è necessario recuperarne migliaia quando ne bastano pochi.
+- **Seleziona una Vista** che filtri e ordini già i dati necessari. In questo modo la configurazione dell'automazione rimane più semplice.
+- **Evita di recuperare l'intera Tabella**, a meno che tutti i Record non siano davvero necessari. I set di risultati grandi richiedono più tempo e risorse, soprattutto se combinati con Ciclo.
+- Ottieni Record non modifica alcun dato: è un'operazione di sola lettura.
+- Se la query restituisce zero Record, i passaggi successivi che fanno riferimento ai risultati riceveranno un array vuoto. Assicurati che il workflow gestisca correttamente questo caso, ad esempio evitando di inviare un'email che annuncia risultati quando non ce ne sono.
+- I filtri di Ottieni Record funzionano come quelli delle Viste: puoi combinare le condizioni con la logica E/O.
+- Quando usi Accesso tra Base, la query viene eseguita con le autorizzazioni del creatore del workflow. Se quest'ultimo perde l'accesso alla Base di destinazione, il passaggio non riuscirà.
+
+## Contenuti correlati
+
+- [Accesso tra Base](/it/basic/automation/actions/records/cross-base) — interroga Tabelle in altre Base
+- [Ciclo (batch)](../logic/loop-run) — scorre l'array dei risultati
+- [Crea Record](/it/basic/automation/actions/records/create-record) — crea Record in base ai dati recuperati
+- [Aggiorna Record](/it/basic/automation/actions/records/update-record) — aggiorna i Record trovati da Ottieni Record

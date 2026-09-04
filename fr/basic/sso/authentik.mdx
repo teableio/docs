@@ -1,0 +1,197 @@
+---
+title: "SSO Authentik"
+description: "Configurer Authentik comme fournisseur d’authentification SSO pour Teable"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Disponible à partir du forfait Business</Tip>
+
+## Étape 1 : Créer un fournisseur d’authentification dans Teable
+
+1. Accédez aux paramètres SSO de Teable.
+2. Créez un fournisseur d’authentification, nommez-le **Authentik**, puis sélectionnez **OpenID Connect**.
+
+## Étape 2 : Accéder à l’interface d’administration Authentik
+
+1. Connectez-vous à l’interface d’administration de votre instance Authentik.
+2. L’URL par défaut est généralement `https://your-authentik-domain/if/admin/`.
+3. Utilisez vos identifiants d’administrateur pour vous connecter.
+
+## Étape 3 : Créer un nouveau fournisseur
+
+1. Accédez à **Applications** → **Providers** dans le menu de gauche.
+2. Cliquez sur le bouton **Create**.
+3. Sélectionnez **OAuth2/OpenID Provider**.
+4. Configurez les paramètres du fournisseur :
+
+### Paramètres de base
+
+- **Name** : Fournisseur SSO Teable
+- **Authorization flow** : sélectionnez le flux de votre choix (généralement **default-authentication-flow**).
+- **Client type** : **Confidential**
+- **Client ID** : (généré automatiquement ; vous pouvez le personnaliser si nécessaire)
+- **Client Secret** : (généré automatiquement ; copiez cette valeur)
+
+### URI de redirection
+
+- **Redirect URIs/Origins (RegEx)** : collez l’**URL de rappel** depuis Teable.
+  - Pour une correspondance exacte : `https://app.teable.ai/api/auth/authentication/__providerId__/callback`
+  - Pour un modèle d’expression régulière : `https://app\.teable\.ai/api/auth/authentication/.*/callback`
+
+<Note>Remplacez `__providerId__` dans l’URL par le providerId affiché après la création du fournisseur d’authentification dans Teable, ou copiez directement l’URL de rappel depuis la page Teable.</Note>
+
+### Paramètres avancés
+
+- **Scopes** : assurez-vous que les portées suivantes sont disponibles :
+  - `openid`
+  - `email`
+  - `profile`
+- **Subject mode** : **Based on the User's hashed ID**
+- **Include claims in id_token** : cochez cette option.
+
+Cliquez sur **Finish** pour créer le fournisseur.
+
+## Étape 4 : Enregistrer les identifiants client
+
+Après avoir créé le fournisseur :
+
+1. Copiez le **Client ID** depuis les détails du fournisseur.
+2. Copiez le **Client Secret** (il n’est affiché qu’une seule fois lors de la création).
+3. Collez les deux valeurs dans la configuration SSO de Teable.
+
+<Warning>Conservez le secret client en lieu sûr. Vous pourrez le régénérer ultérieurement si nécessaire.</Warning>
+
+## Étape 5 : Créer une application
+
+1. Accédez à **Applications** → **Applications** dans le menu de gauche.
+2. Cliquez sur le bouton **Create**.
+3. Configurez l’application :
+   - **Name** : Teable
+   - **Slug** : `teable` (ou le slug de votre choix)
+   - **Provider** : sélectionnez le **Teable SSO Provider** créé à l’étape 3.
+   - **Launch URL** : (facultatif) `https://app.teable.ai`
+   - **UI settings** : (facultatif) téléversez le logo Teable et personnalisez l’apparence.
+
+Cliquez sur **Create** pour terminer.
+
+## Étape 6 : Configurer les points de terminaison OAuth
+
+Dans Teable, renseignez les points de terminaison OAuth suivants à l’aide de votre domaine Authentik :
+
+- **Authorization URL** : `https://{your-authentik-domain}/application/o/authorize/`
+- **Token URL** : `https://{your-authentik-domain}/application/o/token/`
+- **User Info URL** : `https://{your-authentik-domain}/application/o/userinfo/`
+- **Issuer** : `https://{your-authentik-domain}/application/o/{application-slug}/`
+
+<Note>Remplacez `{your-authentik-domain}` par le domaine réel de votre instance Authentik et `{application-slug}` par le slug configuré (par exemple, `teable`).</Note>
+
+## Étape 7 : Configurer l’accès à l’application
+
+### Créer ou utiliser un flux existant
+
+1. Accédez à **Flows & Stages** → **Flows**.
+2. Vous pouvez utiliser les flux par défaut ou en créer des personnalisés.
+3. Flux généralement nécessaires :
+   - **Authentication flow** : pour la connexion utilisateur
+   - **Authorization flow** : pour l’autorisation OAuth2/OIDC
+
+### Attribuer une politique d’accès (facultatif)
+
+1. Retournez aux paramètres de votre application.
+2. Faites défiler jusqu’à la section **Policy / Group / User Bindings**.
+3. Cliquez sur **Bind existing policy** pour restreindre l’accès selon :
+   - **Groups** : n’autoriser que des groupes spécifiques
+   - **Users** : n’autoriser que des utilisateurs spécifiques
+   - **Custom policies** : créer des règles d’accès complexes
+
+## Étape 8 : Configurer les portées et les revendications (facultatif)
+
+### Vérifier les portées
+
+1. Accédez à **Customization** → **Property Mappings**.
+2. Vérifiez les **Scope Mappings** pour OAuth2/OIDC.
+3. Assurez-vous que les portées suivantes incluent les bonnes revendications :
+   - `openid` : contient la revendication `sub`
+   - `email` : contient `email` et `email_verified`
+   - `profile` : contient `name`, `given_name`, `family_name`, etc.
+
+### Ajouter des revendications personnalisées
+
+Si vous avez besoin d’attributs utilisateur personnalisés :
+
+1. Accédez à **Customization** → **Property Mappings**.
+2. Cliquez sur **Create** → **Scope Mapping**.
+3. Définissez vos revendications personnalisées :
+   - **Name** : nom de la revendication personnalisée
+   - **Scope name** : identifiant de portée (par exemple, `custom_claims`)
+   - **Expression** : expression Python permettant d’extraire les données utilisateur
+4. Attachez la portée à votre fournisseur.
+
+## Étape 9 : Tester la connexion SSO
+
+Vous disposez de deux options pour activer la connexion SSO :
+
+**Option 1 : URL d’authentification directe**
+- Utilisez l’URL d’autorisation comme URL de connexion SSO.
+- Les utilisateurs seront redirigés vers Authentik pour l’authentification.
+
+**Option 2 : Vérification de domaine**
+1. Dans Teable, configurez la vérification de domaine.
+2. Vérifiez votre domaine personnalisé.
+3. Ouvrez https://app.teable.ai.
+4. Cliquez sur le bouton de connexion SSO.
+5. Saisissez votre adresse e-mail associée au domaine vérifié pour vous connecter.
+
+## Configuration supplémentaire (facultatif)
+
+### Configurer l’authentification multifacteur
+
+1. Accédez à **Flows & Stages** → **Stages**.
+2. Créez des étapes MFA (par exemple, TOTP, WebAuthn, SMS).
+3. Accédez à **Flows & Stages** → **Flows**.
+4. Modifiez votre flux d’authentification.
+5. Ajoutez les étapes MFA au flux.
+6. Configurez les politiques et liaisons MFA.
+
+### Configurer l’inscription des utilisateurs
+
+1. Accédez à **Flows & Stages** → **Flows**.
+2. Créez ou modifiez un flux d’inscription.
+3. Ajoutez des étapes pour :
+   - La collecte des informations utilisateur
+   - La vérification de l’e-mail
+   - La configuration du mot de passe
+4. Associez le flux d’inscription à votre application.
+
+### Configurer les politiques de mot de passe
+
+1. Accédez à **Flows & Stages** → **Policies**.
+2. Créez des politiques de mot de passe comprenant des exigences telles que :
+   - Longueur minimale
+   - Exigences de complexité
+   - Historique des mots de passe
+   - Règles d’expiration
+
+### Activer la gestion des sessions
+
+1. Accédez à **Events** → **Sessions**.
+2. Surveillez les sessions utilisateur actives.
+3. Configurez les paramètres d’expiration de session dans **System** → **Settings**.
+
+### Identité visuelle personnalisée
+
+1. Accédez à **Customization** → **Tenants**.
+2. Modifiez les paramètres de votre locataire.
+3. Personnalisez :
+   - Le logo et le favicon
+   - Les couleurs du thème
+   - Le texte et les liens de pied de page
+4. Les utilisateurs verront votre identité visuelle lorsqu’ils se connecteront via Authentik.
+
+### Activer la journalisation d’audit
+
+1. Accédez à **Events** → **Logs**.
+2. Examinez les événements et erreurs d’authentification.
+3. Configurez des règles de notification pour les événements importants.
+4. Configurez les politiques de conservation des événements dans **System** → **Settings**.
+

@@ -1,0 +1,95 @@
+---
+title: "Bedingtes Rollup"
+description: "Berechnen Sie tabellenübergreifende Statistiken anhand von Filterbedingungen und geben Sie einen aggregierten Wert zurück."
+---
+
+Ein bedingtes Rollup filtert passende Datensätze aus einer Zieltabelle, ohne zuvor eine Verknüpfungsbeziehung zu erstellen, und berechnet anschließend Statistiken für ein ausgewähltes Feld. Es eignet sich zur Berechnung von Anzahlen, Summen, Durchschnittswerten und anderen Ergebnissen auf Grundlage der Feldwerte im aktuellen Datensatz.
+
+## Anwendungsfälle
+
+| Szenario | Geeignet für |
+| --- | --- |
+| Aufgabenstatistik für Mitarbeiter | Laufende und abgeschlossene Aufgaben einer zuständigen Person zählen |
+| Verkaufsstatistik nach Zeitraum | Umsatzbetrag, Bestellanzahl oder durchschnittlichen Bestellwert nach Datumsbereich berechnen |
+| Prüfung auf doppelte Daten | Doppelte Namen, Telefonnummern oder IDs zählen |
+| Regionale Berichte | Geschäftsdaten nach Region, Filiale oder Kanal aggregieren |
+
+## Vorgehensweise
+
+<Steps>
+  <Step title="Feld für ein bedingtes Rollup erstellen">
+    Klicken Sie rechts neben einem Feldnamen auf das Symbol `+`, wählen Sie **Bedingtes Rollup** und geben Sie einen Feldtitel ein, beispielsweise „Gesamtumsatz“.
+  </Step>
+  <Step title="Zieltabelle auswählen">
+    Wählen Sie im Dropdown-Menü für die Zieltabelle die abzufragende Tabelle aus.
+  </Step>
+  <Step title="Rollup-Feld konfigurieren">
+    Wählen Sie das zu berechnende Feld aus und bestätigen Sie den Feldtyp.
+  </Step>
+  <Step title="Filterbedingungen festlegen">
+    Fügen Sie Filterbedingungen hinzu und wählen Sie Feld, Bedingungstyp und Vergleichswert aus. Der Vergleichswert kann ein statischer Wert oder ein Feld aus der aktuellen Tabelle sein.
+  </Step>
+  <Step title="Aggregatfunktion auswählen">
+    Wählen Sie abhängig vom Datentyp eine Berechnungsmethode aus, beispielsweise Ursprungswert, eindeutige Werte, Anzahl eindeutiger Werte, Summe, Anzahl, Durchschnitt, Maximum oder Minimum.
+  </Step>
+</Steps>
+
+## Praxisbeispiele
+
+### Statistik zum Aufgabenvolumen des Teams
+
+**Tabellen**
+
+- Tabelle „Aufgaben“
+- Tabelle „Statistiken“
+
+Ein Teamadministrator möchte für jeden Mitarbeiter Aufgaben in unterschiedlichen Status zählen, etwa laufende und abgeschlossene Aufgaben, um die Verteilung der Arbeitslast und den Bearbeitungsfortschritt nachzuvollziehen.
+
+**Laufende Aufgaben**
+
+1. Erstellen Sie in der Tabelle mit Mitarbeiterinformationen ein Feld vom Typ „Bedingtes Rollup“ mit dem Namen „Laufende Aufgaben“
+2. Zieltabelle: Tabelle mit Aufgabenzuweisungen
+3. Rollup-Feld: Aufgaben-ID
+4. Filterbedingungen:
+   - Feld: Zuständige Person -> Bedingung: Ist gleich -> Wert: Feld „Mitarbeiter“ aus der aktuellen Tabelle
+   - Feld: Aufgabenstatus -> Bedingung: Ist gleich -> Wert: „In Bearbeitung“
+5. Aggregatfunktion: Alle zählen
+
+**Abgeschlossene Aufgaben**
+
+1. Erstellen Sie ein weiteres Feld vom Typ „Bedingtes Rollup“ mit dem Namen „Abgeschlossene Aufgaben“
+2. Zieltabelle: Tabelle mit Aufgabenzuweisungen
+3. Rollup-Feld: Aufgaben-ID
+4. Filterbedingungen:
+   - Feld: Zuständige Person -> Bedingung: Ist gleich -> Wert: Feld „Mitarbeiter“ aus der aktuellen Tabelle
+   - Feld: Aufgabenstatus -> Bedingung: Ist gleich -> Wert: „Abgeschlossen“
+5. Aggregatfunktion: Alle zählen
+
+### Doppelte Werte finden
+
+**Tabellen**
+
+- Tabelle „Kunden“ mit Feldern wie Kundenname und Telefonnummer
+
+Suchen Sie in der Tabelle „Kunden“ nach doppelten Kundennamen, bevor Sie Kundenprofile zusammenführen.
+
+**Schritte**
+
+1. Erstellen Sie in der Tabelle „Kunden“ ein Feld vom Typ „Bedingtes Rollup“ mit dem Namen „Anzahl doppelter Kundennamen“
+2. Zieltabelle: Tabelle „Kunden“ (diese Tabelle)
+3. Rollup-Feld: Kundenname
+4. Filterbedingung:
+   - Feld: Kundenname -> Bedingung: Ist gleich -> Wert: Feld „Kundenname“ aus der aktuellen Tabelle
+5. Aggregatfunktion: Alle zählen
+6. Erstellen Sie ein Formelfeld mit dem Namen „Duplikatkennzeichnung“
+7. Legen Sie die Formel auf `IF(Anzahl doppelter Kundennamen > 1, "Duplikat", BLANK())` fest
+
+Die Tabelle „Kunden“ zeigt, wie oft jeder Kundenname vorkommt, und kennzeichnet doppelte Datensätze mit „Duplikat“, sodass Sie diese später filtern und bearbeiten können.
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Worin besteht der Unterschied zwischen einem bedingten Rollup und einer bedingten Suche?">
+    Ein bedingtes Rollup gibt einen einzelnen berechneten Wert zurück und eignet sich daher für Summen, Anzahlen und Durchschnittswerte. Eine bedingte Suche gibt eine Liste passender Rohwerte zurück und eignet sich daher zur Anzeige von Detaildaten.
+  </Accordion>
+</AccordionGroup>

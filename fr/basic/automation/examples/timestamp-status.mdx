@@ -1,0 +1,36 @@
+---
+title: "Enregistrer automatiquement l’heure d’un changement de statut"
+description: "Inscrivez automatiquement un horodatage lorsque le statut d’un enregistrement prend une valeur précise"
+---
+
+<Tip>Nous vous recommandons de créer les exemples d’automatisation directement dans le Chat IA. Décrivez simplement le flux de travail souhaité : l’IA se chargera de toute la configuration, y compris du déclencheur, des actions, du script et des paramètres.</Tip>
+
+## Créer avec l’IA
+
+Ouvrez le Chat IA dans la barre latérale droite de votre table et indiquez à l’IA ce que vous souhaitez. Par exemple, vous pouvez dire :
+
+*"Lorsque le statut d’une tâche devient Terminé, inscris la date et l’heure actuelles dans le champ Terminé le"*
+
+L’IA créera automatiquement le flux de travail complet. Vous pourrez examiner le script généré, le tester avec des données réelles et activer le flux de travail lorsqu’il sera prêt.
+
+## Configuration manuelle
+
+1. **Créez un flux de travail** avec le déclencheur **Lorsqu’un enregistrement remplit les conditions**.
+2. Sélectionnez votre table **Tâches**.
+3. Définissez le filtre : `Statut` **est** `Terminé`.
+4. Cliquez sur **Tester**.
+5. **Ajoutez une action** → **Mettre à jour l’enregistrement**.
+6. Associez les champs :
+   - ID de l’enregistrement → l’ID de l’enregistrement du déclencheur (via **+**)
+   - Terminé le → utilisez une expression ou l’horodatage du déclencheur
+7. Cliquez sur **Tester**, puis **activez** le flux de travail.
+
+## Pourquoi utiliser « Lorsqu’un enregistrement remplit les conditions » ?
+
+Ce déclencheur s’exécute **une seule fois**, au moment où l’enregistrement commence à remplir les conditions. Si une personne modifie ensuite la Description (alors que le Statut est toujours « Terminé »), le flux de travail ne se déclenche **pas** de nouveau. Cela empêche l’écrasement de l’horodatage.
+
+## Variantes
+
+- **« Démarré le »** — déclenchez le flux de travail lorsque le Statut devient « En cours ».
+- **« Transmis le »** — déclenchez le flux de travail lorsque la Priorité devient « Urgent ».
+- **« Approuvé le »** — déclenchez le flux de travail lorsque l’Approbation devient « Oui ».

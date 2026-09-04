@@ -1,0 +1,103 @@
+---
+title: "Actualizar Registro"
+description: "Modifica Campos de un Registro existente como parte de un flujo de trabajo"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Recomendamos encarecidamente usar Ejecutar script para crear automatizaciones, ya que permite cubrir el comportamiento de todas las acciones, incluidas aquellas que, de otro modo, tendrían que crearse manualmente. Solo tienes que describir tus requisitos a la IA en el chat.
+
+Ten en cuenta que, si añades acciones manualmente, la IA no podrá reconocerlas ni modificarlas más adelante.
+</Tip>
+
+## Crear con IA
+
+Abre el Chat de IA en la barra lateral derecha de tu Tabla y describe lo que quieres.
+
+La IA se encarga de todo: elige el desencadenador adecuado, selecciona las acciones correspondientes, asigna los Campos y configura automáticamente todo el flujo de trabajo.
+
+Describe el objetivo una sola vez y el flujo de trabajo estará listo, sin necesidad de configuración manual.
+
+Actualiza uno o varios Campos de un Registro existente. Solo cambiarán los Campos que asignes; todo lo demás permanecerá igual.
+
+## Configuración
+
+| Ajuste | Obligatorio | Descripción |
+|---|---|---|
+| Tabla | Sí | La Tabla que contiene el Registro que se actualizará |
+| ID de Registro | Sí | El Registro que se actualizará. Admite variables dinámicas e ID separados por comas para actualizar varios Registros |
+| Campos | Sí | Asigna a cada Campo su valor nuevo, ya sea estático o dinámico |
+
+## Cómo configurarla
+
+1. Añade una acción **Actualizar Registro** a tu flujo de trabajo.
+2. Elige la **Tabla** que contiene el Registro que quieres modificar.
+3. Establece el **ID de Registro**. Haz clic en **+** para insertar una variable dinámica:
+   - Desde un **desencadenador de Registro** (creado, actualizado, botón pulsado): el desencadenador proporciona directamente el ID de Registro.
+   - Desde una acción **Obtener Registros**: haz referencia al ID de Registro de los resultados recuperados.
+   - También puedes escribir un ID de Registro estático o utilizar una lista separada por comas para actualizar varios Registros a la vez (p. ej., `rec123,rec456,rec789`).
+4. Asigna los Campos que quieras cambiar. Para cada Campo:
+   - **Valor estático:** escribe directamente el valor nuevo.
+   - **Valor dinámico:** haz clic en **+** para insertar un valor de un paso anterior.
+5. Deja sin asignar los Campos que no quieras modificar; conservarán sus valores actuales.
+6. Guarda la acción.
+
+## Cómo obtener el ID de Registro
+
+El ID de Registro es el dato esencial que necesita esta acción. Aquí puedes ver dónde encontrarlo según el desencadenador:
+
+| Desencadenador / Paso anterior | Cómo obtener el ID de Registro |
+|---|---|
+| Cuando se crea un Registro | Disponible directamente como variable de salida del desencadenador |
+| Cuando se actualiza un Registro | Disponible directamente como variable de salida del desencadenador |
+| Cuando se pulsa un botón | Disponible directamente: corresponde a la fila en la que se pulsó el botón |
+| Cuando se envía un formulario | Disponible directamente: corresponde al Registro creado por el envío |
+| Acción Obtener Registros | Cada Registro de los resultados tiene un ID. En un Bucle, haz referencia al ID del elemento actual |
+| Webhook recibido | Debes incluir el ID de Registro en la carga útil del webhook o buscarlo con Obtener Registros |
+
+<Tip>¿Necesitas actualizar varios Registros a la vez? Puedes proporcionar ID de Registro separados por comas o utilizar [Bucle (lote)](../logic/loop-run) con un resultado de Obtener Registros para actualizarlos en lote.</Tip>
+
+## Actualizaciones parciales
+
+Esta acción realiza una actualización parcial. Esto significa que:
+
+- Los **Campos asignados** se sobrescriben con los valores nuevos que especifiques.
+- Los **Campos sin asignar** se dejan exactamente como están.
+
+No es necesario volver a enviar todos los valores de los Campos, solo los que quieras cambiar. Es seguro y eficiente.
+
+## Advertencia: bucles del desencadenador
+
+<Warning>Si tu flujo de trabajo utiliza un desencadenador «Cuando se actualiza un Registro» y un paso posterior actualiza los mismos Campos supervisados de la misma Tabla, el flujo de trabajo se activará de nuevo y creará un bucle infinito.</Warning>
+
+Si la Automatización se activa mediante **Cuando se actualiza un Registro** y la acción Actualizar Registro vuelve a escribir en la **misma Tabla**, puedes crear un bucle infinito:
+
+1. El Registro cambia → el desencadenador se activa → la Automatización actualiza el Registro → el desencadenador se vuelve a activar → y así sucesivamente.
+
+**Cómo evitar los bucles:**
+
+- **Supervisa Campos específicos** en el desencadenador que sean *distintos* de los Campos que actualizas. Por ejemplo, supervisa «Estado», pero actualiza «Fecha de procesamiento».
+- **Añade un filtro** al desencadenador. Por ejemplo, actívalo solo cuando `Procesado` no sea `true` y establece `Procesado` en `true` en tu acción.
+- Considera utilizar [Cuando el Registro cumple las condiciones](/es/basic/automation/trigger/records/record-matches-conditions), que solo se activa en las transiciones de estado.
+
+## Cuándo usarla
+
+- **Marcar una tarea como completada después de aprobarla.** Cuando se pulse un botón, establece Estado en «Aprobada» y rellena la fecha de aprobación.
+- **Actualizar un Campo de estado a partir de eventos externos.** Cuando un webhook informe de un pago, busca el Registro del pedido y actualiza su estado a «Pagado».
+- **Escribir una marca de tiempo cuando algo cambie.** Cuando se actualice un Registro, establece un Campo de fecha «Última modificación por Automatización» en la hora actual.
+- **Volver a sincronizar datos desde un sistema externo.** Después de llamar a una API externa, escribe los datos de la respuesta (p. ej., un número de seguimiento) en el Registro.
+- **Actualizar Registros en lote.** Combina Obtener Registros y Bucle para actualizar varios Registros a la vez; por ejemplo, para marcar todas las tareas vencidas como «Escaladas».
+
+## Consejos
+
+- La actualización de un Registro puede activar otras automatizaciones que supervisen la misma Tabla. Ten en cuenta los efectos en cascada.
+- Al actualizar varios Registros con ID separados por comas, todos reciben los mismos valores de Campo. Si necesitas valores distintos para cada Registro, utiliza un paso [Bucle](../logic/loop-run).
+- Si necesitas borrar un Campo, asígnale un valor vacío. Dejarlo sin asignar *no* lo borrará.
+- Utiliza [Acceso entre Bases](/es/basic/automation/actions/records/cross-base) para actualizar Registros de una Tabla que se encuentre en otra Base.
+
+## Contenido relacionado
+
+- [Crear Registro](/es/basic/automation/actions/records/create-record) — añade Registros nuevos en lugar de modificar los existentes
+- [Obtener Registros](/es/basic/automation/actions/records/get-records) — recupera Registros para obtener sus ID antes de actualizarlos
+- [Acceso entre Bases](/es/basic/automation/actions/records/cross-base) — actualiza Registros en Tablas que se encuentran fuera de la Base actual
+- [Bucle (lote)](../logic/loop-run) — actualiza varios Registros con valores diferentes

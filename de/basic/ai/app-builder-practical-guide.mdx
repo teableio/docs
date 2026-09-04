@@ -1,0 +1,275 @@
+---
+title: "Best Practices für den App-Builder"
+description: "Praktische Tipps und Muster, um Teable App-Builder optimal zu nutzen."
+---
+
+## Tipps zum Erstellen
+
+### 1. Daten zuerst definieren
+
+Teable App-Builder arbeitet auf Ihren bestehenden Teable-Tabellen auf – **Ihre Tabellen und Felder bilden Ihr Schema**, das die KI bei der Generierung von UI und Logik direkt liest.
+
+Definieren Sie daher Ihr Datenmodell klar, bevor Sie mit dem Erstellen beginnen. Je präziser Ihre Feldtypen, Verknüpfungen sowie Lese- und Schreibpfade sind, desto besser ist die Qualität der KI-Ergebnisse.
+
+### 2. Vor dem Erstellen planen
+
+Auch wenn Ihr Datenmodell fertig ist, sollten Sie nicht sofort mit dem Erstellen der UI beginnen. Führen Sie zuerst mit der KI einen Planungsdurchlauf durch.
+
+Sagen Sie zum Beispiel: *„Schreiben wir noch keinen Code – erstellen wir zuerst einen Plan.“* Beschreiben Sie das zu lösende Problem, die Zielnutzer und den groben Funktionsumfang. Lassen Sie die KI einen strukturierten Vorschlag entwerfen. Prüfen und passen Sie ihn an und beginnen Sie erst mit der Umsetzung, wenn Sie den Plan für sinnvoll halten.
+
+<Tip>Einige zusätzliche Minuten für die frühzeitige Abstimmung der Richtung sparen später Stunden an Nacharbeit.</Tip>
+
+### 3. Klein anfangen
+
+Versuchen Sie nicht, jede Funktion in einen einzigen Prompt zu packen. Beschreiben Sie zuerst die Kernfunktionalität, erstellen Sie eine minimale funktionsfähige Version und fügen Sie dann immer nur eine Sache hinzu: eine Interaktion, eine Stilanpassung oder einen Teil der Logik.
+
+Prüfen Sie jede Änderung, bevor Sie fortfahren. Wenn etwas nicht funktioniert, müssen Sie nur eine kleine Änderung zurückrollen, statt von vorne zu beginnen.
+
+### 4. Konkret statt abstrakt sein
+
+Beschreibungen wie *„mach es schöner“* oder *„lass die Interaktionen natürlicher wirken“* liefern der KI fast keine Informationen.
+
+Effektive Prompts sind konkret: **welche Seite, welcher Bereich, welches Verhalten Sie wünschen und welches nicht**. Das Anhängen von Screenshots oder Referenz-UIs hilft sehr.
+
+<Tip>Behandeln Sie Ihren Prompt wie ein Briefing für eine intelligente Person, die nichts über Ihr Projekt weiß. Je präziser die Anweisungen sind, desto näher kommt das Ergebnis Ihren Vorstellungen.</Tip>
+
+### 5. Vor dem Beheben diagnostizieren
+
+Wenn sich die App unerwartet verhält, widerstehen Sie dem Impuls, der KI zu sagen, sie solle es *„einfach beheben“*. Vage Anweisungen zum Beheben veranlassen die KI, Dinge blind zu patchen, wodurch oft neue Fehler entstehen.
+
+Ein besserer Ansatz besteht aus zwei Schritten:
+
+<Steps>
+  <Step title="Bitten Sie die KI zunächst um eine Analyse">
+    Beschreiben Sie die Symptome und bitten Sie die KI, wahrscheinliche Ursachen und mögliche Ansätze aufzulisten – ohne den Code vorerst anzufassen.
+  </Step>
+  <Step title="Richtung auswählen und dann umsetzen">
+    Entscheiden Sie, welche Erklärung am plausibelsten ist, und weisen Sie die KI an, diesen Weg zu verfolgen.
+  </Step>
+</Steps>
+
+<Warning>Wenn mehrere Behebungsversuche nacheinander fehlschlagen, rollen Sie auf die letzte bekanntermaßen funktionierende Version zurück und beginnen Sie neu. Das ist in der Regel schneller, als Patch auf Patch zu setzen.</Warning>
+
+### 6. Versionsrücksetzungen nutzen
+
+Jede Unterhaltung mit der KI erzeugt Änderungen. Der empfohlene Rhythmus: Schließen Sie ein Funktionsmodul ab, bestätigen Sie, dass es funktioniert, und fahren Sie dann fort. **Bearbeiten Sie nicht mehrere unfertige Funktionen gleichzeitig.**
+
+Hat eine spätere Änderung etwas beschädigt? Kehren Sie zur letzten stabilen Version zurück und versuchen Sie es erneut mit einem klareren Prompt.
+
+## Häufige Fragen
+
+### App-Builder unterstützt nur Next.js
+
+Die Laufzeitumgebung von App-Builder (Sandbox, Vorschau und Build) basiert auf **Next.js** und unterstützt derzeit **keine** anderen Frontend-Frameworks, einschließlich Astro, Vite, Create React App, Vue, Svelte usw.
+
+Wenn Sie die KI bitten, ein Nicht-Next.js-Framework zu verwenden, lehnt sie dies möglicherweise nicht zuverlässig ab und versucht vielleicht sogar, den entsprechenden Code zu generieren. Da die zugrunde liegende Umgebung jedoch nicht kompatibel ist, **kann die Vorschau nicht starten** – Sie bleiben unbegrenzt bei „Vorschau wird gestartet ...“ hängen, während Unterhaltungen in dieser Zeit weiterhin Credits verbrauchen.
+
+<Warning>
+Wenn Sie ein anderes Framework als Next.js verwenden müssen, empfehlen wir die Entwicklung in Ihrer eigenen lokalen Umgebung und die Verbindung Ihrer Daten über die Teable API.
+</Warning>
+
+### Umgang mit 429-Fehlern
+
+<Warning>
+Die Teable API ist derzeit auf **10 QPS** (10 Anfragen pro Sekunde) begrenzt. Von App-Builder generierte Apps können bei normaler Nutzung 429-Fehler auslösen, wenn die Anfrageverarbeitung nicht optimiert ist. Unser Engineering-Team arbeitet aktiv an der Optimierung der API-Leistung; wir können dieses Limit künftig anpassen.
+</Warning>
+
+Es gibt vier grundlegende Strategien dafür:
+
+<CardGroup cols={4}>
+  <Card title="Caching" icon="database">
+    Doppelte Anfragen reduzieren
+  </Card>
+  <Card title="Paginierung und Batching" icon="layer-group">
+    Datenmenge pro Anfrage verringern
+  </Card>
+  <Card title="Debounce und Throttle" icon="gauge-high">
+    Anfragehäufigkeit verringern
+  </Card>
+  <Card title="Rendering-Kompatibilität" icon="window-restore">
+    Vorschaufehler reduzieren
+  </Card>
+</CardGroup>
+
+In den folgenden Abschnitten finden Sie häufige Szenarien, die Lösung und einen wiederverwendbaren Referenz-Prompt.
+
+**Caching – doppelte Anfragen reduzieren**
+
+<AccordionGroup>
+  <Accordion title="Seiten und Dashboards mit vielen Anzeigen können beim Laden zu viele Anfragen auslösen" icon="bolt">
+    **Szenario**: Eine Dashboard-Seite enthält mehrere Diagramme, Statistik-Karten und Listen, die jeweils eine andere Tabelle abfragen. Oder die Seite dient hauptsächlich zur Anzeige, ruft aber bei jedem Besuch trotzdem direkt die API auf. In beiden Fällen kann die Gleichzeitigkeit beim Laden der Seite stark ansteigen, und Traffic-Spitzen lösen eher 429-Fehler aus.
+
+    **Lösung**: Bevorzugen Sie cachingfreundliche Rendering-Muster. Cachen Sie Daten nach dem Laden im App-Speicher (eine TTL von 1–3 Minuten ist ein guter Ausgangspunkt) und verwenden Sie sie bei späteren Besuchen wieder. Laden Sie Komponenten unterhalb des sichtbaren Bereichs verzögert, um Anfragen zu staffeln. Wenn die Seite bei jedem Besuch erneut abruft, bitten Sie die KI ausdrücklich, die Caching-Strategie zu verbessern.
+
+    <Tip>
+    **Referenz-Prompt**: "Dies ist eine Seite mit vielen Anzeigen. Verwende einen cachingfreundlichen Rendering-Ansatz. Cache die Daten nach dem Laden der Seite lokal mit einer TTL von 1 Minute, frage die API nicht innerhalb der TTL erneut ab und verzögere Komponenten unterhalb des sichtbaren Bereichs um 500 ms."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Mehrere Komponenten fragen dieselbe Tabelle ab" icon="copy">
+    **Szenario**: Drei Komponenten auf derselben Seite benötigen Daten aus derselben Tabelle und lösen jeweils eine eigene Anfrage aus – obwohl eine ausgereicht hätte.
+
+    **Lösung**: Zentralisieren Sie das Abrufen der Daten, sodass derselbe Datensatz einmal geladen und zwischen den Komponenten geteilt wird.
+
+    <Tip>
+    **Referenz-Prompt**: "Wenn mehrere Komponenten Daten aus derselben Tabelle benötigen, rufe sie einmal ab und teile sie mit allen Komponenten. Sende keine doppelten Anfragen."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Erneutes Abrufen bei der Seitennavigation" icon="arrows-rotate">
+    **Szenario**: Nutzer wechseln zwischen Seiten hin und her. Jede Rückkehr löst einen neuen Abruf aus, selbst wenn sich nichts geändert hat.
+
+    **Lösung**: Verwenden Sie innerhalb der Cache-TTL die zuvor geladenen Daten erneut, statt sie erneut anzufordern.
+
+    <Tip>
+    **Referenz-Prompt**: "Wenn ein Nutzer zu einer Seite zurückkehrt und der letzte Ladevorgang weniger als 1 Minute zurückliegt, verwende die gecachten Daten. Frage die API nicht erneut ab."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Dropdowns laden riesige Optionslisten" icon="list">
+    **Szenario**: Ein Dropdown zeigt jeden Datensatz einer Tabelle als Option an. Bei vielen Datensätzen ist diese einzelne Anfrage bereits umfangreich.
+
+    **Lösung**: Wandeln Sie es in eine Suche mit Auswahl um – rufen Sie passende Datensätze erst ab, nachdem der Nutzer etwas eingegeben hat. Alternativ können Sie die Optionsliste cachen.
+
+    <Tip>
+    **Referenz-Prompt**: "Dropdowns sollen nicht alle Optionen im Voraus laden. Stelle auf eine Stichwortsuche um, die passende Datensätze bei Eingabe abruft, und wende Debounce an."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Kaskadierende Auswahlfelder verketten Anfragen" icon="sitemap">
+    **Szenario**: Die Auswahl eines Feldes löst das Laden der Optionen für die nächste Ebene aus. Mehrstufige Kaskaden verursachen mehrere Anfragen pro Interaktion.
+
+    **Lösung**: Laden Sie die zugehörigen Daten einmal vor und filtern Sie lokal oder cachen Sie Kaskadendaten nach dem ersten Laden.
+
+    <Tip>
+    **Referenz-Prompt**: "Cache die Optionsdaten kaskadierender Auswahlfelder nach dem Laden lokal. Wenn der Nutzer eine übergeordnete Option ändert, filtere aus dem Cache, statt erneut anzufordern."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Erneute Renderings lösen doppelte Anfragen aus" icon="repeat">
+    **Szenario**: Schlechtes State-Management führt dazu, dass Komponenten bei jedem Rendering Daten erneut abrufen.
+
+    **Lösung**: Lösen Sie das Abrufen von Daten bei bestimmten Ereignissen aus (erstes Mounten, explizite Nutzeraktion), nicht bei jedem Rendering. Verwenden Sie Caching als Sicherheitsnetz.
+
+    <Tip>
+    **Referenz-Prompt**: "Rufe Daten nur beim ersten Laden der Seite oder bei expliziten Nutzeraktionen ab. Rufe bei erneuten Renderings nicht erneut ab – verwende stattdessen gecachte Daten."
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+**Paginierung und Batching – Datenmenge pro Anfrage verringern**
+
+<AccordionGroup>
+  <Accordion title="Listen oder Tabellen ohne Paginierung" icon="table-list">
+    **Szenario**: Das gleichzeitige Laden aller Datensätze verursacht eine Flut von API-Aufrufen, wenn der Datenbestand wächst.
+
+    **Lösung**: Verwenden Sie Paginierung. Laden Sie nur die Daten der aktuellen Seite.
+
+    <Tip>
+    **Referenz-Prompt**: "Zeige 20 Zeilen pro Seite. Lade die nächste Seite nur, wenn der Nutzer dorthin navigiert. Lade nicht alles auf einmal."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Abruf verknüpfter Daten pro Zeile (N+1)" icon="link">
+    **Szenario**: Nach dem Laden einer Liste rufen Sie Details aus verknüpften Tabellen für jeden Datensatz einzeln ab. Das Laden von 50 Projekten und anschließend 50 Besitzerabfragen bedeutet sofort 50 zusätzliche Anfragen.
+
+    **Lösung**: Rufen Sie alle verknüpften Daten in einem Batch ab, nicht Zeile für Zeile.
+
+    <Tip>
+    **Referenz-Prompt**: "Rufe beim Laden einer Liste alle verknüpften Daten in einer einzigen Batch-Anfrage ab. Durchlaufe keine Datensätze, um ihre verknüpften Informationen einzeln abzurufen."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Schreibvorgänge pro Zeile bei Massenaktualisierungen" icon="pen-to-square">
+    **Szenario**: Mehrere Datensätze werden massenweise aktualisiert, indem pro Datensatz statt einer einzelnen Batch-Anfrage eine Aktualisierungsanfrage gesendet wird.
+
+    **Lösung**: Verwenden Sie die Batch-Update-API, um alle Änderungen in einem Aufruf zu übermitteln.
+
+    <Tip>
+    **Referenz-Prompt**: "Fasse bei Massenoperationen mehrere Datensatzänderungen in einer einzigen Batch-Anfrage zusammen. Sende nicht eine Aktualisierung pro Datensatz."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="API-Aufrufe innerhalb von Schleifen" icon="rotate">
+    **Szenario**: Eine `for`-Schleife verarbeitet Datensätze einzeln und ruft die API bei jeder Iteration auf.
+
+    **Lösung**: Sammeln Sie zuerst alle IDs und senden Sie dann eine einzelne Batch-Anfrage.
+
+    <Tip>
+    **Referenz-Prompt**: "Rufe die API nicht innerhalb einer Schleife auf. Sammle zuerst alle erforderlichen IDs und sende dann eine einzelne Batch-Anfrage."
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+**Debounce und Throttle – Anfragehäufigkeit verringern**
+
+<AccordionGroup>
+  <Accordion title="Suche oder Filter ohne Debounce" icon="magnifying-glass">
+    **Szenario**: Jeder Tastendruck in einem Suchfeld löst eine Anfrage aus. Die Eingabe einer Abfrage mit vier Zeichen führt zu vier Anfragen.
+
+    **Lösung**: Wenden Sie Debounce auf die Eingabe an – warten Sie 300–500 ms, nachdem der Nutzer aufgehört hat zu tippen, bevor Sie die Anfrage senden.
+
+    <Tip>
+    **Referenz-Prompt**: "Wende Debounce auf die Sucheingabe an. Sende eine Anfrage erst 300 ms, nachdem der Nutzer aufgehört hat zu tippen. Sende während der Eingabe keine Anfragen."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Schnelle wiederholte Nutzeraktionen" icon="hand-pointer">
+    **Szenario**: Rasche Klicks auf „Senden“, schnelles Umschalten von Filtern, schnelle Paginierung – jede Aktion löst sofort eine Anfrage aus.
+
+    **Lösung**: Wenden Sie Debounce oder Throttle an. Deaktivieren Sie Senden-Schaltflächen, bis die Anfrage abgeschlossen ist, um doppelte Übermittlungen zu verhindern.
+
+    <Tip>
+    **Referenz-Prompt**: "Deaktiviere die Senden-Schaltfläche nach dem Klick und aktiviere sie wieder, sobald die Anfrage abgeschlossen ist. Wende Debounce auf Filteränderungen an, sodass schnelle Änderungen innerhalb von 300 ms nur eine Anfrage auslösen."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Zu aggressives automatisches Speichern von Formularen" icon="floppy-disk">
+    **Szenario**: Jede Feldänderung wird sofort gespeichert. Das Ausfüllen eines Formulars kann ein Dutzend Schreibvorgänge auslösen.
+
+    **Lösung**: Wechseln Sie zu explizitem Speichern per Schaltflächenklick oder verwenden Sie Debounce für das automatische Speichern, sodass es nach einer Bearbeitungspause einmal ausgelöst wird.
+
+    <Tip>
+    **Referenz-Prompt**: "Speichere nicht bei jeder Feldänderung. Speichere nach einem expliziten Klick auf die Schaltfläche oder automatisch einmal, nachdem der Nutzer die Bearbeitung für 2 Sekunden unterbrochen hat."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Zu kurze Polling-Intervalle" icon="clock">
+    **Szenario**: Daten werden alle paar Sekunden aktualisiert, was dauerhaft hochfrequenten Traffic erzeugt.
+
+    **Lösung**: Verlängern Sie das Polling-Intervall auf einen angemessenen Wert (30 Sekunden oder mehr) oder wechseln Sie zur manuellen Aktualisierung.
+
+    <Tip>
+    **Referenz-Prompt**: "Setze das Intervall für die automatische Aktualisierung auf 60 Sekunden. Füge eine Schaltfläche zur manuellen Aktualisierung hinzu, damit Nutzer die neuesten Daten bei Bedarf abrufen können."
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Mehrere Komponenten pollen unabhängig voneinander" icon="timer">
+    **Szenario**: Mehrere Komponenten auf einer Seite richten jeweils ihren eigenen Polling-Timer ein. Die kombinierte Last überschreitet leicht das Limit.
+
+    **Lösung**: Zentralisieren Sie das Polling. Führen Sie einen periodischen Abruf aus und verteilen Sie das Ergebnis dann an jede Komponente, die es benötigt.
+
+    <Tip>
+    **Referenz-Prompt**: "Lass nicht jede Komponente ihren eigenen Polling-Timer einrichten. Verwende einen einzelnen Aktualisierungsmechanismus, der alles nach einem Zeitplan abruft und die Daten an die Komponenten verteilt."
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+**Rendering-Kompatibilität – Vorschaufehler reduzieren**
+
+<AccordionGroup>
+  <Accordion title="Diagramme, Karten oder reine Browser-Komponenten schlagen in der Vorschau fehl" icon="chart-line">
+    **Szenario**: Die Seite verwendet Diagramme, Karten oder Bibliotheken, die von `window`, DOM-Messungen oder anderen reinen Browser-APIs abhängen, und die Vorschau zeigt Fehler, einen leeren Bildschirm oder Hydration-Abweichungen.
+
+    **Lösung**: Diese Komponenten lassen sich oft sicherer im Browser laden, statt sie direkt auf dem Server zu rendern. Wenn die Vorschauprobleme fortbestehen, bitten Sie die KI ausdrücklich, sie auf ein reines Browser-Lademuster umzustellen.
+
+    <Tip>
+    **Referenz-Prompt**: "Diese Komponente hängt von der Browser-Umgebung ab. Lade sie nur auf dem Client, um Vorschau-Rendering-Fehler oder Hydration-Abweichungen zu vermeiden."
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+<Note>
+KI kann Fehler machen. Bitte überprüfen Sie Antworten sorgfältig.
+</Note>
+

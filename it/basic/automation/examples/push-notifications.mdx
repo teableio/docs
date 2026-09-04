@@ -1,0 +1,70 @@
+---
+title: "Inviare notifiche push a Slack, Discord o Teams"
+description: "Invia un messaggio a un canale di chat quando si verifica un evento nella Tabella"
+---
+
+<Tip>Consigliamo di creare gli esempi di Automazione direttamente in AI Chat. Descrivi il workflow desiderato e l'IA si occuperà dell'intera configurazione, inclusi trigger, azioni, script e impostazioni.</Tip>
+
+## Creare con l'IA
+
+Apri AI Chat nella barra laterale destra della Tabella e spiega all'IA cosa desideri. Ad esempio, puoi dire:
+
+*"Quando viene creato un nuovo ticket con priorità alta, invia un messaggio Slack al canale #support con il titolo e la descrizione del ticket"*
+
+L'IA creerà automaticamente il workflow completo. Puoi esaminare lo script generato, provarlo con dati reali e abilitare il workflow quando è pronto.
+
+## Prerequisiti
+
+Ti serve un URL webhook della piattaforma di chat:
+- **Slack:** crea un [Webhook in entrata](https://api.slack.com/messaging/webhooks)
+- **Discord:** Impostazioni server → Integrazioni → Webhook → Nuovo webhook
+- **Teams:** Canale → Connettori → Webhook in entrata
+
+## Configurazione manuale
+
+1. **Crea un workflow** con il trigger **Quando viene creato un Record**.
+2. Seleziona la Tabella **Ticket**.
+3. Aggiungi un filtro: `Priorità` **è** `Alta`.
+4. Fai clic su **Test**.
+5. **Aggiungi un'azione** → **Richiesta HTTP**.
+6. Configura:
+   - Metodo: **POST**
+   - URL: l'URL webhook
+   - Content-Type: `application/json`
+   - Corpo (per Slack):
+     ```json
+     {
+       "text": "Nuovo ticket con priorità alta: <titolo ticket>"
+     }
+     ```
+   - Usa il pulsante **+** per inserire dinamicamente il titolo del ticket.
+7. Fai clic su **Test**, quindi **abilita** il workflow.
+
+## Adattare il workflow a Discord
+
+Discord usa `"content"` invece di `"text"`:
+
+```json
+{
+  "content": "Nuovo ticket con priorità alta: <titolo ticket>"
+}
+```
+
+## Adattare il workflow a Teams
+
+Teams usa il formato Adaptive Card:
+
+```json
+{
+  "type": "message",
+  "attachments": [{
+    "contentType": "application/vnd.microsoft.card.adaptive",
+    "content": {
+      "type": "AdaptiveCard",
+      "body": [{ "type": "TextBlock", "text": "Nuovo ticket con priorità alta: <titolo ticket>" }],
+      "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+      "version": "1.2"
+    }
+  }]
+}
+```

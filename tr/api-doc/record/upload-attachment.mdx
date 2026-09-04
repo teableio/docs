@@ -1,0 +1,213 @@
+---
+title: "Ek Yükleme"
+description: "Yerel dosyaları veya URL üzerinden erişilen dosyaları, belirtilen bir Kayıttaki Ek Alanının sonuna yükleyin"
+---
+
+### Yol
+
+POST /api/table/\{tableId}/record/\{recordId}/\{fieldId}/uploadAttachment
+
+### İstek
+
+#### Yol Parametreleri
+
+* tableId (string): Tablonun benzersiz tanımlayıcısı [(nasıl alınır)](/tr/api-doc/get-id#tableid).
+* recordId (string): Güncellenecek Kaydın benzersiz tanımlayıcısı [(nasıl alınır)](/tr/api-doc/get-id#recordid).
+* fieldId (string): Yüklemenin yapılacağı Ek Alanının kimliği [(nasıl alınır)](/tr/api-doc/get-id#fieldid)
+
+Ek Alanları birden fazla ek içerebilir. Bu API, hücrenin sonuna tek seferde bir ek yüklemenize olanak tanır.
+
+Ekleri silmek veya yeniden sıralamak için [Kayıt Güncelleme API'sini](/tr/api-doc/record/update) kullanın.
+
+fieldId, Ek türünde bir Alan olmalıdır.
+
+API üzerinden yüklenen ekler bulut sürümünde 100MB ile sınırlıdır; kendi sunucunuzda barındırılan sürümde sınır yoktur.
+
+#### İstek Gövdesi
+
+Tür: formData
+
+Parametreler:
+
+* **file (isteğe bağlı)**
+  * Açıklama: Güncellenecek Kayıt verileri
+  * Tür: Buffer veya ReadStream
+* **fileUrl (isteğe bağlı)**
+  * Açıklama: Dosyanın yükleneceği URL
+  * Tür: Dize
+  * Örnek: `https://example.com/image.jpg`
+  * Not: Aynı anda file veya fileUrl parametrelerinden yalnızca biri belirtilebilir. İkisi de belirtilirse file öncelikli olur.
+
+### Yanıt
+
+#### Başarılı Yanıt
+
+* Durum kodu: 201 Created
+* Yanıt gövdesi: Güncellenmiş Kayıt verilerini döndürür.
+
+**Örnek Yanıt Gövdesi**
+
+```json
+{
+    "id": "rec123456789ABCDE",
+    "fields": {
+      "fld123456789ABCDE": [
+        {
+          "id": "act75TiSyhcS7hfrizW",
+          "name": "example.jpg",
+          "path": "table/example",
+          "size": 392903,
+          "token": "tokenxxxxx",
+          "width": 976,
+          "height": 1000,
+          "mimetype": "image/jpeg",
+          "presignedUrl": "https://app.teable.ai/preview/previewURL"
+        }
+      ],
+    }
+}
+```
+
+#### Hata Yanıtları
+
+* Durum kodu: 400 Bad Request: İstek gövdesi biçim hatası veya zorunlu Alanlar eksik.
+* Durum kodu: 404 Not Found: Belirtilen tableId veya recordId mevcut değil.
+
+### Örnek Kod
+
+<CodeGroup>
+  ```bash CURL
+  # Dosyayla yükle
+
+  curl -X POST 'https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment' \
+    -H 'Authorization: Bearer __token__' \
+    -H 'Content-Type: multipart/form-data' \
+    -F 'file=@/path/to/your/file.jpg'
+
+  # URL üzerinden yükle
+  curl -X POST 'https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment' \
+    -H 'Authorization: Bearer __token__' \
+    -H 'Content-Type: multipart/form-data' \
+    -F 'fileUrl=https://example.com/image.jpg'
+  ```
+
+  ```js JS SDK
+  import { configApi, uploadAttachment } from '@teable/openapi';
+
+  configApi({
+    endpoint: 'https://app.teable.ai',
+    token: '__token__',
+  });
+
+  // Node.js ortamı: Yerel dosya yükle
+  const fileStream = fs.createReadStream('/path/to/your/file.jpg');
+  const response = await uploadAttachment('__tableId__', '__recordId__', '__fieldId__', fileStream);
+
+  console.log(response.data);
+
+  // URL yükle (hem Node.js hem tarayıcı ortamlarında çalışır)
+  const response = await uploadAttachment('__tableId__', '__recordId__', '__fieldId__', 'https://example.com/image.jpg');
+
+  console.log(response.data);
+
+  // Tarayıcı ortamı: Dosya yükle
+  // Bir dosya girdisi öğesi olduğu varsayılır: <input type="file" id="fileInput">
+  document.getElementById('fileInput').addEventListener('change', async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const response = await uploadAttachment('__tableId__', '__recordId__', '__fieldId__', file);
+      console.log(response.data);
+    }
+  });
+  ```
+
+  ```ts TypeScript
+  import FormData from 'form-data';
+  import fs from 'fs';
+
+  // Node.js ortamı: Yerel dosya yükle
+  const formData = new FormData();
+  formData.append('file', fs.createReadStream('/path/to/your/file.jpg'));
+
+  const response = await fetch('https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer __token__',
+      ...formData.getHeaders()
+    },
+    body: formData
+  });
+
+  console.log(await response.json());
+
+  // URL yükle (hem Node.js hem tarayıcı ortamlarında çalışır)
+  const formDataUrl = new FormData();
+  formDataUrl.append('fileUrl', 'https://example.com/image.jpg');
+
+  const responseUrl = await fetch('https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer __token__',
+      ...formDataUrl.getHeaders()
+    },
+    body: formDataUrl
+  });
+
+  console.log(await responseUrl.json());
+
+  // Tarayıcı ortamı: Dosya yükle
+  // Bir dosya girdisi öğesi olduğu varsayılır: <input type="file" id="fileInput">
+  document.getElementById('fileInput').addEventListener('change', async (event: Event) => {
+    const fileInput = event.target as HTMLInputElement;
+    const file = fileInput.files?.[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer __token__'
+        },
+        body: formData
+      });
+
+      console.log(await response.json());
+    }
+  });
+  ```
+
+  ```python Python
+  import requests
+  import mimetypes
+  import os
+
+  # Yerel dosya yükle
+  file_path = '/path/to/your/file.jpg'
+  with open(file_path, 'rb') as file:
+      file_name = os.path.basename(file_path)
+      mime_type, _ = mimetypes.guess_type(file_path)
+      files = {'file': (file_name, file, mime_type)}
+      response = requests.post(
+          'https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment',
+          headers={
+              'Authorization': 'Bearer __token__'
+          },
+          files=files
+      )
+
+  print(response.json())
+
+  # URL yükle
+  response_url = requests.post(
+      'https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment',
+      headers={
+          'Authorization': 'Bearer __token__'
+      },
+      data={'fileUrl': 'https://example.com/image.jpg'}
+  )
+
+  print(response_url.json())
+  ```
+</CodeGroup>
+

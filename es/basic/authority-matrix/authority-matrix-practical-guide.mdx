@@ -1,0 +1,218 @@
+---
+title: "Guía práctica de la Matriz de Autoridad"
+description: "Configura los roles de la Matriz de Autoridad para un equipo de ventas que necesita datos compartidos, acceso a Registros según el propietario y entrada de datos restringida."
+---
+
+{/* mintlify-resync: 2026-05-28 */}
+Esta guía utiliza una Base de ventas con tres Tablas: `Clientes`, `Pedidos de ventas`
+y `Productos`. El objetivo es permitir que cada rol trabaje con los datos que necesita
+sin exponer toda la Base.
+
+| Rol | Objetivo de acceso |
+| --- | --- |
+| Director de ventas | Ver los datos de clientes y ventas, comentar productos y evitar modificar sus precios. |
+| Representante de ventas | Ver y actualizar únicamente sus propios clientes y pedidos, crear clientes nuevos y evitar eliminar pedidos completados. |
+| Responsable de entrada de datos | Añadir productos nuevos sin ver los productos, clientes ni pedidos existentes. |
+
+<Info>Activa la Matriz de Autoridad antes de depender de los permisos de los roles.</Info>
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-enable-en.png"
+  alt="Habilitar la Matriz de Autoridad"
+  className="docs-screenshot"
+/>
+
+## Crear los roles
+
+<Steps>
+  <Step title="Habilitar la Matriz de Autoridad">
+    Abre la página de la Matriz de Autoridad en la Base y activa el interruptor principal. El
+    usuario que la habilita se añade como administrador.
+  </Step>
+  <Step title="Añadir roles personalizados">
+    Haz clic en `Añadir rol` y crea `Director de ventas`, `Representante de ventas` y `Responsable de entrada de
+    datos`.
+  </Step>
+</Steps>
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-create-roles-en.png"
+  alt="Crear tres roles: Director de ventas, Representante de ventas y Responsable de entrada de datos"
+  className="docs-screenshot"
+/>
+
+## Configurar el rol Director de ventas
+
+El Director de ventas necesita una visibilidad amplia, pero los precios de los productos deben permanecer
+protegidos frente a cambios accidentales.
+
+| Nodo | Ajuste |
+| --- | --- |
+| Clientes | Establece la Tabla en `Puede editar`. Mantén abiertos los permisos de Registros y Campos para que el rol pueda consultar los datos de los clientes. |
+| Pedidos de ventas | Establece la Tabla en `Puede editar`. Mantén abiertos los permisos de Registros y Campos para que el rol pueda revisar la actividad de ventas. |
+| Productos | Establece la Tabla en `Puede editar` y permite únicamente `Leer Registro` y `Comentar Registro` en los permisos de Registros. |
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-director-permissions-en.png"
+  alt="Configurar los permisos del Director de ventas"
+  className="docs-screenshot"
+/>
+
+Asigna miembros desde la lista de roles mediante `Añadir usuario` o `Añadir desde la organización`
+y asegúrate de que el interruptor del rol esté habilitado.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-director-members-en.png"
+  alt="Añadir miembros al rol Director de ventas"
+  className="docs-screenshot"
+/>
+
+Después de configurarlo, un Director de ventas puede revisar los datos de clientes y pedidos, comentar
+los productos y evitar modificar los Registros de productos.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-director-view-en.webp"
+  alt="Vista del Director de ventas después de configurar los permisos"
+  className="docs-screenshot"
+/>
+
+## Configurar el rol Representante de ventas
+
+El rol Representante de ventas usa filtros de Registros para que cada representante trabaje únicamente con aquellos
+de los que es propietario.
+
+### Clientes
+
+Establece `Clientes` en `Puede editar`.
+
+| Área de permisos | Ajuste |
+| --- | --- |
+| Permisos de Registro | Elige los Registros que cumplan condiciones concretas. Añade un filtro como `Representante de ventas` `es` `Yo (usuario actual)`. |
+| Operaciones de Registro | Permite `Leer Registro`, `Actualizar Registro` y `Crear Registro`. Deja `Eliminar Registro` desactivado si los representantes no deben eliminar Registros de clientes. |
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-filter-en.webp"
+  alt="Configurar un filtro de Registros basado en el propietario para Representante de ventas"
+  className="docs-screenshot"
+/>
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-customer-permissions-en.png"
+  alt="Configurar los permisos de clientes del Representante de ventas"
+  className="docs-screenshot"
+/>
+
+### Pedidos de ventas
+
+Establece `Pedidos de ventas` en `Puede editar`.
+
+| Área de permisos | Ajuste |
+| --- | --- |
+| Permisos de Registro | Usa el mismo filtro basado en el propietario, como `Representante de ventas` `es` `Yo (usuario actual)`. |
+| Operaciones de Registro | Permite `Leer Registro` y `Crear Registro`. Deja `Actualizar Registro` y `Eliminar Registro` desactivados si los pedidos completados deben permanecer sin cambios. |
+| Permisos de Campo | Oculta los Campos confidenciales, como `Método de pago`, desactivando `Leer Registro` para ese Campo. |
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-order-permissions-en.png"
+  alt="Configurar los permisos de pedidos del Representante de ventas"
+  className="docs-screenshot"
+/>
+
+Asigna los representantes de ventas al rol y mantenlo habilitado.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-members-en.png"
+  alt="Añadir miembros al rol Representante de ventas"
+  className="docs-screenshot"
+/>
+
+Ahora, cada representante de ventas solo ve los Registros de clientes y pedidos que coinciden con el
+filtro de propietario.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-view-en.webp"
+  alt="Vista previa del rol Representante de ventas"
+  className="docs-screenshot"
+/>
+
+## Configurar el rol Responsable de entrada de datos
+
+El Responsable de entrada de datos solo necesita añadir productos.
+
+| Nodo | Ajuste |
+| --- | --- |
+| Productos | Establece la Tabla en `Puede editar`. En los permisos de Registros, permite únicamente `Crear Registro`. |
+| Campos de productos | Si los datos de pedidos enlazados deben permanecer ocultos, desactiva `Leer Registro` para el Campo enlazado `Pedidos`. |
+| Clientes y Pedidos de ventas | Mantén estas Tablas como `Sin acceso`. |
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-data-entry-permissions-en.png"
+  alt="Configurar los permisos del Responsable de entrada de datos"
+  className="docs-screenshot"
+/>
+
+Asigna responsables al rol y mantenlo habilitado.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-data-entry-members-en.png"
+  alt="Añadir miembros al rol Responsable de entrada de datos"
+  className="docs-screenshot"
+/>
+
+Después de configurarlo, el Responsable de entrada de datos puede añadir Registros de productos nuevos, pero no puede explorar
+los datos existentes de productos, clientes ni pedidos.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-data-entry-view-en.webp"
+  alt="Vista previa del rol Responsable de entrada de datos"
+  className="docs-screenshot"
+/>
+
+## Vista de revisión de ventas
+
+<Tip>Usa esta configuración para las revisiones de ventas: los representantes pueden ver la lista completa de clientes, pero solo pueden editar aquellos que tienen asignados.</Tip>
+
+Durante una revisión, los representantes pueden necesitar ver todos los Registros de clientes para comparar los patrones
+de seguimiento y el estado de los clientes. La edición cotidiana debe seguir limitada a
+los clientes que tienen asignados, para evitar que modifiquen por error los Registros de otro representante.
+
+Mantén el rol `Representante de ventas` existente y añade un rol de solo lectura para ofrecer visibilidad
+de los clientes de toda la empresa. Un representante puede usar el rol de solo lectura para ver todos los clientes y
+el rol `Representante de ventas` para actualizar únicamente los que tiene asignados.
+
+### Crear un rol de solo lectura
+
+Haz clic en `Añadir rol` y crea un rol de solo lectura, como `Lector global de clientes`.
+
+### Configurar el acceso a clientes
+
+Establece `Clientes` en `Puede editar`. En los permisos de Registros, permite únicamente `Leer Registro`.
+No habilites `Actualizar Registro`, `Eliminar Registro` ni `Crear Registro`. Deja vacío el
+filtro de Registros para que este rol pueda ver todos los Registros de clientes.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-global-customer-viewer-permissions-en.png"
+  alt="Configurar permisos de clientes de solo lectura para Lector global de clientes"
+  className="docs-screenshot"
+/>
+
+### Asignar representantes de ventas
+
+Vuelve a la lista de roles y añade al rol
+`Lector global de clientes` los representantes que necesiten acceso de revisión.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-global-customer-viewer-members-en.png"
+  alt="Añadir miembros al rol Lector global de clientes"
+  className="docs-screenshot"
+/>
+
+Cuando un usuario tiene los roles `Representante de ventas` y `Lector global de clientes`, Teable combina
+los permisos. El usuario puede ver todos los Registros de clientes, pero solo puede actualizar
+los que permita el filtro de propietario del rol `Representante de ventas`.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-global-customer-viewer-result-en.webp"
+  alt="Vista del Representante de ventas con permisos de Lector global de clientes"
+  className="docs-screenshot"
+/>

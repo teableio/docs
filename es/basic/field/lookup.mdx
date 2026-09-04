@@ -1,0 +1,51 @@
+---
+title: "Búsqueda"
+description: "Consulta valores de Campos de una Tabla enlazada mediante una relación de enlace existente y mantén los datos sincronizados."
+---
+
+Los Campos Búsqueda se basan en Campos **Enlace a Registro**. Un Campo Búsqueda consulta un Campo seleccionado de una Tabla enlazada para que la Tabla actual pueda mostrar datos de otra Tabla sin tener que introducirlos de nuevo.
+
+## Casos de uso
+
+| Escenario | Adecuado para |
+| --- | --- |
+| Líneas de pedido | Después de enlazar un producto, mostrar su precio, SKU o categoría |
+| Gestión de incidencias | Después de enlazar un cliente, mostrar su número de teléfono, nivel o responsable |
+| Gestión de libros | En una Tabla de libros, mostrar la fecha de nacimiento, nacionalidad o biografía del autor |
+| Gestión de proyectos | Desde las tareas enlazadas, mostrar la persona asignada, la fecha de vencimiento o el estado |
+
+## Crear y configurar
+
+<Steps>
+  <Step title="Crear una relación de enlace">
+    Antes de usar un Campo Búsqueda, crea un Campo **Enlace a Registro** entre las dos Tablas.
+  </Step>
+  <Step title="Elegir el tipo de Campo">
+    En la Vista de Tabla, haz clic en `+` para añadir un Campo y elige **Búsqueda**.
+  </Step>
+  <Step title="Elegir el Campo de enlace">
+    Elige un Campo de enlace existente en la Tabla actual como ruta de búsqueda.
+  </Step>
+  <Step title="Elegir el Campo de destino">
+    Elige el Campo que quieres leer de la Tabla de origen, como la fecha de nacimiento de un autor, el número de teléfono de un cliente o el precio de un producto.
+  </Step>
+</Steps>
+
+## Sincronización automática
+
+Después de la configuración, Teable completa el resultado de la búsqueda según la relación de enlace existente:
+
+- Si cambia el Registro enlazado, por ejemplo, al elegir otro autor, el valor de la búsqueda se actualiza.
+- Si cambian los datos de origen, por ejemplo, al editar la fecha de nacimiento de un autor, el valor de la búsqueda se actualiza.
+
+## Usos habituales
+
+- **Gestión de libros**: en una Tabla `Libros`, usa un Campo de enlace `Autor` para buscar `Fecha de nacimiento` en una Tabla de detalles de autores.
+- **Cálculo de pedidos**: en una Tabla `Líneas de pedido`, busca el precio del producto y usa después una fórmula para calcular el total.
+- **Sincronización de información de clientes**: en una Tabla de incidencias, enlaza un cliente y busca su número de teléfono, correo electrónico o nivel.
+
+## Notas
+
+- **Campo de solo lectura**: los Campos Búsqueda son de **solo lectura**. No puedes editar el valor consultado desde la Tabla actual. Para cambiarlo, edita el Campo original en la Tabla de origen.
+- **Valor único y varios valores**: si la relación de enlace es uno a uno, el resultado de la búsqueda es un valor único. Si la relación es uno a varios, el resultado se convierte en una matriz de varios valores y los muestra separados por comas.
+- **Dependencias de datos**: los Campos Búsqueda dependen del Campo de enlace y del Campo de origen. Si se elimina el Campo de enlace o el Campo de destino de la Tabla de origen, el Campo Búsqueda deja de funcionar.

@@ -1,0 +1,40 @@
+---
+title: "Generar y enviar un resumen diario por correo electrónico con IA"
+description: "Usa un desencadenador programado y Generar con IA para resumir la actividad del día y enviarla por correo electrónico a tu equipo"
+---
+
+<Tip>Recomendamos crear los ejemplos de Automatización directamente en el Chat de IA. Solo tienes que describir el flujo de trabajo que quieres y la IA se encargará de toda la configuración, incluidos el desencadenador, las acciones, el script y la configuración.</Tip>
+
+## Crear con IA
+
+Abre el Chat de IA en la barra lateral derecha de tu Tabla e indica a la IA lo que quieres. Por ejemplo, puedes decir:
+
+*«Todos los días a las 18:00, busca todas las tareas completadas hoy, resúmelas en un informe breve y envíalo por correo electrónico a team@yourcompany.com»*
+
+La IA creará automáticamente el flujo de trabajo completo. Puedes revisar el script generado, probarlo con datos reales y activar el flujo de trabajo cuando esté listo.
+
+## Configuración manual
+
+1. **Crea un flujo de trabajo** con el desencadenador **A la hora programada**, todos los días a las 18:00.
+2. **Añade una acción** → **Obtener Registros**.
+   - Tabla: **Tareas**
+   - Filtro: `Estado` **es** `Completada` AND `Completada el` **es** `hoy`
+3. **Añade una acción** → **Generar con IA**.
+   - Prompt:
+     ```
+     Resume estas tareas completadas en un breve informe diario.
+     Agrúpalas por categoría cuando corresponda. Limita el informe a 200 palabras.
+
+     Tareas: <inserta la salida de Obtener Registros mediante +>
+     ```
+   - Tipo de salida: **Texto**
+4. **Añade una acción** → **Enviar correo electrónico**.
+   - Para: `team@yourcompany.com`
+   - Asunto: `Informe diario de tareas`
+   - Cuerpo: inserta la salida de Generar con IA (mediante **+**)
+5. Prueba cada paso y luego **activa** el flujo.
+
+## Variaciones
+
+- **Resumen semanal:** cambia la programación a los viernes y el filtro a «últimos 7 días».
+- **Resumen de actividad de clientes:** consulta una Tabla de CRM para buscar interacciones nuevas y resumirlas.

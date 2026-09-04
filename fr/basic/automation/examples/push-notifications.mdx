@@ -1,0 +1,70 @@
+---
+title: "Envoyer des notifications à Slack, Discord ou Teams"
+description: "Envoyez un message à un canal de discussion lorsqu’un événement se produit dans votre table"
+---
+
+<Tip>Nous vous recommandons de créer les exemples d’automatisation directement dans le Chat IA. Décrivez simplement le flux de travail souhaité : l’IA se chargera de toute la configuration, y compris du déclencheur, des actions, du script et des paramètres.</Tip>
+
+## Créer avec l’IA
+
+Ouvrez le Chat IA dans la barre latérale droite de votre table et indiquez à l’IA ce que vous souhaitez. Par exemple, vous pouvez dire :
+
+*"Lorsqu’un nouveau ticket de priorité élevée est créé, envoie un message Slack au canal #support avec le titre et la description du ticket"*
+
+L’IA créera automatiquement le flux de travail complet. Vous pourrez examiner le script généré, le tester avec des données réelles et activer le flux de travail lorsqu’il sera prêt.
+
+## Prérequis
+
+Vous avez besoin d’une URL de webhook fournie par votre plateforme de discussion :
+- **Slack :** créez un [webhook entrant](https://api.slack.com/messaging/webhooks)
+- **Discord :** Paramètres du serveur → Intégrations → Webhooks → Nouveau webhook
+- **Teams :** Canal → Connecteurs → Webhook entrant
+
+## Configuration manuelle
+
+1. **Créez un flux de travail** avec le déclencheur **Lorsqu’un enregistrement est créé**.
+2. Sélectionnez votre table **Tickets**.
+3. Ajoutez un filtre : `Priorité` **est** `Élevée`.
+4. Cliquez sur **Tester**.
+5. **Ajoutez une action** → **Requête HTTP**.
+6. Configurez les éléments suivants :
+   - Méthode : **POST**
+   - URL : l’URL de votre webhook
+   - Content-Type : `application/json`
+   - Corps (pour Slack) :
+     ```json
+     {
+       "text": "Nouveau ticket de priorité élevée : <titre du ticket>"
+     }
+     ```
+   - Utilisez le bouton **+** pour insérer dynamiquement le titre du ticket.
+7. Cliquez sur **Tester**, puis **activez** le flux de travail.
+
+## Adapter la configuration à Discord
+
+Discord utilise `"content"` au lieu de `"text"` :
+
+```json
+{
+  "content": "Nouveau ticket de priorité élevée : <titre du ticket>"
+}
+```
+
+## Adapter la configuration à Teams
+
+Teams utilise le format Adaptive Card :
+
+```json
+{
+  "type": "message",
+  "attachments": [{
+    "contentType": "application/vnd.microsoft.card.adaptive",
+    "content": {
+      "type": "AdaptiveCard",
+      "body": [{ "type": "TextBlock", "text": "Nouveau ticket de priorité élevée : <titre du ticket>" }],
+      "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+      "version": "1.2"
+    }
+  }]
+}
+```

@@ -1,0 +1,86 @@
+---
+title: "Obtenir des Enregistrements"
+---
+
+<Tip>Nous mettons à la disposition des développeurs un [générateur de paramètres de requête](https://app.teable.ai/developer/tool/query-builder) intégré, qui peut aider à construire des requêtes personnalisées à partir de vos Tables existantes.</Tip>
+
+### Chemin
+GET /api/table/\{tableId\}/record
+​
+### Requête
+#### Paramètres de chemin
+tableId (string) : L’identifiant unique de la Table [(comment l’obtenir)](/fr/api-doc/get-id#tableid).
+
+#### Paramètres de requête de base
+Tous les paramètres sont facultatifs
+
+<ParamField query="viewId" type="string">
+  Spécifie l’ID de la Vue depuis laquelle récupérer les Enregistrements. S’il n’est pas spécifié, les Enregistrements sont renvoyés dans l’ordre de leur création, avec tous les Enregistrements et Champs inclus.
+</ParamField>
+
+<ParamField query="take" type="number">
+  Spécifie le nombre d’Enregistrements à récupérer ; la valeur maximale est 100. Pour lire davantage d’Enregistrements, paginez les données avec `skip` et `take` (consultez [Pagination](/fr/api-doc/overview)).
+
+  La limite de 100 Enregistrements s’applique aux clés d’API personnelles Teable Cloud créées le 10 septembre 2026 ou après. Les clés créées avant cette date, les jetons OAuth et de plugin, ainsi que les instances auto-hébergées, acceptent toujours jusqu’à 1 000 Enregistrements, mais des pages de 100 restent la taille recommandée.
+</ParamField>
+
+<ParamField query="skip" type="number">
+  Spécifie le nombre d’Enregistrements à ignorer, utilisé pour la pagination.
+</ParamField>
+
+<ParamField query="fieldKeyType" type="string" default="name">
+  Définit le type de clé des Champs dans les Enregistrements ; valeurs possibles :
+  - `name` : Utiliser les noms de Champ comme clés (par défaut)
+  - `id` : Utiliser les ID de Champ comme clés
+  - `dbFieldName` : Utiliser les dbFieldName de Champ comme clés
+</ParamField>
+
+<ParamField query="cellFormat" type="string" default="json">
+  Définit le format de retour des valeurs de cellule ; valeurs possibles :
+  - `json` : Renvoie des données JSON structurées (par défaut)
+  - `text` : Renvoie du texte brut
+</ParamField>
+
+<ParamField query="projection" type="string[]">
+  Si vous n’avez besoin que de Champs spécifiques, indiquez-les à l’aide de ce paramètre. Sinon, tous les Champs visibles seront récupérés. Les valeurs du paramètre dépendent du réglage fieldKeyType (utilisation des noms de Champ, des ID ou de dbFieldName).
+</ParamField>
+
+<ParamField query="orderBy" type="string">
+  Tableau d’objets de tri spécifiant l’ordre des Enregistrements.
+</ParamField>
+
+<ParamField query="filter" type="string">
+  Objet de condition de requête complexe pour filtrer les résultats. Prend en charge des conditions de requête complexes basées sur les Champs, les opérateurs et les valeurs.
+</ParamField>
+
+<ParamField query="search" type="string[]">
+  Recherche des Enregistrements correspondant aux Champs et valeurs spécifiés.
+</ParamField>
+
+<Accordion title="Paramètres de requête avancés">
+<ParamField query="groupBy" type="string">
+  Tableau d’objets de regroupement spécifiant la manière dont les Enregistrements doivent être regroupés.
+</ParamField>
+
+<ParamField query="collapsedGroupIds" type="string[]">
+  Tableau des ID de groupes à réduire.
+</ParamField>
+
+<ParamField query="selectedRecordIds" type="string[]">
+  Filtre les Enregistrements sélectionnés par leurs ID d’Enregistrement.
+</ParamField>
+
+<ParamField query="ignoreViewQuery" type="boolean">
+  Lorsque viewId est spécifié, définir cette option sur true ignore les filtres, le tri et les autres paramètres de la Vue.
+</ParamField>
+
+<ParamField query="filterLinkCellCandidate" type="string[]">
+  Filtre les Enregistrements de la Table liée qui peuvent être sélectionnés par la cellule de lien spécifiée. Par exemple, pour les Champs de relation un-à-plusieurs ou un-à-un, les ID d’Enregistrement déjà sélectionnés n’apparaîtront pas.
+</ParamField>
+
+<ParamField query="filterLinkCellSelected" type="string[]">
+  Filtre les Enregistrements de la Table liée déjà sélectionnés par cette cellule de lien. Remarque : viewId, filter et orderBy ne prennent pas effet dans ce cas, car les Enregistrements sélectionnés ont leur propre ordre.
+</ParamField>
+</Accordion>
+
+

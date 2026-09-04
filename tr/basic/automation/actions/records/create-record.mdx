@@ -1,0 +1,78 @@
+---
+title: "Kayıt oluştur"
+description: "Bir iş akışının parçası olarak herhangi bir tabloda yeni kayıt oluşturun"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Otomasyon oluşturmak için Komut dosyası çalıştır'ı kullanmanızı kesinlikle öneririz; bu özellik, aksi hâlde elle oluşturulması gerekecek eylemler dahil tüm eylem davranışlarını kapsayabilir. Gereksinimlerinizi sohbette AI'a açıklamanız yeterlidir.
+
+Lütfen unutmayın: eylemleri elle eklerseniz AI daha sonra bunları tanıyamaz veya değiştiremez.
+</Tip>
+
+## AI ile oluşturma
+
+Tablonuzun sağ kenar çubuğunda AI Chat'i açın ve ne istediğinizi açıklayın.
+
+AI her şeyi halleder: doğru tetikleyiciyi belirler, uygun eylemleri seçer, alanları eşler ve iş akışının tamamını otomatik olarak yapılandırır.
+
+Hedefinizi bir kez açıklayın; iş akışınız elle yapılandırma gerektirmeden hazır olur.
+
+Belirtilen tabloda yeni bir kayıt oluşturur. Önceki adımlardaki verileri yeni kaydın alanlarına eşleyebilirsiniz. Kayıt oluşturulduktan sonra yeni Kayıt Kimliği ve tüm alan değerleri sonraki adımlarda kullanılabilir.
+
+## Yapılandırma
+
+| Ayar | Zorunlu | Açıklama |
+|---|---|---|
+| Tablo | Evet | Yeni kaydın oluşturulacağı hedef tablo |
+| Alanlar | Evet | Her alanı bir değerle eşleyin: sabit metin/sayılar veya önceki adımlardaki dinamik değişkenler |
+
+## Nasıl yapılandırılır?
+
+1. İş akışınıza bir **Kayıt Oluştur** eylemi ekleyin.
+2. Kaydın oluşturulmasını istediğiniz **Tabloyu** seçin. Varsayılan olarak bu, aynı Veritabanındaki bir tablodur; ancak başka bir Veritabanındaki tabloyu hedeflemek için [Veritabanları Arası Erişim](/tr/basic/automation/actions/records/cross-base) özelliğini kullanabilirsiniz.
+3. Alan eşleme bölümü, hedef tablodaki tüm alanları gösterir. Doldurmak istediğiniz her alan için:
+   - **Sabit değer:** Doğrudan alana bir değer yazın (ör. Durum alanı için "Yeni" yazın).
+   - **Dinamik değer:** Önceki bir adımdaki değişkeni eklemek için alanın yanındaki **+** düğmesine tıklayın. Örneğin tetikleyen kaydın adını kopyalamak için tetikleyicinin "Ad" alanını ekleyin.
+4. Sabit ve dinamik değerleri birlikte kullanabilirsiniz. Örneğin Durum'u sabit "Beklemede" değerine ayarlarken Müşteri Adı'nı tetikleyicideki dinamik bir değere ayarlayabilirsiniz.
+5. Eylemi kaydedin.
+
+<Tip>Tek bir metin alanında birden fazla değişkeni birleştirebilirsiniz. Örneğin "Özet" alanına `Tetikleyici kaydın Müşteri Adı - Tetikleyici kaydın Sipariş Kimliği` değerini ekleyin.</Tip>
+
+## Zorunlu alanlara ne olur?
+
+Zorunlu bir alanın varsayılan değeri varsa ve alanı eşlemeden bırakırsanız Teable, kayıt oluşturulduğunda varsayılan değeri doldurur. Zorunlu alanın varsayılan değeri yoksa veya eşlenen değer çalışma zamanında boşsa eylem başarısız olur.
+
+Hangi alanların zorunlu olduğunu görmek için hedef tablonuzdaki alan yapılandırmasına bakın. Zorunlu alanlar genellikle yıldız işareti veya "Zorunlu" etiketiyle belirtilir.
+
+## Çıktı: oluşturulan kaydı sonraki adımlarda kullanma
+
+Kayıt Oluştur eylemi çalıştıktan sonra yeni oluşturulan kayıt, sonraki tüm adımlarda kullanılabilir. Buna şunlar dahildir:
+
+- **Kayıt Kimliği** — yeni kayda atanan benzersiz tanımlayıcı.
+- **Tüm alan değerleri** — otomatik hesaplanan veya varsayılan değerler dahil, oluşturulan kaydın tüm alan değerleri.
+
+Bu, eylemleri zincirlemeniz gerektiğinde kullanışlıdır. Örneğin bir kayıt oluşturup hemen ardından bu kaydın bağlantısını içeren bir e-posta gönderebilir veya ilgili kaydı yeni Kayıt Kimliğiyle güncelleyebilirsiniz.
+
+## Ne zaman kullanılır?
+
+- **Form gönderimlerini ayrı bir tabloya kaydedin.** Bir form gönderildiğinde, gönderilen verileri ve zaman damgasını "Gönderim Günlüğü" tablosunda yeni bir kayda yazın.
+- **Takip görevlerini otomatik olarak oluşturun.** Bir proje oluşturulduğunda ilgili Görevler tablosunda varsayılan görevler oluşturun.
+- **Kayıtları tablolar arasında çoğaltın.** Verileri bir tablodan diğerine kopyalayın; örneğin bir anlaşma tamamlandığında olası müşteriyi "Aday Müşteriler" tablosundan "Etkin Müşteriler" tablosuna taşıyın.
+- **Harici verilerden kayıt oluşturun.** Bir webhook sipariş verisi ilettiğinde sipariş ayrıntılarıyla Siparişler tablonuzda yeni kayıt oluşturun.
+- **Denetim izi kayıtları oluşturun.** Herhangi bir otomasyon çalıştıktan sonra ne olduğunu belgelemek için Denetim Günlüğü tablosunda bir kayıt oluşturun.
+
+## İpuçları
+
+- **Kayıt oluşturulduğunda** tetikleyicisine sahip aynı tabloda kayıt oluşturuyorsanız sonsuz döngülere dikkat edin. Otomasyon tarafından oluşturulan kayıtları hariç tutmak için tetikleyicide filtre kullanın (ör. "Kaynak" alanının "Otomasyon" olarak ayarlanıp ayarlanmadığını denetleyin).
+- Bu eylemi [Döngü (Toplu)](../logic/loop-run) ile birleştirerek toplu kayıt oluşturabilirsiniz. Örneğin bir tablodan 50 kayıt alıp başka bir tabloda karşılık gelen 50 kayıt oluşturabilirsiniz.
+- Eşlemediğiniz alanlar tablonun varsayılan değerlerini (varsa) kullanır veya boş kalır.
+- Bağlantılı kayıt alanları görünen değerleri değil, Kayıt Kimliklerini bekler. Bir kayda bağlantı vermek istiyorsanız kaydın adı yerine Kayıt Kimliğini ilettiğinizden emin olun.
+- Hedef tablo otomasyonun bulunduğu Veritabanından farklı bir Veritabanındaysa [Veritabanları Arası Erişim](/tr/basic/automation/actions/records/cross-base) özelliğini kullanın.
+
+## İlgili konular
+
+- [Kaydı güncelle](/tr/basic/automation/actions/records/update-record) — yeni kayıt oluşturmak yerine mevcut kayıtları değiştirin
+- [Kayıtları getir](/tr/basic/automation/actions/records/get-records) — yeni kayıt oluştururken girdi olarak kullanılacak kayıtları alın
+- [Veritabanları arası erişim](/tr/basic/automation/actions/records/cross-base) — geçerli Veritabanının dışındaki tablolarda kayıt oluşturun
+- [Döngü (toplu)](../logic/loop-run) — tek eylem adımında birden fazla kayıt oluşturun

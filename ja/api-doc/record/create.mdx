@@ -1,0 +1,243 @@
+---
+title: "レコードを作成"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+### パス
+
+POST /api/table/\{tableId\}/record
+
+### リクエスト
+
+#### パスパラメーター
+
+* tableId (string): テーブルの一意の識別子です。
+
+#### リクエスト本文
+
+* **records（必須）**
+  * 説明: 作成するレコードの配列
+  * 型: 配列
+  * 例:
+    ```json
+    [
+      {
+        "fields": {
+          "Name": "John Doe",
+          "Age": 30,
+          "Email": "john@example.com"
+        }
+      },
+      {
+        "fields": {
+          "Name": "Jane Smith",
+          "Age": 28,
+          "Email": "jane@example.com"
+        }
+      }
+    ]
+    ```
+  * 注: 各レコードは、`fields`オブジェクトを含む項目です。`fields`オブジェクトには、フィールド名と対応する値が含まれます。フィールド型ごとに値の構造が異なります。詳しくは[レコードフィールドの値の型](/ja/api-doc/record/interface)をご覧ください。
+  * デフォルト値: `fields`から省略したフィールドには、テーブルにデフォルト値が設定されている場合、その値が使用されます。必須フィールドにデフォルト値がない場合、または必須フィールドに明示的に`null`を渡した場合、リクエストは失敗します。
+* **fieldKeyType（任意）**
+  * 説明: フィールドキーの種類を指定します
+  * 型: 文字列
+  * 指定可能な値:
+    * "name": フィールド名をキーとして使用します
+    * "id": フィールドIDをキーとして使用します
+    * "dbFieldName": フィールドのdbFieldNameをキーとして使用します
+  * 例: `"name"`、`"id"`、または`"dbFieldName"`
+  * 注: 指定しない場合、デフォルトではフィールド名がキーとして使用されます。
+  * 使用方法:
+    * "name"に設定した場合:
+      ```json
+      {
+        "fields": {
+          "Name": "John Doe",
+          "Age": 30
+        }
+      }
+      ```
+    * "id"に設定した場合:
+      ```json
+      {
+        "fields": {
+          "fldABCDEFGHIJKLMN": "John Doe",
+          "fldOPQRSTUVWXYZ12": 30
+        }
+      }
+      ```
+* **typecast（任意）**
+  * 説明: フィールド値の型を自動変換するかどうかを指定します。デフォルトでは厳密な検証が適用され、入力値が現在のフィールドのデータ型と一致している必要があります。有効にすると、システムが自動変換を試みます。
+  * 型: ブール値
+  * 指定可能な値: trueまたはfalse
+  * 例: `true`
+  * 注: trueに設定すると、入力値を正しいフィールド値の型へ変換しようとします。
+  * 使用例:
+    * リンクフィールド: 主キーテキストをリンクに直接使用できます
+      ```json
+      {
+        "User table": "John Smith"
+      }
+      ```
+    * 日付フィールド: 標準形式以外の日付文字列を使用できます
+      ```json
+      {
+        "Date": "2023-05-15"
+      }
+      ```
+    * ユーザーフィールド: ユーザー名を直接使用できます
+      ```json
+      {
+        "Assigned To": "John Doe"
+      }
+      ```
+* **order（任意）**
+  * 説明: 特定のビュー内で新しいレコードを配置する位置を指定します
+  * 型: オブジェクト
+  * プロパティ:
+    * viewId
+      * 説明: ビューID（[取得方法](/ja/api-doc/get-id#viewid)）
+      * 型: 文字列
+      * 例: `"viwABCDEFGHIJKLMN"`
+    * anchorId
+      * 説明: 基準となるレコードID（[取得方法](/ja/api-doc/get-id#recordid)）
+      * 型: 文字列
+      * 例: `"rec123456789ABCDE"`
+    * position
+      * 説明: 基準レコードに対する位置
+      * 型: 文字列
+      * 指定可能な値:
+        * "before": 基準レコードの前
+        * "after": 基準レコードの後
+      * 例: `"after"`
+  * 完全な例:
+    ```json
+    {
+      "viewId": "viwABCDEFGHIJKLMN",
+      "anchorId": "rec123456789ABCDE",
+      "position": "after"
+    }
+    ```
+  * 注: orderを使用すると、特定のビュー内で新しいレコードの位置を正確に制御できます。
+
+### レスポンス
+
+#### 成功レスポンス
+
+* ステータスコード: 201 Created
+* レスポンス本文: 作成されたレコードデータを返します。
+
+**レスポンス本文の例**
+
+```json
+{
+  "records": [
+    {
+      "id": "record789",
+      "fields": {
+        "single line text": "text value 1"
+      }
+    },
+    {
+      "id": "record567",
+      "fields": {
+        "single line text": "text value 2"
+      }
+    }
+  ]
+}
+```
+
+### エラーレスポンス
+
+* ステータスコード: 400 Bad Request: リクエスト本文の形式が正しくないか、必須フィールドがありません。
+* ステータスコード: 404 Not Found: 指定したtableIdが存在しません。
+
+### コード例
+
+<CodeGroup>
+  ```bash CURL
+  curl -X POST 'https://app.teable.ai/api/table/__tableId__/record' \
+    -H 'Authorization: Bearer __token__' \
+    -H 'Content-Type: application/json' \
+    -d '{
+      "records": [
+        {
+          "fields": {
+            "Name": "John Doe",
+            "Age": 30
+          }
+        }
+      ]
+    }'
+  ```
+
+  ```js JS SDK
+  import { configApi, createRecords } from '@teable/openapi';
+
+  configApi({
+    endpoint: 'https://app.teable.ai',
+    token,
+  });
+
+  const response = await createRecords('__tableId__', {
+    records: [
+      {
+        fields: {
+          Name: 'John Doe',
+          Age: 30
+        }
+      }
+    ]
+  });
+
+  console.log(response.data);
+  ```
+
+  ```ts TypeScript
+  const response = await fetch('https://app.teable.ai/api/table/__tableId__/record', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer __token__',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      records: [
+        {
+          fields: {
+            Name: 'John Doe',
+            Age: 30
+          }
+        }
+      ]
+    })
+  });
+
+  console.log(await response.json());
+  ```
+
+  ```python Python
+  import requests
+
+  response = requests.post(
+      'https://app.teable.ai/api/table/__tableId__/record',
+      headers={
+          'Authorization': 'Bearer __token__',
+          'Content-Type': 'application/json'
+      },
+      json={
+          'records': [
+              {
+                  'fields': {
+                      'Name': 'John Doe',
+                      'Age': 30
+                  }
+              }
+          ]
+      }
+  )
+
+  print(response.json())
+  ```
+</CodeGroup>

@@ -1,0 +1,212 @@
+---
+title: "Загрузка вложения"
+description: "Загрузка локальных файлов или файлов по URL в конец поля вложений в указанной записи"
+---
+
+### Путь
+
+POST /api/table/\{tableId}/record/\{recordId}/\{fieldId}/uploadAttachment
+
+### Запрос
+
+#### Параметры пути
+
+* tableId (string): Уникальный идентификатор таблицы [(как получить)](/ru/api-doc/get-id#tableid).
+* recordId (string): Уникальный идентификатор обновляемой записи [(как получить)](/ru/api-doc/get-id#recordid).
+* fieldId (string): ID поля вложений, в которое выполняется загрузка [(как получить)](/ru/api-doc/get-id#fieldid)
+
+Поля вложений могут содержать несколько вложений. Этот API позволяет загружать по одному вложению за раз в конец ячейки.
+
+Чтобы удалить или изменить порядок вложений, используйте [API обновления записи](/ru/api-doc/record/update).
+
+fieldId должен быть полем типа «вложение».
+
+Через API размер загружаемых вложений в облачной версии ограничен 100 МБ, а в версии для самостоятельного размещения ограничений нет.
+
+#### Тело запроса
+
+Тип: formData
+
+Параметры:
+
+* **file (необязательно)**
+  * Описание: Данные записи для обновления
+  * Тип: Buffer или ReadStream
+* **fileUrl (необязательно)**
+  * Описание: URL для загрузки
+  * Тип: String
+  * Пример: `https://example.com/image.jpg`
+  * Примечание: Одновременно можно указать только один из параметров file или fileUrl. Если указаны оба, приоритет имеет file.
+
+### Ответ
+
+#### Успешный ответ
+
+* Код состояния: 201 Created
+* Тело ответа: Возвращает обновлённые данные записи.
+
+**Пример тела ответа**
+
+```json
+{
+    "id": "rec123456789ABCDE",
+    "fields": {
+      "fld123456789ABCDE": [
+        {
+          "id": "act75TiSyhcS7hfrizW",
+          "name": "example.jpg",
+          "path": "table/example",
+          "size": 392903,
+          "token": "tokenxxxxx",
+          "width": 976,
+          "height": 1000,
+          "mimetype": "image/jpeg",
+          "presignedUrl": "https://app.teable.ai/preview/previewURL"
+        }
+      ],
+    }
+}
+```
+
+#### Ответы с ошибками
+
+* Код состояния: 400 Bad Request: Ошибка формата тела запроса или отсутствуют обязательные поля.
+* Код состояния: 404 Not Found: Указанные tableId или recordId не существуют.
+
+### Примеры кода
+
+<CodeGroup>
+  ```bash CURL
+  # Загрузка из файла
+
+  curl -X POST 'https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment' \
+    -H 'Authorization: Bearer __token__' \
+    -H 'Content-Type: multipart/form-data' \
+    -F 'file=@/path/to/your/file.jpg'
+
+  # Загрузка по URL
+  curl -X POST 'https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment' \
+    -H 'Authorization: Bearer __token__' \
+    -H 'Content-Type: multipart/form-data' \
+    -F 'fileUrl=https://example.com/image.jpg'
+  ```
+
+  ```js JS SDK
+  import { configApi, uploadAttachment } from '@teable/openapi';
+
+  configApi({
+    endpoint: 'https://app.teable.ai',
+    token: '__token__',
+  });
+
+  // Среда Node.js: загрузка локального файла
+  const fileStream = fs.createReadStream('/path/to/your/file.jpg');
+  const response = await uploadAttachment('__tableId__', '__recordId__', '__fieldId__', fileStream);
+
+  console.log(response.data);
+
+  // Загрузка по URL (работает как в Node.js, так и в браузере)
+  const response = await uploadAttachment('__tableId__', '__recordId__', '__fieldId__', 'https://example.com/image.jpg');
+
+  console.log(response.data);
+
+  // Среда браузера: загрузка файла
+  // Предполагается наличие элемента выбора файла: <input type="file" id="fileInput">
+  document.getElementById('fileInput').addEventListener('change', async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const response = await uploadAttachment('__tableId__', '__recordId__', '__fieldId__', file);
+      console.log(response.data);
+    }
+  });
+  ```
+
+  ```ts TypeScript
+  import FormData from 'form-data';
+  import fs from 'fs';
+
+  // Среда Node.js: загрузка локального файла
+  const formData = new FormData();
+  formData.append('file', fs.createReadStream('/path/to/your/file.jpg'));
+
+  const response = await fetch('https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer __token__',
+      ...formData.getHeaders()
+    },
+    body: formData
+  });
+
+  console.log(await response.json());
+
+  // Загрузка по URL (работает как в Node.js, так и в браузере)
+  const formDataUrl = new FormData();
+  formDataUrl.append('fileUrl', 'https://example.com/image.jpg');
+
+  const responseUrl = await fetch('https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer __token__',
+      ...formDataUrl.getHeaders()
+    },
+    body: formDataUrl
+  });
+
+  console.log(await responseUrl.json());
+
+  // Среда браузера: загрузка файла
+  // Предполагается наличие элемента выбора файла: <input type="file" id="fileInput">
+  document.getElementById('fileInput').addEventListener('change', async (event: Event) => {
+    const fileInput = event.target as HTMLInputElement;
+    const file = fileInput.files?.[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer __token__'
+        },
+        body: formData
+      });
+
+      console.log(await response.json());
+    }
+  });
+  ```
+
+  ```python Python
+  import requests
+  import mimetypes
+  import os
+
+  # Загрузка локального файла
+  file_path = '/path/to/your/file.jpg'
+  with open(file_path, 'rb') as file:
+      file_name = os.path.basename(file_path)
+      mime_type, _ = mimetypes.guess_type(file_path)
+      files = {'file': (file_name, file, mime_type)}
+      response = requests.post(
+          'https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment',
+          headers={
+              'Authorization': 'Bearer __token__'
+          },
+          files=files
+      )
+
+  print(response.json())
+
+  # Загрузка по URL
+  response_url = requests.post(
+      'https://app.teable.ai/api/table/__tableId__/record/__recordId__/__fieldId__/uploadAttachment',
+      headers={
+          'Authorization': 'Bearer __token__'
+      },
+      data={'fileUrl': 'https://example.com/image.jpg'}
+  )
+
+  print(response_url.json())
+  ```
+</CodeGroup>

@@ -1,0 +1,75 @@
+---
+title: "Wenn Datensatz Bedingungen erfüllt"
+description: "Lösen Sie einen Workflow aus, wenn ein Datensatz beginnt, bestimmte Bedingungen zu erfüllen"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Bitte beachten Sie: Die gesamte Einrichtung von Auslösern kann im KI-Chat erfolgen. Teilen Sie der KI mit, was der Workflow tun soll, und sie übernimmt den Rest.</Tip>
+
+Dieser Auslöser wird verwendet, wenn ein Workflow ausgeführt werden soll, sobald ein Datensatz beginnt, bestimmte Bedingungen zu erfüllen.
+
+Er kann in zwei häufigen Fällen ausgelöst werden:
+
+- Ein neuer Datensatz wird erstellt und erfüllt den Filter bereits.
+- Ein vorhandener Datensatz wird bearbeitet und wechselt von „nicht passend“ zu „passend“ für den Filter.
+
+## Mit KI erstellen
+
+Öffnen Sie den KI-Chat in der rechten Seitenleiste Ihrer Tabelle und beschreiben Sie, was Sie möchten.
+
+Die KI übernimmt alles: Sie wählt den richtigen Auslöser aus, ordnet die relevanten Felder zu und richtet automatisch alle Aktionen ein.
+
+Beschreiben Sie Ihr Ziel einmal, und der Workflow ist bereit – eine manuelle Einrichtung ist nicht erforderlich.
+
+**Beispiel:** *„Sende mir eine E-Mail, wenn eine Aufgabe überfällig wird.“*
+
+## Konfiguration
+
+| Einstellung | Erforderlich | Beschreibung |
+|---|---|---|
+| Tabelle | Ja | Die Tabelle, die auf Änderungen überwacht werden soll |
+| Filter | **Ja** | Die Bedingungen, die der Datensatz erfüllen muss. Verwendet denselben Filtereditor wie Ansichten – unterstützt Feldvergleiche, UND-/ODER-Gruppen und dynamische Werte |
+
+## Einrichtung
+
+1. Öffnen Sie Ihre Automatisierung und fügen Sie einen neuen Auslöser hinzu.
+2. Wählen Sie **Wenn Datensatz Bedingungen erfüllt** aus.
+3. Wählen Sie die zu überwachende **Tabelle** aus.
+4. Klicken Sie auf **Filter hinzufügen**, um die Bedingungen festzulegen. Beispiel: `Status` ist gleich `Überfällig` oder `Betrag` ist größer als `10000`.
+5. Sie können wie bei Ansichtsfiltern mehrere Bedingungen mit UND-/ODER-Logik kombinieren.
+6. Speichern und aktivieren Sie die Automatisierung.
+7. Testen Sie sie, indem Sie einen passenden Datensatz erstellen oder einen vorhandenen Datensatz so bearbeiten, dass er von *nicht passend* zu *passend* für Ihren Filter wechselt. Die Automatisierung sollte einmal ausgeführt werden.
+
+<Tip>Nachdem der Auslöser ausgeführt wurde, können nachfolgende Schritte alle Felddaten des passenden Datensatzes verwenden, einschließlich der neuesten Werte zum Zeitpunkt des Übergangs.</Tip>
+
+## Wie unterscheidet sich dies von „Wenn Datensatz aktualisiert wird“?
+
+Diese beiden Auslöser werden leicht verwechselt. Dies ist der entscheidende Unterschied:
+
+- Der Auslöser **Wenn Datensatz aktualisiert wird** wird jedes Mal ausgeführt, wenn sich ein überwachtes Feld ändert, unabhängig vom neuen Wert. Wenn Sie das Feld „Status“ überwachen, wird der Auslöser ausgeführt, wenn der Status zu „In Bearbeitung“, „Erledigt“ oder einem beliebigen anderen Wert wechselt.
+- Der Auslöser **Wenn Datensatz Bedingungen erfüllt** wird nur ausgeführt, wenn ein Datensatz die Grenze zwischen „nicht passend“ und „passend“ für Ihren Filter überschreitet. Er wird nicht bei jeder Bearbeitung, sondern nur beim Übergang ausgeführt.
+
+Verwenden Sie **Wenn Datensatz aktualisiert wird**, wenn Sie auf jede Änderung reagieren müssen. Verwenden Sie **Wenn Datensatz Bedingungen erfüllt**, wenn für Sie nur das Erreichen eines bestimmten Zustands relevant ist.
+
+<Note>Wenn Sie bei jeder Bearbeitung eines Datensatzes eine Aktion ausführen möchten, verwenden Sie den Auslöser [Wenn Datensatz aktualisiert wird](/de/basic/automation/trigger/records/record-updated). Wenn Sie eine Aktion nur einmal ausführen möchten, sobald ein Datensatz erstmals eine bestimmte Bedingung erfüllt, verwenden Sie diesen Auslöser.</Note>
+
+## Anwendungsfälle
+
+- **Benachrichtigen, wenn eine Bestellung überfällig wird.** Legen Sie den Filter auf `Fälligkeitsdatum` liegt vor heute und `Status` ist nicht `Versendet` fest. Die Automatisierung wird einmal ausgeführt, wenn die Bestellung die Bedingungen erstmals erfüllt.
+- **Support-Ticket eskalieren, wenn die Priorität zu dringend wechselt.** Filter: `Priorität` ist gleich `Dringend`. Wird nur ausgeführt, wenn ein Ticket erstmals dringend wird, nicht bei nachfolgenden Bearbeitungen.
+- **Führungskraft benachrichtigen, wenn ein Abschluss einen Umsatzgrenzwert überschreitet.** Filter: `Abschlusswert` ist größer als `50000`. Wird einmal ausgeführt, wenn der Abschluss diese Grenze überschreitet.
+- **Unvollständig gewordene Datensätze kennzeichnen.** Filter: `Pflichtfeld` ist leer. Wird ausgeführt, wenn ein zuvor vollständiger Datensatz seinen Wert verliert.
+- **Onboarding-Schritte auslösen, wenn sich der Status eines Kontakts zu „Aktiv“ ändert.** Filter: `Status` ist gleich `Aktiv`. Wird nur einmal pro Aktivierung ausgeführt.
+
+## Tipps
+
+- Sie **müssen** mindestens eine Filterbedingung festlegen. Andernfalls hat der Auslöser nichts auszuwerten.
+- Der Auslöser prüft den Übergang in dem Moment, in dem ein Datensatz gespeichert wird. Er wird nicht rückwirkend für Datensätze ausgeführt, die bereits vor der Erstellung der Automatisierung die Bedingungen erfüllten.
+- Nach der Aktivierung erstellte Datensätze werden ebenfalls anhand des Filters geprüft. Wenn die Anfangswerte passen, kann der Workflow sofort ausgelöst werden.
+- Kombinieren Sie diesen Auslöser mit einer Aktion **E-Mail senden** oder **Datensatz aktualisieren**, um leistungsfähige Workflows für Zustandsänderungen ohne Programmierung zu erstellen.
+
+## Verwandte Themen
+
+- [Wenn Datensatz aktualisiert wird](/de/basic/automation/trigger/records/record-updated) – wird bei jeder Feldänderung ausgelöst, nicht nur bei Übergängen
+- [Wenn Datensatz erstellt wird](/de/basic/automation/trigger/records/record-created) – wird ausgelöst, wenn neue Datensätze hinzugefügt werden
+- [E-Mail senden](/de/basic/automation/actions/communication/send-email-overview)

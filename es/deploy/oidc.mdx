@@ -1,0 +1,85 @@
+---
+title: "Inicio de sesión único mediante OIDC"
+description: "Configura la autenticación OpenID Connect (OIDC) para tu instancia autoalojada de Teable."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+Teable admite el inicio de sesión único mediante OIDC, lo que permite integrar proveedores de identidad externos para autenticar a los usuarios.
+
+## Variables de entorno
+
+Para activar OIDC en tu Teable autoalojado, configura estas variables de entorno:
+
+```sh
+# Configuración principal de OIDC
+BACKEND_OIDC_CLIENT_ID=your_client_id
+BACKEND_OIDC_CLIENT_SECRET=your_client_secret
+BACKEND_OIDC_CALLBACK_URL=https://your-teable-domain.com/api/auth/oidc/callback
+
+# Endpoints de OAuth (de tu IdP)
+BACKEND_OIDC_AUTHORIZATION_URL=https://your-idp.com/authorize
+BACKEND_OIDC_TOKEN_URL=https://your-idp.com/token
+BACKEND_OIDC_USER_INFO_URL=https://your-idp.com/userinfo
+BACKEND_OIDC_ISSUER=https://your-idp.com
+
+# Opciones adicionales
+BACKEND_OIDC_OTHER={"scope":["email","profile"]}
+
+# Activar OIDC como proveedor de autenticación
+SOCIAL_AUTH_PROVIDERS=oidc
+```
+
+## Referencia de configuración
+
+| Variable | Descripción |
+|----------|-------------|
+| `BACKEND_OIDC_CLIENT_ID` | ID de cliente de tu proveedor de identidad |
+| `BACKEND_OIDC_CLIENT_SECRET` | Secreto de cliente de tu proveedor de identidad |
+| `BACKEND_OIDC_CALLBACK_URL` | URL de devolución de llamada de Teable (debe coincidir con la configuración del IdP) |
+| `BACKEND_OIDC_AUTHORIZATION_URL` | Endpoint de autorización del IdP |
+| `BACKEND_OIDC_TOKEN_URL` | Endpoint de token del IdP |
+| `BACKEND_OIDC_USER_INFO_URL` | Endpoint de información del usuario del IdP |
+| `BACKEND_OIDC_ISSUER` | Identificador del emisor del IdP |
+| `BACKEND_OIDC_OTHER` | Opciones adicionales en formato JSON (por ejemplo, ámbitos) |
+| `SOCIAL_AUTH_PROVIDERS` | Incluye `oidc` para activar el botón de inicio de sesión mediante OIDC |
+
+## Activar varios proveedores de autenticación
+
+Puedes activar varios métodos de autenticación:
+
+```sh
+SOCIAL_AUTH_PROVIDERS=github,google,oidc
+```
+
+Esto permite a los usuarios iniciar sesión mediante GitHub, Google o tu proveedor de OIDC.
+
+---
+
+## Requisitos de seguridad del proveedor de identidad {#identity-provider-security-requirements}
+
+Teable confía en la dirección de correo electrónico que devuelve tu IdP y la utiliza para vincular automáticamente los inicios de sesión mediante OIDC con las cuentas existentes que tengan el mismo correo. El proveedor de identidad que conectes **debe garantizar que las direcciones de correo electrónico de los usuarios estén verificadas**.
+
+<Warning>
+No conectes proveedores de identidad que permitan a los usuarios establecer direcciones de correo electrónico arbitrarias sin verificar (por ejemplo, IdP multiinquilino con registro abierto). Con esos proveedores, un atacante podría registrar una cuenta con la dirección de correo electrónico de un usuario existente de tu instancia y apropiarse de ella iniciando sesión mediante OIDC. El riesgo es especialmente grave si el inicio de sesión local mediante contraseña también está activado en la misma instancia.
+</Warning>
+
+Recomendaciones:
+
+- Conecta únicamente IdP empresariales bajo tu control (como Okta, Azure Entra ID, Google Workspace o Keycloak) que tengan activada la verificación del correo electrónico.
+- Si tu instancia utiliza exclusivamente SSO, establece [`PASSWORD_LOGIN_DISABLED=true`](/es/deploy/env) para desactivar el inicio de sesión local mediante contraseña y reducir aún más la superficie de ataque.
+
+---
+
+## Notas importantes
+
+1. **HTTPS obligatorio**: todas las URL deben utilizar HTTPS en producción
+2. **La URL de devolución de llamada debe coincidir**: la URL de devolución de llamada de Teable debe coincidir exactamente con la configurada en tu IdP
+3. **Es necesario reiniciar**: después de modificar las variables de entorno, reinicia Teable para que los cambios surtan efecto
+4. **Almacenamiento seguro**: no incorpores nunca secretos al control de versiones; utiliza variables de entorno o gestores de secretos
+5. **El IdP debe verificar los correos electrónicos**: consulta los [Requisitos de seguridad del proveedor de identidad](#identity-provider-security-requirements) anteriores
+
+---
+
+## Documentación relacionada
+
+- [Referencia de variables de entorno](/es/deploy/env)

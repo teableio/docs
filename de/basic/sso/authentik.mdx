@@ -1,0 +1,197 @@
+---
+title: "Authentik SSO"
+description: "Konfigurieren Sie Authentik als Ihren SSO-Authentifizierungsanbieter für Teable"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Verfügbar ab dem Business-Plan</Tip>
+
+## Schritt 1: Authentifizierungsanbieter in Teable erstellen
+
+1. Navigieren Sie zu Ihren Teable-SSO-Einstellungen.
+2. Erstellen Sie einen neuen Authentifizierungsanbieter, nennen Sie ihn **Authentik**, und wählen Sie **OpenID Connect** aus.
+
+## Schritt 2: Authentik-Admin-Oberfläche aufrufen
+
+1. Melden Sie sich bei der Admin-Oberfläche Ihrer Authentik-Instanz an.
+2. Die Standard-URL lautet in der Regel `https://your-authentik-domain/if/admin/`.
+3. Melden Sie sich mit Ihren Administratoranmeldedaten an.
+
+## Schritt 3: Einen neuen Provider erstellen
+
+1. Navigieren Sie im linken Menü zu **Applications** → **Providers**.
+2. Klicken Sie auf die Schaltfläche **Create**.
+3. Wählen Sie **OAuth2/OpenID Provider** aus.
+4. Konfigurieren Sie die Provider-Einstellungen:
+
+### Grundeinstellungen
+
+- **Name**: Teable SSO Provider
+- **Authorization flow**: Wählen Sie Ihren bevorzugten Ablauf (in der Regel **default-authentication-flow**).
+- **Client type**: **Confidential**
+- **Client ID**: (Automatisch generiert; Sie können sie bei Bedarf anpassen.)
+- **Client Secret**: (Automatisch generiert; kopieren Sie diesen Wert.)
+
+### Weiterleitungs-URIs
+
+- **Redirect URIs/Origins (RegEx)**: Fügen Sie die **Callback-URL** aus Teable ein.
+  - Für eine exakte Übereinstimmung: `https://app.teable.ai/api/auth/authentication/__providerId__/callback`
+  - Für ein Regex-Muster: `https://app\.teable\.ai/api/auth/authentication/.*/callback`
+
+<Note>Ersetzen Sie `__providerId__` in der URL durch die providerId, die nach dem Erstellen des Authentifizierungsanbieters in Teable angezeigt wird, oder kopieren Sie die Callback-URL direkt von der Teable-Seite.</Note>
+
+### Erweiterte Einstellungen
+
+- **Scopes**: Stellen Sie sicher, dass die folgenden Scopes verfügbar sind:
+  - `openid`
+  - `email`
+  - `profile`
+- **Subject mode**: **Based on the User's hashed ID**
+- **Include claims in id_token**: Aktivieren Sie diese Option.
+
+Klicken Sie auf **Finish**, um den Provider zu erstellen.
+
+## Schritt 4: Client-Anmeldedaten speichern
+
+Nach dem Erstellen des Providers:
+
+1. Kopieren Sie die **Client ID** aus den Provider-Details.
+2. Kopieren Sie das **Client Secret** (dies wird bei der Erstellung nur einmal angezeigt).
+3. Fügen Sie beide Werte in die Teable-SSO-Konfiguration ein.
+
+<Warning>Bewahren Sie das Client Secret sicher auf. Sie können es bei Bedarf später neu generieren.</Warning>
+
+## Schritt 5: Eine Anwendung erstellen
+
+1. Navigieren Sie im linken Menü zu **Applications** → **Applications**.
+2. Klicken Sie auf die Schaltfläche **Create**.
+3. Konfigurieren Sie die Anwendung:
+   - **Name**: Teable
+   - **Slug**: `teable` (oder Ihr bevorzugter Slug)
+   - **Provider**: Wählen Sie den **Teable SSO Provider**, den Sie in Schritt 3 erstellt haben.
+   - **Launch URL**: (Optional) `https://app.teable.ai`
+   - **UI settings**: (Optional) Laden Sie das Teable-Logo hoch und passen Sie das Erscheinungsbild an.
+
+Klicken Sie auf **Create**, um den Vorgang abzuschließen.
+
+## Schritt 6: OAuth-Endpunkte konfigurieren
+
+Tragen Sie in Teable mithilfe Ihrer Authentik-Domain die folgenden OAuth-Endpunkte ein:
+
+- **Authorization URL**: `https://{your-authentik-domain}/application/o/authorize/`
+- **Token URL**: `https://{your-authentik-domain}/application/o/token/`
+- **User Info URL**: `https://{your-authentik-domain}/application/o/userinfo/`
+- **Issuer**: `https://{your-authentik-domain}/application/o/{application-slug}/`
+
+<Note>Ersetzen Sie `{your-authentik-domain}` durch die tatsächliche Domain Ihrer Authentik-Instanz und `{application-slug}` durch den konfigurierten Slug (z. B. `teable`).</Note>
+
+## Schritt 7: Anwendungszugriff konfigurieren
+
+### Bestehenden Ablauf erstellen oder verwenden
+
+1. Navigieren Sie zu **Flows & Stages** → **Flows**.
+2. Sie können die Standardabläufe verwenden oder benutzerdefinierte Abläufe erstellen.
+3. Typischerweise benötigte Abläufe:
+   - **Authentication flow**: Für die Benutzeranmeldung
+   - **Authorization flow**: Für die OAuth2/OIDC-Autorisierung
+
+### Zugriffsrichtlinie zuweisen (optional)
+
+1. Kehren Sie zu Ihren Anwendungseinstellungen zurück.
+2. Scrollen Sie zum Abschnitt **Policy / Group / User Bindings**.
+3. Klicken Sie auf **Bind existing policy**, um den Zugriff anhand der folgenden Kriterien einzuschränken:
+   - **Groups**: Nur bestimmte Gruppen zulassen
+   - **Users**: Nur bestimmte Benutzer zulassen
+   - **Custom policies**: Komplexe Zugriffsregeln erstellen
+
+## Schritt 8: Scopes und Claims konfigurieren (optional)
+
+### Scopes prüfen
+
+1. Navigieren Sie zu **Customization** → **Property Mappings**.
+2. Prüfen Sie die **Scope Mappings** für OAuth2/OIDC.
+3. Stellen Sie sicher, dass die folgenden Scopes die richtigen Claims enthalten:
+   - `openid`: Enthält den Claim `sub`
+   - `email`: Enthält `email` und `email_verified`
+   - `profile`: Enthält `name`, `given_name`, `family_name` usw.
+
+### Benutzerdefinierte Claims hinzufügen
+
+Wenn Sie benutzerdefinierte Benutzerattribute benötigen:
+
+1. Navigieren Sie zu **Customization** → **Property Mappings**.
+2. Klicken Sie auf **Create** → **Scope Mapping**.
+3. Definieren Sie Ihre benutzerdefinierten Claims:
+   - **Name**: Name des benutzerdefinierten Claims
+   - **Scope name**: Scope-Kennung (z. B. `custom_claims`)
+   - **Expression**: Python-Ausdruck zum Extrahieren von Benutzerdaten
+4. Hängen Sie den Scope an Ihren Provider an.
+
+## Schritt 9: SSO-Anmeldung testen
+
+Sie haben zwei Möglichkeiten, die SSO-Anmeldung zu aktivieren:
+
+**Option 1: Direkte Authentifizierungs-URL**
+- Verwenden Sie die Autorisierungs-URL als Ihre SSO-Anmelde-URL.
+- Benutzer werden zur Authentifizierung zu Authentik weitergeleitet.
+
+**Option 2: Domainverifizierung**
+1. Konfigurieren Sie in Teable die Domainverifizierung.
+2. Verifizieren Sie Ihre benutzerdefinierte Domain.
+3. Rufen Sie https://app.teable.ai auf.
+4. Klicken Sie auf die Schaltfläche für die SSO-Anmeldung.
+5. Geben Sie Ihre E-Mail-Adresse unter der verifizierten Domain ein, um sich anzumelden.
+
+## Zusätzliche Konfiguration (optional)
+
+### Multi-Faktor-Authentifizierung konfigurieren
+
+1. Navigieren Sie zu **Flows & Stages** → **Stages**.
+2. Erstellen Sie MFA-Phasen (z. B. TOTP, WebAuthn, SMS).
+3. Navigieren Sie zu **Flows & Stages** → **Flows**.
+4. Bearbeiten Sie Ihren Authentifizierungsablauf.
+5. Fügen Sie dem Ablauf MFA-Phasen hinzu.
+6. Konfigurieren Sie MFA-Richtlinien und Bindungen.
+
+### Benutzerregistrierung einrichten
+
+1. Navigieren Sie zu **Flows & Stages** → **Flows**.
+2. Erstellen oder bearbeiten Sie einen Registrierungsablauf.
+3. Fügen Sie Phasen hinzu für:
+   - Erfassung von Benutzerdetails
+   - E-Mail-Verifizierung
+   - Passworteinrichtung
+4. Verknüpfen Sie den Registrierungsablauf mit Ihrer Anwendung.
+
+### Passwortrichtlinien konfigurieren
+
+1. Navigieren Sie zu **Flows & Stages** → **Policies**.
+2. Erstellen Sie Passwortrichtlinien mit Anforderungen wie:
+   - Mindestlänge
+   - Komplexitätsanforderungen
+   - Passworthistorie
+   - Ablaufrichtlinien
+
+### Sitzungsverwaltung aktivieren
+
+1. Navigieren Sie zu **Events** → **Sessions**.
+2. Überwachen Sie aktive Benutzersitzungen.
+3. Konfigurieren Sie die Einstellungen für das Sitzungs-Timeout unter **System** → **Settings**.
+
+### Benutzerdefiniertes Branding
+
+1. Navigieren Sie zu **Customization** → **Tenants**.
+2. Bearbeiten Sie Ihre Tenant-Einstellungen.
+3. Passen Sie Folgendes an:
+   - Logo und Favicon
+   - Theme-Farben
+   - Fußzeilentext und Links
+4. Benutzer sehen Ihr Branding, wenn sie sich über Authentik anmelden.
+
+### Audit-Protokollierung aktivieren
+
+1. Navigieren Sie zu **Events** → **Logs**.
+2. Prüfen Sie Authentifizierungsereignisse und Fehler.
+3. Richten Sie Benachrichtigungsregeln für wichtige Ereignisse ein.
+4. Konfigurieren Sie Richtlinien zur Aufbewahrung von Ereignissen unter **System** → **Settings**.
+

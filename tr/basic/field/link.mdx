@@ -1,0 +1,63 @@
+---
+title: "Bağlantı"
+description: "Tablolar arasında ilişkiler oluşturun ve geçerli kayıtta başka bir tablodan kayıtlar seçin."
+---
+
+{/* mintlify-resync: 2026-05-26 */}
+Bağlantı alanı iki tabloyu birbirine bağlar. Bir Bağlantı alanıyla, geçerli tabloda başka bir tablodan kayıtlar seçebilir ve gerektiğinde bağlantılı kayıtları açabilirsiniz. **Arama** ve **Toplama** alanlarını kullanabilmek için de Bağlantı alanları gereklidir.
+
+## Kullanım Alanları
+
+| Senaryo | Uygun olduğu durumlar |
+| --- | --- |
+| Müşteriler ve siparişler | Siparişler tablosundaki müşterileri bağlama ve müşteri tablosundan ilgili siparişleri görüntüleme |
+| Projeler ve görevler | Bir görevi projesine bağlama ve bir projenin altındaki tüm görevleri görüntüleme |
+| Öğrenciler ve dersler | Ders kayıtlarını, proje üyelerini veya diğer çoka çok ilişkileri izleme |
+| Satır kalemleri ve üst kayıtlar | Sipariş satır kalemlerini bir siparişe bağlama, ardından fiyatları arama veya toplamları hesaplama |
+
+## Oluşturma ve Yapılandırma
+
+<Steps>
+  <Step title="Alan türünü seçin">
+    Geçerli tabloda alan ekleme seçeneğine tıklayın ve **Bağlantı**'yı seçin.
+  </Step>
+  <Step title="Hedef tabloyu seçin">
+    Yapılandırma iletişim kutusunda bağlanılacak tabloyu seçin; örneğin siparişler tablosunu müşteriler tablosuna bağlayın.
+  </Step>
+  <Step title="Bağlantı modunu seçin">
+    Gereksiniminize göre tek yönlü veya iki yönlü bağlantıyı seçin.
+  </Step>
+  <Step title="İlişki kurallarını yapılandırın">
+    Bire bir, bire çok, çoka bir veya çoka çok ilişkileri yapılandırmak için **Çoklu seçime izin ver** ve **Yinelenen değerlere izin ver** seçeneklerini kullanın.
+  </Step>
+</Steps>
+
+## Tek Yönlü ve İki Yönlü Bağlantılar
+
+| Mod | Açıklama | En uygun olduğu durumlar |
+| --- | --- | --- |
+| İki yönlü bağlantı | Varsayılan olarak etkindir. Bir bağlantı alanı oluşturduğunuzda Teable, hedef tabloda buna karşılık gelen bir bağlantı alanı oluşturur ve iki taraf eşitlenmiş durumda kalır | Siparişler ve müşteriler ya da projeler ve görevler gibi her iki tablodan da görüntülenmesi gereken ilişkiler |
+| Tek yönlü bağlantı | İki yönlü seçeneği kapalıyken yalnızca geçerli tablo bağlantılı kayıtları gösterir. Hedef tabloya ters yönlü bir alan eklenmez | Yalnızca başka bir tabloya başvurmanız ve hedef tablonun yapısını değiştirmemeniz gereken durumlar |
+
+## İlişki Türleri
+
+Dört yaygın ilişki türünü tanımlamak için **Çoklu seçime izin ver** ve **Yinelenen değerlere izin ver** seçeneklerini birlikte kullanın:
+
+| İlişki | İş örneği | Yapılandırma |
+| :--- | :--- | :--- |
+| **Bire bir (1:1)** | **Çalışan - Profil**<br />Bir çalışanın bir profili vardır ve bir profil bir çalışana aittir | ☐ Çoklu seçime izin ver<br />☐ Yinelenen değerlere izin ver<br />*(iki seçenek de kapalı)* |
+| **Bire çok (1:N)** | **Departman - Çalışan**<br />Bir departmanın birden çok çalışanı vardır, ancak her çalışan bir departmana aittir | ☑ Çoklu seçime izin ver<br />☐ Yinelenen değerlere izin ver<br />*(yalnızca çoklu seçime izin ver)* |
+| **Çoka bir (N:1)** | **Görev - Proje**<br />Birden çok görev bir projeye aittir, ancak her görev yalnızca bir projeye aittir | ☐ Çoklu seçime izin ver<br />☑ Yinelenen değerlere izin ver<br />*(yalnızca yinelenen değerlere izin ver)* |
+| **Çoka çok (N:N)** | **Öğrenci - Ders**<br />Bir öğrenci birden çok ders alabilir ve bir dersin birden çok öğrencisi olabilir | ☑ Çoklu seçime izin ver<br />☑ Yinelenen değerlere izin ver<br />*(iki seçenek de açık)* |
+
+## Yaygın Kullanımlar
+
+- **CRM müşteri yönetimi**: Bir şirketin birden çok kişiyle bağlanabilmesi için `Şirketler` tablosunda `Kişiler` tablosuna giden bir bağlantı alanı oluşturun.
+- **Proje görevi atama**: Her görevin bir projeye ait olması ve proje tablosunda ilgili görevlerin gösterilebilmesi için `Görevler` tablosunda `Projeler` tablosuna giden bir bağlantı alanı oluşturun.
+- **Sipariş satır kalemleri**: `Siparişler` tablosunu `Ürünler` tablosuna bağlayın, ardından fiyatları göstermek için arama alanlarını ve sipariş toplamlarını hesaplamak için toplama alanlarını kullanın.
+
+## Notlar
+
+- **Bire çok sınırları**: Kesin bir bire çok ilişkide, Tablo B tarafında çoklu seçim kapalıyken bir Tablo A kaydıyla bağlanan Tablo B kaydı diğer Tablo A kayıtları tarafından seçilemez. Bu, kimlik numaraları veya çalışan profilleri gibi yeniden kullanılmaması gereken veriler için uygundur.
+
+<Info>Bağlantı alanları yalnızca aynı Alan içindeki tabloları birbirine bağlayabilir. Arama, Toplama, Koşullu Arama ve Koşullu Toplama alanları da aynı Alandaki kaynak verileri gerektirir.</Info>

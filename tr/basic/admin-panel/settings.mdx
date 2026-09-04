@@ -1,0 +1,103 @@
+---
+title: "Örnek Ayarları"
+description: "Örnek düzeyindeki anahtarları, e-posta ayarlarını ve bekleyen sistem öğelerini yönetin."
+---
+
+<Tip>Kendi sunucunuzda barındırılan Business ve üzeri planlarda kullanılabilir</Tip>
+
+Yol: Yönetici Paneli → Örnek Ayarları
+
+**Örnek Ayarları** sayfası; **Genel Ayarlar**, **E-posta** ve **Bekleyen yapılandırma** panelinde gösterilen sistem denetimleri dahil olmak üzere tüm örneğin temel ayarlarını yönetmek için kullanılır.
+
+## Genel Bakış
+
+Bu sayfa temel olarak örnek düzeyindeki ayarları kapsar. Ana ayarlar aşağıdaki şekilde gruplandırılır:
+
+| Ayar türü | Açıklama |
+|------|------|
+| **Genel Ayarlar** | **Yeni hesap oluşturmaya izin ver**, **Yasaklı e-posta alan adları**, **Alan davetleri göndermeye izin ver**, **Herkesin yeni Alan oluşturmasına izin ver** ve **E-posta doğrulamasını etkinleştir** seçeneklerini içerir |
+| **E-posta** | Parola sıfırlama, e-posta doğrulama, bildirim e-postaları ve davet e-postaları için **Bildirim E-postası** ve **Otomasyon E-postası** seçeneklerini içerir |
+| **Sistem sınırları** | Örnek için geçerli Tablo verisi, Alan, Görünüm ve metin sınırlarını gösterir |
+
+Sistem e-postalarını etkinleştirmek için **E-posta** bölümündeki kurulumu tamamlayın.
+
+Listelenen alan adlarından gelen e-posta adreslerinin kaydolmasını önlemek için **Yasaklı e-posta alan adları** seçeneğini kullanın. Teable, kayıt doğrulama kodu göndermeden önce bu alan adlarını reddeder ve bu alan adlarını içeren davet e-postaları gönderilmez.
+
+<Tip>
+E-posta tam olarak yapılandırılmamışsa **Bekleyen yapılandırma** panelindeki **E-posta** öğesi yeşile dönmez.
+</Tip>
+
+## Sistem sınırları
+
+**Sistem sınırları**, Tablo verileri ve ilgili yapılandırmalar için geçerli örnek düzeyi sınırlarını gösterir. Bir sınırı ayarlamanız gerekiyorsa bu sayfada gösterilen ortam değişkenini kullanın.
+
+<Note>
+Bir ortam değişkenini değiştirdikten sonra yeni değerin geçerli olması için hizmeti yeniden başlatın.
+</Note>
+
+## Bekleyen yapılandırma
+
+Sağdaki **Bekleyen yapılandırma** paneli bir sistem kontrol listesidir. Örnekte hangi önemli ayarların hâlâ eksik olduğunu gösterir.
+
+Bu sayfadaki yaygın denetimler şunlardır:
+
+| Öğe | Etkisi |
+|------|------|
+| **PUBLIC_ORIGIN ortam değişkeni** | Ekler ve içe aktarma gibi harici erişim URL'sine dayanan özellikleri etkiler |
+| **HTTPS'yi etkinleştir** | Kopyalama ve yapıştırma gibi HTTPS'ye dayanan özellikleri etkiler |
+| **E-posta** | Parola sıfırlama, e-posta doğrulama, bildirimler ve benzer özellikleri etkiler |
+
+Bu öğeler tamamlanmazsa örnek normal biçimde açılabilir ancak bazı özellikler kullanılamayabilir.
+
+## AI Ayarlarıyla İlişkisi
+
+**Örnek Ayarları** sistem düzeyindeki denetimlerin bir bölümünü gösterir ancak **AI modellerini**, **AI Chat çalışma zamanını** veya **App Builder'ı** burada yapılandırmazsınız.
+
+Bu ayarlar için şu bölüme gidin:
+
+- [AI Ayarları](/tr/basic/admin-panel/ai-setting)
+
+Ayrımı şöyle düşünebilirsiniz:
+
+- **Örnek Ayarları**: Örneğin kendi temel özelliklerini kapsar
+- **AI Ayarları**: AI Chat, AI Alanları, AI otomasyonu ve App Builder'ı kapsar
+
+## Denetim sırası
+
+Kendi sunucunuzda barındırılan yeni bir dağıtım hazırlıyor veya ilk kez kullanıma alıyorsanız şu öğeleri sırayla kontrol edin:
+
+<Steps>
+  <Step title="Erişim URL'sini kontrol edin">
+    **PUBLIC_ORIGIN** değerinin doğru yapılandırıldığından emin olun.
+  </Step>
+  <Step title="HTTPS'yi kontrol edin">
+    Örnekte **HTTPS**'nin etkinleştirildiğinden emin olun.
+  </Step>
+  <Step title="E-postayı kontrol edin">
+    **SMTP**'nin yapılandırıldığından ve e-postaları başarıyla gönderebildiğinden emin olun.
+  </Step>
+  <Step title="AI Ayarlarıyla devam edin">
+    Temel öğeleri doğruladıktan sonra [AI Ayarları](/tr/basic/admin-panel/ai-setting) ile devam edin.
+  </Step>
+</Steps>
+
+Bu sıra, **Bekleyen yapılandırma** öğelerini sırayla yeşile dönüştürmeyi kolaylaştırır ve sorun gidermeye yardımcı olur.
+
+## SSS
+
+<AccordionGroup>
+<Accordion title="Örnek normal açılıyor ancak sağ tarafta hâlâ tamamlanmamış öğeler var">
+
+Bu genellikle örneğe erişilebildiği ancak bir veya daha fazla önemli çalışma zamanı gereksiniminin hâlâ eksik olduğu anlamına gelir. Yalnızca sayfanın açılıp açılmadığına güvenmek yerine sağdaki panelde yer alan istemleri izleyip bunları tek tek tamamlayın.
+</Accordion>
+
+<Accordion title="E-posta bazen çalışıyor ancak E-posta hâlâ tamamlanmış olarak işaretlenmiyor">
+
+Kaydedilen SMTP ayarlarının eksiksiz olup olmadığını, amaçlanan gönderim amacıyla eşleşip eşleşmediğini ve doğrulama veya bildirim e-postalarının güvenilir biçimde gönderilip gönderilemediğini kontrol edin.
+</Accordion>
+
+<Accordion title="PUBLIC_ORIGIN neden önemlidir?">
+
+Harici erişim URL'sine dayanan birçok özellik bu değere bağlıdır. Yapılandırılan değer gerçek erişim URL'siyle eşleşmezse içe aktarma, ek veya yönlendirme gibi özellikler doğru çalışmayabilir.
+</Accordion>
+</AccordionGroup>

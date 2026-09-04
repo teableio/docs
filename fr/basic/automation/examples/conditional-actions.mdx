@@ -1,0 +1,37 @@
+---
+title: "Exécuter différentes actions selon les valeurs d’un enregistrement"
+description: "Utilisez une logique conditionnelle pour créer des branches dans votre flux de travail et exécuter différentes actions selon les valeurs des champs"
+---
+
+<Tip>Nous vous recommandons de créer les exemples d’automatisation directement dans le Chat IA. Décrivez simplement le flux de travail souhaité : l’IA se chargera de toute la configuration, y compris du déclencheur, des actions, du script et des paramètres.</Tip>
+
+## Créer avec l’IA
+
+Ouvrez le Chat IA dans la barre latérale droite de votre table et indiquez à l’IA ce que vous souhaitez. Par exemple, vous pouvez dire :
+
+*"Lorsqu’un nouveau ticket est créé, vérifie le champ Priorité. S’il est défini sur Urgent, envoie un e-mail à l’équipe d’astreinte. Sinon, envoie un e-mail à la file d’assistance générale"*
+
+L’IA créera automatiquement le flux de travail complet. Vous pourrez examiner le script généré, le tester avec des données réelles et activer le flux de travail lorsqu’il sera prêt.
+
+## Configuration manuelle
+
+1. **Créez un flux de travail** avec le déclencheur **Lorsqu’un enregistrement est créé**.
+2. Sélectionnez votre table **Tickets**.
+3. Cliquez sur **Tester** pour obtenir un exemple d’enregistrement.
+4. **Ajoutez un nœud Condition**.
+5. Définissez la règle : **Priorité** `est` **Urgent**.
+6. Cliquez sur **Tester**.
+7. **Sur la branche vraie** → ajoutez une action **Envoyer un e-mail** :
+   - À : `oncall@yourcompany.com`
+   - Objet : `Ticket urgent : ` + titre du ticket (via **+**)
+   - Corps : description du ticket (via **+**)
+8. **Sur la branche fausse** → ajoutez une action **Envoyer un e-mail** :
+   - À : `support@yourcompany.com`
+   - Objet : `Nouveau ticket : ` + titre du ticket
+   - Corps : description du ticket
+9. Testez les deux branches, puis **activez** le flux de travail.
+
+## Conseils
+
+- Vous pouvez imbriquer des conditions : ajoutez une autre condition dans la branche fausse pour distinguer la priorité « Élevée » de la priorité « Faible ».
+- Combinez les règles avec ET/OU, par exemple : `Priorité est Urgent ET Responsable est vide`.

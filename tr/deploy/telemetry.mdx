@@ -1,0 +1,40 @@
+---
+title: "Telemetri"
+description: "Kendi sunucunuzda barındırılan Teable telemetrisinin nasıl çalıştığını, hangi verilerin bildirildiğini ve nasıl devre dışı bırakılacağını öğrenin."
+---
+
+## Genel Bakış
+
+Geçerli bir Lisans Anahtarı alıp girdikten sonra lisans etkinleştirme çevrimdışı çalışabilir.
+
+Kendi sunucunuzda barındırılan bir örnek İnternet'e erişebiliyorsa lisans uyumluluğu, güvenlik incelemesi, dolandırıcılığın önlenmesi ve yetkisiz dağıtımların araştırılması için asgari düzeyde bir telemetri raporu gönderebilir.
+
+Bu telemetri, isteğe bağlı ürün analizlerinden ayrıdır. Kendi kendine yönetilen yazılımlardaki yaygın hizmet sinyali, lisans doğrulama ve anonim kullanım raporlama uygulamalarına benzer şekilde, kendi sunucusunda barındırma yönetimi ve uyumluluk için tasarlanmıştır.
+
+## Bildirilebilecek Veriler
+
+Telemetri raporları; Örnek Kimliği ve lisans yüklüyse Lisans Kimliği gibi ürün yetkilendirme tanımlayıcılarını; mevcut olduğunda lisans planını, koltuk sınırını ve sona erme tarihlerini; yazılım sürümünü, uygulama sürümünü, derleme sürümünü, imaj özetini ve derleme kanalını; toplu kullanım sayılarını ve aralıklarını; örneğin son etkinlik zamanını; karma oluşturulmuş genel kaynak ana bilgisayar adını ve makine ana bilgisayar adını; platformu, CPU mimarisini ve Node.js sürümünü ve uyumluluk riski sinyallerini içerebilir.
+
+Örnek Kimliği ve Lisans Kimliği gibi ürün yetkilendirme tanımlayıcıları, dağıtımı ve lisans durumunu doğrulamak için kullanıldığından özgün biçimleriyle gönderilebilir.
+
+Genel kaynak ana bilgisayar adı ve makine ana bilgisayar adı gibi müşteriyi veya ana bilgisayarı tanımlayan değerlerin karma değerleri iletimden önce oluşturulur.
+
+## Bildirilmeyen Veriler
+
+Telemetri raporları; müşteri çalışma alanı içeriğini, tablo kayıtlarını, şema adlarını, alan değerlerini, SQL sorgularını, uygulama gizli anahtarlarını, erişim kimlik bilgilerini, kimlik doğrulama belirteçlerini, Lisans Anahtarlarını, kullanıcı e-posta listelerini, kullanıcı adlarını veya genel kaynak URL'sinin tamamını içermez.
+
+## İletim ve Saklama
+
+Telemetri raporları aktarım sırasında şifrelenir.
+
+Teable, ham telemetri olaylarını yalnızca lisans uyumluluğu, güvenlik incelemesi, dolandırıcılığın önlenmesi, uyuşmazlıkların ele alınması ve denetim amaçları için makul ölçüde gerekli olduğu sürece saklar. Teable, toplu veya türetilmiş uyumluluk durumunu müşteri ilişkisi boyunca ve yasaların gerektirdiği saklama süresince muhafaza edebilir.
+
+## Telemetri Raporlamasını Devre Dışı Bırakma
+
+Kendi sunucusunda barındırma yöneticileri şu ayarı yaparak telemetri raporlamasını devre dışı bırakabilir:
+
+```env
+TELEMETRY_REPORT_DISABLED=true
+```
+
+Telemetri raporlamasını devre dışı bırakmak çevrimdışı lisans etkinleştirmeyi tek başına engellemez; ancak Teable'ın lisans uyumluluğunu doğrulama, yetkisiz dağıtımları algılama veya lisans uyuşmazlıklarını araştırma becerisini sınırlayabilir.

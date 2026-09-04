@@ -1,0 +1,96 @@
+---
+title: "Lorsqu’un enregistrement est mis à jour"
+description: "Déclenchez un flux de travail lorsqu’un enregistrement existant est modifié"
+---
+
+<Tip>Remarque : vous pouvez configurer tous les déclencheurs dans le Chat IA. Indiquez à l’IA ce que le flux de travail doit accomplir et elle se chargera du reste.</Tip>
+
+Ce déclencheur s’exécute lorsqu’un enregistrement existant est modifié. Il ne s’exécute pas lors de sa création.
+
+## Créer avec l’IA
+
+Ouvrez le Chat IA dans la barre latérale droite de votre table et décrivez ce que vous souhaitez.
+
+L’IA s’occupe de tout : elle choisit le bon déclencheur, associe les champs pertinents et configure automatiquement toutes les actions.
+
+Décrivez une seule fois votre objectif et le flux de travail est prêt, sans aucune configuration manuelle.
+
+**Exemple :** *"Lorsque le champ Statut change, envoie un e-mail au responsable."*
+
+## Configuration
+
+| Paramètre | Obligatoire | Description |
+|---|---|---|
+| Table | Oui | Table dans laquelle les changements doivent être surveillés |
+| Champs surveillés | Oui | Choisissez les champs précis à surveiller, ou sélectionnez « Tous les champs » pour déclencher le flux lors de n’importe quel changement |
+| Filtre | Non | Déclenche le flux uniquement si l’enregistrement mis à jour remplit ces conditions après la modification |
+
+## Procédure de configuration
+
+1. Ouvrez votre automatisation et ajoutez un nouveau déclencheur.
+2. Sélectionnez **Lorsqu’un enregistrement est mis à jour**.
+3. Choisissez la **Table** à surveiller.
+4. Dans **Champs surveillés**, sélectionnez un ou plusieurs champs précis. Par exemple, choisissez uniquement « Statut » si vous souhaitez réagir aux changements de statut.
+5. (Facultatif) Ajoutez un **Filtre** pour limiter davantage les mises à jour qui exécutent le déclencheur. Par exemple, si `Statut` est égal à `Terminé`, le déclencheur ne s’exécutera que lorsque le statut d’un enregistrement devient « Terminé ».
+6. Enregistrez et activez l’automatisation.
+7. Ajoutez vos étapes d’action. Cliquez sur **+** dans n’importe quel champ d’action pour insérer les valeurs de l’enregistrement mis à jour.
+
+## Comprendre les champs surveillés
+
+Le paramètre Champs surveillés est l’élément le plus important de ce déclencheur :
+
+- **Champs précis (recommandé) :** sélectionnez uniquement les champs qui vous intéressent. Le déclencheur ne s’exécute que lorsque l’un d’eux change. Toutes les autres modifications apportées à l’enregistrement sont ignorées.
+- **Tous les champs :** le déclencheur s’exécute dès qu’un champ *quelconque* de l’enregistrement change. Cela inclut les champs calculés, les horodatages de dernière modification et les modifications mineures qui ne vous intéressent peut-être pas.
+
+**Pourquoi est-il généralement préférable de choisir des champs précis ?**
+
+- Le nombre d’exécutions inutiles du déclencheur diminue, ce qui évite de gaspiller des exécutions d’automatisation.
+- Cela empêche les boucles accidentelles (voir ci-dessous).
+- L’objectif de votre automatisation devient plus clair pour toute personne qui la consulte.
+
+Choisissez « Tous les champs » uniquement si vous devez réellement réagir à tous les changements possibles, par exemple pour constituer un journal d’audit complet.
+
+<Tip>Il est vivement recommandé de sélectionner des champs surveillés précis. Si vous sélectionnez « Tous les champs », le flux de travail peut s’exécuter lors de modifications sans rapport avec son objectif, gaspiller des exécutions d’automatisation et produire des résultats inattendus.</Tip>
+
+### Champs calculés
+
+Les valeurs [Formule](/fr/basic/field/formula), [Recherche](/fr/basic/field/lookup), [Agrégation](/fr/basic/field/rollup), [Recherche conditionnelle](/fr/basic/field/conditional-lookup) et [Agrégation conditionnelle](/fr/basic/field/conditional-rollup) proviennent des calculs de Teable plutôt que d’une saisie manuelle. Leur recalcul ne déclenche ce flux que si vous indiquez le champ calculé dans **Champs surveillés**. Ces cinq types de champs se comportent de la même manière.
+
+Vous pouvez ainsi réagir à un résultat dérivé plutôt qu’aux données brutes dont il dépend. Surveillez un champ Formule `Montant total` : le flux de travail s’exécute chaque fois que le total change réellement, quel que soit le champ sous-jacent modifié. Surveillez une Agrégation de tâches liées : le flux s’exécute lorsque la valeur agrégée change, y compris si le changement provient d’une modification dans la table liée.
+
+## Piège courant : les boucles de mise à jour
+
+<Warning>Si votre flux de travail comprend une action Mettre à jour l’enregistrement qui écrit dans la même table et modifie un champ surveillé, le déclencheur s’exécute de nouveau, ce qui crée une boucle infinie.</Warning>
+
+Si votre automatisation est déclenchée par les mises à jour d’une table et comprend également une action **Mettre à jour l’enregistrement** qui réécrit dans la *même table*, vous pouvez créer une boucle infinie :
+
+1. Un champ change → le déclencheur s’exécute.
+2. L’automatisation met à jour un autre champ du même enregistrement → le déclencheur s’exécute de nouveau.
+3. Le cycle se répète indéfiniment.
+
+**Comment éviter ce problème :**
+
+- Surveillez uniquement des champs précis et vérifiez que votre action Mettre à jour l’enregistrement écrit dans des champs *différents* de ceux qui sont surveillés.
+- Utilisez une condition de filtre pour interrompre la boucle. Par exemple, déclenchez le flux uniquement lorsque `Statut` est différent de `Traité`, puis demandez à votre action de définir le `Statut` sur `Traité`.
+- Si votre action doit mettre à jour le même champ, envisagez plutôt le déclencheur [Lorsqu’un enregistrement remplit les conditions](/fr/basic/automation/trigger/records/record-matches-conditions), qui ne s’exécute que lors des transitions.
+
+## Cas d’utilisation
+
+- **Synchroniser les changements de prix avec un système externe.** Surveillez le champ « Prix ». Lorsqu’il change, envoyez une requête HTTP afin de mettre à jour le prix sur votre plateforme de commerce électronique.
+- **Envoyer une notification lorsque le statut d’une tâche change.** Surveillez le champ « Statut ». Lorsqu’une tâche passe à « Bloquée » ou « Terminée », informez le responsable ou son manager.
+- **Consigner les changements de champs à des fins d’audit.** Surveillez « Tous les champs » et créez un enregistrement dans une table de journal d’audit contenant les anciennes et nouvelles valeurs.
+- **Mettre à jour un enregistrement lié lorsque son parent change.** Surveillez les champs clés d’un enregistrement de projet. Lorsque l’échéance du projet change, mettez à jour toutes les tâches liées.
+- **Déclencher un nouveau calcul dans un autre système.** Surveillez des champs numériques tels que « Quantité » ou « Prix unitaire ». Lorsqu’ils changent, appelez une API pour recalculer les totaux.
+
+## Conseils
+
+- Commencez par des champs surveillés précis. Vous pourrez toujours en ajouter par la suite si certains événements vous échappent.
+- Le filtre est évalué *après* la mise à jour. Il vérifie donc les nouvelles valeurs de l’enregistrement, et non les anciennes.
+- Ce déclencheur ne vous indique pas la valeur précédente, mais uniquement l’état actuel de l’enregistrement. Si vous devez effectuer une comparaison avant-après, envisagez de conserver un champ « Valeur précédente » mis à jour par votre automatisation.
+- Le déclencheur s’exécute une seule fois par enregistrement, même si plusieurs champs surveillés changent au cours de la même modification.
+
+## Pages associées
+
+- [Lorsqu’un enregistrement remplit les conditions](/fr/basic/automation/trigger/records/record-matches-conditions) — s’exécute uniquement lors des transitions d’état, et non après chaque modification
+- [Lorsqu’un enregistrement est créé](/fr/basic/automation/trigger/records/record-created) — s’exécute lors de la création d’enregistrements, et non lors des mises à jour
+- [Action Mettre à jour l’enregistrement](/fr/basic/automation/actions/records/update-record) — action correspondante permettant de modifier des enregistrements dans les flux de travail

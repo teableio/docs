@@ -1,0 +1,81 @@
+---
+title: "Operazioni sulle query delle Tabelle"
+description: "Esamina i suggerimenti relativi ai rischi delle query per le Tabelle lente e conferma i miglioramenti del database."
+---
+
+<Tip>Disponibile per il piano Business Self-hosted e versioni successive</Tip>
+
+Percorso: Amministrazione di sistema → Operazioni sulle query delle Tabelle
+
+Usa **Operazioni sulle query delle Tabelle** quando Viste, filtri, relazioni o ricerche in una Tabella di grandi dimensioni diventano lenti. Un analizzatore in background osserva il carico delle query e trasforma quanto rilevato in suggerimenti. La pagina li elenca affinché gli amministratori dell'istanza possano esaminare le prove, analizzare più a fondo una Tabella specifica e confermare eventuali modifiche al database.
+
+I contatori sopra l'elenco riepilogano la situazione corrente: finestre di osservazione, richieste, query lente, timeout, suggerimenti aperti e accettati, attività in esecuzione e non riuscite e numero di percorsi di accesso per la ricerca pronti o degradati.
+
+## Esaminare i suggerimenti
+
+La pagina si apre su **Suggerimenti**, ordinati per priorità. L'analizzatore pondera il rischio di una query rispetto all'intensità d'uso della Tabella, così le voci per cui è più opportuno intervenire vengono mostrate per prime.
+
+Cerca per ID di Tabella, Base o Spazio per filtrare tutti i suggerimenti; qualsiasi altro testo filtra ciò che è già visualizzato. I filtri di stato e rischio restringono ulteriormente l'elenco.
+
+Ogni voce indica lo Spazio, la Base e la Tabella a cui appartiene. Espandi una riga per leggere le prove alla base del suggerimento, la decisione del sistema e la diagnostica SQL:
+
+| Sezione | Informazioni fornite |
+| --- | --- |
+| **Trigger** | Origine del suggerimento: traffico delle query osservato, configurazione di una Vista salvata o configurazione di un Campo di relazione. Un trigger basato su una Vista salvata indica che non è stata ancora osservata alcuna query lenta; è la configurazione stessa ad aver segnalato il rischio. |
+| **Percorso di accesso** | Frequenza con cui questa Tabella è stata raggiunta tramite scansione sequenziale anziché tramite scansione dell'indice. |
+| **Motivi** | Cause leggibili, ad esempio una Tabella di grandi dimensioni, l'assenza di un indice utile nei Campi di filtro o ordinamento, un ordinamento costoso o timeout osservati. |
+| **Forma della query** | Campi specifici filtrati e ordinati, con il tipo di corrispondenza utilizzato da ciascuno. |
+| **Indice proposto** | Campi che il suggerimento indicizzerebbe e relativa motivazione. |
+
+**Analisi approfondita** apre l'area di lavoro di analisi con la Tabella già compilata.
+
+Quando l'analizzatore rileva numerose ricerche di sottostringhe in una Tabella, genera un unico suggerimento **GIN per testo generato** per l'intera Tabella, anziché un indice per ogni Campo. Tale riga offre **Crea percorso di ricerca** al posto di **Analisi approfondita** e **Aggiungi indice** non viene visualizzato, perché un percorso di accesso per la ricerca viene applicato dall'area di lavoro di analisi e richiede prima una **ricerca di esempio EXPLAIN**. Il suggerimento si chiude automaticamente quando la Tabella dispone del percorso.
+
+Accanto sono presenti altre due schede:
+
+| Scheda | Contenuto |
+| --- | --- |
+| **Tabelle attive** | Le Tabelle più utilizzate, con richieste, query lente, timeout e durata massima delle query. |
+| **Attività** | Attività correttive create da Teable, con stato, tentativi, worker e ultimo errore. |
+
+Sopra l'elenco viene visualizzato un banner quando un problema di configurazione blocca il processo: i percorsi di accesso per la ricerca sono configurati mentre il flag del runtime è disattivato, alcune Tabelle hanno un percorso di accesso obsoleto o in attesa di ricostruzione e la ricerca è passata automaticamente alla scansione `ILIKE` più lenta oppure l'attività accodata più vecchia è rimasta in attesa abbastanza a lungo da suggerire che nessun worker la stia elaborando. Correggi quanto segnalato dal banner prima di intervenire sui suggerimenti sottostanti.
+
+### Leggere il badge della decisione
+
+Ogni suggerimento riporta la decisione più recente presa dal sistema:
+
+| Badge | Significato |
+| --- | --- |
+| **Richiede conferma manuale** | Soltanto un amministratore può applicarlo. |
+| **Simulazione · verrebbe eseguito automaticamente** | Il suggerimento soddisfa i criteri di accettazione, ma l'esecuzione automatica non è abilitata, quindi non è stata apportata alcuna modifica. |
+| **Esecuzione automatica in corso** / **Eseguito automaticamente** | L'esecuzione automatica ha accettato e applicato il suggerimento. |
+| **Verifica successiva non riuscita · nuovo tentativo ritardato** | Una modifica automatica non ha superato la verifica. Teable attende più a lungo prima di riprovare su quella Tabella. |
+| **Periodo di attesa** | Lo stesso ambito è stato modificato di recente, quindi il sistema attende. |
+| **In sospeso** / **Esecuzione automatica non applicata** | Le prove del piano o le dimensioni della Tabella non hanno soddisfatto i requisiti per l'esecuzione automatica. |
+
+<Info>Per impostazione predefinita, Teable registra soltanto le decisioni e crea i Record dei suggerimenti e delle attività; non modifica autonomamente il database. L'esecuzione automatica è facoltativa e si abilita tramite `V2_TABLE_QUERY_OPS_AUTO_ACCEPT=auto`; anche in tal caso viene applicata soltanto alle Tabelle di piccole dimensioni il cui piano di esecuzione mostra un chiaro miglioramento dei costi. Tutto il resto attende l'intervento di un amministratore.</Info>
+
+### Aggiungere l'indice proposto
+
+Quando un suggerimento propone un indice che approvi, fai clic su **Aggiungi indice** nella riga. La conferma accetta il suggerimento ed esegue `CREATE INDEX CONCURRENTLY` sulla Tabella PostgreSQL sottostante; se la convalida del piano è stata ignorata, Teable crea comunque l'indice dai Campi consigliati. La finestra di dialogo ripete le prove affinché tu possa controllarle un'ultima volta.
+
+Per una Tabella stimata in almeno 50.000 righe, la finestra di dialogo richiede di confermare che sia attiva una finestra di manutenzione prima di rendere disponibile il pulsante. La creazione simultanea su una Tabella di grandi dimensioni richiede tempo e aggiunge carico durante l'esecuzione.
+
+Teable segnala quindi **Indice creato** oppure **Suggerimento accettato e accodato**. Nel secondo caso, segui l'attività nella scheda **Attività**. Se il suggerimento non dispone di una colonna fisica eseguibile sottostante, **Aggiungi indice** rimane disabilitato e ne indica il motivo; usa invece l'area di lavoro di analisi per approfondire.
+
+## Eseguire un'analisi approfondita
+
+Apri **Area di lavoro di analisi** per analizzare un ambito su richiesta, ad esempio quando un utente segnala una Tabella lenta per cui non esiste ancora alcun suggerimento.
+
+| Tipo di analisi | Utilizzo |
+| --- | --- |
+| **Query e indici** | Individuare i rischi delle query e i possibili miglioramenti degli indici. |
+| **Ricerca di sottostringhe** | Verificare se un percorso di accesso per la ricerca di sottostringhe può velocizzare le ricerche «contiene» senza modificarne il comportamento di corrispondenza. |
+
+Scegli **Tabella**, **Base** o **Spazio**, inserisci l'ID corrispondente e seleziona un tipo di analisi. Inizia da **Tabella** quando sai già quale Tabella è lenta.
+
+Fai clic su **Genera report delle query** o **Genera report della ricerca**. Il report riepiloga i rischi rilevati e le azioni successive consigliate. Per un report della ricerca, la **ricerca di esempio EXPLAIN** è facoltativa. Aggiungi un esempio per controllare la compatibilità dei risultati, i piani delle query e la temporizzazione delle query ripetute per il percorso di accesso proposto per la ricerca di sottostringhe. Teable non salva il valore di esempio.
+
+<Info>Il report delle query non modifica il database. L'applicazione di un suggerimento per la ricerca di sottostringhe richiede una **ricerca di esempio EXPLAIN** e la conferma di un amministratore.</Info>
+
+Per una Tabella di grandi dimensioni, esamina l'impatto e pianifica qualsiasi modifica confermata in una finestra di manutenzione adeguata.

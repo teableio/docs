@@ -1,0 +1,110 @@
+---
+title: Modèle d’IA personnalisé
+description: Ajoutez des fournisseurs de modèles personnalisés pour les Champs IA, les automatisations, le Chat IA, le Créateur d’applications et les autres fonctionnalités d’IA prises en charge.
+---
+
+<Tip>Disponible avec le forfait Pro et les offres supérieures</Tip>
+
+## Où le configurer
+
+1. Ouvrez l’Espace cible.
+2. Cliquez sur **Paramètres** dans le coin supérieur droit.
+3. Accédez à **Paramètres d’IA**.
+
+<img
+  src="/images/docs/ai/2026-05-21-custom-model-ai-settings.png"
+  alt="Page des paramètres d’IA"
+  className="docs-screenshot"
+/>
+
+## Étapes de configuration
+
+Sous **Capacités d’IA**, activez les éléments dont vous avez besoin :
+
+- **Champ IA**
+- **Chat IA**
+
+L’activation de **Chat IA** détermine si la fonctionnalité de chat est disponible dans l’Espace.
+
+La ligne **Concurrence** sous **Champ IA** définit le nombre de générations de Champs IA que cet Espace exécute simultanément ; les autres attendent dans la file. Réduisez cette valeur lorsque les remplissages IA en masse de cet Espace ralentissent le travail des autres personnes, et augmentez-la si vous souhaitez terminer plus rapidement un remplissage important.
+
+### Ajouter un fournisseur LLM
+
+<Note>
+Lorsque vous ajoutez un fournisseur LLM, choisissez **OpenAI**, **Anthropic** ou **Compatible OpenAI** comme type de fournisseur. Utilisez **Compatible OpenAI** pour les services qui exposent un point de terminaison d’API compatible OpenAI. Si une tâche utilise des images, des captures d’écran ou d’autres entrées visuelles, choisissez un modèle prenant en charge la vision. Les modèles sans prise en charge de la vision échoueront pour ces tâches multimodales.
+</Note>
+
+Cliquez sur **Ajouter un fournisseur LLM** et renseignez les éléments suivants :
+
+- **Nom** : permet de distinguer les différents fournisseurs.
+- **Type de fournisseur** : sélectionnez le type de fournisseur.
+- **URL de base** : saisissez le point de terminaison d’API du fournisseur.
+- **Clé API** : saisissez la clé API du fournisseur.
+- **Modèles** : saisissez les noms des modèles que vous souhaitez connecter. Séparez plusieurs modèles par des virgules anglaises.
+
+<img
+  src="/images/docs/ai/2026-05-21-custom-model-add-provider.png"
+  alt="Boîte de dialogue Ajouter un fournisseur LLM"
+  className="docs-screenshot"
+/>
+
+### Tester les capacités des modèles
+
+Il existe actuellement trois façons d’effectuer un test :
+
+- Cliquez sur **Tester** dans la ligne du fournisseur LLM.
+- Cliquez sur **Tester** dans la ligne d’un modèle individuel.
+- Cliquez sur **Tester les capacités des modèles** dans le coin supérieur droit de la liste pour tester par lot tous les modèles configurés.
+
+Si un modèle est destiné à la génération d’images, cochez **Modèle de génération d’images** avant d’exécuter le test. Une fois cette option cochée, Teable le teste comme modèle d’image pour les capacités texte-vers-image et image-vers-image. Sinon, le modèle est testé comme un modèle de texte ordinaire.
+
+## Conseils de configuration
+
+### URL de base et modèles
+
+<Warning>Certaines clés Coding Plan peuvent ne fonctionner que dans des outils de programmation désignés et ne pas être des clés API standard. Vérifiez les conditions du fournisseur avant de les utiliser avec des services tiers. Pour connecter Teable, utilisez une clé API standard créée dans le tableau de bord du fournisseur.</Warning>
+
+Exemples courants :
+
+| Type de fournisseur | Format de l’URL de base | Exemples de modèles |
+|----------|----------------|----------------|
+| OpenAI | `https://api.openai.com/v1` | `gpt-5.5,o3,gpt-5-mini` |
+| Anthropic | `https://api.anthropic.com/v1` | `claude-opus-4-8,claude-sonnet-5,claude-haiku-4-5` |
+| Compatible OpenAI | Le point de terminaison `/v1` compatible OpenAI du fournisseur | `gpt-5.5,gpt-5.4,o3,gpt-5-mini` |
+
+<Note>Les noms des modèles doivent correspondre exactement à la documentation du fournisseur et respectent la casse. Séparez plusieurs modèles par des virgules anglaises.</Note>
+
+Remarques :
+
+- Les noms des modèles respectent la casse. Utilisez les noms exacts indiqués dans la documentation du fournisseur.
+- Certains fournisseurs exigent l’absence d’espace après les virgules, par exemple `gpt-5.5,o3`.
+- Pour les fournisseurs **Compatibles OpenAI**, utilisez le format de nom de modèle exigé par ce fournisseur. Certains services utilisent `provider/model-name`.
+
+## FAQ
+
+<AccordionGroup>
+<Accordion title="Tous les tests de modèles ont échoué">
+Vérifiez que l’**URL de base** est correcte, qu’elle n’a pas été renseignée par erreur avec l’URL de la page d’accueil du fournisseur, et qu’elle ne comporte pas de `/` final supplémentaire. Si vous utilisez un point de terminaison compatible OpenAI, vérifiez également que `/v1` n’est pas absent.
+</Accordion>
+
+<Accordion title="J’obtiens une erreur « Échec du test »">
+Vérifiez que la **Clé API** est valide et que le compte dispose encore de Crédits ou de l’autorisation d’appeler le modèle.
+</Accordion>
+
+<Accordion title="Délai de connexion dépassé">
+Vérifiez que l’**URL de base** est correcte et que votre environnement actuel peut atteindre cette adresse.
+</Accordion>
+
+<Accordion title="Modèle introuvable">
+Assurez-vous que la valeur **Modèles** correspond exactement à la documentation du fournisseur, y compris la casse et le format du séparateur.
+</Accordion>
+
+<Accordion title="Le test échoue lorsque j’utilise une clé Coding Plan">
+Ce type de clé peut ne pas prendre en charge les appels API standard, ou les conditions du fournisseur peuvent ne pas autoriser l’utilisation avec un service tiers. Vérifiez d’abord les conditions Coding Plan du fournisseur. Pour connecter Teable, utilisez une **Clé API** standard créée dans le tableau de bord du fournisseur.
+</Accordion>
+
+<Accordion title="Le résultat du test du modèle de génération d’images semble incorrect">
+Si le modèle est destiné à la génération d’images, cochez d’abord **Modèle de génération d’images**, puis effectuez de nouveau le test. Une fois cette option cochée, Teable teste à la place les capacités texte-vers-image et image-vers-image.
+</Accordion>
+</AccordionGroup>
+

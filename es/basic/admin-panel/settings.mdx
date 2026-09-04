@@ -1,0 +1,103 @@
+---
+title: "Ajustes de la instancia"
+description: "Administra los controles de la instancia, los ajustes de correo electrónico y los elementos pendientes del sistema."
+---
+
+<Tip>Disponible para el plan Business autoalojado y los planes superiores</Tip>
+
+Ruta: Administración del sistema → Ajustes de la instancia
+
+La página **Ajustes de la instancia** permite administrar los ajustes principales de toda la instancia, incluidos los **Ajustes generales**, el **Correo electrónico** y las comprobaciones del sistema que aparecen en el panel **Configuración pendiente**.
+
+## Descripción general
+
+Esta página abarca principalmente los aspectos básicos de la instancia. Los ajustes principales se agrupan de la siguiente manera:
+
+| Tipo de ajuste | Descripción |
+|------|------|
+| **Ajustes generales** | Incluye **Permitir la creación de cuentas nuevas**, **Dominios de correo electrónico bloqueados**, **Permitir el envío de invitaciones a Espacios**, **Permitir que todos creen Espacios nuevos** y **Habilitar la verificación del correo electrónico** |
+| **Correo electrónico** | Incluye **Correo electrónico de notificaciones** y **Correo electrónico de automatizaciones** para restablecer contraseñas, verificar direcciones de correo electrónico y enviar notificaciones e invitaciones por correo electrónico |
+| **Límites del sistema** | Muestra los límites efectivos de datos de Tablas, Campos, Vistas y texto de la instancia |
+
+Para habilitar los correos electrónicos del sistema, completa la configuración de **Correo electrónico**.
+
+Usa **Dominios de correo electrónico bloqueados** para impedir que se registren direcciones de correo electrónico de los dominios indicados. Teable rechaza esos dominios antes de enviar códigos de verificación de registro y no envía correos electrónicos de invitación relacionados con ellos.
+
+<Tip>
+Si el correo electrónico no está completamente configurado, el elemento **Correo electrónico** del panel **Configuración pendiente** no se mostrará en verde.
+</Tip>
+
+## Límites del sistema
+
+**Límites del sistema** muestra los límites actuales de la instancia para los datos de las Tablas y la configuración relacionada. Si necesitas ajustar un límite, usa la variable de entorno que aparece en esa página.
+
+<Note>
+Después de cambiar una variable de entorno, reinicia el servicio para que el nuevo valor surta efecto.
+</Note>
+
+## Configuración pendiente
+
+El panel **Configuración pendiente** de la derecha es una lista de comprobación del sistema. Muestra qué ajustes importantes aún faltan en la instancia.
+
+Entre las comprobaciones habituales de esta página se incluyen:
+
+| Elemento | Impacto |
+|------|------|
+| **Variable de entorno PUBLIC_ORIGIN** | Afecta a las funciones que dependen de una URL de acceso externo, como los archivos adjuntos y las importaciones |
+| **Habilitar HTTPS** | Afecta a las funciones que dependen de HTTPS, como copiar y pegar |
+| **Correo electrónico** | Afecta al restablecimiento de contraseñas, la verificación del correo electrónico, las notificaciones y funciones similares |
+
+Aunque estos elementos no se hayan completado, es posible que la instancia se abra con normalidad, pero algunas funciones podrían seguir sin estar disponibles.
+
+## Relación con los Ajustes de IA
+
+**Ajustes de la instancia** muestra parte de las comprobaciones del sistema, pero no es la página donde se configuran los **modelos de IA**, el **entorno de ejecución del Chat de IA** ni **App Builder**.
+
+Para configurar estos elementos, ve a:
+
+- [Ajustes de IA](/es/basic/admin-panel/ai-setting)
+
+La separación se puede entender así:
+
+- **Ajustes de la instancia**: Abarca las funciones principales de la propia instancia
+- **Ajustes de IA**: Abarca el Chat de IA, los Campos de IA, las automatizaciones de IA y App Builder
+
+## Orden de comprobación
+
+Si estás preparando una implementación autoalojada nueva o vas a ponerla en producción por primera vez, comprueba estos elementos en el orden siguiente:
+
+<Steps>
+  <Step title="Comprobar la URL de acceso">
+    Asegúrate de que **PUBLIC_ORIGIN** esté configurada correctamente.
+  </Step>
+  <Step title="Comprobar HTTPS">
+    Asegúrate de que la instancia ya tenga **HTTPS** habilitado.
+  </Step>
+  <Step title="Comprobar el correo electrónico">
+    Asegúrate de que **SMTP** esté configurado y pueda enviar correos electrónicos correctamente.
+  </Step>
+  <Step title="Continuar con los Ajustes de IA">
+    Después de confirmar los elementos básicos, continúa con [Ajustes de IA](/es/basic/admin-panel/ai-setting).
+  </Step>
+</Steps>
+
+Esto facilita que los elementos de **Configuración pendiente** se muestren en verde en el orden adecuado y ayuda a solucionar problemas.
+
+## Preguntas frecuentes
+
+<AccordionGroup>
+<Accordion title="La instancia se abre con normalidad, pero todavía hay elementos sin completar a la derecha">
+
+Esto suele significar que la instancia está accesible, pero aún faltan uno o varios requisitos importantes del entorno de ejecución. Sigue las indicaciones del panel derecho y completa los elementos uno por uno en lugar de basarte únicamente en si la página se abre.
+</Accordion>
+
+<Accordion title="El correo electrónico funciona a veces, pero aún no aparece como completado">
+
+Comprueba si los ajustes de SMTP guardados están completos, si corresponden a la finalidad de envío prevista y si los correos electrónicos de verificación o notificación se pueden enviar de forma fiable.
+</Accordion>
+
+<Accordion title="¿Por qué es importante PUBLIC_ORIGIN?">
+
+Muchas funciones que dependen de una URL de acceso externo también dependen de esta variable. Si el valor configurado no coincide con la URL de acceso real, es posible que funciones como las importaciones, los archivos adjuntos o las redirecciones no funcionen correctamente.
+</Accordion>
+</AccordionGroup>

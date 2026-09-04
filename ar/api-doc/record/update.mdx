@@ -1,0 +1,210 @@
+---
+title: "تحديث سجل"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+### المسار
+
+PATCH /api/table/\{tableId\}/record/\{recordId\}
+
+### الطلب
+
+#### معلمات المسار
+
+* tableId (string): المعرّف الفريد للجدول [(كيفية الحصول عليه)](/ar/api-doc/get-id#tableid).
+* recordId (string): المعرّف الفريد للسجل المطلوب تحديثه [(كيفية الحصول عليه)](/ar/api-doc/get-id#recordid).
+
+#### نص الطلب
+
+* **record (مطلوب)**
+  * الوصف: بيانات السجل المطلوب تحديثها
+  * النوع: كائن
+  * مثال:
+    ```json
+    {
+      "fields": {
+        "Name": "John Doe",
+        "Age": 31,
+        "Email": "john.doe@example.com"
+      }
+    }
+    ```
+  * ملاحظة: يحتوي كائن `fields` على أسماء الحقول وقيمها الجديدة المقابلة. لكل نوع من الحقول بنية قيمة مختلفة؛ راجع [أنواع قيم حقول السجلات](/ar/api-doc/record/interface) للاطلاع على التفاصيل.
+
+لمسح قيمة حقل، مرّر `null` صراحةً. إذا لم يتضمن الطلب اسم حقل، فلن يُجرى أي تحديث لذلك الحقل.
+
+* **fieldKeyType (اختياري)**
+  * الوصف: يحدد نوع مفتاح الحقل
+  * النوع: سلسلة نصية
+  * القيم الممكنة:
+    * "name": استخدام اسم الحقل كمفتاح
+    * "id": استخدام معرّف الحقل كمفتاح
+    * "dbFieldName": استخدام dbFieldName للحقل كمفتاح
+  * مثال: `"name"` أو `"id"` أو `"dbFieldName"`
+  * ملاحظة: إذا لم تحدده، فسيُستخدم اسم الحقل كمفتاح افتراضيًا.
+  * الاستخدام:
+    * عند ضبطه على "name":
+      ```json
+      {
+        "fields": {
+          "Name": "John Doe",
+          "Age": 30
+        }
+      }
+      ```
+    * عند ضبطه على "id":
+      ```json
+      {
+        "fields": {
+          "fldABCDEFGHIJKLMN": "John Doe",
+          "fldOPQRSTUVWXYZ12": 30
+        }
+      }
+      ```
+* **typecast (اختياري)**
+  * الوصف: يحدد ما إذا كانت أنواع قيم الحقول ستُحوّل تلقائيًا. يُطبّق التحقق الصارم افتراضيًا، ما يفرض تطابق قيم الإدخال مع نوع بيانات الحقل الحالي. عند تمكينه، سيحاول النظام إجراء التحويل تلقائيًا.
+  * النوع: قيمة منطقية
+  * القيم الممكنة: true أو false
+  * مثال: `true`
+  * ملاحظة: إذا ضُبط على true، فسيحاول النظام تحويل قيم الإدخال إلى نوع قيمة الحقل الصحيح.
+  * أمثلة على الاستخدام:
+    * حقل ارتباط: يمكن استخدام نص المفتاح الأساسي مباشرةً لإنشاء الارتباط
+      ```json
+      {
+        "User table": "John Smith"
+      }
+      ```
+    * حقل تاريخ: يمكن استخدام سلاسل تاريخ بتنسيق غير قياسي
+      ```json
+      {
+        "Date": "2023-05-15"
+      }
+      ```
+    * حقل مستخدم: يمكن استخدام اسم المستخدم مباشرةً
+      ```json
+      {
+        "Assigned To": "John Doe"
+      }
+      ```
+
+لرفع ملفات جديدة إلى حقول المرفقات، يُرجى الرجوع إلى قسم [رفع مرفق](/ar/api-doc/record/upload-attachment).
+
+* **order (اختياري)**
+  * الوصف: بعد تحديث السجل، نقله إلى موضع محدد في طريقة عرض محددة.
+  * النوع: كائن
+  * الخصائص:
+    * viewId: معرّف طريقة العرض
+    * anchorId: معرّف السجل المرجعي
+    * position: الموضع بالنسبة إلى السجل المرجعي. القيم الممكنة: `"before"` أو `"after"`
+  * مثال:
+    ```json
+    {
+      "viewId": "viwABCDEFGHIJKLMN",
+      "anchorId": "rec123456789ABCDE",
+      "position": "after"
+    }
+    ```
+
+### الاستجابة
+
+#### استجابة النجاح
+
+* رمز الحالة: 200 OK
+* نص الاستجابة: يُرجع بيانات السجل المحدّثة.
+
+**مثال على نص الاستجابة**
+```json
+{
+    "id": "rec123456789ABCDE",
+    "fields": {
+        "Name": "John Doe",
+        "Age": 31,
+        "Email": "john.doe@example.com"
+    }
+}
+```
+
+#### استجابات الأخطاء
+
+* رمز الحالة: 400 Bad Request: خطأ في تنسيق نص الطلب أو غياب الحقول المطلوبة.
+* رمز الحالة: 404 Not Found: قيمة tableId أو recordId المحددة غير موجودة.
+
+#### مثال على الشيفرة
+
+<CodeGroup>
+  ```bash CURL
+  curl -X PATCH 'https://app.teable.ai/api/table/__tableId__/record/__recordId__' \
+    -H 'Authorization: Bearer __token__' \
+    -H 'Content-Type: application/json' \
+    -d '{
+      "record": {
+        "fields": {
+          "Name": "John Doe",
+          "Age": 31
+        }
+      }
+    }'
+  ```
+
+  ```js JS SDK
+  import { configApi, updateRecord } from '@teable/openapi';
+
+  configApi({
+    endpoint: 'https://app.teable.ai',
+    token,
+  });
+
+  const response = await updateRecord('__tableId__', '__recordId__', {
+    record: {
+      fields: {
+        Name: 'John Doe',
+        Age: 31
+      }
+    }
+  });
+
+  console.log(response.data);
+  ```
+
+  ```ts TypeScript
+  const response = await fetch('https://app.teable.ai/api/table/__tableId__/record/__recordId__', {
+    method: 'PATCH',
+    headers: {
+      'Authorization': 'Bearer __token__',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      record: {
+        fields: {
+          Name: 'John Doe',
+          Age: 31
+        }
+      }
+    })
+  });
+
+  console.log(await response.json());
+  ```
+
+  ```python Python
+  import requests
+
+  response = requests.patch(
+      'https://app.teable.ai/api/table/__tableId__/record/__recordId__',
+      headers={
+          'Authorization': 'Bearer __token__',
+          'Content-Type': 'application/json'
+      },
+      json={
+          'record': {
+              'fields': {
+                  'Name': 'John Doe',
+                  'Age': 31
+              }
+          }
+      }
+  )
+
+  print(response.json())
+  ```
+</CodeGroup>

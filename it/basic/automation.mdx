@@ -1,0 +1,87 @@
+---
+title: "Panoramica"
+description: "Crea flussi di lavoro di Automazione con l'IA o tramite configurazione manuale."
+---
+
+{/* mintlify-resync: 2026-05-26 */}
+L'Automazione di Teable semplifica la creazione di potenti flussi di lavoro. Nessun codice, nessuna operazione di trascinamento, nessuna configurazione complicata. Indica semplicemente all'IA ciò di cui hai bisogno usando un linguaggio naturale e Teable si occuperà delle attività ripetitive.
+
+## Creare con l'IA (da zero)
+
+Il modo più semplice per iniziare. Apri una Tabella qualsiasi, fai clic su **AI Chat** nella barra laterale destra e descrivi ciò che desideri:
+
+- *«Quando arriva un nuovo ordine, invia una notifica Slack con il nome del cliente e l'importo.»*
+- *«Ogni lunedì mattina, inviami via email un riepilogo delle attività scadute.»*
+- *«Quando qualcuno invia il modulo di feedback, classificalo e aggiorna il Campo della categoria.»*
+
+L'IA crea e testa per te l'intera Automazione: trigger, azioni e associazioni dei Campi. Esamina i risultati nel pannello Automazione e abilitala.
+
+## Creare con l'IA (dal trigger)
+
+Puoi anche partire da un trigger specifico e lasciare che l'IA crei le azioni:
+
+1. **Aggiungi un trigger** — scegli un tipo di trigger (ad esempio «Quando viene creato un Record») e configuralo.
+2. **Aggiungi un'azione** — fai clic su **+**, vai a **Crea con l'IA** e seleziona **Esegui script**.
+3. Nel pannello di configurazione, fai clic su **Apri editor**.
+4. Scegli uno dei **suggerimenti** per iniziare rapidamente oppure descrivi con parole tue ciò di cui hai bisogno.
+5. L'IA genera il codice JavaScript. Esaminalo e fai clic su **Applica**.
+6. Fai clic su **Testa** per eseguire lo script con dati reali, quindi su **Abilita** per il flusso di lavoro.
+
+## Creare manualmente
+
+Puoi anche creare Automazioni un passaggio alla volta utilizzando le azioni integrate:
+
+1. **Aggiungi un trigger** — scegli un tipo di trigger, seleziona la Tabella e configura i Campi. Fai clic su **Testa**.
+2. **Aggiungi un'azione** — scegli un tipo di azione (Crea Record, Invia email, Richiesta HTTP e così via), associa i valori dei Campi usando **+** per inserire variabili dinamiche. Fai clic su **Genera anteprima** o **Esegui come configurato**.
+3. **Abilita** — fai clic sull'interruttore nell'angolo in alto a sinistra.
+
+## Modificare un flusso di lavoro attivo
+
+Le modifiche vengono salvate come bozza. Il flusso di lavoro attivo continua a essere eseguito nella versione precedente finché non fai clic su **Applica aggiornamento**.
+
+## Segreti
+
+Usa **Segreti** per archiviare le chiavi API, le credenziali e la configurazione necessarie a un'Automazione durante l'esecuzione. Apri il flusso di lavoro nella scheda di modifica, quindi fai clic su **Segreti** accanto ai controlli di test.
+
+I segreti sono limitati all'Automazione corrente. Le azioni script possono leggerli da variabili di ambiente come `process.env.EXTERNAL_API_KEY`. I valori salvati sono di sola scrittura; inserisci un nuovo valore per aggiornare un segreto.
+
+## Cronologia delle esecuzioni
+
+Apri un flusso di lavoro → **Cronologia delle esecuzioni**. Il pannello della cronologia elenca ogni esecuzione con stato, tempo impiegato e dettagli dei passaggi. Fai clic su un'esecuzione per esaminare input e output di ogni passaggio.
+
+Usa i filtri della cronologia per restringere l'elenco in base a stato, durata o intervallo di date. Per le esecuzioni non riuscite, usa il pannello dei dettagli per eseguire la diagnosi o ripetere l'esecuzione:
+
+- **Diagnostica** apre AI Chat con l'esecuzione non riuscita come contesto, così puoi chiedere a Cuppy di spiegare l'errore.
+- **Ripetizione completa** esegue nuovamente ogni passaggio e potrebbe creare Record, email o notifiche duplicati.
+- **Riprendi dal passaggio non riuscito** è disponibile quando Teable può continuare in sicurezza dal passaggio non riuscito.
+
+Quando **Riprendi dal passaggio non riuscito** non è disponibile, Teable spiega perché è possibile utilizzare soltanto **Ripetizione completa**. Ciò può verificarsi quando il flusso di lavoro è stato modificato dopo l'esecuzione non riuscita, è disabilitato, nessun passaggio è stato completato correttamente prima dell'errore oppure mancano i dati del passaggio di controllo.
+
+I tentativi di ripetizione sono contrassegnati come nuovi tentativi e rimandano all'esecuzione originale.
+
+## Limiti
+
+| Elemento | Limite |
+|---|---|
+| Frequenza di invio delle email | 5 / secondo / Base |
+| Frequenza di ricezione dei webhook | 50 / secondo / Base, 2 / secondo / flusso di lavoro |
+| Dimensioni del payload dei webhook | 4 MB |
+| Quota di esecuzioni e conservazione della cronologia | Varia in base al piano |
+
+## Domande frequenti
+
+<AccordionGroup>
+  <Accordion title="Perché ho ricevuto un avviso sull'utilizzo delle esecuzioni delle Automazioni?">
+    In Teable Cloud, Teable invia notifiche sull'utilizzo delle esecuzioni delle Automazioni ai proprietari dello Spazio quando uno Spazio è vicino alla propria quota di esecuzioni o l'ha superata oppure quando le esecuzioni aumentano rapidamente in un breve periodo.
+
+    Per i promemoria relativi alla quota, Teable invia una notifica quando il periodo di fatturazione corrente raggiunge l'80% o il 90% della quota di esecuzioni disponibile.
+
+    I piani Pro e superiori possono ricevere avvisi dopo che le esecuzioni delle Automazioni superano la quota. Teable può inviare un promemoria ogni 6 ore circa.
+
+    Teable Cloud può inoltre inviare notifiche critiche per utilizzi insoliti, ad esempio un forte aumento giornaliero o un picco improvviso in un breve periodo. Il sistema utilizza gli schemi recenti delle esecuzioni giornaliere e orarie e le soglie esatte possono cambiare.
+
+    La notifica apre **Impostazioni dello Spazio** → **Fatturazione**. Quando disponibili, mostra il flusso di lavoro e la Base che hanno contribuito al maggior numero di esecuzioni. I promemoria relativi alla quota si basano sulle esecuzioni conteggiate ai fini del limite del piano; i controlli sull'utilizzo insolito possono considerare anche le esecuzioni recenti con stato **riuscito**, **non riuscito** o **in sospeso**.
+
+    Se l'utilizzo è previsto, valuta l'acquisto di una quota aggiuntiva di Automazioni o la modifica del piano. Se è imprevisto, esamina il flusso di lavoro principale e modifica o metti in pausa l'Automazione correlata.
+  </Accordion>
+</AccordionGroup>

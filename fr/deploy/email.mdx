@@ -1,0 +1,144 @@
+---
+title: "Configurer le service de messagerie"
+description: "Activez le service de messagerie pour activer les notifications par e-mail dans l’application, la réinitialisation de mot de passe en libre-service, les e-mails d’invitation et d’autres fonctionnalités."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+## Méthodes de configuration
+
+Teable prend en charge deux méthodes de configuration du service de messagerie :
+
+<CardGroup cols={2}>
+  <Card title="Panneau d’administration (recommandé)" icon="sliders" href="#option-1-admin-panel-recommended">
+    Configuration visuelle avec test en direct. Aucun redémarrage requis.
+  </Card>
+  <Card title="Variables d’environnement" icon="code" href="#option-2-environment-variables">
+    Configuration traditionnelle via le fichier `.env`. Nécessite le redémarrage du conteneur.
+  </Card>
+</CardGroup>
+
+---
+
+## Option 1 : Panneau d’administration (recommandé) {#option-1-admin-panel-recommended}
+
+La manière la plus simple de configurer la messagerie consiste à utiliser le panneau d’administration :
+
+1. Connectez-vous en tant qu’administrateur (le premier utilisateur enregistré)
+2. Accédez à **Panneau d’administration** → **Paramètres de l’instance**
+3. Recherchez la section **E-mail**
+4. Configurez **E-mail de notification** et **E-mail d’automatisation** selon vos besoins
+
+<Tip>
+La configuration du panneau d’administration prend en charge les **tests en direct** — vous pouvez vérifier le bon fonctionnement de vos paramètres SMTP avant de les enregistrer.
+</Tip>
+
+- **E-mail de notification** : utilisé pour la vérification des utilisateurs, la réinitialisation du mot de passe, les invitations, les notifications système et les e-mails similaires.
+- **E-mail d’automatisation** : utilisé comme service de messagerie par défaut pour les actions Envoyer un e-mail des automatisations. Une même action Envoyer un e-mail peut également configurer son propre [serveur SMTP personnalisé](/fr/basic/automation/actions/communication/smtp-sender).
+
+### Sources de configuration et priorité
+
+Nous vous recommandons de configurer d’abord le service de messagerie dans **Panneau d’administration → Paramètres de l’instance → E-mail**. La priorité effective est la suivante :
+
+1. **Serveur de messagerie personnalisé dans l’action Envoyer un e-mail** : s’applique uniquement à cette action Envoyer un e-mail spécifique dans l’automatisation actuelle.
+2. **Panneau d’administration → Paramètres de l’instance → E-mail → E-mail d’automatisation** : utilisé par les e-mails d’automatisation lorsque l’action Envoyer un e-mail ne configure pas son propre serveur de messagerie.
+3. **Panneau d’administration → Paramètres de l’instance → E-mail → E-mail de notification** : utilisé pour la vérification des utilisateurs, la réinitialisation du mot de passe, les invitations, les notifications système et les e-mails similaires. Il sert également de solution de secours pour les e-mails d’automatisation si l’e-mail d’automatisation n’est pas configuré.
+4. **Variables d’environnement `BACKEND_MAIL_*`** : configuration de messagerie par défaut au niveau du déploiement. Utilisées uniquement comme solution de secours lorsque la boîte aux lettres correspondante n’est pas configurée dans le panneau d’administration.
+
+### Champs de configuration
+
+| Champ | Description | Exemple |
+|-------|-------------|---------|
+| Adresse du serveur | Adresse du serveur SMTP | `smtp.gmail.com` |
+| Port | Port SMTP | `465` (SSL) ou `587` (TLS) |
+| SSL/TLS | Indique s’il faut utiliser SSL/TLS | `true` |
+| Nom d’utilisateur | Utilisateur d’authentification SMTP | `noreply@company.com` |
+| Mot de passe | Mot de passe SMTP ou mot de passe d’application | `xxxxxxxxxxxxxx` |
+| Adresse de l’expéditeur | Adresse d’expédition | `noreply@company.com` |
+| Nom de l’expéditeur | Nom d’affichage | `Notification Teable` |
+
+---
+
+## Option 2 : Variables d’environnement {#option-2-environment-variables}
+
+Pour les déploiements où vous préférez une configuration basée sur des fichiers, utilisez des variables d’environnement :
+
+<Note>
+Nous vous recommandons de configurer d’abord l’e-mail de notification et l’e-mail d’automatisation dans **Panneau d’administration → Paramètres de l’instance → E-mail**. Les variables d’environnement servent principalement de valeurs par défaut au niveau du déploiement et de configuration de secours.
+</Note>
+
+```sh
+BACKEND_MAIL_HOST=smtp.example.com
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=noreply@company.com
+BACKEND_MAIL_SENDER_NAME=Teable
+BACKEND_MAIL_AUTH_USER=username
+BACKEND_MAIL_AUTH_PASS=your_password
+```
+
+<Note>
+Après avoir modifié les variables d’environnement, vous devez **redémarrer** le conteneur Teable pour que les changements prennent effet.
+</Note>
+
+---
+
+## Exemples de fournisseurs SMTP
+
+<Accordion title="AWS SES">
+```sh
+# Pour les obtenir : AWS Console → Simple Email Service → SMTP Settings → Create SMTP Credentials
+BACKEND_MAIL_HOST=email-smtp.us-east-1.amazonaws.com  # Replace with your region
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=noreply@yourdomain.com  # Must be a verified sender address
+BACKEND_MAIL_SENDER_NAME=Notification Teable
+BACKEND_MAIL_AUTH_USER=your_smtp_username   # AWS SMTP username
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx       # AWS SMTP password
+```
+</Accordion>
+
+<Accordion title="Gmail">
+```sh
+# Pour les obtenir : Google Account → Security → 2-Step Verification → App Passwords
+BACKEND_MAIL_HOST=smtp.gmail.com
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=you@gmail.com
+BACKEND_MAIL_SENDER_NAME=Notification Teable
+BACKEND_MAIL_AUTH_USER=you@gmail.com
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # 16-digit app password
+```
+</Accordion>
+
+<Accordion title="Microsoft 365 / Outlook">
+```sh
+# Pour les obtenir : Microsoft 365 admin center → Security → Policies & rules → Email authentication
+BACKEND_MAIL_HOST=smtp.office365.com
+BACKEND_MAIL_PORT=587
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=your.name@yourdomain.com
+BACKEND_MAIL_SENDER_NAME=Notification Teable
+BACKEND_MAIL_AUTH_USER=your.name@yourdomain.com
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # Your Microsoft 365 password or app password
+```
+</Accordion>
+
+<Accordion title="SendGrid">
+```sh
+# Pour les obtenir : SendGrid Dashboard → Settings → API Keys → Create API Key
+BACKEND_MAIL_HOST=smtp.sendgrid.net
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=noreply@yourdomain.com
+BACKEND_MAIL_SENDER_NAME=Notification Teable
+BACKEND_MAIL_AUTH_USER=apikey
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # Your SendGrid API Key
+```
+</Accordion>
+
+---
+
+## Documentation associée
+
+- [Référence des variables d’environnement](/fr/deploy/env)
+- [Présentation du panneau d’administration](/fr/basic/admin-panel/overview)

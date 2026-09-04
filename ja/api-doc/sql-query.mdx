@@ -1,0 +1,145 @@
+---
+title: "SQLクエリ（非推奨）"
+noindex: true
+---
+
+<Tip>
+**セルフホスト限定**: すべてのバージョンで接続数の制限なく利用できます。
+</Tip>
+
+Teableでは、外部ツールから基盤となるPostgreSQLデータベースに接続し、読み取り専用クエリを実行できます。これにより、BIツール（PowerBI、Metabase、Superset）、データベースクライアント（DataGrip、Navicat、TablePlus）、ローコードプラットフォーム（Appsmith、Budibase）、アプリケーションコードと連携できます。
+
+### データベース接続を作成する
+
+1. **テーブルを開く**: まず、接続するベース内の任意のテーブルを開きます。
+2. **設計ページを開く**: 右上の⚙️アイコンをクリックして、ベース設計ページを開きます。
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-open-design-page-en.png"
+  alt="ベース設計ページを開く"
+  className="docs-screenshot"
+/>
+
+3. **データベース接続パネルを見つける**: 設計ページで「データベース接続」パネルを見つけます。
+4. **接続を作成する**: 作成をクリックすると、ユーザー名、パスワード、ホストアドレスを含む読み取り専用のPostgreSQL接続が自動的に生成されます。
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-database-connection-panel-en.png"
+  alt="データベース接続パネル"
+  className="docs-screenshot"
+/>
+
+### データベースに接続する
+
+認証情報を使用し、お好みのツールから接続します。以下はその例です。
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-connection-example.png"
+  alt="外部データベースへの接続例"
+  className="docs-screenshot"
+/>
+
+### データをクエリする
+
+接続後は、SQLを使用してデータをクエリできます。
+
+```sql
+SELECT * FROM "bseamGnQT65TVSCzIaC"."clients" LIMIT 100
+```
+
+**注:** PostgreSQLでは、大文字と小文字を区別した状態を維持するため、スキーマ名とテーブル名を二重引用符`"`で囲みます。
+
+このクエリを記述するには、次の3つの情報が必要です。
+- **スキーマ名（BaseId）**: `bse`で始まるベース識別子
+- **テーブル名**: PostgreSQL内の物理テーブル名
+- **フィールド名**: データベース内の実際の列名
+
+以降のセクションでは、それぞれを確認する方法を説明します。
+
+### BaseId（スキーマ名）を確認する
+
+Teableの各ベースは、PostgreSQL内の1つの**スキーマ**に対応します。BaseIdは、SQLクエリで使用するスキーマ名です。
+
+**方法1:** URLを確認します。`bse`で始まる文字列がBaseIdです。
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-base-id-url.png"
+  alt="URL内のベースID"
+  className="docs-screenshot"
+/>
+
+**方法2:** ベース設計画面に表示されているスキーマ名がBaseIdです。
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-design-page-schema.png"
+  alt="ベース設計ページ内のスキーマ名"
+  className="docs-screenshot"
+/>
+
+### テーブル名を確認する
+
+Teable画面上のテーブル名は、物理データベースのテーブル名と自動的には同期されません。実際のデータベーステーブル名は、ベース設計画面で確認してください。
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-table-info.png"
+  alt="設計ページ内の物理テーブル名"
+  className="docs-screenshot"
+/>
+
+**ヒント:** 必要に応じて、設計画面で物理テーブル名を変更できます。
+
+### フィールド名を確認する
+
+データベース内のフィールド（列）名は、Teable画面上の名前と異なる場合があります。設計画面で`dbFieldName`を確認してください。
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-db-field-name.png"
+  alt="設計ページ内のDBフィールド名"
+  className="docs-screenshot"
+/>
+
+**ヒント:** Teableでフィールド名を変更しても、自動的には同期されません。PostgreSQL内の実際の列名を変更するには、`dbFieldName`を明示的に変更してください。
+
+### システムフィールド
+
+Teableでは、次のシステムフィールドが自動的に作成されます（名前は変更できません）。
+
+| フィールド | 説明 |
+|-------|-------------|
+| `__id` | 一意のID |
+| `__version` | バージョン番号 |
+| `__auto_number` | 自動採番される主キー |
+| `__created_time` | 作成日時 |
+| `__last_modified_time` | 最終更新日時 |
+| `__created_by` | 作成者ID |
+| `__last_modified_by` | 最終更新者ID |
+| `__row*` | レコードの順序を維持するためのビューインデックスフィールド |
+| `__fk*` | リレーションフィールドの外部キー |
+
+### 中間テーブル
+
+`junction_`で始まるテーブルは、多対多および単方向のリレーションを処理するためにシステムが生成するテーブルです。
+
+### 権限に関する注意事項
+
+データベース接続の範囲は、現在のベースだけに限定されます。PostgreSQLのスキーマによって権限が分離されるため、自分のベース内にあるテーブルだけにアクセスできます。
+
+接続時に他のbaseId（スキーマ名）が表示される場合がありますが、その内容にはアクセスできません。
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-tableplus-base-id.png"
+  alt="TablePlus内のベースID"
+  className="docs-screenshot"
+/>
+
+### 接続数の上限
+
+デフォルトの上限は、同時接続20件です。
+
+### データを書き込む
+
+Teableでは、外部接続からデータベースへ直接書き込むことはできません。データを変更するには、代わりに[Teable API](/ja/api-doc/token)を使用してください。
+
+### 接続を閉じる
+
+データベース接続パネルで削除をクリックして接続を閉じます。以前のパスワードは消去され、新しい接続を作成すると新しい認証情報が生成されます。

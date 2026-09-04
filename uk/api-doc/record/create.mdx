@@ -1,0 +1,243 @@
+---
+title: "Створення Записів"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+### Шлях
+
+POST /api/table/\{tableId\}/record
+
+### Запит
+
+#### Параметри шляху
+
+* tableId (string): Унікальний ідентифікатор Таблиці.
+
+#### Тіло запиту
+
+* **records (обов’язковий)**
+  * Опис: масив Записів, які потрібно створити
+  * Тип: масив
+  * Приклад:
+    ```json
+    [
+      {
+        "fields": {
+          "Name": "John Doe",
+          "Age": 30,
+          "Email": "john@example.com"
+        }
+      },
+      {
+        "fields": {
+          "Name": "Jane Smith",
+          "Age": 28,
+          "Email": "jane@example.com"
+        }
+      }
+    ]
+    ```
+  * Примітка: кожен Запис є елементом, що містить об’єкт `fields`. Об’єкт `fields` містить назви Полів і відповідні значення. Кожен тип Поля має власну структуру значення. Докладніше див. у розділі [Типи значень Полів Запису](/uk/api-doc/record/interface).
+  * Значення за замовчуванням: для Полів, відсутніх в об’єкті `fields`, використовується значення Таблиці за замовчуванням, якщо його налаштовано. Якщо обов’язкове Поле не має значення за замовчуванням або якщо для обов’язкового Поля явно передано `null`, запит завершиться помилкою.
+* **fieldKeyType (необов’язковий)**
+  * Опис: визначає тип ключа Поля
+  * Тип: рядок
+  * Можливі значення:
+    * "name": використовувати назву Поля як ключ
+    * "id": використовувати ідентифікатор Поля як ключ
+    * "dbFieldName": використовувати dbFieldName Поля як ключ
+  * Приклад: `"name"` або `"id"` або `"dbFieldName"`
+  * Примітка: якщо значення не вказано, за замовчуванням як ключ використовується назва Поля.
+  * Використання:
+    * Якщо встановлено значення "name":
+      ```json
+      {
+        "fields": {
+          "Name": "John Doe",
+          "Age": 30
+        }
+      }
+      ```
+    * Якщо встановлено значення "id":
+      ```json
+      {
+        "fields": {
+          "fldABCDEFGHIJKLMN": "John Doe",
+          "fldOPQRSTUVWXYZ12": 30
+        }
+      }
+      ```
+* **typecast (необов’язковий)**
+  * Опис: чи потрібно автоматично перетворювати типи значень Полів. За замовчуванням застосовується сувора перевірка, яка вимагає, щоб вхідні значення відповідали поточному типу даних Поля. Якщо цей параметр увімкнено, система спробує виконати автоматичне перетворення.
+  * Тип: логічний
+  * Можливі значення: true або false
+  * Приклад: `true`
+  * Примітка: якщо встановлено значення true, система спробує перетворити вхідні значення на правильний тип значення Поля.
+  * Приклади використання:
+    * Поле зв’язку: для створення зв’язку можна безпосередньо використовувати текст первинного ключа
+      ```json
+      {
+        "User table": "John Smith"
+      }
+      ```
+    * Поле дати: можна використовувати рядки дат у нестандартному форматі
+      ```json
+      {
+        "Date": "2023-05-15"
+      }
+      ```
+    * Поле користувача: можна безпосередньо використовувати ім’я користувача
+      ```json
+      {
+        "Assigned To": "John Doe"
+      }
+      ```
+* **order (необов’язковий)**
+  * Опис: визначає позицію нових Записів у певному Перегляді
+  * Тип: об’єкт
+  * Властивості:
+    * viewId
+      * Опис: ідентифікатор Перегляду [(як знайти)](/uk/api-doc/get-id#viewid)
+      * Тип: рядок
+      * Приклад: `"viwABCDEFGHIJKLMN"`
+    * anchorId
+      * Опис: ідентифікатор опорного Запису [(як знайти)](/uk/api-doc/get-id#recordid)
+      * Тип: рядок
+      * Приклад: `"rec123456789ABCDE"`
+    * position
+      * Опис: позиція відносно опорного Запису
+      * Тип: рядок
+      * Можливі значення:
+        * "before": перед опорним Записом
+        * "after": після опорного Запису
+      * Приклад: `"after"`
+  * Повний приклад:
+    ```json
+    {
+      "viewId": "viwABCDEFGHIJKLMN",
+      "anchorId": "rec123456789ABCDE",
+      "position": "after"
+    }
+    ```
+  * Примітка: параметр order дає змогу точно керувати позиціями нових Записів у певному Перегляді.
+
+### Відповідь
+
+#### Успішна відповідь
+
+* Код стану: 201 Created
+* Тіло відповіді: повертає дані створених Записів.
+
+**Приклад тіла відповіді**
+
+```json
+{
+  "records": [
+    {
+      "id": "record789",
+      "fields": {
+        "single line text": "текстове значення 1"
+      }
+    },
+    {
+      "id": "record567",
+      "fields": {
+        "single line text": "текстове значення 2"
+      }
+    }
+  ]
+}
+```
+
+### Відповіді з помилками
+
+* Код стану: 400 Bad Request: неправильний формат тіла запиту або відсутні обов’язкові Поля.
+* Код стану: 404 Not Found: указаний tableId не існує.
+
+### Приклад коду
+
+<CodeGroup>
+  ```bash CURL
+  curl -X POST 'https://app.teable.ai/api/table/__tableId__/record' \
+    -H 'Authorization: Bearer __token__' \
+    -H 'Content-Type: application/json' \
+    -d '{
+      "records": [
+        {
+          "fields": {
+            "Name": "John Doe",
+            "Age": 30
+          }
+        }
+      ]
+    }'
+  ```
+
+  ```js JS SDK
+  import { configApi, createRecords } from '@teable/openapi';
+
+  configApi({
+    endpoint: 'https://app.teable.ai',
+    token,
+  });
+
+  const response = await createRecords('__tableId__', {
+    records: [
+      {
+        fields: {
+          Name: 'John Doe',
+          Age: 30
+        }
+      }
+    ]
+  });
+
+  console.log(response.data);
+  ```
+
+  ```ts TypeScript
+  const response = await fetch('https://app.teable.ai/api/table/__tableId__/record', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer __token__',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      records: [
+        {
+          fields: {
+            Name: 'John Doe',
+            Age: 30
+          }
+        }
+      ]
+    })
+  });
+
+  console.log(await response.json());
+  ```
+
+  ```python Python
+  import requests
+
+  response = requests.post(
+      'https://app.teable.ai/api/table/__tableId__/record',
+      headers={
+          'Authorization': 'Bearer __token__',
+          'Content-Type': 'application/json'
+      },
+      json={
+          'records': [
+              {
+                  'fields': {
+                      'Name': 'John Doe',
+                      'Age': 30
+                  }
+              }
+          ]
+      }
+  )
+
+  print(response.json())
+  ```
+</CodeGroup>

@@ -1,0 +1,109 @@
+---
+title: Özel AI Modeli
+description: AI Alanları, Otomasyonlar, AI Chat, App Builder ve desteklenen diğer AI özellikleri için özel model sağlayıcıları ekleyin.
+---
+
+<Tip>Pro planı ve üzeri planlarda kullanılabilir</Tip>
+
+## Nerede yapılandırılır?
+
+1. Hedef Alanı açın.
+2. Sağ üst köşedeki **Ayarlar**'a tıklayın.
+3. **AI ayarları**'na gidin.
+
+<img
+  src="/images/docs/ai/2026-05-21-custom-model-ai-settings.png"
+  alt="AI ayarları sayfası"
+  className="docs-screenshot"
+/>
+
+## Kurulum Adımları
+
+**AI Özellikleri** altında ihtiyacınız olanları etkinleştirin:
+
+- **AI Alanı**
+- **AI Chat**
+
+**AI Chat**'in etkinleştirilmesi, sohbet özelliğinin Alanda kullanılabilir olup olmadığını belirler.
+
+**AI Alanı** altındaki **Eş Zamanlılık** satırı, bu Alanda aynı anda kaç AI Alanı oluşturma işleminin çalışacağını belirler; kalan işlemler kuyrukta bekler. Bu Alandaki toplu AI doldurma işlemleri diğer kullanıcıların çalışmalarını yavaşlatıyorsa değeri düşürün, büyük bir doldurma işleminin daha hızlı bitmesini istiyorsanız artırın.
+
+### LLM Sağlayıcısı Ekleme
+
+<Note>
+Yeni bir LLM sağlayıcısı eklerken sağlayıcı türü olarak **OpenAI**, **Anthropic** veya **OpenAI Compatible** seçin. OpenAI uyumlu bir API uç noktası sunan hizmetler için **OpenAI Compatible** seçeneğini kullanın. Bir görevde görüntüler, ekran görüntüleri veya başka görsel girdiler kullanılıyorsa görsel desteği bulunan bir model seçin. Görsel desteği olmayan modeller bu çok modlu görevlerde başarısız olur.
+</Note>
+
+**LLM sağlayıcısı ekle**'ye tıklayın ve aşağıdakileri doldurun:
+
+- **Ad**: Farklı sağlayıcıları ayırt etmek için kullanılır.
+- **Sağlayıcı türü**: Sağlayıcı türünü seçin.
+- **Temel URL**: Sağlayıcının API uç noktasını girin.
+- **API Anahtarı**: Sağlayıcıdan aldığınız API anahtarını girin.
+- **Modeller**: Bağlamak istediğiniz model adlarını girin. Birden fazla modeli İngilizce virgülle ayırın.
+
+<img
+  src="/images/docs/ai/2026-05-21-custom-model-add-provider.png"
+  alt="LLM sağlayıcısı ekleme iletişim kutusu"
+  className="docs-screenshot"
+/>
+
+### Model Özelliklerini Test Etme
+
+Şu anda test etmenin üç yolu vardır:
+
+- LLM sağlayıcısı satırındaki **Test Et**'e tıklayın.
+- Tek bir model satırındaki **Test Et**'e tıklayın.
+- Yapılandırılan tüm modelleri toplu olarak test etmek için listenin sağ üst köşesindeki **Model Özelliklerini Test Et**'e tıklayın.
+
+Bir model görüntü oluşturmak için tasarlanmışsa testi çalıştırmadan önce **Görüntü Oluşturma Modeli**'ni işaretleyin. İşaretlendiğinde Teable, metinden görüntüye ve görüntüden görüntüye özellikleri için modeli bir görüntü modeli olarak test eder. İşaretlenmezse model normal bir metin modeli olarak test edilir.
+
+## Yapılandırma İpuçları
+
+### Temel URL ve Modeller
+
+<Warning>Bazı Coding Plan anahtarları yalnızca belirli kodlama araçlarında çalışabilir ve standart API anahtarları olmayabilir. Bunları üçüncü taraf hizmetlerle kullanmadan önce sağlayıcının koşullarını kontrol edin. Teable'a bağlanmak için sağlayıcı panosunda oluşturulmuş standart bir API anahtarı kullanın.</Warning>
+
+Yaygın örnekler:
+
+| Sağlayıcı türü | Temel URL biçimi | Örnek modeller |
+|----------|----------------|----------------|
+| OpenAI | `https://api.openai.com/v1` | `gpt-5.5,o3,gpt-5-mini` |
+| Anthropic | `https://api.anthropic.com/v1` | `claude-opus-4-8,claude-sonnet-5,claude-haiku-4-5` |
+| OpenAI Compatible | Sağlayıcının OpenAI uyumlu `/v1` uç noktası | `gpt-5.5,gpt-5.4,o3,gpt-5-mini` |
+
+<Note>Model adları sağlayıcı belgeleriyle tam olarak eşleşmelidir ve büyük/küçük harfe duyarlıdır. Birden fazla modeli İngilizce virgülle ayırın.</Note>
+
+Notlar:
+
+- Model adları büyük/küçük harfe duyarlıdır. Sağlayıcı belgelerindeki adları tam olarak kullanın.
+- Bazı sağlayıcılar virgülden sonra boşluk bırakılmamasını gerektirir; örneğin `gpt-5.5,o3`.
+- **OpenAI Compatible** sağlayıcılarında ilgili sağlayıcının gerektirdiği model adlandırma biçimini kullanın. Bazı hizmetler `provider/model-name` biçimini kullanır.
+
+## SSS
+
+<AccordionGroup>
+<Accordion title="Tüm model testleri başarısız oldu">
+**Temel URL**'nin doğru olup olmadığını, yanlışlıkla sağlayıcının ana sayfa URL'sinin girilip girilmediğini veya sonunda fazladan `/` bulunup bulunmadığını kontrol edin. OpenAI uyumlu bir uç nokta kullanıyorsanız `/v1` bölümünün eksik olmadığını da doğrulayın.
+</Accordion>
+
+<Accordion title="“Test başarısız” hatası alıyorum">
+**API Anahtarı**'nın geçerli olup olmadığını ve hesapta hâlâ kredi ya da modeli çağırma izni bulunup bulunmadığını kontrol edin.
+</Accordion>
+
+<Accordion title="Bağlantı zaman aşımı">
+**Temel URL**'nin doğru olup olmadığını ve mevcut ortamınızın bu adrese erişip erişemediğini kontrol edin.
+</Accordion>
+
+<Accordion title="Model bulunamadı">
+**Modeller** değerinin büyük/küçük harf ve ayırıcı biçimi dahil olmak üzere sağlayıcı belgeleriyle tam olarak eşleştiğinden emin olun.
+</Accordion>
+
+<Accordion title="Coding Plan anahtarı kullandığımda test başarısız oluyor">
+Bu tür bir anahtar standart API çağrılarını desteklemeyebilir veya sağlayıcının koşulları üçüncü taraf hizmetlerde kullanıma izin vermeyebilir. Önce sağlayıcının Coding Plan koşullarını kontrol edin. Teable'a bağlanmak için sağlayıcı panosunda oluşturulmuş standart bir **API Anahtarı** kullanın.
+</Accordion>
+
+<Accordion title="Görüntü oluşturma modeli testinin sonucu yanlış görünüyor">
+Model görüntü oluşturmak için tasarlanmışsa önce **Görüntü Oluşturma Modeli**'ni işaretleyin ve ardından yeniden test edin. İşaretlendiğinde Teable bunun yerine metinden görüntüye ve görüntüden görüntüye özelliklerini test eder.
+</Accordion>
+</AccordionGroup>

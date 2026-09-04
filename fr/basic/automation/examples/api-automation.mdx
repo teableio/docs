@@ -1,0 +1,80 @@
+---
+title: "Créer des automatisations par programmation avec l’API"
+description: "Créez et configurez des workflows à l’aide de l’API Teable et de JavaScript"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Nous vous recommandons de créer les exemples d’automatisation directement dans le Chat IA. Décrivez simplement le workflow souhaité : l’IA se charge de toute la configuration, notamment du déclencheur, des actions, du script et des paramètres.</Tip>
+
+## Créer avec l’IA
+
+Ouvrez le Chat IA dans la barre latérale droite de votre table et indiquez à l’IA ce que vous souhaitez. Vous pouvez par exemple dire :
+
+*« Crée une automatisation qui surveille les changements de statut des commandes et envoie une notification webhook lorsqu’une commande est expédiée »*
+
+L’IA créera automatiquement le workflow complet. Vous pourrez examiner le script généré, le tester avec des données réelles, puis activer le workflow lorsqu’il sera prêt.
+
+## Prérequis
+
+- Un jeton d’accès personnel (PAT). Consultez [Jeton d’accès](/fr/api-doc/token).
+- L’ID de votre base, l’ID de votre table et les ID de vos champs. Consultez [Obtenir les ID](/fr/api-doc/get-id).
+
+## Fonctions utilitaires
+
+```javascript
+const baseUrl = "https://app.teable.ai/api";
+const token = process.env.TEABLE_TOKEN;
+const baseId = "bserxxxxxx";
+
+const headers = {
+  Authorization: `Bearer ${token}`,
+  "Content-Type": "application/json",
+};
+
+async function api(method, path, body) {
+  const res = await fetch(`${baseUrl}${path}`, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!res.ok) throw new Error(`${method} ${path} → ${res.status}`);
+  return res.json();
+}
+```
+
+## Créer le workflow
+
+```javascript
+// 1. Créer un workflow
+const wf = await api("POST", `/base/${baseId}/workflow`, {
+  name: "Notifier lors de l’expédition",
+  description: "Envoyer un webhook lorsque le statut de la commande devient Expédiée",
+});
+
+// 2. Ajouter un déclencheur
+const trigger = await api("POST", `/base/${baseId}/workflow/${wf.id}/trigger`, {
+  type: "recordUpdated",
+  config: { tableId: "tblOrders", watchFieldIds: ["fldStatus"] },
+});
+
+// 3. Tester le déclencheur
+await api("POST", `/base/${baseId}/workflow/${wf.id}/test/${trigger.id}`);
+
+// 4. Ajouter une action Requête HTTP
+const action = await api("POST", `/base/${baseId}/workflow/${wf.id}/action`, {
+  type: "httpRequest",
+  parentNodeId: trigger.id,
+});
+
+// 5. Activer
+await api("PUT", `/base/${baseId}/workflow/${wf.id}/active`, {
+  method: "activate",
+});
+```
+
+## Bonnes pratiques
+
+- Utilisez le PAT disposant des privilèges minimaux : limitez-le aux espaces et bases nécessaires.
+- Stockez les jetons dans des variables d’environnement ; ne les inscrivez jamais directement dans le code.
+- Utilisez **Tester le nœud** pour effectuer une vérification avant l’activation.
+- Consultez la [Référence complète de l’API Automation](/fr/api-reference/automation/put-base-workflow-action).

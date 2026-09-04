@@ -1,0 +1,107 @@
+---
+title: "Berechnete Outbox"
+description: "Überwachen Sie die BullMQ-Zustellung und den Rückstau berechneter Aufgaben im Admin-Panel."
+---
+
+<Tip>Verfügbar für selbstgehostete Business-Tarife und höher</Tip>
+
+Pfad: Admin-Panel → Berechnete Outbox
+
+Verwenden Sie **Berechnete Outbox**, wenn Formel-, Lookup- oder andere berechnete Feldwerte nicht mehr aktualisiert werden oder deutlich länger als erwartet benötigen. Die Seite zeigt den allgemeinen Zustand der Aufgaben, die Aufträge in der Warteschlange, Aufgaben, die möglicherweise wiederhergestellt werden müssen, sowie jeden Space, dessen berechnete Aufgaben derzeit pausiert sind.
+
+## Den Zustandsstatus lesen
+
+Der Status neben dem Seitentitel zeigt, ob berechnete Aufgaben Aufmerksamkeit benötigen:
+
+| Status | Bedeutung |
+| --- | --- |
+| **Gesund** | Berechnete Aufgaben werden normal ausgeführt. |
+| **Beeinträchtigt** | Teable hat Fehler, Aufgaben mit Zeitüberschreitung oder einen wachsenden Rückstau gefunden. |
+| **Kritisch** | BullMQ ist nicht verfügbar oder es ist kein Worker zur Verarbeitung von Aufgaben verfügbar. |
+
+Wenn der Status Aufmerksamkeit benötigt, führt die Seite den Grund auf.
+
+## Eine Aufgabe in der Warteschlange finden
+
+**Live-BullMQ-Warteschlange** listet die Aufträge auf, die Teable weiterhin speichert, damit Sie eine berechnete Aufgabe verfolgen oder nach langsamen Aufgaben suchen können.
+
+Standardmäßig ist jede Zeile eine Aufgabe, die beim erneuten Versuch durch Teable an Ort und Stelle verschiedene Zustände durchläuft. Wechseln Sie zu **Zustellungen**, wenn Sie den vollständigen Versuchsverlauf einer Aufgabe benötigen oder nach langsamen Ausführungen suchen möchten.
+
+So grenzen Sie die Liste ein:
+
+- Klicken Sie auf die Zustandskacheln über der Tabelle, um nach Zustand zu filtern: **Wartend**, **Aktiv**, **Verzögert**, **Fehlgeschlagen**, **Abgeschlossen (aufbewahrt)** und weitere. Sie können mehrere zugleich auswählen; beim Überfahren einer Kachel wird erklärt, was der Zustand bedeutet.
+- Filtern Sie nach **Space**, **Base**, **Ursache** oder **Ergebnis**, suchen Sie nach einer Aufgabe, Base, einem Space oder Fehler oder legen Sie eine Mindestverarbeitungszeit fest, um langsame Aufgaben anzuzeigen.
+- Klicken Sie auf eine Zeile, um **Berechnete Herkunft** zu öffnen: Zeitstempel der Warteschlange, Zustellungsverzögerung, Verarbeitungszeit, den vollständigen Fehlergrund einschließlich bereinigtem SQL für eine fehlgeschlagene Zustellung sowie die unten beschriebene Ausbreitungsdetailansicht.
+
+<Info>**Abgeschlossen** bedeutet nicht, dass die Aufgabe Arbeit ausgeführt hat. Die Ergebnisplakette zeigt, was die Zustellung tatsächlich getan hat: **Verarbeitet** führte die Aufgabe aus, **Keine Aktion** stellte fest, dass nichts mehr zu tun war, **Verschoben** plante sie für später neu ein, und **Geparkt** bedeutet, dass ihr Umfang pausiert ist. Der Filter **Ergebnis** grenzt die Liste nach diesem Resultat ein und zeigt, wie viele Zustellungen jeweils darunter fallen. Wenn Sie **Abgeschlossen (aufbewahrt)** mit **Verarbeitet** kombinieren, bleiben nur die Zustellungen übrig, die die Aufgabe tatsächlich ausgeführt haben.</Info>
+
+Eine fehlgeschlagene Zeile ist der Verlauf eines Zustellversuchs, keine festgefahrene Aufgabe. Die dauerhafte Aufgabe versucht es weiterhin selbstständig, lesen Sie daher die Spalte **Ledger-Status**, um zu entscheiden, ob Sie handeln müssen: **Abgeschlossen** bedeutet, dass ein späterer Wiederholungsversuch bereits erfolgreich war, und **Unzustellbar** verweist auf die Anomaliewartung. Abgeschlossene Fehler werden standardmäßig ausgeblendet; ein Banner zeigt ihre Anzahl und ermöglicht ihre Anzeige.
+
+**Fehlgeschlagenen Verlauf löschen** entfernt nur die aufbewahrten fehlgeschlagenen Auftragsdatensätze aus der Warteschlange. Dadurch wird nichts repariert, und unzustellbare Einträge bleiben in der **Anomaliewartung**.
+
+Eine Zustandskachel kann auch Einträge zählen, deren Auftragsdaten nicht mehr in Redis vorhanden sind, meist Überbleibsel nach einer Auslagerung oder einem Datenverlust. Die Liste kann sie nicht anzeigen, daher erklärt die Seite die Lücke unter der Tabelle. Teable entfernt solche Überbleibsel selbstständig aus dem fehlgeschlagenen Zustand; **Fehlgeschlagenen Verlauf löschen** entfernt sie sofort.
+
+## Nachverfolgen, wie sich ein Wert ausbreitet
+
+Wenn ein berechneter Wert falsch aussieht oder verspätet eingetroffen ist, öffnen Sie **Berechnete Herkunft**, um die gesamte Kette dahinter zu sehen. Klicken Sie auf eine beliebige Zeile der Warteschlange oder auf **Herkunft** neben einer Aufgaben-ID in den Anomaliedetails.
+
+| Abschnitt | Was er beantwortet |
+| --- | --- |
+| Zusammenfassung | End-to-End-Latenz, Zeitpunkt der Quelländerung, Zeitpunkt der Konvergenz des Werts sowie Tabelle und Felder, die die Ausführung ausgelöst haben. Eine Plakette **Wird berechnet** bedeutet, dass die Kette noch läuft. |
+| **Zeitachse** | Wann die Ausführung eingereiht, gestartet und abgeschlossen wurde oder fehlgeschlagen ist. |
+| **Aufgabenkette** | Jede Aufgabe in der Kaskade, unter der Aufgabe verschachtelt, die sie eingereiht hat, damit Sie sehen können, woher ein Zweig stammt. Jede Zeile zeigt ihren Zustand, Plan-Schritte, **Schreibziel** (die Tabelle und Felder, die diese Aufgabe aktualisiert), **Unsaubere Zeilen**, Kaskadentiefe, Einreihungszeit und Dauer. |
+| **Feldausbreitung** | Welche Felder die Ausführung gelesen und geschrieben hat und wie die Änderung zwischen ihnen weitergegeben wurde. Gestrichelt blau ist der Ursprung, der zu diesem Schreiben führte, grau ist eine Eingabe, die bei dieser Ausführung nicht geschrieben wurde, grün wurde bei dieser Ausführung geschrieben, und die Pfeile sind Feldabhängigkeiten oder Verknüpfungssprünge statt der Reihenfolge der Schritte. Es werden nur Ursprünge gezeichnet, die tatsächlich die Schreibvorgänge dieser Ausführung erreichen. Verwenden Sie **Erweitern**, um das Diagramm im Vollbild zu öffnen, wenn eine breite Kette inline schwer nachzuverfolgen ist. |
+
+<Info>Das Herkunfts-Ledger zeichnet nur Aufgaben auf, die nach Veröffentlichung dieser Funktion erstellt wurden, und bewahrt 7 Tage Verlauf auf. Eine ältere Aufgabe zeigt ihre Warteschlangenfakten ohne Ausbreitungsdiagramm. Eine Seed-Aufgabe, die der Worker noch nicht geplant hat, zeigt nur ihre Auslöserfelder. Wenn eine Änderung keine nachgelagerten berechneten Schreibvorgänge erzeugt hat, wird dies im Diagramm angegeben: Nichts hing über eine Formel, ein Lookup, ein Rollup oder einen Verknüpfungstitel von diesen Feldern ab.</Info>
+
+## Anomale Aufgaben behandeln
+
+<Info>Die Anzahl **Fehlgeschlagen** und die **Anomaliewartung** zeigen unterschiedliche Arten von Problemen, daher können ihre Zahlen voneinander abweichen.</Info>
+
+**Anomaliewartung** sammelt Anomalien in Problemgruppen, jeweils eine pro Base, Quelltabelle und Fehler, damit eine einzelne Grundursache leicht zu erkennen ist. Prüfen Sie den Fehlergrund und beheben Sie das zugrunde liegende Problem, bevor Sie etwas wiederherstellen. Erweitern Sie eine Gruppe, um ihre Fehlerdetails und die enthaltenen Aufgaben zu lesen; diese Zeilen dienen der Prüfung, und die Wiederherstellung wird immer für die gesamte Gruppe durchgeführt.
+
+Die verfügbaren Aktionen einer Gruppe hängen von ihrem Typ ab:
+
+| Anomalietyp | Aktion | Was geschieht |
+| --- | --- | --- |
+| **Unzustellbar** | **Gesamte Gruppe wiederherstellen** | Stellt jeden derzeit in dieser Gruppe befindlichen unzustellbaren Eintrag in der dauerhaften Warteschlange wieder her und stellt sie erneut zu. Alle anderen Gruppen bleiben unverändert. |
+| **Unzustellbar** | **Gruppe verwerfen** (im Menü **Weitere Aktionen**) | Löscht die unzustellbaren Einträge in dieser Gruppe dauerhaft. Sie können danach nicht wiederhergestellt oder erneut ausgeführt werden; verwenden Sie dies daher nur, wenn eine erneute Ausführung sinnlos ist. |
+| **Zeitüberschritten** | **Letzte Zeitüberschreitung erneut aktivieren** | Weckt die Warteschlange für die neueste Aufgabe der Gruppe, damit ein Worker sie übernehmen kann. |
+
+Nach der Wiederherstellung einer Gruppe meldet Teable, wie viele Aufgaben wiederhergestellt wurden, wie viele neu oder bereits eingereiht waren und wie viele zugestellt oder verschoben wurden. Worker verarbeiten die Gruppe dann unter den aktuellen Gleichzeitigkeits- und Aufgabenteilungslimits.
+
+Eine als **Base gelöscht** markierte Gruppe gehört zu einer Base, die nicht mehr existiert. Ihre Wiederherstellung würde sofort erneut fehlschlagen, daher ist **Gruppe verwerfen** die einzige angebotene Aktion.
+
+Das Verschieben einer Tabelle in den Papierkorb erzeugt hier keine Anomalien mehr. Eine berechnete Aufgabe, die weiterhin auf eine Tabelle im Papierkorb verweist, überspringt die Schritte, die sie lesen, beendet die Schritte, die auf aktive Tabellen zielen, und wird abgeschlossen.
+
+Eine Wiederherstellung ist auch nicht verfügbar, wenn die Daten selbst den Fehler verursacht haben, beispielsweise ein Wert, der eine Größenbeschränkung überschreitet oder eine Feldbeschränkung verletzt. Die erneute Ausführung derselben Aufgabe würde auf dieselbe Weise fehlschlagen; verwerfen Sie daher die Gruppe und korrigieren Sie stattdessen die Quelldaten oder die Felddefinition. Spätere Schreibvorgänge berechnen diese Felder automatisch neu.
+
+## Berechnete Aufgaben für einen Space pausieren
+
+Wenn die berechneten Aufgaben eines Space einen Vorfall verschlimmern, pausieren Sie diesen Space unter **Pausen berechneter Aufgaben**, statt die gesamte Instanz anzuhalten.
+
+<Steps>
+  <Step title="Pausendialog öffnen">Klicken Sie auf **Einen Space pausieren**.</Step>
+  <Step title="Space finden">Suchen Sie nach Space-ID oder -Name und wählen Sie ihn dann aus den Ergebnissen aus.</Step>
+  <Step title="Dauer auswählen">Setzen Sie **Pausendauer** auf 15, 30, 60 oder 120 Minuten.</Step>
+  <Step title="Grund dokumentieren (optional)">Notieren Sie den Vorfall oder das Wartungsfenster unter **Grund**.</Step>
+  <Step title="Bestätigen">Klicken Sie auf **Pause bestätigen**.</Step>
+</Steps>
+
+Eine Pause hindert Worker nur daran, neue berechnete Aufgaben für diesen Space zu beanspruchen. Bereits laufende Aufgaben werden nicht unterbrochen, und passende Aufgaben warten bis zum Ende der Pause, statt verworfen zu werden.
+
+Eine Pause läuft immer selbstständig ab, und zwei Stunden sind die längste einstellbare Dauer. Wenn der Vorfall länger anhält, pausieren Sie den Space auf dieser Seite erneut. Die Liste zeigt jede aktive Pause mit Ersteller, Grund und Zeitpunkt der automatischen Fortsetzung sowie die Anzahl ausstehender Aufgaben, die die aktiven Pausen zurückhalten, damit Sie den Rückstau beurteilen können, der bei einer Fortsetzung freigegeben wird. Um eine Pause frühzeitig aufzuheben, klicken Sie in ihrer Zeile auf **Fortsetzen** und bestätigen Sie.
+
+## Gleichzeitigkeit anpassen
+
+Der Warteschlangenabschnitt verfügt über zwei Steuerelemente für Gleichzeitigkeit. Jedes schreibt eine clusterweite Überschreibung, die jeder Prozess innerhalb von etwa 15 Sekunden ohne Neustart übernimmt und zurückgesetzt werden kann, sodass Prozesse zu ihrer eigenen Umgebungseinstellung zurückkehren. Eine Plakette **Überschrieben** kennzeichnet ein Steuerelement, das nicht mehr auf seinem Standardwert steht.
+
+| Steuerelement | Was es begrenzt |
+| --- | --- |
+| **Gleichzeitigkeit pro Prozess** | Wie viele berechnete Aufgaben jeder Worker-Prozess gleichzeitig verarbeitet. |
+| **Beanspruchungslimits pro Base** | Wie viele berechnete Aufgaben gleichzeitig für eine Base (**Pro Base**) und für eine Quelltabelle darin (**Pro Seed-Tabelle**) ausgeführt werden. Beide haben standardmäßig den Wert 2 und akzeptieren Werte von 1 bis 16. |
+
+Erhöhen Sie die Beanspruchungslimits, wenn eine ausgelastete Base den Engpass bildet, und die Gleichzeitigkeit pro Prozess, wenn viele Bases gleichzeitig in die Warteschlange eingereiht sind.
+
+<Warning>Höhere Gleichzeitigkeit belastet Ihre Datenbank stärker. Spaces, die ihre Daten in einem [Datenbank-Mandanten](/de/basic/admin-panel/database-tenant) speichern, behalten die Umgebungsstandardwerte für die Beanspruchungslimits bei, da ihre Verbindungspools auf diese Werte ausgelegt sind.</Warning>
+

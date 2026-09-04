@@ -1,0 +1,45 @@
+---
+title: "Evitare attivazioni indesiderate con filtri e Campi monitorati"
+description: "Impedisci l'esecuzione delle Automazioni quando non dovrebbero attivarsi"
+---
+
+<Tip>Consigliamo di creare gli esempi di Automazione direttamente in AI Chat. Descrivi il workflow desiderato e l'IA si occuperà dell'intera configurazione, inclusi trigger, azioni, script e impostazioni.</Tip>
+
+## Creare con l'IA
+
+Apri AI Chat nella barra laterale destra della Tabella e spiega all'IA cosa desideri. Ad esempio, puoi dire:
+
+*"Quando il Campo Stato passa ad Approvato, invia un'email di notifica all'assegnatario. Attiva il workflow soltanto per le modifiche di Stato e ignora quelle degli altri Campi"*
+
+L'IA creerà automaticamente il workflow completo. Puoi esaminare lo script generato, provarlo con dati reali e abilitare il workflow quando è pronto.
+
+Un workflow che si attiva troppo spesso spreca esecuzioni, invia email indesiderate e crea rumore. Ecco come rendere precisi i trigger.
+
+## Usare i Campi monitorati
+
+Quando utilizzi **Quando viene aggiornato un Record**, seleziona sempre Campi specifici anziché "Tutti i Campi".
+
+**Problema:** un workflow invia una notifica quando cambia il Campo Stato. Se è selezionato "Tutti i Campi", si attiva anche quando qualcuno modifica la Descrizione o aggiunge un commento.
+
+**Soluzione:** imposta Campi monitorati soltanto su **Stato**. Il workflow ignorerà tutte le altre modifiche.
+
+## Usare i filtri
+
+Aggiungi un filtro a qualsiasi trigger basato sui Record per limitare i Record che attivano il workflow.
+
+**Problema:** un workflow elabora tutti i nuovi Record, ma alcuni sono voci di prova.
+
+**Soluzione:** aggiungi un filtro: `Tipo` **non è** `Test`. Soltanto i Record reali attiveranno il workflow.
+
+## Combinare entrambi
+
+Per il massimo controllo, usa insieme i Campi monitorati **e** un filtro:
+
+- Campi monitorati: `Stato`
+- Filtro: `Stato` **è** `Approvato`
+
+Ciò significa che il workflow si attiva soltanto quando cambia il Campo Stato **e** il nuovo valore è "Approvato".
+
+## Usare "Quando un Record soddisfa le condizioni" per i cambiamenti di stato
+
+Se vuoi attivare il workflow **soltanto durante la transizione** (ad esempio, da "In attesa" ad "Approvato"), usa invece il trigger **Quando un Record soddisfa le condizioni**. Si attiva una volta nel momento in cui il Record inizia a soddisfare le condizioni, non a ogni modifica successiva.

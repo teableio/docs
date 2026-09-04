@@ -1,0 +1,95 @@
+---
+title: "Genel Bakış"
+description: "Aynı veritabanındaki farklı ekipler için erişim kapsamları belirleyerek üyelerin yalnızca ihtiyaç duydukları verileri görmesini, düzenlemesini veya dışa aktarmasını sağlayın."
+---
+
+{/* mintlify-resync: 2026-05-28 */}
+<Tip>Business planı ve üzerindeki planlarda kullanılabilir</Tip>
+
+Satış, finans, operasyon ve yönetim ekipleri aynı veritabanını paylaştığında izinler; kimlerin veritabanına girebileceğini, hangi verileri görebileceğini veya düzenleyebileceğini ve verileri içe ya da dışa aktarıp aktaramayacağını belirler. Yetki Matrisi, ekiplerin verileri tek yerde tutarken erişimi sorumluluklara göre ayırmasına yardımcı olur.
+
+Üyelere veya departmanlara özel roller atayabilir, ardından her rolün yalnızca ihtiyaç duyduğu tablolara, uygulamalara ve iş akışlarına erişmesine izin verebilirsiniz. Tablolar için görünür görünümleri, görünür kayıtları, düzenlenebilir alanları ve içe ya da dışa aktarma izinlerini de sınırlayabilirsiniz. Örneğin satış ekibi kendi müşterilerini yönetebilir, finans ekibi faturalandırma alanlarını görebilir ve yönetim ekibi veri kümesinin tamamını görüntüleyebilir.
+
+## Ne Zaman Kullanılmalı?
+
+| Senaryo | Uygun olduğu kullanım |
+| --- | --- |
+| Departman düzeyinde erişim | Satış ekibi müşteri kayıtlarını yönetirken finans ekibi yalnızca faturalandırma alanlarını görebilir. |
+| Atanan kişiye dayalı kayıtlar | Satış temsilcileri yalnızca kendilerine atanan kayıtları görüntüleyip güncelleyebilir. |
+| Kısıtlı veri girişi | Üyeler mevcut kayıtları düzenlemeden veya silmeden yeni kayıtlar oluşturabilir. |
+| Paylaşılan bir veritabanındaki hassas alanlar | Üyeler ödeme veya maliyet alanlarını görmeden sipariş kayıtlarını görüntüleyebilir. |
+| Denetimli uygulamalar ve iş akışları | Roller belirli uygulamaları veya iş akışlarını açabilirken yetkisiz düğümler gizli kalır. |
+
+## İzinler Nasıl Çalışır?
+
+Yetki Matrisi, erişimi role göre atar. Kullanıcılar doğrudan kendilerine atanan rollerden veya departman rollerinden izin alabilir. Birden fazla rol geçerli olduğunda Teable, bu rollerin izin verdiği yetkileri birleştirir.
+
+<Info>**Yönetici** iznine sahip Alan kullanıcıları ve Yetki Matrisi yöneticileri, Yetki Matrisini yönetebilir ve onun kısıtlamalarına tabi değildir.</Info>
+
+Rol listesi bir `Yöneticiler` bölümü ve bir `Özel roller` bölümü içerir:
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-role-list-en.png"
+  alt="Yetki Matrisi rol listesi"
+  className="docs-screenshot"
+/>
+
+Özel bir rol oluşturmak için `Rol ekle` seçeneğini kullanın. Rol ayrıntıları sayfasında ortak çalışanları atayın, kısa bir açıklama yazın ve veritabanındaki her düğüm için erişimi yapılandırın:
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-role-detail-en.png"
+  alt="Yetki Matrisi rol ayrıntıları sayfası"
+  className="docs-screenshot"
+/>
+
+## Rol Erişimini Yapılandırma
+
+Her tablo, uygulama ve iş akışı kendi erişim ayarına sahiptir.
+
+| Düğüm türü | Kullanılabilir ayar |
+| --- | --- |
+| Tablo | `Düzenleyebilir` veya `Erişim yok` seçeneğini belirleyin. Bir tablo `Düzenleyebilir` olarak ayarlandıktan sonra ayrıntılı izinlerini yapılandırın. |
+| Uygulama | `Erişebilir` veya `Erişim yok` seçeneğini belirleyin. Bu ayar, rolün uygulamayı açıp açamayacağını denetler. |
+| İş akışı | `Erişebilir` veya `Erişim yok` seçeneğini belirleyin. Bu ayar, rolün iş akışını açıp açamayacağını denetler. |
+| Klasör | Klasörler gezinme amacıyla gösterilir. Alt düğümlerin hiçbirine erişilemiyorsa klasör bu rol için gizlenir. |
+
+Görünüm, kayıt, alan ve diğer ayrıntılı tablo izinlerini yapılandırmak için önce tabloyu `Düzenleyebilir` olarak ayarlayın. `Erişim yok` olarak ayarlanan bir tablo, bu roldeki üyelerden gizlenir.
+
+## Tablo İzinleri
+
+Bir tablo `Düzenleyebilir` olarak ayarlandığında aşağıdaki izin alanlarını yapılandırın:
+
+| İzin alanı | Denetlediği öğeler |
+| --- | --- |
+| Görünüm izinleri | Rolün görünüm oluşturup oluşturamayacağını, güncelleyip silemeyeceğini ve `Tüm görünümler`i mi yoksa yalnızca `Belirli görünümler`i mi görebileceğini belirler. |
+| Kayıt izinleri | Rolün kayıt oluşturup oluşturamayacağını, güncelleyip silemeyeceğini, kayıtlara yorum yapıp kayıtları kopyalayıp kopyalayamayacağını belirler. Görünür kayıtlar `Tüm kayıtlar` veya filtre koşullarıyla eşleşen kayıtlar olabilir. |
+| Alan izinleri | Rolün belirli alanlardaki değerleri görüntüleyip görüntüleyemeyeceğini, güncelleyip oluşturup oluşturamayacağını belirler. Birincil alan görünür kalmalıdır. |
+| İçe ve dışa aktarma izinleri | Rolün tabloya veri aktarıp aktaramayacağını veya tablo verilerini dışa aktarıp aktaramayacağını belirler. |
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-table-permissions-en.png"
+  alt="Yetki Matrisi tablo izinleri"
+  className="docs-screenshot"
+/>
+
+Kayıt filtreleri, sorumluya, departmana veya benzer alanlara göre değişen erişim kapsamlarında kullanışlıdır. Örneğin `Satış sorumlusu` `şuna eşittir` `geçerli kullanıcı` koşulu, her satış temsilcisinin yalnızca kendi kayıtlarını görmesini sağlar. Alan izinleri, rolün erişebildiği kayıtlardaki hassas alan değerlerini ayrıca gizleyebilir veya kilitleyebilir.
+
+## Varsayılan Rol
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-default-role-en.png"
+  alt="Yetki Matrisi varsayılan rol ayarı"
+  className="docs-screenshot"
+/>
+
+Herhangi bir özel rol atanmamış üyeler için `Varsayılan rol`ü kullanın. Etkin bir özel rol seçebilir veya bu üyelerin Yetki Matrisi tarafından denetlenen içeriğe erişememesi için `İzin reddedildi` seçeneğini belirleyebilirsiniz.
+
+## Notlar
+
+- Yetki Matrisi etkinleştirildikten sonra Alan izni `Yönetici` düzeyinin altında olan kullanıcılar, Yetki Matrisi yöneticisi olarak eklenmedikleri sürece matris tarafından kısıtlanır.
+- Yetki Matrisini etkinleştiren kullanıcı otomatik olarak `Yöneticiler`e eklenir.
+- Yeni özel roller `Rol ekle` seçeneğiyle oluşturulduklarında etkinleştirilir; ancak her tablo, uygulama ve iş akışının yine de kendi erişim ayarı gerekir.
+- Bir rol için `Erişim yok` olarak ayarlanan tablo, ayrıntılı izin seçenekleri daha önce düzenlenmiş olsa bile bu rolden gizlenir.
+- `Kullanıcı ekle` veya `Kuruluştan ekle` seçeneğinden rol atamak, seçilen üyeleri veya departmanları veritabanı ortak çalışanı olarak ekleyebilir. Ardından Yetki Matrisi, veritabanı içindeki erişim kapsamlarını daraltır.
+
+<Note>Temel Alan ve veritabanı izin düzeyleri hakkında bilgi edinmek için [İş Birliği İzinleri](/tr/basic/space/space-permission) sayfasına bakın.</Note>

@@ -1,0 +1,51 @@
+---
+title: "Lookup"
+description: "Consulta i valori dei Campi di una Tabella collegata tramite una relazione esistente e mantieni i dati sincronizzati."
+---
+
+I Campi Lookup si basano sui Campi **Collegamento a Record**. Un Campo Lookup consulta un Campo selezionato in una Tabella collegata, consentendo alla Tabella corrente di mostrare i dati di un'altra Tabella senza doverli inserire di nuovo.
+
+## Casi d'uso
+
+| Scenario | Utile per |
+| --- | --- |
+| Voci degli ordini | Dopo aver collegato un prodotto, mostrarne prezzo, SKU o categoria |
+| Gestione dei ticket | Dopo aver collegato un cliente, mostrarne numero di telefono, fascia o responsabile |
+| Gestione dei libri | In una Tabella di libri, mostrare data di nascita, nazionalità o biografia dell'autore |
+| Gestione dei progetti | Dalle attività collegate, mostrare assegnatario, data di scadenza o stato |
+
+## Creare e configurare
+
+<Steps>
+  <Step title="Crea una relazione di collegamento">
+    Prima di utilizzare un Campo Lookup, crea un Campo **Collegamento a Record** tra le due Tabelle.
+  </Step>
+  <Step title="Scegli il tipo di Campo">
+    Nella Vista Tabella, fai clic su `+` per aggiungere un Campo e scegli **Lookup**.
+  </Step>
+  <Step title="Scegli il Campo di collegamento">
+    Scegli un Campo di collegamento esistente nella Tabella corrente come percorso del lookup.
+  </Step>
+  <Step title="Scegli il Campo di destinazione">
+    Scegli il Campo da leggere nella Tabella di origine, ad esempio la data di nascita di un autore, il numero di telefono di un cliente o il prezzo di un prodotto.
+  </Step>
+</Steps>
+
+## Sincronizzazione automatica
+
+Dopo la configurazione, Teable compila il risultato del lookup in base alla relazione di collegamento esistente:
+
+- Se il Record collegato cambia, ad esempio scegliendo un autore diverso, il valore del lookup si aggiorna.
+- Se cambiano i dati di origine, ad esempio modificando la data di nascita di un autore, il valore del lookup viene aggiornato.
+
+## Utilizzi comuni
+
+- **Gestione dei libri**: in una Tabella `Libri`, usa un Campo di collegamento `Autore` per cercare `Data di nascita` in una Tabella con i dettagli degli autori.
+- **Calcolo degli ordini**: in una Tabella `Voci degli ordini`, cerca il prezzo del prodotto e usa quindi una formula per calcolare il totale.
+- **Sincronizzazione delle informazioni sui clienti**: in una Tabella di ticket, collega un cliente e cercane il numero di telefono, l'indirizzo email o la fascia.
+
+## Note
+
+- **Campo di sola lettura**: i Campi Lookup sono **di sola lettura**. Non puoi modificare il valore recuperato dalla Tabella corrente. Per cambiarlo, modifica il Campo originale nella Tabella di origine.
+- **Valore singolo e valori multipli**: se la relazione di collegamento è uno-a-uno, il risultato del lookup è un singolo valore. Se la relazione è uno-a-molti, il risultato diventa una matrice multivalore e mostra i valori separati da virgole.
+- **Dipendenze dei dati**: i Campi Lookup dipendono dal Campo di collegamento e dal Campo di origine. Se il Campo di collegamento o il Campo di destinazione nella Tabella di origine viene eliminato, il Campo Lookup smette di funzionare.

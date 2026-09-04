@@ -1,0 +1,154 @@
+---
+title: "Campi AI"
+description: "I Campi AI possono riassumere testi, classificare tag, generare punteggi o trasformare contenuti in immagini."
+---
+
+<Note>Disponibile in tutti i piani Cloud. Le distribuzioni self-hosted richiedono il piano Business o superiore.</Note>
+
+## Principali casi d'uso
+
+I Campi AI generano il valore del Campo corrente a partire da altri Campi della stessa riga. Usali per trasformare contenuti non elaborati in riepiloghi, traduzioni, dettagli estratti, categorie, punteggi, date o immagini.
+
+<Columns cols={2}>
+  <Card title="Testo" icon="text">
+    Riassumi, traduci, estrai informazioni, migliora la scrittura o personalizza l'output. Ideale per trasformare testi lunghi in contenuti utilizzabili.
+  </Card>
+  <Card title="Selezione singola" icon="circle-dot">
+    Classifica in modo intelligente o personalizza l'output. Ideale per associare i contenuti a una categoria esistente.
+  </Card>
+  <Card title="Selezione multipla" icon="tags">
+    Applica tag in modo intelligente o personalizza l'output. Ideale per associare i contenuti a uno o più tag esistenti.
+  </Card>
+  <Card title="Valutazione / Numero" icon="star">
+    Valuta o personalizza l'output. Ideale per generare punteggi o risultati numerici dai contenuti di origine.
+  </Card>
+  <Card title="Data" icon="calendar">
+    Estrai informazioni o personalizza l'output. Ideale per estrarre date o orari dai contenuti.
+  </Card>
+  <Card title="Allegato" icon="image">
+    Genera immagini o personalizza l'output. Ideale per creare immagini a partire da testo o allegati.
+  </Card>
+</Columns>
+
+Se non sai quale azione usare, inizia da qui:
+
+<AccordionGroup>
+  <Accordion title="Riassumi, Traduci, Estrai informazioni">
+    - **Riassumi**: crea un riepilogo a partire dal Campo di origine.
+    - **Traduci**: traduce il Campo di origine nella lingua di destinazione.
+    - **Estrai informazioni**: estrae informazioni specifiche dal testo. Anche i Campi Data possono usare questa azione per estrarre date o orari.
+  </Accordion>
+  <Accordion title="Migliora la scrittura, Classificazione intelligente, Tag intelligenti">
+   - **Migliora la scrittura**: riscrive il contenuto in base ai requisiti aggiuntivi specificati.
+   -  **Classificazione intelligente**: associa un Campo Selezione singola a un'opzione esistente.
+   -  **Tag intelligenti**: associa un Campo Selezione multipla a opzioni esistenti.
+  </Accordion>
+  <Accordion title="Valuta, Genera immagine">
+    - **Valuta**: genera un punteggio o un valore numerico a partire dal contenuto di origine.
+    - **Genera immagine**: crea immagini in un Campo Allegato. Alcuni modelli consentono di usare un Campo Allegato come immagine di riferimento.
+  </Accordion>
+  <Accordion title="Personalizza">
+    Usa un prompt personalizzato quando le azioni predefinite non soddisfano le tue esigenze. I prompt personalizzati possono fare riferimento ai Campi della stessa riga.
+  </Accordion>
+</AccordionGroup>
+
+## Flusso di lavoro
+
+<Steps>
+  <Step title="Aggiungi un Campo">
+    Crea un Campo, scegline il tipo, quindi espandi **Configurazione AI**. Ogni tipo di Campo mostra le azioni AI che supporta.
+  </Step>
+  <Step title="Scegli un'azione e un modello">
+    Scegli il **Tipo di azione AI** e il **Modello AI**. L'azione controlla l'attività, mentre il modello determina quale modello AI genera il risultato.
+  </Step>
+  <Step title="Scegli i Campi di origine">
+    Scegli il Campo che l'AI deve leggere come input. Il Campo AI genera il proprio valore a partire dai Campi di origine della stessa riga.
+  </Step>
+  <Step title="Aggiungi i requisiti di generazione">
+    A seconda dell'azione, compila **Requisiti aggiuntivi**, **Lingua di destinazione** o un **Prompt personalizzato**. Per la generazione di immagini nei Campi Allegato, usa **Impostazioni avanzate** per regolare dimensioni, qualità, numero, proporzioni, risoluzione o immagini di riferimento. Le impostazioni disponibili dipendono dal modello selezionato.
+  </Step>
+</Steps>
+
+<img
+  src="/images/docs/base/2026-05-22-ai-field-create-config.png"
+  alt="Creare un Campo AI"
+  className="docs-screenshot"
+/>
+
+Quando modifichi un Campo AI, puoi cambiare il tipo di azione, il modello, i Campi di origine, i requisiti aggiuntivi, il prompt personalizzato e l'impostazione di aggiornamento automatico. Dopo il salvataggio, la nuova configurazione si applica alle generazioni future. Se un risultato esistente non è quello desiderato, rigeneralo.
+
+<img
+  src="/images/docs/base/2026-05-22-ai-field-edit-config.png"
+  alt="Modificare un Campo AI"
+  className="docs-screenshot"
+/>
+
+## Aggiornamento automatico e generazione in blocco
+
+Quando **Aggiornamento automatico** è abilitato, il Campo AI viene aggiornato con la configurazione corrente ogni volta che cambiano il contenuto dei Campi di origine o la configurazione AI. Usalo quando il risultato deve rimanere sincronizzato con il contenuto di origine, ad esempio per categorie, riepiloghi, punteggi o tag generati dai feedback.
+
+Dopo aver creato un Campo o averne modificato la configurazione AI, puoi scegliere se elaborare immediatamente i Record nella Vista corrente:
+
+<Columns cols={3}>
+  <Card title="Compila solo le celle vuote" icon="circle">
+    Genera contenuti solo per le celle vuote. I valori esistenti non vengono sovrascritti.
+  </Card>
+  <Card title="Genera l'intera colonna" icon="rotate">
+    Rigenera i risultati per i Record nella Vista corrente. I valori esistenti vengono sovrascritti.
+  </Card>
+  <Card title="Salva solo la configurazione" icon="floppy-disk">
+    Salva la configurazione del Campo senza scrivere valori nelle celle.
+  </Card>
+</Columns>
+
+<img
+  src="/images/docs/base/2026-05-22-ai-field-save-options.png"
+  alt="Opzioni di salvataggio del Campo AI"
+  className="docs-screenshot"
+/>
+
+Dopo aver scelto un'opzione di generazione, Teable mostra lo stato dell'attività durante l'elaborazione dei Record.
+
+<img
+  src="/images/docs/base/2026-05-22-ai-field-generation-status.png"
+  alt="Stato di generazione del Campo AI"
+  className="docs-screenshot"
+/>
+
+Per eseguire la generazione in seguito, usa il menu del Campo invece di salvare nuovamente la configurazione.
+
+Puoi anche fare clic con il pulsante destro del mouse sul Campo e scegliere **Genera** per avviare la generazione in blocco per la Vista corrente. La disponibilità dipende dalla Vista corrente e dalle tue autorizzazioni.
+
+<img
+  src="/images/docs/base/2026-05-22-ai-field-generate-menu.png"
+  alt="Menu di generazione del Campo AI"
+  className="docs-screenshot"
+/>
+
+## Domande frequenti
+
+<AccordionGroup>
+  <Accordion title="I Campi AI elaborano automaticamente i Record esistenti?">
+    Dopo aver creato un Campo o averne modificato la configurazione AI, puoi scegliere **Compila solo le celle vuote**, **Genera l'intera colonna** o **Salva solo la configurazione**. Puoi anche eseguire in seguito la generazione in blocco dal menu contestuale del Campo scegliendo **Genera**.
+  </Accordion>
+
+  <Accordion title="Quando è consigliabile abilitare l'aggiornamento automatico?">
+    Abilita **Aggiornamento automatico** se desideri che il Campo AI venga aggiornato quando cambia il contenuto dei Campi di origine. Se vuoi controllare quando viene eseguita la generazione, lascialo disabilitato e usa **Genera** quando necessario.
+  </Accordion>
+
+  <Accordion title="Perché tipi di Campo diversi mostrano azioni AI diverse?">
+    Le azioni AI dipendono dal tipo di Campo. I Campi di testo sono adatti per riassumere, tradurre ed estrarre informazioni. I Campi Selezione singola sono adatti alla Classificazione intelligente. I Campi Selezione multipla sono adatti ai Tag intelligenti. I Campi Allegato sono adatti alla generazione di immagini.
+  </Accordion>
+
+  <Accordion title="Perché non vedo il modello che desidero usare?">
+    L'elenco dei modelli include quelli forniti da Teable e i modelli AI configurati nello Spazio corrente. Per usare un modello di terze parti, aggiungi prima un modello AI personalizzato nelle impostazioni dello Spazio.
+  </Accordion>
+
+  <Accordion title="Perché le opzioni di generazione delle immagini cambiano?">
+    Le opzioni relative a dimensioni, qualità, numero, proporzioni, risoluzione e immagini di riferimento dipendono dal modello selezionato.
+  </Accordion>
+
+  <Accordion title="Perché un'immagine 4K non usa sempre un lato completo da 3840 px?">
+    Alcuni modelli di immagini applicano un limite al numero totale di pixel. Quando scegli una risoluzione elevata come **4K**, Teable usa le dimensioni massime consentite per le proporzioni selezionate, pertanto larghezza e altezza esatte possono variare.
+  </Accordion>
+</AccordionGroup>

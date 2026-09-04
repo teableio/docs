@@ -1,0 +1,81 @@
+---
+title: "Operaciones de consulta de Tablas"
+description: "Revisa las recomendaciones sobre riesgos de consulta en Tablas lentas y confirma las mejoras de la base de datos."
+---
+
+<Tip>Disponible para el plan Business autoalojado y los planes superiores</Tip>
+
+Ruta: Administración del sistema → Operaciones de consulta de Tablas
+
+Usa **Operaciones de consulta de Tablas** cuando las Vistas, los filtros, las relaciones o las búsquedas de una Tabla grande se vuelvan lentos. Un analizador en segundo plano supervisa la carga de las consultas y convierte sus observaciones en recomendaciones. La página las enumera para que los administradores de la instancia puedan revisar las pruebas, analizar una Tabla concreta con más detalle y confirmar cualquier cambio en la base de datos.
+
+Los contadores situados sobre la lista resumen la situación actual: periodos de observación, solicitudes, consultas lentas, tiempos de espera agotados, recomendaciones abiertas y aceptadas, tareas en curso y fallidas, y cuántas rutas de acceso de búsqueda están listas o degradadas.
+
+## Revisar recomendaciones
+
+La página se abre en **Recomendaciones**, ordenadas por prioridad. El analizador pondera el riesgo de una consulta según la intensidad de uso de la Tabla, por lo que las entradas que más conviene atender aparecen primero.
+
+Busca por ID de Tabla, Base o Espacio para filtrar todas las recomendaciones; cualquier otro texto filtra lo que ya aparece en pantalla. Los filtros de estado y riesgo permiten acotar aún más la lista.
+
+Cada entrada indica el Espacio, la Base y la Tabla a los que pertenece. Expande una fila para consultar las pruebas que respaldan la recomendación, la decisión del sistema y los diagnósticos SQL:
+
+| Sección | Qué indica |
+| --- | --- |
+| **Desencadenador** | De dónde procede la recomendación: tráfico de consultas observado, la configuración de una Vista guardada o la configuración de un Campo de relación. Un desencadenador de Vista guardada significa que todavía no se ha observado ninguna consulta lenta; el riesgo se detectó únicamente a partir de la configuración. |
+| **Ruta de acceso** | Con qué frecuencia se accedió a esta Tabla mediante un análisis secuencial frente a un análisis por índice. |
+| **Motivos** | Causas comprensibles, como una Tabla grande, la ausencia de un índice útil en los Campos de filtro u ordenación, una ordenación costosa o tiempos de espera agotados observados. |
+| **Patrón de consulta** | Los Campos concretos que se filtran y ordenan, junto con el tipo de coincidencia que usa cada uno. |
+| **Índice propuesto** | Los Campos que indexaría la recomendación y el motivo. |
+
+**Análisis profundo** abre el Espacio de trabajo de análisis con esa Tabla ya introducida.
+
+Cuando el analizador detecta un uso intensivo de búsquedas de subcadenas en una Tabla, genera una única recomendación de **GIN de texto generado** para toda la Tabla, en lugar de un índice por Campo. Esa fila ofrece **Crear ruta de búsqueda** en lugar de **Análisis profundo**, y **Añadir índice** no aparece porque las rutas de acceso de búsqueda se aplican desde el Espacio de trabajo de análisis y requieren primero una **Búsqueda de muestra con EXPLAIN**. La recomendación se cierra automáticamente cuando la Tabla dispone de la ruta.
+
+Hay otras dos pestañas junto a ella:
+
+| Pestaña | Qué muestra |
+| --- | --- |
+| **Tablas con más actividad** | Las Tablas con más actividad, junto con sus solicitudes, consultas lentas, tiempos de espera agotados y la duración de la consulta más larga. |
+| **Tareas** | Las tareas de corrección creadas por Teable, con su estado, intentos, proceso de trabajo y último error. |
+
+Aparece un banner sobre la lista cuando un problema de configuración está bloqueando el proceso: hay rutas de acceso de búsqueda configuradas mientras el indicador del entorno de ejecución está desactivado; algunas Tablas tienen una ruta de acceso obsoleta o pendiente de reconstrucción y su búsqueda ha vuelto silenciosamente al análisis `ILIKE`, que es más lento; o la tarea más antigua de la cola lleva tanto tiempo esperando que parece que ningún proceso de trabajo la está consumiendo. Corrige el problema indicado en el banner antes de actuar sobre las recomendaciones que aparecen debajo.
+
+### Interpretar el distintivo de decisión
+
+Cada recomendación incluye la decisión más reciente que el sistema ha tomado al respecto:
+
+| Distintivo | Significado |
+| --- | --- |
+| **Requiere confirmación manual** | Solo un administrador puede aplicar esta recomendación. |
+| **Simulación · se ejecutaría automáticamente** | La recomendación cumple los criterios de aceptación, pero la ejecución automática no está habilitada, por lo que no se ha realizado ningún cambio. |
+| **En ejecución automática** / **Ejecutada automáticamente** | La ejecución automática ha aceptado y aplicado la recomendación. |
+| **Error en la verificación posterior · reintento aplazado** | Un cambio automático no superó la verificación. Teable espera más tiempo antes de volver a intentarlo en esa Tabla. |
+| **En periodo de espera** | El mismo ámbito se ha modificado recientemente, por lo que el sistema está esperando. |
+| **En espera** / **Ejecución automática no aplicada** | Las pruebas del plan o el tamaño de la Tabla no alcanzaron el umbral necesario para la ejecución automática. |
+
+<Info>De forma predeterminada, Teable solo registra las decisiones y crea registros de recomendaciones y tareas; no modifica la base de datos por sí solo. La ejecución automática se habilita de forma voluntaria mediante `V2_TABLE_QUERY_OPS_AUTO_ACCEPT=auto` y, aun así, solo se aplica a Tablas pequeñas cuyo plan de ejecución muestra una mejora clara de costes. Todo lo demás queda pendiente de un administrador.</Info>
+
+### Añadir el índice propuesto
+
+Cuando estés de acuerdo con el índice propuesto por una recomendación, haz clic en **Añadir índice** en la fila. Al confirmar, se acepta la recomendación y se ejecuta `CREATE INDEX CONCURRENTLY` en la Tabla PostgreSQL subyacente; si se omitió la validación del plan, Teable crea igualmente el índice a partir de los Campos recomendados. El cuadro de diálogo repite las pruebas para que puedas comprobarlas una última vez.
+
+En las Tablas con una estimación de 50 000 filas o más, el cuadro de diálogo te pide que confirmes la existencia de una ventana de mantenimiento antes de habilitar el botón. La creación simultánea en una Tabla grande requiere tiempo y añade carga mientras se ejecuta.
+
+Teable informa entonces de que el **Índice se ha creado** o de que la **Recomendación se ha aceptado y añadido a la cola**. En el segundo caso, sigue la tarea en **Tareas**. Si la recomendación no tiene ninguna columna física ejecutable asociada, **Añadir índice** permanece deshabilitado e indica el motivo; usa el Espacio de trabajo de análisis para investigar con más detalle.
+
+## Ejecutar un análisis profundo
+
+Abre el **Espacio de trabajo de análisis** para analizar un ámbito cuando lo necesites, por ejemplo, cuando un usuario informe de una Tabla lenta para la que aún no haya ninguna recomendación.
+
+| Tipo de análisis | Para qué se utiliza |
+| --- | --- |
+| **Consultas e índices** | Detectar riesgos de consulta y posibles mejoras de índices. |
+| **Búsqueda de subcadenas** | Comprobar si una ruta de acceso para búsquedas de subcadenas podría acelerar las búsquedas de contenido sin cambiar su comportamiento de coincidencia. |
+
+Elige **Tabla**, **Base** o **Espacio**, introduce el ID correspondiente y selecciona un tipo de análisis. Empieza por **Tabla** cuando ya sepas qué Tabla es lenta.
+
+Haz clic en **Generar informe de consultas** o **Generar informe de búsqueda**. El informe resume los riesgos detectados y las siguientes acciones recomendadas. En los informes de búsqueda, la **Búsqueda de muestra con EXPLAIN** es opcional. Añade una muestra para comprobar la compatibilidad de los resultados, los planes de consulta y los tiempos de consultas repetidas de la ruta de acceso propuesta para búsquedas de subcadenas. Teable no guarda el valor de muestra.
+
+<Info>El informe de consultas no modifica la base de datos. Para aplicar una recomendación de búsqueda de subcadenas se necesita una **Búsqueda de muestra con EXPLAIN** y la confirmación de un administrador.</Info>
+
+En las Tablas grandes, revisa el impacto y programa cualquier cambio confirmado para una ventana de mantenimiento adecuada.

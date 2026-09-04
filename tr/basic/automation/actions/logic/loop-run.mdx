@@ -1,0 +1,104 @@
+---
+title: "Döngü (toplu)"
+description: "Bir dizi üzerinde yineleme yaparak tek eylemde birden fazla öğeyi işleyin"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Otomasyon oluşturmak için Komut dosyası çalıştır'ı kullanmanızı kesinlikle öneririz; bu özellik, aksi hâlde elle oluşturulması gerekecek eylemler dahil tüm eylem davranışlarını kapsayabilir. Gereksinimlerinizi sohbette AI'a açıklamanız yeterlidir.
+
+Lütfen unutmayın: eylemleri elle eklerseniz AI daha sonra bunları tanıyamaz veya değiştiremez.
+</Tip>
+
+Döngü, bir eylemi dizideki **her öğe için bir kez** çalıştırmanızı sağlar. Tek bir kaydı işlemek veya tek bir e-posta göndermek yerine listedeki her öğe için eylemi yineler; toplu kayıt oluşturabilir, bir kişi listesine kişiselleştirilmiş e-postalar gönderebilir veya her öğe için API çağrısı yapabilirsiniz.
+
+Öğeler sırayla işlenir ve tüm yinelemelerin sonuçları, sonraki adımların kullanabileceği bir dizi olarak döndürülür.
+
+## Desteklenen eylemler
+
+| Eylem | Döngü Desteği |
+|---|---|
+| Kayıt Oluştur | Evet |
+| Kaydı Güncelle | Evet |
+| E-posta Gönder | Evet |
+| HTTP İsteği | Evet |
+| AI ile Oluştur | Evet |
+
+## Dizilerin kaynakları
+
+Döngüyü kullanmak için girdi olarak bir dizi gerekir. Yaygın kaynaklar şunlardır:
+
+| Kaynak | Elde ettiğiniz veri |
+|---|---|
+| **Kayıtları Getir** eylemi | Bir tablo sorgusundan gelen kayıt dizisi |
+| **Webhook alındı** tetikleyicisi | JSON gövdesi diziler içerebilir (ör. sipariş kalemleri listesi) |
+| **AI ile Oluştur** eylemi (JSON çıktısı) | AI, yapılandırılmış öğelerden oluşan bir dizi döndürebilir |
+| **HTTP İsteği** eylemi | Dizi içeren bir API yanıtı |
+| **Komut Dosyası** eylemi | Bir komut dosyası `output.set()` üzerinden herhangi bir diziyi çıkarabilir |
+
+## Nasıl yapılandırılır?
+
+1. Desteklenen bir eylemi açın (ör. Kayıt Oluştur, E-posta Gönder).
+2. Tablo seçicinin altındaki (veya eylem yapılandırma alanındaki) **Döngü Çalıştırması** seçeneğine tıklayın.
+3. Veri kaynağı seçicide önceki bir adımdan gelen **dizi değişkenini** seçin. Örneğin Kayıtları Getir adımındaki kayıtlar dizisini seçebilirsiniz.
+4. Alan eşleme bölümünde artık dizinin tamamı yerine her bir öğenin özellikleri gösterilir. **Geçerli öğenin** özelliklerine (ör. geçerli kaydın Ad, E-posta veya Durum değerine) başvurmak için **+** simgesine tıklayın.
+5. Eylemi kaydedin. İş akışı çalıştığında eylem, dizideki her öğe için bir kez yürütülür.
+
+## Geçerli öğeye başvurma
+
+Döngü etkin olduğunda **+** değişken seçici, yinelemedeki geçerli öğenin özelliklerini gösterir. Örneğin:
+
+- Kayıtları Getir çıktısı üzerinde döngü kuruyorsanız `geçerli öğe → alanlar → Ad`, `geçerli öğe → alanlar → E-posta` vb. değerlere başvurabilirsiniz.
+- Bir webhook dizisi üzerinde döngü kuruyorsanız `geçerli öğe → product_name`, `geçerli öğe → quantity` vb. değerlere başvurabilirsiniz.
+
+Bu, dizinin tamamına veya belirli bir dizine başvurduğunuz döngüsüz moddan farklıdır.
+
+## Somut örnek: vadesi geçmiş görevler için hatırlatma e-postaları gönderme
+
+1. **Tetikleyici:** Zamanlanan saatte — her gün 09.00'da.
+2. **1. Eylem:** Kayıtları Getir — Görevler tablosunda filtre: Son Tarih bugünden önce VE Durum "Tamamlandı" değil.
+3. **2. Eylem:** **Döngü** etkin olarak E-posta Gönder; veri kaynağı = 1. Eylemin kayıtlar dizisi.
+   - **Kime:** geçerli öğenin Sorumlu E-postası alanı.
+   - **Konu:** `Hatırlatma: "{{current item → Task Name}}" görevinin süresi geçti`
+   - **Gövde:** `Merhaba {{current item → Assignee Name}}, "{{current item → Task Name}}" görevinizin son tarihi {{current item → Due Date}} idi. Lütfen görevi güncelleyin.`
+
+Sonuç: vadesi geçmiş her görev için bir kişiselleştirilmiş e-posta.
+
+## HTTP Dizi Gövdesi
+
+HTTP İsteği eylemlerinde Döngü, özel bir **Dizi Gövdesi** modu sunar. Dizi Gövdesi, her öğe için ayrı bir HTTP isteği göndermek (bu yöntem yavaş olabilir ve hız sınırlarına takılabilir) yerine **dizinin tamamını tek istekte bir JSON dizisi olarak** gönderir.
+
+Bu, harici API toplu işlemleri desteklediğinde kullanışlıdır; örneğin tek bir API çağrısında birden fazla kayıt oluşturabilir veya bir analiz hizmetine olayları toplu hâlde gönderebilirsiniz.
+
+Dizi Gövdesini kullanmak için:
+1. Bir HTTP İsteği eyleminde Döngüyü etkinleştirin.
+2. Varsayılan öğe başına modu yerine **Dizi Gövdesi** modunu seçin.
+3. Dizinin tamamı bir JSON dizisi olarak serileştirilir ve istek gövdesinde gönderilir.
+
+## Performansla ilgili noktalar
+
+- Döngü, öğeleri paralel değil **sıralı olarak** işler. 100 öğelik bir döngü, tek çalıştırmadan yaklaşık 100 kat uzun sürer.
+- Büyük dizilerde (yüzlerce veya binlerce öğe), harici eylemin toplu girdiyi işleyip işleyemeyeceğini değerlendirin. API destekliyorsa HTTP Dizi Gövdesini kullanın.
+- Kayıtları Getir çıktısı üzerinde döngü kurup her kayıt için HTTP isteği yapıyorsanız harici API'nin hız sınırlarını göz önünde bulundurun.
+- Çok büyük veri kümelerinde, Kayıtları Getir bölümündeki sayfalandırmayı (Atla/Al) ve birden fazla otomasyon çalıştırmasını kullanarak işi daha küçük gruplara ayırmayı değerlendirin.
+
+## Ne zaman kullanılır?
+
+- **Toplu kayıt oluşturun.** Bir tablodan kayıtları alın ve başka bir tabloda karşılık gelen kayıtları oluşturmak için döngü kurun.
+- **Bir listeye kişiselleştirilmiş e-postalar gönderin.** Kişi listesini alın ve her birine özelleştirilmiş e-posta göndermek için döngü kurun.
+- **Birden fazla kaydı güncelleyin.** Bir koşulla eşleşen kayıtları alın ve her birini güncellemek için döngü kurun (ör. vadesi geçmiş tüm görevleri "Üst Birime Aktarıldı" olarak işaretleyin).
+- **Her kayıt için API çağrısı yapın.** Her kaydın verilerini tek tek harici bir sisteme aktarın.
+- **Bir kayıt grubunu AI ile işleyin.** Kayıtlar üzerinde döngü kurun ve her birindeki verileri sınıflandırmak, özetlemek veya ayıklamak için AI ile Oluştur'u kullanın.
+
+## İpuçları
+
+- Döngüyü etkinleştirmeden önce dizinizin boyutunu mutlaka denetleyin. Kayıtları Getir 1.000 kayıt döndürürse döngünüz 1.000 kez çalışır.
+- Otomasyonu tetikleyen tablodaki kayıtları oluşturuyor veya güncelliyorsanız otomasyonun kendisini yeniden tetiklemesine dikkat edin. Döngüleri önlemek için tetikleyicide filtre kullanın.
+- Tüm döngü yinelemelerinin sonuçları sonraki adımlarda bir dizi olarak kullanılabilir ancak çok büyük döngülerde bu dizi de büyük olabilir. Yalnızca ihtiyaç duyduğunuz verilere başvurun.
+
+## İlgili konular
+
+- [Kayıtları getir](/tr/basic/automation/actions/records/get-records) — Döngü için en yaygın dizi kaynağı
+- [Kayıt oluştur](/tr/basic/automation/actions/records/create-record) — toplu kayıt oluşturmak için Döngü içinde yaygın olarak kullanılır
+- [HTTP isteği](/tr/basic/automation/actions/logic/http-request) — öğe başına API çağrısı yapmak için Döngü içinde yaygın olarak kullanılır
+- [E-posta gönder](/tr/basic/automation/actions/communication/send-email-overview) — toplu e-posta göndermek için Döngü içinde yaygın olarak kullanılır

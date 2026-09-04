@@ -1,0 +1,90 @@
+---
+title: "Obtenir des enregistrements"
+description: "Récupérez des enregistrements d’une table avec des filtres et une pagination facultatifs"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Nous vous recommandons vivement d’utiliser Exécuter un script pour créer des automatisations, car cette action peut couvrir tous les comportements, y compris ceux qui devraient autrement être configurés manuellement. Décrivez simplement vos besoins à l’IA dans le chat.
+
+Remarque : si vous ajoutez des actions manuellement, l’IA ne pourra ni les reconnaître ni les modifier par la suite.
+</Tip>
+
+## Créer avec l’IA
+
+Ouvrez le Chat IA dans la barre latérale droite de votre table et décrivez ce que vous souhaitez obtenir.
+
+L’IA s’occupe de tout : elle sélectionne le bon déclencheur, choisit les actions appropriées, associe les champs et configure automatiquement l’ensemble du workflow.
+
+Décrivez une seule fois votre objectif : le workflow est prêt, sans aucune configuration manuelle.
+
+Récupère les enregistrements d’une table et les renvoie sous forme de tableau. Utilisez les résultats dans les étapes suivantes pour parcourir les enregistrements, transmettre des données à un script ou alimenter d’autres actions.
+
+## Configuration
+
+| Paramètre | Obligatoire | Description |
+|---|---|---|
+| Table | Oui | Table à interroger |
+| Vue | Non | Limite les résultats aux enregistrements visibles dans une vue donnée (hérite des filtres, tris et champs masqués de la vue) |
+| Filtre | Non | Conditions de filtrage supplémentaires appliquées en plus du filtre de la vue |
+| Ignorer | Non | Nombre d’enregistrements à ignorer depuis le début (pour la pagination) |
+| Prendre | Non | Nombre maximal d’enregistrements à renvoyer (pour la pagination) |
+
+## Configuration de l’action
+
+1. Ajoutez une action **Obtenir des enregistrements** à votre workflow.
+2. Choisissez la **Table** à interroger. Utilisez l’[Accès inter-base](/fr/basic/automation/actions/records/cross-base) si la table se trouve dans une autre base.
+3. (Facultatif) Sélectionnez une **Vue** pour hériter de ses paramètres de filtre, de tri et de visibilité des champs.
+4. (Facultatif) Ajoutez des conditions de **Filtre** pour affiner les résultats. Par exemple, `Statut` est égal à `Actif` et `Date d’échéance` est antérieure à aujourd’hui.
+5. (Facultatif) Définissez **Ignorer** et **Prendre** pour la pagination. Par exemple, Ignorer 0 et Prendre 100 pour récupérer les 100 premiers enregistrements.
+6. Enregistrez l’action. Lors de l’exécution du workflow, les résultats seront accessibles sous forme de tableau aux étapes suivantes.
+
+## Résultat : utiliser les enregistrements
+
+Le résultat est un **tableau d’enregistrements**. Chaque enregistrement contient :
+
+- **ID de l’enregistrement** — identifiant unique.
+- **Toutes les valeurs de champ** — chaque champ de la table (ou de la vue, si vous en avez sélectionné une).
+
+### Utiliser les résultats à l’étape suivante
+
+- **Référencer un seul enregistrement :** si vous n’attendez qu’un seul résultat, ou souhaitez utiliser le premier, vous pouvez référencer directement les champs du premier enregistrement avec le sélecteur de variables **+**.
+- **Parcourir tous les enregistrements :** ajoutez une action [Boucle (traitement par lots)](../logic/loop-run) après Obtenir des enregistrements et sélectionnez le tableau de résultats comme source de données. Dans la boucle, référencez les champs de chaque élément.
+- **Traiter les données dans un script :** transmettez le tableau à une étape [Exécuter un script](/fr/basic/automation/actions/ai/ai-script) pour effectuer un traitement, un filtrage ou une transformation personnalisé.
+
+## Pagination
+
+Si vous ne définissez pas **Ignorer** et **Prendre**, l’action renvoie des enregistrements jusqu’à la limite par défaut du système. Pour les grandes tables, utilisez la pagination afin de contrôler la taille des résultats :
+
+| Paramètre | Objectif | Exemple |
+|---|---|---|
+| Ignorer | Nombre d’enregistrements à ignorer depuis le début | `0` (commencer au début) |
+| Prendre | Nombre d’enregistrements à renvoyer | `100` (renvoyer 100 enregistrements) |
+
+Pour traiter une grande table entière, vous pouvez utiliser plusieurs étapes Obtenir des enregistrements en augmentant les valeurs Ignorer, ou gérer la pagination dans un script.
+
+## Quand l’utiliser
+
+- **Rechercher les tâches en retard afin d’envoyer des rappels.** Filtrez les tâches dont la Date d’échéance est antérieure à aujourd’hui et dont le Statut n’est pas « Terminée ». Parcourez les résultats et envoyez un e-mail pour chacun.
+- **Rassembler des données pour un récapitulatif quotidien.** Récupérez tous les enregistrements mis à jour au cours des dernières 24 heures et regroupez-les dans un e-mail récapitulatif.
+- **Rechercher des enregistrements liés avant une création ou une mise à jour.** Avant de créer un doublon, vérifiez s’il existe déjà un enregistrement avec la même adresse e-mail.
+- **Alimenter une action IA.** Récupérez les enregistrements comportant des champs de texte long, puis utilisez Générer avec l’IA dans une boucle pour résumer ou classer chacun d’eux.
+- **Synchroniser les enregistrements avec un système externe.** Récupérez tous les enregistrements modifiés depuis la dernière synchronisation, puis transmettez-les à un CRM ou à un entrepôt de données via des requêtes HTTP.
+
+## Conseils
+
+- **Utilisez des filtres.** Plus votre filtre est précis, moins le nombre d’enregistrements renvoyés est élevé et plus l’action s’exécute rapidement.
+- **Limitez les résultats avec Prendre.** Si seuls les 10 premiers enregistrements vous intéressent, définissez Prendre sur 10. Il est inutile d’en récupérer des milliers lorsque vous n’en avez besoin que de quelques-uns.
+- **Sélectionnez une Vue** qui filtre et trie déjà les données nécessaires. La configuration de votre automatisation restera ainsi plus simple.
+- **Évitez de récupérer la table entière**, sauf si tous les enregistrements sont réellement nécessaires. Les jeux de résultats volumineux sont plus longs à traiter et utilisent davantage de ressources, notamment avec Boucle.
+- Obtenir des enregistrements ne modifie aucune donnée : cette action est en lecture seule.
+- Si la requête ne renvoie aucun enregistrement, les étapes suivantes qui référencent les résultats reçoivent un tableau vide. Veillez à ce que votre workflow gère correctement ce cas (par exemple, n’envoyez pas un e-mail annonçant « voici vos résultats » s’il n’y en a aucun).
+- Les filtres d’Obtenir des enregistrements fonctionnent comme ceux des vues : vous pouvez combiner les conditions avec une logique ET/OU.
+- Lors de l’utilisation de l’Accès inter-base, la requête s’exécute avec les autorisations du créateur du workflow. Si celui-ci perd l’accès à la base cible, l’étape échoue.
+
+## Pages connexes
+
+- [Accès inter-base](/fr/basic/automation/actions/records/cross-base) — interrogez des tables situées dans d’autres bases
+- [Boucle (traitement par lots)](../logic/loop-run) — parcourez le tableau de résultats
+- [Créer un enregistrement](/fr/basic/automation/actions/records/create-record) — créez des enregistrements à partir des données récupérées
+- [Mettre à jour un enregistrement](/fr/basic/automation/actions/records/update-record) — mettez à jour les enregistrements trouvés par Obtenir des enregistrements

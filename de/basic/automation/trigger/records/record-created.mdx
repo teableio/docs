@@ -1,0 +1,77 @@
+---
+title: "Wenn Datensatz erstellt wird"
+description: "Lösen Sie einen Workflow aus, wenn einer Tabelle ein neuer Datensatz hinzugefügt wird"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Bitte beachten Sie: Die gesamte Einrichtung von Auslösern kann im KI-Chat erfolgen. Teilen Sie der KI mit, was der Workflow tun soll, und sie übernimmt den Rest.</Tip>
+
+Dieser Auslöser wird ausgeführt, wenn der Tabelle ein neuer Datensatz hinzugefügt wird, unabhängig davon, wie er erstellt wurde.
+
+## Mit KI erstellen
+
+Öffnen Sie den KI-Chat in der rechten Seitenleiste Ihrer Tabelle und beschreiben Sie, was Sie möchten.
+
+Die KI übernimmt alles: Sie wählt den richtigen Auslöser aus, ordnet die relevanten Felder zu und richtet automatisch alle Aktionen ein.
+
+Beschreiben Sie Ihr Ziel einmal, und der Workflow ist bereit – eine manuelle Einrichtung ist nicht erforderlich.
+
+**Beispiel:** *„Wenn eine neue Bestellung erstellt wird, benachrichtige das Team über Slack.“*
+
+## Konfiguration
+
+| Einstellung | Erforderlich | Beschreibung |
+|---|---|---|
+| Tabelle | Ja | Die Tabelle, die auf neue Datensätze überwacht werden soll |
+| Filter | Nein | Nur auslösen, wenn der neue Datensatz diese Bedingungen erfüllt. Verwendet denselben Filtereditor wie Ansichten |
+
+## Einrichtung
+
+1. Öffnen Sie Ihre Automatisierung und fügen Sie einen neuen Auslöser hinzu.
+2. Wählen Sie **Wenn Datensatz erstellt wird** aus.
+3. Wählen Sie die zu überwachende **Tabelle** aus.
+4. (Optional) Fügen Sie einen **Filter** hinzu, wenn Sie nur auf bestimmte neue Datensätze reagieren möchten. Beispielsweise ignoriert `Priorität` ist gleich `Hoch` neue Datensätze mit anderen Prioritätswerten.
+5. Speichern und aktivieren Sie die Automatisierung.
+6. Fügen Sie Ihre Aktionsschritte hinzu. Klicken Sie in jeder Aktion in einem beliebigen Feld auf die Schaltfläche **+**, um Werte aus dem Auslöser einzufügen – alle Felder des neuen Datensatzes werden aufgelistet.
+
+## Welche Daten für nachfolgende Schritte verfügbar sind
+
+Wenn dieser Auslöser ausgeführt wird, stehen alle Felder des neu erstellten Datensatzes als Variablen in nachfolgenden Schritten zur Verfügung:
+
+- **Datensatz-ID** – die eindeutige Kennung des neuen Datensatzes
+- **Alle Feldwerte** – jedes Feld der Tabelle (Text, Zahl, Datum, Anhänge, verknüpfte Datensätze usw.) kann durch Klicken auf **+** in einer beliebigen Feldzuordnung einer Aktion referenziert werden
+
+Wenn Ihre Tabelle beispielsweise Felder wie Name, E-Mail, Status und Erstellungsdatum enthält, können alle vier Werte ohne zusätzliche Konfiguration direkt in Ihren Aktionen verwendet werden.
+
+## Funktionsweise des Filters
+
+Mit dem optionalen Filter können Sie eingrenzen, welche neuen Datensätze die Automatisierung tatsächlich auslösen:
+
+- Wenn **kein Filter** festgelegt ist, löst jeder neue Datensatz den Auslöser aus.
+- Wenn ein **Filter** festgelegt ist, wird der Auslöser nur ausgeführt, wenn der neue Datensatz alle Bedingungen erfüllt. Nicht passende Datensätze werden ohne Meldung ignoriert.
+
+Dies ist hilfreich, wenn Sie nur auf eine Teilmenge neuer Datensätze reagieren möchten – beispielsweise nur auf Aufgaben mit hoher Priorität, nur auf einem bestimmten Team zugewiesene Datensätze oder nur auf Bestellungen über einem bestimmten Betrag.
+
+<Note>Der Filter wird anhand der Feldwerte zum Zeitpunkt der Datensatzerstellung ausgewertet. Wenn ein Feld bei der Erstellung leer ist und später ausgefüllt wird, wird die Automatisierung nicht rückwirkend ausgelöst.</Note>
+
+## Anwendungsfälle
+
+- **Willkommens-E-Mail an einen neuen Kontakt senden.** Wenn Ihrer CRM-Tabelle ein Kontakt hinzugefügt wird, senden Sie anhand des Namens und der E-Mail-Adresse automatisch eine personalisierte Willkommens-E-Mail.
+- **Beim Hinzufügen eines neuen Projekts eine verknüpfte Aufgabe erstellen.** Wenn ein Projektdatensatz erstellt wird, erstellen Sie automatisch eine Standardgruppe von Aufgaben in einer mit dem neuen Projekt verknüpften Tabelle Aufgaben.
+- **Ihr Team über neue Bestellungen benachrichtigen.** Veröffentlichen Sie eine Nachricht in Slack oder senden Sie dem Vertriebsteam eine E-Mail, sobald eine neue Bestellung eingeht.
+- **Eingehende Datensätze automatisch mit KI klassifizieren.** Wenn ein Support-Ticket erstellt wird, kategorisieren Sie es mit der Aktion „Mit KI generieren“ anhand des Beschreibungsfelds.
+- **Neue Datensätze in einem externen System protokollieren.** Übertragen Sie mit der Aktion „HTTP-Anfrage“ neue Datensatzdaten an ein CRM, ERP oder Data Warehouse.
+
+## Tipps
+
+- Dieser Auslöser wird für Datensätze ausgeführt, die mit einer *beliebigen* Methode erstellt wurden, einschließlich anderer Automatisierungen. Wenn eine Automatisierung Datensätze in derselben Tabelle erstellt, müssen Sie darauf achten, Endlosschleifen zu vermeiden. Schließen Sie von der Automatisierung erstellte Datensätze mit einem Filter aus (z. B. durch Prüfen eines Markierungsfelds).
+- Der Auslöser wird einmal pro Datensatz ausgeführt. Wenn 10 Datensätze gesammelt importiert werden, wird er 10-mal separat ausgeführt.
+- Wenn Sie nur auf Datensätze reagieren müssen, die über ein bestimmtes Formular erstellt wurden, verwenden Sie stattdessen den Auslöser [Wenn Formular übermittelt wird](/de/basic/automation/trigger/forms/form-submitted) – damit haben Sie eine präzisere Kontrolle.
+- Felder, die beim Erstellen des Datensatzes leer sind, stehen weiterhin als Variablen zur Verfügung, ihre Werte sind jedoch leer. Stellen Sie sicher, dass Ihre Aktionen leere Werte angemessen verarbeiten.
+
+## Verwandte Themen
+
+- [Wenn Formular übermittelt wird](/de/basic/automation/trigger/forms/form-submitted) – wird nur bei Formularübermittlungen ausgelöst, nicht bei allen Methoden zur Datensatzerstellung
+- [Wenn Datensatz aktualisiert wird](/de/basic/automation/trigger/records/record-updated) – wird ausgelöst, wenn sich vorhandene Datensätze ändern
+- [Aktion „Datensatz erstellen“](/de/basic/automation/actions/records/create-record) – das Aktionsgegenstück zum Erstellen von Datensätzen in Workflows
+- [E-Mail senden](/de/basic/automation/actions/communication/send-email-overview)

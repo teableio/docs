@@ -1,0 +1,191 @@
+---
+title: "AI ile oluştur"
+description: "Bir iş akışında metin veya yapılandırılmış veri oluşturmak için AI modellerini kullanın"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Otomasyon oluşturmak için Komut dosyası çalıştır'ı kullanmanızı kesinlikle öneririz; bu özellik, aksi hâlde elle oluşturulması gerekecek eylemler dahil tüm eylem davranışlarını kapsayabilir. Gereksinimlerinizi sohbette AI'a açıklamanız yeterlidir.
+
+Lütfen unutmayın: eylemleri elle eklerseniz AI daha sonra bunları tanıyamaz veya değiştiremez.
+</Tip>
+
+## AI ile oluşturma
+
+Tablonuzun sağ kenar çubuğunda AI Chat'i açın ve ne istediğinizi açıklayın.
+
+AI her şeyi halleder: doğru tetikleyiciyi belirler, uygun eylemleri seçer, alanları eşler ve iş akışının tamamını otomatik olarak yapılandırır.
+
+Hedefinizi bir kez açıklayın; iş akışınız elle yapılandırma gerektirmeden hazır olur.
+
+Büyük bir dil modeline istem gönderir ve metin ya da yapılandırılmış JSON döndürür. Kayıtlarınıza göre verileri sınıflandırmak, ayıklamak, özetlemek veya oluşturmak için kullanın.
+
+## Yapılandırma
+
+| Ayar | Zorunlu | Açıklama |
+|---|---|---|
+| İstem | Evet | AI'a vereceğiniz talimat. Önceki adımlardaki dinamik değişkenleri eklemek için **+** simgesine tıklayın |
+| Model | Hayır | Bir model seçin. Varsayılan olarak sistem modeli kullanılır. Görüntü ve Akıl Yürütme modelleri de kullanılabilir |
+| Sıcaklık | Hayır | Rastlantısallığı denetler: 0 = en belirleyici, 1 = en yaratıcı. Varsayılan değer genellikle 0,7 civarındadır |
+| Çıktı Türü | Hayır | **Metin** (varsayılan) — serbest biçimli metin döndürür. **JSON** — tanımladığınız şemayla eşleşen yapılandırılmış JSON döndürür |
+| Ekler | Hayır | Görüntü, PDF, Word belgesi veya Excel dosyası yükleyin. Görüntü destekli bir model gerektirir |
+
+## Model yetenekleri
+
+| Etiket | Anlamı |
+|---|---|
+| **Görüntü** | İsteme eklenen görüntüleri, PDF'leri, Word belgelerini ve Excel dosyalarını okuyup analiz edebilir |
+| **Akıl Yürütme** | Hem yanıtı hem de adım adım akıl yürütmeyi (düşünce zinciri) döndürür; karmaşık analizlerde kullanışlıdır |
+
+**Alan → Ayarlar → Entegrasyonlar** üzerinden üçüncü taraf AI modellerini bağlayabilirsiniz. Böylece OpenAI, Anthropic, Google ve diğer sağlayıcıların modellerini kullanabilirsiniz.
+
+## Nasıl yapılandırılır?
+
+1. İş akışınıza bir **AI ile Oluştur** eylemi ekleyin.
+2. **İsteminizi** yazın. AI bu talimatı izleyecektir. Destek talebinin metni, form gönderiminin içeriği veya ürün açıklaması gibi dinamik değerler eklemek için **+** simgesine tıklayın.
+3. (İsteğe bağlı) Varsayılan model yerine belirli bir modeli kullanmak istiyorsanız bir **Model** seçin.
+4. (İsteğe bağlı) **Sıcaklık** değerini ayarlayın. Düşük değerler (0–0,3) daha tutarlı ve öngörülebilir çıktılar, yüksek değerler (0,7–1,0) ise daha çeşitli ve yaratıcı çıktılar verir.
+5. (İsteğe bağlı) Yapılandırılmış veriye ihtiyacınız varsa **Çıktı Türü**nü **JSON** olarak değiştirin. AI'ın hangi biçimi döndüreceğini bilmesi için JSON şemasını tanımlayın.
+6. (İsteğe bağlı) AI'ın belge veya görüntüleri okumasını istiyorsanız **Ekler** ekleyin (görüntü modeli gerekir).
+7. Eylemi kaydedin. AI'ın yanıtı, sonraki adımlarda **+** değişken seçici üzerinden kullanılabilir.
+
+## İstem yazma ipuçları
+
+AI çıktısının kalitesi büyük ölçüde isteminize bağlıdır. İşte bazı pratik öneriler:
+
+- **Net olun.** "Bunu sınıflandır" yerine "Bu destek talebini şu kategorilerden birine ayır: Faturalandırma, Teknik, Hesap, Diğer." yazın.
+- **İstemde örnekler verin.** AI'a ne beklediğinizi gösterin:
+  ```
+  Aşağıdaki destek talebini sınıflandırın. Yalnızca kategori adını döndürün.
+
+  Kategoriler: Faturalandırma, Teknik, Hesap, Diğer
+
+  Örnekler:
+  - "Hesabıma giriş yapamıyorum" → Hesap
+  - "Fatura tutarım yanlış" → Faturalandırma
+  - "API 500 hatası döndürüyor" → Teknik
+
+  Talep: {{Ticket Description}}
+  ```
+- **Çıktı biçimini tanımlayın.** Belirli bir biçim istiyorsanız bunu açıkça belirtin: "Başka hiçbir şey eklemeden yalnızca kategori adını döndürün" veya "Şu anahtarları içeren bir JSON nesnesi döndürün: category, confidence, reason."
+- **Tek konuya odaklanın.** Her istemde tek görev vermek, AI'dan aynı anda birden fazla iş yapmasını istemekten daha iyi sonuç verir.
+
+## JSON çıktısı
+
+Çıktı Türünü **JSON** olarak ayarladığınızda AI, serbest biçimli metin yerine yapılandırılmış veri döndürür. Bu, birden fazla bilgi parçasını ayıklamanız ve sonraki adımlarda ayrı ayrı kullanmanız gerektiğinde yararlıdır.
+
+JSON çıktısı için örnek istem:
+
+```
+Bu fatura e-postasından aşağıdaki bilgileri ayıklayın. Şu anahtarları içeren JSON döndürün:
+- vendor_name (dize)
+- invoice_number (dize)
+- amount (sayı)
+- due_date (YYYY-MM-DD biçiminde dize)
+
+E-posta gövdesi: {{Email Body}}
+```
+
+AI şuna benzer bir sonuç döndürür:
+
+```json
+{
+  "vendor_name": "Acme AŞ",
+  "invoice_number": "INV-2024-001",
+  "amount": 1250.00,
+  "due_date": "2024-03-15"
+}
+```
+
+JSON'daki her anahtar sonraki adımlarda ayrı bir değişken olarak kullanılabilir; böylece `vendor_name` değerini bir alana, `amount` değerini başka bir alana eşleyebilirsiniz.
+
+## Görüntü modelleri ve ekler
+
+Görüntü modelleri, görüntüleri ve belgeleri analiz edebilir. Dosyaları isteme eklediğinizde AI bunları "okur":
+
+- **Görüntüler:** ekran görüntüleri, fotoğraflar, diyagramlar, grafikler.
+- **PDF'ler:** faturalar, sözleşmeler, raporlar.
+- **Word / Excel dosyaları:** belgeler ve elektronik tablolar.
+
+Kullanım örnekleri: taranmış belgelerden metin ayıklama, fatura görüntülerinden veri okuma, grafik görüntülerini analiz etme, yüklenen formları işleme.
+
+**Görüntü** etiketine sahip bir model seçtiğinizden emin olun. Görüntü özelliği olmayan modeller ekleri yok sayar.
+
+## Kredi sistemi
+
+Her AI ile Oluştur çağrısı şunlara bağlı olarak kredi tüketir:
+
+- Kullanılan **model** (daha güçlü modeller belirteç başına daha fazla kredi tüketir).
+- İşlenen **belirteç sayısı** (hem girdi hem çıktı).
+
+Tam kredi maliyeti, test çalıştırmasından sonra test panelinde gösterilir. Özellikle AI ile Oluştur eylemini çok sayıda kayıt üzerinde Döngü içinde kullanıyorsanız hesap ayarlarınızdan kredi kullanımınızı izleyin.
+
+## Somut istem örnekleri
+
+### Sınıflandırma
+
+```
+Bu müşteri geri bildirimini Olumlu, Olumsuz veya Tarafsız olarak sınıflandırın.
+Yalnızca sınıflandırmayı döndürün.
+
+Geri bildirim: {{Feedback Text}}
+```
+
+### Veri ayıklama
+
+```
+Aşağıdaki metinde geçen tüm e-posta adreslerini ayıklayın.
+Bunları dizelerden oluşan bir JSON dizisi olarak döndürün.
+
+Metin: {{Message Body}}
+```
+
+### Özetleme
+
+```
+Aşağıdaki toplantı notlarını 3 maddeyle özetleyin.
+Eylem maddelerine ve alınan kararlara odaklanın.
+
+Notlar: {{Meeting Notes}}
+```
+
+### İçerik oluşturma
+
+```
+{{Customer Name}} adlı müşteriye {{Product Name}} hakkındaki sorusuyla ilgili profesyonel bir takip e-postası yazın.
+Metin 150 kelimeden kısa olsun. 24 saat içinde yanıt vereceğimizi belirtin.
+```
+
+### Çeviri
+
+```
+Aşağıdaki metni {{Source Language}} dilinden {{Target Language}} diline çevirin.
+Özgün biçimlendirmeyi koruyun.
+
+Metin: {{Content}}
+```
+
+## Ne zaman kullanılır?
+
+- **Destek taleplerini konularına göre sınıflandırın.** Gelen talepleri otomatik olarak kategorilere ayırarak doğru ekibe yönlendirin.
+- **Faturalardan veya e-postalardan yapılandırılmış veri ayıklayın.** Tutarları, tarihleri, adları ve referans numaralarını ayrı alanlara aktarın.
+- **Uzun metin alanlarını özetleyin.** Toplantı notlarını, açıklamaları veya yorumları kısa özetlere dönüştürün.
+- **Kişiselleştirilmiş e-posta içeriği oluşturun.** Kayıt verilerine göre özel e-posta gövdesi metni oluşturun.
+- **Görüntüleri ve belgeleri analiz edin.** Yüklenen faturaları, makbuzları veya ekran görüntülerini okumak için görüntü modellerini kullanın.
+
+## İpuçları
+
+- Otomasyonu etkinleştirmeden önce isteminizi iyileştirmek için **test panelini** kullanın. Çıktı biçimini ve kalitesini doğrulamak üzere gerçek verilerle test yapın.
+- Tutarlı sonuçlar için (özellikle sınıflandırmada) Sıcaklık değerini 0 veya 0'a yakın ayarlayın.
+- İstemde açık bir şema sunduğunuzda JSON çıktı modu daha güvenilir olur. Beklenen anahtarları ve türlerini her zaman listeleyin.
+- Çok sayıda kaydı bir [Döngü](../logic/loop-run) içinde işliyorsanız belirteç kullanımını ve kredi maliyetini azaltmak için istemlerinizi kısa tutun.
+- Varsayılan modeller ihtiyaçlarınızı karşılamıyorsa **Alan → Ayarlar → AI ayarları** üzerinden ek AI sağlayıcıları bağlayın. Ayrıntılar için [Özel AI Modelleri](/tr/basic/ai/custom-model) sayfasına bakın.
+
+<Tip>Üçüncü taraf AI modellerini **Alan → Ayarlar → AI ayarları** üzerinden bağlayın.</Tip>
+
+## İlgili konular
+
+- [Döngü (toplu)](../logic/loop-run) — tek bir otomasyon çalıştırmasında birden fazla kaydı AI ile işleyin
+- [Komut dosyası çalıştır](/tr/basic/automation/ai/scripting/runscript) — istem tabanlı oluşturmanın ötesine geçen özel mantık için
+- [E-posta gönder](/tr/basic/automation/actions/communication/send-email-overview)
+- [Kaydı güncelle](/tr/basic/automation/actions/records/update-record)

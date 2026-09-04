@@ -1,0 +1,95 @@
+---
+title: "Koşullu Toplama"
+description: "Filtre koşullarıyla tablolar arası istatistikleri hesaplayın ve tek bir toplu değer döndürün."
+---
+
+Koşullu Toplama, önceden bir bağlantı ilişkisi oluşturmadan hedef tablodaki eşleşen kayıtları filtreler ve ardından seçilen bir alanda istatistikleri hesaplar. Geçerli kayıttaki alan değerlerine göre sayımları, toplamları, ortalamaları ve diğer sonuçları hesaplamak için kullanışlıdır.
+
+## Kullanım Alanları
+
+| Senaryo | Uygun olduğu durumlar |
+| --- | --- |
+| Çalışan görev istatistikleri | Atanan bir kişinin devam eden ve tamamlanan görevlerini sayma |
+| Dönem satış istatistikleri | Tarih aralığına göre satış tutarını, sipariş sayısını veya ortalama sipariş değerini hesaplama |
+| Yinelenen veri kontrolleri | Yinelenen adları, telefon numaralarını veya kimlikleri sayma |
+| Bölgesel raporlar | İş verilerini bölgeye, mağazaya veya kanala göre toplama |
+
+## İşlem
+
+<Steps>
+  <Step title="Bir koşullu toplama alanı oluşturun">
+    Alan adının sağ tarafındaki `+` simgesine tıklayın, **Koşullu Toplama**'yı seçin ve "Toplam satış tutarı" gibi bir alan başlığı girin.
+  </Step>
+  <Step title="Hedef tabloyu seçin">
+    Hedef tablo açılır listesinden sorgulanacak tabloyu seçin.
+  </Step>
+  <Step title="Özet alanını yapılandırın">
+    Hesaplanacak alanı seçin ve alan türünü doğrulayın.
+  </Step>
+  <Step title="Filtre koşullarını ayarlayın">
+    Filtre koşulları ekleyin; alanı, koşul türünü ve karşılaştırma değerini seçin. Karşılaştırma değeri sabit bir değer veya geçerli tablodaki bir alan olabilir.
+  </Step>
+  <Step title="Bir toplama işlevi seçin">
+    Veri türüne göre özgün değer, benzersiz değerler, benzersiz sayım, toplam, sayım, ortalama, azami veya asgari gibi bir hesaplama yöntemi seçin.
+  </Step>
+</Steps>
+
+## Senaryo Uygulaması
+
+### Ekip Görev Hacmi İstatistikleri
+
+**Tablolar**
+
+- Görevler tablosu
+- İstatistikler tablosu
+
+Bir ekip yöneticisinin iş yükü dağılımını ve tamamlanma ilerlemesini anlamak için her çalışanın devam eden ve tamamlanan görevleri gibi farklı durumlardaki görevleri sayması gerekir.
+
+**Devam eden görevler**
+
+1. Çalışan bilgileri tablosunda "Devam eden görevler" adlı bir Koşullu Toplama alanı oluşturun
+2. Hedef tablo: Görev atamaları tablosu
+3. Özet alanı: Görev kimliği
+4. Filtre koşulları:
+   - Alan: Atanan kişi -> Koşul: Eşittir -> Değer: Geçerli tablodaki Çalışan alanı
+   - Alan: Görev durumu -> Koşul: Eşittir -> Değer: "Devam ediyor"
+5. Toplama işlevi: Tümünü say
+
+**Tamamlanan görevler**
+
+1. "Tamamlanan görevler" adlı başka bir Koşullu Toplama alanı oluşturun
+2. Hedef tablo: Görev atamaları tablosu
+3. Özet alanı: Görev kimliği
+4. Filtre koşulları:
+   - Alan: Atanan kişi -> Koşul: Eşittir -> Değer: Geçerli tablodaki Çalışan alanı
+   - Alan: Görev durumu -> Koşul: Eşittir -> Değer: "Tamamlandı"
+5. Toplama işlevi: Tümünü say
+
+### Yinelenen Değerleri Bulma
+
+**Tablolar**
+
+- Müşteri adı ve telefon numarası gibi alanları içeren Müşteriler tablosu
+
+Müşteri profillerini birleştirmeden önce Müşteriler tablosundaki yinelenen müşteri adlarını bulun.
+
+**Adımlar**
+
+1. Müşteriler tablosunda "Müşteri adı yineleme sayısı" adlı bir Koşullu Toplama alanı oluşturun
+2. Hedef tablo: Müşteriler tablosu (bu tablo)
+3. Özet alanı: Müşteri adı
+4. Filtre koşulu:
+   - Alan: Müşteri adı -> Koşul: Eşittir -> Değer: Geçerli tablodaki Müşteri adı alanı
+5. Toplama işlevi: Tümünü say
+6. "Yinelenen işareti" adlı bir Formül alanı oluşturun
+7. Formülü `IF(Customer name duplicate count > 1, "Yinelenen", BLANK())` olarak ayarlayın
+
+Müşteriler tablosu her müşteri adının kaç kez göründüğünü gösterir ve yinelenen kayıtları "Yinelenen" olarak işaretler; böylece bunları daha sonra filtreleyip işleyebilirsiniz.
+
+## SSS
+
+<AccordionGroup>
+  <Accordion title="Koşullu Toplama ile Koşullu Arama arasındaki fark nedir?">
+    Koşullu Toplama tek bir hesaplanmış değer döndürür; bu, toplamlar, sayımlar ve ortalamalar için uygundur. Koşullu Arama eşleşen ham değerlerin listesini döndürür; bu da ayrıntılı verileri görüntülemek için uygundur.
+  </Accordion>
+</AccordionGroup>

@@ -1,0 +1,106 @@
+---
+title: "Bandeja de salida de cálculos"
+description: "Supervisa la entrega de BullMQ y la acumulación de tareas calculadas en Administración del sistema."
+---
+
+<Tip>Disponible para el plan Business autoalojado y los planes superiores</Tip>
+
+Ruta: Administración del sistema → Bandeja de salida de cálculos
+
+Usa la **Bandeja de salida de cálculos** cuando los valores de fórmulas, búsquedas u otros Campos calculados dejen de actualizarse o tarden mucho más de lo esperado. La página muestra el estado general de las tareas, los trabajos que recorren la cola, las tareas que podrían necesitar recuperación y cualquier Espacio cuyas tareas calculadas estén en pausa.
+
+## Consultar el estado general
+
+El estado situado junto al título de la página indica si las tareas calculadas requieren atención:
+
+| Estado | Significado |
+| --- | --- |
+| **Correcto** | Las tareas calculadas se ejecutan con normalidad. |
+| **Degradado** | Teable ha detectado fallos, tareas cuyo tiempo de espera se ha agotado o una acumulación creciente. |
+| **Crítico** | BullMQ no está disponible o no hay ningún proceso de trabajo disponible para procesar las tareas. |
+
+Cuando el estado requiere atención, la página muestra el motivo.
+
+## Encontrar una tarea en la cola
+
+La **Cola de BullMQ en directo** enumera los trabajos que Teable aún conserva, para que puedas seguir una tarea calculada o buscar las que avanzan con lentitud.
+
+De forma predeterminada, cada fila corresponde a una tarea y cambia de estado en la misma posición a medida que Teable vuelve a intentarla. Cambia a **Entregas** cuando necesites consultar el historial completo de intentos de una tarea o buscar ejecuciones lentas.
+
+Para acotar la lista:
+
+- Haz clic en los mosaicos de estado situados sobre la Tabla para filtrar por estado: **En espera**, **Activo**, **Retrasado**, **Fallido**, **Completado (conservado)**, entre otros. Puedes seleccionar varios a la vez; al pasar el cursor sobre un mosaico se explica el significado de ese estado.
+- Filtra por **Espacio**, **Base**, **Causa** o **Resultado**; busca una tarea, Base, Espacio o error; o establece un tiempo mínimo de procesamiento para localizar las tareas lentas.
+- Haz clic en una fila para abrir el **Linaje de cálculos**: marcas de tiempo de la cola, retraso de entrega, tiempo de procesamiento, el motivo completo del fallo con el SQL censurado de una entrega fallida y los detalles de propagación descritos a continuación.
+
+<Info>**Completado** no significa que la tarea haya realizado trabajo. El distintivo de resultado indica lo que hizo realmente la entrega: **Procesado** ejecutó la tarea, **Sin operación** no encontró nada pendiente, **Aplazado** la reprogramó para más adelante y **Apartado** significa que su ámbito está en pausa. El filtro **Resultado** acota la lista según ese resultado y muestra cuántas entregas abarca cada uno; por tanto, combinar **Completado (conservado)** con **Procesado** deja únicamente las entregas que realmente ejecutaron la tarea.</Info>
+
+Una fila fallida representa el historial de un intento de entrega, no una tarea bloqueada. La tarea duradera continúa reintentándose por sí sola, así que consulta la columna **Estado del libro mayor** para decidir si debes actuar: **Resuelta** significa que un intento posterior ya se completó correctamente y **Mensaje fallido definitivo** enlaza con el mantenimiento de anomalías. Los fallos resueltos están ocultos de forma predeterminada; un banner muestra cuántos hay y permite revelarlos.
+
+**Borrar historial de fallos** elimina únicamente de la cola los registros conservados de trabajos fallidos. No repara nada, y los mensajes fallidos definitivos permanecen en **Mantenimiento de anomalías**.
+
+Un mosaico de estado también puede contar entradas cuyos datos de trabajo ya no existan en Redis, normalmente residuos de una expulsión o una pérdida de datos. La lista no puede mostrarlas, por lo que la página explica la diferencia debajo de la Tabla. Teable elimina por sí solo estos residuos del estado de fallo; **Borrar historial de fallos** los elimina de inmediato.
+
+## Rastrear cómo se propagó un valor
+
+Cuando un valor calculado parezca incorrecto o llegue con retraso, abre **Linaje de cálculos** para consultar toda la cadena que hay detrás. Haz clic en cualquier fila de la cola o en **Linaje**, junto al ID de una tarea en los detalles de la anomalía.
+
+| Sección | Qué responde |
+| --- | --- |
+| Resumen | La latencia de extremo a extremo, cuándo cambió el origen, cuándo convergió el valor y qué Tabla y Campos desencadenaron la ejecución. Un distintivo **Calculando** significa que la cadena sigue ejecutándose. |
+| **Cronología** | Cuándo se añadió la ejecución a la cola, cuándo comenzó y cuándo se completó o falló. |
+| **Cadena de tareas** | Todas las tareas de la cascada, anidadas bajo la tarea que las añadió a la cola, para que puedas ver el origen de cada rama. Cada fila muestra su estado, los pasos del plan, el **Destino de escritura** (la Tabla y los Campos que actualiza la tarea), las **Filas pendientes**, la profundidad de la cascada, la hora de entrada en la cola y la duración. |
+| **Propagación de Campos** | Qué Campos leyó y escribió la ejecución, y cómo se propagó el cambio entre ellos. La línea azul discontinua indica el origen que dio lugar a esta escritura; la gris, una entrada que no se escribió en esta ejecución; la verde, lo escrito en esta ejecución; y las flechas representan dependencias entre Campos o saltos de enlace, no el orden de los pasos. Solo se dibujan los orígenes que realmente alcanzan las escrituras de esta ejecución. Usa **Expandir** para abrir el gráfico a pantalla completa cuando resulte difícil seguir una cadena ancha en la vista integrada. |
+
+<Info>El libro mayor de linaje solo registra las tareas creadas desde la publicación de esta función y conserva un historial de 7 días. Las tareas anteriores muestran los datos de su cola sin un gráfico de propagación. Una tarea inicial que el proceso de trabajo aún no haya planificado muestra únicamente sus Campos desencadenantes. Cuando un cambio no produce escrituras calculadas posteriores, el gráfico lo indica: nada dependía de esos Campos mediante una fórmula, una búsqueda, una acumulación o el título de un enlace.</Info>
+
+## Gestionar tareas anómalas
+
+<Info>El recuento de **Fallidas** y el **Mantenimiento de anomalías** muestran tipos de problemas diferentes, por lo que sus cifras pueden no coincidir.</Info>
+
+**Mantenimiento de anomalías** agrupa las anomalías por problema, una por cada Base, Tabla de origen y error, para facilitar la detección de una única causa raíz. Revisa el motivo del fallo y corrige el problema subyacente antes de recuperar nada. Expande un grupo para consultar los detalles del error y las tareas que abarca; esas filas sirven para examinarlas, pero la recuperación siempre se ejecuta sobre el grupo completo.
+
+Las acciones disponibles para un grupo dependen de su tipo:
+
+| Tipo de anomalía | Acción | Qué ocurre |
+| --- | --- | --- |
+| **Mensaje fallido definitivo** | **Recuperar todo el grupo** | Restaura en la cola duradera todos los mensajes fallidos definitivos que pertenecen actualmente a ese grupo y vuelve a entregarlos. Los demás grupos no se modifican. |
+| **Mensaje fallido definitivo** | **Descartar grupo** (en el menú **Más acciones**) | Elimina permanentemente los mensajes fallidos definitivos del grupo. Después no se pueden recuperar ni reproducir, así que usa esta opción únicamente cuando no tenga sentido repetirlos. |
+| **Tiempo agotado** | **Reactivar el último tiempo agotado** | Activa la cola para la tarea más reciente del grupo, de modo que un proceso de trabajo pueda hacerse cargo de ella. |
+
+Después de recuperar un grupo, Teable informa de cuántas tareas ha restaurado, cuántas se han añadido a la cola o ya estaban en ella y cuántas se han entregado o aplazado. A continuación, los procesos de trabajo consumen el grupo con los límites actuales de simultaneidad y división de tareas.
+
+Un grupo marcado como **Base eliminada** pertenece a una Base que ya no existe. Su recuperación volvería a fallar de inmediato, por lo que **Descartar grupo** es la única acción disponible.
+
+Mover una Tabla a la papelera ya no crea anomalías aquí. Las tareas calculadas que aún hacen referencia a una Tabla enviada a la papelera omiten los pasos que la leen, completan los pasos dirigidos a Tablas activas y finalizan.
+
+La recuperación tampoco está disponible cuando los propios datos causaron el fallo, por ejemplo, un valor que supera un límite de tamaño o infringe una restricción de Campo. Volver a ejecutar la misma tarea produciría el mismo fallo; por tanto, descarta el grupo y corrige los datos de origen o la definición del Campo. Las escrituras posteriores volverán a calcular esos Campos automáticamente.
+
+## Pausar las tareas calculadas de un Espacio
+
+Cuando las tareas calculadas de un Espacio empeoren un incidente, pausa ese Espacio en **Pausas de tareas calculadas** en lugar de detener toda la instancia.
+
+<Steps>
+  <Step title="Abrir el cuadro de diálogo de pausa">Haz clic en **Pausar un Espacio**.</Step>
+  <Step title="Buscar el Espacio">Busca por ID o nombre de Espacio y selecciónalo en los resultados.</Step>
+  <Step title="Elegir la duración">Establece **Duración de la pausa** en 15, 30, 60 o 120 minutos.</Step>
+  <Step title="Registrar el motivo (opcional)">Anota el incidente o la ventana de mantenimiento en **Motivo**.</Step>
+  <Step title="Confirmar">Haz clic en **Confirmar pausa**.</Step>
+</Steps>
+
+Una pausa solo impide que los procesos de trabajo reclamen nuevas tareas calculadas de ese Espacio. Las tareas que ya están en ejecución no se interrumpen, y las tareas coincidentes esperan hasta que termina la pausa en lugar de descartarse.
+
+Las pausas siempre caducan por sí solas y su duración máxima es de dos horas. Si el incidente dura más, vuelve a pausar el Espacio desde esta página. La lista muestra todas las pausas activas, quién las creó, su motivo y cuándo se reanudan automáticamente, además del número de tareas pendientes que están reteniendo las pausas activas, para que puedas valorar la acumulación que se liberará al reanudarlas. Para levantar una pausa antes de tiempo, haz clic en **Reanudar** en su fila y confirma la acción.
+
+## Ajustar la simultaneidad
+
+La sección de la cola tiene dos controles de simultaneidad. Cada uno escribe una sustitución para todo el clúster que todos los procesos adoptan en unos 15 segundos, sin reiniciar, y ambos pueden restablecerse para que los procesos vuelvan a su propio ajuste de entorno. Un distintivo **Sustituido** marca los controles que ya no usan su valor predeterminado.
+
+| Control | Qué limita |
+| --- | --- |
+| **Simultaneidad por proceso** | Cuántas tareas calculadas gestiona a la vez cada proceso de trabajo. |
+| **Límites de reclamación por Base** | Cuántas tareas calculadas se ejecutan al mismo tiempo para una Base (**Por Base**) y para una Tabla de origen dentro de ella (**Por Tabla inicial**). Ambos valores son 2 de forma predeterminada y admiten valores del 1 al 16. |
+
+Aumenta los límites de reclamación cuando el cuello de botella sea una única Base con mucha actividad, y la simultaneidad por proceso cuando haya muchas Bases en cola a la vez.
+
+<Warning>Una simultaneidad mayor aumenta la carga de la base de datos. Los Espacios que almacenan sus datos en un [inquilino de base de datos](/es/basic/admin-panel/database-tenant) conservan los valores predeterminados del entorno para los límites de reclamación, ya que sus grupos de conexiones están dimensionados para esos valores.</Warning>

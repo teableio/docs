@@ -1,0 +1,118 @@
+---
+title: "Lookup condizionale"
+description: "Cerca dati tra Tabelle usando condizioni di filtro e restituisce i valori dei Record corrispondenti."
+---
+
+Il Lookup condizionale può recuperare dati corrispondenti da una Tabella di destinazione senza dover prima creare una relazione di collegamento. È utile quando la ricerca deve variare in base ai valori dei Campi nel Record corrente, ad esempio per trovare il prodotto più venduto nella stessa categoria o cercare i dati di un periodo corrispondente.
+
+## Casi d'uso
+
+| Scenario | Ideale per |
+| --- | --- |
+| Analisi delle categorie | Trovare il prodotto più venduto nella stessa categoria |
+| Confronto tra periodi | Cercare l'importo delle vendite del periodo precedente per calcoli tra periodi consecutivi |
+| Corrispondenza dei clienti | Trovare i dettagli di un cliente tramite numero di telefono, email o ID cliente |
+| Ricerca dei dettagli | Restituire i Record di dettaglio corrispondenti in base alle condizioni del Record corrente |
+
+## Procedura
+
+<Steps>
+  <Step title="Crea un Campo Lookup condizionale">
+    Fai clic sull'icona `+` sul lato destro del nome di un Campo, scegli **Lookup condizionale** e inserisci un titolo per il Campo, ad esempio "Ordini correlati".
+  </Step>
+  <Step title="Scegli la Tabella di destinazione">
+    Nel menu a discesa della Tabella di destinazione, scegli la Tabella da interrogare.
+  </Step>
+  <Step title="Configura il Campo di ricerca">
+    Scegli il Campo da estrarre e conferma il tipo di dati restituito.
+  </Step>
+  <Step title="Imposta le condizioni di filtro">
+    Aggiungi le condizioni di filtro e scegli Campo, tipo di condizione e valore di confronto. Il valore di confronto può essere un valore statico oppure un Campo della Tabella corrente.
+  </Step>
+  <Step title="Configura ordinamento e limiti">
+    Se necessario, imposta il Campo di ordinamento, la direzione e il numero di Record da mostrare.
+  </Step>
+</Steps>
+
+È richiesta almeno una condizione di filtro. Per più condizioni, scegli "Tutte le condizioni sono soddisfatte (AND)" oppure "Una qualsiasi delle condizioni è soddisfatta (OR)".
+
+## Esercitazioni basate su scenari
+
+### Analisi delle vendite tra periodi consecutivi
+
+**Tabelle**
+
+- Tabella di riepilogo delle vendite per periodo, con Campi quali periodo, data di inizio, data di fine e importo delle vendite
+- Tabella dei dettagli delle vendite, con Campi quali importo e data delle vendite
+
+Nella Tabella di riepilogo delle vendite per periodo, calcola la crescita rispetto al periodo precedente per ogni periodo. Usa innanzitutto un Rollup condizionale per calcolare le vendite del periodo corrente, quindi un Lookup condizionale per recuperare le vendite del periodo precedente e infine un Campo Formula per calcolare il tasso di crescita.
+
+**Passaggi**
+
+**Crea un Campo Rollup condizionale per le vendite del periodo corrente**
+
+1. Nella Tabella di riepilogo delle vendite per periodo, crea un Campo Rollup condizionale denominato "Vendite del periodo corrente"
+2. Tabella di destinazione: Tabella dei dettagli delle vendite
+3. Campo di aggregazione: Importo delle vendite
+4. Condizioni di filtro:
+   - Campo: Data delle vendite -> Condizione: Precedente o uguale a -> Valore: Campo Data di fine della Tabella corrente
+   - Campo: Data delle vendite -> Condizione: Successiva o uguale a -> Valore: Campo Data di inizio della Tabella corrente
+5. Funzione di aggregazione: Somma
+
+**Crea un Campo Lookup condizionale per le vendite del periodo precedente**
+
+1. Crea un Campo Lookup condizionale denominato "Vendite del periodo precedente"
+2. Tabella di destinazione: Tabella di riepilogo delle vendite per periodo (questa Tabella)
+3. Campo: Vendite del periodo corrente
+4. Condizione di filtro:
+   - Campo: Data di fine -> Condizione: Uguale a -> Valore: Campo Data di fine del periodo precedente della Tabella corrente
+5. Funzione di aggregazione: Somma
+
+**Crea un Campo Formula per la crescita rispetto al periodo precedente**
+
+1. Crea un Campo Formula denominato "Tasso di crescita rispetto al periodo precedente"
+2. Imposta la formula su `(Current period sales - Previous period sales) / Previous period sales * 100`
+3. Formattala come percentuale con 2 posizioni decimali
+
+### Analisi delle vendite per prodotto
+
+**Tabelle**
+
+- Tabella dei prodotti, con Campi quali ID categoria, nome del prodotto e volume delle vendite
+- Tabella delle categorie, con Campi quali ID categoria e nome della categoria
+
+Nella Tabella delle categorie, trova il prodotto più venduto per ciascuna categoria, così da identificare il prodotto principale di ogni categoria.
+
+**Passaggi**
+
+**Prodotto più venduto**
+
+1. Nella Tabella delle categorie, crea un Campo Lookup condizionale denominato "Prodotto più venduto"
+2. Tabella di destinazione: Tabella dei prodotti
+3. Campo di ricerca: Nome del prodotto
+4. Condizione di filtro:
+   - Campo: ID categoria -> Condizione: Uguale a -> Valore: Campo ID categoria della Tabella corrente
+5. Ordinamento: Campo Volume delle vendite -> Decrescente
+6. Limite di visualizzazione: 1 Record
+
+**Volume delle vendite**
+
+1. Crea un altro Campo Lookup condizionale denominato "Volume delle vendite"
+2. Tabella di destinazione: Tabella dei prodotti
+3. Campo di ricerca: Volume delle vendite
+4. Condizione di filtro:
+   - Campo: ID categoria -> Condizione: Uguale a -> Valore: Campo ID categoria della Tabella corrente
+5. Ordinamento: Campo Volume delle vendite -> Decrescente
+6. Limite di visualizzazione: 1 Record
+
+## Domande frequenti
+
+<AccordionGroup>
+  <Accordion title="Perché alcuni Campi non possono essere usati come condizioni di filtro?">
+    Alcuni tipi di Campo complessi, come immagini e allegati, potrebbero non supportare le condizioni di filtro.
+  </Accordion>
+
+  <Accordion title="Qual è la differenza tra Lookup condizionale e un normale Campo Lookup?">
+    Un normale Campo Lookup richiede prima un Campo Collegamento. Il Lookup condizionale può trovare direttamente le corrispondenze nella Tabella di destinazione tramite condizioni di filtro.
+  </Accordion>
+</AccordionGroup>

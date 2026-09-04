@@ -1,0 +1,290 @@
+---
+title: "Komut dosyası çalıştır"
+description: "Yerleşik eylemlerin ötesine geçen mantık için güvenli bir korumalı alanda özel JavaScript çalıştırın"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Otomasyon oluşturmak için Komut dosyası çalıştır'ı kullanmanızı kesinlikle öneririz; bu özellik, aksi hâlde elle oluşturulması gerekecek eylemler dahil tüm eylem davranışlarını kapsayabilir. Gereksinimlerinizi sohbette AI'a açıklamanız yeterlidir.
+
+Lütfen unutmayın: eylemleri elle eklerseniz AI daha sonra bunları tanıyamaz veya değiştiremez.
+</Tip>
+
+Komut dosyası çalıştır eylemi, yerleşik eylemlerin karşılayamadığı mantığı işlemek için özel JavaScript yazmanızı sağlar. Güvenli bir korumalı alan ortamında verileri dönüştürebilir, harici API'leri çağırabilir, hesaplamalar yapabilir, koşullu dallanma uygulayabilir ve çok daha fazlasını gerçekleştirebilirsiniz.
+
+Komut dosyaları önceki adımlardaki verileri `input` nesnesi üzerinden alır ve sonuçları `output.set()` işleviyle sonraki adımlara aktarır.
+
+## Komut dosyası çalıştır ve yerleşik eylemler ne zaman kullanılmalı?
+
+| Senaryo | Yerleşik eylemleri kullanın | Komut dosyası çalıştır'ı kullanın |
+|---|---|---|
+| Kayıt oluşturma, güncelleme veya getirme | Evet | Yalnızca çevresinde karmaşık bir mantık gerekiyorsa |
+| Basit bir e-posta gönderme | Evet | Hayır |
+| Tek bir API uç noktasını çağırma | Evet (HTTP İsteği) | Yalnızca yanıtı karmaşık biçimde işlemeniz gerekiyorsa |
+| Adımlar arasında veri dönüştürme | Bazen | Evet — koşullu mantık, döngü veya dize işleme gerekiyorsa |
+| Karmaşık JSON yapılarını ayrıştırma | Hayır | Evet |
+| Tarihleri hesaplama, sayıları biçimlendirme | Hayır | Evet |
+| Birden fazla API çağrısını mantıkla zincirleme | Yerleşik eylemlerle zahmetli | Evet |
+| Çok sayıda koşul içeren iş kurallarını uygulama | Pratik değil | Evet |
+
+Genel olarak ihtiyaçlarınıza uyduklarında yerleşik eylemleri kullanın. Özel mantık, veri dönüştürme veya karmaşık API etkileşimi gerektiğinde Komut dosyası çalıştır'ı kullanın.
+
+## Ortam
+
+| Özellik | Değer |
+|---|---|
+| Dil | JavaScript (ES6+), üst düzey `await` desteklenir |
+| Çalışma zamanı | 60 saniyelik zaman aşımına sahip güvenli korumalı alan |
+| Modüller | CommonJS (`require()`), npm paketleri desteklenir |
+| Ağ | `fetch()` üzerinden HTTP istekleri |
+
+## Nasıl yapılandırılır?
+
+1. İş akışınıza bir **Komut dosyası çalıştır** eylemi ekleyin.
+2. Komut dosyası düzenleyicisi boş bir çalışma alanıyla açılır. JavaScript kodunuzu buraya yazın.
+3. Komut dosyanız önceki adımlardaki verileri `input` nesnesiyle okuyabilir (aşağıya bakın).
+4. Sonuçları sonraki adımlara aktarmak için `output.set(key, value)` kullanın.
+5. (İsteğe bağlı) Komut dosyanız harici kitaplıklar gerektiriyorsa yapılandırma paneline npm bağımlılıkları ekleyin.
+6. Komut dosyasını en son tetikleyici çalıştırmasındaki gerçek verilerle çalıştırmak için **Test et**'e tıklayın.
+7. Komut dosyanızın doğru çalıştığını doğrulamak için test çıktısını ve konsol günlüklerini denetleyin.
+8. Eylemi kaydedin.
+
+## Girdi verilerini okuma
+
+`input` nesnesi, iş akışındaki önceki tüm adımların verilerini içerir. Her adım eylem kimliğiyle tanımlanır.
+
+### Girdi yapısı
+
+```javascript
+// input, eylem kimliklerini anahtar olarak kullanan bir nesnedir
+// Her anahtar, ilgili adımın çıktısını içerir
+
+const actionIds = Object.keys(input);
+// actionIds şu değerleri içerebilir: ["triggerStep1", "actionStep2", "actionStep3"]
+```
+
+### Tetikleyici verilerini alma (kayıt alanları)
+
+```javascript
+const actionIds = Object.keys(input);
+const triggerData = input[actionIds[0]]; // İlk girdi genellikle tetikleyicidir
+
+// Kayıt tabanlı tetikleyiciler için (oluşturuldu, güncellendi, düğmeye tıklandı, form gönderildi):
+const recordId = triggerData.record.id;
+const fields = triggerData.record.fields;
+
+// Belirli alanlara alan kimliğiyle erişin
+const customerName = fields.fldXXXXXXX;  // Gerçek alan kimliğiyle değiştirin
+const orderAmount = fields.fldYYYYYYY;
+```
+
+### Kayıtları Getir adımındaki verileri alma
+
+```javascript
+const actionIds = Object.keys(input);
+const getRecordsData = input[actionIds[1]]; // Örneğin ikinci adım
+
+const records = getRecordsData.records;
+records.forEach(record => {
+  console.log(record.id, record.fields.fldName);
+});
+```
+
+### Diğer eylem çıktılarındaki verileri alma
+
+```javascript
+const actionIds = Object.keys(input);
+const previousOutput = input[actionIds[2]]; // Üçüncü adımın çıktısı
+// Yapı, ilgili eylemin çıktısına bağlıdır
+```
+
+<Tip>Test sırasında girdi verilerinizin tam yapısını görmek için `console.log(JSON.stringify(input, null, 2))` kullanın. Nelerin kullanılabilir olduğunu anlamanın en hızlı yolu budur.</Tip>
+
+## Çıktı yazma
+
+Verileri sonraki adımlarda kullanılabilir hâle getirmek için `output.set(key, value)` kullanın. Birden fazla anahtar ayarlayabilirsiniz.
+
+```javascript
+// Basit değerleri ayarlayın
+output.set("status", "success");
+output.set("count", 42);
+
+// Nesneleri ayarlayın
+output.set("result", {
+  name: "Ayşe",
+  score: 95,
+  passed: true
+});
+
+// Dizileri ayarlayın
+output.set("items", [
+  { id: 1, name: "Öğe A" },
+  { id: 2, name: "Öğe B" }
+]);
+```
+
+Ayarladığınız her anahtar, sonraki adımların **+** değişken seçici üzerinden başvurabileceği ayrı bir değişken olur. Örneğin `output.set("status", "success")` çağrısı yaparsanız sonraki adım bu komut dosyasının çıktısındaki `status` değerine başvurabilir.
+
+## console.log ile hata ayıklama
+
+Geliştirme sırasında verileri incelemek ve yürütme akışını izlemek için `console.log()` kullanın. **Test et**'e tıkladığınızda günlük çıktısı test panelinde görünür.
+
+```javascript
+const actionIds = Object.keys(input);
+console.log("Eylem kimlikleri:", actionIds);
+
+const data = input[actionIds[0]];
+console.log("Tetikleyici verileri:", JSON.stringify(data, null, 2));
+
+// Ara sonuçları günlüğe kaydedin
+const processed = data.record.fields.fldName.toUpperCase();
+console.log("İşlenen ad:", processed);
+
+output.set("name", processed);
+```
+
+Konsol günlükleri yalnızca test sırasında görünür; üretim çalıştırma geçmişinde gösterilmez. Komut dosyanızı oluştururken bunları dilediğiniz kadar kullanabilirsiniz.
+
+## npm paket yönetimi
+
+Komut dosyalarınızda npm paketlerini kullanabilirsiniz. Bağımlılıkları yapılandırma panelinde bildirin:
+
+```json
+[
+  { "name": "lodash", "version": "4.17.21" },
+  { "name": "dayjs", "version": "1.11.10" }
+]
+```
+
+Ardından komut dosyanızda `require()` ile kullanın:
+
+```javascript
+const _ = require("lodash");
+const dayjs = require("dayjs");
+
+const actionIds = Object.keys(input);
+const records = input[actionIds[0]].records;
+
+const grouped = _.groupBy(records, r => r.fields.fldCategory);
+const today = dayjs().format("YYYY-MM-DD");
+
+output.set("grouped", grouped);
+output.set("date", today);
+```
+
+<Tip>Mümkün olduğunda npm paketleri yerine yerleşik JavaScript özelliklerini tercih edin. Modern JavaScript; `Array.map()`, `Array.filter()`, `Object.entries()`, şablon dizeleri, yapı bozma ve daha birçok yerleşik yardımcı sunar. Yalnızca önemli bir fayda sağladıklarında npm paketleri ekleyin.</Tip>
+
+## Yerleşik değişkenler
+
+| Değişken | Açıklama |
+|---|---|
+| `process.env.AUTOMATION_TOKEN` | Teable API'sini çağırmaya yönelik Taşıyıcı belirteci. Kapsamı geçerli otomasyonun izinleriyle sınırlıdır |
+| `process.env.PUBLIC_ORIGIN` | Teable örneğinizin temel URL'si (ör. `https://app.teable.io`) |
+
+### Güvenlik: AUTOMATION_TOKEN kapsamı
+
+`AUTOMATION_TOKEN` her otomasyon çalıştırması için otomatik olarak oluşturulur. Otomasyonu oluşturan kişiyle aynı izinlere sahiptir ve kapsamı geçerli yürütmeyle sınırlıdır. Önemli noktalar:
+
+- Otomasyonu oluşturan kişinin erişebildiği tüm tablolara erişebilir.
+- Yalnızca komut dosyası yürütülürken geçerlidir (60 saniyelik zaman aşımı).
+- Bu belirteci harici sistemlere ifşa etmeyin; komut dosyanızın içinden Teable API'sini çağırmak için tasarlanmıştır.
+
+### Teable API'sini çağırma
+
+```javascript
+const base = process.env.PUBLIC_ORIGIN + "/api";
+const token = process.env.AUTOMATION_TOKEN;
+
+// Örnek: bir tablodaki kayıtları alın
+const res = await fetch(`${base}/table/tblXXXXXXX/record?take=10`, {
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json"
+  }
+});
+
+const data = await res.json();
+console.log("Alınan kayıtlar:", data);
+output.set("records", data);
+```
+
+### Komut dosyasından AI çağırma
+
+`POST /api/automation/runtime/ai`, Veritabanınızın AI modeline bir istem gönderir. Veritabanı otomasyon bağlamından alındığı için Veritabanı kimliği gerekmez. Gövde `prompt` değerini ve isteğe bağlı `attachments`, `modelKey`, `temperature` ve `outputType` değerlerini alır; yanıt `{ "message": ... }` biçimindedir.
+
+Ekler, her çağrıda en fazla 10 adet olmak üzere `{ url, mimetype, name }` öğeleridir; her biri 20 MB'tan küçük olmalı ve 30 saniye içinde indirilmelidir. Görüntüler, PDF'ler ve Office belgeleri desteklenir. Varsayılan sohbet modeli görüntüleri ve benzer ekleri okuyamayabilir; bu nedenle dosya gönderirken `modelKey` iletin. Her çağrı kredi tüketir.
+
+## Hata işleme
+
+İş akışınızın hataları uygun şekilde ele alabilmesi için riskli işlemleri her zaman try/catch blokları içine alın:
+
+```javascript
+try {
+  const res = await fetch("https://api.example.com/data");
+  
+  if (!res.ok) {
+    throw new Error(`API şu durumu döndürdü: ${res.status}: ${res.statusText}`);
+  }
+  
+  const data = await res.json();
+  output.set("success", true);
+  output.set("data", data);
+} catch (error) {
+  console.log("Hata:", error.message);
+  output.set("success", false);
+  output.set("error", error.message);
+}
+```
+
+Hata işleme olmadan başarısız bir fetch çağrısı veya beklenmeyen veri biçimi komut dosyasını durdurur ve sonraki adımlar çıktı alamaz.
+
+## Tam örnek: destek taleplerini işleme ve yönlendirme
+
+```javascript
+const actionIds = Object.keys(input);
+const record = input[actionIds[0]].record;
+
+const subject = record.fields.fldSubject || "";
+const body = record.fields.fldBody || "";
+const email = record.fields.fldEmail || "";
+
+// Anahtar kelime tabanlı basit yönlendirme
+const text = (subject + " " + body).toLowerCase();
+
+let category = "Genel";
+let priority = "Normal";
+
+if (text.includes("faturalandırma") || text.includes("fatura") || text.includes("ödeme")) {
+  category = "Faturalandırma";
+} else if (text.includes("hata") || text.includes("sorun") || text.includes("çökme")) {
+  category = "Teknik";
+  priority = "Yüksek";
+} else if (text.includes("iptal") || text.includes("iade")) {
+  category = "Hesap";
+  priority = "Yüksek";
+}
+
+// VIP müşterileri denetleyin
+const vipDomains = ["bigcorp.com", "enterprise.io"];
+const domain = email.split("@")[1] || "";
+if (vipDomains.includes(domain)) {
+  priority = "Acil";
+}
+
+output.set("category", category);
+output.set("priority", priority);
+output.set("isVIP", vipDomains.includes(domain));
+```
+
+## İpuçları
+
+- **console.log ile başlayın.** Yeni bir komut dosyası oluştururken yapısını anlamak için önce `input` nesnesinin tamamını günlüğe kaydedin.
+- **Komut dosyalarını tek konuya odaklayın.** Birden fazla görevi tek komut dosyasına sıkıştırmak yerine tek bir işi iyi yapın. Gerekirse birden fazla Komut dosyası çalıştır eylemini zincirleyin.
+- **60 saniyelik zaman aşımını göz önünde bulundurun.** Uzun süren işlemler (büyük veri işleme, çok sayıda sıralı API çağrısı) zaman aşımına uğrayabilir. Büyük görevleri daha küçük parçalara ayırın.
+- **Gerçek verilerle test edin.** Test paneli en son tetikleyici çalıştırmasındaki gerçek verileri kullanarak size gerçeğe uygun sonuçlar sunar.
+- **Eksik verileri ele alın.** Boş veya tanımsız olabilecek alanlar için varsayılan değerleri (`||` işleci) kullanın.
+
+## İlgili konular
+
+- [AI ile oluştur](/tr/basic/automation/actions/ai/ai-generate) — özel kod gerektirmeyen, istem tabanlı AI görevleri için
+- [HTTP isteği](/tr/basic/automation/actions/logic/http-request) — komut dosyası gerektirmeyen basit API çağrıları için

@@ -1,0 +1,96 @@
+---
+title: "Übersicht"
+description: "Legen Sie Zugriffsbereiche für verschiedene Teams in derselben Base fest, damit Mitglieder nur die benötigten Daten sehen, bearbeiten oder exportieren können."
+---
+
+{/* mintlify-resync: 2026-05-28 */}
+<Tip>Verfügbar ab dem Business-Plan</Tip>
+
+Wenn Vertrieb, Finanzen, Betrieb und Führung dieselbe Base nutzen, bestimmen Berechtigungen, wer die Base betreten kann, welche Daten angezeigt oder bearbeitet werden können und ob Daten importiert oder exportiert werden dürfen. Die Authority Matrix hilft Teams, Daten an einem Ort zu halten und den Zugriff gleichzeitig nach Verantwortlichkeiten zu trennen.
+
+Sie können Mitgliedern oder Abteilungen benutzerdefinierte Rollen zuweisen und jeder Rolle Zugriff nur auf die benötigten Tabellen, Apps und Workflows geben. Für Tabellen können Sie außerdem sichtbare Ansichten, sichtbare Datensätze, bearbeitbare Felder sowie Import- oder Exportberechtigungen einschränken. So kann beispielsweise der Vertrieb seine eigenen Kunden verwalten, die Finanzabteilung kann Abrechnungsfelder anzeigen und die Führung kann den vollständigen Datensatz anzeigen.
+
+## Wann sie verwendet werden sollte
+
+| Szenario | Geeignet für |
+| --- | --- |
+| Zugriff auf Abteilungsebene | Der Vertrieb kann Kundendatensätze verwalten, während die Finanzabteilung nur Abrechnungsfelder sieht. |
+| Zugewiesene Datensätze | Vertriebsmitarbeitende können nur ihnen zugewiesene Datensätze anzeigen und aktualisieren. |
+| Eingeschränkte Dateneingabe | Mitglieder können neue Datensätze erstellen, ohne vorhandene Datensätze zu bearbeiten oder zu löschen. |
+| Sensible Felder in einer gemeinsam genutzten Base | Mitglieder können Bestelldatensätze anzeigen, ohne Zahlungs- oder Kostenfelder zu sehen. |
+| Gesteuerte Apps und Workflows | Rollen können ausgewählte Apps oder Workflows öffnen, während nicht autorisierte Knoten ausgeblendet bleiben. |
+
+## So funktionieren Berechtigungen
+
+Die Authority Matrix weist Zugriffe nach Rollen zu. Nutzer können Berechtigungen über direkt zugewiesene Rollen oder über Abteilungsrollen erhalten. Wenn mehrere Rollen gelten, kombiniert Teable die von diesen Rollen erlaubten Berechtigungen.
+
+<Info>Space-Nutzer mit der Berechtigung **Manager** und Administratoren der Authority Matrix können die Authority Matrix verwalten und unterliegen keinen Einschränkungen durch sie.</Info>
+
+Die Rollenliste enthält einen Abschnitt `Administratoren` und einen Abschnitt `Benutzerdefinierte Rollen`:
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-role-list-en.png"
+  alt="Rollenliste der Authority Matrix"
+  className="docs-screenshot"
+/>
+
+Verwenden Sie `Rolle hinzufügen`, um eine benutzerdefinierte Rolle zu erstellen. Weisen Sie auf der Detailseite der Rolle Mitarbeitende zu, verfassen Sie eine kurze Beschreibung und konfigurieren Sie den Zugriff für jeden Knoten in der Base:
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-role-detail-en.png"
+  alt="Detailseite einer Rolle der Authority Matrix"
+  className="docs-screenshot"
+/>
+
+## Rollenzugriff konfigurieren
+
+Jede Tabelle, App und jeder Workflow hat eine eigene Zugriffseinstellung.
+
+| Knotentyp | Verfügbare Einstellung |
+| --- | --- |
+| Tabelle | Wählen Sie `Kann bearbeiten` oder `Kein Zugriff`. Nachdem eine Tabelle auf `Kann bearbeiten` gesetzt wurde, konfigurieren Sie ihre detaillierten Berechtigungen. |
+| App | Wählen Sie `Kann zugreifen` oder `Kein Zugriff`. Damit wird festgelegt, ob die Rolle die App öffnen kann. |
+| Workflow | Wählen Sie `Kann zugreifen` oder `Kein Zugriff`. Damit wird festgelegt, ob die Rolle den Workflow öffnen kann. |
+| Ordner | Ordner dienen der Navigation. Wenn keines der untergeordneten Knoten zugänglich ist, wird der Ordner für die Rolle ausgeblendet. |
+
+Um Ansichts-, Datensatz-, Feld- und andere detaillierte Tabellenberechtigungen zu konfigurieren, setzen Sie die Tabelle zuerst auf `Kann bearbeiten`. Eine Tabelle mit `Kein Zugriff` wird für Mitglieder dieser Rolle ausgeblendet.
+
+## Tabellenberechtigungen
+
+Wenn eine Tabelle auf `Kann bearbeiten` gesetzt ist, konfigurieren Sie diese Berechtigungsbereiche:
+
+| Berechtigungsbereich | Was er steuert |
+| --- | --- |
+| Ansichtsberechtigungen | Ob die Rolle Ansichten erstellen, aktualisieren oder löschen kann und ob sie `Alle Ansichten` oder nur `Bestimmte Ansichten` anzeigen kann. |
+| Datensatzberechtigungen | Ob die Rolle Datensätze erstellen, aktualisieren, löschen, kommentieren oder kopieren kann. Sichtbare Datensätze können `Alle Datensätze` sein oder Datensätze, die Filterbedingungen entsprechen. |
+| Feldberechtigungen | Ob die Rolle Werte in bestimmten Feldern anzeigen, aktualisieren oder erstellen kann. Das primäre Feld muss sichtbar bleiben. |
+| Import- und Exportberechtigungen | Ob die Rolle Daten in die Tabelle importieren oder Tabellendaten exportieren kann. |
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-table-permissions-en.png"
+  alt="Tabellenberechtigungen der Authority Matrix"
+  className="docs-screenshot"
+/>
+
+Datensatzfilter eignen sich gut für Zugriffsbereiche, die sich nach Inhaber, Abteilung oder ähnlichen Feldern ändern. Beispielsweise ermöglicht eine Bedingung wie `Vertriebsinhaber` `ist` `aktueller Nutzer`, dass jeder Vertriebsmitarbeitende nur seine eigenen Datensätze sieht. Feldberechtigungen können sensible Feldwerte in Datensätzen, auf die die Rolle zugreifen kann, zusätzlich ausblenden oder sperren.
+
+## Standardrolle
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-default-role-en.png"
+  alt="Einstellung der Standardrolle in der Authority Matrix"
+  className="docs-screenshot"
+/>
+
+Verwenden Sie `Standardrolle` für Mitglieder, denen keine benutzerdefinierte Rolle zugewiesen wurde. Sie können eine aktivierte benutzerdefinierte Rolle auswählen oder `Berechtigung verweigert` wählen, damit diese Mitglieder nicht auf von der Authority Matrix gesteuerte Inhalte zugreifen können.
+
+## Hinweise
+
+- Nachdem die Authority Matrix aktiviert wurde, unterliegen Nutzer mit einer Space-Berechtigung unterhalb von `Manager` ihren Einschränkungen, sofern sie nicht als Administratoren der Authority Matrix hinzugefügt wurden.
+- Der Nutzer, der die Authority Matrix aktiviert, wird automatisch zu `Administratoren` hinzugefügt.
+- Neue benutzerdefinierte Rollen werden aktiviert, wenn sie über `Rolle hinzufügen` erstellt werden; jede Tabelle, App und jeder Workflow benötigt jedoch weiterhin eine eigene Zugriffseinstellung.
+- Eine für eine Rolle auf `Kein Zugriff` gesetzte Tabelle wird für diese Rolle ausgeblendet, auch wenn ihre detaillierten Berechtigungsoptionen zuvor bearbeitet wurden.
+- Das Zuweisen einer Rolle über `Nutzer hinzufügen` oder `Aus Organisation hinzufügen` kann ausgewählte Mitglieder oder Abteilungen als Mitarbeitende der Base hinzufügen. Die Authority Matrix schränkt anschließend ein, worauf sie innerhalb der Base zugreifen können.
+
+<Note>Informationen zu grundlegenden Berechtigungsebenen für Spaces und Bases finden Sie unter [Berechtigungen für die Zusammenarbeit](/de/basic/space/space-permission).</Note>
+

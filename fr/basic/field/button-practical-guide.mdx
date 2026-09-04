@@ -1,0 +1,109 @@
+---
+title: "Guide pratique du champ Bouton"
+description: "Utilisez un champ Bouton pour déclencher des automatisations et exécuter en un clic des flux de travail fixes, comme la conversion de prospects ou les rappels de tâches."
+---
+
+Les champs Bouton sont utiles pour les flux de travail fixes et répétitifs qui doivent s’exécuter après la confirmation d’une personne. Ils servent couramment à convertir un prospect en opportunité, à planifier un contenu approuvé, à envoyer des rappels de tâches ou à synchroniser l’Enregistrement actuel avec un système externe.
+
+Ce guide prend la conversion de prospect comme exemple principal et explique comment relier un bouton à une Automatisation.
+
+## Cas d’utilisation
+
+| Scénario | Ce que le bouton peut faire |
+| --- | --- |
+| Conversion de prospect | Créer un Enregistrement dans la Table des opportunités et marquer le prospect d’origine comme converti |
+| Planification de contenu | Créer un calendrier de publication et avertir le membre de l’équipe responsable de la publication |
+| Rappels de tâches | Envoyer un e-mail ou un message d’équipe au responsable |
+| Synchronisation avec un système externe | Envoyer l’Enregistrement actuel à un autre système au moyen d’une requête HTTP |
+
+## Exemple : convertir un prospect en opportunité
+
+Dans une Table CRM, un commercial clique sur le bouton « Convertir en opportunité » après avoir décidé qu’un prospect est prêt. L’Automatisation exécute deux actions :
+
+- Créer un nouvel Enregistrement dans la Table des opportunités avec des informations clés telles que l’entreprise et le contact.
+- Mettre à jour le statut du prospect d’origine sur « Converti » dans la Table des prospects.
+
+### Préparer les Tables
+
+Cet exemple utilise deux Tables :
+
+| Table | Objectif | Exemples de Champs |
+| --- | --- | --- |
+| Table des prospects | Stocke les prospects à relancer. C’est là que le champ Bouton est créé | Nom de l’entreprise, contact, responsable, statut |
+| Table des opportunités | Stocke les opportunités converties | Nom de l’opportunité, client associé, responsable, prospect d’origine |
+
+### Créer le champ Bouton
+
+Ajoutez un champ Bouton dans la Table des prospects :
+
+<Steps>
+  <Step title="Choisir le type de champ">
+    Créez un Champ et choisissez **Bouton** comme type de Champ.
+  </Step>
+  <Step title="Définir le texte du bouton">
+    Définissez le texte du bouton sur « Convertir en opportunité » et choisissez une couleur facile à reconnaître.
+  </Step>
+  <Step title="Activer la confirmation du clic">
+    Pour éviter les clics accidentels, activez **Confirmer avant le clic** et renseignez le titre et le message de la boîte de dialogue, ainsi que le texte du bouton de confirmation.
+  </Step>
+</Steps>
+
+### Configurer les actions de l’Automatisation
+
+Après avoir créé le champ Bouton, configurez l’Automatisation qui s’exécute lorsqu’un utilisateur clique sur le bouton.
+
+<Steps>
+  <Step title="Créer une automatisation">
+    Dans les paramètres du champ Bouton, cliquez sur **Automatisation personnalisée** et créez un flux de travail.
+  </Step>
+  <Step title="Créer un enregistrement d’opportunité">
+    Ajoutez une action **Créer un enregistrement** et choisissez la Table des opportunités comme Table cible.
+  </Step>
+  <Step title="Mapper les champs">
+    Écrivez les principaux Champs du prospect dans la nouvelle opportunité. Par exemple :
+    - `Nom de l’opportunité` = `Nom de l’entreprise` de l’Enregistrement déclencheur
+    - `Client associé` = `Contact` de l’Enregistrement déclencheur
+    - `Responsable` = `Responsable` de l’Enregistrement déclencheur
+  </Step>
+  <Step title="Mettre à jour le statut du prospect d’origine">
+    Ajoutez une action **Mettre à jour l’enregistrement**. Choisissez la Table des prospects comme Table cible, utilisez l’ID de l’Enregistrement déclencheur comme ID d’Enregistrement, puis définissez `Statut` sur « Converti ».
+  </Step>
+</Steps>
+
+Après avoir enregistré l’Automatisation, le commercial peut cliquer sur « Convertir en opportunité » pour créer l’opportunité et mettre à jour le statut du prospect d’origine.
+
+### Ajouter des notifications
+
+Si un responsable commercial ou le propriétaire de l’opportunité doit être averti après la conversion, ajoutez une action **Envoyer un e-mail** ou une action de message d’équipe à l’Automatisation.
+
+Paramètres courants :
+
+- **Destinataire** : une adresse e-mail fixe ou un Champ Utilisateur de l’Enregistrement actuel.
+- **Objet et corps** : insérez des valeurs de Champ provenant de l’Enregistrement déclencheur, telles que le nom de l’entreprise, le responsable ou la source du prospect.
+
+Exemple de corps d’e-mail :
+
+> Nouvelle opportunité convertie : [Nom de l’entreprise] a été convertie par [Responsable]. Merci d’assurer le suivi.
+
+### Connecter des systèmes externes
+
+Si les opportunités converties doivent également être synchronisées avec un CRM, un système financier ou un outil interne, ajoutez une action de requête HTTP à l’Automatisation.
+
+Les requêtes HTTP fonctionnent mieux lorsque le système cible dispose d’une API stable. Avant de configurer l’action, vérifiez le point de terminaison, la méthode de requête, la méthode d’authentification et le format des Champs.
+
+### Limiter les clics en double
+
+La conversion d’un prospect ne doit généralement pas avoir lieu plus d’une fois pour le même prospect. Activez **Limiter le nombre de clics** dans le champ Bouton :
+
+| Paramètre | Recommandation |
+| --- | --- |
+| Nombre maximal de clics | Définissez-le sur `1` |
+| Autoriser la réinitialisation | Laissez généralement cette option désactivée afin d’éviter les opportunités en double |
+
+Une fois la limite de clics atteinte, le bouton de cet Enregistrement est désactivé.
+
+## Remarques
+
+- La réussite de l’exécution après un clic sur le bouton dépend de l’activation et du bon fonctionnement de l’Automatisation associée.
+- Chaque déclenchement réussi d’une Automatisation est comptabilisé dans le quota d’exécutions d’Automatisations de l’Espace de travail.
+- Si le bouton modifie des données importantes, activez la confirmation du clic et limitez le nombre de clics.

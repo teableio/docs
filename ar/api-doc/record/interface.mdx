@@ -1,0 +1,449 @@
+---
+title: "واجهة حقول السجلات"
+---
+
+<Note>حقل البحث ليس نوعًا محددًا من الحقول. يمكننا البحث عن أي نوع من الحقول في قاعدة بيانات مرتبطة. يتحدد نوع حقل البحث وفقًا للحقل الأصلي في قاعدة البيانات المرتبطة، وتكون لديه الخاصية isLookup. لا يمكن تحرير حقول البحث.</Note>
+
+<Note>
+قد تحمل جميع قيم الإرجاع للحقول القيمة `isMultipleCellValue: true` في حالات معينة:
+
+1. يحدث ذلك عندما يكون الحقل حقل بحث. وعندما تسمح القيمة المرتبطة بتحديد خيارات متعددة، تكون قيمة حقل البحث مصفوفة بالضرورة.
+
+2. يمكن تهيئة الحقول؛ فعلى سبيل المثال، يمكن تهيئة حقول المستخدم وحقول الارتباط لتحديد خيار واحد أو خيارات متعددة. يمكنك استخدام `field.isMultipleCellValue` في شيفرتك لتحديد ما إذا كان الحقل يقبل قيمًا متعددة.
+</Note>
+
+<Note>
+لا تستخدم نوع الحقل لتحديد أذونات الكتابة. استخدم بدلاً من ذلك الخاصية isComputed للحقل.
+</Note>
+
+### 1. حقل الأرقام
+* النوع: number
+* نوع الكتابة: `number`
+* نوع الإرجاع:
+  * `isMultipleCellValue: false`: `number`
+  * `isMultipleCellValue: true`: `number[]`
+
+مثال:
+```js
+// قيمة الإدخال
+42
+
+// القيمة المُعادة (isMultipleCellValue: false)
+42
+
+// القيمة المُعادة (isMultipleCellValue: true)
+[42, 17, 99]
+```
+
+### 2. حقل النص أحادي السطر
+* النوع: singleLineText
+* نوع الكتابة: `string`
+* نوع الإرجاع:
+  * `isMultipleCellValue: false`: `string`
+  * `isMultipleCellValue: true`: `string[]`
+
+مثال:
+```js
+// قيمة الإدخال
+"مرحبًا، Teable!"
+
+// القيمة المُعادة (isMultipleCellValue: false)
+"مرحبًا، Teable!"
+
+// القيمة المُعادة (isMultipleCellValue: true)
+["مرحبًا، Teable!", "مرحبًا بك", "يوم سعيد"]
+```
+
+### 3. حقل النص الطويل
+* النوع: longText
+* نوع الكتابة: `string`
+* نوع الإرجاع:
+  * `isMultipleCellValue: false`: `string`
+  * `isMultipleCellValue: true`: `string[]`
+
+مثال:
+```js
+// قيمة الإدخال
+"هذا حقل نص طويل يمكن أن يحتوي على عدة فقرات..."
+
+// القيمة المُعادة (isMultipleCellValue: false)
+"هذا حقل نص طويل يمكن أن يحتوي على عدة فقرات..."
+
+// القيمة المُعادة (isMultipleCellValue: true)
+["هذا نص طويل...", "نص طويل آخر...", "نص طويل آخر أيضًا..."]
+```
+
+### 4. حقل التحديد الأحادي
+* النوع: singleSelect
+* نوع الكتابة: `string` (قيمة الخيار)
+* نوع الإرجاع:
+  * `isMultipleCellValue: false`: `string`
+  * `isMultipleCellValue: true`: `string[]`
+
+مثال:
+```js
+// قيمة الإدخال
+"الخيار A"
+
+// القيمة المُعادة (isMultipleCellValue: false)
+"الخيار A"
+
+// القيمة المُعادة (isMultipleCellValue: true)
+["الخيار A", "الخيار B", "الخيار C"]
+```
+
+### 5. حقل التحديد المتعدد
+* النوع: multipleSelect
+* نوع الكتابة: `string[]` (مصفوفة قيم الخيارات)
+* نوع الإرجاع: `string[]`
+
+مثال:
+```js
+// قيمة الإدخال
+["أحمر", "أزرق", "أخضر"]
+
+// القيمة المُعادة
+["أحمر", "أزرق", "أخضر"]
+```
+
+### 6. حقل الارتباط
+* النوع: link
+* نوع الكتابة:
+  * `isMultipleCellValue: false`: `{ id: string }`
+  * `isMultipleCellValue: true`: `{ id: string }[]`
+* نوع الإرجاع:
+  * `isMultipleCellValue: false`: `{ id: string, title?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title?: string }[]`
+
+مثال:
+```js
+// قيمة الإدخال (isMultipleCellValue: false)
+{ id: "rec123456" }
+
+// قيمة الإدخال (isMultipleCellValue: true)
+[{ id: "rec123456" }, { id: "rec789012" }]
+
+// القيمة المُعادة (isMultipleCellValue: false)
+{ id: "rec123456", title: "السجل المرتبط 1" }
+
+// القيمة المُعادة (isMultipleCellValue: true)
+[
+  { id: "rec123456", title: "السجل المرتبط 1" },
+  { id: "rec789012", title: "السجل المرتبط 2" }
+]
+```
+
+### 7. حقل الصيغة
+* النوع: formula
+* نوع الكتابة: لا يمكن الكتابة فيه مباشرةً
+* نوع الإرجاع: يعتمد على نتيجة الصيغة، ويمكن أن يكون `string | number | boolean` أو مصفوفة من أحد هذه الأنواع
+
+مثال:
+```js
+// القيمة المُعادة (isMultipleCellValue: false)
+42 // أو "النتيجة" أو true
+
+// القيمة المُعادة (isMultipleCellValue: true)
+[42, 17, 99] // أو ["النتيجة1", "النتيجة2"] أو [true, false, true]
+```
+
+### 8. حقل المرفقات
+لرفع مرفق إلى حقل مرفقات، استخدم واجهة API المخصصة لذلك. للاطلاع على التفاصيل، راجع قسم [رفع مرفق](/ar/api-doc/record/upload-attachment).
+* النوع: attachment
+* نوع الكتابة:
+  ```ts
+  {
+    id: string;
+    name: string;
+    path: string;
+    token: string; // معرّف فريد
+    size: number; // حجم الملف بالبايت
+    mimetype: string; // نوع الملف
+    presignedUrl?: string; // عنوان URL لمعاينة الملف أو تنزيله
+    width?: number; // عرض الصورة
+    height?: number; // ارتفاع الصورة
+  }[]
+  ```
+
+* نوع الإرجاع:
+```ts
+{
+  id: string;
+  name: string;
+  path: string;
+  token: string; // معرّف فريد
+  size: number; // حجم الملف بالبايت
+  mimetype: string; // نوع الملف
+  presignedUrl?: string; // عنوان URL لمعاينة الملف أو تنزيله
+  width?: number; // عرض الصورة
+  height?: number; // ارتفاع الصورة
+}[]
+```
+
+مثال:
+```js
+// قيمة الإدخال
+[
+  {
+    name: "document.pdf",
+    type: "application/pdf",
+    token: "abc123",
+    size: 1024000
+  }
+]
+
+// القيمة المُعادة
+[
+  {
+    id: "att123",
+    name: "document.pdf",
+    path: "/uploads/document.pdf",
+    token: "abc123",
+    size: 1024000,
+    mimetype: "application/pdf",
+    presignedUrl: "https://app.teable.ai/preview/document.pdf",
+  },
+  {
+    id: "att456",
+    name: "image.jpg",
+    path: "/uploads/image.jpg",
+    token: "def456",
+    size: 2048000,
+    mimetype: "image/jpeg",
+    presignedUrl: "https://app.teable.ai/preview/image.jpg",
+    width: 1920,
+    height: 1080
+  }
+]
+```
+
+### 9. حقل التاريخ
+* النوع: date
+* نوع الكتابة: `string` (بتنسيق ISO 8601)
+* نوع الإرجاع:
+  * `isMultipleCellValue: false`: `string` (بتنسيق ISO 8601)
+  * `isMultipleCellValue: true`: `string[]` (بتنسيق ISO 8601)
+يمكنك استخدام `new Date().toISOString()` للحصول على تنسيق الوقت ISO 8601
+
+مثال:
+```js
+// قيمة الإدخال
+"2024-09-02T02:51:03.875Z"
+
+// القيمة المُعادة (isMultipleCellValue: false)
+"2024-09-02T02:51:03.875Z"
+
+// القيمة المُعادة (isMultipleCellValue: true)
+["2024-09-02T02:51:03.875Z", "2024-09-02T02:51:03.875Z"]
+```
+
+### 10. حقل وقت الإنشاء
+* النوع: createdTime
+* نوع الكتابة: لا يمكن الكتابة فيه مباشرةً
+* نوع الإرجاع:
+  * `isMultipleCellValue: false`: `string` (بتنسيق ISO 8601)
+  * `isMultipleCellValue: true`: `string[]` (بتنسيق ISO 8601)
+
+مثال:
+```js
+// القيمة المُعادة (isMultipleCellValue: false)
+"2024-09-02T02:51:03.875Z"
+
+// القيمة المُعادة (isMultipleCellValue: true)
+["2024-09-02T02:51:03.875Z", "2024-09-02T02:51:03.875Z"]
+```
+
+### 11. حقل وقت آخر تعديل
+* النوع: lastModifiedTime
+* نوع الكتابة: لا يمكن الكتابة فيه مباشرةً
+* نوع الإرجاع:
+  * `isMultipleCellValue: false`: `string` (بتنسيق ISO 8601)
+  * `isMultipleCellValue: true`: `string[]` (بتنسيق ISO 8601)
+
+مثال:
+```js
+// القيمة المُعادة (isMultipleCellValue: false)
+"2023-04-15T10:30:00Z"
+
+// القيمة المُعادة (isMultipleCellValue: true)
+["2023-04-15T10:30:00Z", "2023-04-16T14:45:00Z"]
+```
+
+### 12. حقل مربع الاختيار
+* النوع: checkbox
+* نوع الكتابة: `boolean`
+* نوع الإرجاع:
+  * `isMultipleCellValue: false`: `boolean`
+  * `isMultipleCellValue: true`: `boolean[]`
+
+مثال:
+```js
+// قيمة الإدخال
+true
+
+// القيمة المُعادة (isMultipleCellValue: false)
+true
+
+// القيمة المُعادة (isMultipleCellValue: true)
+[true, false, true]
+```
+
+### 13. حقل التجميع
+* النوع: rollup
+* نوع الكتابة: لا يمكن الكتابة فيه مباشرةً
+* نوع الإرجاع: يعتمد على تهيئة التجميع، ويمكن أن يكون `number | string` أو مصفوفة من أحد هذين النوعين
+
+مثال:
+```js
+// القيمة المُعادة (isMultipleCellValue: false)
+42 // أو "نتيجة الملخص"
+
+// القيمة المُعادة (isMultipleCellValue: true)
+[42, 17, 99] // أو ["الملخص 1", "الملخص 2"]
+```
+
+### 14. حقل التقييم
+* النوع: rating
+* نوع الكتابة: `number`
+* نوع الإرجاع:
+  * `isMultipleCellValue: false`: `number`
+  * `isMultipleCellValue: true`: `number[]`
+
+مثال:
+```js
+// قيمة الإدخال
+4
+
+// القيمة المُعادة (isMultipleCellValue: false)
+4
+
+// القيمة المُعادة (isMultipleCellValue: true)
+[4, 3, 5]
+```
+
+### 15. حقل الترقيم التلقائي
+* النوع: autoNumber
+* نوع الكتابة: لا يمكن الكتابة فيه مباشرةً
+* نوع الإرجاع:
+  * `isMultipleCellValue: false`: `number`
+  * `isMultipleCellValue: true`: `number[]`
+
+مثال:
+```js
+// القيمة المُعادة (isMultipleCellValue: false)
+42
+
+// القيمة المُعادة (isMultipleCellValue: true)
+[42, 43, 44]
+```
+
+### 16. حقل المستخدم
+
+* النوع: user
+* نوع الكتابة:
+  * `isMultipleCellValue: false`: `{ id: string, title: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string }[]`
+* نوع الإرجاع:
+  * `isMultipleCellValue: false`: `{ id: string, title: string, email?: string, avatar?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string, email?: string, avatar?: string }[]`
+
+مثال:
+```js
+// قيمة الإدخال (isMultipleCellValue: false)
+{ id: "user123", title: "John Doe" }
+
+// قيمة الإدخال (isMultipleCellValue: true)
+[
+  { id: "user123", title: "John Doe" },
+  { id: "user456", title: "Jane Smith" }
+]
+
+// القيمة المُعادة (isMultipleCellValue: false)
+{
+  id: "user123",
+  title: "John Doe",
+  email: "john@example.com",
+  avatar: "https://example.com/avatar.jpg"
+}
+
+// القيمة المُعادة (isMultipleCellValue: true)
+[
+  {
+    id: "user123",
+    title: "John Doe",
+    email: "john@example.com",
+    avatar: "https://example.com/avatar1.jpg"
+  },
+  {
+    id: "user456",
+    title: "Jane Smith",
+    email: "jane@example.com",
+    avatar: "https://example.com/avatar2.jpg"
+  }
+]
+```
+
+### 17. حقل المنشئ
+* نوع الكتابة: لا يمكن الكتابة فيه مباشرةً
+* نوع الإرجاع:
+  * `isMultipleCellValue: false`: `{ id: string, title: string, email?: string, avatar?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string, email?: string, avatar?: string }[]`
+مثال:
+```js
+// القيمة المُعادة (isMultipleCellValue: false)
+{
+  id: "user123",
+  title: "John Doe",
+  email: "john@example.com",
+  avatar: "https://example.com/avatar.jpg"
+}
+
+// القيمة المُعادة (isMultipleCellValue: true)
+[
+  {
+    id: "user123",
+    title: "John Doe",
+    email: "john@example.com",
+    avatar: "https://example.com/avatar1.jpg"
+  },
+  {
+    id: "user456",
+    title: "Jane Smith",
+    email: "jane@example.com",
+    avatar: "https://example.com/avatar2.jpg"
+  }
+]
+```
+
+### 18. حقل آخر من أجرى تعديلًا
+* نوع الكتابة: لا يمكن الكتابة فيه مباشرةً
+* نوع الإرجاع:
+  * `isMultipleCellValue: false`: `{ id: string, title: string, email?: string, avatar?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string, email?: string, avatar?: string }[]`
+
+مثال:
+```js
+// القيمة المُعادة (isMultipleCellValue: false)
+{
+  id: "user123",
+  title: "John Doe",
+  email: "john@example.com",
+  avatar: "https://example.com/avatar.jpg"
+}
+
+// القيمة المُعادة (isMultipleCellValue: true)
+[
+  {
+    id: "user123",
+    title: "John Doe",
+    email: "john@example.com",
+    avatar: "https://example.com/avatar1.jpg"
+  },
+  {
+    id: "user456",
+    title: "Jane Smith",
+    email: "jane@example.com",
+    avatar: "https://example.com/avatar2.jpg"
+  }
+]
+```

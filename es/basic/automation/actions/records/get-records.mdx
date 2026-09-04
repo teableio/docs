@@ -1,0 +1,90 @@
+---
+title: "Obtener Registros"
+description: "Recupera Registros de una Tabla con filtros y paginación opcionales"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Recomendamos encarecidamente usar Ejecutar script para crear automatizaciones, ya que permite cubrir el comportamiento de todas las acciones, incluidas aquellas que, de otro modo, tendrían que crearse manualmente. Solo tienes que describir tus requisitos a la IA en el chat.
+
+Ten en cuenta que, si añades acciones manualmente, la IA no podrá reconocerlas ni modificarlas más adelante.
+</Tip>
+
+## Crear con IA
+
+Abre el Chat de IA en la barra lateral derecha de tu Tabla y describe lo que quieres.
+
+La IA se encarga de todo: elige el desencadenador adecuado, selecciona las acciones correspondientes, asigna los Campos y configura automáticamente todo el flujo de trabajo.
+
+Describe el objetivo una sola vez y el flujo de trabajo estará listo, sin necesidad de configuración manual.
+
+Recupera Registros de una Tabla y los devuelve como una matriz. Utiliza los resultados en pasos posteriores para recorrer los Registros, pasar datos a un script o alimentar otras acciones.
+
+## Configuración
+
+| Ajuste | Obligatorio | Descripción |
+|---|---|---|
+| Tabla | Sí | La Tabla que se consultará |
+| Vista | No | Limita los resultados a los Registros visibles en una Vista concreta (hereda los filtros, la ordenación y los Campos ocultos de la Vista) |
+| Filtro | No | Condiciones de filtro adicionales que se aplican además de cualquier filtro de la Vista |
+| Omitir | No | Número de Registros que se omitirán desde el principio (para la paginación) |
+| Tomar | No | Número máximo de Registros que se devolverán (para la paginación) |
+
+## Cómo configurarla
+
+1. Añade una acción **Obtener Registros** a tu flujo de trabajo.
+2. Elige la **Tabla** que quieres consultar. Utiliza [Acceso entre Bases](/es/basic/automation/actions/records/cross-base) si la Tabla está en otra Base.
+3. (Opcional) Selecciona una **Vista** para heredar sus ajustes de filtro, ordenación y visibilidad de Campos.
+4. (Opcional) Añade condiciones de **Filtro** para acotar los resultados. Por ejemplo, `Estado` es igual a `Activo` y `Fecha de vencimiento` es anterior a hoy.
+5. (Opcional) Establece **Omitir** y **Tomar** para la paginación. Por ejemplo, Omitir 0 y Tomar 100 para obtener los primeros 100 Registros.
+6. Guarda la acción. Cuando se ejecute el flujo de trabajo, los resultados estarán disponibles como una matriz para los pasos posteriores.
+
+## Salida: trabajar con los resultados
+
+La salida es una **matriz de Registros**. Cada Registro de la matriz contiene:
+
+- **ID de Registro** — el identificador único.
+- **Todos los valores de los Campos** — todos los Campos de la Tabla (o de la Vista, si has seleccionado una).
+
+### Usar los resultados en el paso siguiente
+
+- **Hacer referencia a un solo Registro:** si solo esperas un resultado (o quieres el primero), puedes hacer referencia directamente a los Campos del primer Registro mediante el selector de variables **+**.
+- **Recorrer todos los Registros:** añade una acción [Bucle (lote)](../logic/loop-run) después de Obtener Registros y selecciona la matriz de resultados como fuente de datos. Dentro del bucle, haz referencia a los Campos de cada elemento.
+- **Procesarlos en un script:** pasa la matriz a un paso [Ejecutar script](/es/basic/automation/actions/ai/ai-script) para procesarla, filtrarla o transformarla de forma personalizada.
+
+## Paginación
+
+Si no estableces **Omitir** ni **Tomar**, la acción devuelve Registros hasta alcanzar el límite predeterminado del sistema. En Tablas grandes, utiliza la paginación para controlar el tamaño de los resultados:
+
+| Ajuste | Finalidad | Ejemplo |
+|---|---|---|
+| Omitir | Cuántos Registros se omitirán desde el principio | `0` (empezar desde el principio) |
+| Tomar | Cuántos Registros se devolverán | `100` (devolver 100 Registros) |
+
+Para procesar una Tabla grande completa, puedes utilizar varios pasos Obtener Registros con valores de Omitir cada vez mayores o gestionar la paginación en un script.
+
+## Cuándo usarla
+
+- **Buscar tareas vencidas para enviar recordatorios.** Filtra las tareas cuya Fecha de vencimiento sea anterior a hoy y cuyo Estado no sea «Completada». Recorre los resultados y envía un correo electrónico por cada una.
+- **Recopilar datos para un resumen diario.** Recupera todos los Registros actualizados en las últimas 24 horas y reúnelos en un correo electrónico de resumen.
+- **Buscar Registros relacionados antes de crear o actualizar.** Antes de crear un duplicado, comprueba si ya existe un Registro con el mismo correo electrónico.
+- **Proporcionar datos a una acción de IA.** Obtén Registros con Campos de texto largos y luego utiliza Generar con IA en un bucle para resumirlos o clasificarlos individualmente.
+- **Sincronizar Registros con un sistema externo.** Obtén todos los Registros que hayan cambiado desde la última sincronización y transfiérelos a un CRM o almacén de datos mediante solicitudes HTTP.
+
+## Consejos
+
+- **Utiliza filtros.** Cuanto más específico sea el filtro, menos Registros se devolverán y más rápido se ejecutará la acción.
+- **Limita los resultados con Tomar.** Si solo necesitas los primeros 10 Registros, establece Tomar en 10. No es necesario recuperar miles de Registros cuando solo necesitas unos pocos.
+- **Selecciona una Vista** que ya filtre y ordene los datos que necesitas. Así, la configuración de la Automatización será más sencilla.
+- **Evita obtener la Tabla completa** a menos que realmente necesites todos los Registros. Los conjuntos de resultados grandes tardan más en procesarse y utilizan más recursos, especialmente cuando se combinan con Bucle.
+- Obtener Registros no modifica ningún dato: es una acción de solo lectura.
+- Si la consulta no devuelve ningún Registro, los pasos posteriores que hagan referencia a los resultados recibirán una matriz vacía. Asegúrate de que el flujo de trabajo lo gestione correctamente (p. ej., que no envíe un correo electrónico diciendo «estos son tus resultados» cuando no haya ninguno).
+- Los filtros de Obtener Registros funcionan igual que los filtros de Vista: puedes combinar condiciones con lógica AND/OR.
+- Al utilizar Acceso entre Bases, la consulta se ejecuta con los permisos del creador del flujo de trabajo. Si el creador pierde el acceso a la Base de destino, el paso fallará.
+
+## Contenido relacionado
+
+- [Acceso entre Bases](/es/basic/automation/actions/records/cross-base) — consulta Tablas de otras Bases
+- [Bucle (lote)](../logic/loop-run) — recorre la matriz de resultados
+- [Crear Registro](/es/basic/automation/actions/records/create-record) — crea Registros a partir de los datos recuperados
+- [Actualizar Registro](/es/basic/automation/actions/records/update-record) — actualiza los Registros encontrados mediante Obtener Registros

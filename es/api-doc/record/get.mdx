@@ -1,0 +1,85 @@
+---
+title: "Obtener Registros"
+---
+
+<Tip>Proporcionamos a los desarrolladores un [Generador de parámetros de consulta](https://app.teable.ai/developer/tool/query-builder) integrado que facilita la creación de solicitudes personalizadas basadas en tus Tablas existentes.</Tip>
+
+### Ruta
+GET /api/table/\{tableId\}/record
+​
+### Solicitud
+#### Parámetros de ruta
+tableId (string): El identificador único de la Tabla [(cómo obtenerlo)](/es/api-doc/get-id#tableid).
+
+#### Parámetros de consulta básicos
+Todos los parámetros son opcionales
+
+<ParamField query="viewId" type="string">
+  Especifica el ID de la Vista de la que se obtendrán los Registros. Si no se especifica, los Registros se devolverán en orden de creación e incluirán todos los Registros y Campos.
+</ParamField>
+
+<ParamField query="take" type="number">
+  Especifica el número de Registros que se recuperarán; el valor máximo es 100. Para leer más Registros, recorre los datos por páginas con `skip` y `take` (consulta [Paginación](/es/api-doc/overview)).
+
+  El límite de 100 Registros se aplica a las claves de API personales de Teable Cloud creadas a partir del 10 de septiembre de 2026. Las claves creadas antes de esa fecha, los tokens de OAuth y de complementos, y las instancias autoalojadas siguen admitiendo hasta 1000, pero el tamaño de página recomendado continúa siendo de 100.
+</ParamField>
+
+<ParamField query="skip" type="number">
+  Especifica el número de Registros que se omitirán; se utiliza para la paginación.
+</ParamField>
+
+<ParamField query="fieldKeyType" type="string" default="name">
+  Define el tipo de clave de los Campos de los Registros; los valores posibles son:
+  - `name`: Usa los nombres de los Campos como claves (valor predeterminado)
+  - `id`: Usa los ID de los Campos como claves
+  - `dbFieldName`: Usa los dbFieldName de los Campos como claves
+</ParamField>
+
+<ParamField query="cellFormat" type="string" default="json">
+  Define el formato de devolución de los valores de celda; los valores posibles son:
+  - `json`: Devuelve datos JSON estructurados (valor predeterminado)
+  - `text`: Devuelve un formato de texto sin formato
+</ParamField>
+
+<ParamField query="projection" type="string[]">
+  Si solo necesitas Campos concretos, especifícalos mediante este parámetro. De lo contrario, se recuperarán todos los Campos visibles. Los valores del parámetro dependen de la configuración de fieldKeyType (se usan nombres de Campos, ID o dbFieldName).
+</ParamField>
+
+<ParamField query="orderBy" type="string">
+  Matriz de objetos de ordenación que especifican cómo deben ordenarse los Registros.
+</ParamField>
+
+<ParamField query="filter" type="string">
+  Objeto de condiciones de consulta complejas para filtrar los resultados. Admite condiciones de consulta complejas basadas en Campos, operadores y valores.
+</ParamField>
+
+<ParamField query="search" type="string[]">
+  Busca Registros que coincidan con los Campos y valores especificados.
+</ParamField>
+
+<Accordion title="Parámetros de consulta avanzados">
+<ParamField query="groupBy" type="string">
+  Matriz de objetos de agrupación que especifican cómo deben agruparse los Registros.
+</ParamField>
+
+<ParamField query="collapsedGroupIds" type="string[]">
+  Matriz de ID de grupos que se contraerán.
+</ParamField>
+
+<ParamField query="selectedRecordIds" type="string[]">
+  Filtra los Registros seleccionados por sus ID de Registro.
+</ParamField>
+
+<ParamField query="ignoreViewQuery" type="boolean">
+  Cuando se especifica viewId, establecer este valor en true hará que se ignoren los filtros, la ordenación y los demás ajustes de la Vista.
+</ParamField>
+
+<ParamField query="filterLinkCellCandidate" type="string[]">
+  Filtra los Registros de la Tabla enlazada que puede seleccionar la celda de enlace especificada. Por ejemplo, en los Campos de relación uno a varios o uno a uno, no aparecerán los ID de Registro ya seleccionados.
+</ParamField>
+
+<ParamField query="filterLinkCellSelected" type="string[]">
+  Filtra los Registros de la Tabla enlazada que ya están seleccionados por esta celda de enlace. Nota: viewId, filter y orderBy no surtirán efecto en este caso, ya que los Registros seleccionados tienen su propio orden.
+</ParamField>
+</Accordion>
+

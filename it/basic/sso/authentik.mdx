@@ -1,0 +1,196 @@
+---
+title: "SSO con Authentik"
+description: "Configura Authentik come provider di autenticazione SSO per Teable"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Disponibile con il piano Business e superiori</Tip>
+
+## Passaggio 1: creare il provider di autenticazione in Teable
+
+1. Vai alle impostazioni SSO di Teable
+2. Crea un nuovo provider di autenticazione, chiamalo **Authentik** e seleziona **OpenID Connect**
+
+## Passaggio 2: accedere all'interfaccia di amministrazione di Authentik
+
+1. Accedi all'interfaccia di amministrazione della tua istanza Authentik
+2. L'URL predefinito è in genere `https://your-authentik-domain/if/admin/`
+3. Accedi con le tue credenziali di amministratore
+
+## Passaggio 3: creare un nuovo provider
+
+1. Nel menu a sinistra, vai ad **Applicazioni** → **Provider**
+2. Fai clic sul pulsante **Crea**
+3. Seleziona **Provider OAuth2/OpenID**
+4. Configura le impostazioni del provider:
+
+### Impostazioni di base
+
+- **Nome**: Provider SSO di Teable
+- **Flusso di autorizzazione**: seleziona il flusso che preferisci (in genere **default-authentication-flow**)
+- **Tipo di client**: **Riservato**
+- **ID client**: (generato automaticamente; puoi personalizzarlo se necessario)
+- **Segreto client**: (generato automaticamente; copia questo valore)
+
+### URI di reindirizzamento
+
+- **URI/origini di reindirizzamento (RegEx)**: incolla l'**URL di callback** fornito da Teable
+  - Per una corrispondenza esatta: `https://app.teable.ai/api/auth/authentication/__providerId__/callback`
+  - Per un'espressione regolare: `https://app\.teable\.ai/api/auth/authentication/.*/callback`
+
+<Note>Sostituisci `__providerId__` nell'URL con il providerId mostrato dopo aver creato il provider di autenticazione in Teable, oppure copia direttamente l'URL di callback dalla pagina di Teable.</Note>
+
+### Impostazioni avanzate
+
+- **Ambiti**: assicurati che siano disponibili i seguenti ambiti:
+  - `openid`
+  - `email`
+  - `profile`
+- **Modalità soggetto**: **Basata sull'ID con hash dell'utente**
+- **Includi i claim in id_token**: seleziona questa opzione
+
+Fai clic su **Fine** per creare il provider.
+
+## Passaggio 4: salvare le credenziali del client
+
+Dopo aver creato il provider:
+
+1. Copia l'**ID client** dai dettagli del provider
+2. Copia il **Segreto client** (viene mostrato una sola volta durante la creazione)
+3. Incolla entrambi i valori nella configurazione SSO di Teable
+
+<Warning>Conserva il Segreto client in modo sicuro. Se necessario, potrai rigenerarlo in seguito.</Warning>
+
+## Passaggio 5: creare un'applicazione
+
+1. Nel menu a sinistra, vai ad **Applicazioni** → **Applicazioni**
+2. Fai clic sul pulsante **Crea**
+3. Configura l'applicazione:
+   - **Nome**: Teable
+   - **Slug**: `teable` (o lo slug che preferisci)
+   - **Provider**: seleziona il **Provider SSO di Teable** creato nel passaggio 3
+   - **URL di avvio**: (facoltativo) `https://app.teable.ai`
+   - **Impostazioni dell'interfaccia**: (facoltativo) carica il logo di Teable e personalizza l'aspetto
+
+Fai clic su **Crea** per terminare.
+
+## Passaggio 6: configurare gli endpoint OAuth
+
+In Teable, compila i seguenti endpoint OAuth usando il tuo dominio Authentik:
+
+- **URL di autorizzazione**: `https://{your-authentik-domain}/application/o/authorize/`
+- **URL del token**: `https://{your-authentik-domain}/application/o/token/`
+- **URL delle informazioni utente**: `https://{your-authentik-domain}/application/o/userinfo/`
+- **Emittente**: `https://{your-authentik-domain}/application/o/{application-slug}/`
+
+<Note>Sostituisci `{your-authentik-domain}` con il dominio effettivo della tua istanza Authentik e `{application-slug}` con lo slug configurato (ad esempio, `teable`).</Note>
+
+## Passaggio 7: configurare l'accesso all'applicazione
+
+### Creare o utilizzare un flusso esistente
+
+1. Vai a **Flussi e fasi** → **Flussi**
+2. Puoi utilizzare i flussi predefiniti o crearne di personalizzati
+3. In genere sono necessari i seguenti flussi:
+   - **Flusso di autenticazione**: per l'accesso degli utenti
+   - **Flusso di autorizzazione**: per l'autorizzazione OAuth2/OIDC
+
+### Assegnare un criterio di accesso (facoltativo)
+
+1. Torna alle impostazioni dell'applicazione
+2. Scorri fino alla sezione **Associazioni di criteri/gruppi/utenti**
+3. Fai clic su **Associa criterio esistente** per limitare l'accesso in base a:
+   - **Gruppi**: consenti solo gruppi specifici
+   - **Utenti**: consenti solo utenti specifici
+   - **Criteri personalizzati**: crea regole di accesso complesse
+
+## Passaggio 8: configurare ambiti e claim (facoltativo)
+
+### Esaminare gli ambiti
+
+1. Vai a **Personalizzazione** → **Mappature delle proprietà**
+2. Esamina le **Mappature degli ambiti** per OAuth2/OIDC
+3. Assicurati che i seguenti ambiti includano i claim corretti:
+   - `openid`: contiene il claim `sub`
+   - `email`: contiene `email` ed `email_verified`
+   - `profile`: contiene `name`, `given_name`, `family_name` e così via
+
+### Aggiungere claim personalizzati
+
+Se hai bisogno di attributi utente personalizzati:
+
+1. Vai a **Personalizzazione** → **Mappature delle proprietà**
+2. Fai clic su **Crea** → **Mappatura ambito**
+3. Definisci i claim personalizzati:
+   - **Nome**: nome del claim personalizzato
+   - **Nome ambito**: identificatore dell'ambito (ad esempio, `custom_claims`)
+   - **Espressione**: espressione Python per estrarre i dati dell'utente
+4. Associa l'ambito al provider
+
+## Passaggio 9: provare l'accesso SSO
+
+Hai due opzioni per abilitare l'accesso SSO:
+
+**Opzione 1: URL di autenticazione diretto**
+- Usa l'URL di autorizzazione come URL di accesso SSO
+- Gli utenti verranno reindirizzati ad Authentik per l'autenticazione
+
+**Opzione 2: verifica del dominio**
+1. In Teable, configura la verifica del dominio
+2. Verifica il tuo dominio personalizzato
+3. Visita https://app.teable.ai
+4. Fai clic sul pulsante di accesso SSO
+5. Per accedere, inserisci il tuo indirizzo email appartenente al dominio verificato
+
+## Configurazione aggiuntiva (facoltativa)
+
+### Configurare l'autenticazione a più fattori
+
+1. Vai a **Flussi e fasi** → **Fasi**
+2. Crea fasi MFA (ad esempio, TOTP, WebAuthn, SMS)
+3. Vai a **Flussi e fasi** → **Flussi**
+4. Modifica il flusso di autenticazione
+5. Aggiungi le fasi MFA al flusso
+6. Configura i criteri e le associazioni MFA
+
+### Configurare la registrazione degli utenti
+
+1. Vai a **Flussi e fasi** → **Flussi**
+2. Crea o modifica un flusso di registrazione
+3. Aggiungi fasi per:
+   - Raccolta dei dati dell'utente
+   - Verifica dell'email
+   - Configurazione della password
+4. Collega il flusso di registrazione alla tua applicazione
+
+### Configurare i criteri delle password
+
+1. Vai a **Flussi e fasi** → **Criteri**
+2. Crea criteri delle password con requisiti quali:
+   - Lunghezza minima
+   - Requisiti di complessità
+   - Cronologia delle password
+   - Regole di scadenza
+
+### Abilitare la gestione delle sessioni
+
+1. Vai a **Eventi** → **Sessioni**
+2. Monitora le sessioni utente attive
+3. Configura le impostazioni di timeout delle sessioni in **Sistema** → **Impostazioni**
+
+### Branding personalizzato
+
+1. Vai a **Personalizzazione** → **Tenant**
+2. Modifica le impostazioni del tenant
+3. Personalizza:
+   - Logo e favicon
+   - Colori del tema
+   - Testo e link del piè di pagina
+4. Gli utenti vedranno il tuo branding quando accedono tramite Authentik
+
+### Abilitare i log di controllo
+
+1. Vai a **Eventi** → **Log**
+2. Esamina gli eventi e gli errori di autenticazione
+3. Configura regole di notifica per gli eventi importanti
+4. Configura i criteri di conservazione degli eventi in **Sistema** → **Impostazioni**

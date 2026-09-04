@@ -1,0 +1,329 @@
+---
+title: App Builder
+description: Transforma tus datos en aplicaciones web personalizadas mediante IA.
+---
+
+<Note>Disponible en todos los planes de Cloud; la versión autoalojada requiere el plan Business o uno superior.</Note>
+
+App Builder de Teable permite convertir tus bases de datos en aplicaciones web personalizadas y plenamente funcionales sin escribir código. Al combinar la potencia de tu estructura de datos con un diseño impulsado por IA, puedes lanzar herramientas internas, portales para clientes y paneles de datos en cuestión de minutos.
+
+## Descripción general
+
+App Builder sigue un flujo de trabajo de «Instrucción a aplicación». Tú describes lo que quieres y la IA crea la estructura, las páginas y la lógica de la aplicación. Después puedes ajustar cada detalle mediante el editor visual o el código.
+
+<Note>
+Usa App Builder para crear interfaces personalizadas y aplicaciones independientes. Para realizar análisis interactivos de datos y consultas puntuales dentro de la base de datos, usa el [Chat de IA](/es/basic/ai/ai-chat).
+</Note>
+
+## Crear una aplicación
+
+Hay dos formas principales de crear una aplicación:
+
+1. **Desde una Base**: En cualquier Base, haz clic en «Crear aplicación» para generar una aplicación enlazada a tus datos actuales.
+2. **Desde el Chat**: Abre el Chat de IA y di «Crea una aplicación de CRM para esta Tabla de clientes».
+
+## Interfaz del editor de aplicaciones
+
+App Builder ofrece una interfaz doble tanto para usuarios sin conocimientos técnicos como para desarrolladores.
+
+<img
+  src="/images/docs/ai/2026-05-21-app-builder-editor-interface.png"
+  alt="Interfaz del editor de App Builder"
+  className="docs-screenshot"
+/>
+
+### 1. Interfaz de chat (impulsada por IA)
+El centro de control de tu aplicación.
+- **Edición mediante lenguaje natural**: Describe cambios como *«Haz que el encabezado sea azul»* o *«Añade un formulario para enviar Registros nuevos»*.
+- **Enrutamiento automático**: La IA entiende a qué componente o página te refieres y lo modifica directamente.
+- **Integraciones**: Cuando la tarea de la aplicación necesita acceso a una cuenta externa, App Builder puede mostrar una tarjeta como **Conectar Slack** en el panel de chat. Haz clic en **Conectar** para autorizar mediante OAuth. Haz clic en **Omitir** para cancelar la autorización; la IA continuará con las partes que pueda completar sin esa conexión.
+- **Habilidades**: Abre el menú **+** y elige **Habilidades** para administrar las habilidades de esta conversación de la aplicación. Las habilidades añadidas aquí solo están disponibles para la aplicación actual; también pueden usarse las que se comparten con la Base y el Espacio de la aplicación. Escribe `/` en el cuadro de entrada para elegir una habilidad habilitada.
+- **Administrar archivos**: Abre **+** → **Más** → **Administrar archivos** para consultar los archivos del entorno aislado de la aplicación. Úsalo para obtener una vista previa de los archivos compatibles, descargar archivos generados o eliminar los archivos y carpetas que ya no necesites.
+- **Borrar conversación**: Si la conversación actual se ha desviado, haz clic en **Borrar chat** en la esquina inferior derecha del panel para iniciar una sesión nueva. Esto borra el historial del chat de la conversación actual, pero no elimina la aplicación. La primera vez se muestra una confirmación, y puedes elegir que no vuelva a aparecer.
+
+### 2. Panel de vista previa
+- **Vista previa y publicada**: El panel tiene dos pestañas. **Vista previa** ejecuta la versión que estás creando, incluidos los cambios que aún no se han publicado. **Publicada** carga la aplicación publicada desde su dirección pública para que puedas comparar lo que ven los usuarios con aquello en lo que estás trabajando. Hasta que se publique la aplicación, **Publicada** muestra una indicación para publicarla. App Builder abre las aplicaciones publicadas en **Publicada** y las no publicadas en **Vista previa**; después recuerda la última pestaña que usaste con cada aplicación.
+- **Simulación multidispositivo**: Usa el selector de la parte superior para alternar entre las Vistas **Escritorio**, **Tableta** y **Móvil**.
+- **Generación en directo**: El panel de vista previa puede mostrar cómo toma forma la aplicación mientras App Builder la genera.
+- **Respuesta inmediata**: Cuando App Builder termina un cambio, la vista previa se actualiza con la última versión guardada.
+
+En la pestaña **Vista previa**, usa la barra de herramientas flotante de la parte inferior para realizar cambios específicos:
+
+- Elige **Seleccionar un elemento para editar** y haz clic en un elemento de la vista previa. App Builder añade el elemento a la entrada del chat. Añade tu instrucción y envía el mensaje para que la IA pueda actualizar esa parte concreta de la aplicación.
+- Elige **Editar texto directamente**, haz clic en un texto estático de la vista previa y escribe el contenido que lo sustituirá. Puedes editar más de un elemento de texto antes de hacer clic en **Guardar**. Haz clic en **Descartar cambios** para deshacer los cambios de texto pendientes.
+
+El texto dinámico, como el contenido cargado desde los datos o calculado por la aplicación, no se puede editar directamente. Selecciona el elemento y describe el cambio en el chat. La selección de elementos y la edición directa de texto se ponen en pausa mientras la IA está generando. Pulsa `Esc` para salir de cualquiera de los modos.
+
+### 3. Modo de desarrollador (editor de código)
+Para una personalización ilimitada, tienes acceso directo al código.
+- **Editor Monaco**: Una experiencia similar a VS Code directamente en el navegador.
+- **Componentes de React**: Edita el código React subyacente, las clases de Tailwind CSS y la lógica.
+- **Árbol de archivos**: Navega por la estructura del proyecto.
+
+<img
+  src="/images/docs/ai/2026-05-21-app-builder-code-editor-en.png"
+  alt="Editor de código de App Builder"
+  className="docs-screenshot"
+/>
+
+#### Descargar código
+Puedes descargar toda la aplicación como archivo ZIP en cualquier momento:
+1. Cambia a la pestaña **Código** del editor.
+2. Haz clic en el menú **`...`** de la barra de pestañas.
+3. Selecciona **Descargar código** para guardar un archivo ZIP que incluya todos los archivos de origen.
+
+Si la aplicación usa variables de entorno personalizadas, el archivo descargado puede incluir un archivo `.env` en la raíz. Revísalo antes de compartir el ZIP.
+
+#### Importar código
+Puedes actualizar el código de la aplicación importando un archivo ZIP:
+1. Cambia a la pestaña **Código** del editor.
+2. Haz clic en el menú **`...`** de la barra de pestañas.
+3. Selecciona **Importar código** y elige un archivo ZIP de hasta 20 MB.
+
+<Note>
+- Incluye únicamente archivos de origen. `node_modules`, `.next` y otros artefactos de compilación se ignoran automáticamente.
+- El ZIP sustituye el proyecto existente. Los archivos que omitas se eliminan de la versión nueva.
+- Si el ZIP contiene una carpeta contenedora, Teable elimina esa carpeta. Puedes comprimir directamente la carpeta de nivel superior del proyecto.
+- El proyecto importado debe incluir `package.json` en la raíz del proyecto.
+- Los archivos `.env` situados en la raíz del ZIP se importan en los **Secretos** de la aplicación. Las demás variantes `.env*`, como `.env.local`, se ignoran.
+</Note>
+
+#### Secretos
+
+Usa **Secretos** para las claves de API, credenciales y valores de configuración que la aplicación necesita durante la ejecución. En el panel de chat de App Builder, abre el menú **+** y elige **Secretos**.
+
+| Detalle | Comportamiento |
+| --- | --- |
+| Disponibilidad | Los Secretos de la aplicación están disponibles en el entorno de vista previa y en la aplicación publicada |
+| Acceso desde el código | El código de servidor de la aplicación puede leerlos desde variables de entorno como `process.env.MY_API_KEY` |
+| Valores guardados | Los valores secretos son de solo escritura después de guardarlos; introduce un valor nuevo para actualizar uno |
+| Formato del nombre | El **Nombre** debe comenzar por una letra mayúscula y puede contener letras mayúsculas, dígitos y guiones bajos |
+
+Después de añadir, eliminar o cambiar el valor de un Secreto, el entorno de vista previa de la aplicación usa el valor nuevo. La aplicación publicada solo lo usa después de volver a publicarla. Si solo editas la descripción de un Secreto, no es necesario volver a publicar.
+
+#### Administrar los archivos de la aplicación
+
+App Builder almacena los archivos cargados, los resultados generados y los archivos de ejecución en el entorno aislado de la aplicación. En el panel de chat, abre **+** → **Más** → **Administrar archivos** para examinarlos. Los tipos de archivo compatibles se abren en una vista previa. También puedes descargar archivos o eliminar los archivos y carpetas que ya no necesites.
+
+#### Añadir funciones de IA a una aplicación
+
+Añade IA cuando la aplicación necesite resumir Registros, clasificar solicitudes, redactar respuestas o responder preguntas de sus usuarios.
+
+Puedes indicar a App Builder lo que quieres, por ejemplo: «Añade un asistente de IA para responder incidencias de soporte» o «Resume cada envío de formulario». App Builder puede activar el **Acceso a IA** y añadir el código de la función.
+
+<Info>
+Después de que App Builder añada la función de IA, la vista previa de la aplicación usa la versión nueva. La aplicación publicada solo la usa después de volver a publicarla.
+</Info>
+
+## Sincronizar el código con GitHub
+
+<Note>Disponible en los planes Business de Cloud y superiores.</Note>
+
+Vincula una aplicación con un repositorio privado de GitHub cuando quieras revisar el código en solicitudes de incorporación de cambios, conservar una copia fuera de Teable o trabajar en la aplicación desde tu editor local. Una vez vinculados, la aplicación y el repositorio se sincronizan en ambas direcciones: cada versión nueva de la aplicación se envía a GitHub y las confirmaciones que envíes a GitHub se convierten en versiones nuevas de la aplicación.
+
+### Conectar una cuenta y crear el repositorio
+
+Primero, genera la aplicación al menos una vez. Mientras la aplicación no tenga código, el botón de GitHub muestra **Genera primero la aplicación para conectar GitHub** y no hace nada.
+
+<Steps>
+  <Step title="Abrir el panel de GitHub">Haz clic en el icono de GitHub del encabezado de la aplicación para abrir **Sincronización con GitHub**. Necesitas acceso de edición a la aplicación.</Step>
+  <Step title="Conectar una cuenta">Haz clic en **Conectar GitHub** y completa la instalación en la ventana emergente. Elige tu cuenta personal o una organización que administres. Permite las ventanas emergentes si el navegador las bloquea.</Step>
+  <Step title="Elegir la cuenta">Selecciona la cuenta conectada en **Cuenta de GitHub**. Haz clic en **+** para conectar otra.</Step>
+  <Step title="Asignar un nombre al repositorio">El **Nombre del repositorio** se completa previamente a partir del nombre de la aplicación. Los nombres pueden contener letras, dígitos, `.`, `-` y `_`, hasta un máximo de 100 caracteres.</Step>
+  <Step title="Crear y vincular">Haz clic en **Crear repositorio y vincular**. En las cuentas personales, GitHub te pide que autorices la creación en otra ventana emergente.</Step>
+</Steps>
+
+Teable crea un repositorio privado nuevo y confirma el código actual de la aplicación en la rama `main`, junto con un archivo README que enlaza con la aplicación y explica cómo se mantienen sincronizados ambos elementos. No puedes vincular una aplicación con un repositorio que ya exista.
+
+De forma predeterminada, las conexiones pertenecen a quien las creó. Para permitir que los colaboradores creen aplicaciones en la misma cuenta de organización, selecciona la conexión y activa **Permitir que otros miembros usen esta conexión**. Los demás miembros con acceso de edición a la aplicación podrán crear repositorios para sus propias aplicaciones en esa organización. Las conexiones personales no se pueden compartir porque GitHub exige la autorización del propietario de la cuenta para crear un repositorio.
+
+### Cómo funciona la sincronización
+
+| Dirección | Qué ocurre |
+| --- | --- |
+| Aplicación → GitHub | Cada versión nueva de la aplicación se envía a la rama `main` del repositorio. |
+| GitHub → aplicación | Las confirmaciones enviadas a `main` se convierten en una versión nueva de la aplicación. Un mensaje del panel de chat informa de lo que se ha sincronizado, y las vistas previas abiertas vuelven a cargarse con el código nuevo. |
+
+Los archivos de entorno nunca se envían. Consulta **Variables de entorno y desarrollo local** más adelante.
+
+El panel muestra el estado actual junto al nombre del repositorio:
+
+| Estado | Significado | Qué hacer |
+| --- | --- | --- |
+| **Sincronizado** | El repositorio coincide con la última versión de la aplicación. | No se requiere ninguna acción. |
+| **Sincronizando** | Hay un envío en curso. | Espera; el panel se actualiza automáticamente. |
+| **Conflicto** | La rama `main` tiene confirmaciones que Teable no produjo y que no se pueden combinar automáticamente. | Fusiona la rama `teable-sync` en GitHub. Consulta la información siguiente. |
+| **En pausa** | Teable ha detenido la sincronización porque la aplicación de GitHub se ha desinstalado o suspendido. | El panel indica cuál de estas situaciones ha ocurrido. Al levantar una suspensión, la sincronización se reanuda automáticamente. |
+| **Error** | El último intento de sincronización ha fallado. | Lee el motivo en el panel y haz clic en **Reintentar**. |
+
+### Resolver un conflicto
+
+Teable nunca fuerza el envío a tu rama. Cuando los historiales divergen, coloca la última versión de la aplicación en una rama llamada `teable-sync` y marca el vínculo como **Conflicto**. Fusiona `teable-sync` en `main` desde GitHub; la fusión vuelve como una versión nueva de la aplicación y el vínculo regresa al estado **Sincronizado**. Mientras dure el conflicto, las versiones posteriores de la aplicación siguen avanzando la rama `teable-sync`, por lo que fusionarla siempre incorpora el trabajo más reciente.
+
+### Variables de entorno y desarrollo local
+
+El repositorio solo contiene el código fuente. Teable nunca envía archivos cuyos nombres comiencen por `.env`: ni en la raíz del proyecto, ni en una subcarpeta ni en el historial de confirmaciones. Los valores de entorno residen en los **Secretos** de la aplicación y nunca entran en git. El archivo `.gitignore` del repositorio ya incluye `.env*`, por lo que un clon local no confirmará ninguno por accidente.
+
+Para ejecutar la aplicación en tu propio equipo:
+
+<Steps>
+  <Step title="Clonar e instalar">Clona el repositorio y ejecuta `pnpm install`.</Step>
+  <Step title="Copiar las variables">En el panel de GitHub, haz clic en **Copiar variables de entorno locales** y pega el contenido del portapapeles en un archivo `.env` situado en la raíz del proyecto.</Step>
+  <Step title="Iniciar la aplicación">Ejecuta `pnpm dev`.</Step>
+</Steps>
+
+El contenido copiado coincide con lo que recibe la aplicación en el entorno aislado de Teable: tus Secretos y las variables que la plataforma inyecta para el punto de conexión de la API, el token de acceso y el acceso a IA de la aplicación.
+
+<Warning>
+La línea `TEABLE_APP_TOKEN` de ese archivo concede acceso a los datos de la aplicación; por este motivo, solo pueden copiarla los miembros con acceso de edición a la aplicación. Nunca confirmes el archivo ni lo pegues en una incidencia o solicitud de incorporación de cambios.
+</Warning>
+
+Para añadir o cambiar un secreto, edita **Secretos** en Teable en lugar del archivo local. Un archivo `.env` confirmado en GitHub no crea ni actualiza ningún Secreto. Después de cambiar un secreto, vuelve a copiar las variables para actualizar tu archivo `.env` local.
+
+### Desvincular el repositorio
+
+Haz clic en el icono de eliminación situado junto al nombre del repositorio y confirma. La sincronización se detiene, pero el repositorio y su código permanecen en GitHub. Si vuelves a vincular la misma aplicación más adelante, se creará un repositorio nuevo en lugar de reconectarla con el anterior.
+
+## Publicación y gestión
+
+### Publicar la aplicación
+Cuando la aplicación esté lista, haz clic en el botón **Publicar** (icono de flecha) de la esquina superior derecha.
+- **URL pública**: Teable genera una URL segura y de acceso público para tu aplicación.
+- **Dominio personalizado**: Asocia tu propio dominio a la aplicación.
+- **Mostrar marca**: Usa **Mostrar marca** en el menú **Publicar** para controlar si la aplicación publicada muestra el distintivo **Creado con Teable**. Si cambias este ajuste después de publicar, haz clic en **Volver a implementar** para aplicarlo.
+- **Retirar publicación**: En una aplicación publicada, usa **Retirar publicación** en el menú de publicación para desactivar el enlace público.
+- **Cambios en la configuración de la aplicación**: Cuando el menú de publicación muestre **La configuración del entorno de ejecución ha cambiado. Vuelve a implementar para aplicarla a la aplicación publicada** o **El ajuste de marca ha cambiado. Vuelve a implementar para aplicarlo a la aplicación publicada**, haz clic en **Volver a implementar**.
+- **Abrir la aplicación publicada**: Una vez publicada la aplicación, el icono situado junto a **Publicar** abre la aplicación publicada en una pestaña nueva.
+
+<Info>Ocultar el distintivo **Creado con Teable** requiere el plan Business o uno superior.</Info>
+
+<img
+  src="/images/docs/ai/2026-05-21-app-builder-publish-app.png"
+  alt="Menú para publicar la aplicación"
+  className="docs-screenshot"
+/>
+
+### Retirar la publicación de una aplicación
+
+Para retirar una aplicación publicada, abre el menú **Publicar** y haz clic en **Retirar publicación**. Después de confirmar, ya no se podrá acceder a la URL pública de la aplicación.
+
+<img
+  src="/images/docs/ai/2026-06-05-app-builder-unpublish-en.png"
+  alt="Botón Retirar publicación del menú de publicación"
+  className="docs-screenshot"
+/>
+
+Retirar la publicación no elimina la aplicación ni su historial de edición. Puedes seguir editándola y volver a publicarla más adelante.
+
+### Dominios personalizados
+
+<Note>Los dominios personalizados requieren el plan Business o uno superior.</Note>
+
+Usa **Dominio personalizado** para vincular un dominio a la aplicación publicada. Se recomienda un subdominio, como `app.yourdomain.com`. Después de introducir el dominio, Teable muestra los registros DNS que debes añadir. Añade los registros mediante tu proveedor de DNS, espera a que se propaguen y verifica después el dominio en Teable.
+
+También puedes usar un subdominio disponible de `teable.app` y editar el prefijo de `teable.app`, por ejemplo, `your-name.teable.app`.
+
+<img
+  src="/images/docs/ai/2026-05-21-app-builder-custom-domain.png"
+  alt="Ajustes del dominio personalizado"
+  className="docs-screenshot"
+/>
+
+### Información personalizada del sitio
+
+Usa **Información personalizada del sitio** en el menú **Publicar** para definir el icono de la pestaña del navegador, el título y la descripción de la página de la aplicación publicada. El cuadro de diálogo muestra una vista previa conjunta mientras los editas.
+
+| Ajuste | Qué controla |
+| --- | --- |
+| **Favicon** | El icono que aparece en la pestaña del navegador. Carga un archivo PNG, JPEG, WebP, SVG o ICO de hasta 5 MB; el tamaño recomendado es 32×32. Elimina el archivo cargado para volver al icono predeterminado de Teable. |
+| **Título** | El título de la página, de hasta 120 caracteres. |
+| **Descripción** | La descripción del sitio incluida en los metadatos de la página, de hasta 500 caracteres. |
+
+Deja un Campo vacío para conservar el valor que App Builder escribió por ti. Al guardar, el cambio se aplica al entorno de vista previa de la aplicación; la aplicación publicada solo lo usa después de volver a publicarla.
+
+### Inicio de sesión en la aplicación
+
+Haz clic en **Añadir inicio de sesión** en el encabezado de la aplicación para exigir que los visitantes inicien sesión antes de poder usarla. Una vez configurado, el botón cambia a **Ajustes de inicio de sesión**.
+
+<img
+  src="/images/docs/ai/2026-05-21-app-builder-login-settings.png"
+  alt="Ajustes de inicio de sesión de la aplicación"
+  className="docs-screenshot"
+/>
+
+Cuando habilitas el inicio de sesión:
+
+1. Elige dónde se almacenarán los usuarios de la aplicación. Puedes crear una Tabla **Usuarios** o reutilizar una Tabla existente que tenga un Campo de correo electrónico. Cada usuario que inicia sesión se almacena como un Registro y varias aplicaciones pueden reutilizar la misma Tabla de usuarios.
+2. Elige al menos un método de inicio de sesión, como **OTP por correo electrónico**, **Google** o **Teable**. Los métodos disponibles dependen de los ajustes de autenticación de la instancia.
+3. Elige una política de acceso: **Cualquiera puede registrarse**, **Dominios de correo electrónico permitidos** o **Solo con invitación**.
+
+Los cambios en el inicio de sesión aparecen en el entorno de vista previa de la aplicación después de volver a cargarlo. Publica de nuevo la aplicación para aplicar esos cambios a la aplicación publicada.
+
+### Historial de versiones y reversión
+Teable realiza un seguimiento automático de cada implementación.
+- Haz clic en el botón **Historial** (icono de reloj) para consultar una lista de todas las versiones implementadas.
+- **Reversión con un clic**: Si una actualización nueva provoca problemas, puedes devolver inmediatamente la aplicación publicada a cualquier versión estable anterior.
+
+<img
+  src="/images/docs/ai/2026-05-21-app-builder-version-history.png"
+  alt="Historial de versiones de la aplicación"
+  className="docs-screenshot"
+/>
+
+### Corrección automática
+Si tus cambios en el código personalizado provocan un error de compilación, la implementación fallará. 
+- Teable proporciona un botón **Corrección automática** junto al registro de errores.
+- Al hacer clic en él, la IA puede analizar el error de compilación y aplicar automáticamente un parche al código para resolver el problema.
+
+### Eliminar una aplicación
+Para eliminar una aplicación, haz clic en el botón **Ajustes** (icono de engranaje) del encabezado y selecciona **Eliminar**.
+
+## Prácticas recomendadas
+
+Para consultar patrones de instrucciones, consejos de creación, recomendaciones de reversión y soluciones a problemas habituales, consulta la [Guía práctica de App Builder](/es/basic/ai/app-builder-practical-guide).
+
+## Preguntas frecuentes
+
+<AccordionGroup>
+  <Accordion title="¿Borrar la conversación elimina la aplicación?">
+    No. Borrar la conversación solo elimina el historial del chat de la conversación actual de la aplicación. No elimina la propia aplicación. Úsalo cuando la conversación se haya desviado y quieras volver a empezar.
+  </Accordion>
+
+  <Accordion title="¿Cómo descargo o importo el código de una aplicación?">
+    Cambia a la pestaña **Código** del editor, haz clic en el menú **`...`** de la barra de pestañas y elige **Descargar código** o **Importar código**. Los archivos ZIP importados pueden tener hasta 20 MB y sustituyen el proyecto existente, así que incluye todos los archivos de origen que quieras conservar. El proyecto importado debe incluir un archivo `package.json` en la raíz. Los archivos `.env` situados en la raíz se importan en los **Secretos** de la aplicación.
+  </Accordion>
+
+  <Accordion title="¿Cuándo se aplican los ajustes de inicio de sesión a la aplicación publicada?">
+    Los ajustes de inicio de sesión aparecen en el entorno de vista previa de la aplicación después de volver a cargarlo. Publica de nuevo la aplicación para aplicar esos cambios a la aplicación publicada.
+  </Accordion>
+
+  <Accordion title="¿Cómo puede una aplicación llamar a modelos de IA durante la ejecución?">
+    Indica a App Builder la función de IA que quieres, como un asistente de respuestas, un resumen de envíos o un clasificador de solicitudes. App Builder puede habilitar el **Acceso a IA** y añadir el código de la función. La vista previa de la aplicación usa la versión nueva cuando App Builder termina el cambio. La aplicación publicada solo la usa después de volver a publicarla. Las llamadas de IA realizadas mediante esta aplicación aparecen como **IA de la aplicación** en los detalles de uso de Créditos.
+  </Accordion>
+
+  <Accordion title="¿Cómo se cobran la IA integrada y la IA dentro de las aplicaciones?">
+    La **IA integrada** incluye las funciones de IA disponibles directamente en Teable, como la generación mediante Campos de IA, el Chat de IA, el Bot de mensajería instantánea y App Builder. Actualmente, estas funciones consumen Créditos con una tarifa considerablemente reducida.
+
+    La **IA dentro de las aplicaciones** hace referencia a las funciones de IA utilizadas en las aplicaciones creadas con App Builder. El uso se cobra al [precio oficial de la API](https://vercel.com/ai-gateway/models) del proveedor de modelos seleccionado, sin recargos ni descuentos. Un dólar estadounidense de uso de la API equivale a 100 Créditos.
+  </Accordion>
+
+  <Accordion title="¿Cómo vuelvo a una versión anterior?">
+    Haz clic en el botón **Historial** (icono de reloj) para consultar las versiones implementadas y restaura después la aplicación publicada a una versión estable anterior.
+  </Accordion>
+
+  <Accordion title="¿Por qué indica App Builder que un agente está ocupado en otra conversación?">
+    Cada usuario puede ejecutar hasta 3 agentes al mismo tiempo, incluidos el Chat de IA y App Builder. Si App Builder indica que un agente está ocupado en otra conversación, significa que todavía se está ejecutando otra tarea. Espera a que termine la tarea anterior antes de continuar.
+  </Accordion>
+
+  <Accordion title="¿Cómo se reembolsan los Créditos cuando falla una ejecución de App Builder?">
+    Una ejecución de App Builder puede incluir varios pasos de procesamiento. Tanto la conversación como la página de facturación muestran el total de Créditos de esa ejecución. El trabajo que Cuppy ya haya completado y guardado se puede seguir usando. Si el último paso se interrumpe por un error inesperado, los Créditos de ese paso se reembolsan automáticamente. Puedes seguir trabajando en la misma conversación de la aplicación.
+  </Accordion>
+
+  <Accordion title="¿Dónde configuro App Builder para una instalación autoalojada?">
+    Si ejecutas Teable en una instalación autoalojada, sigue la configuración de la página [Ajustes de IA](/es/basic/admin-panel/ai-setting). Si App Builder usa tu propia clave (BYOK), el modelo de chat debe proceder de un proveedor **Compatible con OpenAI** o **Anthropic**. Para obtener ayuda con la implementación, contacta con Teable en **support@teable.ai**.
+
+    <Note>
+    Si seleccionas **Vercel** en **Motor de implementación**, asegúrate de que tanto la instancia de Teable como el almacenamiento de objetos (MinIO / S3) sean accesibles públicamente y usa después **Probar acceso público** en la página [Ajustes de IA](/es/basic/admin-panel/ai-setting). Esta comprobación no es necesaria cuando seleccionas **Teable Infra**.
+    </Note>
+  </Accordion>
+</AccordionGroup>

@@ -1,0 +1,210 @@
+---
+title: "Aggiornare un Record"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+### Percorso
+
+PATCH /api/table/\{tableId\}/record/\{recordId\}
+
+### Richiesta
+
+#### Parametri del percorso
+
+* tableId (string): identificatore univoco della Tabella [(come ottenerlo)](/it/api-doc/get-id#tableid).
+* recordId (string): identificatore univoco del Record da aggiornare [(come ottenerlo)](/it/api-doc/get-id#recordid).
+
+#### Corpo della richiesta
+
+* **record (obbligatorio)**
+  * Descrizione: dati del Record da aggiornare
+  * Tipo: Object
+  * Esempio:
+    ```json
+    {
+      "fields": {
+        "Name": "John Doe",
+        "Age": 31,
+        "Email": "john.doe@example.com"
+      }
+    }
+    ```
+  * Nota: l'oggetto `fields` contiene i nomi dei Campi e i relativi nuovi valori. Ogni tipo di Campo ha una struttura di valori diversa; per i dettagli, consulta [Tipi di valore dei Campi dei Record](/it/api-doc/record/interface).
+
+Per cancellare il valore di un Campo, passa esplicitamente `null`. Se il nome di un Campo non è incluso, tale Campo non verrà aggiornato.
+
+* **fieldKeyType (facoltativo)**
+  * Descrizione: specifica il tipo di chiave del Campo
+  * Tipo: String
+  * Valori possibili:
+    * "name": usa il nome del Campo come chiave
+    * "id": usa l'ID del Campo come chiave
+    * "dbFieldName": usa il dbFieldName del Campo come chiave
+  * Esempio: `"name"` oppure `"id"` oppure `"dbFieldName"`
+  * Nota: se non specificato, per impostazione predefinita viene utilizzato il nome del Campo come chiave.
+  * Utilizzo:
+    * Quando è impostato su "name":
+      ```json
+      {
+        "fields": {
+          "Name": "John Doe",
+          "Age": 30
+        }
+      }
+      ```
+    * Quando è impostato su "id":
+      ```json
+      {
+        "fields": {
+          "fldABCDEFGHIJKLMN": "John Doe",
+          "fldOPQRSTUVWXYZ12": 30
+        }
+      }
+      ```
+* **typecast (facoltativo)**
+  * Descrizione: indica se convertire automaticamente i tipi dei valori dei Campi. Per impostazione predefinita viene applicata una convalida rigorosa, che richiede la corrispondenza tra i valori di input e il tipo di dati del Campo corrente. Se abilitato, il sistema tenterà la conversione automatica.
+  * Tipo: Boolean
+  * Valori possibili: true o false
+  * Esempio: `true`
+  * Nota: se impostato su true, il sistema tenterà di convertire i valori di input nel tipo di valore corretto per il Campo.
+  * Esempi di utilizzo:
+    * Campo di collegamento: consente di utilizzare direttamente il testo della chiave primaria per creare il collegamento
+      ```json
+      {
+        "User table": "John Smith"
+      }
+      ```
+    * Campo data: consente di utilizzare stringhe di data in formato non standard
+      ```json
+      {
+        "Date": "2023-05-15"
+      }
+      ```
+    * Campo utente: consente di utilizzare direttamente il nome utente
+      ```json
+      {
+        "Assigned To": "John Doe"
+      }
+      ```
+
+Per caricare nuovi file nei Campi allegato, consulta la sezione [Caricare un allegato](/it/api-doc/record/upload-attachment).
+
+* **order (facoltativo)**
+  * Descrizione: dopo l'aggiornamento, sposta il Record in una posizione specifica all'interno di una determinata Vista.
+  * Tipo: Object
+  * Proprietà:
+    * viewId: ID della Vista
+    * anchorId: ID del Record di ancoraggio
+    * position: posizione relativa al Record di ancoraggio. Valori possibili: `"before"` oppure `"after"`
+  * Esempio:
+    ```json
+    {
+      "viewId": "viwABCDEFGHIJKLMN",
+      "anchorId": "rec123456789ABCDE",
+      "position": "after"
+    }
+    ```
+
+### Risposta
+
+#### Risposta in caso di successo
+
+* Codice di stato: 200 OK
+* Corpo della risposta: restituisce i dati aggiornati del Record.
+
+**Esempio di corpo della risposta**
+```json
+{
+    "id": "rec123456789ABCDE",
+    "fields": {
+        "Name": "John Doe",
+        "Age": 31,
+        "Email": "john.doe@example.com"
+    }
+}
+```
+
+#### Risposte di errore
+
+* Codice di stato: 400 Bad Request: formato del corpo della richiesta non valido o Campi obbligatori mancanti.
+* Codice di stato: 404 Not Found: il tableId o il recordId specificato non esiste.
+
+#### Codice di esempio
+
+<CodeGroup>
+  ```bash CURL
+  curl -X PATCH 'https://app.teable.ai/api/table/__tableId__/record/__recordId__' \
+    -H 'Authorization: Bearer __token__' \
+    -H 'Content-Type: application/json' \
+    -d '{
+      "record": {
+        "fields": {
+          "Name": "John Doe",
+          "Age": 31
+        }
+      }
+    }'
+  ```
+
+  ```js JS SDK
+  import { configApi, updateRecord } from '@teable/openapi';
+
+  configApi({
+    endpoint: 'https://app.teable.ai',
+    token,
+  });
+
+  const response = await updateRecord('__tableId__', '__recordId__', {
+    record: {
+      fields: {
+        Name: 'John Doe',
+        Age: 31
+      }
+    }
+  });
+
+  console.log(response.data);
+  ```
+
+  ```ts TypeScript
+  const response = await fetch('https://app.teable.ai/api/table/__tableId__/record/__recordId__', {
+    method: 'PATCH',
+    headers: {
+      'Authorization': 'Bearer __token__',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      record: {
+        fields: {
+          Name: 'John Doe',
+          Age: 31
+        }
+      }
+    })
+  });
+
+  console.log(await response.json());
+  ```
+
+  ```python Python
+  import requests
+
+  response = requests.patch(
+      'https://app.teable.ai/api/table/__tableId__/record/__recordId__',
+      headers={
+          'Authorization': 'Bearer __token__',
+          'Content-Type': 'application/json'
+      },
+      json={
+          'record': {
+              'fields': {
+                  'Name': 'John Doe',
+                  'Age': 31
+              }
+          }
+      }
+  )
+
+  print(response.json())
+  ```
+</CodeGroup>

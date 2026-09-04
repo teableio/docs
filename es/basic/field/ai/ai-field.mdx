@@ -1,0 +1,154 @@
+---
+title: "Campos de IA"
+description: "Los campos de IA pueden resumir texto, clasificar etiquetas, generar puntuaciones o convertir contenido en imágenes."
+---
+
+<Note>Disponible en todos los planes de Cloud. Las implementaciones autohospedadas requieren el plan Business o uno superior.</Note>
+
+## Principales casos de uso
+
+Los campos de IA generan el valor del campo actual a partir de otros campos de la misma fila. Úsalos para convertir contenido sin procesar en resúmenes, traducciones, datos extraídos, categorías, puntuaciones, fechas o imágenes.
+
+<Columns cols={2}>
+  <Card title="Texto" icon="text">
+    Resume, traduce, extrae información, mejora la redacción o personaliza el resultado. Es ideal para convertir textos largos en contenido útil.
+  </Card>
+  <Card title="Selección única" icon="circle-dot">
+    Clasifica de forma inteligente o personaliza el resultado. Es ideal para asociar contenido a una categoría existente.
+  </Card>
+  <Card title="Selección múltiple" icon="tags">
+    Etiqueta de forma inteligente o personaliza el resultado. Es ideal para asociar contenido a una o varias etiquetas existentes.
+  </Card>
+  <Card title="Valoración / Número" icon="star">
+    Puntúa o personaliza el resultado. Es ideal para generar puntuaciones o resultados numéricos a partir del contenido de origen.
+  </Card>
+  <Card title="Fecha" icon="calendar">
+    Extrae información o personaliza el resultado. Es ideal para extraer fechas u horas del contenido.
+  </Card>
+  <Card title="Adjunto" icon="image">
+    Genera imágenes o personaliza el resultado. Es ideal para crear imágenes a partir de texto o archivos adjuntos.
+  </Card>
+</Columns>
+
+Si no sabes qué acción usar, empieza aquí:
+
+<AccordionGroup>
+  <Accordion title="Resumir, Traducir, Extraer información">
+    - **Resumir**: Crea un resumen a partir del campo de origen.
+    - **Traducir**: Traduce el campo de origen al idioma de destino.
+    - **Extraer información**: Extrae información específica del texto. Los campos de fecha también pueden usar esta acción para extraer fechas u horas.
+  </Accordion>
+  <Accordion title="Mejorar la redacción, Clasificación inteligente, Etiquetado inteligente">
+   - **Mejorar la redacción**: Reescribe el contenido según tus requisitos adicionales.
+   -  **Clasificación inteligente**: Asocia un campo de selección única a una opción existente.
+   -  **Etiquetado inteligente**: Asocia un campo de selección múltiple a opciones existentes.
+  </Accordion>
+  <Accordion title="Puntuar, Generar imagen">
+    - **Puntuar**: Genera una puntuación o un valor numérico a partir del contenido de origen.
+    - **Generar imagen**: Crea imágenes en un campo de adjuntos. Algunos modelos permiten usar un campo de adjuntos como imagen de referencia.
+  </Accordion>
+  <Accordion title="Personalizar">
+    Usa un prompt personalizado cuando las acciones predeterminadas no cubran tu caso. Los prompts personalizados pueden hacer referencia a campos de la misma fila.
+  </Accordion>
+</AccordionGroup>
+
+## Flujo de trabajo
+
+<Steps>
+  <Step title="Añade un campo">
+    Crea un campo, elige el tipo de campo y despliega **Configuración de IA**. Cada tipo de campo muestra las acciones de IA que admite.
+  </Step>
+  <Step title="Elige una acción y un modelo">
+    Elige el **Tipo de acción de IA** y el **Modelo de IA**. La acción determina la tarea. El modelo determina qué modelo de IA genera el resultado.
+  </Step>
+  <Step title="Elige los campos de origen">
+    Elige el campo que la IA debe leer como entrada. El campo de IA genera su valor a partir de campos de origen de la misma fila.
+  </Step>
+  <Step title="Añade los requisitos de generación">
+    Según la acción, completa **Requisitos adicionales**, **Idioma de destino** o un **Prompt personalizado**. Para generar imágenes en campos de adjuntos, usa **Configuración avanzada** para ajustar el tamaño, la calidad, la cantidad, la relación de aspecto, la resolución o las imágenes de referencia. Las opciones disponibles dependen del modelo seleccionado.
+  </Step>
+</Steps>
+
+<img
+  src="/images/docs/base/2026-05-22-ai-field-create-config.png"
+  alt="Crear un campo de IA"
+  className="docs-screenshot"
+/>
+
+Al editar un campo de IA, puedes cambiar el tipo de acción, el modelo, los campos de origen, los requisitos adicionales, el prompt personalizado y la opción de actualización automática. Después de guardar, la nueva configuración se aplica a las generaciones futuras. Si un resultado existente no es el que deseas, vuelve a generarlo.
+
+<img
+  src="/images/docs/base/2026-05-22-ai-field-edit-config.png"
+  alt="Editar un campo de IA"
+  className="docs-screenshot"
+/>
+
+## Actualización automática y generación por lotes
+
+Cuando **Actualización automática** está activada, el campo de IA se actualiza con la configuración actual si cambia el contenido de un campo de origen o la configuración de IA. Úsala cuando el resultado deba mantenerse sincronizado con el contenido de origen, como categorías, resúmenes, puntuaciones o etiquetas generadas a partir de comentarios.
+
+Después de crear un campo o cambiar su configuración de IA, puedes decidir si procesar de inmediato los registros de la vista actual:
+
+<Columns cols={3}>
+  <Card title="Rellenar solo las celdas vacías" icon="circle">
+    Genera contenido solo para las celdas vacías. Los valores existentes no se sobrescriben.
+  </Card>
+  <Card title="Generar toda la columna" icon="rotate">
+    Vuelve a generar los resultados de los registros de la vista actual. Los valores existentes se sobrescriben.
+  </Card>
+  <Card title="Guardar solo la configuración" icon="floppy-disk">
+    Guarda la configuración del campo sin escribir valores en las celdas.
+  </Card>
+</Columns>
+
+<img
+  src="/images/docs/base/2026-05-22-ai-field-save-options.png"
+  alt="Opciones para guardar un campo de IA"
+  className="docs-screenshot"
+/>
+
+Después de elegir una opción de generación, Teable muestra el estado de la tarea mientras procesa los registros.
+
+<img
+  src="/images/docs/base/2026-05-22-ai-field-generation-status.png"
+  alt="Estado de generación del campo de IA"
+  className="docs-screenshot"
+/>
+
+Para ejecutar la generación más adelante, usa el menú del campo en vez de volver a guardar la configuración.
+
+También puedes hacer clic con el botón derecho en el campo y elegir **Generar** para ejecutar la generación por lotes en la vista actual. La disponibilidad depende de la vista actual y de tus permisos.
+
+<img
+  src="/images/docs/base/2026-05-22-ai-field-generate-menu.png"
+  alt="Menú de generación del campo de IA"
+  className="docs-screenshot"
+/>
+
+## Preguntas frecuentes
+
+<AccordionGroup>
+  <Accordion title="¿Los campos de IA procesarán automáticamente los registros existentes?">
+    Después de crear un campo o cambiar su configuración de IA, puedes elegir **Rellenar solo las celdas vacías**, **Generar toda la columna** o **Guardar solo la configuración**. También puedes generar por lotes más adelante desde el menú contextual del campo eligiendo **Generar**.
+  </Accordion>
+
+  <Accordion title="¿Cuándo debo activar la actualización automática?">
+    Activa **Actualización automática** si quieres que el campo de IA se actualice cuando cambie el contenido de los campos de origen. Si quieres controlar cuándo se ejecuta la generación, déjala desactivada y usa **Generar** cuando sea necesario.
+  </Accordion>
+
+  <Accordion title="¿Por qué los distintos tipos de campo muestran acciones de IA diferentes?">
+    Las acciones de IA dependen del tipo de campo. Los campos de texto son adecuados para resumir, traducir y extraer información. Los campos de selección única son adecuados para la Clasificación inteligente. Los campos de selección múltiple son adecuados para el Etiquetado inteligente. Los campos de adjuntos son adecuados para generar imágenes.
+  </Accordion>
+
+  <Accordion title="¿Por qué no aparece el modelo que quiero usar?">
+    La lista de modelos procede de los modelos proporcionados por Teable y de los modelos de IA configurados en el Espacio actual. Para usar un modelo de terceros, añade primero un modelo de IA personalizado en la configuración del Espacio.
+  </Accordion>
+
+  <Accordion title="¿Por qué cambian las opciones de generación de imágenes?">
+    Las opciones de tamaño, calidad, cantidad, relación de aspecto, resolución e imagen de referencia dependen del modelo seleccionado.
+  </Accordion>
+
+  <Accordion title="¿Por qué una imagen 4K no siempre usa un borde completo de 3840 px?">
+    Algunos modelos de imagen aplican un límite total de píxeles. Cuando eliges una resolución alta como **4K**, Teable usa el tamaño máximo permitido para la relación de aspecto seleccionada, por lo que la anchura y la altura exactas pueden variar.
+  </Accordion>
+</AccordionGroup>

@@ -1,0 +1,146 @@
+---
+title: "Requête SQL (obsolète)"
+noindex: true
+---
+
+<Tip>
+**Auto-hébergé uniquement** : disponible pour toutes les versions avec un nombre illimité de connexions.
+</Tip>
+
+Teable vous permet de vous connecter à sa base de données PostgreSQL sous-jacente via des outils externes pour effectuer des requêtes en lecture seule. Cela permet l’intégration avec des outils de BI (PowerBI, Metabase, Superset), des clients de base de données (DataGrip, Navicat, TablePlus), des plateformes low-code (Appsmith, Budibase) et du code applicatif.
+
+### Créer une connexion à la base de données
+
+1. **Ouvrir une Table** : commencez par ouvrir une Table de la Base à laquelle vous souhaitez vous connecter.
+2. **Accéder à la page de conception** : cliquez sur l’icône ⚙️ en haut à droite pour accéder à la page de conception de la Base.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-open-design-page-en.png"
+  alt="Ouvrir la page de conception de la Base"
+  className="docs-screenshot"
+/>
+
+3. **Trouver le panneau de connexion à la base de données** : dans la page de conception, localisez le panneau « Connexion à la base de données ».
+4. **Créer la connexion** : cliquez sur créer ; le système générera automatiquement une connexion PostgreSQL en lecture seule avec un nom d’utilisateur, un mot de passe et une adresse hôte.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-database-connection-panel-en.png"
+  alt="Panneau Connexion à la base de données"
+  className="docs-screenshot"
+/>
+
+### Se connecter à la base de données
+
+Utilisez les identifiants pour vous connecter avec l’outil de votre choix. Voici un exemple :
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-connection-example.png"
+  alt="Exemple de connexion à une base de données externe"
+  className="docs-screenshot"
+/>
+
+### Interroger les données
+
+Une fois connecté, vous pouvez interroger les données à l’aide de SQL :
+
+```sql
+SELECT * FROM "bseamGnQT65TVSCzIaC"."clients" LIMIT 100
+```
+
+**Remarque :** dans PostgreSQL, utilisez des guillemets doubles `"` autour des noms de schéma et de Table afin de préserver la sensibilité à la casse.
+
+Pour écrire cette requête, vous devez connaître trois éléments :
+- **Nom du schéma (BaseId)** : l’identifiant de la Base commençant par `bse`
+- **Nom de la Table** : le nom physique de la Table dans PostgreSQL
+- **Noms des Champs** : les noms réels des colonnes dans la base de données
+
+Les sections suivantes expliquent comment trouver chacun d’eux.
+
+### Trouver le BaseId (nom du schéma)
+
+Chaque Base dans Teable correspond à un **schéma** dans PostgreSQL. Le BaseId est le nom du schéma utilisé dans les requêtes SQL.
+
+**Méthode 1 :** consultez l’URL ; la chaîne commençant par `bse` est le BaseId.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-base-id-url.png"
+  alt="ID de la Base dans l’URL"
+  className="docs-screenshot"
+/>
+
+**Méthode 2 :** dans l’interface de conception de la Base, le nom de schéma affiché est le BaseId.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-design-page-schema.png"
+  alt="Nom du schéma dans la page de conception de la Base"
+  className="docs-screenshot"
+/>
+
+### Trouver les noms de Tables
+
+Les noms de Tables dans l’interface Teable ne se synchronisent pas automatiquement avec les noms des Tables physiques de la base de données. Consultez l’interface de conception de la Base pour connaître le nom réel de la Table de base de données.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-table-info.png"
+  alt="Nom de la Table physique dans la page de conception"
+  className="docs-screenshot"
+/>
+
+**Conseil :** vous pouvez modifier le nom de la Table physique dans l’interface de conception si nécessaire.
+
+### Trouver les noms de Champs
+
+Les noms des Champs (colonnes) dans la base de données peuvent différer de ceux de l’interface Teable. Consultez `dbFieldName` dans l’interface de conception.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-db-field-name.png"
+  alt="Nom du Champ de base de données dans la page de conception"
+  className="docs-screenshot"
+/>
+
+**Conseil :** la modification des noms de Champs dans Teable ne se synchronise pas automatiquement. Modifiez explicitement `dbFieldName` pour changer le nom réel de la colonne dans PostgreSQL.
+
+### Champs système
+
+Teable crée automatiquement ces Champs système (ils ne peuvent pas être renommés) :
+
+| Champ | Description |
+|-------|-------------|
+| `__id` | ID unique |
+| `__version` | Numéro de version |
+| `__auto_number` | Numéro à incrémentation automatique, clé primaire |
+| `__created_time` | Date de création |
+| `__last_modified_time` | Date de dernière modification |
+| `__created_by` | ID du créateur |
+| `__last_modified_by` | ID du dernier modificateur |
+| `__row*` | Champs d’index de Vue, utilisés pour maintenir l’ordre des Enregistrements |
+| `__fk*` | Clés étrangères pour les Champs de relation |
+
+### Tables de jonction
+
+Les Tables commençant par `junction_` sont des Tables générées par le système pour gérer les relations ManyToMany et unidirectionnelles.
+
+### Remarques sur les autorisations
+
+La connexion à la base de données est limitée à la Base actuelle. Les schémas PostgreSQL assurent l’isolation des autorisations, garantissant que vous ne pouvez accéder qu’aux Tables de votre Base.
+
+Vous pouvez voir d’autres baseIds (noms de schéma) lors de la connexion, mais vous ne pouvez pas accéder à leur contenu.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-tableplus-base-id.png"
+  alt="ID de la Base dans TablePlus"
+  className="docs-screenshot"
+/>
+
+### Limites de connexion
+
+La limite par défaut est de 20 connexions simultanées.
+
+### Écrire des données
+
+Teable n’autorise pas les écritures directes dans la base de données via des connexions externes. Pour modifier des données, utilisez plutôt l’[API Teable](/fr/api-doc/token).
+
+### Fermer la connexion
+
+Dans le panneau Connexion à la base de données, cliquez sur supprimer pour fermer la connexion. L’ancien mot de passe sera effacé, et la création d’une nouvelle connexion générera de nouveaux identifiants.
+

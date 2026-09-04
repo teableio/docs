@@ -1,0 +1,104 @@
+---
+title: "Ciclo (batch)"
+description: "Elabora più elementi in un'unica azione scorrendo un array"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Consigliamo vivamente di usare Esegui script per creare automazioni, perché può coprire il comportamento di tutte le azioni, comprese quelle che altrimenti dovrebbero essere create manualmente. Descrivi semplicemente le tue esigenze all'IA nella chat.
+
+Nota: se aggiungi azioni manualmente, in seguito l'IA non sarà in grado di riconoscerle o modificarle.
+</Tip>
+
+Ciclo consente di eseguire un'azione **una volta per ogni elemento** di un array. Anziché elaborare un singolo Record o inviare una sola email, Ciclo ripete l'azione per ogni elemento di un elenco, ad esempio per creare Record in blocco, inviare email personalizzate a una lista di contatti o effettuare chiamate API per ciascun elemento.
+
+Gli elementi vengono elaborati in ordine e i risultati di tutte le iterazioni vengono restituiti come array utilizzabile dai passaggi successivi.
+
+## Azioni supportate
+
+| Azione | Supporto del ciclo |
+|---|---|
+| Crea Record | Sì |
+| Aggiorna Record | Sì |
+| Invia email | Sì |
+| Richiesta HTTP | Sì |
+| Generazione IA | Sì |
+
+## Origine degli array
+
+Per usare Ciclo è necessario un array come input. Le fonti più comuni includono:
+
+| Fonte | Risultato ottenuto |
+|---|---|
+| Azione **Ottieni Record** | Un array di Record provenienti da una query su una Tabella |
+| Trigger **Webhook ricevuto** | Il corpo JSON può contenere array, ad esempio un elenco di articoli di un ordine |
+| Azione **Generazione IA** con output JSON | L'IA può restituire un array di elementi strutturati |
+| Azione **Richiesta HTTP** | Una risposta API contenente un array |
+| Azione **Script** | Uno script può restituire qualsiasi array tramite `output.set()` |
+
+## Come configurarlo
+
+1. Apri un'azione supportata, ad esempio Crea Record o Invia email.
+2. Fai clic su **Esecuzione ciclica** sotto il selettore della Tabella oppure nell'area di configurazione dell'azione.
+3. Nel selettore dell'origine dati, scegli una **variabile array** proveniente da un passaggio precedente, ad esempio l'array di Record restituito da Ottieni Record.
+4. L'area di associazione dei Campi mostra ora le proprietà di ogni singolo elemento, non l'intero array. Fai clic su **+** per fare riferimento alle proprietà dell'**elemento corrente**, ad esempio Nome, Email o Stato del Record corrente.
+5. Salva l'azione. Quando il workflow viene eseguito, l'azione viene ripetuta una volta per ogni elemento dell'array.
+
+## Come fare riferimento all'elemento corrente
+
+Quando Ciclo è attivo, il selettore di variabili **+** mostra le proprietà dell'elemento corrente dell'iterazione. Ad esempio:
+
+- Se scorri l'output di Ottieni Record, puoi fare riferimento a `elemento corrente → Campi → Nome`, `elemento corrente → Campi → Email` e così via.
+- Se scorri un array proveniente da un webhook, puoi fare riferimento a `elemento corrente → product_name`, `elemento corrente → quantity` e così via.
+
+Ciò differisce dalla modalità senza ciclo, nella quale si fa riferimento all'intero array o a un indice specifico.
+
+## Esempio concreto: inviare promemoria email per attività scadute
+
+1. **Trigger:** All'ora pianificata, ogni giorno alle 09:00.
+2. **Azione 1:** Ottieni Record dalla Tabella Attività, con il filtro: Data di scadenza è precedente a oggi E Stato non è "Completata".
+3. **Azione 2:** Invia email con **Ciclo** abilitato e origine dati impostata sull'array di Record dell'Azione 1.
+   - **A:** Campo Email assegnatario dell'elemento corrente.
+   - **Oggetto:** `Promemoria: "{{current item → Task Name}}" è scaduta`
+   - **Corpo:** `Ciao {{current item → Assignee Name}}, l'attività "{{current item → Task Name}}" scadeva il {{current item → Due Date}}. Aggiornala.`
+
+Risultato: un'email personalizzata per ogni attività scaduta.
+
+## Corpo HTTP come array
+
+Per le azioni Richiesta HTTP, Ciclo offre una speciale modalità **Corpo come array**. Anziché inviare una richiesta HTTP per ogni elemento, operazione che può essere lenta e superare i limiti di frequenza, Corpo come array invia **l'intero array come un singolo array JSON** in un'unica richiesta.
+
+È utile quando l'API esterna supporta operazioni in batch, ad esempio la creazione di più Record in una sola chiamata API o l'invio di un gruppo di eventi a un servizio di analisi.
+
+Per usare Corpo come array:
+1. Abilita Ciclo in un'azione Richiesta HTTP.
+2. Scegli la modalità **Corpo come array** invece della modalità predefinita per singolo elemento.
+3. L'intero array viene serializzato come array JSON e inviato nel corpo della richiesta.
+
+## Considerazioni sulle prestazioni
+
+- Ciclo elabora gli elementi **in sequenza**, non in parallelo. Un ciclo di 100 elementi richiede approssimativamente 100 volte il tempo di una singola esecuzione.
+- Per array di grandi dimensioni, con centinaia o migliaia di elementi, valuta se l'azione esterna accetta input in batch. Usa Corpo HTTP come array se l'API lo supporta.
+- Se scorri l'output di Ottieni Record ed effettui richieste HTTP per ogni Record, tieni conto dei limiti di frequenza dell'API esterna.
+- Per set di dati molto grandi, valuta la possibilità di suddividere il lavoro in batch più piccoli usando la paginazione di Ottieni Record, con Ignora/Prendi, ed eseguendo più volte l'automazione.
+
+## Quando utilizzarlo
+
+- **Creare Record in blocco.** Ottieni Record da una Tabella e scorrili per creare i Record corrispondenti in un'altra Tabella.
+- **Inviare email personalizzate a un elenco.** Ottieni un elenco di contatti e scorrilo per inviare a ciascuno un'email personalizzata.
+- **Aggiornare più Record.** Ottieni i Record che soddisfano una condizione e scorrili per aggiornarli, ad esempio contrassegnando tutte le attività scadute come "In escalation".
+- **Effettuare chiamate API per ogni Record.** Invia uno alla volta i dati di ciascun Record a un sistema esterno.
+- **Elaborare con l'IA un batch di Record.** Scorri i Record e usa Generazione IA per classificare, riepilogare o estrarre dati da ciascuno.
+
+## Suggerimenti
+
+- Controlla sempre la dimensione dell'array prima di abilitare Ciclo. Se Ottieni Record restituisce 1.000 Record, il ciclo verrà eseguito 1.000 volte.
+- Se il ciclo crea o aggiorna Record nella stessa Tabella che ha attivato l'automazione, fai attenzione a non riattivarla. Usa filtri nel trigger per evitare cicli infiniti.
+- I risultati di tutte le iterazioni del ciclo sono disponibili come array nei passaggi successivi; per i cicli molto grandi, tuttavia, l'array può avere dimensioni notevoli. Fai riferimento solo ai dati necessari.
+
+## Contenuti correlati
+
+- [Ottieni Record](/it/basic/automation/actions/records/get-records) — la fonte di array più comune per Ciclo
+- [Crea Record](/it/basic/automation/actions/records/create-record) — usata spesso all'interno di un Ciclo per creare Record in blocco
+- [Richiesta HTTP](/it/basic/automation/actions/logic/http-request) — usata spesso all'interno di un Ciclo per le chiamate API relative ai singoli elementi
+- [Invia email](/it/basic/automation/actions/communication/send-email-overview) — usata spesso all'interno di un Ciclo per inviare email in blocco

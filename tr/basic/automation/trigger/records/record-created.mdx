@@ -1,0 +1,77 @@
+---
+title: "Kayıt oluşturulduğunda"
+description: "Tabloya yeni kayıt eklendiğinde iş akışını tetikleyin"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Lütfen unutmayın: tüm tetikleyici yapılandırması AI Chat'te yapılabilir. İş akışının ne yapmasını istediğinizi AI'a söyleyin; gerisini o halleder.</Tip>
+
+Bu tetikleyici, nasıl oluşturulduğuna bakılmaksızın tabloya yeni bir kayıt eklendiğinde çalışır.
+
+## AI ile oluşturma
+
+Tablonuzun sağ kenar çubuğunda AI Chat'i açın ve ne istediğinizi açıklayın.
+
+AI her şeyi halleder: doğru tetikleyiciyi seçer, ilgili alanları eşler ve tüm eylemleri otomatik olarak yapılandırır.
+
+Hedefinizi bir kez açıklayın; iş akışınız elle yapılandırma gerektirmeden hazır olur.
+
+**Örnek:** *"Yeni bir sipariş oluşturulduğunda ekibe Slack üzerinden bildirim gönder."*
+
+## Yapılandırma
+
+| Ayar | Zorunlu | Açıklama |
+|---|---|---|
+| Tablo | Evet | Yeni kayıtlar için izlenecek tablo |
+| Filtre | Hayır | Yalnızca yeni kayıt bu koşullarla eşleşiyorsa tetiklenir. Görünümlerle aynı filtre oluşturucuyu kullanır |
+
+## Nasıl yapılandırılır?
+
+1. Otomasyonunuzu açıp yeni bir tetikleyici ekleyin.
+2. **Kayıt oluşturulduğunda** seçeneğini belirleyin.
+3. İzlemek istediğiniz **Tabloyu** seçin.
+4. (İsteğe bağlı) Yalnızca belirli yeni kayıtlara tepki vermek istiyorsanız bir **Filtre** ekleyin. Örneğin `Öncelik`, `Yüksek` değerine eşittir filtresi diğer öncelik değerlerine sahip yeni kayıtları yok sayar.
+5. Otomasyonu kaydedip etkinleştirin.
+6. Eylem adımlarınızı ekleyin. Tetikleyicideki değerleri eklemek için her eylemde herhangi bir alandaki **+** düğmesine tıklayın; yeni kaydın tüm alanlarını listede görürsünüz.
+
+## Sonraki adımlarda kullanılabilen veriler
+
+Bu tetikleyici çalıştığında yeni oluşturulan kaydın tüm alanları, sonraki adımlarda değişken olarak kullanılabilir:
+
+- **Kayıt Kimliği** — yeni kaydın benzersiz tanımlayıcısı
+- **Tüm alan değerleri** — tablodaki her alana (metin, sayı, tarih, ek, bağlantılı kayıt vb.) herhangi bir eylemin alan eşlemesinde **+** simgesine tıklanarak başvurulabilir
+
+Bu, tablonuzda Ad, E-posta, Durum ve Oluşturulma Tarihi gibi alanlar varsa dört değerin de ek yapılandırma olmadan eylemlerinizde kullanıma hazır olduğu anlamına gelir.
+
+## Filtre nasıl çalışır?
+
+İsteğe bağlı filtre, hangi yeni kayıtların otomasyonu gerçekten tetikleyeceğini daraltmanızı sağlar:
+
+- **Filtre ayarlanmamışsa** her yeni kayıt tetikleyiciyi çalıştırır.
+- **Filtre ayarlanmışsa** tetikleyici yalnızca yeni kayıt tüm koşullarla eşleştiğinde çalışır. Eşleşmeyen kayıtlar sessizce yok sayılır.
+
+Bu, yalnızca yeni kayıtların belirli bir alt kümesinde işlem yapmak istediğinizde kullanışlıdır; örneğin yalnızca yüksek öncelikli görevlerde, belirli bir ekibe atanan kayıtlarda veya belirli bir tutarın üzerindeki siparişlerde.
+
+<Note>Filtre, kayıt oluşturulduğu andaki alan değerlerine göre değerlendirilir. Bir alan oluşturma sırasında boş olup daha sonra doldurulursa otomasyon geriye dönük olarak çalışmaz.</Note>
+
+## Ne zaman kullanılır?
+
+- **Yeni bir kişiye hoş geldiniz e-postası gönderin.** CRM tablonuza bir kişi eklendiğinde kişinin adını ve e-posta adresini kullanarak otomatik olarak kişiselleştirilmiş bir hoş geldiniz e-postası gönderin.
+- **Yeni proje eklendiğinde bağlantılı görev oluşturun.** Proje kaydı oluşturulduğunda yeni projeye bağlı Görevler tablosunda varsayılan bir görev kümesini otomatik olarak oluşturun.
+- **Yeni siparişleri ekibinize bildirin.** Yeni bir sipariş geldiğinde Slack'e ileti gönderin veya satış ekibine e-posta yollayın.
+- **Gelen kayıtları AI ile otomatik sınıflandırın.** Bir destek talebi oluşturulduğunda açıklama alanına göre kategorilere ayırmak için AI ile Oluştur eylemini kullanın.
+- **Yeni kayıtları harici sisteme kaydedin.** Yeni kayıt verilerini CRM'e, ERP'ye veya veri ambarına aktarmak için HTTP İsteği eylemini kullanın.
+
+## İpuçları
+
+- Bu tetikleyici diğer otomasyonlar dahil *herhangi bir* yöntemle oluşturulan kayıtlarda çalışır. Aynı tabloda kayıt oluşturan bir otomasyonunuz varsa sonsuz döngülerden kaçınmaya dikkat edin. Otomasyon tarafından oluşturulan kayıtları hariç tutmak için filtre kullanın (örneğin bir işaret alanını denetleyerek).
+- Tetikleyici kayıt başına bir kez çalışır. Toplu olarak 10 kayıt içe aktarılırsa 10 ayrı kez çalışır.
+- Yalnızca belirli bir form üzerinden oluşturulan kayıtlara tepki vermeniz gerekiyorsa bunun yerine [Form gönderildiğinde](/tr/basic/automation/trigger/forms/form-submitted) tetikleyicisini kullanın; daha ayrıntılı denetim sağlar.
+- Kayıt oluşturulurken boş olan alanlar değişken olarak yine kullanılabilir ancak değerleri boş olur. Eylemlerinizin boş değerleri uygun şekilde ele aldığından emin olun.
+
+## İlgili konular
+
+- [Form gönderildiğinde](/tr/basic/automation/trigger/forms/form-submitted) — tüm kayıt oluşturma yöntemlerinde değil, yalnızca form gönderimlerinde çalışır
+- [Kayıt güncellendiğinde](/tr/basic/automation/trigger/records/record-updated) — mevcut kayıtlar değiştiğinde çalışır
+- [Kayıt oluştur eylemi](/tr/basic/automation/actions/records/create-record) — iş akışlarında kayıt oluşturan karşılık gelen eylem
+- [E-posta gönder](/tr/basic/automation/actions/communication/send-email-overview)

@@ -1,0 +1,85 @@
+---
+title: "Authentification unique OIDC"
+description: "Configurez l’authentification OpenID Connect (OIDC) pour votre instance Teable Auto-hébergée."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+Teable prend en charge l’authentification unique OIDC, ce qui vous permet de l’intégrer à des fournisseurs d’identité externes pour l’authentification des utilisateurs.
+
+## Variables d’environnement
+
+Pour activer OIDC dans votre Teable Auto-hébergé, configurez ces variables d’environnement :
+
+```sh
+# Configuration OIDC principale
+BACKEND_OIDC_CLIENT_ID=your_client_id
+BACKEND_OIDC_CLIENT_SECRET=your_client_secret
+BACKEND_OIDC_CALLBACK_URL=https://your-teable-domain.com/api/auth/oidc/callback
+
+# Points de terminaison OAuth (fournis par votre IdP)
+BACKEND_OIDC_AUTHORIZATION_URL=https://your-idp.com/authorize
+BACKEND_OIDC_TOKEN_URL=https://your-idp.com/token
+BACKEND_OIDC_USER_INFO_URL=https://your-idp.com/userinfo
+BACKEND_OIDC_ISSUER=https://your-idp.com
+
+# Options supplémentaires
+BACKEND_OIDC_OTHER={"scope":["email","profile"]}
+
+# Activer OIDC comme fournisseur d’authentification
+SOCIAL_AUTH_PROVIDERS=oidc
+```
+
+## Référence de configuration
+
+| Variable | Description |
+|----------|-------------|
+| `BACKEND_OIDC_CLIENT_ID` | ID client de votre fournisseur d’identité |
+| `BACKEND_OIDC_CLIENT_SECRET` | Secret client de votre fournisseur d’identité |
+| `BACKEND_OIDC_CALLBACK_URL` | URL de rappel de Teable (doit correspondre à la configuration de l’IdP) |
+| `BACKEND_OIDC_AUTHORIZATION_URL` | Point de terminaison d’autorisation de l’IdP |
+| `BACKEND_OIDC_TOKEN_URL` | Point de terminaison de jeton de l’IdP |
+| `BACKEND_OIDC_USER_INFO_URL` | Point de terminaison des informations utilisateur de l’IdP |
+| `BACKEND_OIDC_ISSUER` | Identifiant d’émetteur de l’IdP |
+| `BACKEND_OIDC_OTHER` | Options supplémentaires au format JSON (par ex., étendues) |
+| `SOCIAL_AUTH_PROVIDERS` | Incluez `oidc` pour activer le bouton de connexion OIDC |
+
+## Activer plusieurs fournisseurs d’authentification
+
+Vous pouvez activer plusieurs méthodes d’authentification :
+
+```sh
+SOCIAL_AUTH_PROVIDERS=github,google,oidc
+```
+
+Cela permet aux utilisateurs de se connecter via GitHub, Google ou votre fournisseur OIDC.
+
+---
+
+## Exigences de sécurité du fournisseur d’identité {#identity-provider-security-requirements}
+
+Teable fait confiance à l’adresse e-mail renvoyée par votre IdP et l’utilise pour associer automatiquement les connexions OIDC aux comptes existants utilisant la même adresse e-mail. Le fournisseur d’identité que vous connectez **doit garantir que les adresses e-mail des utilisateurs sont vérifiées**.
+
+<Warning>
+Ne connectez pas de fournisseurs d’identité qui permettent aux utilisateurs de définir des adresses e-mail arbitraires et non vérifiées (par exemple, des IdP mutualisés avec inscription ouverte). Sur ces fournisseurs, un attaquant peut créer un compte en utilisant l’adresse e-mail d’un utilisateur existant sur votre instance et prendre le contrôle de ce compte en se connectant via OIDC. Ce risque est particulièrement élevé lorsque la connexion locale par mot de passe est également activée sur la même instance.
+</Warning>
+
+Recommandations :
+
+- Connectez uniquement des IdP de niveau entreprise sous votre contrôle (tels qu’Okta, Azure Entra ID, Google Workspace ou Keycloak) avec vérification de l’adresse e-mail activée.
+- Si votre instance utilise exclusivement le SSO, définissez [`PASSWORD_LOGIN_DISABLED=true`](/fr/deploy/env) pour désactiver la connexion locale par mot de passe et réduire davantage la surface d’attaque.
+
+---
+
+## Remarques importantes
+
+1. **HTTPS requis** : toutes les URL doivent utiliser HTTPS en production
+2. **L’URL de rappel doit correspondre** : l’URL de rappel dans Teable doit correspondre exactement à celle configurée dans votre IdP
+3. **Redémarrage requis** : après avoir modifié les variables d’environnement, redémarrez Teable pour que les modifications prennent effet
+4. **Stockage sécurisé** : ne validez jamais de secrets dans le contrôle de version ; utilisez des variables d’environnement ou des gestionnaires de secrets
+5. **L’IdP doit vérifier les e-mails** : consultez les [Exigences de sécurité du fournisseur d’identité](#identity-provider-security-requirements) ci-dessus
+
+---
+
+## Documentation associée
+
+- [Référence des variables d’environnement](/fr/deploy/env)

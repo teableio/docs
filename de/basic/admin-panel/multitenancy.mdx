@@ -1,0 +1,146 @@
+---
+title: "Verwaltung von Organisationstenants"
+description: "Erstellen und verwalten Sie mehrere Organisationstenants in einer Teable-Instanz und weisen Sie jedem Tenant einen Administrator zu."
+hidden: true
+noindex: true
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Verfügbar im selbst gehosteten Enterprise-Tarif</Tip>
+
+Eine Teable-Instanz kann mehrere Organisationstenants enthalten, jeweils mit separaten Mitgliedern, Abteilungen, Spaces und Einstellungen für einen Kunden, Geschäftsbereich oder ein Team.
+
+## Hierarchie der Organisationstenants
+
+```text
+Teable-Instanz
+├── Organisationstenant A
+│   ├── Organisationsadministratoren, Mitglieder und Abteilungen
+│   └── Spaces, Bases und Einstellungen auf Organisationsebene
+├── Organisationstenant B
+│   ├── Organisationsadministratoren, Mitglieder und Abteilungen
+│   └── Spaces, Bases und Einstellungen auf Organisationsebene
+└── Organisationstenant C
+```
+
+Organisationstenants verwenden dieselbe Teable-Bereitstellung und Instanzkonfiguration, verwalten die folgenden Elemente jedoch getrennt:
+
+| Bereich | Beschreibung |
+| --- | --- |
+| **Mitglieder und Abteilungen** | Jede Organisation verwaltet eigene Organisationsmitglieder, Organisationsadministratoren und ihre Abteilungsstruktur |
+| **Spaces** | Jede Organisation verwaltet die ihr zugeordneten Spaces |
+| **Authentifizierung und Sicherheit** | Jede Organisation kann ihre Authentifizierungsanbieter und verifizierten E-Mail-Domains konfigurieren |
+| **Organisationseinstellungen** | Organisationsname, automatischer Space-Zugriff und Abteilungsbereich werden getrennt konfiguriert |
+| **Instanzkonfiguration** | Lizenzen, Systemeinstellungen sowie das Erstellen und Löschen von Organisationstenants bleiben unter der Kontrolle des Instanzadministrators |
+
+<Info>Organisationstenants geben nicht jeder Organisation eine separate PostgreSQL-Datenbank. Informationen zum Speichern der Daten eines Space in einer separaten PostgreSQL-Datenbank finden Sie unter [Datenbanktenant](/de/basic/admin-panel/database-tenant).</Info>
+
+## Zwei Verwaltungseinstiegspunkte
+
+| Einstiegspunkt | Verwaltungsrolle | Zweck |
+| --- | --- | --- |
+| **Admin-Panel → Organisationen** | Instanzadministrator | Organisationstenants erstellen, anzeigen und löschen sowie Organisationsadministratoren zuweisen |
+| **Organisationsbereich** | Organisationsadministrator | Nutzer, Abteilungen, Spaces, Authentifizierung, Sicherheit und Einstellungen innerhalb des aktuellen Tenants verwalten |
+
+Organisationsadministratoren können nur ihre zugewiesene Organisation verwalten. Sie können keine anderen Organisationstenants erstellen oder löschen und keine instanzweiten Systemeinstellungen ändern.
+
+## Organisationen öffnen
+
+1. Melden Sie sich als Instanzadministrator bei Teable an.
+2. Wählen Sie oben links **Admin-Panel**.
+3. Öffnen Sie **Organisationen** über die linke Navigation.
+
+<img
+  src="/images/selfhosted/admin-panel/2026-05-29-admin-panel-organizations-entry-en.png"
+  alt="Einstieg Organisationen im Admin-Panel"
+  className="docs-screenshot"
+/>
+
+<Tip>Der erste in einer Instanz registrierte Nutzer wird automatisch Instanzadministrator.</Tip>
+
+## Einen Organisationstenant erstellen
+
+1. Wählen Sie **Organisation erstellen**.
+2. Geben Sie den **Organisationsnamen** ein.
+3. Wählen Sie **Erstellen**.
+
+Die neue Organisation erscheint in der Organisationsliste. Nachdem Sie einen Organisationsadministrator zugewiesen haben, kann dieser Mitglieder, Abteilungen und Spaces über den Organisationsbereich konfigurieren.
+
+## Die Organisationsliste anzeigen
+
+Die Liste kann nach Namen durchsucht werden und enthält:
+
+| Spalte | Beschreibung |
+| --- | --- |
+| **Organisationsname** | Name und ID des Organisationstenants |
+| **Nutzeranzahl** | Gesamtzahl der Nutzer in der Organisation |
+| **Space-Anzahl** | Gesamtzahl der der Organisation zugeordneten Spaces |
+| **Administratoren** | Zugewiesene Organisationsadministratoren |
+| **Erstellungszeit** | Zeitpunkt der Erstellung des Organisationstenants |
+
+<img
+  src="/images/selfhosted/admin-panel/2026-05-29-admin-panel-organizations-list-en.png"
+  alt="Organisationsliste im Admin-Panel"
+  className="docs-screenshot"
+/>
+
+## Organisationsadministratoren zuweisen
+
+1. Öffnen Sie das Aktionsmenü der Zielorganisation.
+2. Wählen Sie **Administratoren verwalten**.
+3. Suchen Sie nach einem Nutzer in der Instanz.
+4. Wählen Sie **Als Administrator festlegen** oder **Administrator entfernen**.
+
+Jeder Instanznutzer außer einem gelöschten Nutzer kann als Organisationsadministrator zugewiesen werden. Der Nutzer erhält Verwaltungszugriff auf die aktuelle Organisation, wird dadurch jedoch nicht Instanzadministrator.
+
+| Rolle | Alle Organisationstenants verwalten | Instanzeinstellungen verwalten | Aktuelle Organisation verwalten | Spaces in der aktuellen Organisation verwalten |
+| --- | --- | --- | --- | --- |
+| **Instanzadministrator** | Ja | Ja | Ja | Ja |
+| **Organisationsadministrator** | Nein | Nein | Ja | Ja |
+| **Reguläres Mitglied** | Nein | Nein | Nein | Abhängig von der Space-Rolle |
+
+## Einen Tenant intern verwalten
+
+Über den Space-Wechsler kann ein Organisationsadministrator den **Organisationsbereich** öffnen und Folgendes verwalten:
+
+| Seite | Verwaltungsfunktionen |
+| --- | --- |
+| **Nutzer** | Nutzer in der aktuellen Organisation anzeigen und verwalten |
+| **Organisation** | Abteilungen erstellen, verschieben, umbenennen und löschen sowie Abteilungsmitglieder verwalten |
+| **Space-Verwaltung** | Spaces zur Organisation hinzufügen oder daraus entfernen sowie die Anzahl der Spaces und Bases anzeigen |
+| **Authentifizierungseinstellungen** | Authentifizierungsanbieter von Drittanbietern für die Organisation konfigurieren |
+| **Sicherheitseinstellungen** | E-Mail-Domains verifizieren, damit neue Nutzer mit diesen Domains der Organisation automatisch beitreten |
+| **Instanzeinstellungen** | Organisationsname, automatischen Space-Zugriff und Abteilungsbereich ändern |
+
+Ausführliche Anweisungen zu **Instanzeinstellungen** finden Sie unter [Einstellungen des Organisationsbereichs](/de/basic/organization-panel/settings).
+
+## Einen Organisationstenant löschen
+
+1. Öffnen Sie das Aktionsmenü der Zielorganisation.
+2. Wählen Sie **Löschen**.
+3. Prüfen Sie die Bestätigung und bestätigen Sie die Löschung.
+
+<Warning>Das Löschen einer Organisation entfernt die Organisation und alle ihre Daten dauerhaft. Prüfen Sie vor dem Fortfahren die Zielorganisation, zugehörige Spaces und Sicherungen.</Warning>
+
+## Häufige Tenant-Modelle
+
+| Szenario | Organisationstenant-Modell |
+| --- | --- |
+| Einen Teable-Dienst für mehrere Kunden bereitstellen | Für jeden Kunden einen separaten Organisationstenant erstellen |
+| Eine Gruppenbereitstellung mit unabhängigen Tochtergesellschaften betreiben | Für jede Tochtergesellschaft einen Organisationstenant erstellen |
+| Geschäftsbereiche in einem großen Unternehmen isolieren | Für jede Einheit, die unabhängige Mitgliedschaften, Spaces und Verwaltungsrichtlinien benötigt, einen Organisationstenant erstellen |
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Was ist der Unterschied zwischen einem Organisationstenant und einem Datenbanktenant?">
+    Ein Organisationstenant trennt Mitglieder, Abteilungen, Spaces und Verwaltungsberechtigungen. Ein Datenbanktenant steuert, welche PostgreSQL-Datenbank die Daten eines bestimmten Space speichert. Ein Organisationstenant kann mehrere Spaces enthalten; die von jedem Space verwendete Datendatenbank wird separat konfiguriert.
+  </Accordion>
+  <Accordion title="Warum sollte nach dem Erstellen einer Organisation ein Organisationsadministrator zugewiesen werden?">
+    Der Instanzadministrator erstellt und löscht Tenants und verwaltet die Instanz. Der Organisationsadministrator übernimmt die tägliche Verwaltung innerhalb eines Tenants. Das Zuweisen eines Organisationsadministrators delegiert die Verwaltung von Mitgliedern, Abteilungen, Spaces und Authentifizierung, ohne Zugriff auf Instanzebene zu gewähren.
+  </Accordion>
+  <Accordion title="Kann eine Instanz mehrere Kunden bedienen?">
+    Ja. Erstellen Sie für jeden Kunden einen separaten Organisationstenant. Der Instanzadministrator verwaltet die gemeinsame Bereitstellung und die Systemeinstellungen, während jeder Kunde eigene Organisationsadministratoren erhält.
+  </Accordion>
+</AccordionGroup>
+

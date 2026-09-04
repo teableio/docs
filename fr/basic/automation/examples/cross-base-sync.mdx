@@ -1,0 +1,36 @@
+---
+title: "Synchroniser les enregistrements entre plusieurs bases"
+description: "Répliquez automatiquement les enregistrements nouveaux ou mis à jour dans une autre base grâce à l’accès inter-base"
+---
+
+<Tip>Nous vous recommandons de créer les exemples d’automatisation directement dans le Chat IA. Décrivez simplement le flux de travail souhaité : l’IA se chargera de toute la configuration, y compris du déclencheur, des actions, du script et des paramètres.</Tip>
+
+## Créer avec l’IA
+
+Ouvrez le Chat IA dans la barre latérale droite de votre table et indiquez à l’IA ce que vous souhaitez. Par exemple, vous pouvez dire :
+
+*"Lorsqu’une nouvelle commande est créée dans la base Ventes, crée un enregistrement correspondant dans la base Traitement des commandes avec l’identifiant de commande, le nom du client, le montant et le statut défini sur En attente"*
+
+L’IA créera automatiquement le flux de travail complet. Vous pourrez examiner le script généré, le tester avec des données réelles et activer le flux de travail lorsqu’il sera prêt.
+
+## Configuration manuelle
+
+1. **Créez un flux de travail** dans la base **Ventes** avec le déclencheur **Lorsqu’un enregistrement est créé**.
+2. Sélectionnez votre table **Commandes**.
+3. Cliquez sur **Tester**.
+4. **Ajoutez une action** → **Créer un enregistrement**.
+5. Cliquez sur **Accès inter-base** à côté du sélecteur de table.
+6. Accédez à la base **Traitement des commandes** et sélectionnez la table **Commandes**.
+7. Associez les champs :
+   - Identifiant de commande → Identifiant de commande du déclencheur (via **+**)
+   - Client → Client du déclencheur
+   - Montant → Montant du déclencheur
+   - Statut → `Traitement en attente`
+8. Cliquez sur **Tester**, puis **activez** le flux de travail.
+
+## Synchronisation bidirectionnelle
+
+Pour synchroniser les mises à jour dans les deux sens :
+1. Créez un second flux de travail dans la base **Traitement des commandes**.
+2. Utilisez **Lorsqu’un enregistrement est mis à jour** → **Mettre à jour l’enregistrement**, avec l’accès inter-base pointant vers la base Ventes.
+3. Utilisez un filtre pour éviter les boucles infinies : par exemple, ne déclenchez le flux de travail que lorsque certains champs changent et vérifiez que la valeur est effectivement différente avant de la mettre à jour.

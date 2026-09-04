@@ -1,0 +1,41 @@
+---
+title: "Bağımsız Panoyu Etkinleştirme"
+description: "Kendi sunucunuzdaki dağıtımlarda Bağımsız Pano özelliğini etkinleştirme"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Bağımsız Pano özelliğinin yerini App Builder almıştır. **En iyi deneyim için daha güçlü ve özelleştirilebilir panolar oluştururken App Builder'ı kullanmanızı önemle öneririz.**
+
+Eski Pano düğümünü kullanmanız hâlâ gerekiyorsa Bağımsız Panoyu etkinleştirmek için aşağıdaki yapılandırma adımlarını izleyebilirsiniz. Şu anda bu özelliği daha fazla geliştirmeyi planlamadığımızı lütfen unutmayın.
+</Tip>
+
+## Genel Bakış
+
+Bağımsız Pano özelliği, kendi sunucunuzda barındırılan Teable örneklerinde varsayılan olarak devre dışıdır. Etkinleştirmek için aşağıdaki adımları izleyin.
+
+## Adımlar
+
+### 1. Adım: SQL İfadesini Çalıştırma
+
+Teable'ın kullandığı PostgreSQL veritabanına bağlanıp `disallowDashboard` değerini `false` olarak ayarlamak için aşağıdaki SQL ifadesini çalıştırın:
+
+```sql
+UPDATE setting SET content = 'false' WHERE name = 'disallowDashboard';
+```
+
+### 2. Adım: Ayar Tablosu Önbelleğini Temizleme
+
+Yapılandırmanın geçerli olması için SQL'i çalıştırdıktan sonra `setting` Tablosunun önbelleğini temizlemeniz gerekir.
+
+Doğrudan bir önbellek temizleme giriş noktası bulunmadığından **herhangi bir örnek ayarı seçeneğini değiştirerek** önbelleğin yenilenmesini tetikleyebilirsiniz. Örneğin:
+
+1. **Yönetici Paneli** > **Örnek Ayarları** bölümüne gidin
+2. E-posta doğrulama seçeneğini **etkinleştirin**
+3. E-posta doğrulama seçeneğini yeniden **devre dışı bırakın**
+
+<Callout type="info">
+Bu adımın amacı, ayar Tablosunun önbelleğini yenilemektir. Herhangi bir ayar seçeneğini değiştirmeniz yeterlidir; hiçbir yapılandırmayı kalıcı olarak değiştirmeniz gerekmez.
+</Callout>
+
+Her iki adımı da tamamladıktan sonra sayfayı yenileyin; Bağımsız Pano özelliği etkinleştirilecektir.

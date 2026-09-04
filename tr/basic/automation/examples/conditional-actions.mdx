@@ -1,0 +1,37 @@
+---
+title: "Kayıt değerlerine göre farklı eylemler çalıştırma"
+description: "İş akışınızı dallandırmak ve alan değerlerine göre farklı eylemler gerçekleştirmek için koşullu mantığı kullanın"
+---
+
+<Tip>Otomasyon örneklerini doğrudan AI Chat'te oluşturmanızı öneririz. İstediğiniz iş akışını açıklamanız yeterlidir; AI tetikleyici, eylemler, komut dosyası ve yapılandırma dahil tüm kurulumu sizin için tamamlar.</Tip>
+
+## AI ile oluşturma
+
+Tablonuzun sağ kenar çubuğunda AI Chat'i açın ve AI'a ne istediğinizi söyleyin. Örneğin şöyle diyebilirsiniz:
+
+*"Yeni bir talep oluşturulduğunda öncelik alanını denetle. Acil ise nöbetçi ekibe, değilse genel destek kuyruğuna e-posta gönder"*
+
+AI, iş akışının tamamını otomatik olarak oluşturur. Oluşturulan komut dosyasını inceleyebilir, gerçek verilerle test edebilir ve hazır olduğunuzda iş akışını etkinleştirebilirsiniz.
+
+## Elle yapılandırma
+
+1. **Kayıt Oluşturulduğunda** tetikleyicisiyle bir **iş akışı oluşturun**.
+2. **Talepler** tablonuzu seçin.
+3. Örnek bir kayıt almak için **Test et**'e tıklayın.
+4. Bir **Koşul ekleyin**.
+5. Kuralı ayarlayın: **Öncelik** `eşittir` **Acil**.
+6. **Test et**'e tıklayın.
+7. **Doğru yolda** → bir **E-posta Gönder** eylemi ekleyin:
+   - Kime: `oncall@yourcompany.com`
+   - Konu: `Acil talep: ` + talep başlığı (**+** üzerinden)
+   - Gövde: talep açıklaması (**+** üzerinden)
+8. **Yanlış yolda** → bir **E-posta Gönder** eylemi ekleyin:
+   - Kime: `support@yourcompany.com`
+   - Konu: `Yeni talep: ` + talep başlığı
+   - Gövde: talep açıklaması
+9. Her iki yolu da test edin, ardından **etkinleştirin**.
+
+## İpuçları
+
+- Koşulları iç içe yerleştirebilirsiniz: "Yüksek" önceliği "Düşük" öncelikten ayırmak için yanlış yolun içine başka bir koşul ekleyin.
+- Kuralları VE/VEYA ile birleştirin; ör. `Öncelik eşittir Acil VE Sorumlu boştur`.

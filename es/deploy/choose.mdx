@@ -1,0 +1,48 @@
+---
+title: "Despliegue"
+description: "Elige entre Teable Cloud, el autoalojamiento independiente y la plataforma autoalojada con todas las funciones."
+---
+
+Hay tres formas de ejecutar Teable; elige según tus necesidades:
+
+| | **Teable Cloud** | **Autoalojamiento con todas las funciones** | **Autoalojamiento independiente** |
+|---|---|---|---|
+| Tablas, colaboración, API y Automatizaciones | ✅ | ✅ | ✅ |
+| Funciones de IA (chat y agentes) | ✅ | ✅ | ❌ |
+| App Builder (crear y desplegar aplicaciones) | ✅ | ✅ | ❌ |
+| Entornos aislados y vistas previas | ✅ | ✅ | ❌ |
+| Se ejecuta en | [teable.ai](https://teable.ai), sin nada que desplegar | Una máquina (Docker) o un clúster de Kubernetes | Una máquina: aplicación y PostgreSQL |
+| Empieza aquí | [teable.ai](https://teable.ai) | [Arquitectura](/es/deploy/architecture) → [teableio/teable-deployment](https://github.com/teableio/teable-deployment) | [Despliegue con Docker](/es/deploy/docker) |
+
+<Note>
+**¿Ya ejecutas Teable?** La actualización de un despliegue existente a la
+plataforma con todas las funciones se explica paso a paso en la
+[guía de migración](https://github.com/teableio/teable-deployment/blob/main/migration/2026-07-basic-to-full-featured.md)
+del repositorio de despliegue: el plano de ejecución se instala junto a tu Teable
+actual y los datos permanecen en su lugar.
+</Note>
+
+## Dejar que un agente de IA realice el despliegue
+
+El repositorio de despliegue está preparado para que lo utilicen agentes de IA. Dirige tu
+entorno de agentes (Claude Code, Codex, etc.) a
+[teableio/teable-deployment](https://github.com/teableio/teable-deployment),
+indícale en qué entorno quieres desplegar y podrá realizar todo el proceso
+de principio a fin. Prepara tres cosas:
+
+1. **Un dominio**: todo se deriva de un único dominio base, por ejemplo,
+   `teable.example.com`.
+2. **Un token de DNS**: un token de API para la plataforma que aloja tu DNS
+   (Cloudflare, Route 53, etc.), de modo que los Registros DNS y los certificados TLS puedan
+   configurarse automáticamente. Limita su ámbito a esa única zona.
+3. **Acceso al destino del despliegue:**
+
+| Destino | Qué debes proporcionar al agente |
+|---|---|
+| Tu propia máquina: Docker todo en uno, modo `local` | Solo Docker en la máquina; no se necesita dominio ni token de DNS (todo se ejecuta en `*.localhost`) |
+| Un servidor en la nube: Docker todo en uno | Acceso SSH a la máquina |
+| Un clúster administrado en AWS (EKS), GCP (GKE) o Azure (AKS) | Crea el clúster y después proporciona su `kubeconfig` |
+| Cualquier clúster de Kubernetes existente | Un archivo `kubeconfig` que pueda instalar versiones de Helm |
+
+Eso es todo: las guías, los scripts doctor y los manifiestos de versiones del
+repositorio guían al agente durante el resto del proceso.

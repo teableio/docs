@@ -1,0 +1,243 @@
+---
+title: "Kayıt Oluşturma"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+### Yol
+
+POST /api/table/\{tableId\}/record
+
+### İstek
+
+#### Yol Parametreleri
+
+* tableId (string): Tablonun benzersiz tanımlayıcısı.
+
+#### İstek Gövdesi
+
+* **records (zorunlu)**
+  * Açıklama: Oluşturulacak Kayıtlar dizisi
+  * Tür: Dizi
+  * Örnek:
+    ```json
+    [
+      {
+        "fields": {
+          "Name": "John Doe",
+          "Age": 30,
+          "Email": "john@example.com"
+        }
+      },
+      {
+        "fields": {
+          "Name": "Jane Smith",
+          "Age": 28,
+          "Email": "jane@example.com"
+        }
+      }
+    ]
+    ```
+  * Not: Her Kayıt, bir `fields` nesnesi içeren öğedir. `fields` nesnesi, Alan adlarını ve bunlara karşılık gelen değerleri içerir. Her Alan türünün değer yapısı farklıdır; ayrıntılar için [Kayıt Alanı Değeri Türleri](/tr/api-doc/record/interface) sayfasına bakın.
+  * Varsayılan değerler: `fields` içinde belirtilmeyen Alanlar, yapılandırılmışsa Tablonun varsayılan değerini kullanır. Zorunlu bir Alanın varsayılan değeri yoksa veya zorunlu bir Alana açıkça `null` iletirseniz istek başarısız olur.
+* **fieldKeyType (isteğe bağlı)**
+  * Açıklama: Alan anahtarının türünü belirtir
+  * Tür: Dize
+  * Olası değerler:
+    * "name": Alan adını anahtar olarak kullanır
+    * "id": Alan kimliğini anahtar olarak kullanır
+    * "dbFieldName": Alanın dbFieldName değerini anahtar olarak kullanır
+  * Örnek: `"name"` veya `"id"` ya da `"dbFieldName"`
+  * Not: Belirtilmezse varsayılan olarak Alan adı anahtar olarak kullanılır.
+  * Kullanım:
+    * "name" olarak ayarlandığında:
+      ```json
+      {
+        "fields": {
+          "Name": "John Doe",
+          "Age": 30
+        }
+      }
+      ```
+    * "id" olarak ayarlandığında:
+      ```json
+      {
+        "fields": {
+          "fldABCDEFGHIJKLMN": "John Doe",
+          "fldOPQRSTUVWXYZ12": 30
+        }
+      }
+      ```
+* **typecast (isteğe bağlı)**
+  * Açıklama: Alan değeri türlerinin otomatik olarak dönüştürülüp dönüştürülmeyeceğini belirler. Varsayılan olarak katı doğrulama uygulanır ve giriş değerlerinin geçerli Alanın veri türüyle eşleşmesi gerekir. Etkinleştirilirse sistem otomatik dönüştürmeyi dener.
+  * Tür: Boolean
+  * Olası değerler: true veya false
+  * Örnek: `true`
+  * Not: true olarak ayarlanırsa sistem, giriş değerlerini doğru Alan değeri türüne dönüştürmeyi dener.
+  * Kullanım örnekleri:
+    * Bağlantı Alanı: Bağlantı kurmak için birincil anahtar metni doğrudan kullanılabilir
+      ```json
+      {
+        "User table": "John Smith"
+      }
+      ```
+    * Tarih Alanı: Standart olmayan biçimdeki tarih dizeleri kullanılabilir
+      ```json
+      {
+        "Date": "2023-05-15"
+      }
+      ```
+    * Kullanıcı Alanı: Kullanıcı adı doğrudan kullanılabilir
+      ```json
+      {
+        "Assigned To": "John Doe"
+      }
+      ```
+* **order (isteğe bağlı)**
+  * Açıklama: Yeni Kayıtların belirli bir Görünümdeki konumunu belirtir
+  * Tür: Nesne
+  * Özellikler:
+    * viewId
+      * Açıklama: Görünüm kimliği [(nasıl alınır)](/tr/api-doc/get-id#viewid)
+      * Tür: Dize
+      * Örnek: `"viwABCDEFGHIJKLMN"`
+    * anchorId
+      * Açıklama: Referans Kayıt kimliği [(nasıl alınır)](/tr/api-doc/get-id#recordid)
+      * Tür: Dize
+      * Örnek: `"rec123456789ABCDE"`
+    * position
+      * Açıklama: Referans Kayda göre konum
+      * Tür: Dize
+      * Olası değerler:
+        * "before": Referans Kayıttan önce
+        * "after": Referans Kayıttan sonra
+      * Örnek: `"after"`
+  * Tam örnek:
+    ```json
+    {
+      "viewId": "viwABCDEFGHIJKLMN",
+      "anchorId": "rec123456789ABCDE",
+      "position": "after"
+    }
+    ```
+  * Not: order kullanarak yeni Kayıtların belirli bir Görünümdeki konumunu hassas biçimde denetleyebilirsiniz.
+
+### Yanıt
+
+#### Başarılı Yanıt
+
+* Durum kodu: 201 Created
+* Yanıt gövdesi: Oluşturulan Kayıt verilerini döndürür.
+
+**Örnek Yanıt Gövdesi**
+
+```json
+{
+  "records": [
+    {
+      "id": "record789",
+      "fields": {
+        "single line text": "metin değeri 1"
+      }
+    },
+    {
+      "id": "record567",
+      "fields": {
+        "single line text": "metin değeri 2"
+      }
+    }
+  ]
+}
+```
+
+### Hata Yanıtları
+
+* Durum kodu: 400 Bad Request: İstek gövdesi biçim hatası veya zorunlu Alanlar eksik.
+* Durum kodu: 404 Not Found: Belirtilen tableId mevcut değil.
+
+### Örnek Kod
+
+<CodeGroup>
+  ```bash CURL
+  curl -X POST 'https://app.teable.ai/api/table/__tableId__/record' \
+    -H 'Authorization: Bearer __token__' \
+    -H 'Content-Type: application/json' \
+    -d '{
+      "records": [
+        {
+          "fields": {
+            "Name": "John Doe",
+            "Age": 30
+          }
+        }
+      ]
+    }'
+  ```
+
+  ```js JS SDK
+  import { configApi, createRecords } from '@teable/openapi';
+
+  configApi({
+    endpoint: 'https://app.teable.ai',
+    token,
+  });
+
+  const response = await createRecords('__tableId__', {
+    records: [
+      {
+        fields: {
+          Name: 'John Doe',
+          Age: 30
+        }
+      }
+    ]
+  });
+
+  console.log(response.data);
+  ```
+
+  ```ts TypeScript
+  const response = await fetch('https://app.teable.ai/api/table/__tableId__/record', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer __token__',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      records: [
+        {
+          fields: {
+            Name: 'John Doe',
+            Age: 30
+          }
+        }
+      ]
+    })
+  });
+
+  console.log(await response.json());
+  ```
+
+  ```python Python
+  import requests
+
+  response = requests.post(
+      'https://app.teable.ai/api/table/__tableId__/record',
+      headers={
+          'Authorization': 'Bearer __token__',
+          'Content-Type': 'application/json'
+      },
+      json={
+          'records': [
+              {
+                  'fields': {
+                      'Name': 'John Doe',
+                      'Age': 30
+                  }
+              }
+          ]
+      }
+  )
+
+  print(response.json())
+  ```
+</CodeGroup>

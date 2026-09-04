@@ -1,0 +1,40 @@
+---
+title: "AI ile günlük e-posta özeti oluşturma ve gönderme"
+description: "Gün içindeki etkinlikleri özetleyip ekibinize e-postayla göndermek için zamanlanmış tetikleyici + AI ile Oluştur'u kullanın"
+---
+
+<Tip>Otomasyon örneklerini doğrudan AI Chat'te oluşturmanızı öneririz. İstediğiniz iş akışını açıklamanız yeterlidir; AI tetikleyici, eylemler, komut dosyası ve yapılandırma dahil tüm kurulumu sizin için tamamlar.</Tip>
+
+## AI ile oluşturma
+
+Tablonuzun sağ kenar çubuğunda AI Chat'i açın ve AI'a ne istediğinizi söyleyin. Örneğin şöyle diyebilirsiniz:
+
+*"Her gün saat 18.00'de bugün tamamlanan tüm görevleri bul, kısa bir rapor hâlinde özetle ve team@yourcompany.com adresine e-postayla gönder"*
+
+AI, iş akışının tamamını otomatik olarak oluşturur. Oluşturulan komut dosyasını inceleyebilir, gerçek verilerle test edebilir ve hazır olduğunuzda iş akışını etkinleştirebilirsiniz.
+
+## Elle yapılandırma
+
+1. Her gün saat 18.00'de çalışacak **Zamanlanan Saatte** tetikleyicisiyle bir **iş akışı oluşturun**.
+2. **Eylem ekleyin** → **Kayıtları Getir**.
+   - Tablo: **Görevler**
+   - Filtre: `Durum` **eşittir** `Tamamlandı` VE `Tamamlanma Zamanı` **eşittir** `bugün`
+3. **Eylem ekleyin** → **AI ile Oluştur**.
+   - İstem:
+     ```
+     Tamamlanan bu görevleri kısa bir günlük rapor hâlinde özetleyin.
+     Uygunsa kategoriye göre gruplayın. 200 kelimeden kısa tutun.
+
+     Görevler: <Kayıtları Getir çıktısını + ile ekleyin>
+     ```
+   - Çıktı Türü: **Metin**
+4. **Eylem ekleyin** → **E-posta Gönder**.
+   - Kime: `team@yourcompany.com`
+   - Konu: `Günlük Görev Raporu`
+   - Gövde: AI ile Oluştur çıktısını ekleyin (**+** üzerinden)
+5. Her adımı test edin, ardından **etkinleştirin**.
+
+## Çeşitlemeler
+
+- **Haftalık özet:** zamanlamayı cuma günlerine, filtreyi de "son 7 gün" olarak değiştirin.
+- **Müşteri etkinliği özeti:** yeni etkileşimler için bir CRM tablosunu sorgulayıp sonuçları özetleyin.

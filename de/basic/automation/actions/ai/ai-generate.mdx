@@ -1,0 +1,191 @@
+---
+title: "Mit KI generieren"
+description: "Verwenden Sie KI-Modelle, um in einem Workflow Text oder strukturierte Daten zu generieren"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Wir empfehlen dringend, Automatisierungen mit „Skript ausführen“ zu erstellen, da diese Funktion alle Aktionsarten abdecken kann – auch solche, die andernfalls manuell erstellt werden müssten. Beschreiben Sie Ihre Anforderungen einfach im KI-Chat.
+
+Bitte beachten Sie: Wenn Sie Aktionen manuell hinzufügen, kann die KI sie später weder erkennen noch ändern.
+</Tip>
+
+## Mit KI erstellen
+
+Öffnen Sie den KI-Chat in der rechten Seitenleiste Ihrer Tabelle und beschreiben Sie, was Sie erreichen möchten.
+
+Die KI übernimmt alles: Sie wählt den richtigen Auslöser und die passenden Aktionen aus, ordnet die Felder zu und konfiguriert den gesamten Workflow automatisch.
+
+Beschreiben Sie Ihr Ziel einmal, und der Workflow ist einsatzbereit – eine manuelle Einrichtung ist nicht erforderlich.
+
+Diese Aktion sendet einen Prompt an ein großes Sprachmodell und gibt Text oder strukturiertes JSON zurück. Verwenden Sie sie, um Daten auf Grundlage Ihrer Datensätze zu klassifizieren, zu extrahieren, zusammenzufassen oder zu generieren.
+
+## Konfiguration
+
+| Einstellung | Erforderlich | Beschreibung |
+|---|---|---|
+| Prompt | Ja | Ihre Anweisung an die KI. Klicken Sie auf **+**, um dynamische Variablen aus vorherigen Schritten einzufügen |
+| Modell | Nein | Wählen Sie ein Modell aus. Standardmäßig wird das Systemmodell verwendet. Es sind auch Vision- und Reasoning-Modelle verfügbar |
+| Temperatur | Nein | Steuert die Zufälligkeit: 0 = am deterministischsten, 1 = am kreativsten. Der Standardwert liegt üblicherweise bei etwa 0,7 |
+| Ausgabetyp | Nein | **Text** (Standard) – gibt frei formulierten Text zurück. **JSON** – gibt strukturiertes JSON zurück, das einem von Ihnen definierten Schema entspricht |
+| Anhänge | Nein | Laden Sie Bilder, PDFs, Word-Dokumente oder Excel-Dateien hoch. Erfordert ein visionsfähiges Modell |
+
+## Modellfunktionen
+
+| Tag | Bedeutung |
+|---|---|
+| **Vision** | Kann Bilder, PDFs, Word-Dokumente und Excel-Dateien lesen und analysieren, die dem Prompt angehängt sind |
+| **Reasoning** | Gibt sowohl die Antwort als auch eine schrittweise Begründung zurück, was sich für komplexe Analysen eignet |
+
+Sie können KI-Modelle von Drittanbietern über **Space → Einstellungen → Integrationen** verbinden. So können Sie Modelle von OpenAI, Anthropic, Google und anderen Anbietern verwenden.
+
+## Einrichtung
+
+1. Fügen Sie Ihrem Workflow die Aktion **Mit KI generieren** hinzu.
+2. Schreiben Sie Ihren **Prompt**. Dies ist die Anweisung, der die KI folgt. Klicken Sie auf **+**, um dynamische Werte einzufügen – zum Beispiel den Text eines Support-Tickets, den Inhalt einer Formulareinreichung oder eine Produktbeschreibung.
+3. (Optional) Wählen Sie ein **Modell** aus, wenn Sie statt des Standardmodells ein bestimmtes Modell verwenden möchten.
+4. (Optional) Passen Sie die **Temperatur** an. Niedrigere Werte (0–0,3) führen zu konsistenteren, besser vorhersehbaren Ausgaben. Höhere Werte (0,7–1,0) führen zu abwechslungsreicheren, kreativeren Ausgaben.
+5. (Optional) Stellen Sie den **Ausgabetyp** auf **JSON** um, wenn Sie strukturierte Daten benötigen. Definieren Sie das JSON-Schema, damit die KI weiß, welches Format sie zurückgeben soll.
+6. (Optional) Fügen Sie **Anhänge** hinzu, wenn die KI Dokumente oder Bilder lesen soll (erfordert ein Vision-Modell).
+7. Speichern Sie die Aktion. Die Antwort der KI steht nachfolgenden Schritten über die Variablenauswahl **+** zur Verfügung.
+
+## Tipps zum Schreiben von Prompts
+
+Die Qualität der KI-Ausgabe hängt stark von Ihrem Prompt ab. Hier finden Sie praktische Richtlinien:
+
+- **Formulieren Sie konkret.** Schreiben Sie statt „Klassifiziere dies“ besser „Klassifiziere dieses Support-Ticket in eine dieser Kategorien: Abrechnung, Technik, Konto, Sonstiges.“
+- **Geben Sie im Prompt Beispiele an.** Zeigen Sie der KI, was Sie erwarten:
+  ```
+  Klassifiziere das folgende Support-Ticket. Gib nur den Namen der Kategorie zurück.
+
+  Kategorien: Abrechnung, Technik, Konto, Sonstiges
+
+  Beispiele:
+  - "Ich kann mich nicht bei meinem Konto anmelden" → Konto
+  - "Der Betrag auf meiner Rechnung ist falsch" → Abrechnung
+  - "Die API gibt einen 500-Fehler zurück" → Technik
+
+  Ticket: {{Ticket Description}}
+  ```
+- **Definieren Sie das Ausgabeformat.** Wenn Sie ein bestimmtes Format wünschen, geben Sie dies an: „Gib nur den Namen der Kategorie und nichts anderes zurück“ oder „Gib ein JSON-Objekt mit den Schlüsseln category, confidence und reason zurück.“
+- **Bleiben Sie fokussiert.** Ein einzelner Auftrag pro Prompt funktioniert besser, als die KI um mehrere Dinge gleichzeitig zu bitten.
+
+## JSON-Ausgabe
+
+Wenn Sie den Ausgabetyp auf **JSON** setzen, gibt die KI strukturierte Daten statt Freitext zurück. Dies ist nützlich, wenn Sie mehrere Informationen extrahieren und in späteren Schritten getrennt verwenden möchten.
+
+Beispiel-Prompt für eine JSON-Ausgabe:
+
+```
+Extrahiere die folgenden Informationen aus dieser Rechnungs-E-Mail. Gib JSON mit diesen Schlüsseln zurück:
+- vendor_name (Zeichenfolge)
+- invoice_number (Zeichenfolge)
+- amount (Zahl)
+- due_date (Zeichenfolge im Format YYYY-MM-DD)
+
+E-Mail-Text: {{Email Body}}
+```
+
+Die KI gibt beispielsweise Folgendes zurück:
+
+```json
+{
+  "vendor_name": "Acme Corp",
+  "invoice_number": "INV-2024-001",
+  "amount": 1250.00,
+  "due_date": "2024-03-15"
+}
+```
+
+Jeder Schlüssel im JSON steht anschließend als separate Variable in nachfolgenden Schritten zur Verfügung. So können Sie `vendor_name` einem Feld und `amount` einem anderen zuordnen und entsprechend mit den übrigen Schlüsseln verfahren.
+
+## Vision-Modelle und Anhänge
+
+Vision-Modelle können Bilder und Dokumente analysieren. Hängen Sie Dateien an den Prompt an, damit die KI sie „lesen“ kann:
+
+- **Bilder:** Screenshots, Fotos, Diagramme und Grafiken.
+- **PDFs:** Rechnungen, Verträge und Berichte.
+- **Word-/Excel-Dateien:** Dokumente und Tabellenkalkulationen.
+
+Anwendungsfälle: Text aus gescannten Dokumenten extrahieren, Daten aus Rechnungsbildern lesen, Diagrammbilder analysieren und hochgeladene Formulare verarbeiten.
+
+Wählen Sie unbedingt ein Modell mit dem Tag **Vision** aus. Modelle ohne Vision-Unterstützung ignorieren Anhänge.
+
+## Guthabensystem
+
+Jeder Aufruf von „Mit KI generieren“ verbraucht Guthaben auf Grundlage folgender Faktoren:
+
+- Das verwendete **Modell** (leistungsfähigere Modelle kosten mehr Guthaben pro Token).
+- Die **Anzahl der verarbeiteten Tokens** (Ein- und Ausgabe).
+
+Die genauen Guthabenkosten werden nach einer Testausführung im Testbereich angezeigt. Behalten Sie Ihren Guthabenverbrauch in den Kontoeinstellungen im Blick, insbesondere wenn Sie „Mit KI generieren“ innerhalb einer Schleife über viele Datensätze verwenden.
+
+## Konkrete Prompt-Beispiele
+
+### Klassifizierung
+
+```
+Klassifiziere dieses Kundenfeedback als positiv, negativ oder neutral.
+Gib nur die Klassifizierung zurück.
+
+Feedback: {{Feedback Text}}
+```
+
+### Datenextraktion
+
+```
+Extrahiere alle im folgenden Text genannten E-Mail-Adressen.
+Gib sie als JSON-Array aus Zeichenfolgen zurück.
+
+Text: {{Message Body}}
+```
+
+### Zusammenfassung
+
+```
+Fasse die folgenden Besprechungsnotizen in 3 Stichpunkten zusammen.
+Konzentriere dich auf Aufgaben und getroffene Entscheidungen.
+
+Notizen: {{Meeting Notes}}
+```
+
+### Inhaltserstellung
+
+```
+Schreibe eine professionelle Folge-E-Mail an {{Customer Name}} zu dessen Anfrage über {{Product Name}}.
+Beschränke sie auf höchstens 150 Wörter. Erwähne, dass wir innerhalb von 24 Stunden antworten werden.
+```
+
+### Übersetzung
+
+```
+Übersetze den folgenden Text von {{Source Language}} in {{Target Language}}.
+Behalte die ursprüngliche Formatierung bei.
+
+Text: {{Content}}
+```
+
+## Verwendung
+
+- **Support-Tickets nach Thema klassifizieren.** Kategorisieren Sie eingehende Tickets automatisch, damit sie an das richtige Team weitergeleitet werden können.
+- **Strukturierte Daten aus Rechnungen oder E-Mails extrahieren.** Übertragen Sie Beträge, Daten, Namen und Referenznummern in separate Felder.
+- **Lange Textfelder zusammenfassen.** Verdichten Sie Besprechungsnotizen, Beschreibungen oder Kommentare zu kurzen Zusammenfassungen.
+- **Personalisierte E-Mail-Inhalte generieren.** Erstellen Sie anhand von Datensatzdaten individuelle E-Mail-Texte.
+- **Bilder und Dokumente analysieren.** Verwenden Sie Vision-Modelle, um hochgeladene Rechnungen, Belege oder Screenshots zu lesen.
+
+## Tipps
+
+- Verwenden Sie den **Testbereich**, um Ihren Prompt vor der Aktivierung der Automatisierung zu optimieren. Führen Sie Tests mit echten Daten aus, um Format und Qualität der Ausgabe zu überprüfen.
+- Setzen Sie die Temperatur für konsistente Ergebnisse – insbesondere bei Klassifizierungen – auf 0 oder einen Wert nahe 0.
+- Der JSON-Ausgabemodus ist zuverlässiger, wenn Sie in Ihrem Prompt ein klares Schema angeben. Listen Sie stets die erwarteten Schlüssel und deren Typen auf.
+- Wenn Sie viele Datensätze in einer [Schleife](../logic/loop-run) verarbeiten, halten Sie Ihre Prompts kurz, um Tokenverbrauch und Guthabenkosten zu reduzieren.
+- Verbinden Sie über **Space → Einstellungen → KI-Einstellungen** weitere KI-Anbieter, wenn die Standardmodelle Ihren Anforderungen nicht entsprechen. Weitere Informationen finden Sie unter [Benutzerdefinierte KI-Modelle](/de/basic/ai/custom-model).
+
+<Tip>Verbinden Sie KI-Modelle von Drittanbietern über **Space → Einstellungen → KI-Einstellungen**.</Tip>
+
+## Verwandte Themen
+
+- [Schleife (Stapelverarbeitung)](../logic/loop-run) – mehrere Datensätze in einer einzigen Automatisierungsausführung mit KI verarbeiten
+- [Skript ausführen](/de/basic/automation/ai/scripting/runscript) – für benutzerdefinierte Logik, die über promptbasierte Generierung hinausgeht
+- [E-Mail senden](/de/basic/automation/actions/communication/send-email-overview)
+- [Datensatz aktualisieren](/de/basic/automation/actions/records/update-record)

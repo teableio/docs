@@ -1,0 +1,114 @@
+---
+title: "Überblick: Wenn E-Mail empfangen wird"
+description: "Lösen Sie einen Workflow aus, wenn eine neue E-Mail in einem überwachten Postfach eingeht"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Bitte beachten Sie: Die gesamte Einrichtung von Auslösern kann im KI-Chat erfolgen. Teilen Sie der KI mit, was der Workflow tun soll, und sie übernimmt den Rest.</Tip>
+
+Dieser Auslöser wird ausgeführt, wenn eine neue, ungelesene E-Mail in einem überwachten Postfach eingeht.
+
+## Mit KI erstellen
+
+Öffnen Sie den KI-Chat in der rechten Seitenleiste Ihrer Tabelle und beschreiben Sie, was Sie möchten.
+
+Die KI übernimmt alles: Sie wählt den richtigen Auslöser aus, ordnet die relevanten Felder zu und richtet automatisch alle Aktionen ein.
+
+Beschreiben Sie Ihr Ziel einmal, und der Workflow ist bereit – eine manuelle Einrichtung ist nicht erforderlich.
+
+**Beispiel:** *„Wenn ich eine Support-E-Mail erhalte, erstelle ein Ticket und klassifiziere es.“*
+
+## Konfiguration
+
+| Einstellung | Erforderlich | Beschreibung |
+|---|---|---|
+| Verbindungstyp | Ja | IMAP, Gmail oder Outlook |
+| Abfrageintervall | Ja | Wie häufig auf neue E-Mails geprüft wird: 10 bis 60 Minuten (Standard: 10) |
+
+## Verbindungstypen im Detail
+
+### IMAP
+
+IMAP funktioniert mit jedem E-Mail-Anbieter, der das IMAP-Protokoll unterstützt – einschließlich selbst gehosteter Mailserver, geschäftlicher E-Mail-Dienste und Anbieter wie Yahoo oder Zoho.
+
+| Einstellung | Erforderlich | Beschreibung |
+|---|---|---|
+| Host | Ja | Die Adresse Ihres IMAP-Servers (z. B. `imap.gmail.com`, `imap.mail.yahoo.com`) |
+| Port | Ja | Üblicherweise 993 (SSL/TLS) oder 143 (unverschlüsselt, nicht empfohlen) |
+| Benutzername | Ja | Ihre E-Mail-Adresse oder der Benutzername Ihres Kontos |
+| Passwort | Ja | Ihr App-Passwort (bitte beachten Sie: nicht Ihr E-Mail-Passwort) |
+| Postfach | Nein | Der zu überwachende Ordner (standardmäßig `INBOX`) |
+
+### Gmail (OAuth)
+
+Stellt die Verbindung über den OAuth-Ablauf von Google her. Es ist kein Passwort erforderlich – Sie autorisieren Teable für den Zugriff auf Ihr Gmail-Konto.
+
+| Einstellung | Erforderlich | Beschreibung |
+|---|---|---|
+| Google-Konto | Ja | Autorisierung über OAuth – Teable fordert schreibgeschützten Zugriff an |
+| Label | Nein | Wählen Sie ein zu überwachendes Gmail-Label aus (standardmäßig Posteingang) |
+
+### Outlook (OAuth)
+
+Stellt die Verbindung über den OAuth-Ablauf von Microsoft für Outlook- und Microsoft-365-Postfächer her.
+
+| Einstellung | Erforderlich | Beschreibung |
+|---|---|---|
+| Microsoft-Konto | Ja | Autorisierung über OAuth – Teable fordert schreibgeschützten Zugriff an |
+| Ordner | Nein | Wählen Sie einen zu überwachenden Outlook-Ordner aus (standardmäßig Posteingang) |
+
+## Welche E-Mail-Daten für nachfolgende Schritte verfügbar sind
+
+Wenn der Auslöser ausgeführt wird, stehen die folgenden Daten der E-Mail als Variablen in Ihren Aktionsschritten zur Verfügung:
+
+| Daten | Beschreibung |
+|---|---|
+| **Von** | Die E-Mail-Adresse des Absenders |
+| **Betreff** | Die Betreffzeile der E-Mail |
+| **Text (Nur Text)** | Die Nur-Text-Version des E-Mail-Texts |
+| **Text (HTML)** | Die HTML-Version des E-Mail-Texts (falls verfügbar) |
+| **Datum** | Der Zeitpunkt, zu dem die E-Mail gesendet wurde |
+| **Anhänge** | In der E-Mail enthaltene Dateianhänge |
+
+Sie können auf jeden dieser Werte verweisen, indem Sie in Ihren Aktionsfeldern auf **+** klicken.
+
+## Einrichtung (IMAP-Beispiel)
+
+1. Öffnen Sie Ihre Automatisierung und fügen Sie einen neuen Auslöser hinzu.
+2. Wählen Sie **Wenn E-Mail empfangen wird** aus.
+3. Wählen Sie **IMAP** als Verbindungstyp aus.
+4. Geben Sie die Daten Ihres IMAP-Servers ein: Host, Port, Benutzername und Passwort.
+5. (Optional) Ändern Sie das **Postfach**, wenn Sie einen anderen Ordner als INBOX überwachen möchten.
+6. Legen Sie das **Abfrageintervall** fest – also wie häufig auf neue E-Mails geprüft werden soll. Ein kürzeres Intervall führt zu schnelleren Reaktionen, aber auch zu häufigeren Serverabfragen.
+7. Klicken Sie auf **Testen**, um die Verbindung zu überprüfen. Teable versucht, eine Verbindung zu Ihrem Postfach herzustellen, und meldet Erfolg oder Fehler.
+8. Speichern und aktivieren Sie die Automatisierung.
+9. Fügen Sie Ihre Aktionsschritte hinzu und verwenden Sie dabei die E-Mail-Daten (Von, Betreff, Text usw.) als Variablen.
+
+## Anwendungsfälle
+
+- **Für jede eingehende Support-E-Mail einen Datensatz erstellen.** Analysieren Sie Betreff und Text, um Felder in einer Tabelle für Support-Tickets automatisch zu befüllen.
+- **Rechnungsdaten mit KI aus E-Mails extrahieren.** Verwenden Sie die Aktion „Mit KI generieren“, um den E-Mail-Text oder Anhang auszulesen und Beträge, Datumsangaben und Lieferantennamen zu extrahieren.
+- **Kundenanfragen an das richtige Team weiterleiten.** Aktualisieren Sie anhand von Schlüsselwörtern im Betreff oder Text ein Feld „Team“ oder senden Sie Benachrichtigungen an bestimmte Personen.
+- **Wichtige E-Mails als Datensätze archivieren.** Protokollieren Sie E-Mails von bestimmten Absendern oder mit bestimmten Betreffzeilen automatisch in einer Teable-Tabelle, um sie einfach durchsuchen und nachverfolgen zu können.
+- **Bestellbestätigungen verarbeiten.** Extrahieren Sie beim Eingang einer Bestellbestätigung Bestellnummer und Einzelheiten, um Ihre Bestelltabelle zu aktualisieren.
+
+## Fehlerbehebung
+
+- **Verbindung fehlgeschlagen (IMAP):** Überprüfen Sie Host, Port, Benutzername und Passwort. Stellen Sie sicher, dass Ihr E-Mail-Anbieter den IMAP-Zugriff zulässt – einige Anbieter deaktivieren ihn standardmäßig.
+- **Gmail: Fehler „Weniger sichere App“:** Gmail erlaubt keine Anmeldung mit einem einfachen Passwort. Verwenden Sie stattdessen ein **App-Passwort**. Eine Anleitung finden Sie unter [Gmail-IMAP einrichten](/de/basic/automation/trigger/email/gmail-imap).
+- **E-Mails werden nicht erfasst:** Prüfen Sie das Abfrageintervall. Stellen Sie außerdem sicher, dass die E-Mails im überwachten Ordner bzw. Label eingehen. E-Mails in Unterordnern oder gefilterten Labels werden möglicherweise übersehen, wenn das falsche Postfach ausgewählt ist.
+- **Doppelte Verarbeitung:** Der Auslöser merkt sich, welche E-Mails bereits verarbeitet wurden. Wenn Sie die Automatisierung jedoch deaktivieren und erneut aktivieren, verarbeitet sie möglicherweise kürzlich eingegangene E-Mails erneut. Markieren Sie E-Mails bei Bedarf in Ihrem Posteingang als gelesen.
+- **OAuth-Token abgelaufen:** Autorisieren Sie die Verbindung für Gmail oder Outlook erneut, wenn das OAuth-Token abgelaufen ist. Dies geschieht üblicherweise nach mehreren Monaten oder wenn Sie App-Berechtigungen widerrufen.
+
+## Tipps
+
+- Ein kürzeres Abfrageintervall ermöglicht schnellere Reaktionen auf E-Mails, garantiert aber keine Verarbeitung in Echtzeit. Erwägen Sie für eine echte Echtzeitverarbeitung einen Webhook-basierten Ansatz, sofern Ihr E-Mail-Anbieter diesen unterstützt.
+- Leiten Sie relevante E-Mails mithilfe von Filtern in Ihrem E-Mail-Client an ein bestimmtes Label oder einen bestimmten Ordner weiter und lassen Sie Teable nur dieses Label überwachen. So reduzieren Sie unerwünschte Meldungen.
+- Erwägen Sie bei Postfächern mit hohem Aufkommen, das Abfrageintervall zu erhöhen und E-Mails stapelweise zu verarbeiten, damit Ihr Workflow nicht überlastet wird.
+
+## Verwandte Themen
+
+- [Gmail-IMAP einrichten](/de/basic/automation/trigger/email/gmail-imap) – ausführliche Anleitung zum Verbinden von Gmail
+- [Aktion „Mit KI generieren“](/de/basic/automation/actions/ai/ai-generate) – hilfreich zum Extrahieren strukturierter Daten aus E-Mail-Inhalten
+- [Aktion „Datensatz erstellen“](/de/basic/automation/actions/records/create-record) – wird häufig mit E-Mail-Auslösern kombiniert, um E-Mails als Datensätze zu protokollieren
+- [E-Mail senden](/de/basic/automation/actions/communication/send-email-overview)

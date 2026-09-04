@@ -1,0 +1,243 @@
+---
+title: "Создание Записей"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+### Путь
+
+POST /api/table/\{tableId\}/record
+
+### Запрос
+
+#### Параметры пути
+
+* tableId (string): Уникальный идентификатор Таблицы.
+
+#### Тело запроса
+
+* **records (обязательный)**
+  * Описание: Массив создаваемых Записей
+  * Тип: Array
+  * Пример:
+    ```json
+    [
+      {
+        "fields": {
+          "Name": "John Doe",
+          "Age": 30,
+          "Email": "john@example.com"
+        }
+      },
+      {
+        "fields": {
+          "Name": "Jane Smith",
+          "Age": 28,
+          "Email": "jane@example.com"
+        }
+      }
+    ]
+    ```
+  * Примечание: Каждая Запись — это элемент, содержащий объект `fields`. Объект `fields` содержит имена Полей и соответствующие им значения. Каждый тип Поля имеет свою структуру значений; подробности см. в разделе [Типы значений Полей Записи](/ru/api-doc/record/interface).
+  * Значения по умолчанию: Для Полей, не указанных в `fields`, используется значение по умолчанию Таблицы, если оно настроено. Если обязательное Поле не имеет значения по умолчанию или вы явно передаёте `null` обязательному Полю, запрос завершится ошибкой.
+* **fieldKeyType (необязательный)**
+  * Описание: Определяет тип ключа Поля
+  * Тип: String
+  * Допустимые значения:
+    * "name": использовать имя Поля как ключ
+    * "id": использовать ID Поля как ключ
+    * "dbFieldName": использовать dbFieldName Поля как ключ
+  * Пример: `"name"` или `"id"` или `"dbFieldName"`
+  * Примечание: Если параметр не указан, в качестве ключа по умолчанию используется имя Поля.
+  * Использование:
+    * Если установлено значение "name":
+      ```json
+      {
+        "fields": {
+          "Name": "John Doe",
+          "Age": 30
+        }
+      }
+      ```
+    * Если установлено значение "id":
+      ```json
+      {
+        "fields": {
+          "fldABCDEFGHIJKLMN": "John Doe",
+          "fldOPQRSTUVWXYZ12": 30
+        }
+      }
+      ```
+* **typecast (необязательный)**
+  * Описание: Следует ли автоматически преобразовывать типы значений Полей. По умолчанию применяется строгая проверка, требующая соответствия входных значений текущему типу данных Поля. Если параметр включён, система попытается выполнить автоматическое преобразование.
+  * Тип: Boolean
+  * Допустимые значения: true или false
+  * Пример: `true`
+  * Примечание: Если установлено значение true, система попытается преобразовать входные значения в корректный тип значения Поля.
+  * Примеры использования:
+    * Поле ссылки: для связывания можно напрямую использовать текст первичного ключа
+      ```json
+      {
+        "User table": "John Smith"
+      }
+      ```
+    * Поле даты: можно использовать строки с датой в нестандартном формате
+      ```json
+      {
+        "Date": "2023-05-15"
+      }
+      ```
+    * Поле пользователя: можно напрямую использовать имя пользователя
+      ```json
+      {
+        "Assigned To": "John Doe"
+      }
+      ```
+* **order (необязательный)**
+  * Описание: Определяет положение новых Записей в конкретном Представлении
+  * Тип: Object
+  * Свойства:
+    * viewId
+      * Описание: ID Представления [(как получить)](/ru/api-doc/get-id#viewid)
+      * Тип: String
+      * Пример: `"viwABCDEFGHIJKLMN"`
+    * anchorId
+      * Описание: ID опорной Записи [(как получить)](/ru/api-doc/get-id#recordid)
+      * Тип: String
+      * Пример: `"rec123456789ABCDE"`
+    * position
+      * Описание: Положение относительно опорной Записи
+      * Тип: String
+      * Допустимые значения:
+        * "before": перед опорной Записью
+        * "after": после опорной Записи
+      * Пример: `"after"`
+  * Полный пример:
+    ```json
+    {
+      "viewId": "viwABCDEFGHIJKLMN",
+      "anchorId": "rec123456789ABCDE",
+      "position": "after"
+    }
+    ```
+  * Примечание: Использование order позволяет точно управлять положением новых Записей в конкретном Представлении.
+
+### Ответ
+
+#### Успешный ответ
+
+* Код состояния: 201 Created
+* Тело ответа: Возвращает данные созданной Записи.
+
+**Пример тела ответа**
+
+```json
+{
+  "records": [
+    {
+      "id": "record789",
+      "fields": {
+        "single line text": "text value 1"
+      }
+    },
+    {
+      "id": "record567",
+      "fields": {
+        "single line text": "text value 2"
+      }
+    }
+  ]
+}
+```
+
+### Ответы с ошибками
+
+* Код состояния: 400 Bad Request: ошибка формата тела запроса или отсутствуют обязательные Поля.
+* Код состояния: 404 Not Found: указанный tableId не существует.
+
+### Пример кода
+
+<CodeGroup>
+  ```bash CURL
+  curl -X POST 'https://app.teable.ai/api/table/__tableId__/record' \
+    -H 'Authorization: Bearer __token__' \
+    -H 'Content-Type: application/json' \
+    -d '{
+      "records": [
+        {
+          "fields": {
+            "Name": "John Doe",
+            "Age": 30
+          }
+        }
+      ]
+    }'
+  ```
+
+  ```js JS SDK
+  import { configApi, createRecords } from '@teable/openapi';
+
+  configApi({
+    endpoint: 'https://app.teable.ai',
+    token,
+  });
+
+  const response = await createRecords('__tableId__', {
+    records: [
+      {
+        fields: {
+          Name: 'John Doe',
+          Age: 30
+        }
+      }
+    ]
+  });
+
+  console.log(response.data);
+  ```
+
+  ```ts TypeScript
+  const response = await fetch('https://app.teable.ai/api/table/__tableId__/record', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer __token__',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      records: [
+        {
+          fields: {
+            Name: 'John Doe',
+            Age: 30
+          }
+        }
+      ]
+    })
+  });
+
+  console.log(await response.json());
+  ```
+
+  ```python Python
+  import requests
+
+  response = requests.post(
+      'https://app.teable.ai/api/table/__tableId__/record',
+      headers={
+          'Authorization': 'Bearer __token__',
+          'Content-Type': 'application/json'
+      },
+      json={
+          'records': [
+              {
+                  'fields': {
+                      'Name': 'John Doe',
+                      'Age': 30
+                  }
+              }
+          ]
+      }
+  )
+
+  print(response.json())
+  ```
+</CodeGroup>

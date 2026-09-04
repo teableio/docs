@@ -1,0 +1,63 @@
+---
+title: "Verknüpfung"
+description: "Erstellen Sie Beziehungen zwischen Tabellen und wählen Sie im aktuellen Datensatz Datensätze aus einer anderen Tabelle aus."
+---
+
+{/* mintlify-resync: 2026-05-26 */}
+Das Feld „Verknüpfung“ verbindet zwei Tabellen. Mit einem Verknüpfungsfeld können Sie in der aktuellen Tabelle Datensätze aus einer anderen Tabelle auswählen und die verknüpften Datensätze bei Bedarf öffnen. Verknüpfungsfelder sind außerdem erforderlich, bevor Sie **Suchfelder** und **Rollup-Felder** verwenden können.
+
+## Anwendungsfälle
+
+| Szenario | Geeignet für |
+| --- | --- |
+| Kunden und Bestellungen | Kunden in der Bestelltabelle verknüpfen und die zugehörigen Bestellungen in der Kundentabelle anzeigen |
+| Projekte und Aufgaben | Eine Aufgabe mit ihrem Projekt verknüpfen und alle Aufgaben eines Projekts anzeigen |
+| Studierende und Kurse | Kursanmeldungen, Projektmitglieder oder andere Viele-zu-viele-Beziehungen nachverfolgen |
+| Positionen und übergeordnete Datensätze | Bestellpositionen mit einer Bestellung verknüpfen und anschließend Preise nachschlagen oder Summen aggregieren |
+
+## Erstellen und konfigurieren
+
+<Steps>
+  <Step title="Feldtyp auswählen">
+    Klicken Sie in der aktuellen Tabelle auf „Feld hinzufügen“ und wählen Sie **Verknüpfung** aus.
+  </Step>
+  <Step title="Zieltabelle auswählen">
+    Wählen Sie im Konfigurationsdialog die zu verknüpfende Tabelle aus, beispielsweise um die Bestelltabelle mit der Kundentabelle zu verknüpfen.
+  </Step>
+  <Step title="Verknüpfungsmodus auswählen">
+    Wählen Sie je nach Bedarf eine einseitige oder beidseitige Verknüpfung aus.
+  </Step>
+  <Step title="Beziehungsregeln konfigurieren">
+    Verwenden Sie **Mehrfachauswahl zulassen** und **Doppelte Werte zulassen**, um Eins-zu-eins-, Eins-zu-viele-, Viele-zu-eins- oder Viele-zu-viele-Beziehungen zu konfigurieren.
+  </Step>
+</Steps>
+
+## Einseitige und beidseitige Verknüpfungen
+
+| Modus | Beschreibung | Am besten geeignet für |
+| --- | --- | --- |
+| Beidseitige Verknüpfung | Standardmäßig aktiviert. Wenn Sie ein Verknüpfungsfeld erstellen, erstellt Teable in der Zieltabelle ein entsprechendes Verknüpfungsfeld und beide Seiten bleiben synchron | Beziehungen, die in beiden Tabellen angezeigt werden müssen, beispielsweise Bestellungen und Kunden oder Projekte und Aufgaben |
+| Einseitige Verknüpfung | Wenn die beidseitige Option deaktiviert ist, zeigt nur die aktuelle Tabelle die verknüpften Datensätze an. In der Zieltabelle wird kein Gegenfeld erstellt | Fälle, in denen Sie nur auf eine andere Tabelle verweisen müssen und die Struktur der Zieltabelle nicht ändern möchten |
+
+## Beziehungstypen
+
+Verwenden Sie **Mehrfachauswahl zulassen** und **Doppelte Werte zulassen** gemeinsam, um vier gängige Beziehungstypen zu definieren:
+
+| Beziehung | Geschäftsbeispiel | Konfiguration |
+| :--- | :--- | :--- |
+| **Eins-zu-eins (1:1)** | **Mitarbeiter – Profil**<br />Ein Mitarbeiter hat ein Profil und ein Profil gehört zu einem Mitarbeiter | ☐ Mehrfachauswahl zulassen<br />☐ Doppelte Werte zulassen<br />*(beide Optionen deaktiviert)* |
+| **Eins-zu-viele (1:N)** | **Abteilung – Mitarbeiter**<br />Eine Abteilung hat mehrere Mitarbeiter, jeder Mitarbeiter gehört jedoch nur zu einer Abteilung | ☑ Mehrfachauswahl zulassen<br />☐ Doppelte Werte zulassen<br />*(nur Mehrfachauswahl zulassen)* |
+| **Viele-zu-eins (N:1)** | **Aufgabe – Projekt**<br />Mehrere Aufgaben gehören zu einem Projekt, jede Aufgabe gehört jedoch nur zu einem Projekt | ☐ Mehrfachauswahl zulassen<br />☑ Doppelte Werte zulassen<br />*(nur doppelte Werte zulassen)* |
+| **Viele-zu-viele (N:N)** | **Studierende – Kurs**<br />Eine Person kann mehrere Kurse belegen und ein Kurs kann von mehreren Personen belegt werden | ☑ Mehrfachauswahl zulassen<br />☑ Doppelte Werte zulassen<br />*(beide Optionen aktiviert)* |
+
+## Häufige Verwendungszwecke
+
+- **CRM-Kundenverwaltung**: Erstellen Sie in einer Tabelle `Unternehmen` ein Verknüpfungsfeld zu einer Tabelle `Kontakte`, damit ein Unternehmen mit mehreren Kontakten verknüpft werden kann.
+- **Projektaufgaben zuordnen**: Erstellen Sie in einer Tabelle `Aufgaben` ein Verknüpfungsfeld zu einer Tabelle `Projekte`, damit jede Aufgabe zu einem Projekt gehört und in der Projekttabelle die zugehörigen Aufgaben angezeigt werden können.
+- **Bestellpositionen**: Verknüpfen Sie eine Tabelle `Bestellungen` mit einer Tabelle `Produkte`. Verwenden Sie anschließend Suchfelder, um Preise anzuzeigen, und Rollup-Felder, um Bestellsummen zu berechnen.
+
+## Hinweise
+
+- **Beschränkungen bei Eins-zu-viele-Beziehungen**: Wenn bei einer strikten Eins-zu-viele-Beziehung die Mehrfachauswahl auf Seite von Tabelle B deaktiviert ist, kann ein Datensatz aus Tabelle B, der mit einem Datensatz aus Tabelle A verknüpft ist, nicht von anderen Datensätzen aus Tabelle A ausgewählt werden. Dies eignet sich für Daten, die nicht wiederverwendet werden dürfen, beispielsweise ID-Nummern oder Mitarbeiterprofile.
+
+<Info>Verknüpfungsfelder können nur Tabellen innerhalb desselben Space verbinden. Auch Such-, Rollup-, bedingte Such- und bedingte Rollup-Felder benötigen Quelldaten aus demselben Space.</Info>

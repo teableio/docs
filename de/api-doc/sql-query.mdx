@@ -1,0 +1,146 @@
+---
+title: "SQL-Abfrage (veraltet)"
+noindex: true
+---
+
+<Tip>
+**Nur Self-hosted**: Für alle Versionen mit unbegrenzten Verbindungen verfügbar.
+</Tip>
+
+Teable ermöglicht es Ihnen, über externe Tools für schreibgeschützte Abfragen eine Verbindung zu seiner zugrunde liegenden PostgreSQL-Datenbank herzustellen. Dies ermöglicht die Integration mit BI-Tools (PowerBI, Metabase, Superset), Datenbank-Clients (DataGrip, Navicat, TablePlus), Low-Code-Plattformen (Appsmith, Budibase) und Anwendungscode.
+
+### Erstellen einer Datenbankverbindung
+
+1. **Eine Tabelle öffnen**: Öffnen Sie zunächst eine beliebige Tabelle in der Base, mit der Sie sich verbinden möchten.
+2. **Zur Designseite wechseln**: Klicken Sie auf das ⚙️-Symbol oben rechts, um zur Seite „Base-Design“ zu gelangen.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-open-design-page-en.png"
+  alt="Seite „Base-Design“ öffnen"
+  className="docs-screenshot"
+/>
+
+3. **Bereich für Datenbankverbindungen finden**: Suchen Sie auf der Designseite den Bereich „Datenbankverbindung“.
+4. **Verbindung erstellen**: Klicken Sie auf „Erstellen“. Das System generiert automatisch eine schreibgeschützte PostgreSQL-Verbindung mit Benutzername, Passwort und Hostadresse.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-database-connection-panel-en.png"
+  alt="Bereich „Datenbankverbindung“"
+  className="docs-screenshot"
+/>
+
+### Mit der Datenbank verbinden
+
+Verwenden Sie die Zugangsdaten, um sich mit Ihrem bevorzugten Tool zu verbinden. Hier ist ein Beispiel:
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-connection-example.png"
+  alt="Beispiel für eine externe Datenbankverbindung"
+  className="docs-screenshot"
+/>
+
+### Daten abfragen
+
+Sobald Sie verbunden sind, können Sie Daten mit SQL abfragen:
+
+```sql
+SELECT * FROM "bseamGnQT65TVSCzIaC"."clients" LIMIT 100
+```
+
+**Hinweis:** Verwenden Sie in PostgreSQL doppelte Anführungszeichen `"` um Schema- und Tabellennamen, damit die Groß- und Kleinschreibung erhalten bleibt.
+
+Zum Schreiben dieser Abfrage benötigen Sie drei Informationen:
+- **Schemaname (BaseId)**: Die mit `bse` beginnende Kennung der Base
+- **Tabellenname**: Der physische Tabellenname in PostgreSQL
+- **Feldnamen**: Die tatsächlichen Spaltennamen in der Datenbank
+
+In den folgenden Abschnitten wird erläutert, wie Sie jede dieser Informationen finden.
+
+### Die BaseId (Schemaname) finden
+
+Jede Base in Teable entspricht einem **Schema** in PostgreSQL. Die BaseId ist der in SQL-Abfragen verwendete Schemaname.
+
+**Methode 1:** Sehen Sie sich die URL an – die mit `bse` beginnende Zeichenfolge ist die BaseId.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-base-id-url.png"
+  alt="Base-ID in der URL"
+  className="docs-screenshot"
+/>
+
+**Methode 2:** In der Oberfläche „Base-Design“ ist der angezeigte Schemaname die BaseId.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-design-page-schema.png"
+  alt="Schemaname auf der Seite „Base-Design“"
+  className="docs-screenshot"
+/>
+
+### Tabellennamen finden
+
+Tabellennamen in der Teable-Oberfläche werden nicht automatisch mit physischen Datenbanktabellennamen synchronisiert. Prüfen Sie in der Oberfläche „Base-Design“ den tatsächlichen Datenbanktabellennamen.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-table-info.png"
+  alt="Physischer Tabellenname auf der Designseite"
+  className="docs-screenshot"
+/>
+
+**Tipp:** Sie können den physischen Tabellennamen bei Bedarf in der Designoberfläche ändern.
+
+### Feldnamen finden
+
+Feldnamen (Spaltennamen) in der Datenbank können von denen in der Teable-Oberfläche abweichen. Prüfen Sie in der Designoberfläche den Wert `dbFieldName`.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-db-field-name.png"
+  alt="DB-Feldname auf der Designseite"
+  className="docs-screenshot"
+/>
+
+**Tipp:** Änderungen von Feldnamen in Teable werden nicht automatisch synchronisiert. Ändern Sie `dbFieldName` ausdrücklich, um den tatsächlichen Spaltennamen in PostgreSQL zu ändern.
+
+### Systemfelder
+
+Teable erstellt automatisch diese Systemfelder (sie können nicht umbenannt werden):
+
+| Feld | Beschreibung |
+|-------|-------------|
+| `__id` | Eindeutige ID |
+| `__version` | Versionsnummer |
+| `__auto_number` | Automatisch inkrementierte Nummer, Primärschlüssel |
+| `__created_time` | Erstellungszeit |
+| `__last_modified_time` | Zeitpunkt der letzten Änderung |
+| `__created_by` | ID des Erstellers |
+| `__last_modified_by` | ID des letzten Bearbeiters |
+| `__row*` | Ansichtsindexfelder zur Beibehaltung der Datensatzreihenfolge |
+| `__fk*` | Fremdschlüssel für Beziehungsfelder |
+
+### Verknüpfungstabellen
+
+Tabellen, die mit `junction_` beginnen, sind vom System generierte Tabellen zur Verarbeitung von ManyToMany- und unidirektionalen Beziehungen.
+
+### Hinweise zu Berechtigungen
+
+Die Datenbankverbindung ist auf die aktuelle Base beschränkt. PostgreSQL-Schemas bieten eine Berechtigungsisolation und stellen sicher, dass Sie nur auf Tabellen innerhalb Ihrer Base zugreifen können.
+
+Beim Verbinden sehen Sie möglicherweise andere BaseIds (Schemanamen), können jedoch nicht auf deren Inhalte zugreifen.
+
+<img
+  src="/images/api/sql-query/2026-05-29-sql-query-tableplus-base-id.png"
+  alt="Base-ID in TablePlus"
+  className="docs-screenshot"
+/>
+
+### Verbindungslimits
+
+Das Standardlimit beträgt 20 gleichzeitige Verbindungen.
+
+### Daten schreiben
+
+Teable erlaubt keine direkten Datenbank-Schreibvorgänge über externe Verbindungen. Verwenden Sie stattdessen zum Ändern von Daten die [Teable API](/de/api-doc/token).
+
+### Verbindung schließen
+
+Klicken Sie im Bereich „Datenbankverbindung“ auf „Löschen“, um die Verbindung zu schließen. Das alte Passwort wird gelöscht, und beim Erstellen einer neuen Verbindung werden neue Zugangsdaten generiert.
+

@@ -1,0 +1,51 @@
+---
+title: "Recherche"
+description: "Référencez les valeurs de Champs d’une Table liée au moyen d’une relation de liaison existante et conservez les données synchronisées."
+---
+
+Les Champs Recherche reposent sur les Champs **Lien**. Un Champ Recherche référence un Champ sélectionné dans une Table liée afin que la Table actuelle puisse afficher les données d’une autre Table sans qu’il soit nécessaire de les saisir de nouveau.
+
+## Cas d’utilisation
+
+| Scénario | Utilité |
+| --- | --- |
+| Lignes de commande | Après avoir lié un produit, afficher son prix, sa référence SKU ou sa catégorie |
+| Traitement des tickets | Après avoir lié un client, afficher son numéro de téléphone, son niveau ou son responsable |
+| Gestion de livres | Dans une Table de livres, afficher la date de naissance, la nationalité ou la biographie de l’auteur |
+| Gestion de projet | À partir des tâches liées, afficher le responsable, l’échéance ou le statut |
+
+## Création et configuration
+
+<Steps>
+  <Step title="Créer une relation de liaison">
+    Avant d’utiliser un Champ Recherche, créez un Champ **Lien** entre les deux Tables.
+  </Step>
+  <Step title="Choisir le type de Champ">
+    Dans la Vue de la Table, cliquez sur `+` pour ajouter un Champ et choisissez **Recherche**.
+  </Step>
+  <Step title="Choisir le Champ Lien">
+    Choisissez un Champ Lien existant dans la Table actuelle comme chemin de recherche.
+  </Step>
+  <Step title="Choisir le Champ cible">
+    Choisissez le Champ à lire dans la Table source, comme la date de naissance d’un auteur, le numéro de téléphone d’un client ou le prix d’un produit.
+  </Step>
+</Steps>
+
+## Synchronisation automatique
+
+Après la configuration, Teable renseigne le résultat de la recherche en fonction de la relation de liaison existante :
+
+- Si l’Enregistrement lié change, par exemple si vous choisissez un autre auteur, la valeur recherchée est mise à jour.
+- Si les données sources changent, par exemple si la date de naissance d’un auteur est modifiée, la valeur recherchée est actualisée.
+
+## Utilisations courantes
+
+- **Gestion de livres** : dans une Table `Livres`, utilisez un Champ Lien `Auteur` pour rechercher la `Date de naissance` dans une Table contenant les informations sur les auteurs.
+- **Calcul de commande** : dans une Table `Lignes de commande`, recherchez le prix du produit, puis utilisez une formule pour calculer le total.
+- **Synchronisation des informations client** : dans une Table de tickets, liez un client et recherchez son numéro de téléphone, son adresse e-mail ou son niveau.
+
+## Remarques
+
+- **Champ en lecture seule** : les Champs Recherche sont **en lecture seule**. Vous ne pouvez pas modifier la valeur recherchée depuis la Table actuelle. Pour la changer, modifiez le Champ d’origine dans la Table source.
+- **Valeur unique et valeurs multiples** : si la relation de liaison est un-à-un, le résultat de la recherche est une valeur unique. Si la relation est un-à-plusieurs, le résultat devient un tableau de plusieurs valeurs affichées avec des virgules comme séparateurs.
+- **Dépendances des données** : les Champs Recherche dépendent du Champ Lien et du Champ source. Si le Champ Lien ou le Champ cible de la Table source est supprimé, le Champ Recherche cesse de fonctionner.

@@ -1,0 +1,95 @@
+---
+title: "Rollup condizionale"
+description: "Calcola statistiche tra Tabelle usando condizioni di filtro e restituisce un unico valore aggregato."
+---
+
+Il Rollup condizionale filtra i Record corrispondenti di una Tabella di destinazione senza dover prima creare una relazione di collegamento, quindi calcola statistiche su un Campo selezionato. È utile per calcolare conteggi, somme, medie e altri risultati basati sui valori dei Campi nel Record corrente.
+
+## Casi d'uso
+
+| Scenario | Ideale per |
+| --- | --- |
+| Statistiche sulle attività dei dipendenti | Contare le attività in corso e completate per un assegnatario |
+| Statistiche sulle vendite per periodo | Calcolare l'importo delle vendite, il numero di ordini o il valore medio degli ordini per intervallo di date |
+| Controlli dei dati duplicati | Contare nomi, numeri di telefono o ID duplicati |
+| Report regionali | Aggregare i dati aziendali per area geografica, negozio o canale |
+
+## Procedura
+
+<Steps>
+  <Step title="Crea un Campo Rollup condizionale">
+    Fai clic sull'icona `+` sul lato destro del nome di un Campo, scegli **Rollup condizionale** e inserisci un titolo per il Campo, ad esempio "Importo totale delle vendite".
+  </Step>
+  <Step title="Scegli la Tabella di destinazione">
+    Nel menu a discesa della Tabella di destinazione, scegli la Tabella da interrogare.
+  </Step>
+  <Step title="Configura il Campo di aggregazione">
+    Scegli il Campo da calcolare e conferma il tipo di Campo.
+  </Step>
+  <Step title="Imposta le condizioni di filtro">
+    Aggiungi le condizioni di filtro e scegli Campo, tipo di condizione e valore di confronto. Il valore di confronto può essere un valore statico oppure un Campo della Tabella corrente.
+  </Step>
+  <Step title="Scegli una funzione di aggregazione">
+    Scegli un metodo di calcolo in base al tipo di dati, ad esempio valore originale, valori univoci, conteggio univoco, somma, conteggio, media, massimo o minimo.
+  </Step>
+</Steps>
+
+## Esercitazioni basate su scenari
+
+### Statistiche sul volume delle attività del team
+
+**Tabelle**
+
+- Tabella delle attività
+- Tabella delle statistiche
+
+Un amministratore del team deve contare per ogni dipendente le attività con stati diversi, ad esempio quelle in corso e quelle completate, per comprendere la distribuzione del carico di lavoro e l'avanzamento.
+
+**Attività in corso**
+
+1. Nella Tabella delle informazioni sui dipendenti, crea un Campo Rollup condizionale denominato "Attività in corso"
+2. Tabella di destinazione: Tabella delle assegnazioni delle attività
+3. Campo di aggregazione: ID attività
+4. Condizioni di filtro:
+   - Campo: Assegnatario -> Condizione: Uguale a -> Valore: Campo Dipendente della Tabella corrente
+   - Campo: Stato attività -> Condizione: Uguale a -> Valore: "In corso"
+5. Funzione di aggregazione: Conta tutto
+
+**Attività completate**
+
+1. Crea un altro Campo Rollup condizionale denominato "Attività completate"
+2. Tabella di destinazione: Tabella delle assegnazioni delle attività
+3. Campo di aggregazione: ID attività
+4. Condizioni di filtro:
+   - Campo: Assegnatario -> Condizione: Uguale a -> Valore: Campo Dipendente della Tabella corrente
+   - Campo: Stato attività -> Condizione: Uguale a -> Valore: "Completata"
+5. Funzione di aggregazione: Conta tutto
+
+### Trovare valori duplicati
+
+**Tabelle**
+
+- Tabella dei clienti, con Campi quali nome del cliente e numero di telefono
+
+Nella Tabella dei clienti, individua i nomi duplicati prima di unire i profili dei clienti.
+
+**Passaggi**
+
+1. Nella Tabella dei clienti, crea un Campo Rollup condizionale denominato "Conteggio duplicati nome cliente"
+2. Tabella di destinazione: Tabella dei clienti (questa Tabella)
+3. Campo di aggregazione: Nome cliente
+4. Condizione di filtro:
+   - Campo: Nome cliente -> Condizione: Uguale a -> Valore: Campo Nome cliente della Tabella corrente
+5. Funzione di aggregazione: Conta tutto
+6. Crea un Campo Formula denominato "Indicatore duplicato"
+7. Imposta la formula su `IF(Customer name duplicate count > 1, "Duplicate", BLANK())`
+
+La Tabella dei clienti mostra quante volte compare ciascun nome e contrassegna i Record duplicati con "Duplicato", consentendoti di filtrarli e gestirli in seguito.
+
+## Domande frequenti
+
+<AccordionGroup>
+  <Accordion title="Qual è la differenza tra Rollup condizionale e Lookup condizionale?">
+    Il Rollup condizionale restituisce un singolo valore calcolato ed è adatto a totali, conteggi e medie. Il Lookup condizionale restituisce un elenco di valori non elaborati corrispondenti ed è adatto alla visualizzazione dei dati di dettaglio.
+  </Accordion>
+</AccordionGroup>

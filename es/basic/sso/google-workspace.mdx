@@ -1,0 +1,119 @@
+---
+title: "SSO con Google Workspace"
+description: "Configura Google Workspace como proveedor de autenticación SSO para Teable"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Disponible en el plan Business y superiores</Tip>
+
+## Paso 1: crear un proveedor de autenticación en Teable
+
+1. Ve a los ajustes de SSO de Teable
+2. Crea un proveedor de autenticación, asígnale el nombre **Google Workspace** y selecciona **OpenID Connect**
+
+## Paso 2: acceder a Google Cloud Console
+
+1. Ve a [Google Cloud Console](https://console.cloud.google.com)
+2. Inicia sesión con tu cuenta de administrador de Google Workspace
+3. Selecciona o crea un proyecto para la integración SSO de Teable
+
+## Paso 3: activar los servicios de identidad de Google
+
+1. En Google Cloud Console, ve a **API y servicios** → **Biblioteca**
+2. Busca **Google Identity** o **Google+ API**
+3. Haz clic en **Activar** si aún no está activada
+
+## Paso 4: configurar la pantalla de consentimiento de OAuth
+
+1. Ve a **API y servicios** → **Pantalla de consentimiento de OAuth**
+2. Selecciona **Interno** (solo para usuarios de Google Workspace) o **Externo**
+3. Completa la información obligatoria:
+   - **Nombre de la aplicación**: SSO de Teable
+   - **Correo electrónico de asistencia al usuario**: tu dirección de correo electrónico
+   - **Logotipo de la aplicación**: (opcional) carga el logotipo de Teable
+   - **Dominios autorizados**: añade tu dominio de Teable
+   - **Información de contacto del desarrollador**: tu dirección de correo electrónico
+4. Haz clic en **Guardar y continuar**
+
+### Configurar los ámbitos
+
+1. Haz clic en **Añadir o eliminar ámbitos**
+2. Añade los siguientes ámbitos:
+   - `openid`
+   - `email`
+   - `profile`
+3. Haz clic en **Actualizar** y después en **Guardar y continuar**
+
+### Añadir usuarios de prueba (si utilizas Externo)
+
+Si has seleccionado «Externo», añade usuarios de prueba durante el desarrollo:
+1. Haz clic en **Añadir usuarios**
+2. Introduce las direcciones de correo electrónico de los usuarios de prueba
+3. Haz clic en **Guardar y continuar**
+
+## Paso 5: crear un ID de cliente de OAuth
+
+1. Ve a **API y servicios** → **Credenciales**
+2. Haz clic en **Crear credenciales** → **ID de cliente de OAuth**
+3. Selecciona **Aplicación web** como tipo de aplicación
+4. Configura el cliente:
+   - **Nombre**: Cliente SSO de Teable
+   - **Orígenes de JavaScript autorizados**: (opcional) `https://app.teable.ai`
+   - **URI de redirección autorizados**: pega la **URL de devolución de llamada** de Teable
+5. Haz clic en **Crear**
+
+## Paso 6: guardar las credenciales del cliente
+
+Después de crear el cliente de OAuth, aparecerá un cuadro de diálogo con tus credenciales:
+
+1. Copia el **ID de cliente**
+2. Copia el **Secreto de cliente**
+3. Haz clic en **Aceptar**
+4. Pega ambos valores en la configuración de SSO de Teable
+
+<Note>Siempre puedes recuperar estas credenciales más adelante desde la página Credenciales.</Note>
+
+## Paso 7: configurar los endpoints de OAuth
+
+En Teable, completa los siguientes endpoints de OAuth:
+
+- **URL de autorización**: `https://accounts.google.com/o/oauth2/v2/auth`
+- **URL del token**: `https://oauth2.googleapis.com/token`
+- **URL de información del usuario**: `https://openidconnect.googleapis.com/v1/userinfo`
+- **Emisor**: `https://accounts.google.com`
+
+## Paso 8: probar el inicio de sesión mediante SSO
+
+Dispones de dos opciones para activar el inicio de sesión mediante SSO:
+
+**Opción 1: URL de autenticación directa**
+- Utiliza la URL de autorización como URL de inicio de sesión mediante SSO
+
+**Opción 2: verificación del dominio**
+1. Configura la verificación del dominio en Teable
+2. Verifica tu dominio de Google Workspace
+3. Visita https://app.teable.ai
+4. Haz clic en el botón de inicio de sesión mediante SSO
+5. Introduce tu dirección de correo electrónico de Google Workspace para iniciar sesión
+
+## Configuración adicional (opcional)
+
+### Restringir el acceso por dominio
+
+Si quieres restringir el acceso a determinados dominios de Google Workspace:
+
+1. Configura restricciones de dominio en el código de tu aplicación o en los ajustes de Teable
+2. Permite únicamente direcciones de correo electrónico de tus dominios verificados
+
+### Configurar la duración de las sesiones
+
+1. En la consola de administración de Google, ve a **Seguridad** → **Autenticación**
+2. Configura los ajustes de **Control de sesiones de Google**
+3. Establece la duración de las sesiones y las políticas de autenticación repetida
+
+### Activar la verificación en dos pasos
+
+1. En la consola de administración de Google, ve a **Seguridad** → **Autenticación** → **Verificación en dos pasos**
+2. Activa la verificación en dos pasos para tu organización
+3. Configura las políticas de aplicación para los usuarios
+

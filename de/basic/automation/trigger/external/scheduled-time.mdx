@@ -1,0 +1,98 @@
+---
+title: "Zum geplanten Zeitpunkt"
+description: "Führen Sie einen Workflow nach einem wiederkehrenden oder einmaligen Zeitplan aus"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Bitte beachten Sie: Die gesamte Einrichtung von Auslösern kann im KI-Chat erfolgen. Teilen Sie der KI mit, was der Workflow tun soll, und sie übernimmt den Rest.</Tip>
+
+Dieser Auslöser wird nach einem von Ihnen festgelegten Zeitplan ausgeführt – von einigen Minuten bis hin zu einmal im Monat oder als einzelne einmalige Ausführung.
+
+## Mit KI erstellen
+
+Öffnen Sie den KI-Chat in der rechten Seitenleiste Ihrer Tabelle und beschreiben Sie, was Sie möchten.
+
+Die KI übernimmt alles: Sie wählt den richtigen Auslöser aus, ordnet die relevanten Felder zu und richtet automatisch alle Aktionen ein.
+
+Beschreiben Sie Ihr Ziel einmal, und der Workflow ist bereit – eine manuelle Einrichtung ist nicht erforderlich.
+
+**Beispiel:** *„Sende mir jeden Montag um 9 Uhr per E-Mail eine Liste überfälliger Aufgaben.“*
+
+## Konfiguration
+
+| Einstellung | Erforderlich | Beschreibung |
+|---|---|---|
+| Startzeit | Ja | Wann der Zeitplan beginnt |
+| Endzeit | Nein | Wann der Zeitplan endet (leer lassen, um ihn unbegrenzt auszuführen) |
+| Zeitzone | Ja | Standardmäßig Ihre aktuelle Zeitzone. Alle Zeiten werden in dieser Zeitzone interpretiert |
+| Häufigkeit | Ja | Wie häufig der Auslöser ausgeführt wird – siehe Optionen unten |
+
+## Häufigkeitsoptionen
+
+| Häufigkeit | Intervall | Zusätzliche Einstellungen |
+|---|---|---|
+| Minuten | Alle 10–60 Min. | – |
+| Stunden | Alle 1–24 Std. | – |
+| Tage | Alle 1–31 Tage | Auslösezeit (Stunde + Minute) |
+| Wochen | Alle 1–52 Wochen | Wochentage (Mo.–So.) + Auslösezeit |
+| Monate | Alle 1–12 Monate | Monatstage + Auslösezeit |
+| Einmalig | – | Wird einmal zum angegebenen Zeitpunkt ausgelöst und danach automatisch deaktiviert |
+
+Verwenden Sie **-1** als Monatstag, um unabhängig davon, ob der Monat 28, 30 oder 31 Tage hat, den letzten Tag des Monats festzulegen.
+
+## Einrichtung
+
+1. Öffnen Sie Ihre Automatisierung und fügen Sie einen neuen Auslöser hinzu.
+2. Wählen Sie **Zum geplanten Zeitpunkt** aus.
+3. Legen Sie die **Zeitzone** fest. Dies ist besonders wichtig, wenn Ihr Team in mehreren Zeitzonen arbeitet – der Zeitplan wird in der hier ausgewählten Zeitzone ausgeführt.
+4. Wählen Sie eine **Häufigkeit** aus. So legen Sie beispielsweise eine Ausführung jeden Montag um 9:00 Uhr fest:
+   - Legen Sie die Häufigkeit auf **Wochen** fest.
+   - Legen Sie das Intervall auf **1** fest (alle 1 Woche).
+   - Aktivieren Sie im Wochentagswähler **Montag**.
+   - Legen Sie die Auslösezeit auf **09:00** fest.
+5. Legen Sie eine **Startzeit** fest (ab wann der Zeitplan aktiv ist).
+6. (Optional) Legen Sie eine **Endzeit** fest, wenn der Zeitplan ablaufen soll.
+7. Speichern und aktivieren Sie die Automatisierung.
+8. Da keine Datensatzdaten vorhanden sind, ist Ihre erste Aktion in der Regel ein Schritt **Datensätze abrufen**, der die benötigten Daten lädt.
+
+## Konkretes Beispiel: wöchentlicher Bericht am Montagmorgen
+
+Ziel: Jeden Montag um 9:00 Uhr alle in dieser Woche fälligen Aufgaben abrufen und eine Zusammenfassung per E-Mail senden.
+
+1. **Auslöser:** Zum geplanten Zeitpunkt – Wochen, alle 1 Woche, Montag, 09:00 Uhr, Ihre Zeitzone.
+2. **Aktion 1:** Datensätze abrufen – aus der Tabelle Aufgaben, Filter: Fälligkeitsdatum liegt in dieser Woche.
+3. **Aktion 2:** E-Mail senden – an Ihr Team, mit den abgerufenen Aufgaben im Text.
+
+## Einmalige Zeitpläne
+
+Wenn Sie die Häufigkeit **Einmalig** auswählen, wird die Automatisierung einmal zum angegebenen Datum und Zeitpunkt ausgeführt und danach automatisch deaktiviert. Dies ist für folgende Zwecke hilfreich:
+
+- Eine Erinnerung, an einem bestimmten Datum nachzufassen.
+- Eine verzögerte Aktion, die einmal ausgeführt werden muss (z. B. das Senden einer Einführungsankündigung an einem zukünftigen Datum).
+- Eine zeitlich begrenzte Kampagne, die nur einmal ausgelöst wird.
+
+Nachdem ein einmaliger Auslöser ausgeführt wurde, wird die Automatisierung als inaktiv angezeigt. Sie können sie bei Bedarf mit einem neuen Zeitpunkt reaktivieren.
+
+## Anwendungsfälle
+
+- **Täglichen Zusammenfassungsbericht erstellen.** Führen Sie den Workflow täglich um 8:00 Uhr aus, rufen Sie alle gestern aktualisierten Datensätze ab und versenden Sie eine Zusammenfassung per E-Mail.
+- **Jeden Montag wiederkehrende Aufgaben erstellen.** Führen Sie den Workflow wöchentlich aus und erstellen Sie Datensätze für die neue Woche in Ihrer Aufgabentabelle.
+- **Monatliche Rechnungserinnerungen senden.** Führen Sie den Workflow am 1. jedes Monats aus, suchen Sie unbezahlte Rechnungen und versenden Sie Erinnerungs-E-Mails.
+- **Veraltete Datensätze bereinigen.** Führen Sie den Workflow täglich aus, suchen Sie Datensätze, die älter als 90 Tage sind und den Status „Entwurf“ haben, und archivieren oder löschen Sie sie.
+- **Daten nach einem Zeitplan synchronisieren.** Führen Sie den Workflow stündlich aus, um aktualisierte Datensätze an eine externe API zu übertragen.
+
+<Warning>Zeitgesteuerte Auslöser sind mit keinem Datensatz verknüpft. Daher stehen nachfolgenden Schritten keine Datensatzdaten zur Verfügung. Wenn Sie Datensätze verarbeiten müssen, fügen Sie als ersten Schritt die Aktion „Datensätze abrufen“ hinzu und wählen Sie die benötigten Datensätze mithilfe von Filtern aus.</Warning>
+
+## Tipps
+
+- Da zeitgesteuerte Auslöser keinen „aktuellen Datensatz“ haben, können Sie in Aktionen nicht wie bei datensatzbasierten Auslösern auf Auslöserdaten verweisen. Beginnen Sie immer mit einer Aktion **Datensätze abrufen**, wenn Sie Daten benötigen.
+- Achten Sie auf Zeitzonen, insbesondere bei Teams, die regionsübergreifend arbeiten. Die Zeitzoneneinstellung des Auslösers bestimmt, wann er ausgeführt wird – nicht die lokale Zeit des Betrachters.
+- Halten Sie Ihren Workflow bei häufigen Zeitplänen (alle paar Minuten) kompakt, um sich überschneidende Ausführungen zu vermeiden.
+- Wenn Ihre Automatisierung zeitkritisch ist (z. B. vor einer täglichen Besprechung ausgeführt werden muss), planen Sie sie einige Minuten früher ein, um Verarbeitungszeit zu berücksichtigen.
+- Der **-1**-Trick für den Monatstag ist hilfreich für Berichte oder Prozesse zum Monatsende. -1 bedeutet „letzter Tag des Monats“, sodass der Workflow am 31. Januar, am 28. (oder 29.) Februar, am 31. März usw. korrekt ausgeführt wird.
+
+## Verwandte Themen
+
+- [Aktion „Datensätze abrufen“](/de/basic/automation/actions/records/get-records) – üblicherweise der erste Schritt nach einem zeitgesteuerten Auslöser
+- [Aktion „E-Mail senden“](/de/basic/automation/actions/communication/send-email-overview) – wird häufig mit Zeitplänen für regelmäßige Benachrichtigungen kombiniert
+- [Aktion „Schleife (Stapel)“](/de/basic/automation/actions/logic/loop-run) – hilfreich zum Verarbeiten des von „Datensätze abrufen“ zurückgegebenen Arrays

@@ -1,0 +1,62 @@
+---
+title: "Descripción general de la API"
+description: "Todo lo que necesitas para empezar a llamar a la API de Teable: URL base, autenticación, IDs y patrones de solicitud habituales."
+---
+
+Esta sección te ayuda a comenzar a usar la API de Teable de forma rápida y segura.
+
+## URL base
+
+- **Teable Cloud**: `https://app.teable.ai`
+- **Autoalojado**: usa tu propio dominio (por ejemplo, `https://teable.example.com`)
+
+Todas las rutas de la API de esta documentación son relativas a la URL base y comienzan con `/api`.
+
+## Autenticación
+
+Las API de Teable utilizan **tokens Bearer**:
+
+```bash
+curl -H 'Authorization: Bearer __token__' \
+  'https://app.teable.ai/api/table/__tableId__/record'
+```
+
+Puedes usar uno de estos:
+
+- **Token de acceso personal**: ideal para scripts, herramientas internas e integraciones del lado del servidor. Consulta [Token de acceso](/es/api-doc/token).
+- **Token de acceso OAuth**: ideal para integraciones multiusuario en las que los usuarios finales conceden acceso. Consulta [Aplicación OAuth](/es/api-doc/oauth).
+
+## IDs (spaceId / baseId / tableId / viewId / fieldId / recordId)
+
+La mayoría de los endpoints requieren IDs como `tbl...`, `rec...`. Consulta [Obtener IDs](/es/api-doc/get-id).
+
+## Ámbitos y permisos
+
+Tanto los tokens de acceso personales como los tokens OAuth están limitados por permisos. Si recibes un 403, normalmente significa que al token le falta el ámbito requerido.
+
+- Consulta [Códigos de error](/es/api-doc/error-code)
+- Referencia de ámbitos OAuth: [Aplicación OAuth](/es/api-doc/oauth#available-scopes)
+
+## Paginación (take / skip)
+
+Muchos endpoints de lista admiten:
+
+- `take`: número de elementos que se devolverán (algunos endpoints tienen un límite; por ejemplo, 100 Registros por solicitud, por lo que debes paginar con `skip`)
+- `skip`: número de elementos que se omitirán
+
+## Claves de Campo y formato de celda
+
+Algunas API te permiten controlar cómo se representan los Campos de Registro:
+
+- `fieldKeyType`: `name` (default) / `id` / `dbFieldName`
+- `cellFormat`: `json` (default) / `text`
+
+Para conocer las estructuras de valores de los Campos de Registro, consulta [Interfaz de Campos de Registro](/es/api-doc/record/interface).
+
+## Adónde ir después
+
+- **Solo quieres obtener datos**: [Obtener Registros](/es/api-doc/record/get)
+- **Crear/actualizar/eliminar Registros**: [Crear Registros](/es/api-doc/record/create), [Actualizar Registro](/es/api-doc/record/update), [Eliminar Registros](/es/api-doc/record/delete)
+- **Cargar adjuntos**: [Cargar adjunto](/es/api-doc/record/upload-attachment)
+- **Lista completa de endpoints**: usa la navegación de la izquierda en **Referencia de la API**
+

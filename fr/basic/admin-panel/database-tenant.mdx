@@ -1,0 +1,32 @@
+---
+title: "Locataire de base de données"
+description: "Hébergez les données d’un Espace Teable dans une base de données PostgreSQL gérée par le client."
+---
+
+<Tip>Disponible avec le forfait Business auto-hébergé et les forfaits supérieurs</Tip>
+
+Chemin : Panneau d’administration → BYODB
+
+Un locataire de base de données est utile lorsqu’un client ou un Espace métier spécifique doit disposer d’un stockage de données géré séparément. Les données métier de l’Espace sont stockées dans une base de données PostgreSQL désignée au lieu d’être partagées avec la base de données par défaut de l’instance et les autres Espaces ; cela réduit l’impact de la charge ou d’une défaillance de la base de données d’un locataire sur les autres Espaces. Votre organisation peut également gérer l’emplacement de déploiement de la base de données, ses contrôles d’accès, ses sauvegardes et sa surveillance.
+
+## Ce que vous pouvez faire
+
+Depuis **Panneau d’administration** → **BYODB**, un administrateur d’instance peut :
+
+- Créer un nouvel Espace qui utilise une base de données PostgreSQL gérée par le client.
+- Déplacer un Espace existant vers la base de données cible.
+- Vérifier la connexion, le statut de la migration et les erreurs récentes.
+
+<Info>Pour un Espace existant, Teable teste par défaut la migration sans basculer de base de données. Après validation, l’administrateur décide d’effectuer ou non le basculement. Le basculement suspend brièvement les écritures ; planifiez-le donc pendant une fenêtre de maintenance appropriée.</Info>
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Un locataire correspond-il à un compte utilisateur PostgreSQL ?">
+    Non. Il désigne l’Espace Teable dont les données sont stockées dans cette base de données.
+  </Accordion>
+  <Accordion title="Un locataire de base de données connecte-t-il une base de données métier existante à Teable ?">
+    Non. Il modifie l’emplacement où Teable stocke et gère ses propres données d’Espace. Vous fournissez une base de données PostgreSQL hébergée ailleurs, et Teable y crée et gère ses propres données. Les tables et Enregistrements existants dans cette base de données ne sont pas connectés à Teable et ne sont pas automatiquement importés comme Bases.
+  </Accordion>
+</AccordionGroup>
+

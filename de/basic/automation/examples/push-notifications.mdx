@@ -1,0 +1,70 @@
+---
+title: "Benachrichtigungen an Slack, Discord oder Teams senden"
+description: "Senden Sie eine Nachricht an einen Chatkanal, wenn in Ihrer Tabelle etwas geschieht"
+---
+
+<Tip>Wir empfehlen, Automatisierungsbeispiele direkt im KI-Chat zu erstellen. Beschreiben Sie einfach den gewünschten Workflow, und die KI übernimmt die vollständige Einrichtung für Sie – einschließlich Auslöser, Aktionen, Skript und Konfiguration.</Tip>
+
+## Mit KI erstellen
+
+Öffnen Sie den KI-Chat in der rechten Seitenleiste Ihrer Tabelle und teilen Sie der KI mit, was Sie möchten. Sie können zum Beispiel sagen:
+
+*„Wenn ein neues Ticket mit hoher Priorität erstellt wird, sende eine Slack-Nachricht mit Tickettitel und -beschreibung an den Kanal #support.“*
+
+Die KI erstellt automatisch den vollständigen Workflow. Sie können das erzeugte Skript überprüfen, mit echten Daten testen und den Workflow aktivieren, sobald er bereit ist.
+
+## Voraussetzungen
+
+Sie benötigen eine Webhook-URL von Ihrer Chatplattform:
+- **Slack:** Erstellen Sie einen [eingehenden Webhook](https://api.slack.com/messaging/webhooks)
+- **Discord:** Servereinstellungen → Integrationen → Webhooks → Neuer Webhook
+- **Teams:** Kanal → Connectors → Eingehender Webhook
+
+## Manuelle Einrichtung
+
+1. **Erstellen Sie einen Workflow** mit dem Auslöser **Wenn Datensatz erstellt wird**.
+2. Wählen Sie Ihre Tabelle **Tickets** aus.
+3. Fügen Sie einen Filter hinzu: `Priorität` **ist** `Hoch`.
+4. Klicken Sie auf **Testen**.
+5. **Fügen Sie eine Aktion hinzu** → **HTTP-Anfrage**.
+6. Konfigurieren Sie Folgendes:
+   - Methode: **POST**
+   - URL: Ihre Webhook-URL
+   - Content-Type: `application/json`
+   - Text (für Slack):
+     ```json
+     {
+       "text": "Neues Ticket mit hoher Priorität: <tickettitel>"
+     }
+     ```
+   - Verwenden Sie die Schaltfläche **+**, um den Tickettitel dynamisch einzufügen.
+7. Klicken Sie auf **Testen** und anschließend auf **Aktivieren**.
+
+## Für Discord anpassen
+
+Discord verwendet `"content"` anstelle von `"text"`:
+
+```json
+{
+  "content": "Neues Ticket mit hoher Priorität: <tickettitel>"
+}
+```
+
+## Für Teams anpassen
+
+Teams verwendet das Format „Adaptive Card“:
+
+```json
+{
+  "type": "message",
+  "attachments": [{
+    "contentType": "application/vnd.microsoft.card.adaptive",
+    "content": {
+      "type": "AdaptiveCard",
+      "body": [{ "type": "TextBlock", "text": "Neues Ticket mit hoher Priorität: <tickettitel>" }],
+      "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+      "version": "1.2"
+    }
+  }]
+}
+```

@@ -1,0 +1,467 @@
+---
+title: "النشر باستخدام Docker"
+---
+
+<Callout type="info">
+**يوصى باستخدام Docker Compose للفرق الصغيرة وللتقييم** (أقل من 50 مستخدمًا).
+ألست متأكدًا من أن هذا هو المسار المناسب؟ ابدأ من [النشر](/ar/deploy/choose). هل تحتاج إلى ميزات الذكاء الاصطناعي أو منشئ التطبيقات؟ إذا كنت تبدأ من الصفر، فانشر [المنصة متكاملة الميزات](/ar/deploy/architecture)؛ وإذا كنت تشغّل هذا الإعداد المستقل بالفعل، فاتبع [دليل الترحيل](https://github.com/teableio/teable-deployment/blob/main/migration/2026-07-basic-to-full-featured.md) — ستظل بياناتك في مكانها.
+</Callout>
+
+## النشر باستخدام Docker Compose
+
+**النطاق الموصى به**: من 0 إلى 50 مستخدمًا
+
+| المزايا | العيوب |
+| ---------- | ------------- |
+| سهولة النشر | النشر على جهاز واحد، وصعوبة التوسّع |
+| تحكم كامل | |
+| مرونة التهيئة | |
+
+**متطلبات الخادم**
+
+تأكد من أن خادمك يلبي المتطلبات الأساسية التالية:
+
+* نظام التشغيل: توزيعة Linux موصى بها، مثل Ubuntu 20.04 LTS
+* الذاكرة: ذاكرة RAM لا تقل عن 4GB
+* وحدة المعالجة المركزية: نواتان على الأقل
+* مساحة القرص: مساحة متاحة لا تقل عن 40GB
+* الشبكة: اتصال مستقر بالإنترنت مع إتاحة المنافذ اللازمة
+
+#### المتطلبات الأساسية
+
+قبل البدء، تأكد من توفر ما يلي:
+
+* فهم أساسي لمبادئ Docker والحاويات
+* تثبيت Docker وDocker Compose على جهازك. راجع وثائق Docker الرسمية للاطلاع على أدلة التثبيت.
+
+### **تثبيت Docker**
+
+```bash
+# تنزيل أحدث إصدار من Docker
+curl -fsSL https://get.docker.com | bash -s docker
+
+# التحقق من التثبيت
+docker --version
+docker-compose --version
+```
+
+### تثبيت التطبيق
+
+#### إنشاء ملف docker-compose.yaml
+
+ادخل إلى خادمك، ثم أنشئ مجلد teable وانتقل إليه:
+
+```bash
+mkdir teable
+
+cd teable
+```
+
+أنشئ ملفي `docker-compose.yaml` و`.env`، ثم ألصق المحتوى التالي:
+
+```bash
+vim docker-compose.yaml
+```
+
+#### **الحد الأدنى للنشر:**
+
+```yaml docker-compose.yaml
+services:
+  teable:
+    image: ghcr.io/teableio/teable:latest
+    restart: always
+    ports:
+      - '3000:3000'
+    volumes:
+      - teable-data:/app/.assets:rw
+    env_file:
+      - .env
+    environment:
+      - NEXT_ENV_IMAGES_ALL_REMOTE=true
+    networks:
+      - teable
+    depends_on:
+      teable-db:
+        condition: service_healthy
+      teable-cache:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      start_period: 5s
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  teable-db:
+    image: postgres:15.4
+    restart: always
+    ports:
+      - '42345:5432'
+    volumes:
+      - teable-db:/var/lib/postgresql/data:rw
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    networks:
+      - teable
+    healthcheck:
+      test: ['CMD-SHELL', "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  teable-cache:
+    image: redis:7.2.4
+    restart: always
+    expose:
+      - '6379'
+    volumes:
+      - teable-cache:/data:rw
+    networks:
+      - teable
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    healthcheck:
+      test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+networks:
+  teable:
+    name: teable-network
+
+volumes:
+  teable-db: {}
+  teable-data: {}
+  teable-cache: {}
+```
+
+```bash .env
+# استبدل كلمة المرور الافتراضية أدناه بكلمة مرور قوية (ASCII) لا تقل عن 8 أحرف.
+POSTGRES_PASSWORD=replace_this_password
+REDIS_PASSWORD=replace_this_password
+SECRET_KEY=replace_this_secret_key
+
+# استبدل العنوان التالي بعنوان يمكن الوصول إليه علنًا
+PUBLIC_ORIGIN=http://127.0.0.1:3000
+
+# ---------------------
+
+# PostgreSQL
+POSTGRES_HOST=teable-db
+POSTGRES_PORT=5432
+POSTGRES_DB=teable
+POSTGRES_USER=teable
+
+# Redis
+REDIS_HOST=teable-cache
+REDIS_PORT=6379
+REDIS_DB=0
+
+# التطبيق
+PRISMA_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+BACKEND_CACHE_PROVIDER=redis
+BACKEND_CACHE_REDIS_URI=redis://default:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB}
+```
+
+
+#### **إضافة خدمة تخزين (اختياري)**
+
+لعمليات النشر في بيئات الإنتاج، استخدم **تخزين كائنات متوافقًا مع S3** (مثل S3 أو MinIO أو OSS/OBS/COS بنقاط نهاية متوافقة مع S3، أو خدمة أخرى متوافقة مع S3) لتحقيق متانة وقابلية توسّع أفضل.
+
+<Tabs>
+<Tab title="إضافة MinIO إلى docker-compose">
+يوفر MinIO واجهة إضافية لإدارة التخزين (المنفذ 9001) وخدمة ملفات أقوى وأكثر استقرارًا.
+
+```yaml docker-compose.yaml
+services:
+  # ...المحتوى السابق
+  teable-storage:
+    image: minio/minio:RELEASE.2024-02-17T01-15-57Z
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+    volumes:
+      - teable-storage:/data:rw
+    networks:
+      - teable
+    command: server /data --console-address ":9001"
+  createbuckets:
+    image: minio/mc
+    networks:
+      - teable
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set teable-storage http://teable-storage:9000 ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY};
+      /usr/bin/mc mb teable-storage/public;
+      /usr/bin/mc anonymous set public teable-storage/public;
+      /usr/bin/mc mb teable-storage/private;
+      exit 0;
+      "
+    depends_on:
+      teable-storage:
+        condition: service_started
+
+networks:
+  teable:
+    name: teable-network
+
+volumes:
+  teable-db: {}
+  teable-cache: {}
+  # إضافة وحدة تخزين جديدة
+  teable-storage: {}
+
+```
+
+```bash .env
+# استبدل كلمات المرور الافتراضية أدناه بكلمات مرور قوية (ASCII) لا تقل عن 8 أحرف.
+POSTGRES_PASSWORD=replace_this_password
+REDIS_PASSWORD=replace_this_password
+SECRET_KEY=replace_this_secret_key
+
+# إذا فعّلت HTTPS، فاضبط PROTOCOL على https.
+PROTOCOL=http
+# اضبط PUBLIC_HOST على عنوان IP أو اسم نطاق عملية النشر. لا يمكن استخدام localhost أو 127.0.0.1.
+PUBLIC_HOST=192.168.x.x
+# عدّل المنفذ الأخير ليتوافق مع منفذ الوصول، أو احذف :port عند استخدام المنافذ القياسية (80/443).
+PUBLIC_ORIGIN=${PROTOCOL}://${PUBLIC_HOST}:3000
+
+# ---------------------
+
+# PostgreSQL
+POSTGRES_HOST=teable-db
+POSTGRES_PORT=5432
+POSTGRES_DB=teable
+POSTGRES_USER=teable
+
+# Redis
+REDIS_HOST=teable-cache
+REDIS_PORT=6379
+REDIS_DB=0
+
+# MinIO
+MINIO_ACCESS_KEY=teable_minio_access
+MINIO_SECRET_KEY=${SECRET_KEY}
+
+# التطبيق
+PRISMA_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+BACKEND_CACHE_PROVIDER=redis
+BACKEND_CACHE_REDIS_URI=redis://default:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB}
+BACKEND_STORAGE_PROVIDER=minio
+BACKEND_STORAGE_PUBLIC_BUCKET=public
+BACKEND_STORAGE_PRIVATE_BUCKET=private
+BACKEND_STORAGE_MINIO_USE_SSL=false # إذا فعّلت HTTPS، فغيّر هذه القيمة إلى true
+BACKEND_STORAGE_MINIO_ENDPOINT=${PUBLIC_HOST}
+BACKEND_STORAGE_MINIO_PORT=9000
+BACKEND_STORAGE_MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+BACKEND_STORAGE_MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+STORAGE_PREFIX=${PROTOCOL}://${PUBLIC_HOST}:${BACKEND_STORAGE_MINIO_PORT}
+```
+</Tab>
+
+<Tab title="الاتصال بخادم MinIO خارجي">
+قبل البدء، عليك إنشاء حاويتين في MinIO: حاوية عامة لتخزين صور الملفات الشخصية ورؤوس النماذج، وحاوية خاصة لتخزين محتوى المرفقات.
+
+```sh .env
+# ...المحتوى السابق
+# استخدام موفر MinIO
+BACKEND_STORAGE_PROVIDER=minio
+# اسم الحاوية العامة
+BACKEND_STORAGE_PUBLIC_BUCKET=public
+# اسم الحاوية الخاصة
+BACKEND_STORAGE_PRIVATE_BUCKET=private
+# عنوان IP أو اسم نطاق نقطة نهاية خدمة MinIO
+BACKEND_STORAGE_MINIO_ENDPOINT=minio.example.com
+# منفذ MinIO
+BACKEND_STORAGE_MINIO_PORT=443
+# ما إذا كان HTTPS مفعّلًا
+BACKEND_STORAGE_MINIO_USE_SSL=true
+# مفتاح وصول MinIO
+BACKEND_STORAGE_MINIO_ACCESS_KEY=_minio_access_key_
+# المفتاح السري لـ MinIO
+BACKEND_STORAGE_MINIO_SECRET_KEY=_minio_secret_key_
+# عنوان الوصول الكامل
+STORAGE_PREFIX=https://minio.example.com
+
+# ---تهيئة الشبكة الداخلية (اختياري)---
+# عنوان IP أو اسم نطاق نقطة نهاية خدمة MinIO الداخلية (غير مدعوم مع HTTPS)
+BACKEND_STORAGE_MINIO_INTERNAL_ENDPOINT=teable-storage.internal
+# منفذ MinIO الداخلي
+BACKEND_STORAGE_MINIO_INTERNAL_PORT=9000
+# ---تهيئة المنطقة (اختياري)---
+# اسم المنطقة
+BACKEND_STORAGE_MINIO_REGION=us-east-1
+
+```
+</Tab>
+
+<Tab title="الاتصال بـ AWS S3">
+<Note>
+ملاحظة: يجب تهيئة **حاويتين** (عامة/خاصة). يجب أن تكون **الحاوية العامة** متاحة **للقراءة العامة** وأن تسمح بطلبات **CORS من أي مصدر**، وإلا فقد يتعذر الوصول إليها من المتصفح.
+</Note>
+قبل البدء، عليك إنشاء حاويتين في AWS S3: حاوية عامة لتخزين الصور الرمزية ورؤوس النماذج، وحاوية خاصة لتخزين محتوى المرفقات.
+
+```sh .env
+# ...المحتوى السابق
+# استخدام موفر S3 القياسي
+BACKEND_STORAGE_PROVIDER=s3
+# اسم المنطقة
+BACKEND_STORAGE_S3_REGION=us-west-2
+# نقطة النهاية، ويجب أن تتضمن البروتوكول (عادةً https)
+BACKEND_STORAGE_S3_ENDPOINT=https://s3.us-west-2.amazonaws.com
+# مفتاح الوصول
+BACKEND_STORAGE_S3_ACCESS_KEY=access_key
+# المفتاح السري
+BACKEND_STORAGE_S3_SECRET_KEY=secret_key
+# الحاوية العامة
+BACKEND_STORAGE_PUBLIC_BUCKET=your-public-bucket
+# الحاوية الخاصة
+BACKEND_STORAGE_PRIVATE_BUCKET=your-private-bucket
+# عنوان الوصول الكامل، أي عنوان الوصول إلى حاويتك العامة
+STORAGE_PREFIX=https://your-public-bucket.s3.us-west-2.amazonaws.com
+
+```
+
+تنطبق هذه العملية على معظم موفري الخدمات السحابية، وليس AWS S3 وحده.
+
+</Tab>
+</Tabs>
+
+
+
+#### تشغيل التطبيق
+
+نفّذ الأوامر التالية في الدليل الحالي لتشغيل التطبيق. وبعد بدء التشغيل، يمكنك الوصول إلى التطبيق عبر 127.0.0.1:3000
+
+<Note>
+تتطلب عمليات نسخ البيانات واسعة النطاق بيئة HTTPS، وإلا فلن يتوفر الوصول غير المتزامن إلى الحافظة.
+</Note>
+
+```bash
+docker-compose pull
+
+docker-compose up -d
+```
+
+#### استخدام قواعد بيانات مُدارة (اختياري)
+
+إذا كنت تفضّل استخدام قواعد بيانات مُدارة، فيمكنك تبسيط عملية النشر أكثر:
+
+1. احذف services.teable-db
+2. احذف volumes.teable-db
+3. حدّث .env بتهيئة قاعدة البيانات المُدارة
+
+املأ معلمات قاعدة البيانات بمعلمات الاتصال بقاعدة البيانات المُدارة:
+
+```sh .env
+POSTGRES_HOST=your-database.com
+POSTGRES_PORT=5432
+POSTGRES_DB=teable
+POSTGRES_USER=teable
+```
+
+<Note>
+لاحظ أن `127.0.0.1` يشير إلى الشبكة الداخلية للحاوية. إذا أردت الاتصال بقاعدة بيانات منشورة محليًا، فاستخدم `host.docker.internal` بدلًا من `127.0.0.1` عنوانًا للمضيف، وإلا سيفشل الاتصال.
+</Note>
+
+**وبالمثل عند استخدام Redis مُدار خارجيًا:**
+
+* احذف service.teable-cache
+* احذف service.teable.depends_on.teable-cache
+* احذف volumes.teable-cache
+* حدّث .env بتهيئة Redis المُدار
+
+### الخطوات التالية
+
+[تهيئة خدمة البريد الإلكتروني](/ar/deploy/email)
+
+## الدعم والملاحظات
+
+إذا واجهت أي مشكلات أثناء النشر، فتواصل مع فريق الدعم عبر support@teable.ai أو [أرسل مشكلة](https://github.com/teableio/teable/issues).
+
+## الترخيص
+
+يتضمن Teable ميزات المجتمع مفتوحة المصدر بموجب ترخيص AGPL-3.0. لفتح الميزات المدفوعة في عمليات النشر ذاتية الاستضافة، اشترك عبر [صفحة الأسعار](https://app.teable.ai/public/pricing?host=self-hosted&billing=year).
+
+<Note>
+تتضمن الصورة `ghcr.io/teableio/teable:latest` مجموعة الميزات كاملة. وتتطلب الميزات المدفوعة ترخيص اشتراك صالحًا لتفعيلها.
+
+إذا كنت تحتاج فقط إلى مجموعة ميزات المجتمع مفتوحة المصدر، فيمكنك اختيار الصورة `ghcr.io/teableio/teable-community:latest`.
+</Note>
+
+
+## المشكلات الشائعة
+
+<Accordion title="كيف أسجّل الدخول بعد أول عملية نشر؟">
+بعد بدء تشغيل النسخة، افتح عنوان URL الخاص بها وأنشئ حسابًا فيها. لا يأتي Teable مع حساب مسؤول مُعد مسبقًا، ولا تستخدم نسختك ذاتية الاستضافة حساب Teable Cloud على teable.ai.
+
+يصبح أول مستخدم ينشئ حسابًا في النسخة مسؤولها.
+</Accordion>
+
+<Accordion title="لماذا لا يمكنني استيراد CSV/xlsx أو رفع الصور بعد التثبيت؟">
+تنتج مشكلات استيراد الملفات عادةً من تهيئة غير صحيحة لمتغير البيئة PUBLIC_ORIGIN. يجب ضبط PUBLIC_ORIGIN على العنوان الذي يمكن الوصول إليه حاليًا:
+```bash
+# للتطوير المحلي
+PUBLIC_ORIGIN=http://127.0.0.1:3000
+
+# للوصول عبر الشبكة المحلية
+PUBLIC_ORIGIN=http://192.168.1.100:3000
+
+# للوصول باستخدام اسم النطاق
+PUBLIC_ORIGIN=https://teable.example.com
+```
+<Callout type="warning">
+مهم: لا تُضف شرطة مائلة لاحقة ("/") في نهاية عنوان URL.
+</Callout>
+بعد تغيير هذه التهيئة، ستحتاج إلى إعادة تشغيل نسخة Teable كي تسري التغييرات.
+</Accordion>
+
+<Accordion title="كيف أفعّل HTTPS؟">
+يتطلب تفعيل HTTPS الخطوات التالية:
+- الحصول على شهادة SSL صالحة
+- ضبط `PROTOCOL=https` (أو ضبط `PUBLIC_ORIGIN=https://teable.example.com` وفق إعدادك)
+- عند استخدام MinIO، اضبط `BACKEND_STORAGE_MINIO_USE_SSL=true`
+<Tip>
+يوصى باستخدام وكيل عكسي (مثل Nginx أو Traefik) لمعالجة إنهاء اتصال SSL.
+</Tip>
+<Tip>
+إذا لم تكن متأكدًا من كيفية تهيئة Nginx (‏HTTPS/الشهادات، أو WebSocket، أو شبكات Docker، أو Nginx Proxy Manager، وما إلى ذلك)، فراجع: [Nginx (الوكيل العكسي)](/ar/deploy/nginx).
+</Tip>
+</Accordion>
+
+<Accordion title="كيف أنشئ نسخة احتياطية من بياناتي؟">
+لعمليات النشر باستخدام Docker Compose، تتوفر عدة خيارات للنسخ الاحتياطي:
+
+**الخيار 1: نسخة احتياطية كاملة من الجهاز الافتراضي** (موصى به للبساطة)
+- أنشئ نسخًا احتياطية منتظمة من الجهاز الافتراضي الذي يستضيف Teable بالكامل
+- يتيح استعادة النظام بالكامل
+
+**الخيار 2: نسخة احتياطية من وحدات تخزين Docker**
+- أنشئ نسخة احتياطية من جميع وحدات تخزين Docker المحددة في `docker-compose.yaml`
+- اسرد وحدات التخزين: `docker volume ls`
+- أنشئ نسخة احتياطية من وحدة تخزين:
+  ```bash
+  docker run --rm -v <volume_name>:/data -v $(pwd):/backup alpine tar czf /backup/<volume_name>.tar.gz /data
+  ```
+
+**الخيار 3: نسخة احتياطية على مستوى المكونات** (موصى به للتحكم الدقيق)
+- **قاعدة بيانات PostgreSQL**: تحتوي على جميع بيانات الجداول
+  ```bash
+  docker exec teable-db pg_dump -U teable teable > backup.sql
+  ```
+- **قاعدة بيانات Redis**: تحتوي على بيانات قائمة انتظار الأتمتة
+  ```bash
+  docker exec teable-cache redis-cli --rdb /data/dump.rdb
+  ```
+- **دليل البيانات**: أنشئ نسخة احتياطية من وحدة التخزين `teable-data` (تحتوي على جميع ملفات المرفقات)
+  ```bash
+  docker run --rm -v teable-data:/data -v $(pwd):/backup alpine tar czf /backup/teable-data.tar.gz /data
+  ```
+
+لبيئات الإنتاج، نوصي بإعداد نسخ احتياطية يومية مؤتمتة مع سياسات للاحتفاظ بها.
+</Accordion>

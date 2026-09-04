@@ -1,0 +1,179 @@
+---
+title: "تسجيل الدخول الأحادي عبر Azure Entra ID"
+description: "إعداد Azure Entra ID بوصفه موفّر مصادقة تسجيل الدخول الأحادي في Teable"
+---
+
+{/* mintlify-resync: 2026-05-28 */}
+<Tip>متاح في خطة Business والخطط الأعلى</Tip>
+
+## الخطوة 1: إنشاء موفّر مصادقة في Teable
+
+1. انتقل إلى إعدادات تسجيل الدخول الأحادي في Teable
+2. أنشئ موفّر مصادقة جديدًا، وسمّه **Azure Entra ID**، ثم اختر **OpenID Connect**
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-create-provider.png"
+  alt="الخطوة 1 من إعداد تسجيل الدخول الأحادي عبر Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+## الخطوة 2: الوصول إلى Azure Entra ID
+
+1. سجّل الدخول إلى حسابك في Azure
+2. انتقل إلى **Microsoft Entra ID** (المعروف سابقًا باسم Azure Active Directory)
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-open-entra-id.png"
+  alt="الخطوة 2 من إعداد تسجيل الدخول الأحادي عبر Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+## الخطوة 3: إعداد نقاط نهاية OAuth
+
+املأ نقاط نهاية OAuth التالية في Teable باستخدام **معرّف المستأجر**:
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-oauth-endpoints.png"
+  alt="الخطوة 3 من إعداد تسجيل الدخول الأحادي عبر Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+- **عنوان URL للتفويض**: `https://login.microsoftonline.com/_YOUR_TENANT_ID_/oauth2/v2.0/authorize`
+- **عنوان URL للرمز المميز**: `https://login.microsoftonline.com/_YOUR_TENANT_ID_/oauth2/v2.0/token`
+- **عنوان URL لمعلومات المستخدم**: `https://graph.microsoft.com/oidc/userinfo`
+- **جهة الإصدار**: `https://login.microsoftonline.com/_YOUR_TENANT_ID_/v2.0`
+
+<Note>استبدل `_YOUR_TENANT_ID_` بمعرّف مستأجر Azure الفعلي.</Note>
+
+## الخطوة 4: تسجيل تطبيق جديد
+
+1. في Azure Entra ID، انقر على **تسجيلات التطبيقات** من القائمة اليسرى
+2. انقر على **+ تسجيل جديد**
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-app-registration-entry.png"
+  alt="تسجيل تطبيق Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+## الخطوة 5: إعداد تسجيل التطبيق
+
+املأ نموذج تسجيل التطبيق:
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-app-registration-form.png"
+  alt="الخطوة 5 من إعداد تسجيل الدخول الأحادي عبر Azure Entra ID"
+  className="docs-screenshot"
+/>
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-redirect-uri.png"
+  alt="الخطوة 6 من إعداد تسجيل الدخول الأحادي عبر Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+- **الاسم**: تسجيل الدخول الأحادي في Teable
+- **أنواع الحسابات المدعومة**: اختر وفق احتياجاتك
+- **المنصة**: الويب
+- **معرّف URI لإعادة التوجيه**: الصق **عنوان URL لرد الاتصال** من Teable
+
+انقر على **تسجيل** لإنشاء التطبيق.
+
+## الخطوة 6: حفظ معرّف العميل
+
+1. انسخ **معرّف التطبيق (العميل)** من صفحة النظرة العامة على التطبيق
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-application-client-id.png"
+  alt="الخطوة 7 من إعداد تسجيل الدخول الأحادي عبر Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+2. الصق معرّف العميل في إعداد تسجيل الدخول الأحادي في Teable
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-teable-client-id.png"
+  alt="الخطوة 8 من إعداد تسجيل الدخول الأحادي عبر Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+## الخطوة 7: إنشاء سر العميل
+
+1. في تطبيقك، انقر على **الشهادات والأسرار** من القائمة اليسرى
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-certificates-secrets.png"
+  alt="الخطوة 9 من إعداد تسجيل الدخول الأحادي عبر Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+2. انقر على **+ إضافة شهادة أو سر**
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-add-client-secret.png"
+  alt="الخطوة 10 من إعداد تسجيل الدخول الأحادي عبر Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+3. أضف وصفًا وحدّد مدة انتهاء الصلاحية
+4. انقر على **إضافة**
+5. **مهم**: انسخ **قيمة** السر فورًا واحفظها بصفتها سر العميل في Teable
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-client-secret-value.png"
+  alt="الخطوة 11 من إعداد تسجيل الدخول الأحادي عبر Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+<Warning>لا تظهر قيمة السر إلا مرة واحدة. احرص على حفظها فورًا.</Warning>
+
+## الخطوة 8: إعداد صلاحيات API
+
+1. انقر على **صلاحيات API** من القائمة اليسرى
+2. انقر على **+ إضافة صلاحية**
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-add-api-permission.png"
+  alt="الخطوة 12 من إعداد تسجيل الدخول الأحادي عبر Azure Entra ID"
+  className="docs-screenshot"
+/>
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-microsoft-graph-permissions.png"
+  alt="الخطوة 13 من إعداد تسجيل الدخول الأحادي عبر Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+3. اختر **Microsoft Graph**
+4. اختر **الصلاحيات المفوّضة**
+5. أضف الصلاحيات التالية:
+   - `email`
+   - `openid`
+   - `profile`
+6. انقر على **إضافة الصلاحيات**
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-delegated-permissions.png"
+  alt="الخطوة 14 من إعداد تسجيل الدخول الأحادي عبر Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+7. انقر على **منح موافقة المسؤول لـ [الدليل الخاص بك]** للموافقة على الصلاحيات
+
+## الخطوة 9: اختبار تسجيل الدخول الأحادي
+
+لديك خياران لتفعيل تسجيل الدخول الأحادي:
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-login-options.png"
+  alt="الخطوة 15 من إعداد تسجيل الدخول الأحادي عبر Azure Entra ID"
+  className="docs-screenshot"
+/>
+
+**الخيار 1: عنوان URL المباشر للمصادقة**
+- استخدم عنوان URL للمصادقة بوصفه عنوان تسجيل الدخول الأحادي
+
+**الخيار 2: التحقق من النطاق**
+1. انقر على **التحقق من النطاق** من القائمة اليسرى
+2. تحقّق من نطاقك المخصص
+3. انتقل إلى صفحة تسجيل الدخول إلى Teable الخاصة بك
+4. انقر على زر تسجيل الدخول الأحادي
+5. أدخل عنوان بريدك الإلكتروني ضمن النطاق الذي تم التحقق منه لتسجيل الدخول

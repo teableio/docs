@@ -1,0 +1,109 @@
+---
+title: "Guía práctica del botón"
+description: "Usa un campo Botón para activar automatizaciones y convertir flujos de trabajo fijos, como la conversión de clientes potenciales o los recordatorios de tareas, en una acción de un solo clic."
+---
+
+Los campos Botón son útiles para flujos de trabajo fijos y repetitivos que deben ejecutarse después de que una persona confirme la acción. Algunos ejemplos habituales son convertir un cliente potencial en una oportunidad, programar contenido aprobado, enviar recordatorios de tareas o sincronizar el registro actual con un sistema externo.
+
+Esta guía utiliza la conversión de clientes potenciales como ejemplo principal y muestra cómo conectar un botón a una Automatización.
+
+## Casos de uso
+
+| Escenario | Qué puede hacer el botón |
+| --- | --- |
+| Conversión de clientes potenciales | Crear un registro en la Tabla de oportunidades y marcar el cliente potencial original como convertido |
+| Programación de contenido | Crear un calendario de publicación y avisar al compañero responsable de publicar |
+| Recordatorios de tareas | Enviar un correo electrónico o un mensaje de equipo al responsable |
+| Sincronización con sistemas externos | Enviar el registro actual a otro sistema mediante una solicitud HTTP |
+
+## Ejemplo: Convertir un cliente potencial en una oportunidad
+
+En una Tabla de CRM, un representante de ventas hace clic en el botón "Convertir en oportunidad" después de decidir que un cliente potencial está listo. La Automatización completa dos acciones:
+
+- Crea un nuevo registro en la Tabla de oportunidades con información clave, como la empresa y el contacto.
+- Actualiza el estado del cliente potencial original en la Tabla de clientes potenciales a "Convertido".
+
+### Preparar las tablas
+
+Este ejemplo utiliza dos tablas:
+
+| Tabla | Finalidad | Campos de ejemplo |
+| --- | --- | --- |
+| Tabla de clientes potenciales | Almacena los clientes potenciales que requieren seguimiento. Aquí se crea el campo Botón | Nombre de la empresa, contacto, responsable, estado |
+| Tabla de oportunidades | Almacena las oportunidades convertidas | Nombre de la oportunidad, cliente relacionado, responsable, cliente potencial de origen |
+
+### Crear el campo Botón
+
+Añade un campo Botón en la Tabla de clientes potenciales:
+
+<Steps>
+  <Step title="Elige el tipo de campo">
+    Crea un campo y elige **Botón** como tipo de campo.
+  </Step>
+  <Step title="Define el texto del botón">
+    Define el texto del botón como "Convertir en oportunidad" y elige un color que sea fácil de reconocer.
+  </Step>
+  <Step title="Activa la confirmación de clic">
+    Para evitar clics accidentales, activa **Confirmar antes de hacer clic** y completa el título del cuadro de diálogo, el mensaje y el texto del botón de confirmación.
+  </Step>
+</Steps>
+
+### Configurar las acciones de la Automatización
+
+Después de crear el campo Botón, configura la Automatización que se ejecutará al hacer clic en él.
+
+<Steps>
+  <Step title="Crea una Automatización">
+    En la configuración del campo Botón, haz clic en **Automatización personalizada** y crea un flujo de trabajo.
+  </Step>
+  <Step title="Crea un registro de oportunidad">
+    Añade una acción **Crear registro** y elige la Tabla de oportunidades como Tabla de destino.
+  </Step>
+  <Step title="Asigna los campos">
+    Escribe los campos clave del cliente potencial en la nueva oportunidad. Por ejemplo:
+    - `Nombre de la oportunidad` = `Nombre de la empresa` del registro que activa el flujo
+    - `Cliente relacionado` = `Contacto` del registro que activa el flujo
+    - `Responsable` = `Responsable` del registro que activa el flujo
+  </Step>
+  <Step title="Actualiza el estado del cliente potencial original">
+    Añade una acción **Actualizar registro**. Elige la Tabla de clientes potenciales como Tabla de destino, usa el ID del registro que activa el flujo como ID del registro y actualiza `Estado` a "Convertido".
+  </Step>
+</Steps>
+
+Después de guardar la Automatización, el representante de ventas puede hacer clic en "Convertir en oportunidad" para crear la oportunidad y actualizar el estado del cliente potencial original.
+
+### Añadir notificaciones
+
+Si es necesario avisar a un responsable de ventas o al responsable de la oportunidad después de la conversión, añade a la Automatización una acción **Enviar correo electrónico** o una acción de mensaje de equipo.
+
+Configuraciones habituales:
+
+- **Destinatario**: Una dirección de correo electrónico fija o un campo de usuario del registro actual.
+- **Asunto y cuerpo**: Inserta valores de campos del registro que activa el flujo, como el nombre de la empresa, el responsable o el origen del cliente potencial.
+
+Ejemplo de cuerpo del correo electrónico:
+
+> Nueva oportunidad convertida: [Nombre de la empresa] fue convertida por [Responsable]. Realiza el seguimiento correspondiente.
+
+### Conectar sistemas externos
+
+Si las oportunidades convertidas también deben sincronizarse con un CRM, un sistema financiero o una herramienta interna, añade una acción de solicitud HTTP a la Automatización.
+
+Las solicitudes HTTP funcionan mejor cuando el sistema de destino tiene una API estable. Antes de configurar la acción, confirma el endpoint, el método de solicitud, el método de autenticación y el formato de los campos.
+
+### Limitar los clics duplicados
+
+La conversión de un cliente potencial normalmente no debe realizarse más de una vez para el mismo cliente potencial. Activa **Limitar número de clics** en el campo Botón:
+
+| Configuración | Recomendación |
+| --- | --- |
+| Máximo de clics | Establécelo en `1` |
+| Permitir restablecimiento | Normalmente debe mantenerse desactivado para evitar oportunidades duplicadas |
+
+Cuando se alcanza el límite de clics, el botón de ese registro queda desactivado.
+
+## Notas
+
+- Que un clic en el botón se ejecute correctamente depende de que la Automatización vinculada esté activada y funcione correctamente.
+- Cada activación correcta de una Automatización cuenta para la cuota de ejecuciones de automatizaciones del Espacio de trabajo.
+- Si el botón modifica datos importantes, activa la confirmación de clic y limita el número de clics.

@@ -1,0 +1,95 @@
+---
+title: "Acumulación condicional"
+description: "Calcula estadísticas entre tablas con condiciones de filtrado y devuelve un único valor agregado."
+---
+
+La Acumulación condicional filtra los registros coincidentes de una Tabla de destino sin crear antes una relación de enlace y, a continuación, calcula estadísticas sobre un campo seleccionado. Resulta útil para calcular recuentos, sumas, promedios y otros resultados según los valores de los campos del registro actual.
+
+## Casos de uso
+
+| Escenario | Ideal para |
+| --- | --- |
+| Estadísticas de tareas de empleados | Contar las tareas en curso y completadas de un responsable |
+| Estadísticas de ventas por período | Calcular el importe de ventas, el número de pedidos o el valor medio de los pedidos por intervalo de fechas |
+| Comprobación de datos duplicados | Contar nombres, números de teléfono o ID duplicados |
+| Informes regionales | Acumular datos empresariales por región, tienda o canal |
+
+## Procedimiento
+
+<Steps>
+  <Step title="Crea un campo de acumulación condicional">
+    Haz clic en el icono `+` situado a la derecha del nombre de un campo, elige **Acumulación condicional** e introduce un título para el campo, como "Importe total de ventas".
+  </Step>
+  <Step title="Elige la Tabla de destino">
+    En el menú desplegable de tablas de destino, elige la Tabla que quieras consultar.
+  </Step>
+  <Step title="Configura el campo de acumulación">
+    Elige el campo que se va a calcular y confirma su tipo.
+  </Step>
+  <Step title="Define las condiciones de filtrado">
+    Añade condiciones de filtrado y elige el campo, el tipo de condición y el valor de comparación. El valor de comparación puede ser un valor estático o un campo de la Tabla actual.
+  </Step>
+  <Step title="Elige una función de acumulación">
+    Elige un método de cálculo según el tipo de datos, como valor original, valores únicos, recuento de valores únicos, suma, recuento, promedio, máximo o mínimo.
+  </Step>
+</Steps>
+
+## Práctica con escenarios
+
+### Estadísticas del volumen de tareas del equipo
+
+**Tablas**
+
+- Tabla de tareas
+- Tabla de estadísticas
+
+Un administrador del equipo necesita contar las tareas de cada empleado en distintos estados, como tareas en curso y completadas, para comprender la distribución de la carga de trabajo y el progreso de finalización.
+
+**Tareas en curso**
+
+1. En la Tabla de información de empleados, crea un campo Acumulación condicional llamado "Tareas en curso"
+2. Tabla de destino: Tabla de asignaciones de tareas
+3. Campo de acumulación: ID de tarea
+4. Condiciones de filtrado:
+   - Campo: Responsable -> Condición: Es igual a -> Valor: Campo Empleado de la Tabla actual
+   - Campo: Estado de la tarea -> Condición: Es igual a -> Valor: "En curso"
+5. Función de acumulación: Contar todos
+
+**Tareas completadas**
+
+1. Crea otro campo Acumulación condicional llamado "Tareas completadas"
+2. Tabla de destino: Tabla de asignaciones de tareas
+3. Campo de acumulación: ID de tarea
+4. Condiciones de filtrado:
+   - Campo: Responsable -> Condición: Es igual a -> Valor: Campo Empleado de la Tabla actual
+   - Campo: Estado de la tarea -> Condición: Es igual a -> Valor: "Completada"
+5. Función de acumulación: Contar todos
+
+### Encontrar valores duplicados
+
+**Tablas**
+
+- Tabla de clientes, con campos como nombre del cliente y número de teléfono
+
+En la Tabla de clientes, busca nombres de clientes duplicados antes de combinar sus perfiles.
+
+**Pasos**
+
+1. En la Tabla de clientes, crea un campo Acumulación condicional llamado "Recuento de duplicados del nombre del cliente"
+2. Tabla de destino: Tabla de clientes (esta Tabla)
+3. Campo de acumulación: Nombre del cliente
+4. Condición de filtrado:
+   - Campo: Nombre del cliente -> Condición: Es igual a -> Valor: Campo Nombre del cliente de la Tabla actual
+5. Función de acumulación: Contar todos
+6. Crea un campo Fórmula llamado "Indicador de duplicado"
+7. Define la fórmula como `IF(Recuento de duplicados del nombre del cliente > 1, "Duplicado", BLANK())`
+
+La Tabla de clientes muestra cuántas veces aparece cada nombre de cliente y marca los registros duplicados con "Duplicado", para que puedas filtrarlos y gestionarlos más adelante.
+
+## Preguntas frecuentes
+
+<AccordionGroup>
+  <Accordion title="¿Cuál es la diferencia entre la Acumulación condicional y la Búsqueda condicional?">
+    La Acumulación condicional devuelve un valor calculado, por lo que resulta adecuada para totales, recuentos y promedios. La Búsqueda condicional devuelve una lista de valores sin procesar coincidentes, por lo que resulta adecuada para ver datos detallados.
+  </Accordion>
+</AccordionGroup>

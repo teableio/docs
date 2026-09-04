@@ -1,0 +1,96 @@
+---
+title: "Cuando se actualiza un Registro"
+description: "Activa un flujo de trabajo cuando se modifica un Registro existente"
+---
+
+<Tip>Ten en cuenta que toda la configuración del disparador puede realizarse en el Chat de IA. Dile a la IA qué quieres que haga el flujo de trabajo y se encargará del resto.</Tip>
+
+Este disparador se ejecuta cuando se modifica un Registro existente. No se activa al crearlo.
+
+## Crear con IA
+
+Abre el Chat de IA en la barra lateral derecha de tu Tabla y describe lo que quieres.
+
+La IA se encarga de todo: elige el disparador adecuado, asigna los Campos pertinentes y configura automáticamente todas las acciones.
+
+Describe el objetivo una sola vez y el flujo de trabajo estará listo, sin necesidad de configuración manual.
+
+**Ejemplo:** *"Cuando cambie el Campo de estado, envía un correo electrónico al responsable".*
+
+## Configuración
+
+| Ajuste | Obligatorio | Descripción |
+|---|---|---|
+| Tabla | Sí | Tabla en la que se supervisarán los cambios |
+| Campos supervisados | Sí | Elige Campos específicos que supervisar o selecciona «Todos los Campos» para activarlo con cualquier cambio |
+| Filtro | No | Activa el flujo únicamente si el Registro actualizado cumple estas condiciones después del cambio |
+
+## Cómo configurarlo
+
+1. Abre tu Automatización y añade un disparador nuevo.
+2. Selecciona **Cuando se actualiza un Registro**.
+3. Elige la **Tabla** que quieres supervisar.
+4. En **Campos supervisados**, selecciona uno o varios Campos específicos. Por ejemplo, elige solo «Estado» si quieres reaccionar a los cambios de estado.
+5. (Opcional) Añade un **Filtro** para limitar aún más las actualizaciones que activan el disparador. Por ejemplo, `Estado` es igual a `Hecho` solo activará el flujo cuando el estado de un Registro cambie a «Hecho».
+6. Guarda y activa la Automatización.
+7. Añade los pasos de acción. Haz clic en **+** en cualquier Campo de acción para insertar valores del Registro actualizado.
+
+## Comprender los Campos supervisados
+
+El ajuste Campos supervisados es la parte más importante de este disparador:
+
+- **Campos específicos (recomendado):** selecciona únicamente los Campos que te interesan. El disparador solo se activa cuando cambia alguno de ellos. Se ignoran todas las demás modificaciones del Registro.
+- **Todos los Campos:** el disparador se activa cuando cambia *cualquier* Campo del Registro. Esto incluye Campos calculados, marcas de tiempo de última modificación y cambios menores que quizá no te interesen.
+
+**Por qué los Campos específicos son mejores en la mayoría de los casos:**
+
+- Reducen las ejecuciones innecesarias del disparador y, por tanto, las ejecuciones desperdiciadas de la Automatización.
+- Evitan bucles accidentales (consulta la sección siguiente).
+- Hacen más claro el propósito de la Automatización para cualquier persona que la lea.
+
+Elige «Todos los Campos» únicamente cuando necesites reaccionar realmente a todos los cambios posibles; por ejemplo, para crear un registro de auditoría completo.
+
+<Tip>Se recomienda encarecidamente seleccionar Campos supervisados específicos. Seleccionar «Todos los Campos» puede hacer que el flujo de trabajo se active con modificaciones no relacionadas, desperdicie ejecuciones de la Automatización y produzca comportamientos inesperados.</Tip>
+
+### Campos calculados
+
+Los valores de [Fórmula](/es/basic/field/formula), [Búsqueda](/es/basic/field/lookup), [Acumulación](/es/basic/field/rollup), [Búsqueda condicional](/es/basic/field/conditional-lookup) y [Acumulación condicional](/es/basic/field/conditional-rollup) proceden de los propios cálculos de Teable, no de datos introducidos manualmente, y un nuevo cálculo solo activa este disparador cuando nombras el Campo calculado en **Campos supervisados**. Los cinco se comportan de la misma forma.
+
+Esto permite reaccionar a un resultado derivado en lugar de a los datos sin procesar que lo originan. Supervisa un Campo de Fórmula `Importe total` y el flujo de trabajo se ejecutará cada vez que cambie realmente el total, con independencia de cuál de los Campos subyacentes haya cambiado. Supervisa una Acumulación de tareas enlazadas y el flujo de trabajo se ejecutará cuando cambie el valor acumulado, incluso si el cambio procede de una modificación en la Tabla enlazada.
+
+## Error habitual: bucles de actualización
+
+<Warning>Si tu flujo de trabajo incluye una acción Actualizar Registro que escribe en la misma Tabla y actualiza un Campo supervisado, el disparador volverá a activarse y creará un bucle infinito.</Warning>
+
+Si la Automatización se activa con actualizaciones de una Tabla y también tiene una acción **Actualizar Registro** que vuelve a escribir en la *misma Tabla*, puedes crear un bucle infinito:
+
+1. Un Campo cambia → se activa el disparador.
+2. La Automatización actualiza otro Campo del mismo Registro → el disparador vuelve a activarse.
+3. El proceso se repite indefinidamente.
+
+**Cómo evitarlo:**
+
+- Supervisa únicamente Campos específicos y asegúrate de que la acción Actualizar Registro escriba en Campos *distintos* de los supervisados.
+- Usa una condición de filtro para detener el bucle. Por ejemplo, activa el flujo únicamente cuando `Estado` no sea igual a `Procesado` y haz que la acción establezca `Estado` en `Procesado`.
+- Si la acción debe actualizar el mismo Campo, considera usar en su lugar el disparador [Cuando un Registro cumple las condiciones](/es/basic/automation/trigger/records/record-matches-conditions), que solo se activa durante las transiciones.
+
+## Cuándo usarlo
+
+- **Sincronizar cambios de precio con un sistema externo.** Supervisa el Campo «Precio». Cuando cambie, envía una solicitud HTTP para actualizar el precio en tu plataforma de comercio electrónico.
+- **Enviar una notificación cuando cambie el estado de una tarea.** Supervisa el Campo «Estado». Cuando una tarea pase a «Bloqueada» o «Hecha», notifica al responsable o al gestor.
+- **Registrar cambios de Campos para auditorías.** Supervisa «Todos los Campos» y crea un Registro en una Tabla de auditoría con los valores anteriores y nuevos.
+- **Actualizar un Registro enlazado cuando cambie uno principal.** Supervisa los Campos clave de un Registro de proyecto. Cuando cambie la fecha límite del proyecto, actualiza todas las tareas enlazadas.
+- **Activar un nuevo cálculo en otro sistema.** Supervisa Campos numéricos como «Cantidad» o «Precio unitario». Cuando cambien, llama a una API para volver a calcular los totales.
+
+## Consejos
+
+- Empieza con Campos supervisados específicos. Siempre puedes añadir más si descubres que faltan eventos.
+- El filtro se evalúa *después* de la actualización. Esto significa que comprueba los valores nuevos del Registro, no los anteriores.
+- Este disparador no indica cuál era el valor anterior, solo cómo es el Registro ahora. Si necesitas comparar los valores anteriores y posteriores, considera mantener un Campo «Valor anterior» que actualice la Automatización.
+- El disparador se activa una vez por cada operación de guardado, aunque cambien varios Campos supervisados en la misma modificación.
+
+## Contenido relacionado
+
+- [Cuando un Registro cumple las condiciones](/es/basic/automation/trigger/records/record-matches-conditions) — se activa solo durante las transiciones de estado, no con cada modificación
+- [Cuando se crea un Registro](/es/basic/automation/trigger/records/record-created) — se activa con Registros nuevos, no con actualizaciones
+- [Acción Actualizar Registro](/es/basic/automation/actions/records/update-record) — acción equivalente para modificar Registros en flujos de trabajo

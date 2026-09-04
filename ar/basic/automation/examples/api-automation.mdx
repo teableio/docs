@@ -1,0 +1,80 @@
+---
+title: "إنشاء عمليات الأتمتة برمجيًا باستخدام API"
+description: "أنشئ تدفقات العمل وهيّئها باستخدام واجهة Teable API وJavaScript"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>نوصي بإنشاء أمثلة الأتمتة مباشرةً في دردشة الذكاء الاصطناعي. ما عليك سوى وصف سير العمل الذي تريده، وسيتولى الذكاء الاصطناعي الإعداد كاملًا، بما في ذلك المشغّل والإجراءات والبرنامج النصي والتهيئة.</Tip>
+
+## الإنشاء بالذكاء الاصطناعي
+
+افتح دردشة الذكاء الاصطناعي في الشريط الجانبي الأيمن للجدول وأخبره بما تريده. يمكنك مثلًا أن تقول:
+
+*"أنشئ أتمتة تراقب تغيرات حالة الطلب وترسل إشعار خطاف ويب عند شحنه"*
+
+سينشئ الذكاء الاصطناعي سير العمل كاملًا تلقائيًا. يمكنك مراجعة البرنامج النصي الذي أنشأه، واختباره ببيانات حقيقية، وتمكين سير العمل عندما يصبح جاهزًا.
+
+## المتطلبات الأساسية
+
+- رمز وصول شخصي (PAT). راجع [رمز الوصول](/ar/api-doc/token).
+- معرّف قاعدة البيانات ومعرّف الجدول ومعرّفات الحقول. راجع [الحصول على المعرّفات](/ar/api-doc/get-id).
+
+## الدوال المساعدة
+
+```javascript
+const baseUrl = "https://app.teable.ai/api";
+const token = process.env.TEABLE_TOKEN;
+const baseId = "bserxxxxxx";
+
+const headers = {
+  Authorization: `Bearer ${token}`,
+  "Content-Type": "application/json",
+};
+
+async function api(method, path, body) {
+  const res = await fetch(`${baseUrl}${path}`, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!res.ok) throw new Error(`${method} ${path} → ${res.status}`);
+  return res.json();
+}
+```
+
+## إنشاء سير العمل
+
+```javascript
+// 1. إنشاء سير عمل
+const wf = await api("POST", `/base/${baseId}/workflow`, {
+  name: "الإشعار عند الشحن",
+  description: "إرسال خطاف ويب عندما تصبح حالة الطلب تم الشحن",
+});
+
+// 2. إضافة مشغّل
+const trigger = await api("POST", `/base/${baseId}/workflow/${wf.id}/trigger`, {
+  type: "recordUpdated",
+  config: { tableId: "tblOrders", watchFieldIds: ["fldStatus"] },
+});
+
+// 3. اختبار المشغّل
+await api("POST", `/base/${baseId}/workflow/${wf.id}/test/${trigger.id}`);
+
+// 4. إضافة إجراء طلب HTTP
+const action = await api("POST", `/base/${baseId}/workflow/${wf.id}/action`, {
+  type: "httpRequest",
+  parentNodeId: trigger.id,
+});
+
+// 5. التمكين
+await api("PUT", `/base/${baseId}/workflow/${wf.id}/active`, {
+  method: "activate",
+});
+```
+
+## أفضل الممارسات
+
+- استخدم رمز PAT بأقل قدر من الصلاحيات، واقصره على المساحات وقواعد البيانات التي يحتاج إليها.
+- خزّن الرموز في متغيرات البيئة، ولا تثبتها أبدًا في الشيفرة.
+- استخدم **اختبار العقدة** للتحقق قبل التمكين.
+- راجع [مرجع API الكامل للأتمتة](/ar/api-reference/automation/put-base-workflow-action).

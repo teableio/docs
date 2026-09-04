@@ -1,0 +1,179 @@
+---
+title: "Azure Entra ID SSO"
+description: "Azure Entra ID を Teable の SSO 認証プロバイダーとして設定します"
+---
+
+{/* mintlify-resync: 2026-05-28 */}
+<Tip>Business プラン以上で利用できます</Tip>
+
+## ステップ1：Teable で認証プロバイダーを作成する
+
+1. Teable の SSO 設定を開きます
+2. 新しい認証プロバイダーを作成し、名前を **Azure Entra ID** として、**OpenID Connect** を選択します
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-create-provider.png"
+  alt="Azure Entra ID SSO 設定のステップ1"
+  className="docs-screenshot"
+/>
+
+## ステップ2：Azure Entra ID を開く
+
+1. Azure アカウントにログインします
+2. **Microsoft Entra ID**（旧 Azure Active Directory）を開きます
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-open-entra-id.png"
+  alt="Azure Entra ID SSO 設定のステップ2"
+  className="docs-screenshot"
+/>
+
+## ステップ3：OAuth エンドポイントを設定する
+
+**テナントID**を使用して、Teable に次の OAuth エンドポイントを入力します。
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-oauth-endpoints.png"
+  alt="Azure Entra ID SSO 設定のステップ3"
+  className="docs-screenshot"
+/>
+
+- **認可URL**：`https://login.microsoftonline.com/_YOUR_TENANT_ID_/oauth2/v2.0/authorize`
+- **トークンURL**：`https://login.microsoftonline.com/_YOUR_TENANT_ID_/oauth2/v2.0/token`
+- **ユーザー情報URL**：`https://graph.microsoft.com/oidc/userinfo`
+- **発行者**：`https://login.microsoftonline.com/_YOUR_TENANT_ID_/v2.0`
+
+<Note>`_YOUR_TENANT_ID_` を実際の Azure テナントIDに置き換えてください。</Note>
+
+## ステップ4：新しいアプリケーションを登録する
+
+1. Azure Entra ID の左側のメニューで**アプリの登録**をクリックします
+2. **+ 新規登録**をクリックします
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-app-registration-entry.png"
+  alt="Azure Entra ID のアプリ登録"
+  className="docs-screenshot"
+/>
+
+## ステップ5：アプリケーション登録を設定する
+
+アプリケーション登録フォームに入力します。
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-app-registration-form.png"
+  alt="Azure Entra ID SSO 設定のステップ5"
+  className="docs-screenshot"
+/>
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-redirect-uri.png"
+  alt="Azure Entra ID SSO 設定のステップ6"
+  className="docs-screenshot"
+/>
+
+- **名前**：Teable SSO
+- **サポートされているアカウントの種類**：必要に応じて選択します
+- **プラットフォーム**：Web
+- **リダイレクト URI**：Teable の**コールバックURL**を貼り付けます
+
+**登録**をクリックしてアプリケーションを作成します。
+
+## ステップ6：クライアントIDを保存する
+
+1. アプリケーションの概要ページから**アプリケーション（クライアント）ID**をコピーします
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-application-client-id.png"
+  alt="Azure Entra ID SSO 設定のステップ7"
+  className="docs-screenshot"
+/>
+
+2. クライアントIDを Teable の SSO 設定に貼り付けます
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-teable-client-id.png"
+  alt="Azure Entra ID SSO 設定のステップ8"
+  className="docs-screenshot"
+/>
+
+## ステップ7：クライアントシークレットを作成する
+
+1. アプリケーションの左側のメニューで**証明書とシークレット**をクリックします
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-certificates-secrets.png"
+  alt="Azure Entra ID SSO 設定のステップ9"
+  className="docs-screenshot"
+/>
+
+2. **+ 証明書またはシークレットの追加**をクリックします
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-add-client-secret.png"
+  alt="Azure Entra ID SSO 設定のステップ10"
+  className="docs-screenshot"
+/>
+
+3. 説明を追加し、有効期限を設定します
+4. **追加**をクリックします
+5. **重要**：シークレットの**値**をすぐにコピーし、Teable でクライアントシークレットとして保存します
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-client-secret-value.png"
+  alt="Azure Entra ID SSO 設定のステップ11"
+  className="docs-screenshot"
+/>
+
+<Warning>シークレットの値が表示されるのは一度だけです。すぐに保存してください。</Warning>
+
+## ステップ8：API 権限を設定する
+
+1. 左側のメニューで **API のアクセス許可**をクリックします
+2. **+ アクセス許可の追加**をクリックします
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-add-api-permission.png"
+  alt="Azure Entra ID SSO 設定のステップ12"
+  className="docs-screenshot"
+/>
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-microsoft-graph-permissions.png"
+  alt="Azure Entra ID SSO 設定のステップ13"
+  className="docs-screenshot"
+/>
+
+3. **Microsoft Graph** を選択します
+4. **委任されたアクセス許可**を選択します
+5. 次の権限を追加します：
+   - `email`
+   - `openid`
+   - `profile`
+6. **アクセス許可の追加**をクリックします
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-delegated-permissions.png"
+  alt="Azure Entra ID SSO 設定のステップ14"
+  className="docs-screenshot"
+/>
+
+7. **[自分のディレクトリ] に管理者の同意を与えます**をクリックして権限を承認します
+
+## ステップ9：SSO ログインをテストする
+
+SSO ログインを有効にする方法は2つあります。
+
+<img
+  src="/images/docs/sso/2026-05-11-azure-entra-id-login-options.png"
+  alt="Azure Entra ID SSO 設定のステップ15"
+  className="docs-screenshot"
+/>
+
+**オプション1：認証URLを直接使用**
+- 認証URLを SSO ログインURLとして使用します
+
+**オプション2：ドメイン認証**
+1. 左側のメニューで**ドメイン認証**をクリックします
+2. カスタムドメインを認証します
+3. Teable のログインページにアクセスします
+4. SSO ログインボタンをクリックします
+5. 認証済みドメインのメールアドレスを入力してログインします

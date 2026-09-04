@@ -1,0 +1,243 @@
+---
+title: "إنشاء السجلات"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+### المسار
+
+POST /api/table/\{tableId\}/record
+
+### الطلب
+
+#### معلمات المسار
+
+* tableId (string): المعرّف الفريد للجدول.
+
+#### نص الطلب
+
+* **records (مطلوب)**
+  * الوصف: مصفوفة السجلات المطلوب إنشاؤها
+  * النوع: مصفوفة
+  * مثال:
+    ```json
+    [
+      {
+        "fields": {
+          "Name": "John Doe",
+          "Age": 30,
+          "Email": "john@example.com"
+        }
+      },
+      {
+        "fields": {
+          "Name": "Jane Smith",
+          "Age": 28,
+          "Email": "jane@example.com"
+        }
+      }
+    ]
+    ```
+  * ملاحظة: كل سجل عبارة عن عنصر يحتوي على كائن `fields`. ويحتوي كائن `fields` على أسماء الحقول وقيمها المقابلة. لكل نوع من الحقول بنية قيمة مختلفة؛ راجع [أنواع قيم حقول السجلات](/ar/api-doc/record/interface) للاطلاع على التفاصيل.
+  * القيم الافتراضية: تستخدم الحقول المحذوفة من `fields` القيمة الافتراضية للجدول عند تهيئة إحداها. إذا لم تكن للحقل المطلوب قيمة افتراضية، أو إذا مرّرت `null` صراحةً إلى حقل مطلوب، فسيفشل الطلب.
+* **fieldKeyType (اختياري)**
+  * الوصف: يحدد نوع مفتاح الحقل
+  * النوع: سلسلة نصية
+  * القيم الممكنة:
+    * "name": استخدام اسم الحقل كمفتاح
+    * "id": استخدام معرّف الحقل كمفتاح
+    * "dbFieldName": استخدام dbFieldName للحقل كمفتاح
+  * مثال: `"name"` أو `"id"` أو `"dbFieldName"`
+  * ملاحظة: إذا لم تحدده، فسيُستخدم اسم الحقل كمفتاح افتراضيًا.
+  * الاستخدام:
+    * عند ضبطه على "name":
+      ```json
+      {
+        "fields": {
+          "Name": "John Doe",
+          "Age": 30
+        }
+      }
+      ```
+    * عند ضبطه على "id":
+      ```json
+      {
+        "fields": {
+          "fldABCDEFGHIJKLMN": "John Doe",
+          "fldOPQRSTUVWXYZ12": 30
+        }
+      }
+      ```
+* **typecast (اختياري)**
+  * الوصف: يحدد ما إذا كانت أنواع قيم الحقول ستُحوّل تلقائيًا. يُطبّق التحقق الصارم افتراضيًا، ما يفرض تطابق قيم الإدخال مع نوع بيانات الحقل الحالي. عند تمكينه، سيحاول النظام إجراء التحويل تلقائيًا.
+  * النوع: قيمة منطقية
+  * القيم الممكنة: true أو false
+  * مثال: `true`
+  * ملاحظة: إذا ضُبط على true، فسيحاول النظام تحويل قيم الإدخال إلى نوع قيمة الحقل الصحيح.
+  * أمثلة على الاستخدام:
+    * حقل ارتباط: يمكن استخدام نص المفتاح الأساسي مباشرةً لإنشاء الارتباط
+      ```json
+      {
+        "User table": "John Smith"
+      }
+      ```
+    * حقل تاريخ: يمكن استخدام سلاسل تاريخ بتنسيق غير قياسي
+      ```json
+      {
+        "Date": "2023-05-15"
+      }
+      ```
+    * حقل مستخدم: يمكن استخدام اسم المستخدم مباشرةً
+      ```json
+      {
+        "Assigned To": "John Doe"
+      }
+      ```
+* **order (اختياري)**
+  * الوصف: يحدد موضع السجلات الجديدة في طريقة عرض محددة
+  * النوع: كائن
+  * الخصائص:
+    * viewId
+      * الوصف: معرّف طريقة العرض [(كيفية الحصول عليه)](/ar/api-doc/get-id#viewid)
+      * النوع: سلسلة نصية
+      * مثال: `"viwABCDEFGHIJKLMN"`
+    * anchorId
+      * الوصف: معرّف السجل المرجعي [(كيفية الحصول عليه)](/ar/api-doc/get-id#recordid)
+      * النوع: سلسلة نصية
+      * مثال: `"rec123456789ABCDE"`
+    * position
+      * الوصف: الموضع بالنسبة إلى السجل المرجعي
+      * النوع: سلسلة نصية
+      * القيم الممكنة:
+        * "before": قبل السجل المرجعي
+        * "after": بعد السجل المرجعي
+      * مثال: `"after"`
+  * مثال كامل:
+    ```json
+    {
+      "viewId": "viwABCDEFGHIJKLMN",
+      "anchorId": "rec123456789ABCDE",
+      "position": "after"
+    }
+    ```
+  * ملاحظة: يتيح استخدام order التحكم الدقيق في مواضع السجلات الجديدة ضمن طريقة عرض محددة.
+
+### الاستجابة
+
+#### استجابة النجاح
+
+* رمز الحالة: 201 Created
+* نص الاستجابة: يُرجع بيانات السجلات التي أُنشئت.
+
+**مثال على نص الاستجابة**
+
+```json
+{
+  "records": [
+    {
+      "id": "record789",
+      "fields": {
+        "single line text": "قيمة نصية 1"
+      }
+    },
+    {
+      "id": "record567",
+      "fields": {
+        "single line text": "قيمة نصية 2"
+      }
+    }
+  ]
+}
+```
+
+### استجابات الأخطاء
+
+* رمز الحالة: 400 Bad Request: خطأ في تنسيق نص الطلب أو غياب الحقول المطلوبة.
+* رمز الحالة: 404 Not Found: قيمة tableId المحددة غير موجودة.
+
+### مثال على الشيفرة
+
+<CodeGroup>
+  ```bash CURL
+  curl -X POST 'https://app.teable.ai/api/table/__tableId__/record' \
+    -H 'Authorization: Bearer __token__' \
+    -H 'Content-Type: application/json' \
+    -d '{
+      "records": [
+        {
+          "fields": {
+            "Name": "John Doe",
+            "Age": 30
+          }
+        }
+      ]
+    }'
+  ```
+
+  ```js JS SDK
+  import { configApi, createRecords } from '@teable/openapi';
+
+  configApi({
+    endpoint: 'https://app.teable.ai',
+    token,
+  });
+
+  const response = await createRecords('__tableId__', {
+    records: [
+      {
+        fields: {
+          Name: 'John Doe',
+          Age: 30
+        }
+      }
+    ]
+  });
+
+  console.log(response.data);
+  ```
+
+  ```ts TypeScript
+  const response = await fetch('https://app.teable.ai/api/table/__tableId__/record', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer __token__',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      records: [
+        {
+          fields: {
+            Name: 'John Doe',
+            Age: 30
+          }
+        }
+      ]
+    })
+  });
+
+  console.log(await response.json());
+  ```
+
+  ```python Python
+  import requests
+
+  response = requests.post(
+      'https://app.teable.ai/api/table/__tableId__/record',
+      headers={
+          'Authorization': 'Bearer __token__',
+          'Content-Type': 'application/json'
+      },
+      json={
+          'records': [
+              {
+                  'fields': {
+                      'Name': 'John Doe',
+                      'Age': 30
+                  }
+              }
+          ]
+      }
+  )
+
+  print(response.json())
+  ```
+</CodeGroup>

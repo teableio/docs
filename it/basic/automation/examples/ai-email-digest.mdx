@@ -1,0 +1,40 @@
+---
+title: "Generare e inviare un riepilogo giornaliero via email con l'IA"
+description: "Usa un trigger pianificato e Genera con l'IA per riepilogare l'attività della giornata e inviarla via email al team"
+---
+
+<Tip>Consigliamo di creare gli esempi di Automazione direttamente in AI Chat. Descrivi il workflow desiderato e l'IA si occuperà dell'intera configurazione, inclusi trigger, azioni, script e impostazioni.</Tip>
+
+## Creare con l'IA
+
+Apri AI Chat nella barra laterale destra della Tabella e spiega all'IA cosa desideri. Ad esempio, puoi dire:
+
+*"Ogni giorno alle 18:00, trova tutte le attività completate oggi, riassumile in un breve report e invialo via email a team@yourcompany.com"*
+
+L'IA creerà automaticamente il workflow completo. Puoi esaminare lo script generato, provarlo con dati reali e abilitare il workflow quando è pronto.
+
+## Configurazione manuale
+
+1. **Crea un workflow** con il trigger **All'orario pianificato**, ogni giorno alle 18:00.
+2. **Aggiungi un'azione** → **Ottieni Record**.
+   - Tabella: **Attività**
+   - Filtro: `Stato` **è** `Completato` E `Completato il` **è** `oggi`
+3. **Aggiungi un'azione** → **Genera con l'IA**.
+   - Prompt:
+     ```
+     Riassumi queste attività completate in un breve report giornaliero.
+     Se opportuno, raggruppale per categoria. Non superare le 200 parole.
+
+     Attività: <inserisci l'output di Ottieni Record tramite +>
+     ```
+   - Tipo di output: **Testo**
+4. **Aggiungi un'azione** → **Invia email**.
+   - A: `team@yourcompany.com`
+   - Oggetto: `Report giornaliero delle attività`
+   - Corpo: inserisci l'output di Genera con l'IA (tramite **+**)
+5. Prova ogni passaggio, quindi **abilita** il workflow.
+
+## Varianti
+
+- **Riepilogo settimanale:** modifica la pianificazione impostandola al venerdì e il filtro su "ultimi 7 giorni".
+- **Riepilogo delle attività dei clienti:** esegui una query su una Tabella CRM per trovare le nuove interazioni e riassumile.

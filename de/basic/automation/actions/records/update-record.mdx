@@ -1,0 +1,103 @@
+---
+title: "Datensatz aktualisieren"
+description: "Ändern Sie als Teil eines Workflows Felder in einem vorhandenen Datensatz"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Wir empfehlen dringend, Automatisierungen mit „Skript ausführen“ zu erstellen, da diese Funktion alle Aktionsarten abdecken kann – auch solche, die andernfalls manuell erstellt werden müssten. Beschreiben Sie Ihre Anforderungen einfach im KI-Chat.
+
+Bitte beachten Sie: Wenn Sie Aktionen manuell hinzufügen, kann die KI sie später weder erkennen noch ändern.
+</Tip>
+
+## Mit KI erstellen
+
+Öffnen Sie den KI-Chat in der rechten Seitenleiste Ihrer Tabelle und beschreiben Sie, was Sie erreichen möchten.
+
+Die KI übernimmt alles: Sie wählt den richtigen Auslöser und die passenden Aktionen aus, ordnet die Felder zu und konfiguriert den gesamten Workflow automatisch.
+
+Beschreiben Sie Ihr Ziel einmal, und der Workflow ist einsatzbereit – eine manuelle Einrichtung ist nicht erforderlich.
+
+Aktualisiert ein oder mehrere Felder in einem vorhandenen Datensatz. Nur die von Ihnen zugeordneten Felder ändern sich – alle anderen bleiben unverändert.
+
+## Konfiguration
+
+| Einstellung | Erforderlich | Beschreibung |
+|---|---|---|
+| Tabelle | Ja | Die Tabelle mit dem zu aktualisierenden Datensatz |
+| Datensatz-ID | Ja | Der zu aktualisierende Datensatz. Unterstützt dynamische Variablen und durch Kommas getrennte IDs für mehrere Datensätze |
+| Felder | Ja | Ordnen Sie jedem Feld seinen neuen Wert zu – statisch oder dynamisch |
+
+## Einrichtung
+
+1. Fügen Sie Ihrem Workflow die Aktion **Datensatz aktualisieren** hinzu.
+2. Wählen Sie die **Tabelle**, die den zu ändernden Datensatz enthält.
+3. Legen Sie die **Datensatz-ID** fest. Klicken Sie auf **+**, um eine dynamische Variable einzufügen:
+   - Von einem **Datensatzauslöser** (erstellt, aktualisiert, Schaltfläche angeklickt): Der Auslöser stellt die Datensatz-ID direkt bereit.
+   - Von einer Aktion **Datensätze abrufen**: Verweisen Sie auf die Datensatz-ID in den abgerufenen Ergebnissen.
+   - Sie können auch eine feste Datensatz-ID eingeben oder eine durch Kommas getrennte Liste verwenden, um mehrere Datensätze gleichzeitig zu aktualisieren (z. B. `rec123,rec456,rec789`).
+4. Ordnen Sie die zu ändernden Felder zu. Für jedes Feld:
+   - **Statischer Wert:** Geben Sie den neuen Wert direkt ein.
+   - **Dynamischer Wert:** Klicken Sie auf **+**, um einen Wert aus einem vorherigen Schritt einzufügen.
+5. Lassen Sie Felder, die Sie nicht ändern möchten, ohne Zuordnung – sie behalten ihre aktuellen Werte.
+6. Speichern Sie die Aktion.
+
+## Datensatz-ID ermitteln
+
+Die Datensatz-ID ist die zentrale Information, die diese Aktion benötigt. Abhängig von Ihrem Auslöser finden Sie sie hier:
+
+| Auslöser / vorheriger Schritt | Datensatz-ID ermitteln |
+|---|---|
+| Wenn Datensatz erstellt wird | Direkt als Ausgabevariable des Auslösers verfügbar |
+| Wenn Datensatz aktualisiert wird | Direkt als Ausgabevariable des Auslösers verfügbar |
+| Wenn Schaltfläche angeklickt wird | Direkt verfügbar – es ist die Zeile, in der die Schaltfläche angeklickt wurde |
+| Wenn Formular übermittelt wird | Direkt verfügbar – es ist der durch die Einreichung erstellte Datensatz |
+| Aktion „Datensätze abrufen“ | Jeder Datensatz in den Ergebnissen besitzt eine ID. Verweisen Sie in einer Schleife auf die ID des aktuellen Elements |
+| Webhook empfangen | Sie müssen die Datensatz-ID in die Webhook-Nutzlast aufnehmen oder sie mit „Datensätze abrufen“ suchen |
+
+<Tip>Möchten Sie mehrere Datensätze gleichzeitig aktualisieren? Sie können durch Kommas getrennte Datensatz-IDs übergeben oder [Schleife (Stapelverarbeitung)](../logic/loop-run) mit dem Ergebnis von „Datensätze abrufen“ verwenden, um Datensätze massenhaft zu aktualisieren.</Tip>
+
+## Teilaktualisierungen
+
+Diese Aktion führt eine Teilaktualisierung durch. Das bedeutet:
+
+- **Zugeordnete Felder** werden mit den von Ihnen angegebenen neuen Werten überschrieben.
+- **Nicht zugeordnete Felder** bleiben exakt unverändert.
+
+Sie müssen nicht alle Feldwerte erneut senden – nur diejenigen, die Sie ändern möchten. Das ist sicher und effizient.
+
+## Warnung: Auslöserschleifen
+
+<Warning>Wenn Ihr Workflow den Auslöser „Wenn Datensatz aktualisiert wird“ verwendet und ein nachfolgender Schritt dieselben überwachten Felder in derselben Tabelle aktualisiert, wird der Workflow erneut ausgelöst und erzeugt eine Endlosschleife.</Warning>
+
+Wenn Ihre Automatisierung durch **Wenn Datensatz aktualisiert wird** ausgelöst wird und die Aktion „Datensatz aktualisieren“ in dieselbe **Tabelle** zurückschreibt, können Sie eine Endlosschleife erzeugen:
+
+1. Datensatz ändert sich → Auslöser wird aktiviert → Automatisierung aktualisiert den Datensatz → Auslöser wird erneut aktiviert → und so weiter.
+
+**So verhindern Sie Schleifen:**
+
+- **Überwachen Sie im Auslöser bestimmte Felder**, die sich von den aktualisierten Feldern unterscheiden. Überwachen Sie beispielsweise „Status“, aktualisieren Sie jedoch „Verarbeitungsdatum“.
+- **Fügen Sie dem Auslöser einen Filter hinzu.** Lösen Sie beispielsweise nur aus, wenn `Verarbeitet` nicht `true` ist, und setzen Sie `Verarbeitet` in Ihrer Aktion auf `true`.
+- Verwenden Sie stattdessen [Wenn Datensatz Bedingungen erfüllt](/de/basic/automation/trigger/records/record-matches-conditions), das nur bei Zustandsübergängen ausgelöst wird.
+
+## Verwendung
+
+- **Eine Aufgabe nach der Genehmigung als abgeschlossen markieren.** Setzen Sie beim Anklicken einer Schaltfläche den Status auf „Genehmigt“ und tragen Sie das Genehmigungsdatum ein.
+- **Ein Statusfeld anhand externer Ereignisse aktualisieren.** Wenn ein Webhook eine Zahlung meldet, suchen Sie den Bestelldatensatz und aktualisieren seinen Status auf „Bezahlt“.
+- **Bei einer Änderung einen Zeitstempel schreiben.** Setzen Sie beim Aktualisieren eines Datensatzes ein Datumsfeld „Zuletzt durch Automatisierung geändert“ auf die aktuelle Uhrzeit.
+- **Daten aus einem externen System zurücksynchronisieren.** Schreiben Sie nach dem Aufruf einer externen API die Antwortdaten (z. B. eine Sendungsnummer) in den Datensatz zurück.
+- **Datensätze im Stapel aktualisieren.** Kombinieren Sie „Datensätze abrufen“ und „Schleife“, um mehrere Datensätze gleichzeitig zu aktualisieren, etwa um alle überfälligen Aufgaben als „Eskaliert“ zu markieren.
+
+## Tipps
+
+- Das Aktualisieren eines Datensatzes kann weitere Automatisierungen auslösen, die dieselbe Tabelle überwachen. Beachten Sie mögliche Kaskadeneffekte.
+- Wenn Sie mehrere Datensätze über durch Kommas getrennte IDs aktualisieren, erhalten alle Datensätze dieselben Feldwerte. Verwenden Sie für unterschiedliche Werte pro Datensatz stattdessen einen Schritt [Schleife](../logic/loop-run).
+- Um ein Feld zu leeren, ordnen Sie ihm einen leeren Wert zu. Wenn Sie es lediglich ohne Zuordnung lassen, wird es *nicht* geleert.
+- Verwenden Sie [Base-übergreifenden Zugriff](/de/basic/automation/actions/records/cross-base), um Datensätze in einer Tabelle zu aktualisieren, die sich in einer anderen Base befindet.
+
+## Verwandte Themen
+
+- [Datensatz erstellen](/de/basic/automation/actions/records/create-record) – neue Datensätze hinzufügen, statt vorhandene zu ändern
+- [Datensätze abrufen](/de/basic/automation/actions/records/get-records) – Datensätze abrufen, um deren IDs vor der Aktualisierung zu ermitteln
+- [Base-übergreifender Zugriff](/de/basic/automation/actions/records/cross-base) – Datensätze in Tabellen außerhalb der aktuellen Base aktualisieren
+- [Schleife (Stapelverarbeitung)](../logic/loop-run) – mehrere Datensätze mit unterschiedlichen Werten aktualisieren

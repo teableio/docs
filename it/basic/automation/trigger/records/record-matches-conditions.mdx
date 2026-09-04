@@ -1,0 +1,75 @@
+---
+title: "Quando un Record soddisfa le condizioni"
+description: "Attiva un workflow quando un Record inizia a soddisfare condizioni specifiche"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Nota: puoi configurare tutti i trigger in AI Chat. Spiega all'IA cosa deve fare il workflow e si occuperà del resto.</Tip>
+
+Questo trigger viene utilizzato quando un workflow deve essere eseguito dopo che un Record inizia a soddisfare determinate condizioni.
+
+Può attivarsi in due casi comuni:
+
+- Viene creato un nuovo Record che soddisfa già il filtro.
+- Un Record esistente viene modificato e passa dal non soddisfare il filtro al soddisfarlo.
+
+## Creare con l'IA
+
+Apri AI Chat nella barra laterale destra della Tabella e descrivi ciò che desideri.
+
+L'IA si occupa di tutto: sceglie il trigger corretto, mappa i Campi pertinenti e configura automaticamente tutte le azioni.
+
+Descrivi l'obiettivo una sola volta e il workflow è pronto, senza alcuna configurazione manuale.
+
+**Esempio:** *"Quando un'attività diventa scaduta, inviami un'email."*
+
+## Configurazione
+
+| Impostazione | Obbligatoria | Descrizione |
+|---|---|---|
+| Tabella | Sì | La Tabella da monitorare per rilevare le modifiche |
+| Filtro | **Sì** | Le condizioni che il Record deve soddisfare. Usa lo stesso generatore di filtri delle Viste e supporta confronti tra Campi, gruppi E/O e valori dinamici |
+
+## Come configurarlo
+
+1. Apri l'Automazione e aggiungi un nuovo trigger.
+2. Seleziona **Quando un Record soddisfa le condizioni**.
+3. Scegli la **Tabella** da monitorare.
+4. Fai clic su **Aggiungi filtro** per definire le condizioni. Ad esempio: `Stato` uguale a `Scaduto`, oppure `Importo` maggiore di `10000`.
+5. Puoi combinare più condizioni con la logica E/O, proprio come nei filtri delle Viste.
+6. Salva e attiva l'Automazione.
+7. Provala creando un Record corrispondente oppure modificando un Record esistente affinché passi dal *non soddisfare* il filtro al *soddisfarlo*. L'Automazione dovrebbe attivarsi una sola volta.
+
+<Tip>Dopo l'attivazione del trigger, i passaggi successivi possono usare tutti i dati dei Campi del Record corrispondente, inclusi i valori più recenti al momento della transizione.</Tip>
+
+## In cosa differisce da "Quando viene aggiornato un Record"?
+
+È facile confondere questi due trigger. Ecco la differenza principale:
+
+- **Quando viene aggiornato un Record** si attiva ogni volta che cambia un Campo monitorato, indipendentemente dal nuovo valore. Se monitori il Campo "Stato", il trigger si attiva quando Stato passa a "In corso", "Completato" o qualsiasi altro valore.
+- **Quando un Record soddisfa le condizioni** si attiva soltanto quando un Record supera il confine tra il *non soddisfare* e il *soddisfare* il filtro. Non si attiva a ogni modifica, ma soltanto durante la transizione.
+
+Usa **Quando viene aggiornato un Record** quando devi reagire a qualsiasi modifica. Usa **Quando un Record soddisfa le condizioni** quando ti interessa soltanto il raggiungimento di uno stato specifico.
+
+<Note>Se vuoi eseguire un'azione ogni volta che un Record viene modificato, usa il trigger [Quando viene aggiornato un Record](/it/basic/automation/trigger/records/record-updated). Se vuoi eseguire un'azione una sola volta, quando un Record raggiunge per la prima volta una condizione specifica, usa questo trigger.</Note>
+
+## Quando utilizzarlo
+
+- **Inviare un avviso quando un ordine diventa scaduto.** Imposta il filtro su `Data di scadenza` precedente a oggi e `Stato` diverso da `Spedito`. L'Automazione si attiva una volta quando l'ordine soddisfa per la prima volta le condizioni.
+- **Inoltrare un ticket di assistenza quando la priorità diventa urgente.** Filtro: `Priorità` uguale a `Urgente`. Si attiva soltanto la prima volta che un ticket diventa urgente, non per le modifiche successive.
+- **Avvisare un responsabile quando una trattativa supera una soglia di ricavi.** Filtro: `Valore trattativa` maggiore di `50000`. Si attiva una volta quando la trattativa supera tale limite.
+- **Contrassegnare i Record che diventano incompleti.** Filtro: `Campo obbligatorio` è vuoto. Si attiva quando un Record precedentemente completo perde il proprio valore.
+- **Attivare i passaggi di onboarding quando lo stato di un contatto passa ad "Attivo".** Filtro: `Stato` uguale ad `Attivo`. Viene eseguito una sola volta per ogni attivazione.
+
+## Suggerimenti
+
+- Devi definire **almeno** una condizione di filtro. Senza di essa, il trigger non ha nulla da valutare.
+- Il trigger controlla la transizione nel momento in cui il Record viene salvato. Non si attiva retroattivamente per i Record che soddisfacevano già le condizioni prima della creazione dell'Automazione.
+- Anche i Record creati dopo l'attivazione vengono confrontati con il filtro. Se i valori iniziali corrispondono, il workflow può attivarsi immediatamente.
+- Combina questo trigger con un'azione **Invia email** o **Aggiorna Record** per creare potenti workflow basati sui cambiamenti di stato senza scrivere codice.
+
+## Contenuti correlati
+
+- [Quando viene aggiornato un Record](/it/basic/automation/trigger/records/record-updated) — si attiva con qualsiasi modifica di un Campo, non soltanto durante le transizioni
+- [Quando viene creato un Record](/it/basic/automation/trigger/records/record-created) — si attiva quando vengono aggiunti nuovi Record
+- [Invia email](/it/basic/automation/actions/communication/send-email-overview)

@@ -1,0 +1,95 @@
+---
+title: "Agrégation conditionnelle"
+description: "Calculez des statistiques entre plusieurs tables à l’aide de conditions de filtrage et renvoyez une valeur agrégée unique."
+---
+
+L’Agrégation conditionnelle filtre les Enregistrements correspondants d’une Table cible sans nécessiter la création préalable d’une relation de lien, puis calcule des statistiques sur un Champ sélectionné. Elle permet de calculer des décomptes, des sommes, des moyennes et d’autres résultats selon les valeurs de Champ de l’Enregistrement actuel.
+
+## Cas d’utilisation
+
+| Scénario | Utilité |
+| --- | --- |
+| Statistiques des tâches des employés | Compter les tâches en cours et terminées d’un responsable |
+| Statistiques de ventes par période | Calculer le montant des ventes, le nombre de commandes ou la valeur moyenne des commandes par plage de dates |
+| Vérification des données en double | Compter les noms, numéros de téléphone ou ID en double |
+| Rapports régionaux | Agréger les données métier par région, magasin ou canal |
+
+## Procédure
+
+<Steps>
+  <Step title="Créer un champ d’agrégation conditionnelle">
+    Cliquez sur l’icône `+` à droite du nom d’un Champ, choisissez **Agrégation conditionnelle** et saisissez un titre de Champ, tel que « Montant total des ventes ».
+  </Step>
+  <Step title="Choisir la table cible">
+    Dans la liste déroulante des Tables cibles, choisissez la Table à interroger.
+  </Step>
+  <Step title="Configurer le champ à agréger">
+    Choisissez le Champ à calculer et confirmez son type.
+  </Step>
+  <Step title="Définir les conditions de filtrage">
+    Ajoutez des conditions de filtrage, puis choisissez le Champ, le type de condition et la valeur de comparaison. Cette dernière peut être une valeur statique ou un Champ de la Table actuelle.
+  </Step>
+  <Step title="Choisir une fonction d’agrégation">
+    Choisissez une méthode de calcul selon le type de données, comme la valeur d’origine, les valeurs uniques, le nombre de valeurs uniques, la somme, le décompte, la moyenne, le maximum ou le minimum.
+  </Step>
+</Steps>
+
+## Mise en pratique
+
+### Statistiques sur le volume des tâches de l’équipe
+
+**Tables**
+
+- Table des tâches
+- Table des statistiques
+
+Un administrateur d’équipe doit compter, pour chaque employé, les tâches dans différents statuts, notamment celles en cours et terminées, afin de comprendre la répartition de la charge de travail et l’avancement.
+
+**Tâches en cours**
+
+1. Dans la Table des informations sur les employés, créez un champ Agrégation conditionnelle nommé « Tâches en cours »
+2. Table cible : Table d’attribution des tâches
+3. Champ à agréger : ID de tâche
+4. Conditions de filtrage :
+   - Champ : Responsable -> Condition : Est égal à -> Valeur : Champ Employé de la Table actuelle
+   - Champ : Statut de la tâche -> Condition : Est égal à -> Valeur : « En cours »
+5. Fonction d’agrégation : Tout compter
+
+**Tâches terminées**
+
+1. Créez un autre champ Agrégation conditionnelle nommé « Tâches terminées »
+2. Table cible : Table d’attribution des tâches
+3. Champ à agréger : ID de tâche
+4. Conditions de filtrage :
+   - Champ : Responsable -> Condition : Est égal à -> Valeur : Champ Employé de la Table actuelle
+   - Champ : Statut de la tâche -> Condition : Est égal à -> Valeur : « Terminée »
+5. Fonction d’agrégation : Tout compter
+
+### Rechercher les valeurs en double
+
+**Tables**
+
+- Table des clients, avec des Champs tels que le nom du client et le numéro de téléphone
+
+Dans la Table des clients, recherchez les noms de clients en double avant de fusionner leurs profils.
+
+**Étapes**
+
+1. Dans la Table des clients, créez un champ Agrégation conditionnelle nommé « Nombre de doublons du nom du client »
+2. Table cible : Table des clients (cette Table)
+3. Champ à agréger : Nom du client
+4. Condition de filtrage :
+   - Champ : Nom du client -> Condition : Est égal à -> Valeur : Champ Nom du client de la Table actuelle
+5. Fonction d’agrégation : Tout compter
+6. Créez un champ Formule nommé « Indicateur de doublon »
+7. Définissez la formule sur `IF(Nombre de doublons du nom du client > 1, "Doublon", BLANK())`
+
+La Table des clients indique combien de fois chaque nom de client apparaît et marque les Enregistrements en double avec « Doublon », afin que vous puissiez les filtrer et les traiter ultérieurement.
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Quelle est la différence entre l’Agrégation conditionnelle et la Recherche conditionnelle ?">
+    L’Agrégation conditionnelle renvoie une seule valeur calculée, ce qui convient aux totaux, aux décomptes et aux moyennes. La Recherche conditionnelle renvoie une liste de valeurs brutes correspondantes, ce qui convient à la consultation de données détaillées.
+  </Accordion>
+</AccordionGroup>

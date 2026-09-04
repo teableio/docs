@@ -1,0 +1,40 @@
+---
+title: "Télémétrie"
+description: "Découvrez le fonctionnement de la télémétrie auto-hébergée de Teable, les données signalées et comment la désactiver."
+---
+
+## Vue d’ensemble
+
+L’activation de licence peut fonctionner hors ligne après l’obtention et la saisie d’une clé de licence valide.
+
+Si une instance auto-hébergée peut accéder à Internet, elle peut envoyer un rapport de télémétrie minimal à des fins de conformité des licences, d’examen de sécurité, de prévention de la fraude et d’enquête sur les distributions non autorisées.
+
+Cette télémétrie est distincte des analyses produit facultatives. Elle est conçue pour l’administration et la conformité des instances auto-hébergées, à l’image des pratiques courantes de ping de service, de validation de licence et de rapport d’utilisation anonyme dans les logiciels autogérés.
+
+## Données susceptibles d’être signalées
+
+Les rapports de télémétrie peuvent inclure des identifiants d’autorisation produit tels que l’ID d’instance et, lorsqu’une licence est installée, l’ID de licence ; le plan de licence, la limite de sièges et les dates d’expiration lorsqu’ils sont disponibles ; l’édition du logiciel, la version de l’application, la version de build, le condensat d’image et le canal de build ; des décomptes et regroupements d’utilisation agrégés ; l’heure de dernière activité de l’instance ; le nom d’hôte d’origine publique haché et le nom d’hôte de la machine haché ; la plateforme, l’architecture CPU et la version de Node.js ; ainsi que des signaux de risque de conformité.
+
+Les identifiants d’autorisation produit tels que l’ID d’instance et l’ID de licence peuvent être envoyés sous leur forme d’origine, car ils servent à valider l’état du déploiement et de la licence.
+
+Les valeurs permettant d’identifier le client ou l’hôte, telles que le nom d’hôte d’origine publique et le nom d’hôte de la machine, sont hachées avant leur transmission.
+
+## Données non signalées
+
+Les rapports de télémétrie n’incluent pas le contenu des espaces de travail clients, les Enregistrements des Tables, les noms de schéma, les valeurs de Champ, les requêtes SQL, les secrets d’application, les identifiants d’accès, les jetons d’authentification, les clés de licence, les listes d’adresses e-mail des utilisateurs, les noms d’utilisateurs ni l’URL complète de l’origine publique.
+
+## Transmission et conservation
+
+Les rapports de télémétrie sont chiffrés pendant leur transmission.
+
+Teable ne conserve les événements bruts de télémétrie que pendant la durée raisonnablement nécessaire à la conformité des licences, à l’examen de sécurité, à la prévention de la fraude, au traitement des litiges et aux audits. Teable peut conserver le statut de conformité agrégé ou dérivé pendant toute la durée de la relation client et pendant toute période de conservation légalement requise.
+
+## Désactiver les rapports de télémétrie
+
+Les administrateurs d’instances auto-hébergées peuvent désactiver les rapports de télémétrie en définissant :
+
+```env
+TELEMETRY_REPORT_DISABLED=true
+```
+
+La désactivation des rapports de télémétrie n’empêche pas à elle seule l’activation hors ligne de la licence, mais peut limiter la capacité de Teable à vérifier la conformité de la licence, à détecter les distributions non autorisées ou à enquêter sur les litiges relatifs aux licences.

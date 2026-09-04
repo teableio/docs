@@ -1,0 +1,449 @@
+---
+title: "Interface des Champs d’Enregistrement"
+---
+
+<Note>Le Champ de recherche n’est pas un type de Champ spécifique. Nous pouvons rechercher n’importe quel type de Champ depuis une Base liée. Le type d’un Champ de recherche est déterminé par le Champ d’origine dans la Base liée et possède la propriété isLookup. Les Champs de recherche ne peuvent pas être modifiés.</Note>
+
+<Note>
+Toutes les valeurs de retour de Champ peuvent avoir `isMultipleCellValue: true` dans certains cas :
+
+1. Cela se produit lorsque le Champ est un Champ de recherche. Lorsque la valeur liée autorise plusieurs sélections, la valeur du Champ de recherche est nécessairement un tableau.
+
+2. Les Champs peuvent être configurés ; par exemple, les Champs utilisateur et les Champs de lien peuvent être configurés pour une sélection unique ou multiple. Dans votre code, vous pouvez utiliser `field.isMultipleCellValue` pour déterminer si un Champ accepte plusieurs valeurs.
+</Note>
+
+<Note>
+N’utilisez pas le type de Champ pour déterminer les autorisations d’écriture. Utilisez plutôt la propriété isComputed du Champ.
+</Note>
+
+### 1. Champ numérique
+* type: number
+* Type d’écriture : `number`
+* Type de retour :
+  * `isMultipleCellValue: false` : `number`
+  * `isMultipleCellValue: true` : `number[]`
+
+Exemple :
+```js
+// Valeur d’écriture
+42
+
+// Valeur renvoyée (isMultipleCellValue: false)
+42
+
+// Valeur renvoyée (isMultipleCellValue: true)
+[42, 17, 99]
+```
+
+### 2. Champ de texte sur une ligne
+* type: singleLineText
+* Type d’écriture : `string`
+* Type de retour :
+  * `isMultipleCellValue: false` : `string`
+  * `isMultipleCellValue: true` : `string[]`
+
+Exemple :
+```js
+// Valeur d’écriture
+"Hello, Teable!"
+
+// Valeur renvoyée (isMultipleCellValue: false)
+"Hello, Teable!"
+
+// Valeur renvoyée (isMultipleCellValue: true)
+["Hello, Teable!", "Welcome", "Good day"]
+```
+
+### 3. Champ de texte long
+* type: longText
+* Type d’écriture : `string`
+* Type de retour :
+  * `isMultipleCellValue: false` : `string`
+  * `isMultipleCellValue: true` : `string[]`
+
+Exemple :
+```js
+// Valeur d’écriture
+"Il s’agit d’un champ de texte long pouvant contenir plusieurs paragraphes..."
+
+// Valeur renvoyée (isMultipleCellValue: false)
+"Il s’agit d’un champ de texte long pouvant contenir plusieurs paragraphes..."
+
+// Valeur renvoyée (isMultipleCellValue: true)
+["Ceci est un texte long...", "Un autre texte long...", "Encore un autre texte long..."]
+```
+
+### 4. Champ de sélection unique
+* type: singleSelect
+* Type d’écriture : `string` (valeur de l’option)
+* Type de retour :
+  * `isMultipleCellValue: false` : `string`
+  * `isMultipleCellValue: true` : `string[]`
+
+Exemple :
+```js
+// Valeur d’écriture
+"Option A"
+
+// Valeur renvoyée (isMultipleCellValue: false)
+"Option A"
+
+// Valeur renvoyée (isMultipleCellValue: true)
+["Option A", "Option B", "Option C"]
+```
+
+### 5. Champ de sélection multiple
+* type: multipleSelect
+* Type d’écriture : `string[]` (tableau de valeurs d’option)
+* Type de retour : `string[]`
+
+Exemple :
+```js
+// Valeur d’écriture
+["Red", "Blue", "Green"]
+
+// Valeur renvoyée
+["Red", "Blue", "Green"]
+```
+
+### 6. Champ de lien
+* type: link
+* Type d’écriture :
+  * `isMultipleCellValue: false` : `{ id: string }`
+  * `isMultipleCellValue: true` : `{ id: string }[]`
+* Type de retour :
+  * `isMultipleCellValue: false` : `{ id: string, title?: string }`
+  * `isMultipleCellValue: true` : `{ id: string, title?: string }[]`
+
+Exemple :
+```js
+// Valeur d’écriture (isMultipleCellValue: false)
+{ id: "rec123456" }
+
+// Valeur d’écriture (isMultipleCellValue: true)
+[{ id: "rec123456" }, { id: "rec789012" }]
+
+// Valeur renvoyée (isMultipleCellValue: false)
+{ id: "rec123456", title: "Related Record 1" }
+
+// Valeur renvoyée (isMultipleCellValue: true)
+[
+  { id: "rec123456", title: "Related Record 1" },
+  { id: "rec789012", title: "Related Record 2" }
+]
+```
+
+### 7. Champ de formule
+* type: formula
+* Type d’écriture : Ne peut pas être écrit directement
+* Type de retour : Dépend du résultat de la formule ; peut être `string | number | boolean` ou leurs formes sous forme de tableau
+
+Exemple :
+```js
+// Valeur renvoyée (isMultipleCellValue: false)
+42 // or "Result" or true
+
+// Valeur renvoyée (isMultipleCellValue: true)
+[42, 17, 99] // or ["Result1", "Result2"] or [true, false, true]
+```
+
+### 8. Champ de pièce jointe
+Pour téléverser une pièce jointe dans un Champ de pièce jointe, utilisez l’API dédiée. Pour plus de détails, consultez la section [Téléverser une pièce jointe](/fr/api-doc/record/upload-attachment).
+* type: attachment
+* Type d’écriture :
+  ```ts
+  {
+    id: string;
+    name: string;
+    path: string;
+    token: string; // Unique identifier
+    size: number; // File size in bytes
+    mimetype: string; // File type
+    presignedUrl?: string; // File preview/download URL
+    width?: number; // Image width
+    height?: number; // Image height
+  }[]
+  ```
+
+* Type de retour :
+```ts
+{
+  id: string;
+  name: string;
+  path: string;
+  token: string; // Unique identifier
+  size: number; // File size in bytes
+  mimetype: string; // File type
+  presignedUrl?: string; // File preview/download URL
+  width?: number; // Image width
+  height?: number; // Image height
+}[]
+```
+
+Exemple :
+```js
+// Valeur d’écriture
+[
+  {
+    name: "document.pdf",
+    type: "application/pdf",
+    token: "abc123",
+    size: 1024000
+  }
+]
+
+// Valeur renvoyée
+[
+  {
+    id: "att123",
+    name: "document.pdf",
+    path: "/uploads/document.pdf",
+    token: "abc123",
+    size: 1024000,
+    mimetype: "application/pdf",
+    presignedUrl: "https://app.teable.ai/preview/document.pdf",
+  },
+  {
+    id: "att456",
+    name: "image.jpg",
+    path: "/uploads/image.jpg",
+    token: "def456",
+    size: 2048000,
+    mimetype: "image/jpeg",
+    presignedUrl: "https://app.teable.ai/preview/image.jpg",
+    width: 1920,
+    height: 1080
+  }
+]
+```
+
+### 9. Champ de date
+* type: date
+* Type d’écriture : `string` (format ISO 8601)
+* Type de retour :
+  * `isMultipleCellValue: false` : `string` (format ISO 8601)
+  * `isMultipleCellValue: true` : `string[]` (format ISO 8601)
+Vous pouvez utiliser `new Date().toISOString()` pour obtenir le format horaire ISO 8601
+
+Exemple :
+```js
+// Valeur d’écriture
+"2024-09-02T02:51:03.875Z"
+
+// Valeur renvoyée (isMultipleCellValue: false)
+"2024-09-02T02:51:03.875Z"
+
+// Valeur renvoyée (isMultipleCellValue: true)
+["2024-09-02T02:51:03.875Z", "2024-09-02T02:51:03.875Z"]
+```
+
+### 10. Champ d’heure de création
+* type: createdTime
+* Type d’écriture : Ne peut pas être écrit directement
+* Type de retour :
+  * `isMultipleCellValue: false` : `string` (format ISO 8601)
+  * `isMultipleCellValue: true` : `string[]` (format ISO 8601)
+
+Exemple :
+```js
+// Valeur renvoyée (isMultipleCellValue: false)
+"2024-09-02T02:51:03.875Z"
+
+// Valeur renvoyée (isMultipleCellValue: true)
+["2024-09-02T02:51:03.875Z", "2024-09-02T02:51:03.875Z"]
+```
+
+### 11. Champ d’heure de dernière modification
+* type: lastModifiedTime
+* Type d’écriture : Ne peut pas être écrit directement
+* Type de retour :
+  * `isMultipleCellValue: false` : `string` (format ISO 8601)
+  * `isMultipleCellValue: true` : `string[]` (format ISO 8601)
+
+Exemple :
+```js
+// Valeur renvoyée (isMultipleCellValue: false)
+"2023-04-15T10:30:00Z"
+
+// Valeur renvoyée (isMultipleCellValue: true)
+["2023-04-15T10:30:00Z", "2023-04-16T14:45:00Z"]
+```
+
+### 12. Champ de case à cocher
+* type: checkbox
+* Type d’écriture : `boolean`
+* Type de retour :
+  * `isMultipleCellValue: false` : `boolean`
+  * `isMultipleCellValue: true` : `boolean[]`
+
+Exemple :
+```js
+// Valeur d’écriture
+true
+
+// Valeur renvoyée (isMultipleCellValue: false)
+true
+
+// Valeur renvoyée (isMultipleCellValue: true)
+[true, false, true]
+```
+
+### 13. Champ de cumul
+* type: rollup
+* Type d’écriture : Ne peut pas être écrit directement
+* Type de retour : Dépend de la configuration du cumul ; peut être `number | string` ou leurs formes sous forme de tableau
+
+Exemple :
+```js
+// Valeur renvoyée (isMultipleCellValue: false)
+42 // or "Summary Result"
+
+// Valeur renvoyée (isMultipleCellValue: true)
+[42, 17, 99] // or ["Summary 1", "Summary 2"]
+```
+
+### 14. Champ d’évaluation
+* type: rating
+* Type d’écriture : `number`
+* Type de retour :
+  * `isMultipleCellValue: false` : `number`
+  * `isMultipleCellValue: true` : `number[]`
+
+Exemple :
+```js
+// Valeur d’écriture
+4
+
+// Valeur renvoyée (isMultipleCellValue: false)
+4
+
+// Valeur renvoyée (isMultipleCellValue: true)
+[4, 3, 5]
+```
+
+### 15. Champ de numéro automatique
+* type: autoNumber
+* Type d’écriture : Ne peut pas être écrit directement
+* Type de retour :
+  * `isMultipleCellValue: false` : `number`
+  * `isMultipleCellValue: true` : `number[]`
+
+Exemple :
+```js
+// Valeur renvoyée (isMultipleCellValue: false)
+42
+
+// Valeur renvoyée (isMultipleCellValue: true)
+[42, 43, 44]
+```
+
+### 16. Champ utilisateur
+
+* type: user
+* Type d’écriture :
+  * `isMultipleCellValue: false` : `{ id: string, title: string }`
+  * `isMultipleCellValue: true` : `{ id: string, title: string }[]`
+* Type de retour :
+  * `isMultipleCellValue: false` : `{ id: string, title: string, email?: string, avatar?: string }`
+  * `isMultipleCellValue: true` : `{ id: string, title: string, email?: string, avatar?: string }[]`
+
+Exemple :
+```js
+// Valeur d’écriture (isMultipleCellValue: false)
+{ id: "user123", title: "John Doe" }
+
+// Valeur d’écriture (isMultipleCellValue: true)
+[
+  { id: "user123", title: "John Doe" },
+  { id: "user456", title: "Jane Smith" }
+]
+
+// Valeur renvoyée (isMultipleCellValue: false)
+{
+  id: "user123",
+  title: "John Doe",
+  email: "john@example.com",
+  avatar: "https://example.com/avatar.jpg"
+}
+
+// Valeur renvoyée (isMultipleCellValue: true)
+[
+  {
+    id: "user123",
+    title: "John Doe",
+    email: "john@example.com",
+    avatar: "https://example.com/avatar1.jpg"
+  },
+  {
+    id: "user456",
+    title: "Jane Smith",
+    email: "jane@example.com",
+    avatar: "https://example.com/avatar2.jpg"
+  }
+]
+```
+
+### 17. Champ créé par
+* Type d’écriture : Ne peut pas être écrit directement
+* Type de retour :
+  * `isMultipleCellValue: false` : `{ id: string, title: string, email?: string, avatar?: string }`
+  * `isMultipleCellValue: true` : `{ id: string, title: string, email?: string, avatar?: string }[]`
+Exemple :
+```js
+// Valeur renvoyée (isMultipleCellValue: false)
+{
+  id: "user123",
+  title: "John Doe",
+  email: "john@example.com",
+  avatar: "https://example.com/avatar.jpg"
+}
+
+// Valeur renvoyée (isMultipleCellValue: true)
+[
+  {
+    id: "user123",
+    title: "John Doe",
+    email: "john@example.com",
+    avatar: "https://example.com/avatar1.jpg"
+  },
+  {
+    id: "user456",
+    title: "Jane Smith",
+    email: "jane@example.com",
+    avatar: "https://example.com/avatar2.jpg"
+  }
+]
+```
+
+### 18. Champ modifié pour la dernière fois par
+* Type d’écriture : Ne peut pas être écrit directement
+* Type de retour :
+  * `isMultipleCellValue: false` : `{ id: string, title: string, email?: string, avatar?: string }`
+  * `isMultipleCellValue: true` : `{ id: string, title: string, email?: string, avatar?: string }[]`
+
+Exemple :
+```js
+// Valeur renvoyée (isMultipleCellValue: false)
+{
+  id: "user123",
+  title: "John Doe",
+  email: "john@example.com",
+  avatar: "https://example.com/avatar.jpg"
+}
+
+// Valeur renvoyée (isMultipleCellValue: true)
+[
+  {
+    id: "user123",
+    title: "John Doe",
+    email: "john@example.com",
+    avatar: "https://example.com/avatar1.jpg"
+  },
+  {
+    id: "user456",
+    title: "Jane Smith",
+    email: "jane@example.com",
+    avatar: "https://example.com/avatar2.jpg"
+  }
+]
+```

@@ -1,0 +1,59 @@
+---
+title: "Hata Kodları"
+---
+
+<Note>Teable Web API, HTTP durum kodu semantiğini izler.</Note>
+
+* 2xx
+  Başarıyı ifade eder
+* 4xx
+  İstemci hatalarını ifade eder
+* 5xx
+  Sunucu hatalarını ifade eder
+
+Hata yanıtları, hata ve bilgi alanlarını içeren JSON kodlu bir gövde döndürür. Aşağıda örnek bir hata yanıtı gövdesi verilmiştir:
+
+```json
+{
+  "message": "not allowed to operate space|read on spcxxxxxx",
+  "status": 403,
+  "code": "restricted_resource"
+}
+```
+
+## Başarı Durum Kodları
+
+### 200 OK
+
+İstek başarıyla tamamlandı.
+
+### 201 Created
+
+İstek başarıyla tamamlandı ve yeni bir kaynak oluşturuldu.
+
+## Hata Kodları
+
+### 400 Bad Request
+
+İstek gövdesi `JSON` olarak ayrıştırılamıyor veya gövdedeki giriş parametreleri tanımlanan gereksinimleri karşılamıyor.
+
+### 401 Unauthorized
+
+API'ye yetkisiz erişim.
+
+### 403 Forbidden
+
+Gerekli izinlere sahip olmayan API kimlik bilgileriyle korumalı bir kaynağa erişilmeye çalışılıyor.
+
+### 404 Not Found
+
+Rota veya kaynak bulunamadı. Mevcut olmayan bir kaynak yoluna erişildiğinde ya da istek yöntemi eşleşmediğinde bu hata döndürülür.
+
+### 500 Internal Server Error
+
+Sunucu beklenmeyen bir durumla karşılaştı.
+
+### 503 Service Unavailable
+
+Muhtemelen işlem zaman aşımı veya veritabanı bağlantısı hatası nedeniyle hizmet geçici olarak kullanılamıyor.
+

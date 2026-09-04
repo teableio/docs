@@ -1,0 +1,133 @@
+---
+title: "Sürüm Yükseltme"
+---
+
+Bu belge, kendi sunucunuzda barındırılan bir Teable dağıtımının nasıl yükseltileceğini açıklar.
+
+## Sürüm kanalları ve sürüm etiketleri
+
+Teable uygulaması `release.<timestamp>.<build>` biçiminde **tarih tabanlı sürüm etiketleri**
+(örneğin `release.2026-07-14T12-24-39Z.2228`) ve iki değişken kanal yayımlar:
+
+| Etiket | Anlamı |
+|---|---|
+| `latest` | **Kararlı** kanal — her zaman en yeni kararlı sürümü gösterir |
+| `beta` | Devamlı güncellenen kanal — kararlı sürümden ilerideki en yeni derleme |
+| `release.<timestamp>.<build>` | Değişmez, belirli bir sürüm |
+
+Sürümler sık sık (çoğu zaman haftada birkaç kez) yayımlanır; ne zaman yükselteceğinize siz karar verirsiniz.
+Tüm etiketler [GitHub Packages](https://github.com/teableio/teable/pkgs/container/teable)
+sayfasında listelenir.
+
+<Note>
+Herhangi bir yükseltme yapmadan önce verilerinizi yedeklemenizi kesinlikle öneririz.
+</Note>
+
+## Düzenli güncellemeler: değişiklik günlüğünü izleyin
+
+Yeni özellikler ve düzeltmeler [Değişiklik Günlüğü](/tr/changelog) sayfasında duyurulur
+ve her Teable sürüm etiketi derleme tarihini içerir; dolayısıyla "bu özellik bende var mı?"
+sorusunu yanıtlamak için yalnızca tarihleri karşılaştırmanız gerekir. Okuduğunuz bir yeniliği
+edinmek için Teable imajınızı ilgili kaydın tarihinde veya sonrasında yayımlanmış bir sürüme taşıyın:
+
+- **Docker dağıtımları** doğrudan `latest` kanalını izleyebilir:
+
+  ```bash
+  cd teable          # dağıtım dizininiz
+  docker compose pull
+  docker compose up -d
+  ```
+
+  Kapsayıcılar yeni imajla yeniden oluşturulur; verileriniz Docker birimlerinde
+  (veya harici veritabanınızda) tutulur ve bunlara dokunulmaz.
+
+- **Kubernetes dağıtımları** değişken bir etiket çalıştırmamalıdır: Teable
+  imajını belirli bir etikete sabitleyin ve **her güncellemede sabitlenmiş etiketi bilinçli
+  olarak yükseltin**. Dağıtım deposundaki `pin-image.sh`, `latest` etiketinin o anda
+  gösterdiği somut sürümü belirler.
+
+## En iyi uygulama: platformun tamamını birlikte yükseltin
+
+Tam özellikli bir dağıtımda iki sürüm hattı bulunur: Teable uygulaması ve platformun
+kendisi (bkz. [Mimari](/tr/deploy/architecture)). En güvenilir düzenli işlem, yükseltme
+çizelgesi olarak [`VERSIONS.md`](https://github.com/teableio/teable-deployment/blob/main/VERSIONS.md)
+dosyasını kullanıp bu ikisini birbirine bağlar. Her turda:
+
+1. Çalışma zamanı katmanını **en yeni platform sürümüne**
+   (`v<year>.<month>.<seq>`) yükseltin: her git etiketi, tüm çalışma zamanı
+   bileşenlerinin doğrulanmış bir anlık görüntüsüdür ve ilgili
+   [`CHANGELOG.md`](https://github.com/teableio/teable-deployment/blob/main/CHANGELOG.md)
+   kaydı nelerin değiştiğini ve yapmanız gereken bir işlem olup olmadığını belirtir
+   (çoğu sürüm hizmet kesintisi olmadan değiştirilebilir). İlgili etiketin kullanıma
+   alınmış olduğu depoda çalışın.
+2. Teable uygulamasını **`latest` etiketinin o anda karşılık geldiği somut sürüm
+   etiketine** taşıyın (`pin-image.sh` bunu belirler); böylece değişken bir kanal
+   yerine sabitlenmiş ve doğrulanmış bir bileşim kullanırsınız.
+3. Paketle gelen **doctor** aracını çalıştırın; bu araç sistem durumunu denetler ve
+   gerçekte çalışan bileşenleri platform sürümü manifestiyle karşılaştırır
+   (uyumlu / Teable uygulamasını yükseltin / bilinmeyen bileşim).
+
+## Zorunlu gizli anahtarlar
+
+Teable artık yerleşik varsayılan gizli anahtarlara geri dönmez. Dağıtımınız bu varsayılanlara
+dayanıyorsa yükseltmeden sonraki ilk başlatma, ihtiyaç duyulan ortam değişkenlerinin bir
+listesiyle birlikte mevcut oturumlarınızı, belirteçlerinizi ve şifrelenmiş verilerinizi koruyan,
+kopyalayıp yapıştırabileceğiniz bir blok göstererek durur. Bloğu ekleyip yeniden başlatın ve
+ardından anahtarları döndürmeyi planlayın. [Gizli anahtarlar ve döndürme](/tr/deploy/env#secrets-and-rotation)
+bölümüne bakın.
+
+## Veritabanı geçişi
+
+Teable, veritabanı geçişlerini başlangıçta otomatik olarak yürütür; elle işlem yapmanız
+gerekmez. Yükseltmeden sonra bir sorun görürseniz günlükleri denetleyin:
+
+```bash
+docker compose logs teable | grep -i migration
+```
+
+## Geri alma
+
+Yükseltmeden sonra sorun yaşarsanız:
+
+1. `docker-compose.yaml` dosyasındaki imaj etiketini önceki sürüm etiketine geri alın
+   (belirli bir sürüme sabitlemenin `latest` kullanmaktan daha iyi olmasının nedeni budur:
+   önceki sürüm kayıtlıdır).
+2. `docker compose up -d`
+
+<Warning>
+Veritabanı şemasını taşıyan bir sürümden **sonra** geri alma işlemi güvenli olmayabilir;
+bu durumda yükseltme öncesindeki yedeğinizi geri yükleyin. Yukarıdaki yedekleme önerisinin
+temel nedeni budur.
+</Warning>
+
+## SSS
+
+<Accordion title="Yükseltmeden sonra verilerimi kaybeder miyim?">
+Hayır. Verileriniz Docker birimlerinde veya harici veritabanlarında saklanır ve kapsayıcıların yükseltilmesi verilerinizi etkilemez. Yine de yükseltmeden önce yedek almanızı öneririz.
+</Accordion>
+
+<Accordion title="Yükseltmeden sonra Örnek Kimliğim değişir mi?">
+Hayır. Uygulama güncellemeleri sırasında Örnek Kimliğiniz değişmez. Bu, kendi sunucunuzdaki kurulumunuzun kalıcı tanımlayıcısıdır.
+</Accordion>
+
+<Accordion title="Yükseltme ne kadar sürer?">
+Yeni imajların çekilmesi genellikle birkaç dakika (ağ hızına bağlı olarak), kapsayıcıların yeniden başlatılması ise yalnızca birkaç saniye sürer. İşlemin tamamı çoğunlukla 5-10 dakika içinde biter.
+</Accordion>
+
+<Accordion title="Yükseltme sırasında hizmet kesintisi olur mu?">
+`docker compose up -d` kullanıldığında kısa bir hizmet kesintisi (genellikle birkaç saniye ile onlarca saniye arasında) yaşanır.
+</Accordion>
+
+<Accordion title="Çalışan mevcut sürümü nasıl denetlerim?">
+Mevcut sürümü şu yöntemlerle denetleyebilirsiniz:
+- Teable arayüzünün sol alt köşesindeki sürüm numarasına bakın
+- Yönetici hesabıyla yönetici paneline erişin
+- İmaj sürümünü denetlemek için `docker inspect <container> --format='{{.Config.Image}}'` komutunu çalıştırın. `latest` kanalını kullanıyorsanız tam özellikli dağıtım, `latest` etiketinin o anda hangi sürüme karşılık geldiğini belirleyen bir `pin-image.sh` yardımcı aracı içerir.
+</Accordion>
+
+<Accordion title="Yükseltme başarısız olursa ne yapmalıyım?">
+1. Sorunu gidermek için önce kapsayıcı günlüklerini denetleyin: `docker compose logs teable`
+2. Sorun veritabanı geçişiyle ilgiliyse yedekten geri yüklemeyi deneyin
+3. Sorun devam ederse önceki sürüme geri dönün
+4. support@teable.ai adresinden destek ekibiyle iletişime geçin
+</Accordion>

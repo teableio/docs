@@ -1,0 +1,77 @@
+---
+title: "Quando viene creato un Record"
+description: "Attiva un workflow quando viene aggiunto un nuovo Record a una Tabella"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Nota: puoi configurare tutti i trigger in AI Chat. Spiega all'IA cosa deve fare il workflow e si occuperà del resto.</Tip>
+
+Questo trigger viene eseguito quando viene aggiunto un nuovo Record alla Tabella, indipendentemente da come è stato creato.
+
+## Creare con l'IA
+
+Apri AI Chat nella barra laterale destra della Tabella e descrivi ciò che desideri.
+
+L'IA si occupa di tutto: sceglie il trigger corretto, mappa i Campi pertinenti e configura automaticamente tutte le azioni.
+
+Descrivi l'obiettivo una sola volta e il workflow è pronto, senza alcuna configurazione manuale.
+
+**Esempio:** *"Quando viene creato un nuovo ordine, avvisa il team su Slack."*
+
+## Configurazione
+
+| Impostazione | Obbligatoria | Descrizione |
+|---|---|---|
+| Tabella | Sì | La Tabella da monitorare per i nuovi Record |
+| Filtro | No | Attiva il workflow soltanto se il nuovo Record soddisfa queste condizioni. Usa lo stesso generatore di filtri delle Viste |
+
+## Come configurarlo
+
+1. Apri l'Automazione e aggiungi un nuovo trigger.
+2. Seleziona **Quando viene creato un Record**.
+3. Scegli la **Tabella** da monitorare.
+4. (Facoltativo) Aggiungi un **Filtro** se vuoi reagire soltanto a determinati nuovi Record. Ad esempio, `Priorità` uguale ad `Alta` ignorerà i nuovi Record con altri valori di priorità.
+5. Salva e attiva l'Automazione.
+6. Aggiungi i passaggi delle azioni. In ogni azione, fai clic sul pulsante **+** in qualsiasi Campo per inserire valori provenienti dal trigger: vedrai elencati tutti i Campi del nuovo Record.
+
+## Dati disponibili per i passaggi successivi
+
+Quando questo trigger si attiva, tutti i Campi del Record appena creato sono disponibili come variabili nei passaggi successivi:
+
+- **ID Record** — identificatore univoco del nuovo Record
+- **Tutti i valori dei Campi** — puoi fare riferimento a ogni Campo della Tabella (testo, numero, data, allegati, Record collegati e così via) facendo clic su **+** nella mappatura dei Campi di qualsiasi azione
+
+Ciò significa che, se la Tabella contiene Campi come Nome, Email, Stato e Data di creazione, tutti e quattro i valori sono pronti per essere utilizzati nelle azioni senza ulteriori configurazioni.
+
+## Come funziona il filtro
+
+Il filtro facoltativo consente di limitare i nuovi Record che attivano effettivamente l'Automazione:
+
+- Se **non è impostato alcun filtro**, ogni nuovo Record attiva il trigger.
+- Se **è impostato un filtro**, il trigger si attiva soltanto quando il nuovo Record soddisfa tutte le condizioni. I Record che non le soddisfano vengono ignorati senza alcun avviso.
+
+È utile quando vuoi agire soltanto su un sottoinsieme dei nuovi Record, ad esempio attività con priorità alta, Record assegnati a un team specifico oppure ordini superiori a un determinato importo.
+
+<Note>Il filtro viene valutato in base ai valori dei Campi nel momento in cui viene creato il Record. Se un Campo è vuoto alla creazione e viene compilato in seguito, l'Automazione non si attiverà retroattivamente.</Note>
+
+## Quando utilizzarlo
+
+- **Inviare un'email di benvenuto a un nuovo contatto.** Quando viene aggiunto un contatto alla Tabella CRM, invia automaticamente un'email di benvenuto personalizzata usando il nome e l'indirizzo email del contatto.
+- **Creare un'attività collegata quando viene aggiunto un nuovo progetto.** Quando viene creato un Record di progetto, crea automaticamente un insieme predefinito di attività in una Tabella Attività collegata al nuovo progetto.
+- **Avvisare il team dei nuovi ordini.** Pubblica un messaggio su Slack o invia un'email al team commerciale ogni volta che arriva un nuovo ordine.
+- **Classificare automaticamente con l'IA i Record in arrivo.** Quando viene creato un ticket di assistenza, usa l'azione Genera con l'IA per classificarlo in base al Campo della descrizione.
+- **Registrare i nuovi Record in un sistema esterno.** Usa un'azione Richiesta HTTP per inviare i dati dei nuovi Record a un CRM, un ERP o un data warehouse.
+
+## Suggerimenti
+
+- Questo trigger si attiva per i Record creati con *qualsiasi* metodo, incluse altre Automazioni. Se un'Automazione crea Record nella stessa Tabella, presta attenzione a evitare cicli infiniti. Usa un filtro per escludere i Record creati dall'Automazione, ad esempio controllando un Campo flag.
+- Il trigger si attiva una volta per Record. Se vengono importati in blocco 10 Record, si attiva 10 volte separate.
+- Se devi reagire soltanto ai Record creati tramite un modulo specifico, usa invece il trigger [Quando viene inviato un modulo](/it/basic/automation/trigger/forms/form-submitted), che offre un controllo più preciso.
+- I Campi vuoti al momento della creazione del Record saranno comunque disponibili come variabili, ma i loro valori saranno vuoti. Assicurati che le azioni gestiscano correttamente i valori vuoti.
+
+## Contenuti correlati
+
+- [Quando viene inviato un modulo](/it/basic/automation/trigger/forms/form-submitted) — si attiva soltanto per gli invii dei moduli, non per tutti i metodi di creazione dei Record
+- [Quando viene aggiornato un Record](/it/basic/automation/trigger/records/record-updated) — si attiva quando cambiano i Record esistenti
+- [Azione Crea Record](/it/basic/automation/actions/records/create-record) — l'azione corrispondente per creare Record nei workflow
+- [Invia email](/it/basic/automation/actions/communication/send-email-overview)

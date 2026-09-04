@@ -1,0 +1,290 @@
+---
+title: "Esegui script"
+description: "Esegui JavaScript personalizzato in una sandbox sicura per la logica che va oltre le azioni integrate"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Consigliamo vivamente di utilizzare Esegui script per creare le Automazioni, perché può coprire il comportamento di tutte le azioni, incluse quelle che altrimenti dovrebbero essere create manualmente. Descrivi i requisiti all'IA nella chat.
+
+Nota: se aggiungi le azioni manualmente, l'IA non sarà in grado di riconoscerle o modificarle in seguito.
+</Tip>
+
+L'azione Esegui script consente di scrivere JavaScript personalizzato per gestire la logica non coperta dalle azioni integrate. Puoi trasformare dati, chiamare API esterne, eseguire calcoli, implementare ramificazioni condizionali e altro ancora, il tutto in un ambiente sandbox sicuro.
+
+Gli script ricevono i dati dai passaggi precedenti tramite l'oggetto `input` e passano i risultati ai passaggi successivi tramite la funzione `output.set()`.
+
+## Quando usare Esegui script anziché le azioni integrate
+
+| Scenario | Usare le azioni integrate | Usare Esegui script |
+|---|---|---|
+| Creare, aggiornare o ottenere Record | Sì | Soltanto se serve una logica complessa |
+| Inviare una semplice email | Sì | No |
+| Chiamare un singolo endpoint API | Sì (Richiesta HTTP) | Soltanto se devi elaborare la risposta in modo complesso |
+| Trasformare i dati tra i passaggi | A volte | Sì, quando servono logica condizionale, cicli o manipolazione di stringhe |
+| Analizzare strutture JSON complesse | No | Sì |
+| Calcolare date, formattare numeri | No | Sì |
+| Concatenare più chiamate API con una logica | Poco pratico con le azioni integrate | Sì |
+| Implementare regole aziendali con molte condizioni | Poco pratico | Sì |
+
+In generale, usa le azioni integrate quando soddisfano le tue esigenze. Usa Esegui script quando ti servono logica personalizzata, trasformazione dei dati o interazioni API complesse.
+
+## Ambiente
+
+| Proprietà | Valore |
+|---|---|
+| Linguaggio | JavaScript (ES6+), supporta `await` al livello principale |
+| Runtime | Sandbox sicura con timeout di 60 secondi |
+| Moduli | CommonJS (`require()`), pacchetti npm supportati |
+| Rete | Richieste HTTP tramite `fetch()` |
+
+## Come configurarlo
+
+1. Aggiungi un'azione **Esegui script** al workflow.
+2. L'editor di script si apre con un'area vuota. Scrivi qui il codice JavaScript.
+3. Lo script può leggere i dati dei passaggi precedenti usando l'oggetto `input` (vedi sotto).
+4. Usa `output.set(key, value)` per passare i risultati ai passaggi successivi.
+5. (Facoltativo) Aggiungi le dipendenze npm nel pannello di configurazione se lo script richiede librerie esterne.
+6. Fai clic su **Test** per eseguire lo script con dati reali provenienti dall'esecuzione più recente del trigger.
+7. Controlla l'output del test e i log della console per verificare che lo script funzioni correttamente.
+8. Salva l'azione.
+
+## Leggere i dati di input
+
+L'oggetto `input` contiene i dati di tutti i passaggi precedenti del workflow. Ogni passaggio è identificato dal proprio ID azione.
+
+### Struttura dell'input
+
+```javascript
+// input è un oggetto le cui chiavi sono gli ID delle azioni
+// Ogni chiave contiene l'output del relativo passaggio
+
+const actionIds = Object.keys(input);
+// actionIds potrebbe essere: ["triggerStep1", "actionStep2", "actionStep3"]
+```
+
+### Ottenere i dati del trigger (Campi del Record)
+
+```javascript
+const actionIds = Object.keys(input);
+const triggerData = input[actionIds[0]]; // La prima voce è in genere il trigger
+
+// Per i trigger basati sui Record (creazione, aggiornamento, clic su un pulsante, invio di un modulo):
+const recordId = triggerData.record.id;
+const fields = triggerData.record.fields;
+
+// Accedi a Campi specifici tramite l'ID Campo
+const customerName = fields.fldXXXXXXX;  // Sostituisci con l'ID Campo effettivo
+const orderAmount = fields.fldYYYYYYY;
+```
+
+### Ottenere i dati da un passaggio Ottieni Record
+
+```javascript
+const actionIds = Object.keys(input);
+const getRecordsData = input[actionIds[1]]; // Ad esempio, il secondo passaggio
+
+const records = getRecordsData.records;
+records.forEach(record => {
+  console.log(record.id, record.fields.fldName);
+});
+```
+
+### Ottenere i dati dagli output di altre azioni
+
+```javascript
+const actionIds = Object.keys(input);
+const previousOutput = input[actionIds[2]]; // Output del terzo passaggio
+// La struttura dipende dall'output prodotto dall'azione
+```
+
+<Tip>Durante i test, usa `console.log(JSON.stringify(input, null, 2))` per vedere la struttura esatta dei dati di input. È il modo più rapido per capire cosa è disponibile.</Tip>
+
+## Scrivere l'output
+
+Usa `output.set(key, value)` per rendere disponibili i dati ai passaggi successivi. Puoi impostare più chiavi.
+
+```javascript
+// Imposta valori semplici
+output.set("status", "success");
+output.set("count", 42);
+
+// Imposta oggetti
+output.set("result", {
+  name: "Alice",
+  score: 95,
+  passed: true
+});
+
+// Imposta array
+output.set("items", [
+  { id: 1, name: "Elemento A" },
+  { id: 2, name: "Elemento B" }
+]);
+```
+
+Ogni chiave impostata diventa una variabile distinta a cui i passaggi successivi possono fare riferimento tramite il selettore di variabili **+**. Ad esempio, se chiami `output.set("status", "success")`, il passaggio successivo può fare riferimento a `status` nell'output di questo script.
+
+## Debug con console.log
+
+Durante lo sviluppo, usa `console.log()` per esaminare i dati e tenere traccia del flusso di esecuzione. L'output dei log viene visualizzato nel pannello di test quando fai clic su **Test**.
+
+```javascript
+const actionIds = Object.keys(input);
+console.log("ID azioni:", actionIds);
+
+const data = input[actionIds[0]];
+console.log("Dati del trigger:", JSON.stringify(data, null, 2));
+
+// Registra i risultati intermedi
+const processed = data.record.fields.fldName.toUpperCase();
+console.log("Nome elaborato:", processed);
+
+output.set("name", processed);
+```
+
+I log della console sono visibili soltanto durante i test e non compaiono nella cronologia delle esecuzioni di produzione. Usali liberamente mentre crei lo script.
+
+## Gestione dei pacchetti npm
+
+Puoi utilizzare pacchetti npm negli script. Dichiara le dipendenze nel pannello di configurazione:
+
+```json
+[
+  { "name": "lodash", "version": "4.17.21" },
+  { "name": "dayjs", "version": "1.11.10" }
+]
+```
+
+Quindi usali nello script tramite `require()`:
+
+```javascript
+const _ = require("lodash");
+const dayjs = require("dayjs");
+
+const actionIds = Object.keys(input);
+const records = input[actionIds[0]].records;
+
+const grouped = _.groupBy(records, r => r.fields.fldCategory);
+const today = dayjs().format("YYYY-MM-DD");
+
+output.set("grouped", grouped);
+output.set("date", today);
+```
+
+<Tip>Quando possibile, preferisci le funzionalità JavaScript integrate ai pacchetti npm. JavaScript moderno include molte utilità, come `Array.map()`, `Array.filter()`, `Object.entries()`, template literal e destrutturazione. Aggiungi pacchetti npm soltanto quando offrono un vantaggio significativo.</Tip>
+
+## Variabili integrate
+
+| Variabile | Descrizione |
+|---|---|
+| `process.env.AUTOMATION_TOKEN` | Token Bearer per chiamare l'API di Teable. L'ambito è limitato alle autorizzazioni dell'Automazione corrente |
+| `process.env.PUBLIC_ORIGIN` | URL di base dell'istanza Teable (ad esempio, `https://app.teable.io`) |
+
+### Sicurezza: ambito di AUTOMATION_TOKEN
+
+`AUTOMATION_TOKEN` viene generato automaticamente per ogni esecuzione dell'Automazione. Ha le stesse autorizzazioni dell'autore dell'Automazione e il suo ambito è limitato all'esecuzione corrente. Punti chiave:
+
+- Può accedere a qualsiasi Tabella a cui ha accesso l'autore dell'Automazione.
+- È valido soltanto per la durata dell'esecuzione dello script (timeout di 60 secondi).
+- Non esporre questo token a sistemi esterni: è destinato a chiamare l'API di Teable dall'interno dello script.
+
+### Chiamare l'API di Teable
+
+```javascript
+const base = process.env.PUBLIC_ORIGIN + "/api";
+const token = process.env.AUTOMATION_TOKEN;
+
+// Esempio: ottieni Record da una Tabella
+const res = await fetch(`${base}/table/tblXXXXXXX/record?take=10`, {
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json"
+  }
+});
+
+const data = await res.json();
+console.log("Record recuperati:", data);
+output.set("records", data);
+```
+
+### Chiamare l'IA da uno script
+
+`POST /api/automation/runtime/ai` invia un prompt al modello IA della Base. La Base deriva dal contesto dell'Automazione, quindi non è necessario alcun ID Base. Il corpo accetta `prompt` e, facoltativamente, `attachments`, `modelKey`, `temperature` e `outputType`; la risposta è `{ "message": ... }`.
+
+Gli allegati sono elementi `{ url, mimetype, name }`, fino a 10 per chiamata, ciascuno di dimensioni inferiori a 20 MB e con un timeout di download di 30 secondi; sono supportati immagini, PDF e documenti Office. Il modello di chat predefinito potrebbe non leggere immagini e allegati simili, quindi specifica `modelKey` quando invii file. Ogni chiamata consuma Crediti.
+
+## Gestione degli errori
+
+Racchiudi sempre le operazioni rischiose in blocchi try/catch, in modo che il workflow possa gestire correttamente gli errori:
+
+```javascript
+try {
+  const res = await fetch("https://api.example.com/data");
+  
+  if (!res.ok) {
+    throw new Error(`L'API ha restituito ${res.status}: ${res.statusText}`);
+  }
+  
+  const data = await res.json();
+  output.set("success", true);
+  output.set("data", data);
+} catch (error) {
+  console.log("Errore:", error.message);
+  output.set("success", false);
+  output.set("error", error.message);
+}
+```
+
+Senza la gestione degli errori, una richiesta fetch non riuscita o un formato di dati imprevisto interromperà lo script e i passaggi successivi non riceveranno alcun output.
+
+## Esempio completo: elaborare e instradare i ticket di assistenza
+
+```javascript
+const actionIds = Object.keys(input);
+const record = input[actionIds[0]].record;
+
+const subject = record.fields.fldSubject || "";
+const body = record.fields.fldBody || "";
+const email = record.fields.fldEmail || "";
+
+// Instradamento semplice basato su parole chiave
+const text = (subject + " " + body).toLowerCase();
+
+let category = "Generale";
+let priority = "Normale";
+
+if (text.includes("fatturazione") || text.includes("fattura") || text.includes("pagamento")) {
+  category = "Fatturazione";
+} else if (text.includes("bug") || text.includes("errore") || text.includes("crash")) {
+  category = "Tecnico";
+  priority = "Alta";
+} else if (text.includes("annulla") || text.includes("rimborso")) {
+  category = "Account";
+  priority = "Alta";
+}
+
+// Controlla se si tratta di clienti VIP
+const vipDomains = ["bigcorp.com", "enterprise.io"];
+const domain = email.split("@")[1] || "";
+if (vipDomains.includes(domain)) {
+  priority = "Urgente";
+}
+
+output.set("category", category);
+output.set("priority", priority);
+output.set("isVIP", vipDomains.includes(domain));
+```
+
+## Suggerimenti
+
+- **Inizia da console.log.** Quando crei un nuovo script, registra innanzitutto l'intero oggetto `input` per comprenderne la struttura.
+- **Mantieni gli script mirati.** Svolgi bene una singola attività anziché concentrare più attività in un unico script. Se necessario, concatena più azioni Esegui script.
+- **Tieni presente il timeout di 60 secondi.** Le operazioni lunghe (elaborazione di grandi quantità di dati, molte chiamate API sequenziali) possono raggiungere il timeout. Suddividi le attività grandi in blocchi più piccoli.
+- **Esegui i test con dati reali.** Il pannello di test usa i dati effettivi dell'esecuzione più recente del trigger, offrendo risultati realistici.
+- **Gestisci i dati mancanti.** Usa valori predefiniti (operatore `||`) per i Campi che potrebbero essere vuoti o non definiti.
+
+## Contenuti correlati
+
+- [Genera con l'IA](/it/basic/automation/actions/ai/ai-generate) — per attività IA basate su prompt che non richiedono codice personalizzato
+- [Richiesta HTTP](/it/basic/automation/actions/logic/http-request) — per semplici chiamate API che non richiedono scripting

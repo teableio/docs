@@ -1,0 +1,134 @@
+---
+title: "Richiesta HTTP"
+description: "Chiama qualsiasi API esterna da un workflow"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Consigliamo vivamente di usare Esegui script per creare automazioni, perché può coprire il comportamento di tutte le azioni, comprese quelle che altrimenti dovrebbero essere create manualmente. Descrivi semplicemente le tue esigenze all'IA nella chat.
+
+Nota: se aggiungi azioni manualmente, in seguito l'IA non sarà in grado di riconoscerle o modificarle.
+</Tip>
+
+## Crea con l'IA
+
+Apri AI Chat nella barra laterale destra della Tabella e descrivi ciò che desideri.
+
+L'IA si occupa di tutto: sceglie il trigger corretto, seleziona le azioni appropriate, associa i Campi e configura automaticamente l'intero workflow.
+
+Descrivi una sola volta l'obiettivo e il workflow sarà pronto, senza alcuna configurazione manuale.
+
+Invia una richiesta HTTP a qualsiasi URL e restituisce la risposta. Usala per chiamare API REST, inviare notifiche a Slack o Discord, trasmettere dati a sistemi CRM o interagire con qualsiasi servizio dotato di un'API HTTP.
+
+## Configurazione
+
+| Impostazione | Obbligatoria | Descrizione |
+|---|---|---|
+| URL | Sì | L'endpoint di destinazione. Supporta variabili dinamiche tramite **+** |
+| Metodo | Sì | GET, POST, PUT, PATCH, DELETE o HEAD |
+| Header | No | Header HTTP personalizzati come coppie chiave-valore |
+| Content-Type | No | Il formato del corpo della richiesta, illustrato di seguito |
+| Corpo | No | Il payload della richiesta: testo o coppie chiave-valore a seconda del Content-Type |
+
+## Come configurarla
+
+1. Aggiungi un'azione **Richiesta HTTP** al workflow.
+2. Inserisci l'**URL** dell'endpoint API. Puoi usare **+** per inserire valori dinamici, ad esempio includere l'ID di un Record nel percorso dell'URL.
+3. Scegli il **Metodo**:
+   - **GET** — recupera dati.
+   - **POST** — invia dati per creare un elemento.
+   - **PUT/PATCH** — aggiorna dati esistenti.
+   - **DELETE** — elimina dati.
+4. Aggiungi gli **Header** richiesti dall'API, ad esempio token di autorizzazione o header personalizzati.
+5. Scegli un **Content-Type** e scrivi il **Corpo**, se necessario per POST, PUT o PATCH.
+6. Salva l'azione.
+
+## Spiegazione delle opzioni Content-Type
+
+| Content-Type | Quando utilizzarlo | Formato del corpo |
+|---|---|---|
+| `application/json` | La maggior parte delle API REST. Invia dati strutturati | Testo JSON, ad esempio `{"key": "value"}` |
+| `application/x-www-form-urlencoded` | Invio di moduli tradizionali e alcune API legacy | Coppie chiave-valore codificate automaticamente nell'URL |
+| `multipart/form-data` | Caricamento di file o dati misti | Coppie chiave-valore con supporto per i file |
+| `text/plain` | Payload di testo semplici | Stringa di testo normale |
+
+<Tip>Se non sai quale Content-Type usare, scegli `application/json`. La maggior parte delle API moderne usa JSON.</Tip>
+
+In caso di dubbi, `application/json` è la scelta corretta per la maggior parte delle API moderne.
+
+## Esempi di autenticazione
+
+Molte API richiedono l'autenticazione. Ecco gli schemi più comuni che puoi configurare nella sezione Header:
+
+### Token Bearer
+
+Aggiungi un header:
+- **Chiave:** `Authorization`
+- **Valore:** `Bearer your-api-token-here`
+
+Funziona con API come quelle di Slack, GitHub, Notion e molti altri servizi.
+
+### Chiave API nell'header
+
+Aggiungi un header:
+- **Chiave:** `X-API-Key` oppure quella prevista dall'API, ad esempio `api-key` o `x-api-token`
+- **Valore:** `your-api-key`
+
+### Autenticazione di base
+
+Aggiungi un header:
+- **Chiave:** `Authorization`
+- **Valore:** `Basic base64encoded(username:password)`
+
+Dovrai codificare le credenziali in Base64 fuori da Teable oppure usare un'azione Script per generare il valore dell'header.
+
+## Esempio concreto: inviare una notifica Slack
+
+Obiettivo: pubblicare un messaggio in un canale Slack quando viene creato un nuovo Record.
+
+1. **Trigger:** Quando viene creato un Record.
+2. **Azione:** Richiesta HTTP con:
+   - **URL:** `https://hooks.slack.com/services/T00/B00/xxxx`, ovvero l'URL del webhook Slack
+   - **Metodo:** POST
+   - **Content-Type:** `application/json`
+   - **Corpo:**
+     ```json
+     {
+       "text": "Nuova attività creata: {{Task Name}} — Priorità: {{Priority}}"
+     }
+     ```
+   Sostituisci `{{Task Name}}` e `{{Priority}}` con le variabili dinamiche del trigger facendo clic su **+**.
+
+## Uso dei dati della risposta nei passaggi successivi
+
+Dopo l'esecuzione della richiesta HTTP, la risposta è disponibile per le azioni successive:
+
+- **Codice di stato** — lo stato HTTP, ad esempio 200, 201 o 404.
+- **Corpo della risposta** — i dati restituiti dall'API, analizzati come JSON se applicabile.
+
+Nei passaggi successivi puoi fare riferimento a Campi specifici della risposta tramite il selettore di variabili **+**. Ad esempio, se l'API restituisce `{"id": "abc123", "status": "created"}`, puoi fare riferimento singolarmente a `id` e `status`. Quando inserisci valori dinamici con **+**, puoi anche usare percorsi dei Campi e opzioni di formattazione qualora un'API esterna richieda uno specifico formato della richiesta.
+
+È utile per concatenare chiamate API: ad esempio, puoi creare un elemento tramite POST, ricevere un ID e usarlo in una successiva azione Aggiorna Record o in un'altra richiesta HTTP.
+
+## Quando utilizzarla
+
+- **Pubblicare messaggi su Slack o Discord.** Invia notifiche ai canali usando gli URL dei webhook in ingresso.
+- **Sincronizzare dati con un CRM o ERP.** Invia Record nuovi o aggiornati a Salesforce, HubSpot o qualsiasi sistema dotato di API.
+- **Chiamare qualsiasi API di terze parti.** Interagisci con sistemi di elaborazione dei pagamenti, servizi di spedizione, strumenti di analisi o API interne personalizzate.
+- **Attivare workflow esterni.** Chiama webhook di Zapier, scenari Make (Integromat) o altre piattaforme di automazione.
+- **Recuperare dati da fonti esterne.** Usa richieste GET per acquisire tassi di cambio, dati meteorologici o dati di qualsiasi API pubblica nel workflow.
+
+## Suggerimenti
+
+- Controlla sempre nella documentazione dell'API gli header e l'autenticazione richiesti, nonché il formato previsto per il corpo.
+- Usa `application/json` come Content-Type per la maggior parte delle API moderne. Se l'API richiede dati di un modulo, passa a `x-www-form-urlencoded`.
+- Se l'API restituisce un errore con stato 4xx o 5xx, l'azione viene comunque completata, ma i passaggi successivi vedranno la risposta di errore. Controlla il codice di stato nel workflow se devi gestirlo con una condizione.
+- Per le API che restituiscono risposte di grandi dimensioni, fai riferimento nei passaggi successivi solo ai Campi specifici necessari.
+- Combina questa azione con [Ciclo (batch)](/it/basic/automation/actions/logic/loop-run) per effettuare più chiamate API, una per Record. Tieni conto dei limiti di frequenza dell'API esterna.
+- Usa la funzionalità [Corpo HTTP come array](/it/basic/automation/actions/logic/loop-run) quando devi inviare più elementi in un'unica richiesta anziché una richiesta per elemento.
+
+## Contenuti correlati
+
+- [Ciclo (batch)](/it/basic/automation/actions/logic/loop-run) — effettua richieste HTTP per ogni elemento di un array
+- [Quando viene ricevuto un webhook](/it/basic/automation/trigger/external/webhook-received) — la controparte in ingresso, che riceve richieste HTTP da sistemi esterni
+- [Esegui script](/it/basic/automation/ai/scripting/runscript) — per interazioni API più complesse tramite codice personalizzato

@@ -1,0 +1,114 @@
+---
+title: "E-posta alındığında tetikleyicisine genel bakış"
+description: "İzlenen posta kutusuna yeni bir e-posta geldiğinde iş akışını tetikleyin"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Lütfen unutmayın: tüm tetikleyici yapılandırması AI Chat'te yapılabilir. İş akışının ne yapmasını istediğinizi AI'a söyleyin; gerisini o halleder.</Tip>
+
+Bu tetikleyici, izlenen posta kutusuna yeni ve okunmamış bir e-posta geldiğinde çalışır.
+
+## AI ile oluşturma
+
+Tablonuzun sağ kenar çubuğunda AI Chat'i açın ve ne istediğinizi açıklayın.
+
+AI her şeyi halleder: doğru tetikleyiciyi seçer, ilgili alanları eşler ve tüm eylemleri otomatik olarak yapılandırır.
+
+Hedefinizi bir kez açıklayın; iş akışınız elle yapılandırma gerektirmeden hazır olur.
+
+**Örnek:** *"Bir destek e-postası aldığımda talep oluştur ve e-postayı sınıflandır."*
+
+## Yapılandırma
+
+| Ayar | Zorunlu | Açıklama |
+|---|---|---|
+| Bağlantı Türü | Evet | IMAP, Gmail veya Outlook |
+| Yoklama Aralığı | Evet | Yeni e-postaların denetlenme sıklığı: 10 ila 60 dakika (varsayılan 10) |
+
+## Bağlantı türlerinin ayrıntıları
+
+### IMAP
+
+IMAP, kendi sunucunuzda barındırılan posta sunucuları, kurumsal e-posta ve Yahoo ya da Zoho gibi sağlayıcılar dahil IMAP protokolünü destekleyen tüm e-posta sağlayıcılarıyla çalışır.
+
+| Ayar | Zorunlu | Açıklama |
+|---|---|---|
+| Ana Bilgisayar | Evet | IMAP sunucunuzun adresi (ör. `imap.gmail.com`, `imap.mail.yahoo.com`) |
+| Bağlantı Noktası | Evet | Genellikle 993 (SSL/TLS) veya 143 (şifrelenmemiş, önerilmez) |
+| Kullanıcı Adı | Evet | E-posta adresiniz veya hesap kullanıcı adınız |
+| Parola | Evet | Uygulama parolanız (lütfen unutmayın: e-posta parolanız değil) |
+| Posta Kutusu | Hayır | İzlenecek klasör (varsayılan `INBOX`) |
+
+### Gmail (OAuth)
+
+Google'ın OAuth akışı üzerinden bağlanır. Parola gerekmez; Teable'a Gmail hesabınıza erişme yetkisi verirsiniz.
+
+| Ayar | Zorunlu | Açıklama |
+|---|---|---|
+| Google Hesabı | Evet | OAuth üzerinden yetkilendirin; Teable salt okunur erişim ister |
+| Etiket | Hayır | İzlenecek Gmail etiketini seçin (varsayılan Gelen Kutusu) |
+
+### Outlook (OAuth)
+
+Outlook ve Microsoft 365 posta kutuları için Microsoft'un OAuth akışı üzerinden bağlanır.
+
+| Ayar | Zorunlu | Açıklama |
+|---|---|---|
+| Microsoft Hesabı | Evet | OAuth üzerinden yetkilendirin; Teable salt okunur erişim ister |
+| Klasör | Hayır | İzlenecek Outlook klasörünü seçin (varsayılan Gelen Kutusu) |
+
+## Sonraki adımlarda kullanılabilen e-posta verileri
+
+Tetikleyici çalıştığında e-postadaki şu veriler, eylem adımlarınızda değişken olarak kullanılabilir:
+
+| Veri | Açıklama |
+|---|---|
+| **Kimden** | Gönderenin e-posta adresi |
+| **Konu** | E-postanın konu satırı |
+| **Gövde (metin)** | E-posta gövdesinin düz metin sürümü |
+| **Gövde (HTML)** | E-posta gövdesinin HTML sürümü (varsa) |
+| **Tarih** | E-postanın gönderildiği zaman |
+| **Ekler** | E-postaya eklenmiş dosyalar |
+
+Eylem alanlarınızda **+** simgesine tıklayarak bunlardan herhangi birine başvurabilirsiniz.
+
+## Nasıl yapılandırılır? (IMAP örneği)
+
+1. Otomasyonunuzu açıp yeni bir tetikleyici ekleyin.
+2. **E-posta alındığında** seçeneğini belirleyin.
+3. Bağlantı türü olarak **IMAP** seçin.
+4. IMAP sunucusu ayrıntılarınızı girin: ana bilgisayar, bağlantı noktası, kullanıcı adı ve parola.
+5. (İsteğe bağlı) INBOX dışında bir klasörü izlemek istiyorsanız **Posta Kutusunu** değiştirin.
+6. **Yoklama Aralığını**, yani yeni e-postaların ne sıklıkta denetleneceğini ayarlayın. Daha kısa aralık daha hızlı yanıt sağlar ancak sunucu daha sık denetlenir.
+7. Bağlantıyı doğrulamak için **Test et**'e tıklayın. Teable posta kutunuza bağlanmayı dener ve işlemin başarılı olup olmadığını bildirir.
+8. Otomasyonu kaydedip etkinleştirin.
+9. E-posta verilerini (Kimden, Konu, Gövde vb.) değişken olarak kullanarak eylem adımlarınızı ekleyin.
+
+## Ne zaman kullanılır?
+
+- **Gelen her destek e-postası için kayıt oluşturun.** Bir destek talepleri tablosundaki alanları otomatik doldurmak için konuyu ve gövdeyi ayrıştırın.
+- **AI ile e-postalardan fatura verileri ayıklayın.** E-posta gövdesini veya eki okuyup tutarları, tarihleri ve tedarikçi adlarını almak için AI ile Oluştur eylemini kullanın.
+- **Müşteri sorularını doğru ekibe yönlendirin.** Konu veya gövdedeki anahtar kelimelere göre bir "Ekip" alanını güncelleyin ya da belirli kişilere bildirim gönderin.
+- **Önemli e-postaları kayıt olarak arşivleyin.** Belirli gönderenlerden veya belirli konularla gelen e-postaları kolayca arayıp izlemek için otomatik olarak Teable tablosuna kaydedin.
+- **Sipariş onaylarını işleyin.** Bir sipariş onayı e-postası geldiğinde siparişler tablonuzu güncellemek için sipariş numarasını ve ayrıntıları ayıklayın.
+
+## Sorun giderme
+
+- **Bağlantı başarısız oldu (IMAP):** Ana bilgisayarı, bağlantı noktasını, kullanıcı adını ve parolayı yeniden denetleyin. E-posta sağlayıcınızın IMAP erişimine izin verdiğinden emin olun; bazı sağlayıcılar bunu varsayılan olarak devre dışı bırakır.
+- **Gmail: "Daha az güvenli uygulama" hatası:** Gmail, düz parolayla oturum açmaya izin vermez. Bunun yerine bir **Uygulama Parolası** kullanın. Talimatlar için [Gmail IMAP'i yapılandırma](/tr/basic/automation/trigger/email/gmail-imap) sayfasına bakın.
+- **E-postalar alınmıyor:** Yoklama aralığını denetleyin. Ayrıca e-postaların izlenen klasöre/etikete ulaştığını doğrulayın. Yanlış posta kutusu seçilmişse alt klasörlerdeki veya filtrelenmiş etiketlerdeki e-postalar gözden kaçabilir.
+- **Yinelenen işleme:** Tetikleyici, daha önce işlediği e-postaları izler. Ancak otomasyonu devre dışı bırakıp yeniden etkinleştirirseniz son e-postaları yeniden işleyebilir. Gerekirse e-postaları gelen kutunuzda okundu olarak işaretleyin.
+- **OAuth belirtecinin süresi doldu:** Gmail veya Outlook için OAuth belirtecinin süresi dolduysa bağlantıyı yeniden yetkilendirin. Bu genellikle birkaç ay sonra veya uygulama izinlerini iptal ettiğinizde olur.
+
+## İpuçları
+
+- Daha kısa yoklama aralığı e-postalara daha hızlı yanıt verilmesini sağlar ancak gerçek zamanlı teslimatı garanti etmez. Gerçek zamanlı işleme için e-posta sağlayıcınız destekliyorsa webhook tabanlı bir yaklaşım kullanmayı değerlendirin.
+- İlgili e-postaları belirli bir etikete veya klasöre yönlendirmek için e-posta istemcinizde filtreler kullanın, ardından Teable'ın yalnızca bu etiketi izlemesini sağlayın. Bu, gereksiz iletileri azaltır.
+- Yüksek hacimli posta kutularında iş akışınızı aşırı yüklememek için yoklama aralığını artırmayı ve iletileri toplu işlemeyi değerlendirin.
+
+## İlgili konular
+
+- [Gmail IMAP'i yapılandırma](/tr/basic/automation/trigger/email/gmail-imap) — Gmail bağlantısı için ayrıntılı talimatlar
+- [AI ile oluştur eylemi](/tr/basic/automation/actions/ai/ai-generate) — e-posta içeriğinden yapılandırılmış veri ayıklamak için kullanışlıdır
+- [Kayıt oluştur eylemi](/tr/basic/automation/actions/records/create-record) — e-postaları kayıt olarak kaydetmek için e-posta tetikleyicileriyle yaygın olarak kullanılır
+- [E-posta gönder](/tr/basic/automation/actions/communication/send-email-overview)

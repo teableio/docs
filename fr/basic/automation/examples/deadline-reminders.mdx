@@ -1,0 +1,34 @@
+---
+title: "Envoyer des rappels avant l’échéance des tâches"
+description: "Envoyez automatiquement un e-mail aux responsables des tâches dont l’échéance approche"
+---
+
+<Tip>Nous vous recommandons de créer les exemples d’automatisation directement dans le Chat IA. Décrivez simplement le flux de travail souhaité : l’IA se chargera de toute la configuration, y compris du déclencheur, des actions, du script et des paramètres.</Tip>
+
+## Créer avec l’IA
+
+Ouvrez le Chat IA dans la barre latérale droite de votre table et indiquez à l’IA ce que vous souhaitez. Par exemple, vous pouvez dire :
+
+*"Chaque matin à 8 h, recherche les tâches à terminer dans les 2 prochains jours qui ne sont pas achevées, puis envoie un rappel par e-mail à chaque responsable"*
+
+L’IA créera automatiquement le flux de travail complet. Vous pourrez examiner le script généré, le tester avec des données réelles et activer le flux de travail lorsqu’il sera prêt.
+
+## Configuration manuelle
+
+1. **Créez un flux de travail** avec le déclencheur **À l’heure planifiée** — tous les jours à 08:00.
+2. **Ajoutez une action** → **Obtenir les enregistrements**.
+   - Table : **Tâches**
+   - Filtre : `Date d’échéance` **se situe dans les** `2 prochains jours` ET `Statut` **n’est pas** `Terminé`
+3. Cliquez sur **Tester** pour afficher les enregistrements correspondants.
+4. **Ajoutez une action** → **Envoyer un e-mail**, avec l’option **Boucle** activée.
+5. Sélectionnez comme source de la boucle le tableau renvoyé par l’étape Obtenir les enregistrements.
+6. Associez les champs :
+   - À → e-mail du responsable (via **+**, en référençant l’élément actuel de la boucle)
+   - Objet : `Rappel : l’échéance de « <titre de la tâche> » approche`
+   - Corps : `Votre tâche « <titre de la tâche> » arrive à échéance le <date d’échéance>. Veuillez mettre à jour son statut lorsqu’elle sera terminée.`
+7. Cliquez sur **Tester**, puis **activez** le flux de travail.
+
+## Conseils
+
+- Adaptez la période du filtre (« 2 prochains jours », « 7 prochains jours ») au degré d’urgence habituel des tâches.
+- Ajoutez une condition pour n’envoyer un e-mail que si le champ Responsable n’est pas vide.

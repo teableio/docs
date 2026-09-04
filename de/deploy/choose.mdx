@@ -1,0 +1,49 @@
+---
+title: "Bereitstellung"
+description: "Wählen Sie zwischen Teable Cloud, eigenständigem Self-hosting und der umfassenden Self-hosted-Plattform."
+---
+
+Drei Möglichkeiten, Teable auszuführen – wählen Sie nach Ihrem Bedarf:
+
+| | **Teable Cloud** | **Umfassendes Self-hosting** | **Eigenständiges Self-hosting** |
+|---|---|---|---|
+| Tabellen, Zusammenarbeit, API, Automatisierung | ✅ | ✅ | ✅ |
+| KI-Funktionen (Chat, Agents) | ✅ | ✅ | ❌ |
+| App Builder (Apps erstellen und bereitstellen) | ✅ | ✅ | ❌ |
+| Sandboxes / Vorschauen | ✅ | ✅ | ❌ |
+| Läuft auf | [teable.ai](https://teable.ai) – nichts bereitzustellen | einem Rechner (Docker) oder einem Kubernetes-Cluster | einem Rechner: App + PostgreSQL |
+| Hier starten | [teable.ai](https://teable.ai) | [Architektur](/de/deploy/architecture) → [teableio/teable-deployment](https://github.com/teableio/teable-deployment) | [Docker-Bereitstellung](/de/deploy/docker) |
+
+<Note>
+**Teable bereits im Einsatz?** Das Upgrade einer bestehenden Bereitstellung auf die
+umfassende Plattform wird in der
+[Migrationsanleitung](https://github.com/teableio/teable-deployment/blob/main/migration/2026-07-basic-to-full-featured.md)
+im Bereitstellungs-Repository Schritt für Schritt erläutert: Die Runtime-Ebene wird neben Ihrem bestehenden
+Teable installiert, und Ihre Daten bleiben unverändert.
+</Note>
+
+## Lassen Sie es von einem KI-Agent bereitstellen
+
+Das Bereitstellungs-Repository ist für die Verwendung durch KI-Agents ausgelegt. Verweisen Sie
+Ihr Agent-Framework (Claude Code, Codex, …) auf
+[teableio/teable-deployment](https://github.com/teableio/teable-deployment),
+teilen Sie ihm mit, für welche Umgebung Sie bereitstellen, und es kann die Bereitstellung
+vollständig durchführen. Bereiten Sie drei Dinge vor:
+
+1. **Eine Domain** – alles leitet sich von einer Basisdomain ab, z. B.
+   `teable.example.com`.
+2. **Ein DNS-Token** – ein API-Token für die Plattform, auf der Ihr DNS gehostet wird
+   (Cloudflare, Route 53, …), damit DNS-Einträge und TLS-Zertifikate automatisch
+   eingerichtet werden können. Beschränken Sie ihn auf diese eine Zone.
+3. **Zugriff auf das Bereitstellungsziel:**
+
+| Ziel | Was Sie dem Agent übergeben sollten |
+|---|---|
+| Ihr eigener Rechner – Docker-All-in-One, `local`-Modus | Nur Docker auf dem Rechner – keine Domain und kein DNS-Token erforderlich (alles läuft auf `*.localhost`) |
+| Ein Cloud-Server – Docker-All-in-One | SSH-Zugriff auf den Rechner |
+| Ein verwalteter Cluster auf AWS (EKS) / GCP (GKE) / Azure (AKS) | Erstellen Sie den Cluster und übergeben Sie anschließend dessen `kubeconfig` |
+| Jeder vorhandene Kubernetes-Cluster | Eine `kubeconfig`, die Helm-Releases installieren kann |
+
+Das ist alles – die Anleitungen, Doctor-Skripte und Versionsmanifeste des Repositorys
+führen den Agent durch den Rest.
+

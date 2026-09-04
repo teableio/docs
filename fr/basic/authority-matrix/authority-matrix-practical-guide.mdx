@@ -1,0 +1,219 @@
+---
+title: "Guide pratique de la Matrice d’autorité"
+description: "Configurez des rôles de Matrice d’autorité pour une équipe commerciale ayant besoin de données partagées, d’un accès aux enregistrements basé sur le propriétaire et d’une saisie de données restreinte."
+---
+
+{/* mintlify-resync: 2026-05-28 */}
+Ce guide utilise une base commerciale composée de trois tables : `Clients`, `Commandes clients`
+et `Produits`. L’objectif est de permettre à chaque rôle de travailler avec les données dont il a besoin
+sans exposer l’ensemble de la base.
+
+| Rôle | Objectif d’accès |
+| --- | --- |
+| Directeur commercial | Consulter les données clients et commerciales, commenter les produits et éviter de modifier les prix des produits. |
+| Commercial | Consulter et mettre à jour uniquement ses propres clients et commandes, créer de nouveaux clients et éviter de supprimer les commandes finalisées. |
+| Agent de saisie | Ajouter de nouveaux produits sans voir les produits, clients ou commandes existants. |
+
+<Info>Activez la Matrice d’autorité avant de vous appuyer sur les autorisations de rôle.</Info>
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-enable-en.png"
+  alt="Activer la Matrice d’autorité"
+  className="docs-screenshot"
+/>
+
+## Créer les rôles
+
+<Steps>
+  <Step title="Activer la Matrice d’autorité">
+    Ouvrez la page de la Matrice d’autorité dans la base et activez l’interrupteur principal. L’utilisateur
+    qui l’active est ajouté comme administrateur.
+  </Step>
+  <Step title="Ajouter des rôles personnalisés">
+    Cliquez sur `Ajouter un rôle` et créez `Directeur commercial`, `Commercial` et `Agent de
+    saisie`.
+  </Step>
+</Steps>
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-create-roles-en.png"
+  alt="Créer trois rôles : Directeur commercial, Commercial, Agent de saisie"
+  className="docs-screenshot"
+/>
+
+## Configurer le Directeur commercial
+
+Le Directeur commercial a besoin d’une visibilité étendue, mais les prix des produits doivent rester
+protégés contre les modifications accidentelles.
+
+| Nœud | Paramètre |
+| --- | --- |
+| Clients | Définissez la table sur `Peut modifier`. Laissez les autorisations d’enregistrement et de champ ouvertes afin que le rôle puisse consulter les données clients. |
+| Commandes clients | Définissez la table sur `Peut modifier`. Laissez les autorisations d’enregistrement et de champ ouvertes afin que le rôle puisse examiner l’activité commerciale. |
+| Produits | Définissez la table sur `Peut modifier`, puis n’autorisez que `Lire l’enregistrement` et `Commenter l’enregistrement` dans les autorisations d’enregistrement. |
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-director-permissions-en.png"
+  alt="Configurer les autorisations du Directeur commercial"
+  className="docs-screenshot"
+/>
+
+Attribuez des membres depuis la liste des rôles avec `Ajouter un utilisateur` ou `Ajouter depuis l’organisation`,
+puis vérifiez que l’interrupteur du rôle est activé.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-director-members-en.png"
+  alt="Ajouter des membres au rôle Directeur commercial"
+  className="docs-screenshot"
+/>
+
+Après la configuration, un Directeur commercial peut examiner les données clients et de commande, commenter
+les produits et éviter de modifier les enregistrements de produit.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-director-view-en.webp"
+  alt="Vue du Directeur commercial après la configuration des autorisations"
+  className="docs-screenshot"
+/>
+
+## Configurer le Commercial
+
+Le rôle Commercial utilise des filtres d’enregistrements afin que chaque commercial travaille uniquement sur les enregistrements
+dont il est le propriétaire.
+
+### Clients
+
+Définissez `Clients` sur `Peut modifier`.
+
+| Zone d’autorisation | Paramètre |
+| --- | --- |
+| Autorisations des enregistrements | Choisissez les enregistrements qui correspondent à des conditions spécifiques. Ajoutez un filtre tel que `Commercial` `est` `Moi (utilisateur actuel)`. |
+| Opérations sur les enregistrements | Autorisez `Lire l’enregistrement`, `Mettre à jour l’enregistrement` et `Créer un enregistrement`. Désactivez `Supprimer l’enregistrement` si les commerciaux ne doivent pas supprimer les fiches clients. |
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-filter-en.webp"
+  alt="Configurer un filtre d’enregistrements basé sur le propriétaire pour le Commercial"
+  className="docs-screenshot"
+/>
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-customer-permissions-en.png"
+  alt="Configurer les autorisations client du Commercial"
+  className="docs-screenshot"
+/>
+
+### Commandes clients
+
+Définissez `Commandes clients` sur `Peut modifier`.
+
+| Zone d’autorisation | Paramètre |
+| --- | --- |
+| Autorisations des enregistrements | Utilisez le même filtre basé sur le propriétaire, tel que `Commercial` `est` `Moi (utilisateur actuel)`. |
+| Opérations sur les enregistrements | Autorisez `Lire l’enregistrement` et `Créer un enregistrement`. Désactivez `Mettre à jour l’enregistrement` et `Supprimer l’enregistrement` si les commandes finalisées doivent rester inchangées. |
+| Autorisations des champs | Masquez les champs sensibles tels que `Mode de paiement` en désactivant `Lire l’enregistrement` pour ce champ. |
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-order-permissions-en.png"
+  alt="Configurer les autorisations de commande du Commercial"
+  className="docs-screenshot"
+/>
+
+Attribuez les commerciaux au rôle et laissez le rôle activé.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-members-en.png"
+  alt="Ajouter des membres au rôle Commercial"
+  className="docs-screenshot"
+/>
+
+Chaque commercial ne voit désormais que les enregistrements clients et de commande qui correspondent au
+filtre de propriétaire.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-view-en.webp"
+  alt="Aperçu de la vue du Commercial"
+  className="docs-screenshot"
+/>
+
+## Configurer l’Agent de saisie
+
+L’Agent de saisie doit uniquement ajouter des produits.
+
+| Nœud | Paramètre |
+| --- | --- |
+| Produits | Définissez la table sur `Peut modifier`. Dans les autorisations d’enregistrement, autorisez uniquement `Créer un enregistrement`. |
+| Champs de produit | Si les données de commande liées doivent rester masquées, désactivez `Lire l’enregistrement` pour le champ lié `Commandes`. |
+| Clients et Commandes clients | Laissez ces tables sur `Aucun accès`. |
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-data-entry-permissions-en.png"
+  alt="Configurer les autorisations de l’Agent de saisie"
+  className="docs-screenshot"
+/>
+
+Attribuez les agents au rôle et laissez le rôle activé.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-data-entry-members-en.png"
+  alt="Ajouter des membres au rôle Agent de saisie"
+  className="docs-screenshot"
+/>
+
+Après la configuration, l’Agent de saisie peut ajouter de nouveaux enregistrements de produit, mais ne peut pas consulter
+les données existantes sur les produits, les clients ou les commandes.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-data-entry-view-en.webp"
+  alt="Aperçu de la vue de l’Agent de saisie"
+  className="docs-screenshot"
+/>
+
+## Vue de revue commerciale
+
+<Tip>Utilisez cette configuration pour les revues commerciales : les commerciaux peuvent voir la liste complète des clients, mais ne peuvent modifier que les clients dont ils sont propriétaires.</Tip>
+
+Lors d’une revue, les commerciaux peuvent avoir besoin de voir chaque fiche client afin de comparer les tendances de suivi
+et le statut des clients. Les modifications quotidiennes doivent néanmoins rester limitées aux
+clients dont ils sont propriétaires, afin qu’ils ne modifient pas par erreur les enregistrements d’un autre commercial.
+
+Conservez le rôle `Commercial` existant, puis ajoutez un rôle en lecture seule pour offrir une visibilité sur les clients à l’échelle de l’entreprise.
+Un commercial peut utiliser le rôle en lecture seule pour consulter tous les clients et
+le rôle `Commercial` pour ne mettre à jour que les clients dont il est propriétaire.
+
+### Créer un rôle en lecture seule
+
+Cliquez sur `Ajouter un rôle` et créez un rôle en lecture seule, tel que `Lecteur global des clients`.
+
+### Configurer l’accès aux clients
+
+Définissez `Clients` sur `Peut modifier`. Dans les autorisations d’enregistrement, autorisez uniquement `Lire l’enregistrement`.
+N’activez pas `Mettre à jour l’enregistrement`, `Supprimer l’enregistrement` ni `Créer un enregistrement`. Laissez le
+filtre d’enregistrements vide afin que ce rôle puisse consulter tous les enregistrements clients.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-global-customer-viewer-permissions-en.png"
+  alt="Configurer les autorisations client en lecture seule pour le Lecteur global des clients"
+  className="docs-screenshot"
+/>
+
+### Attribuer des commerciaux
+
+Revenez à la liste des rôles et ajoutez les commerciaux ayant besoin d’un accès aux revues à
+`Lecteur global des clients`.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-global-customer-viewer-members-en.png"
+  alt="Ajouter des membres au rôle Lecteur global des clients"
+  className="docs-screenshot"
+/>
+
+Lorsqu’un utilisateur possède à la fois `Commercial` et `Lecteur global des clients`, Teable combine
+les autorisations. L’utilisateur peut consulter tous les enregistrements clients, mais ne peut mettre à jour que les
+enregistrements autorisés par le rôle `Commercial` basé sur le propriétaire.
+
+<img
+  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-global-customer-viewer-result-en.webp"
+  alt="Vue du Commercial avec les autorisations de Lecteur global des clients"
+  className="docs-screenshot"
+/>
+

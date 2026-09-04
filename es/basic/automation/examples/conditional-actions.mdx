@@ -1,0 +1,37 @@
+---
+title: "Ejecutar acciones diferentes según los valores de los Registros"
+description: "Usa lógica condicional para ramificar tu flujo de trabajo y realizar acciones diferentes según los valores de los Campos"
+---
+
+<Tip>Recomendamos crear los ejemplos de Automatización directamente en el Chat de IA. Describe el flujo de trabajo que quieres y la IA se encargará de configurarlo por completo, incluidos el disparador, las acciones, el script y la configuración.</Tip>
+
+## Crear con IA
+
+Abre el Chat de IA en la barra lateral derecha de tu Tabla y dile a la IA lo que quieres. Por ejemplo, puedes decir:
+
+*"Cuando se cree un ticket nuevo, comprueba el Campo Prioridad. Si es Urgente, envía un correo electrónico al equipo de guardia. De lo contrario, envíalo a la cola general de soporte"*
+
+La IA creará automáticamente el flujo de trabajo completo. Puedes revisar el script generado, probarlo con datos reales y habilitar el flujo de trabajo cuando esté listo.
+
+## Configuración manual
+
+1. **Crea un flujo de trabajo** con el disparador **Cuando se crea un Registro**.
+2. Selecciona tu Tabla **Tickets**.
+3. Haz clic en **Probar** para obtener un Registro de ejemplo.
+4. **Añade un nodo Condición**.
+5. Establece la regla: **Prioridad** `es` **Urgente**.
+6. Haz clic en **Probar**.
+7. **En la ruta verdadera** → añade una acción **Enviar correo electrónico**:
+   - Para: `oncall@yourcompany.com`
+   - Asunto: `Ticket urgente: ` + título del ticket (mediante **+**)
+   - Cuerpo: descripción del ticket (mediante **+**)
+8. **En la ruta falsa** → añade una acción **Enviar correo electrónico**:
+   - Para: `support@yourcompany.com`
+   - Asunto: `Ticket nuevo: ` + título del ticket
+   - Cuerpo: descripción del ticket
+9. Prueba ambas rutas y, después, **habilita** el flujo.
+
+## Consejos
+
+- Puedes anidar condiciones: añade otra condición dentro de la ruta falsa para separar la prioridad «Alta» de la «Baja».
+- Combina reglas con Y/O; por ejemplo, `Prioridad es Urgente Y Responsable está vacío`.

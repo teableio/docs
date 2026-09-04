@@ -1,0 +1,144 @@
+---
+title: "تهيئة خدمة البريد الإلكتروني"
+description: "فعّل خدمة البريد الإلكتروني لإتاحة إشعارات البريد داخل التطبيق، وإعادة تعيين كلمة المرور ذاتيًا، ورسائل الدعوة، وغيرها من الميزات."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+## طرق التهيئة
+
+يدعم Teable طريقتين لتهيئة خدمة البريد الإلكتروني:
+
+<CardGroup cols={2}>
+  <Card title="لوحة الإدارة (موصى بها)" icon="sliders" href="#option-1-admin-panel-recommended">
+    تهيئة مرئية مع اختبار مباشر، دون الحاجة إلى إعادة التشغيل.
+  </Card>
+  <Card title="متغيرات البيئة" icon="code" href="#option-2-environment-variables">
+    تهيئة تقليدية عبر ملف `.env`، وتتطلب إعادة تشغيل الحاوية.
+  </Card>
+</CardGroup>
+
+---
+
+## الخيار 1: لوحة الإدارة (موصى بها) {#option-1-admin-panel-recommended}
+
+أسهل طريقة لتهيئة البريد الإلكتروني هي استخدام لوحة الإدارة:
+
+1. سجّل الدخول بصفتك مسؤولًا (أول مستخدم مسجّل)
+2. انتقل إلى **لوحة الإدارة** ← **إعدادات النسخة**
+3. ابحث عن قسم **البريد الإلكتروني**
+4. هيّئ **بريد الإشعارات** و**بريد الأتمتة** حسب الحاجة
+
+<Tip>
+تدعم تهيئة لوحة الإدارة **الاختبار المباشر**، بحيث يمكنك التحقق من صحة إعدادات SMTP قبل حفظها.
+</Tip>
+
+- **بريد الإشعارات**: يُستخدم للتحقق من المستخدم، وإعادة تعيين كلمة المرور، والدعوات، وإشعارات النظام، والرسائل المشابهة.
+- **بريد الأتمتة**: يُستخدم بوصفه خدمة البريد الافتراضية لإجراءات إرسال البريد الإلكتروني في الأتمتة. ويمكن لكل إجراء إرسال بريد إلكتروني أيضًا تهيئة [خادم SMTP مخصص](/ar/basic/automation/actions/communication/smtp-sender) خاص به.
+
+### مصادر التهيئة وترتيب الأولوية
+
+نوصي بتهيئة خدمة البريد أولًا من **لوحة الإدارة ← إعدادات النسخة ← البريد الإلكتروني**. ويكون ترتيب الأولوية الفعلي كما يلي:
+
+1. **خادم البريد المخصص داخل إجراء إرسال البريد الإلكتروني**: ينطبق فقط على إجراء إرسال البريد المحدد في الأتمتة الحالية.
+2. **لوحة الإدارة ← إعدادات النسخة ← البريد الإلكتروني ← بريد الأتمتة**: تستخدمه رسائل الأتمتة عندما لا يهيئ إجراء إرسال البريد خادم بريد خاصًا به.
+3. **لوحة الإدارة ← إعدادات النسخة ← البريد الإلكتروني ← بريد الإشعارات**: يُستخدم للتحقق من المستخدم، وإعادة تعيين كلمة المرور، والدعوات، وإشعارات النظام، والرسائل المشابهة. كما يُستخدم خيارًا احتياطيًا لرسائل الأتمتة إذا لم تتم تهيئة بريد الأتمتة.
+4. **متغيرات البيئة `BACKEND_MAIL_*`**: تهيئة البريد الافتراضية على مستوى النشر. لا تُستخدم إلا خيارًا احتياطيًا عندما لا تتم تهيئة صندوق البريد المقابل في لوحة الإدارة.
+
+### حقول التهيئة
+
+| الحقل | الوصف | المثال |
+|-------|-------------|---------|
+| عنوان الخادم | عنوان خادم SMTP | `smtp.gmail.com` |
+| المنفذ | منفذ SMTP | `465` (SSL) أو `587` (TLS) |
+| SSL/TLS | ما إذا كان SSL/TLS مستخدمًا | `true` |
+| اسم المستخدم | مستخدم مصادقة SMTP | `noreply@company.com` |
+| كلمة المرور | كلمة مرور SMTP أو كلمة مرور التطبيق | `xxxxxxxxxxxxxx` |
+| عنوان المرسل | عنوان «من» | `noreply@company.com` |
+| اسم المرسل | الاسم المعروض | `إشعارات Teable` |
+
+---
+
+## الخيار 2: متغيرات البيئة {#option-2-environment-variables}
+
+في عمليات النشر التي تفضّل فيها التهيئة المستندة إلى الملفات، استخدم متغيرات البيئة:
+
+<Note>
+نوصي بتهيئة بريد الإشعارات وبريد الأتمتة أولًا من **لوحة الإدارة ← إعدادات النسخة ← البريد الإلكتروني**. تُستخدم متغيرات البيئة أساسًا بوصفها إعدادات افتراضية وخيارات احتياطية على مستوى النشر.
+</Note>
+
+```sh
+BACKEND_MAIL_HOST=smtp.example.com
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=noreply@company.com
+BACKEND_MAIL_SENDER_NAME=Teable
+BACKEND_MAIL_AUTH_USER=username
+BACKEND_MAIL_AUTH_PASS=your_password
+```
+
+<Note>
+بعد تغيير متغيرات البيئة، يجب **إعادة تشغيل** حاوية Teable كي تسري التغييرات.
+</Note>
+
+---
+
+## أمثلة لموفري SMTP
+
+<Accordion title="AWS SES">
+```sh
+# كيفية الحصول عليها: وحدة تحكم AWS ← Simple Email Service ← إعدادات SMTP ← إنشاء بيانات اعتماد SMTP
+BACKEND_MAIL_HOST=email-smtp.us-east-1.amazonaws.com  # استبدلها بمنطقتك
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=noreply@yourdomain.com  # يجب أن يكون عنوان مرسل موثّقًا
+BACKEND_MAIL_SENDER_NAME=إشعارات Teable
+BACKEND_MAIL_AUTH_USER=your_smtp_username   # اسم مستخدم AWS SMTP
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx       # كلمة مرور AWS SMTP
+```
+</Accordion>
+
+<Accordion title="Gmail">
+```sh
+# كيفية الحصول عليها: حساب Google ← الأمان ← التحقق بخطوتين ← كلمات مرور التطبيقات
+BACKEND_MAIL_HOST=smtp.gmail.com
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=you@gmail.com
+BACKEND_MAIL_SENDER_NAME=إشعارات Teable
+BACKEND_MAIL_AUTH_USER=you@gmail.com
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # كلمة مرور تطبيق مكوّنة من 16 رقمًا
+```
+</Accordion>
+
+<Accordion title="Microsoft 365 / Outlook">
+```sh
+# كيفية الحصول عليها: مركز إدارة Microsoft 365 ← الأمان ← السياسات والقواعد ← مصادقة البريد الإلكتروني
+BACKEND_MAIL_HOST=smtp.office365.com
+BACKEND_MAIL_PORT=587
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=your.name@yourdomain.com
+BACKEND_MAIL_SENDER_NAME=إشعارات Teable
+BACKEND_MAIL_AUTH_USER=your.name@yourdomain.com
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # كلمة مرور Microsoft 365 أو كلمة مرور التطبيق
+```
+</Accordion>
+
+<Accordion title="SendGrid">
+```sh
+# كيفية الحصول عليها: لوحة معلومات SendGrid ← الإعدادات ← مفاتيح API ← إنشاء مفتاح API
+BACKEND_MAIL_HOST=smtp.sendgrid.net
+BACKEND_MAIL_PORT=465
+BACKEND_MAIL_SECURE=true
+BACKEND_MAIL_SENDER=noreply@yourdomain.com
+BACKEND_MAIL_SENDER_NAME=إشعارات Teable
+BACKEND_MAIL_AUTH_USER=apikey
+BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # مفتاح SendGrid API الخاص بك
+```
+</Accordion>
+
+---
+
+## الوثائق ذات الصلة
+
+- [مرجع متغيرات البيئة](/ar/deploy/env)
+- [نظرة عامة على لوحة الإدارة](/ar/basic/admin-panel/overview)

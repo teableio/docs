@@ -1,0 +1,80 @@
+---
+title: "Видалення Записів"
+---
+
+### Шлях
+
+DELETE /api/table/\{tableId\}/record
+
+### Запит
+
+**Параметри шляху**
+
+* tableId (string): Унікальний ідентифікатор Таблиці [(як знайти)](/uk/api-doc/get-id#tableid).
+
+**Параметри запиту**
+
+* **recordIds (обов’язковий)** [(як знайти)](/uk/api-doc/get-id#recordid)
+  * Опис: масив ідентифікаторів Записів, які потрібно видалити
+  * Тип: масив
+  * Приклад: `["rec123456", "rec789012"]`
+  * Примітка: кожен елемент є рядком, що містить ідентифікатор Запису, який потрібно видалити.
+
+#### Відповідь
+
+**Успішна відповідь**
+
+* Код стану: 200 OK
+* Тіло відповіді: без вмісту
+
+#### Відповіді з помилками
+
+* Код стану: 400 Bad Request: неправильний формат параметрів запиту або відсутні обов’язкові параметри.
+* Код стану: 404 Not Found: указаний tableId не існує або деякі ідентифікатори Записів не існують.
+
+#### Приклад коду
+
+<CodeGroup>
+  ```bash CURL
+  curl -X DELETE 'https://app.teable.ai/api/table/__tableId__/record?recordIds[]=rec123456&recordIds[]=rec789012' \
+    -H 'Authorization: Bearer __token__'
+  ```
+
+  ```js JS SDK
+  import { configApi, deleteRecords } from '@teable/openapi';
+
+  configApi({
+    endpoint: 'https://app.teable.ai',
+    token: '__token__',
+  });
+
+  await deleteRecords('__tableId__', ['rec123456', 'rec789012']);
+  ```
+
+  ```ts TypeScript
+  const response = await fetch('https://app.teable.ai/api/table/__tableId__/record?recordIds[]=rec123456&recordIds[]=rec789012', {
+    method: 'DELETE',
+    headers: {
+      'Authorization': 'Bearer __token__'
+    }
+  });
+
+  console.log(response.status); // У разі успіху — 200
+  ```
+
+  ```python Python
+  import requests
+
+  response = requests.delete(
+      'https://app.teable.ai/api/table/__tableId__/record',
+      headers={
+          'Authorization': 'Bearer __token__'
+      },
+      params={
+          'recordIds': ['rec123456', 'rec789012']
+      }
+  )
+
+  print(response.status_code) # У разі успіху — 200
+  ```
+</CodeGroup>

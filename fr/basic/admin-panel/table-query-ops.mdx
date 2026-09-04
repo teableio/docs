@@ -1,0 +1,82 @@
+---
+title: "Opérations de requêtes de Table"
+description: "Examinez les recommandations de risque liées aux requêtes pour les Tables lentes et confirmez les améliorations de la base de données."
+---
+
+<Tip>Disponible à partir du plan Business auto-hébergé</Tip>
+
+Chemin : Administration système → Opérations de requêtes de Table
+
+Utilisez **Opérations de requêtes de Table** lorsque les Vues, filtres, relations ou recherches sur une grande Table deviennent lents. Un analyseur en arrière-plan surveille la charge de travail des requêtes et transforme ses observations en recommandations. La page les répertorie afin que les administrateurs de l’instance puissent examiner les éléments probants, analyser une Table spécifique plus en détail et confirmer toute modification de base de données.
+
+Les compteurs au-dessus de la liste résument la situation actuelle : périodes d’observation, requêtes, requêtes lentes, délais d’expiration, recommandations ouvertes et acceptées, tâches en cours et en échec, ainsi que le nombre de chemins d’accès de recherche prêts ou dégradés.
+
+## Examiner les recommandations
+
+La page s’ouvre sur **Recommandations**, classées par priorité. L’analyseur évalue le risque d’une requête par rapport à l’intensité d’utilisation de la Table ; les éléments qui méritent le plus une action apparaissent donc en premier.
+
+Recherchez par ID de Table, de Base ou d’Espace pour filtrer toutes les recommandations ; tout autre texte filtre ce qui est déjà affiché à l’écran. Les filtres de statut et de risque réduisent davantage la liste.
+
+Chaque entrée indique l’Espace, la Base et la Table auxquels elle appartient. Développez une ligne pour lire les éléments probants de la recommandation, la décision du système et les diagnostics SQL :
+
+| Section | Ce qu’elle indique |
+| --- | --- |
+| **Déclencheur** | L’origine de la recommandation : trafic de requêtes observé, configuration d’une Vue enregistrée ou configuration d’un Champ de relation. Un déclencheur de Vue enregistrée signifie qu’aucune requête lente n’a encore été observée ; la configuration seule a soulevé le risque. |
+| **Chemin d’accès** | La fréquence à laquelle cette Table a été atteinte par analyse séquentielle plutôt que par analyse d’index. |
+| **Raisons** | Des causes compréhensibles telles qu’une grande Table, l’absence d’index utile sur les Champs de filtre ou de tri, un tri coûteux ou des délais d’expiration observés. |
+| **Forme de requête** | Les Champs spécifiques filtrés et triés, avec le type de correspondance utilisé pour chacun. |
+| **Index proposé** | Les Champs que la recommandation indexerait, et pourquoi. |
+
+**Analyse approfondie** ouvre l’espace de travail d’analyse avec cette Table déjà renseignée.
+
+Lorsque l’analyseur détecte de nombreuses recherches de sous-chaînes dans une Table, il génère une recommandation **GIN de texte généré** pour l’ensemble de cette Table au lieu d’un index par Champ. Une telle ligne propose **Créer un chemin de recherche** à la place de **Analyse approfondie**, et **Ajouter un index** n’apparaît pas, car un chemin d’accès de recherche est appliqué depuis l’espace de travail d’analyse et nécessite d’abord un **EXPLAIN d’une recherche d’exemple**. La recommandation se ferme automatiquement une fois que la Table dispose du chemin.
+
+Deux autres onglets se trouvent à côté :
+
+| Onglet | Ce qu’il affiche |
+| --- | --- |
+| **Tables actives** | Les Tables les plus sollicitées, avec les requêtes, requêtes lentes, délais d’expiration et la durée de requête la plus longue. |
+| **Tâches** | Les tâches de remédiation créées par Teable, avec le statut, les tentatives, le worker et la dernière erreur. |
+
+Une bannière apparaît au-dessus de la liste lorsqu’un problème de configuration bloque le processus : des chemins d’accès de recherche sont configurés alors que l’indicateur d’exécution est désactivé, certaines Tables ont un chemin d’accès obsolète ou en attente de reconstruction et leur recherche est silencieusement revenue à l’analyse `ILIKE` plus lente, ou la tâche en file d’attente la plus ancienne attend depuis suffisamment longtemps pour suggérer qu’aucun worker ne la traite. Corrigez ce que la bannière indique avant d’agir sur les recommandations ci-dessous.
+
+### Lire le badge de décision
+
+Chaque recommandation porte la dernière décision prise par le système à son sujet :
+
+| Badge | Signification |
+| --- | --- |
+| **Nécessite une confirmation manuelle** | Seul un administrateur peut appliquer celle-ci. |
+| **Simulation · s’exécuterait automatiquement** | La recommandation répond aux critères d’acceptation, mais l’exécution automatique n’est pas activée ; rien n’a donc changé. |
+| **Exécution automatique en cours** / **Exécution automatique terminée** | L’exécution automatique a accepté la recommandation et l’a appliquée. |
+| **Échec de la post-vérification · nouvelle tentative différée** | Une modification automatique n’a pas réussi la vérification. Teable attend plus longtemps avant de réessayer cette Table. |
+| **Période de refroidissement** | Le même périmètre a été modifié récemment ; le système attend donc. |
+| **En attente** / **Exécution automatique non appliquée** | Les éléments probants du plan ou la taille de la Table n’ont pas atteint le seuil requis pour une exécution automatique. |
+
+<Info>Par défaut, Teable enregistre uniquement les décisions et crée des enregistrements de recommandations et de tâches ; il ne modifie pas votre base de données de lui-même. L’exécution automatique est facultative via `V2_TABLE_QUERY_OPS_AUTO_ACCEPT=auto` et, même dans ce cas, elle s’applique uniquement aux petites Tables dont le plan d’exécution montre une nette amélioration des coûts. Tout le reste attend un administrateur.</Info>
+
+### Ajouter l’index proposé
+
+Lorsqu’une recommandation propose un index avec lequel vous êtes d’accord, cliquez sur **Ajouter un index** dans la ligne. La confirmation accepte la recommandation et exécute `CREATE INDEX CONCURRENTLY` sur la Table PostgreSQL sous-jacente ; si la validation du plan a été ignorée, Teable crée tout de même l’index à partir des Champs recommandés. La boîte de dialogue répète les éléments probants afin que vous puissiez les vérifier une dernière fois.
+
+Pour une Table estimée à 50 000 lignes ou plus, la boîte de dialogue vous demande de confirmer qu’une fenêtre de maintenance est prévue avant que le bouton ne devienne disponible. Une création concurrente sur une grande Table prend du temps et ajoute de la charge pendant son exécution.
+
+Teable indique ensuite **Index créé** ou **Recommandation acceptée et mise en file d’attente**. Dans le second cas, suivez la tâche sous **Tâches**. Si la recommandation ne possède aucune colonne physique exécutable associée, **Ajouter un index** reste désactivé et l’indique ; utilisez plutôt l’espace de travail d’analyse pour approfondir.
+
+## Exécuter une analyse approfondie
+
+Ouvrez **Espace de travail d’analyse** pour analyser un périmètre à la demande, par exemple lorsqu’un utilisateur signale une Table lente qui n’a pas encore de recommandation.
+
+| Type d’analyse | Utilisez-le pour |
+| --- | --- |
+| **Requêtes et index** | Identifier les risques liés aux requêtes et les améliorations possibles des index. |
+| **Recherche de sous-chaînes** | Vérifier si un chemin d’accès de recherche de sous-chaînes pourrait accélérer les recherches contenant une sous-chaîne sans modifier leur comportement de correspondance. |
+
+Choisissez **Table**, **Base** ou **Espace**, saisissez l’ID correspondant et sélectionnez un type d’analyse. Commencez par **Table** lorsque vous savez déjà quelle Table est lente.
+
+Cliquez sur **Générer le rapport de requêtes** ou **Générer le rapport de recherche**. Le rapport résume les risques détectés et les prochaines actions recommandées. Pour un rapport de recherche, **EXPLAIN d’une recherche d’exemple** est facultatif. Ajoutez un exemple pour vérifier la compatibilité des résultats, les plans de requête et les temps de requête répétés pour le chemin d’accès de recherche de sous-chaînes proposé. Teable n’enregistre pas la valeur de l’exemple.
+
+<Info>Le rapport de requêtes ne modifie pas la base de données. L’application d’une recommandation de recherche de sous-chaînes nécessite un **EXPLAIN d’une recherche d’exemple** et la confirmation d’un administrateur.</Info>
+
+Pour une grande Table, examinez l’impact et planifiez toute modification confirmée pendant une fenêtre de maintenance appropriée.
+

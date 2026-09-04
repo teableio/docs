@@ -1,0 +1,78 @@
+---
+title: "Quando viene fatto clic su un pulsante"
+description: "Attiva un workflow quando viene fatto clic su un Campo pulsante"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Nota: puoi configurare tutti i trigger in AI Chat. Spiega all'IA cosa deve fare il workflow e si occuperà del resto.</Tip>
+
+Questo trigger viene eseguito quando un utente fa clic su un Campo Pulsante in una riga della Tabella. Il workflow riceve i dati di quella riga.
+
+## Creare con l'IA
+
+Apri AI Chat nella barra laterale destra della Tabella e descrivi ciò che desideri.
+
+L'IA si occupa di tutto: sceglie il trigger corretto, mappa i Campi pertinenti e configura automaticamente tutte le azioni.
+
+Descrivi l'obiettivo una sola volta e il workflow è pronto, senza alcuna configurazione manuale.
+
+**Esempio:** *"Quando faccio clic sul pulsante Approva, aggiorna lo stato e avvisa il team."*
+
+## Configurazione
+
+| Impostazione | Obbligatoria | Descrizione |
+|---|---|---|
+| Tabella | Sì | La Tabella che contiene il Campo pulsante |
+| Campi monitorati | Sì | I Campi pulsante da monitorare per i clic |
+| Filtro | No | Attiva il workflow soltanto se il Record soddisfa queste condizioni quando viene fatto clic sul pulsante |
+
+## Come creare un Campo pulsante
+
+Prima di poter utilizzare questo trigger, devi creare un Campo Pulsante nella Tabella:
+
+1. Apri la Tabella in cui vuoi inserire il pulsante.
+2. Fai clic su **+** per aggiungere un nuovo Campo.
+3. Nel menu del tipo di Campo, vai ad **Avanzato** e seleziona **Pulsante**.
+4. Assegna un nome al Campo (ad esempio, "Approva", "Invia fattura", "Esporta").
+5. Salva il Campo. In ogni riga della colonna verrà visualizzato un pulsante su cui è possibile fare clic.
+
+## Come configurarlo
+
+1. Apri l'Automazione e aggiungi un nuovo trigger.
+2. Seleziona **Quando viene fatto clic su un pulsante**.
+3. Scegli la **Tabella** che contiene il Campo pulsante.
+4. In **Campi monitorati**, seleziona il Campo pulsante da monitorare. Se necessario, puoi selezionare più Campi pulsante.
+5. (Facoltativo) Aggiungi un **Filtro** per limitare le righe che possono attivare l'Automazione. Ad esempio, `Stato` diverso da `Completato` impedirà l'attivazione tramite pulsante per i Record già completati.
+6. Salva e attiva l'Automazione.
+7. Aggiungi i passaggi delle azioni. Fai clic su **+** in qualsiasi Campo di un'azione per inserire i dati della riga su cui è stato fatto clic.
+
+## Dati disponibili per i passaggi successivi
+
+Quando viene fatto clic su un pulsante, il trigger fornisce:
+
+- **ID Record** — l'identificatore univoco della riga in cui è stato fatto clic sul pulsante.
+- **Tutti i valori dei Campi** — ogni Campo della riga selezionata è disponibile come variabile. Sono inclusi testo, numeri, date, Record collegati, allegati e altro ancora.
+
+Puoi quindi utilizzare i dati della riga per compilare email, aggiornare altri Record o inviare dati ad API esterne, tutto in base alla riga specifica selezionata dall'utente.
+
+## Quando utilizzarlo
+
+- **Workflow di approvazione con un clic.** Aggiungi un pulsante "Approva" a ogni riga. Quando viene selezionato, aggiorna lo stato in "Approvato" e invia una notifica al richiedente.
+- **Generare un report o un documento su richiesta.** Un pulsante "Genera report" attiva un'azione IA o una richiesta HTTP per creare un PDF o un riepilogo per quel Record specifico.
+- **Inviare un Record a un sistema esterno.** Un pulsante "Sincronizza con il CRM" invia i dati della riga a Salesforce, HubSpot o un'altra piattaforma tramite una richiesta HTTP.
+- **Inviare un'email personalizzata.** Un pulsante "Invia promemoria" compone e invia un'email usando le informazioni di contatto e i dettagli pertinenti della riga.
+- **Attivare un passaggio di revisione manuale.** Un pulsante "Contrassegna per la revisione" contrassegna il Record e avvisa un responsabile, offrendo alle persone il controllo esplicito sugli elementi da inoltrare.
+
+## Suggerimenti
+
+- Il Campo pulsante non memorizza dati: è soltanto un meccanismo di attivazione. Nella cella non vedrai un valore, ma solo un pulsante su cui fare clic.
+- Se una Tabella contiene più Campi pulsante, puoi creare Automazioni separate per ciascuno oppure utilizzare una sola Automazione che monitori più pulsanti e applichi una logica condizionale.
+- Il filtro viene valutato nel momento in cui si fa clic sul pulsante. Se il Record non soddisfa il filtro, l'Automazione semplicemente non viene eseguita e l'utente non visualizza alcun errore.
+- I trigger Pulsante sono ideali per i workflow in cui vuoi applicare una valutazione umana prima dell'esecuzione di un'azione, anziché affidarti a un'elaborazione completamente automatica.
+
+## Contenuti correlati
+
+- [Quando viene inviato un modulo](/it/basic/automation/trigger/forms/form-submitted) — si attiva con gli invii dei moduli anziché con i clic sui pulsanti
+- [Quando viene aggiornato un Record](/it/basic/automation/trigger/records/record-updated) — si attiva automaticamente quando cambiano i Campi, senza richiedere alcuna azione dell'utente
+- [Azione Aggiorna Record](/it/basic/automation/actions/records/update-record) — spesso abbinata ai clic sui pulsanti per modificare lo stato della riga
+- [Invia email](/it/basic/automation/actions/communication/send-email-overview)

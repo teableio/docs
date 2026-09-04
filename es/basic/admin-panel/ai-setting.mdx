@@ -1,0 +1,111 @@
+---
+title: "Ajustes de IA"
+description: "Configura el Chat de IA, los Campos de IA, las automatizaciones de IA y App Builder en una instancia autoalojada."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Disponible para el plan Business autoalojado y los planes superiores</Tip>
+
+Ruta: Administración del sistema → Ajustes de IA
+
+La página **Ajustes de IA** permite configurar el **Chat de IA**, los **Campos de IA**, las **automatizaciones de IA** y **App Builder**. El panel **Configuración pendiente** de la derecha muestra qué elementos obligatorios siguen pendientes.
+
+## Antes de empezar
+
+Antes de abrir la página Ajustes de IA, asegúrate de que los siguientes elementos estén preparados.
+
+| Requisito | ¿Es obligatorio? | Notas |
+|------|------|------|
+| **Configuración del entorno de ejecución de agentes** | Obligatoria para el Chat de IA y App Builder | La utilizan el Chat de IA y App Builder |
+| **Proveedor personalizado** | Obligatorio cuando el Chat de IA o App Builder usan tu propia clave (BYOK) | Usa un proveedor **Compatible con OpenAI** o **Anthropic** |
+| **Clave de API de OpenAI** | Opcional | Solo es necesaria si quieres habilitar la **Entrada de voz** en el Chat de IA |
+| **Acceso público** | Obligatorio cuando se selecciona el motor de implementación **Vercel** | Tu **instancia de Teable** y el **almacenamiento de objetos (MinIO / S3)** deben ser accesibles públicamente para Vercel |
+
+## Pasos de configuración
+
+Comienza por configurar el entorno de ejecución del Chat de IA, la implementación de aplicaciones y los modelos:
+
+<Steps>
+  <Step title="Configurar el entorno de ejecución del Chat de IA y la implementación de aplicaciones">
+    Elige una [opción de implementación](/es/deploy/choose) y completa la implementación; después, haz clic en **Ejecutar prueba** y **Probar conexión**.
+  </Step>
+  <Step title="Configurar la API de LLM">
+    Configura la conexión con el modelo y completa la prueba inicial.
+  </Step>
+  <Step title="Configurar los modelos recomendados">
+    Elige los modelos recomendados para los Campos de IA y las automatizaciones de IA.
+  </Step>
+  <Step title="Establecer el modelo de chat">
+    Elige el modelo predeterminado del Chat de IA.
+  </Step>
+</Steps>
+
+### Configurar el entorno de ejecución
+
+Haz clic en **Ejecutar prueba** para verificar el entorno de ejecución del Chat de IA.
+
+### Configurar la API de LLM
+
+En **API de LLM**, añade un proveedor de modelos y prueba sus modelos. Si usas tu propia clave (BYOK), elige **Compatible con OpenAI** o **Anthropic** como tipo de proveedor.
+
+Abre **Ajustes del modelo** para un modelo cuando necesites revisar o sustituir estos valores:
+
+| Ajuste | Efecto |
+|------|------|
+| **Contexto** | Opcional. Establece el número máximo de tokens de entrada utilizados para compactar el contexto. |
+| **Salida máxima** | Opcional. Establece el número máximo de tokens que el modelo puede generar en una respuesta. |
+
+### Configurar los modelos recomendados
+
+Elige los modelos recomendados que los usuarios pueden seleccionar en los **Campos de IA** y las **automatizaciones de IA**.
+
+### Establecer el modelo de chat
+
+Elige el modelo predeterminado del **Chat de IA** de la barra lateral. El modelo de chat debe pertenecer a la lista de modelos recomendados.
+
+### Habilitar funciones de IA
+
+En **Funciones de IA**, habilita **Campo de IA** y **Chat de IA** según sea necesario. Configura el entorno de ejecución antes de usar el **Chat de IA**.
+
+### Configurar App Builder
+
+En **Motor de implementación**, elige cómo se implementan las aplicaciones:
+
+| Motor de implementación | Requisitos de configuración |
+|------|------|
+| **Vercel** | Introduce un token de acceso de Vercel, haz clic en **Probar conexión** y usa **Probar acceso público** para confirmar que Vercel puede acceder a tu instancia de Teable y al almacenamiento de objetos. |
+| **Teable Infra** | Usa el entorno de ejecución de contenedores de Teable Infra configurado. Aquí no se requieren credenciales adicionales ni una prueba de acceso público. |
+
+Puedes añadir estos ajustes opcionales de App Builder cuando los necesites:
+
+| Elemento opcional | Cuándo lo necesitas |
+|------|------|
+| **Dominio personalizado** | Cuando quieras publicar aplicaciones en tu propio dominio |
+| **Autenticación de aplicaciones** | Cuando las aplicaciones generadas necesiten iniciar sesión mediante **OTP por correo electrónico** o **Google** |
+
+En **Autenticación de aplicaciones**, puedes configurar proveedores de inicio de sesión para las aplicaciones generadas:
+
+- **OTP por correo electrónico** usa un buzón SMTP independiente para los mensajes de verificación de inicio de sesión de las aplicaciones.
+- **Google OAuth** requiere un ID de cliente y un secreto de cliente. Añade la URI de redirección que aparece en esta página a la lista de URI de redirección autorizadas de Google Cloud Console.
+
+El inicio de sesión con **Teable** está disponible de forma predeterminada. **OTP por correo electrónico** solo aparece en App Builder cuando se han completado los ajustes de SMTP, y **Google** solo aparece cuando se han configurado ambas credenciales de OAuth.
+
+La opción **Inyectar automáticamente la clave de API de IA en las aplicaciones** está activada de forma predeterminada, por lo que las aplicaciones pueden llamar a los modelos de IA de la plataforma. Si la desactivas, las aplicaciones dejan de tener acceso a ellos.
+
+### Opcional: configurar la Entrada de voz
+
+Para usar la Entrada de voz en el Chat de IA, habilita la función e introduce una **Clave de API de OpenAI**. Configura el **Punto de conexión de transcripción** únicamente cuando uses un servicio de transcripción personalizado. También puedes limitar la duración de las grabaciones y las solicitudes por minuto.
+
+### Verificar la configuración
+
+Cuando termines la configuración, confirma primero que todos los elementos obligatorios del panel **Configuración pendiente** estén en verde. Después, prueba uno por uno el **Chat de IA**, los **Campos de IA**, las **automatizaciones de IA** y **App Builder**.
+
+## Preguntas frecuentes
+
+<AccordionGroup>
+<Accordion title="Aparece un error que indica que se han superado los Créditos">
+
+Comprueba la cuenta o el proveedor que usa el servicio de modelos configurado. Añade saldo o cambia la configuración del modelo si es necesario.
+</Accordion>
+
+</AccordionGroup>

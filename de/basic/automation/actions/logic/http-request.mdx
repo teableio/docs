@@ -1,0 +1,134 @@
+---
+title: "HTTP-Anfrage"
+description: "Rufen Sie aus einem Workflow eine beliebige externe API auf"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Wir empfehlen dringend, Automatisierungen mit „Skript ausführen“ zu erstellen, da diese Funktion alle Aktionsarten abdecken kann – auch solche, die andernfalls manuell erstellt werden müssten. Beschreiben Sie Ihre Anforderungen einfach im KI-Chat.
+
+Bitte beachten Sie: Wenn Sie Aktionen manuell hinzufügen, kann die KI sie später weder erkennen noch ändern.
+</Tip>
+
+## Mit KI erstellen
+
+Öffnen Sie den KI-Chat in der rechten Seitenleiste Ihrer Tabelle und beschreiben Sie, was Sie erreichen möchten.
+
+Die KI übernimmt alles: Sie wählt den richtigen Auslöser und die passenden Aktionen aus, ordnet die Felder zu und konfiguriert den gesamten Workflow automatisch.
+
+Beschreiben Sie Ihr Ziel einmal, und der Workflow ist einsatzbereit – eine manuelle Einrichtung ist nicht erforderlich.
+
+Sendet eine HTTP-Anfrage an eine beliebige URL und gibt die Antwort zurück. Verwenden Sie diese Aktion, um REST-APIs aufzurufen, Benachrichtigungen an Slack oder Discord zu senden, Daten an CRM-Systeme zu übertragen oder mit beliebigen Diensten zu interagieren, die eine HTTP-API besitzen.
+
+## Konfiguration
+
+| Einstellung | Erforderlich | Beschreibung |
+|---|---|---|
+| URL | Ja | Der Zielendpunkt. Unterstützt dynamische Variablen über **+** |
+| Methode | Ja | GET, POST, PUT, PATCH, DELETE oder HEAD |
+| Header | Nein | Benutzerdefinierte HTTP-Header als Schlüssel-Wert-Paare |
+| Content-Type | Nein | Das Format des Anfragetexts (siehe unten) |
+| Text | Nein | Die Anfragenutzlast – je nach Content-Type Text oder Schlüssel-Wert-Paare |
+
+## Einrichtung
+
+1. Fügen Sie Ihrem Workflow die Aktion **HTTP-Anfrage** hinzu.
+2. Geben Sie die **URL** des API-Endpunkts ein. Mit **+** können Sie dynamische Werte einfügen (z. B. eine Datensatz-ID in den URL-Pfad).
+3. Wählen Sie die **Methode**:
+   - **GET** – Daten abrufen.
+   - **POST** – Daten senden, um etwas zu erstellen.
+   - **PUT / PATCH** – vorhandene Daten aktualisieren.
+   - **DELETE** – Daten entfernen.
+4. Fügen Sie **Header** hinzu, wenn die API diese erfordert (z. B. Autorisierungstokens oder benutzerdefinierte Header).
+5. Wählen Sie einen **Content-Type** und verfassen Sie bei Bedarf den **Text** (für POST, PUT und PATCH).
+6. Speichern Sie die Aktion.
+
+## Erläuterung der Content-Type-Optionen
+
+| Content-Type | Verwendung | Textformat |
+|---|---|---|
+| `application/json` | Die meisten REST-APIs. Strukturierte Daten senden | JSON-Text (z. B. `{"key": "value"}`) |
+| `application/x-www-form-urlencoded` | Herkömmliche Formularübermittlungen und einige ältere APIs | Schlüssel-Wert-Paare, automatisch URL-codiert |
+| `multipart/form-data` | Datei-Uploads oder gemischte Daten | Schlüssel-Wert-Paare mit Dateiunterstützung |
+| `text/plain` | Einfache Textnutzlasten | Nur-Text-Zeichenfolge |
+
+<Tip>Wenn Sie nicht sicher sind, welchen Content-Type Sie verwenden sollen, wählen Sie `application/json`. Die meisten modernen APIs verwenden JSON.</Tip>
+
+Wenn Sie unsicher sind, ist `application/json` für die meisten modernen APIs die richtige Wahl.
+
+## Authentifizierungsbeispiele
+
+Viele APIs erfordern eine Authentifizierung. Hier sind gängige Muster, die Sie im Bereich „Header“ einrichten können:
+
+### Bearer-Token
+
+Fügen Sie einen Header hinzu:
+- **Schlüssel:** `Authorization`
+- **Wert:** `Bearer your-api-token-here`
+
+Dies funktioniert für APIs wie Slack, GitHub, Notion und viele andere.
+
+### API-Schlüssel im Header
+
+Fügen Sie einen Header hinzu:
+- **Schlüssel:** `X-API-Key` (oder den von der API erwarteten Schlüssel, z. B. `api-key`, `x-api-token`)
+- **Wert:** `your-api-key`
+
+### Standardauthentifizierung
+
+Fügen Sie einen Header hinzu:
+- **Schlüssel:** `Authorization`
+- **Wert:** `Basic base64encoded(username:password)`
+
+Sie müssen Ihre Anmeldedaten außerhalb von Teable Base64-codieren oder den Headerwert mit einer Skriptaktion generieren.
+
+## Konkretes Beispiel: Slack-Benachrichtigung senden
+
+Ziel: Beim Erstellen eines neuen Datensatzes eine Nachricht in einem Slack-Kanal posten.
+
+1. **Auslöser:** Wenn Datensatz erstellt wird.
+2. **Aktion:** HTTP-Anfrage mit:
+   - **URL:** `https://hooks.slack.com/services/T00/B00/xxxx` (Ihre Slack-Webhook-URL)
+   - **Methode:** POST
+   - **Content-Type:** `application/json`
+   - **Text:**
+     ```json
+     {
+       "text": "Neue Aufgabe erstellt: {{Task Name}} – Priorität: {{Priority}}"
+     }
+     ```
+   Ersetzen Sie `{{Task Name}}` und `{{Priority}}` durch dynamische Variablen aus dem Auslöser, indem Sie auf **+** klicken.
+
+## Antwortdaten in nachfolgenden Schritten verwenden
+
+Nach der HTTP-Anfrage steht die Antwort nachfolgenden Aktionen zur Verfügung:
+
+- **Statuscode** – der HTTP-Status (200, 201, 404 usw.).
+- **Antworttext** – die von der API zurückgegebenen Daten, sofern möglich als JSON geparst.
+
+Über die Variablenauswahl **+** können Sie in späteren Schritten auf bestimmte Felder der Antwort verweisen. Gibt die API beispielsweise `{"id": "abc123", "status": "created"}` zurück, können Sie getrennt auf `id` und `status` verweisen. Beim Einfügen dynamischer Werte mit **+** können Sie außerdem Feldpfade und Formatierungsoptionen verwenden, wenn eine externe API ein bestimmtes Anfrageformat erfordert.
+
+Dies ist nützlich, um API-Aufrufe zu verketten – erstellen Sie beispielsweise per POST ein Objekt, erhalten Sie eine ID und verwenden Sie diese anschließend in „Datensatz aktualisieren“ oder einer weiteren HTTP-Anfrage.
+
+## Verwendung
+
+- **Nachrichten an Slack oder Discord posten.** Senden Sie über eingehende Webhook-URLs Benachrichtigungen an Kanäle.
+- **Daten mit einem CRM- oder ERP-System synchronisieren.** Übertragen Sie neue oder aktualisierte Datensätze an Salesforce, HubSpot oder ein beliebiges System mit API.
+- **Beliebige Drittanbieter-APIs aufrufen.** Interagieren Sie mit Zahlungsabwicklern, Versanddiensten, Analysetools oder benutzerdefinierten internen APIs.
+- **Externe Workflows auslösen.** Rufen Sie Zapier-Webhooks, Make-Szenarien (Integromat) oder andere Automatisierungsplattformen auf.
+- **Daten aus externen Quellen abrufen.** Rufen Sie mit GET-Anfragen Wechselkurse, Wetterdaten oder Daten einer beliebigen öffentlichen API in Ihrem Workflow ab.
+
+## Tipps
+
+- Prüfen Sie stets die API-Dokumentation auf erforderliche Header, Authentifizierung und das erwartete Textformat.
+- Verwenden Sie für die meisten modernen APIs `application/json` als Content-Type. Erwartet die API Formulardaten, wechseln Sie zu `x-www-form-urlencoded`.
+- Gibt die API einen Fehler zurück (Status 4xx oder 5xx), wird die Aktion dennoch abgeschlossen – nachfolgende Schritte erhalten jedoch die Fehlerantwort. Prüfen Sie den Statuscode in Ihrem Workflow, wenn Sie eine bedingte Behandlung benötigen.
+- Verweisen Sie bei APIs mit großen Antworten in nachfolgenden Schritten nur auf die benötigten Felder.
+- Kombinieren Sie die Aktion mit [Schleife (Stapelverarbeitung)](/de/basic/automation/actions/logic/loop-run), um mehrere API-Aufrufe durchzuführen – einen pro Datensatz. Beachten Sie die Ratenbegrenzungen der externen API.
+- Verwenden Sie die Funktion [HTTP-Array-Body](/de/basic/automation/actions/logic/loop-run), wenn Sie mehrere Elemente in einer einzigen Anfrage senden möchten, statt pro Element eine Anfrage zu stellen.
+
+## Verwandte Themen
+
+- [Schleife (Stapelverarbeitung)](/de/basic/automation/actions/logic/loop-run) – HTTP-Anfragen für jedes Element eines Arrays stellen
+- [Wenn Webhook empfangen wird](/de/basic/automation/trigger/external/webhook-received) – das eingehende Gegenstück: HTTP-Anfragen von externen Systemen empfangen
+- [Skript ausführen](/de/basic/automation/ai/scripting/runscript) – für komplexere API-Interaktionen mit benutzerdefiniertem Code

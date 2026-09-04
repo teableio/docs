@@ -1,0 +1,36 @@
+---
+title: "Mantenere sincronizzati i Record tra più Base"
+description: "Replica automaticamente i Record nuovi o aggiornati in un'altra Base tramite l'Accesso tra Base"
+---
+
+<Tip>Consigliamo di creare gli esempi di Automazione direttamente in AI Chat. Descrivi il workflow desiderato e l'IA si occuperà dell'intera configurazione, inclusi trigger, azioni, script e impostazioni.</Tip>
+
+## Creare con l'IA
+
+Apri AI Chat nella barra laterale destra della Tabella e spiega all'IA cosa desideri. Ad esempio, puoi dire:
+
+*"Quando viene creato un nuovo ordine nella Base Vendite, crea un Record corrispondente nella Base Evasione con l'ID ordine, il nome del cliente, l'importo e lo stato impostato su In attesa di evasione"*
+
+L'IA creerà automaticamente il workflow completo. Puoi esaminare lo script generato, provarlo con dati reali e abilitare il workflow quando è pronto.
+
+## Configurazione manuale
+
+1. **Crea un workflow** nella Base **Vendite** con il trigger **Quando viene creato un Record**.
+2. Seleziona la Tabella **Ordini**.
+3. Fai clic su **Test**.
+4. **Aggiungi un'azione** → **Crea Record**.
+5. Fai clic su **Accesso tra Base** accanto al selettore della Tabella.
+6. Passa alla Base **Evasione** e seleziona la Tabella **Ordini**.
+7. Mappa i Campi:
+   - ID ordine → ID ordine del trigger (tramite **+**)
+   - Cliente → Cliente del trigger
+   - Importo → Importo del trigger
+   - Stato → `In attesa di evasione`
+8. Fai clic su **Test**, quindi **abilita** il workflow.
+
+## Sincronizzazione bidirezionale
+
+Per sincronizzare gli aggiornamenti in entrambe le direzioni:
+1. Crea un secondo workflow nella Base **Evasione**.
+2. Usa **Quando viene aggiornato un Record** → **Aggiorna Record** con Accesso tra Base che rimanda alla Base Vendite.
+3. Usa un filtro per evitare cicli infiniti: ad esempio, attiva il workflow soltanto quando cambiano Campi specifici e verifica che il valore sia effettivamente diverso prima di aggiornarlo.

@@ -1,0 +1,111 @@
+---
+title: "AI Ayarları"
+description: "Kendi sunucunuzda barındırılan bir örnek için AI Chat'i, AI Alanlarını, AI otomasyonunu ve App Builder'ı yapılandırın."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Kendi sunucunuzda barındırılan Business ve üzeri planlarda kullanılabilir</Tip>
+
+Yol: Yönetici Paneli → AI Ayarları
+
+**AI Ayarları** sayfası; **AI Chat**, **AI Alanları**, **AI otomasyonu** ve **App Builder** yapılandırması için kullanılır. Sağdaki **Bekleyen yapılandırma** paneli, hangi zorunlu öğelerin hâlâ eksik olduğunu gösterir.
+
+## Başlamadan önce
+
+AI Ayarları sayfasını açmadan önce aşağıdaki öğelerin hazır olduğundan emin olun.
+
+| Gereksinim | Zorunlu mu? | Notlar |
+|------|------|------|
+| **Aracı Çalışma Zamanı kurulumu** | AI Chat ve App Builder için zorunlu | AI Chat ve App Builder tarafından kullanılır |
+| **Özel sağlayıcı** | AI Chat veya App Builder kendi anahtarınızı (BYOK) kullandığında zorunlu | **OpenAI Compatible** veya **Anthropic** sağlayıcısı kullanın |
+| **OpenAI API Anahtarı** | İsteğe bağlı | Yalnızca AI Chat'te **Sesli girişi** etkinleştirmek istiyorsanız gereklidir |
+| **Genel erişim** | **Vercel** dağıtım motoru seçildiğinde zorunlu | **Teable örneğiniz** ve **nesne depolamanız (MinIO / S3)** Vercel tarafından genel olarak erişilebilir olmalıdır |
+
+## Kurulum adımları
+
+AI Chat çalışma zamanı, uygulama dağıtımı ve model kurulumuyla başlayın:
+
+<Steps>
+  <Step title="AI Chat çalışma zamanını ve uygulama dağıtımını yapılandırın">
+    Bir [dağıtım seçeneği](/tr/deploy/choose) belirleyip dağıtımı tamamlayın, ardından **Testi çalıştır** ve **Bağlantıyı Test Et** seçeneklerine tıklayın.
+  </Step>
+  <Step title="LLM API'yi yapılandırın">
+    Model bağlantınızı kurup ilk testi tamamlayın.
+  </Step>
+  <Step title="Önerilen Modelleri yapılandırın">
+    AI Alanları ve AI otomasyonu için önerilen modelleri seçin.
+  </Step>
+  <Step title="Sohbet modelini ayarlayın">
+    AI Chat için varsayılan modeli seçin.
+  </Step>
+</Steps>
+
+### Çalışma zamanını yapılandırma
+
+AI Chat çalışma zamanını doğrulamak için **Testi çalıştır**'a tıklayın.
+
+### LLM API'yi yapılandırma
+
+**LLM API** bölümünde bir model sağlayıcısı ekleyip modellerini test edin. Kendi anahtarınızı (BYOK) kullanıyorsanız sağlayıcı türü olarak **OpenAI Compatible** veya **Anthropic** seçin.
+
+Aşağıdaki değerleri incelemeniz veya geçersiz kılmanız gerektiğinde modelin **Model Ayarları** bölümünü açın:
+
+| Ayar | Etkisi |
+|------|------|
+| **Bağlam** | İsteğe bağlı. Bağlam sıkıştırması için kullanılacak azami giriş token'ı sayısını belirler. |
+| **Azami çıktı** | İsteğe bağlı. Modelin tek bir yanıtta oluşturabileceği azami token sayısını belirler. |
+
+### Önerilen Modelleri yapılandırma
+
+Kullanıcıların **AI Alanları** ve **AI otomasyonu** içinde seçebileceği önerilen modelleri belirleyin.
+
+### Sohbet modelini ayarlama
+
+Kenar çubuğundaki **AI Chat** için varsayılan modeli seçin. Sohbet modeli, önerilen model listesinden gelmelidir.
+
+### AI özelliklerini etkinleştirme
+
+**AI Özellikleri** bölümünde gerektiği şekilde **AI Alanı** ve **AI Chat**'i etkinleştirin. **AI Chat**'i kullanmadan önce çalışma zamanını yapılandırın.
+
+### App Builder'ı yapılandırma
+
+Uygulamaların nasıl dağıtılacağını **Dağıtım Motoru** bölümünden seçin:
+
+| Dağıtım motoru | Kurulum gereksinimleri |
+|------|------|
+| **Vercel** | Bir Vercel erişim token'ı girin, **Bağlantıyı Test Et**'e tıklayın ve Vercel'in Teable örneğinize ve nesne depolamanıza erişebildiğini doğrulamak için **Genel Erişimi Test Et** seçeneğini kullanın. |
+| **Teable Infra** | Yapılandırılmış Teable Infra kapsayıcı çalışma zamanını kullanır. Burada ek kimlik bilgileri veya genel erişim testi gerekmez. |
+
+Gerektiğinde aşağıdaki isteğe bağlı App Builder ayarlarını ekleyebilirsiniz:
+
+| İsteğe bağlı öğe | Gerektiği durum |
+|------|------|
+| **Özel alan adı** | Uygulamaları kendi alan adınız altında yayımlamak istediğinizde |
+| **Uygulama Kimlik Doğrulaması** | Oluşturulan uygulamalarda **E-posta OTP** veya **Google** ile oturum açma gerektiğinde |
+
+**Uygulama Kimlik Doğrulaması** bölümünde, oluşturulan uygulamalar için oturum açma sağlayıcılarını yapılandırabilirsiniz:
+
+- **E-posta OTP**, uygulama giriş doğrulama e-postaları için bağımsız bir SMTP posta kutusu kullanır.
+- **Google OAuth**, bir İstemci Kimliği ve İstemci Gizli Anahtarı gerektirir. Bu sayfada gösterilen yönlendirme URI'sini Google Cloud Console'daki yetkilendirilmiş yönlendirme URI'leri listesine ekleyin.
+
+**Teable** ile oturum açma varsayılan olarak kullanılabilir. **E-posta OTP**, yalnızca SMTP ayarları tamamlandıktan sonra App Builder'da görünür; **Google** ise yalnızca her iki OAuth kimlik bilgisi yapılandırıldıktan sonra görünür.
+
+**AI API Anahtarını uygulamalara otomatik olarak ekle** varsayılan olarak açıktır; böylece uygulamalar platformun AI modellerini çağırabilir. Bu ayarı kapatırsanız uygulamalar artık bu modellere erişemez.
+
+### İsteğe bağlı: Sesli girişi yapılandırma
+
+AI Chat'te sesli giriş kullanmak için özelliği etkinleştirip bir **OpenAI API Anahtarı** girin. **Transkripsiyon Uç Noktasını** yalnızca özel bir transkripsiyon hizmeti kullanırken yapılandırın. Kayıt uzunluğunu ve dakika başına istek sayısını da sınırlayabilirsiniz.
+
+### Kurulumu doğrulama
+
+Kurulum tamamlandıktan sonra önce **Bekleyen yapılandırma** panelindeki tüm zorunlu öğelerin yeşil olduğunu doğrulayın. Ardından **AI Chat**, **AI Alanları**, **AI otomasyonu** ve **App Builder** özelliklerini tek tek test edin.
+
+## SSS
+
+<AccordionGroup>
+<Accordion title="Kredi sınırı aşıldı hatası alıyorum">
+
+Yapılandırılmış model hizmetinizin kullandığı hesabı veya sağlayıcıyı kontrol edin. Gerekirse bakiye yükleyin veya model yapılandırmasını değiştirin.
+</Accordion>
+
+</AccordionGroup>

@@ -1,0 +1,72 @@
+---
+title: "Rollup"
+description: "Aggregieren Sie Werte aus verknüpften Datensätzen, beispielsweise Summe, Anzahl, Durchschnitt, Maximum und Minimum."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+Rollup-Felder berechnen Statistiken aus mehreren verknüpften Datensätzen. Ein Rollup-Feld geht normalerweise von einem vorhandenen **Verknüpfungsfeld** aus, wählt ein Zielfeld aus verknüpften Datensätzen und berechnet das Ergebnis mit einer ausgewählten Funktion.
+
+## Anwendungsfälle
+
+| Szenario | Geeignet für |
+| --- | --- |
+| Bestellsumme | Preise aus Bestellpositionen aggregieren, um die Bestellsumme zu berechnen |
+| Aufgabenfortschritt | Verknüpfte Aufgaben und abgeschlossene Aufgaben zählen oder durchschnittliche Bewertungen berechnen |
+| Kundenwert | Gesamtausgaben oder Anzahl der Bestellungen aus Kundenbestellungen aggregieren |
+| Tags bereinigen | Tags, Beteiligte oder Quellkanäle aus verknüpften Datensätzen zusammenführen |
+
+## Erstellen und konfigurieren
+
+<Steps>
+  <Step title="Verknüpfungsbeziehung erstellen">
+    Erstellen Sie vor dem Erstellen eines Rollup-Felds ein **Verknüpfungsfeld**.
+  </Step>
+  <Step title="Feldtyp auswählen">
+    Klicken Sie in der Tabellenkopfzeile auf `+`, um ein Feld hinzuzufügen, und wählen Sie **Rollup** aus.
+  </Step>
+  <Step title="Verknüpfungsfeld und Zielfeld auswählen">
+    Wählen Sie das Verknüpfungsfeld aus, das die Datenquelle bereitstellt, und anschließend das zu berechnende Zielfeld.
+  </Step>
+  <Step title="Rollup-Funktion auswählen">
+    Wählen Sie entsprechend dem Typ des Zielfelds eine Funktion aus, beispielsweise Summe, Anzahl, Durchschnitt, Maximum oder Minimum.
+  </Step>
+</Steps>
+
+## Formatierung und Anzeige
+
+Für Rollup-Ergebnisse können in der Regel Formatierungen und interaktive Anzeigeeinstellungen verwendet werden:
+
+- **Formatierung**: Legen Sie Dezimalstellen, Währungssymbole oder Prozentsätze fest.
+- **Interaktive Anzeige**: Zeigen Sie Zahlenergebnisse als Balken, Ringe oder in anderen Anzeigestilen an.
+
+Weitere Informationen finden Sie unter [Formatierung](/de/basic/field/common/formatter) und [Interaktive Anzeige](/de/basic/field/common/show-as).
+
+## Häufige Verwendungszwecke
+
+- **Bestellsummen einer Buchhandlung**: Verwenden Sie in einer Tabelle `Bestellungen` das Verknüpfungsfeld `Ausgewählte Bücher`, um das Feld `Preis` aus der Tabelle `Bücher` zu aggregieren. Wählen Sie **SUM**, um die Bestellsumme zu berechnen.
+- **Statistiken zu Projektaufgaben**: Zählen Sie in einer Tabelle `Projekte` verknüpfte Aufgaben oder berechnen Sie die Abschlussquote der Aufgaben.
+- **Gesamtausgaben von Kunden**: Aggregieren Sie in einer Tabelle `Kunden` die Beträge zugehöriger Bestellungen, um die Gesamtausgaben jedes Kunden anzuzeigen.
+
+## Unterstützte Rollup-Formeln
+
+| Formelname | Erläuterung |
+| --- | --- |
+| COUNTALL | Zählt alle Werte einschließlich Textwerten und leeren Werten |
+| COUNTA | Zählt nicht leere Werte |
+| COUNT | Zählt numerische Elemente |
+| SUM | Berechnet die Summe aller numerischen Werte |
+| MAX | Gibt den größten numerischen Wert zurück |
+| MIN | Gibt den kleinsten numerischen Wert zurück |
+| AND | Gibt „true“ zurück, wenn alle Werte wahr sind |
+| OR | Gibt „true“ zurück, wenn mindestens ein Wert wahr ist |
+| XOR | Gibt „true“ zurück, wenn eine ungerade Anzahl von Werten wahr ist |
+| ARRAY_JOIN | Verbindet alle Werte in einem Array zu einer Zeichenfolge |
+| ARRAY_UNIQUE | Entfernt doppelte Werte und gibt ein Array mit eindeutigen Werten zurück |
+| ARRAY_COMPACT | Entfernt leere Werte und gibt ein neues Array zurück |
+| CONCATENATE | Verbindet mehrere Werte zu einer Zeichenfolge |
+
+## Hinweise
+
+- **Dynamische Aktualisierungen**: Rollup-Felder führen Berechnungen in Echtzeit aus. Wenn sich Quelldaten oder Verknüpfungsbeziehungen ändern, wird das Rollup-Ergebnis aktualisiert.
+- **Einschränkungen bei Datentypen**: Einige Funktionen können nur mit bestimmten Feldtypen verwendet werden. **SUM** funktioniert beispielsweise nur mit Zahlenfeldern. Wenn Sie ein Textfeld auswählen, bietet Teable „Summe“ nicht als Option an.
+- **Leistung**: Viele Rollup-Felder können die Leistung beeinträchtigen, insbesondere wenn sie zahlreiche Datensätze einbeziehen. Planen Sie Verknüpfungsbeziehungen sorgfältig und überprüfen Sie die Rollup-Einstellungen regelmäßig.

@@ -1,0 +1,78 @@
+---
+title: "Koşullu mantık"
+description: "Hangi eylemlerin çalışacağını denetlemek için if/else dallanması ekleyin"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>
+Otomasyon oluşturmak için Komut dosyası çalıştır'ı kullanmanızı kesinlikle öneririz; bu özellik, aksi hâlde elle oluşturulması gerekecek eylemler dahil tüm eylem davranışlarını kapsayabilir. Gereksinimlerinizi sohbette AI'a açıklamanız yeterlidir.
+
+Lütfen unutmayın: eylemleri elle eklerseniz AI daha sonra bunları tanıyamaz veya değiştiremez.
+</Tip>
+
+Koşullar, karar noktaları eklemenizi sağlar. İş akışı bir **doğru** ve bir **yanlış** yola ayrılır.
+
+## Nasıl Kullanılır?
+
+1. Adımlar arasına bir **Koşul** düğümü ekleyin.
+2. Bir veya daha fazla kural tanımlayın.
+3. Doğrulamak için **Test et**'e tıklayın.
+
+## Alan Türüne Göre İşleçler
+
+### Metin
+
+| İşleç | Anlamı |
+|---|---|
+| eşittir / eşit değildir | Tam eşleşme |
+| içerir / içermez | Alt dize eşleşmesi |
+| boş / boş değil | Null denetimi |
+
+### Sayı
+
+| İşleç | Anlamı |
+|---|---|
+| = / ≠ | Eşit / eşit değil |
+| > / ≥ / < / ≤ | Karşılaştırma |
+| boş / boş değil | Null denetimi |
+
+### Tarih
+
+| İşleç | Anlamı |
+|---|---|
+| eşittir / eşit değildir | Tam tarih |
+| öncesindedir / sonrasındadır | Karşılaştırma |
+| tarihinde veya öncesindedir / tarihinde veya sonrasındadır | Dahil karşılaştırma |
+| aralığındadır | Göreli aralık |
+| boş / boş değil | Null denetimi |
+
+**Göreli tarihler:** bugün, yarın, dün, bir hafta önce/sonra, bir ay önce/sonra, X gün önce/sonra.
+
+**Aralıklar ("aralığındadır" için):** geçen/gelecek hafta, geçen/gelecek ay, geçen/gelecek yıl, geçen/gelecek N gün.
+
+### Tekli Seçim / Çoklu Seçim
+
+| İşleç | Anlamı |
+|---|---|
+| herhangi birini içerir / tümünü içerir / hiçbirini içermez | Küme üyeliği |
+| tam olarak eşittir / tam olarak eşit değildir | Tam eşleşme |
+| boş / boş değil | Null denetimi |
+
+### Boole
+
+| İşleç |
+|---|
+| eşittir (doğru / yanlış) |
+
+## Kuralları Birleştirme
+
+- **VE** — tüm kurallar doğru olmalıdır
+- **VEYA** — kurallardan herhangi biri doğru olabilir
+- **DEĞİL** — bir kuralı veya grubu olumsuzlar
+
+Gruplar iç içe yerleştirilebilir:
+
+```
+(durum "Etkin" VEYA durum "Beklemede" değerine eşittir)
+VE tutar > 1000
+```

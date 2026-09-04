@@ -1,0 +1,113 @@
+---
+title: "Guida rapida alle funzioni"
+description: "Trova rapidamente funzioni delle formule, parametri, tipi di output ed esempi di base."
+mode: "wide"
+---
+
+La guida rapida alle funzioni ti aiuta a trovare le funzioni disponibili, i parametri, i tipi di output e gli esempi. Quando scrivi una formula, usa la categoria delle funzioni per individuare quella di cui hai bisogno.
+
+## Funzioni numeriche
+
+Le funzioni numeriche gestiscono operazioni matematiche, calcoli statistici e formattazione dei numeri.
+
+| Nome funzione | Descrizione | Input | Output | Esempio |
+| ------------ | ----------- | ----- | ------ | ------- |
+| SUM | Somma più numeri. Equivale a number1 + number2 + ... | `number1, [number2, ...]` | Numero | `SUM(100, 200, 300) => 600` |
+| AVERAGE | Restituisce la media dei numeri. | `number1, [number2, ...]` | Numero | `AVERAGE(100, 200, 300) => 200` |
+| MAX | Restituisce il valore più grande tra i numeri indicati. | `number1, [number2, ...]` | Numero | `MAX(100, 200, 300) => 300` |
+| MIN | Restituisce il valore più piccolo tra i numeri indicati. | `number1, [number2, ...]` | Numero | `MIN(100, 200, 300) => 100` |
+| ROUND | Arrotonda un valore al numero di posizioni decimali specificato da "precision". | `value, [precision]` | Numero | `ROUND(1.99, 0) => 2` `ROUND(16.8, -1) => 20` |
+| ROUNDUP | Arrotonda sempre per eccesso, allontanandosi da zero. | `value, [precision]` | Numero | `ROUNDUP(1.1, 0) => 2` `ROUNDUP(-1.1, 0) => -2` |
+| ROUNDDOWN | Arrotonda sempre per difetto, verso zero. | `value, [precision]` | Numero | `ROUNDDOWN(1.9, 0) => 1` `ROUNDDOWN(-1.9, 0) => -1` |
+| CEILING | Restituisce il multiplo intero più vicino maggiore o uguale al valore. | `value, [significance]` | Numero | `CEILING(2.49) => 3` `CEILING(2.49, 1) => 2.5` |
+| FLOOR | Restituisce il multiplo intero più vicino minore o uguale al valore. | `value, [significance]` | Numero | `FLOOR(2.49) => 2` `FLOOR(2.49, 1) => 2.4` |
+| EVEN | Restituisce il più piccolo numero pari maggiore o uguale al valore specificato. | `value` | Numero | `EVEN(0.1) => 2` `EVEN(-0.1) => -2` |
+| ODD | Arrotonda i valori positivi per eccesso al numero dispari più vicino e quelli negativi per difetto al numero dispari più vicino. | `value` | Numero | `ODD(0.1) => 1` `ODD(-0.1) => -1` |
+| INT | Restituisce la parte intera di un numero. | `value` | Numero | `INT(1.9) => 1` `INT(-1.9) => -2` |
+| ABS | Restituisce il valore assoluto. | `value` | Numero | `ABS(-1) => 1` |
+| SQRT | Restituisce la radice quadrata di un numero non negativo. | `value` | Numero | `SQRT(4) => 2` |
+| POWER | Calcola la base specificata elevata alla potenza indicata. | `base, exponent` | Numero | `POWER(2, 2) => 4` |
+| EXP | Calcola il numero di Eulero (e) elevato alla potenza indicata. | `value` | Numero | `EXP(0) => 1` `EXP(1) => 2.718` |
+| LOG | Calcola il logaritmo di un valore nella base fornita. Se non specificata, la base predefinita è 10. | `value, [base=10]` | Numero | `LOG(100) => 2` `LOG(1024, 2) => 10` |
+| MOD | Restituisce il resto della divisione del primo parametro per il secondo. | `value, divisor` | Numero | `MOD(9, 2) => 1` `MOD(9, 3) => 0` |
+| VALUE | Converte una stringa di testo in un numero. | `text` | Numero | `VALUE("$1,000,000") => 1000000` |
+
+## Funzioni di testo
+
+Le funzioni di testo gestiscono unione, ricerca, sostituzione, estrazione e suddivisione delle stringhe.
+
+| Nome funzione | Descrizione | Input | Output | Esempio |
+| ------------ | ----------- | ----- | ------ | ------- |
+| CONCATENATE | Unisce più parametri di tipo valore in un unico valore di testo. | `text1, [text2, ...]` | Testo | `CONCATENATE("Hello ", "Teable") => Hello Teable` |
+| FIND | Trova la posizione di una sottostringa nel testo specificato. Restituisce 0 se la sottostringa non viene trovata. | `stringToFind, whereToSearch, [startFromPosition]` | Numero | `FIND("Teable", "Hello Teable") => 7` |
+| SEARCH | Trova la posizione di una sottostringa nel testo specificato. Restituisce un valore vuoto se la sottostringa non viene trovata. È simile a FIND, ma restituisce un valore vuoto anziché 0. | `stringToFind, whereToSearch, [startFromPosition]` | Testo o vuoto | `SEARCH("Teable", "Hello Teable") => 7` |
+| MID | Estrae un numero specificato di caratteri da una stringa di testo, a partire da una posizione specificata. | `text, whereToStart, count` | Testo | `MID("Hello Teable", 6, 6) => "Teable"` |
+| LEFT | Estrae un numero specificato di caratteri dall'inizio di una stringa. | `text, count` | Testo | `LEFT("2023-09-06", 4) => "2023"` |
+| RIGHT | Estrae un numero specificato di caratteri dalla fine di una stringa. | `text, count` | Testo | `RIGHT("2023-09-06", 5) => "09-06"` |
+| REPLACE | Sostituisce un numero specificato di caratteri a partire da una posizione indicata con il testo sostitutivo. | `text, whereToStart, count, replacement` | Testo | `REPLACE("Hello Table", 7, 5, "Teable") => "Hello Teable"` |
+| REGEXP_REPLACE | Sostituisce tutte le sottostringhe che corrispondono a un'espressione regolare con il testo sostitutivo. | `text, regular_expression, replacement` | Testo | `REGEXP_REPLACE("Hello Table", "H.* ", "") => "Teable"` |
+| SUBSTITUTE | Sostituisce il testo precedente con quello nuovo. Puoi specificare un indice per sostituire una particolare occorrenza del testo precedente. Se non indichi alcun indice, sostituisce tutte le occorrenze. | `text, oldText, newText, [index]` | Testo | `SUBSTITUTE("Hello Table", "Table", "Teable") => "Hello Teable"` |
+| TEXTBEFORE | Restituisce il testo che precede il delimitatore specificato. | `text, delimiter` | Testo | `TEXTBEFORE("20, 04, 79", ",") => "20"` |
+| TEXTSPLIT | Divide il testo in base al delimitatore specificato e restituisce più valori di testo. | `text, delimiter` | Matrice | `TEXTSPLIT("20, 04, 79", ",") => ["20", " 04", " 79"]` |
+| LOWER | Converte la stringa in minuscolo. | `text` | Testo | `LOWER("Hello Teable") => "hello teable"` |
+| UPPER | Converte la stringa in maiuscolo. | `text` | Testo | `UPPER("Hello Teable") => "HELLO TEABLE"` |
+| REPT | Ripete il testo per il numero di volte specificato. | `text, number` | Testo | `REPT("Hello!", 3) => "Hello!Hello!Hello!"` |
+| TRIM | Rimuove gli spazi vuoti dall'inizio e dalla fine di una stringa. | `text` | Testo | `TRIM(" Hello ") => "Hello"` |
+| LEN | Conta il numero di caratteri in una stringa. | `text` | Numero | `LEN("Hello") => 5` |
+| T | Restituisce il parametro se è testo; in caso contrario restituisce un valore vuoto. | `value` | Testo o vuoto | `T("Hello") => "Hello"` `T(100) => null` |
+| ENCODE_URL_COMPONENT | Sostituisce determinati caratteri con gli equivalenti codificati per costruire URL o URI. Non codifica: - _ . ~ | `value` | Testo | `ENCODE_URL_COMPONENT("Hello Teable") => "Hello%20Teable"` |
+
+## Funzioni logiche
+
+Le funzioni logiche gestiscono condizioni e operazioni logiche, come `IF`, `AND` e `OR`.
+
+| Nome funzione | Descrizione | Input | Output | Esempio |
+| ------------ | ----------- | ----- | ------ | ------- |
+| IF | Restituisce value1 se il parametro logico è vero; in caso contrario restituisce value2. Può essere usata per istruzioni IF annidate e per verificare se le celle sono vuote. | `logical, value1, value2` | Stringa \| Numero \| Booleano \| Data e ora | `IF(2 > 1, "A", "B") => "A"` `IF(2 > 1, TRUE, FALSE) => TRUE` |
+| SWITCH | Confronta un'espressione di input con una serie di valori e restituisce il risultato corrispondente. Può restituire un valore predefinito se non trova corrispondenze. Spesso può sostituire formule IF() annidate. | `expression, [pattern, result]..., [default]` | Stringa \| Numero \| Booleano \| Data e ora | `SWITCH("B", "A", "Value A", "B", "Value B", "Default Value") => "Value B"` |
+| AND | Restituisce true se tutti i parametri sono veri; in caso contrario restituisce false. | `logical1, [logical2, ...]` | Booleano | `AND(1 < 2, 5 > 3) => true` `AND(1 < 2, 5 < 3) => false` |
+| OR | Restituisce true se almeno un parametro è vero. | `logical1, [logical2, ...]` | Booleano | `OR(1 < 2, 5 < 3) => true` `OR(1 > 2, 5 < 3) => false` |
+| XOR | Restituisce true se è vero un numero dispari di parametri. | `logical1, [logical2, ...]` | Booleano | `XOR(1 < 2, 5 < 3, 8 < 10) => false` `XOR(1 > 2, 5 < 3, 8 < 10) => true` |
+| NOT | Inverte il valore logico del parametro. | `boolean` | Booleano | `NOT(1 < 2) => false` `NOT(1 > 2) => true` |
+| BLANK | Restituisce un valore null. Può anche essere usata per verificare se un Campo è vuoto. | `-` | null | `BLANK() => null` `IF({Weight}=BLANK(), 1, 2) => 1` |
+| ERROR | Restituisce un valore di errore. | `message` | Errore | `IF(2 > 3, "Yes", ERROR("Calculation")) => "#ERROR: Calculation"` |
+| IS_ERROR | Restituisce true se l'espressione genera un errore. | `expr` | Booleano | `IS_ERROR(ERROR()) => true` |
+
+## Funzioni di data
+
+Le funzioni di data gestiscono e convertono i valori di data e ora, ad esempio ottenendo la data corrente, calcolando le differenze tra date e confrontando le date.
+
+| Nome funzione | Descrizione | Input | Output | Esempio |
+| ------------ | ----------- | ----- | ------ | ------- |
+| TODAY | Restituisce la data corrente. | `-` | Data e ora | `TODAY() => "2023-09-08 00:00"` |
+| NOW | Restituisce la data e l'ora correnti. | `-` | Data e ora | `NOW() => "2023-09-08 16:50"` |
+| YEAR | Restituisce l'anno a quattro cifre di una data. | `date` | Numero | `YEAR("2023-09-08") => 2023` |
+| MONTH | Restituisce il mese di una data come numero compreso tra 1 (gennaio) e 12 (dicembre). | `date` | Numero | `MONTH("2023-09-08") => 9` |
+| WEEKNUM | Restituisce il numero della settimana dell'anno. | `date` | Numero | `WEEKNUM("2023-09-08") => 36` |
+| WEEKDAY | Restituisce il giorno della settimana come numero intero compreso tra 0 e 6. Puoi facoltativamente fornire un secondo parametro ("Sunday" o "Monday") per iniziare la settimana in quel giorno. | `date, [startDayOfWeek]` | Numero | `WEEKDAY("2023-09-08", "Monday") => 5` |
+| DAY | Restituisce il giorno del mese come numero compreso tra 1 e 31. | `date` | Numero | `DAY("2023-09-08") => 8` |
+| HOUR | Restituisce l'ora di una data come numero compreso tra 0 (12:00am) e 23 (11:00pm). | `date` | Numero | `HOUR("2023-09-08 16:50") => 16` |
+| MINUTE | Restituisce i minuti di una data come numero intero compreso tra 0 e 59. | `date` | Numero | `MINUTE("2023-09-08 16:50") => 50` |
+| SECOND | Restituisce i secondi di una data come numero intero compreso tra 0 e 59. | `date` | Numero | `SECOND("2023-09-08 16:50:30") => 30` |
+| FROMNOW | Calcola il numero di giorni tra la data corrente e un'altra data. | `date, unit` | Numero | `FROMNOW({Date}, "day") => 25` |
+| TONOW | Calcola il numero di giorni tra la data corrente e un'altra data. | `date, unit` | Numero | `TONOW({Date}, "day") => 25` |
+| DATETIME_DIFF | Restituisce la differenza tra data e ora nelle unità specificate. L'unità predefinita sono i secondi. (Consulta l'elenco degli indicatori di unità.) | `date1, date2, [unit]` | Numero | `DATETIME_DIFF("2022-08-01", "2023-09-08", "day") => 403` |
+| WORKDAY | Restituisce la data del giorno lavorativo calcolata dalla data iniziale, escludendo le festività specificate | `date, count, [holidayStr]` | Data e ora | `WORKDAY("2023-09-08", 200) => "2024-06-14 00:00:00"` |
+| WORKDAY_DIFF | Restituisce il numero di giorni lavorativi tra date1 e date2. I giorni lavorativi escludono i fine settimana e un elenco facoltativo di festività formattato come stringa di date in formato ISO separate da virgole. | `date1, date2, [holidayStr]` | Numero | `WORKDAY_DIFF("2023-06-18", "2023-10-01") => 75` |
+| IS_SAME | Confronta due date rispetto a un'unità e determina se sono uguali. Restituisce true se lo sono, altrimenti false. | `date1, date2, [unit]` | Booleano | `IS_SAME("2023-09-08", "2023-09-10") => false` |
+| IS_AFTER | Determina se date1 è successiva a date2. Restituisce true se lo è, altrimenti false. | `date1, date2, [unit]` | Booleano | `IS_AFTER("2023-09-10", "2023-09-08") => true` `IS_AFTER("2023-09-10", "2023-09-08", "month") => false` |
+
+## Funzioni per matrici e altre funzioni
+
+Le funzioni per matrici e le altre funzioni gestiscono matrici di rollup, rimozione dei duplicati, unione, eliminazione dei valori vuoti e ID dei Record.
+
+| Nome funzione | Descrizione | Input | Output | Esempio |
+| ------------ | ----------- | ----- | ------ | ------- |
+| COUNTALL | Restituisce il conteggio di tutti gli elementi, inclusi testo e valori vuoti. | `value1, [value2, ...]` | Numero | `COUNTALL(100, 200, "", "Teable", TRUE()) => 5` |
+| COUNTA | Restituisce il conteggio dei valori non vuoti. Questa funzione conta sia i numeri sia i valori di testo. | `value1, [value2, ...]` | Numero | `COUNTA(100, 200, 300, "", "Teable", TRUE) => 4` |
+| COUNT | Restituisce il conteggio degli elementi numerici. | `value1, [value2, ...]` | Numero | `COUNT(100, 200, 300, "", "Teable", TRUE) => 3` |
+| ARRAY_JOIN | Unisce una matrice di elementi di rollup in una stringa utilizzando un separatore. | `array, [separator]` | Stringa | `ARRAY_JOIN(["Tom", "Jerry", "Mike"], "; ") => "Tom; Jerry; Mike"` |
+| ARRAY_UNIQUE | Restituisce soltanto gli elementi univoci di una matrice. | `array` | Matrice | `ARRAY_UNIQUE([1, 2, 3, 2, 1]) => [1, 2, 3]` |
+| ARRAY_FLATTEN | Appiattisce una matrice rimuovendo qualsiasi annidamento. Tutti gli elementi diventano elementi di un'unica matrice. | `array` | Matrice | `ARRAY_FLATTEN([1, 2, " ", 3, true], ["ABC"]) => [1, 2, 3, " ", true, "ABC"]` |
+| ARRAY_COMPACT | Rimuove le stringhe vuote e i valori null da una matrice. Mantiene "false" e le stringhe contenenti uno o più spazi. | `array` | Matrice | `ARRAY_COMPACT([1, 2, 3, "", null, "ABC"]) => [1, 2, 3, "ABC"]` |
+| RECORD_ID | Restituisce l'ID del Record corrente. | `-` | Stringa | `RECORD_ID() => "recxxxxxx"` |

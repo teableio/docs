@@ -1,0 +1,449 @@
+---
+title: "Interfaccia dei Campi dei Record"
+---
+
+<Note>Il Campo lookup non è un tipo di Campo specifico. È possibile eseguire il lookup di qualsiasi tipo di Campo da una Base collegata. Il tipo di un Campo lookup è determinato dal Campo originale nella Base collegata e dispone della proprietà isLookup. I Campi lookup non possono essere modificati.</Note>
+
+<Note>
+In alcuni casi, tutti i valori restituiti dai Campi possono avere `isMultipleCellValue: true`:
+
+1. Ciò si verifica quando il Campo è un Campo lookup. Se il valore collegato consente selezioni multiple, il valore del Campo lookup sarà necessariamente un array.
+
+2. I Campi possono essere configurati: ad esempio, i Campi utente e i Campi di collegamento possono essere configurati per la selezione singola o multipla. Nel codice puoi utilizzare `field.isMultipleCellValue` per determinare se un Campo accetta più valori.
+</Note>
+
+<Note>
+Non utilizzare il tipo di Campo per determinare le autorizzazioni di scrittura. Usa invece la proprietà isComputed del Campo.
+</Note>
+
+### 1. Campo numerico
+* tipo: number
+* Tipo in scrittura: `number`
+* Tipo restituito:
+  * `isMultipleCellValue: false`: `number`
+  * `isMultipleCellValue: true`: `number[]`
+
+Esempio:
+```js
+// Valore da scrivere
+42
+
+// Valore restituito (isMultipleCellValue: false)
+42
+
+// Valore restituito (isMultipleCellValue: true)
+[42, 17, 99]
+```
+
+### 2. Campo di testo su una riga
+* tipo: singleLineText
+* Tipo in scrittura: `string`
+* Tipo restituito:
+  * `isMultipleCellValue: false`: `string`
+  * `isMultipleCellValue: true`: `string[]`
+
+Esempio:
+```js
+// Valore da scrivere
+"Ciao, Teable!"
+
+// Valore restituito (isMultipleCellValue: false)
+"Ciao, Teable!"
+
+// Valore restituito (isMultipleCellValue: true)
+["Ciao, Teable!", "Benvenuto", "Buona giornata"]
+```
+
+### 3. Campo di testo lungo
+* tipo: longText
+* Tipo in scrittura: `string`
+* Tipo restituito:
+  * `isMultipleCellValue: false`: `string`
+  * `isMultipleCellValue: true`: `string[]`
+
+Esempio:
+```js
+// Valore da scrivere
+"Questo è un Campo di testo lungo che può contenere più paragrafi..."
+
+// Valore restituito (isMultipleCellValue: false)
+"Questo è un Campo di testo lungo che può contenere più paragrafi..."
+
+// Valore restituito (isMultipleCellValue: true)
+["Questo è un testo lungo...", "Un altro testo lungo...", "Un ulteriore testo lungo..."]
+```
+
+### 4. Campo di selezione singola
+* tipo: singleSelect
+* Tipo in scrittura: `string` (valore dell'opzione)
+* Tipo restituito:
+  * `isMultipleCellValue: false`: `string`
+  * `isMultipleCellValue: true`: `string[]`
+
+Esempio:
+```js
+// Valore da scrivere
+"Opzione A"
+
+// Valore restituito (isMultipleCellValue: false)
+"Opzione A"
+
+// Valore restituito (isMultipleCellValue: true)
+["Opzione A", "Opzione B", "Opzione C"]
+```
+
+### 5. Campo di selezione multipla
+* tipo: multipleSelect
+* Tipo in scrittura: `string[]` (array di valori delle opzioni)
+* Tipo restituito: `string[]`
+
+Esempio:
+```js
+// Valore da scrivere
+["Rosso", "Blu", "Verde"]
+
+// Valore restituito
+["Rosso", "Blu", "Verde"]
+```
+
+### 6. Campo di collegamento
+* tipo: link
+* Tipo in scrittura:
+  * `isMultipleCellValue: false`: `{ id: string }`
+  * `isMultipleCellValue: true`: `{ id: string }[]`
+* Tipo restituito:
+  * `isMultipleCellValue: false`: `{ id: string, title?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title?: string }[]`
+
+Esempio:
+```js
+// Valore da scrivere (isMultipleCellValue: false)
+{ id: "rec123456" }
+
+// Valore da scrivere (isMultipleCellValue: true)
+[{ id: "rec123456" }, { id: "rec789012" }]
+
+// Valore restituito (isMultipleCellValue: false)
+{ id: "rec123456", title: "Record collegato 1" }
+
+// Valore restituito (isMultipleCellValue: true)
+[
+  { id: "rec123456", title: "Record collegato 1" },
+  { id: "rec789012", title: "Record collegato 2" }
+]
+```
+
+### 7. Campo formula
+* tipo: formula
+* Tipo in scrittura: non può essere scritto direttamente
+* Tipo restituito: dipende dal risultato della formula; può essere `string | number | boolean` o le rispettive forme array
+
+Esempio:
+```js
+// Valore restituito (isMultipleCellValue: false)
+42 // oppure "Risultato" oppure true
+
+// Valore restituito (isMultipleCellValue: true)
+[42, 17, 99] // oppure ["Risultato1", "Risultato2"] oppure [true, false, true]
+```
+
+### 8. Campo allegato
+Per caricare un allegato in un Campo allegato, usa l'API dedicata. Per i dettagli, consulta la sezione [Caricare un allegato](/it/api-doc/record/upload-attachment).
+* tipo: attachment
+* Tipo in scrittura:
+  ```ts
+  {
+    id: string;
+    name: string;
+    path: string;
+    token: string; // Identificatore univoco
+    size: number; // Dimensione del file in byte
+    mimetype: string; // Tipo di file
+    presignedUrl?: string; // URL di anteprima/download del file
+    width?: number; // Larghezza dell'immagine
+    height?: number; // Altezza dell'immagine
+  }[]
+  ```
+
+* Tipo restituito:
+```ts
+{
+  id: string;
+  name: string;
+  path: string;
+  token: string; // Identificatore univoco
+  size: number; // Dimensione del file in byte
+  mimetype: string; // Tipo di file
+  presignedUrl?: string; // URL di anteprima/download del file
+  width?: number; // Larghezza dell'immagine
+  height?: number; // Altezza dell'immagine
+}[]
+```
+
+Esempio:
+```js
+// Valore da scrivere
+[
+  {
+    name: "document.pdf",
+    type: "application/pdf",
+    token: "abc123",
+    size: 1024000
+  }
+]
+
+// Valore restituito
+[
+  {
+    id: "att123",
+    name: "document.pdf",
+    path: "/uploads/document.pdf",
+    token: "abc123",
+    size: 1024000,
+    mimetype: "application/pdf",
+    presignedUrl: "https://app.teable.ai/preview/document.pdf",
+  },
+  {
+    id: "att456",
+    name: "image.jpg",
+    path: "/uploads/image.jpg",
+    token: "def456",
+    size: 2048000,
+    mimetype: "image/jpeg",
+    presignedUrl: "https://app.teable.ai/preview/image.jpg",
+    width: 1920,
+    height: 1080
+  }
+]
+```
+
+### 9. Campo data
+* tipo: date
+* Tipo in scrittura: `string` (formato ISO 8601)
+* Tipo restituito:
+  * `isMultipleCellValue: false`: `string` (formato ISO 8601)
+  * `isMultipleCellValue: true`: `string[]` (formato ISO 8601)
+Puoi utilizzare `new Date().toISOString()` per ottenere il formato temporale ISO 8601.
+
+Esempio:
+```js
+// Valore da scrivere
+"2024-09-02T02:51:03.875Z"
+
+// Valore restituito (isMultipleCellValue: false)
+"2024-09-02T02:51:03.875Z"
+
+// Valore restituito (isMultipleCellValue: true)
+["2024-09-02T02:51:03.875Z", "2024-09-02T02:51:03.875Z"]
+```
+
+### 10. Campo data e ora di creazione
+* tipo: createdTime
+* Tipo in scrittura: non può essere scritto direttamente
+* Tipo restituito:
+  * `isMultipleCellValue: false`: `string` (formato ISO 8601)
+  * `isMultipleCellValue: true`: `string[]` (formato ISO 8601)
+
+Esempio:
+```js
+// Valore restituito (isMultipleCellValue: false)
+"2024-09-02T02:51:03.875Z"
+
+// Valore restituito (isMultipleCellValue: true)
+["2024-09-02T02:51:03.875Z", "2024-09-02T02:51:03.875Z"]
+```
+
+### 11. Campo data e ora dell'ultima modifica
+* tipo: lastModifiedTime
+* Tipo in scrittura: non può essere scritto direttamente
+* Tipo restituito:
+  * `isMultipleCellValue: false`: `string` (formato ISO 8601)
+  * `isMultipleCellValue: true`: `string[]` (formato ISO 8601)
+
+Esempio:
+```js
+// Valore restituito (isMultipleCellValue: false)
+"2023-04-15T10:30:00Z"
+
+// Valore restituito (isMultipleCellValue: true)
+["2023-04-15T10:30:00Z", "2023-04-16T14:45:00Z"]
+```
+
+### 12. Campo casella di controllo
+* tipo: checkbox
+* Tipo in scrittura: `boolean`
+* Tipo restituito:
+  * `isMultipleCellValue: false`: `boolean`
+  * `isMultipleCellValue: true`: `boolean[]`
+
+Esempio:
+```js
+// Valore da scrivere
+true
+
+// Valore restituito (isMultipleCellValue: false)
+true
+
+// Valore restituito (isMultipleCellValue: true)
+[true, false, true]
+```
+
+### 13. Campo rollup
+* tipo: rollup
+* Tipo in scrittura: non può essere scritto direttamente
+* Tipo restituito: dipende dalla configurazione del rollup; può essere `number | string` o le rispettive forme array
+
+Esempio:
+```js
+// Valore restituito (isMultipleCellValue: false)
+42 // oppure "Risultato del riepilogo"
+
+// Valore restituito (isMultipleCellValue: true)
+[42, 17, 99] // oppure ["Riepilogo 1", "Riepilogo 2"]
+```
+
+### 14. Campo valutazione
+* tipo: rating
+* Tipo in scrittura: `number`
+* Tipo restituito:
+  * `isMultipleCellValue: false`: `number`
+  * `isMultipleCellValue: true`: `number[]`
+
+Esempio:
+```js
+// Valore da scrivere
+4
+
+// Valore restituito (isMultipleCellValue: false)
+4
+
+// Valore restituito (isMultipleCellValue: true)
+[4, 3, 5]
+```
+
+### 15. Campo numerazione automatica
+* tipo: autoNumber
+* Tipo in scrittura: non può essere scritto direttamente
+* Tipo restituito:
+  * `isMultipleCellValue: false`: `number`
+  * `isMultipleCellValue: true`: `number[]`
+
+Esempio:
+```js
+// Valore restituito (isMultipleCellValue: false)
+42
+
+// Valore restituito (isMultipleCellValue: true)
+[42, 43, 44]
+```
+
+### 16. Campo utente
+
+* tipo: user
+* Tipo in scrittura:
+  * `isMultipleCellValue: false`: `{ id: string, title: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string }[]`
+* Tipo restituito:
+  * `isMultipleCellValue: false`: `{ id: string, title: string, email?: string, avatar?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string, email?: string, avatar?: string }[]`
+
+Esempio:
+```js
+// Valore da scrivere (isMultipleCellValue: false)
+{ id: "user123", title: "John Doe" }
+
+// Valore da scrivere (isMultipleCellValue: true)
+[
+  { id: "user123", title: "John Doe" },
+  { id: "user456", title: "Jane Smith" }
+]
+
+// Valore restituito (isMultipleCellValue: false)
+{
+  id: "user123",
+  title: "John Doe",
+  email: "john@example.com",
+  avatar: "https://example.com/avatar.jpg"
+}
+
+// Valore restituito (isMultipleCellValue: true)
+[
+  {
+    id: "user123",
+    title: "John Doe",
+    email: "john@example.com",
+    avatar: "https://example.com/avatar1.jpg"
+  },
+  {
+    id: "user456",
+    title: "Jane Smith",
+    email: "jane@example.com",
+    avatar: "https://example.com/avatar2.jpg"
+  }
+]
+```
+
+### 17. Campo autore
+* Tipo in scrittura: non può essere scritto direttamente
+* Tipo restituito:
+  * `isMultipleCellValue: false`: `{ id: string, title: string, email?: string, avatar?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string, email?: string, avatar?: string }[]`
+Esempio:
+```js
+// Valore restituito (isMultipleCellValue: false)
+{
+  id: "user123",
+  title: "John Doe",
+  email: "john@example.com",
+  avatar: "https://example.com/avatar.jpg"
+}
+
+// Valore restituito (isMultipleCellValue: true)
+[
+  {
+    id: "user123",
+    title: "John Doe",
+    email: "john@example.com",
+    avatar: "https://example.com/avatar1.jpg"
+  },
+  {
+    id: "user456",
+    title: "Jane Smith",
+    email: "jane@example.com",
+    avatar: "https://example.com/avatar2.jpg"
+  }
+]
+```
+
+### 18. Campo autore dell'ultima modifica
+* Tipo in scrittura: non può essere scritto direttamente
+* Tipo restituito:
+  * `isMultipleCellValue: false`: `{ id: string, title: string, email?: string, avatar?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string, email?: string, avatar?: string }[]`
+
+Esempio:
+```js
+// Valore restituito (isMultipleCellValue: false)
+{
+  id: "user123",
+  title: "John Doe",
+  email: "john@example.com",
+  avatar: "https://example.com/avatar.jpg"
+}
+
+// Valore restituito (isMultipleCellValue: true)
+[
+  {
+    id: "user123",
+    title: "John Doe",
+    email: "john@example.com",
+    avatar: "https://example.com/avatar1.jpg"
+  },
+  {
+    id: "user456",
+    title: "Jane Smith",
+    email: "jane@example.com",
+    avatar: "https://example.com/avatar2.jpg"
+  }
+]
+```

@@ -1,0 +1,85 @@
+---
+title: "Kayıtları Alma"
+---
+
+<Tip>Geliştiricilere, mevcut Tablolarınızı temel alarak özel istekler oluşturmanıza yardımcı olabilecek yerleşik bir [Sorgu Parametresi Oluşturucu](https://app.teable.ai/developer/tool/query-builder) sunuyoruz.</Tip>
+
+### Yol
+GET /api/table/\{tableId\}/record
+​
+### İstek
+#### Yol Parametreleri
+tableId (string): Tablonun benzersiz tanımlayıcısı [(nasıl alınır)](/tr/api-doc/get-id#tableid).
+
+#### Temel Sorgu Parametreleri
+Tüm parametreler isteğe bağlıdır
+
+<ParamField query="viewId" type="string">
+  Kayıtların alınacağı Görünüm kimliğini belirtir. Belirtilmezse tüm Kayıtlar ve Alanlar dahil edilerek Kayıtlar oluşturulma zamanlarına göre döndürülür.
+</ParamField>
+
+<ParamField query="take" type="number">
+  Alınacak Kayıt sayısını belirtir; en yüksek değer 100'dür. Daha fazla Kayıt okumak için `skip` ve `take` ile veriler arasında sayfalama yapın ([Sayfalama](/tr/api-doc/overview) bölümüne bakın).
+
+  100 Kayıt sınırı, 10 Eylül 2026 veya sonrasında oluşturulan Teable Cloud kişisel API anahtarları için geçerlidir. Bu tarihten önce oluşturulan anahtarlar, OAuth ve eklenti token'ları ile kendi sunucunuzda barındırılan örnekler hâlâ 1000'e kadar Kayıt kabul eder; ancak önerilen sayfa boyutu 100 olmaya devam eder.
+</ParamField>
+
+<ParamField query="skip" type="number">
+  Sayfalama için kullanılmak üzere atlanacak Kayıt sayısını belirtir.
+</ParamField>
+
+<ParamField query="fieldKeyType" type="string" default="name">
+  Kayıtlardaki Alanların anahtar türünü tanımlar. Olası değerler:
+  - `name`: Alan adlarını anahtar olarak kullanır (varsayılan)
+  - `id`: Alan kimliklerini anahtar olarak kullanır
+  - `dbFieldName`: Alanların dbFieldName değerlerini anahtar olarak kullanır
+</ParamField>
+
+<ParamField query="cellFormat" type="string" default="json">
+  Hücre değerlerinin dönüş biçimini tanımlar. Olası değerler:
+  - `json`: Yapılandırılmış JSON verileri döndürür (varsayılan)
+  - `text`: Düz metin biçiminde döndürür
+</ParamField>
+
+<ParamField query="projection" type="string[]">
+  Yalnızca belirli Alanlara ihtiyacınız varsa bunları bu parametreyle belirtin. Aksi takdirde görünür tüm Alanlar alınır. Parametre değerleri fieldKeyType ayarına bağlıdır (Alan adları, kimlikleri veya dbFieldName değerleri kullanılır).
+</ParamField>
+
+<ParamField query="orderBy" type="string">
+  Kayıtların nasıl sıralanacağını belirten sıralama nesneleri dizisi.
+</ParamField>
+
+<ParamField query="filter" type="string">
+  Sonuçları filtrelemeye yönelik karmaşık sorgu koşulu nesnesi. Alanlara, operatörlere ve değerlere dayalı karmaşık sorgu koşullarını destekler.
+</ParamField>
+
+<ParamField query="search" type="string[]">
+  Belirtilen Alanlar ve değerlerle eşleşen Kayıtları arar.
+</ParamField>
+
+<Accordion title="Gelişmiş Sorgu Parametreleri">
+<ParamField query="groupBy" type="string">
+  Kayıtların nasıl gruplandırılacağını belirten grup nesneleri dizisi.
+</ParamField>
+
+<ParamField query="collapsedGroupIds" type="string[]">
+  Daraltılacak grup kimlikleri dizisi.
+</ParamField>
+
+<ParamField query="selectedRecordIds" type="string[]">
+  Seçili Kayıtları Kayıt kimliklerine göre filtreler.
+</ParamField>
+
+<ParamField query="ignoreViewQuery" type="boolean">
+  viewId belirtildiğinde bu değer true olarak ayarlanırsa Görünümün filtreleri, sıralaması ve diğer ayarları yok sayılır.
+</ParamField>
+
+<ParamField query="filterLinkCellCandidate" type="string[]">
+  Belirtilen bağlantı hücresinin seçebileceği Kayıtları bağlantılı Tablodan filtreler. Örneğin bire çok veya bire bir ilişki Alanlarında, daha önce seçilmiş Kayıt kimlikleri gösterilmez.
+</ParamField>
+
+<ParamField query="filterLinkCellSelected" type="string[]">
+  Bu bağlantı hücresi tarafından zaten seçilmiş Kayıtları bağlantılı Tablodan filtreler. Not: Seçili Kayıtların kendi sırası bulunduğundan viewId, filter ve orderBy bu durumda geçerli olmaz.
+</ParamField>
+</Accordion>
+

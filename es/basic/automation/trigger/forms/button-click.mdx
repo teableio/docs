@@ -1,0 +1,78 @@
+---
+title: "Cuando se hace clic en un botón"
+description: "Activa un flujo de trabajo cuando se hace clic en un Campo de botón"
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Ten en cuenta que toda la configuración del disparador puede realizarse en el Chat de IA. Dile a la IA qué quieres que haga el flujo de trabajo y se encargará del resto.</Tip>
+
+Este disparador se ejecuta cuando un usuario hace clic en un Campo de Botón de una fila de la Tabla. El flujo de trabajo recibe los datos de esa fila.
+
+## Crear con IA
+
+Abre el Chat de IA en la barra lateral derecha de tu Tabla y describe lo que quieres.
+
+La IA se encarga de todo: elige el disparador adecuado, asigna los Campos pertinentes y configura automáticamente todas las acciones.
+
+Describe el objetivo una sola vez y el flujo de trabajo estará listo, sin necesidad de configuración manual.
+
+**Ejemplo:** *"Cuando haga clic en el botón Aprobar, actualiza el estado y notifica al equipo".*
+
+## Configuración
+
+| Ajuste | Obligatorio | Descripción |
+|---|---|---|
+| Tabla | Sí | Tabla que contiene el Campo de botón |
+| Campos supervisados | Sí | Campos de botón que se supervisarán para detectar clics |
+| Filtro | No | Activa el flujo únicamente si el Registro cumple estas condiciones cuando se hace clic en el botón |
+
+## Cómo crear un Campo de Botón
+
+Antes de usar este disparador, necesitas un Campo de Botón en tu Tabla:
+
+1. Abre la Tabla en la que quieres incluir el botón.
+2. Haz clic en **+** para añadir un Campo nuevo.
+3. En el menú de tipo de Campo, ve a **Avanzado** y selecciona **Botón**.
+4. Asigna un nombre al Campo (p. ej., «Aprobar», «Enviar factura», «Exportar»).
+5. Guarda el Campo. Ahora aparecerá un botón en el que se puede hacer clic en cada fila de esa columna.
+
+## Cómo configurarlo
+
+1. Abre tu Automatización y añade un disparador nuevo.
+2. Selecciona **Cuando se hace clic en un botón**.
+3. Elige la **Tabla** que contiene el Campo de botón.
+4. En **Campos supervisados**, selecciona el Campo de botón que quieres supervisar. Si es necesario, puedes seleccionar varios Campos de botón.
+5. (Opcional) Añade un **Filtro** para limitar las filas que pueden activar la Automatización. Por ejemplo, `Estado` no es igual a `Completado` evitará que el botón active el flujo en Registros que ya estén completados.
+6. Guarda y activa la Automatización.
+7. Añade los pasos de acción. Haz clic en **+** en cualquier Campo de acción para insertar datos de la fila en la que se hizo clic.
+
+## Datos disponibles para los pasos siguientes
+
+Cuando se hace clic en un botón, el disparador proporciona:
+
+- **ID del Registro** — identificador único de la fila en la que se hizo clic en el botón.
+- **Todos los valores de los Campos** — todos los Campos de la fila seleccionada están disponibles como variables. Esto incluye texto, números, fechas, Registros enlazados, archivos adjuntos y mucho más.
+
+Esto significa que puedes usar los datos de la fila para rellenar correos electrónicos, actualizar otros Registros o enviar datos a API externas, todo ello en función de la fila específica en la que el usuario haya hecho clic.
+
+## Cuándo usarlo
+
+- **Flujos de aprobación con un solo clic.** Añade un botón «Aprobar» a cada fila. Al hacer clic, actualiza el estado a «Aprobado» y envía una notificación al solicitante.
+- **Generar un informe o documento bajo demanda.** Un botón «Generar informe» activa una acción de IA o una solicitud HTTP para crear un PDF o resumen para ese Registro concreto.
+- **Enviar un Registro a un sistema externo.** Un botón «Sincronizar con CRM» envía los datos de la fila a Salesforce, HubSpot u otra plataforma mediante una solicitud HTTP.
+- **Enviar un correo electrónico personalizado.** Un botón «Enviar recordatorio» redacta y envía un correo usando la información de contacto y los datos pertinentes de la fila.
+- **Activar un paso de revisión manual.** Un botón «Marcar para revisión» marca el Registro y notifica a un responsable, lo que permite que una persona decida explícitamente qué elementos se escalan.
+
+## Consejos
+
+- El propio Campo de botón no almacena datos: es solo un mecanismo de activación. No verás ningún valor en la celda, únicamente un botón en el que se puede hacer clic.
+- Si tienes varios Campos de botón en una Tabla, puedes crear Automatizaciones independientes para cada uno o usar una sola Automatización que supervise varios botones y emplee lógica condicional.
+- El filtro se evalúa en el momento en que se hace clic en el botón. Si el Registro no cumple el filtro, la Automatización simplemente no se ejecuta; el usuario no verá ningún error.
+- Los disparadores de botón son muy útiles en flujos de trabajo en los que quieres que una persona aplique su criterio antes de ejecutar una acción, en lugar de usar un procesamiento totalmente automático.
+
+## Contenido relacionado
+
+- [Cuando se envía un formulario](/es/basic/automation/trigger/forms/form-submitted) — se activa con el envío de formularios, no con clics en botones
+- [Cuando se actualiza un Registro](/es/basic/automation/trigger/records/record-updated) — se activa automáticamente cuando cambian los Campos, sin necesidad de que el usuario realice ninguna acción
+- [Acción Actualizar Registro](/es/basic/automation/actions/records/update-record) — suele combinarse con clics en botones para cambiar el estado de la fila
+- [Enviar correo electrónico](/es/basic/automation/actions/communication/send-email-overview)

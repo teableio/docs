@@ -1,0 +1,112 @@
+---
+title: "Paramètres IA"
+description: "Configurez le Chat IA, les Champs IA, l’Automatisation IA et le Générateur d’Applications pour une instance auto-hébergée."
+---
+
+{/* mintlify-resync: 2026-05-14 */}
+<Tip>Disponible à partir du plan Business auto-hébergé</Tip>
+
+Chemin : Administration système → Paramètres IA
+
+La page **Paramètres IA** permet de configurer le **Chat IA**, les **Champs IA**, l’**Automatisation IA** et le **Générateur d’Applications**. Le panneau **Configuration en attente** à droite indique quels éléments requis sont encore manquants.
+
+## Avant de commencer
+
+Avant d’ouvrir la page Paramètres IA, assurez-vous que les éléments suivants sont prêts.
+
+| Exigence | Requise ? | Remarques |
+|------|------|------|
+| **Configuration de l’environnement d’exécution des agents** | Requise pour le Chat IA et le Générateur d’Applications | Utilisée par le Chat IA et le Générateur d’Applications |
+| **Fournisseur personnalisé** | Requis lorsque le Chat IA ou le Générateur d’Applications utilise votre propre clé (BYOK) | Utilisez un fournisseur **Compatible OpenAI** ou **Anthropic** |
+| **Clé API OpenAI** | Facultative | Nécessaire uniquement si vous souhaitez activer la **Saisie vocale** dans le Chat IA |
+| **Accès public** | Requis lorsque le moteur de déploiement **Vercel** est sélectionné | Votre **instance Teable** et votre **stockage d’objets (MinIO / S3)** doivent être accessibles publiquement par Vercel |
+
+## Étapes de configuration
+
+Commencez par l’environnement d’exécution du Chat IA, le déploiement des Applications et la configuration des modèles :
+
+<Steps>
+  <Step title="Configurer l’environnement d’exécution du Chat IA et le déploiement des Applications">
+    Choisissez une [option de déploiement](/fr/deploy/choose) et terminez le déploiement, puis cliquez sur **Exécuter le test** et **Tester la connexion**.
+  </Step>
+  <Step title="Configurer l’API LLM">
+    Configurez la connexion à votre modèle et effectuez le test initial.
+  </Step>
+  <Step title="Configurer les modèles recommandés">
+    Choisissez les modèles recommandés pour les Champs IA et l’Automatisation IA.
+  </Step>
+  <Step title="Définir le modèle de chat">
+    Choisissez le modèle par défaut pour le Chat IA.
+  </Step>
+</Steps>
+
+### Configurer l’environnement d’exécution
+
+Cliquez sur **Exécuter le test** pour vérifier l’environnement d’exécution du Chat IA.
+
+### Configurer l’API LLM
+
+Dans **API LLM**, ajoutez un fournisseur de modèles et testez ses modèles. Si vous utilisez votre propre clé (BYOK), choisissez **Compatible OpenAI** ou **Anthropic** comme type de fournisseur.
+
+Ouvrez **Paramètres du modèle** pour un modèle lorsque vous devez vérifier ou remplacer ces valeurs :
+
+| Paramètre | Effet |
+|------|------|
+| **Contexte** | Facultatif. Définit le nombre maximal de jetons d’entrée utilisés pour la compaction du contexte. |
+| **Sortie maximale** | Facultatif. Définit le nombre maximal de jetons que le modèle peut générer dans une réponse. |
+
+### Configurer les modèles recommandés
+
+Choisissez les modèles recommandés que les utilisateurs peuvent sélectionner dans les **Champs IA** et l’**Automatisation IA**.
+
+### Définir le modèle de chat
+
+Choisissez le modèle par défaut pour le **Chat IA** de la barre latérale. Le modèle de chat doit provenir de la liste des modèles recommandés.
+
+### Activer les fonctionnalités IA
+
+Dans **Capacités IA**, activez **Champ IA** et **Chat IA** selon vos besoins. Configurez l’environnement d’exécution avant d’utiliser le **Chat IA**.
+
+### Configurer le Générateur d’Applications
+
+Dans **Moteur de déploiement**, choisissez comment les Applications sont déployées :
+
+| Moteur de déploiement | Exigences de configuration |
+|------|------|
+| **Vercel** | Saisissez un jeton d’accès Vercel, cliquez sur **Tester la connexion**, puis utilisez **Tester l’accès public** pour confirmer que Vercel peut atteindre votre instance Teable et votre stockage d’objets. |
+| **Infrastructure Teable** | Utilise l’environnement d’exécution de conteneur Infrastructure Teable configuré. Aucune information d’identification supplémentaire ni test d’accès public n’est requis ici. |
+
+Vous pouvez ajouter les paramètres facultatifs suivants du Générateur d’Applications si nécessaire :
+
+| Élément facultatif | Cas d’utilisation |
+|------|------|
+| **Domaine personnalisé** | Lorsque vous souhaitez publier des Applications sous votre propre domaine |
+| **Authentification de l’Application** | Lorsque les Applications générées nécessitent une connexion par **OTP par e-mail** ou **Google** |
+
+Dans **Authentification de l’Application**, vous pouvez configurer des fournisseurs de connexion pour les Applications générées :
+
+- **OTP par e-mail** utilise une boîte aux lettres SMTP indépendante pour les e-mails de vérification de connexion à l’Application.
+- **Google OAuth** nécessite un ID client et un secret client. Ajoutez l’URI de redirection affichée sur cette page à la liste des URI de redirection autorisés dans Google Cloud Console.
+
+La connexion **Teable** est disponible par défaut. **OTP par e-mail** apparaît dans le Générateur d’Applications uniquement une fois les paramètres SMTP terminés, et **Google** apparaît uniquement une fois les deux informations d’identification OAuth configurées.
+
+**Injecter automatiquement la clé API IA dans les Applications** est activé par défaut, afin que les Applications puissent appeler les modèles IA de la plateforme. Désactivez-le et les Applications ne pourront plus les atteindre.
+
+### Facultatif : configurer la saisie vocale
+
+Pour utiliser la saisie vocale dans le Chat IA, activez la fonctionnalité et saisissez une **Clé API OpenAI**. Configurez le **Point de terminaison de transcription** uniquement si vous utilisez un service de transcription personnalisé. Vous pouvez également limiter la durée d’enregistrement et le nombre de requêtes par minute.
+
+### Vérifier la configuration
+
+Une fois la configuration terminée, vérifiez d’abord que tous les éléments requis du panneau **Configuration en attente** sont verts. Testez ensuite le **Chat IA**, les **Champs IA**, l’**Automatisation IA** et le **Générateur d’Applications** un par un.
+
+## FAQ
+
+<AccordionGroup>
+<Accordion title="J’obtiens une erreur de crédit dépassé">
+
+Vérifiez le compte ou le fournisseur utilisé par votre service de modèle configuré. Rechargez le compte ou modifiez la configuration du modèle si nécessaire.
+</Accordion>
+
+</AccordionGroup>
+

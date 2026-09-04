@@ -1,0 +1,449 @@
+---
+title: "Интерфейс Поля Записи"
+---
+
+<Note>Поле подстановки не является отдельным типом Поля. Можно подставлять Поле любого типа из связанной Базы. Тип Поля подстановки определяется исходным Полем в связанной Базе и имеет свойство isLookup. Поля подстановки нельзя редактировать.</Note>
+
+<Note>
+Все возвращаемые значения Полей в некоторых случаях могут иметь `isMultipleCellValue: true`:
+
+1. Это происходит, когда Поле является Полем подстановки. Если связанное значение допускает множественный выбор, значение Поля подстановки обязательно будет массивом.
+
+2. Поля можно настраивать: например, Поля пользователей и Поля ссылок могут быть настроены на одиночный или множественный выбор. В коде можно использовать `field.isMultipleCellValue`, чтобы определить, принимает ли Поле несколько значений.
+</Note>
+
+<Note>
+Не используйте тип Поля для определения разрешений на запись. Вместо этого используйте свойство isComputed Поля.
+</Note>
+
+### 1. Числовое Поле
+* type: number
+* Тип записи: `number`
+* Тип возврата:
+  * `isMultipleCellValue: false`: `number`
+  * `isMultipleCellValue: true`: `number[]`
+
+Пример:
+```js
+// Записываемое значение
+42
+
+// Возвращаемое значение (isMultipleCellValue: false)
+42
+
+// Возвращаемое значение (isMultipleCellValue: true)
+[42, 17, 99]
+```
+
+### 2. Поле однострочного текста
+* type: singleLineText
+* Тип записи: `string`
+* Тип возврата:
+  * `isMultipleCellValue: false`: `string`
+  * `isMultipleCellValue: true`: `string[]`
+
+Пример:
+```js
+// Записываемое значение
+"Hello, Teable!"
+
+// Возвращаемое значение (isMultipleCellValue: false)
+"Hello, Teable!"
+
+// Возвращаемое значение (isMultipleCellValue: true)
+["Hello, Teable!", "Welcome", "Good day"]
+```
+
+### 3. Поле длинного текста
+* type: longText
+* Тип записи: `string`
+* Тип возврата:
+  * `isMultipleCellValue: false`: `string`
+  * `isMultipleCellValue: true`: `string[]`
+
+Пример:
+```js
+// Записываемое значение
+"Это поле длинного текста, которое может содержать несколько абзацев..."
+
+// Возвращаемое значение (isMultipleCellValue: false)
+"Это поле длинного текста, которое может содержать несколько абзацев..."
+
+// Возвращаемое значение (isMultipleCellValue: true)
+["Это длинный текст...", "Другой длинный текст...", "Ещё один длинный текст..."]
+```
+
+### 4. Поле одиночного выбора
+* type: singleSelect
+* Тип записи: `string` (значение варианта)
+* Тип возврата:
+  * `isMultipleCellValue: false`: `string`
+  * `isMultipleCellValue: true`: `string[]`
+
+Пример:
+```js
+// Записываемое значение
+"Option A"
+
+// Возвращаемое значение (isMultipleCellValue: false)
+"Option A"
+
+// Возвращаемое значение (isMultipleCellValue: true)
+["Option A", "Option B", "Option C"]
+```
+
+### 5. Поле множественного выбора
+* type: multipleSelect
+* Тип записи: `string[]` (массив значений вариантов)
+* Тип возврата: `string[]`
+
+Пример:
+```js
+// Записываемое значение
+["Red", "Blue", "Green"]
+
+// Возвращаемое значение
+["Red", "Blue", "Green"]
+```
+
+### 6. Поле ссылки
+* type: link
+* Тип записи:
+  * `isMultipleCellValue: false`: `{ id: string }`
+  * `isMultipleCellValue: true`: `{ id: string }[]`
+* Тип возврата:
+  * `isMultipleCellValue: false`: `{ id: string, title?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title?: string }[]`
+
+Пример:
+```js
+// Записываемое значение (isMultipleCellValue: false)
+{ id: "rec123456" }
+
+// Записываемое значение (isMultipleCellValue: true)
+[{ id: "rec123456" }, { id: "rec789012" }]
+
+// Возвращаемое значение (isMultipleCellValue: false)
+{ id: "rec123456", title: "Related Record 1" }
+
+// Возвращаемое значение (isMultipleCellValue: true)
+[
+  { id: "rec123456", title: "Related Record 1" },
+  { id: "rec789012", title: "Related Record 2" }
+]
+```
+
+### 7. Поле формулы
+* type: formula
+* Тип записи: Прямая запись невозможна
+* Тип возврата: Зависит от результата формулы; может быть `string | number | boolean` или их массивными формами
+
+Пример:
+```js
+// Возвращаемое значение (isMultipleCellValue: false)
+42 // or "Result" or true
+
+// Возвращаемое значение (isMultipleCellValue: true)
+[42, 17, 99] // or ["Result1", "Result2"] or [true, false, true]
+```
+
+### 8. Поле вложения
+Чтобы загрузить вложение в Поле вложения, используйте специальный API. Подробнее см. в разделе [Загрузка вложения](/ru/api-doc/record/upload-attachment).
+* type: attachment
+* Тип записи:
+  ```ts
+  {
+    id: string;
+    name: string;
+    path: string;
+    token: string; // Unique identifier
+    size: number; // File size in bytes
+    mimetype: string; // File type
+    presignedUrl?: string; // File preview/download URL
+    width?: number; // Image width
+    height?: number; // Image height
+  }[]
+  ```
+
+* Тип возврата:
+```ts
+{
+  id: string;
+  name: string;
+  path: string;
+  token: string; // Unique identifier
+  size: number; // File size in bytes
+  mimetype: string; // File type
+  presignedUrl?: string; // File preview/download URL
+  width?: number; // Image width
+  height?: number; // Image height
+}[]
+```
+
+Пример:
+```js
+// Записываемое значение
+[
+  {
+    name: "document.pdf",
+    type: "application/pdf",
+    token: "abc123",
+    size: 1024000
+  }
+]
+
+// Возвращаемое значение
+[
+  {
+    id: "att123",
+    name: "document.pdf",
+    path: "/uploads/document.pdf",
+    token: "abc123",
+    size: 1024000,
+    mimetype: "application/pdf",
+    presignedUrl: "https://app.teable.ai/preview/document.pdf",
+  },
+  {
+    id: "att456",
+    name: "image.jpg",
+    path: "/uploads/image.jpg",
+    token: "def456",
+    size: 2048000,
+    mimetype: "image/jpeg",
+    presignedUrl: "https://app.teable.ai/preview/image.jpg",
+    width: 1920,
+    height: 1080
+  }
+]
+```
+
+### 9. Поле даты
+* type: date
+* Тип записи: `string` (формат ISO 8601)
+* Тип возврата:
+  * `isMultipleCellValue: false`: `string` (формат ISO 8601)
+  * `isMultipleCellValue: true`: `string[]` (формат ISO 8601)
+Чтобы получить время в формате ISO 8601, можно использовать `new Date().toISOString()`.
+
+Пример:
+```js
+// Записываемое значение
+"2024-09-02T02:51:03.875Z"
+
+// Возвращаемое значение (isMultipleCellValue: false)
+"2024-09-02T02:51:03.875Z"
+
+// Возвращаемое значение (isMultipleCellValue: true)
+["2024-09-02T02:51:03.875Z", "2024-09-02T02:51:03.875Z"]
+```
+
+### 10. Поле времени создания
+* type: createdTime
+* Тип записи: Прямая запись невозможна
+* Тип возврата:
+  * `isMultipleCellValue: false`: `string` (формат ISO 8601)
+  * `isMultipleCellValue: true`: `string[]` (формат ISO 8601)
+
+Пример:
+```js
+// Возвращаемое значение (isMultipleCellValue: false)
+"2024-09-02T02:51:03.875Z"
+
+// Возвращаемое значение (isMultipleCellValue: true)
+["2024-09-02T02:51:03.875Z", "2024-09-02T02:51:03.875Z"]
+```
+
+### 11. Поле времени последнего изменения
+* type: lastModifiedTime
+* Тип записи: Прямая запись невозможна
+* Тип возврата:
+  * `isMultipleCellValue: false`: `string` (формат ISO 8601)
+  * `isMultipleCellValue: true`: `string[]` (формат ISO 8601)
+
+Пример:
+```js
+// Возвращаемое значение (isMultipleCellValue: false)
+"2023-04-15T10:30:00Z"
+
+// Возвращаемое значение (isMultipleCellValue: true)
+["2023-04-15T10:30:00Z", "2023-04-16T14:45:00Z"]
+```
+
+### 12. Поле флажка
+* type: checkbox
+* Тип записи: `boolean`
+* Тип возврата:
+  * `isMultipleCellValue: false`: `boolean`
+  * `isMultipleCellValue: true`: `boolean[]`
+
+Пример:
+```js
+// Записываемое значение
+true
+
+// Возвращаемое значение (isMultipleCellValue: false)
+true
+
+// Возвращаемое значение (isMultipleCellValue: true)
+[true, false, true]
+```
+
+### 13. Поле сводки
+* type: rollup
+* Тип записи: Прямая запись невозможна
+* Тип возврата: Зависит от конфигурации сводки; может быть `number | string` или их массивными формами
+
+Пример:
+```js
+// Возвращаемое значение (isMultipleCellValue: false)
+42 // or "Summary Result"
+
+// Возвращаемое значение (isMultipleCellValue: true)
+[42, 17, 99] // or ["Summary 1", "Summary 2"]
+```
+
+### 14. Поле оценки
+* type: rating
+* Тип записи: `number`
+* Тип возврата:
+  * `isMultipleCellValue: false`: `number`
+  * `isMultipleCellValue: true`: `number[]`
+
+Пример:
+```js
+// Записываемое значение
+4
+
+// Возвращаемое значение (isMultipleCellValue: false)
+4
+
+// Возвращаемое значение (isMultipleCellValue: true)
+[4, 3, 5]
+```
+
+### 15. Поле автоматической нумерации
+* type: autoNumber
+* Тип записи: Прямая запись невозможна
+* Тип возврата:
+  * `isMultipleCellValue: false`: `number`
+  * `isMultipleCellValue: true`: `number[]`
+
+Пример:
+```js
+// Возвращаемое значение (isMultipleCellValue: false)
+42
+
+// Возвращаемое значение (isMultipleCellValue: true)
+[42, 43, 44]
+```
+
+### 16. Поле пользователя
+
+* type: user
+* Тип записи:
+  * `isMultipleCellValue: false`: `{ id: string, title: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string }[]`
+* Тип возврата:
+  * `isMultipleCellValue: false`: `{ id: string, title: string, email?: string, avatar?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string, email?: string, avatar?: string }[]`
+
+Пример:
+```js
+// Записываемое значение (isMultipleCellValue: false)
+{ id: "user123", title: "John Doe" }
+
+// Записываемое значение (isMultipleCellValue: true)
+[
+  { id: "user123", title: "John Doe" },
+  { id: "user456", title: "Jane Smith" }
+]
+
+// Возвращаемое значение (isMultipleCellValue: false)
+{
+  id: "user123",
+  title: "John Doe",
+  email: "john@example.com",
+  avatar: "https://example.com/avatar.jpg"
+}
+
+// Возвращаемое значение (isMultipleCellValue: true)
+[
+  {
+    id: "user123",
+    title: "John Doe",
+    email: "john@example.com",
+    avatar: "https://example.com/avatar1.jpg"
+  },
+  {
+    id: "user456",
+    title: "Jane Smith",
+    email: "jane@example.com",
+    avatar: "https://example.com/avatar2.jpg"
+  }
+]
+```
+
+### 17. Поле «Создано пользователем»
+* Тип записи: Прямая запись невозможна
+* Тип возврата:
+  * `isMultipleCellValue: false`: `{ id: string, title: string, email?: string, avatar?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string, email?: string, avatar?: string }[]`
+Пример:
+```js
+// Возвращаемое значение (isMultipleCellValue: false)
+{
+  id: "user123",
+  title: "John Doe",
+  email: "john@example.com",
+  avatar: "https://example.com/avatar.jpg"
+}
+
+// Возвращаемое значение (isMultipleCellValue: true)
+[
+  {
+    id: "user123",
+    title: "John Doe",
+    email: "john@example.com",
+    avatar: "https://example.com/avatar1.jpg"
+  },
+  {
+    id: "user456",
+    title: "Jane Smith",
+    email: "jane@example.com",
+    avatar: "https://example.com/avatar2.jpg"
+  }
+]
+```
+
+### 18. Поле «Последнее изменение пользователем»
+* Тип записи: Прямая запись невозможна
+* Тип возврата:
+  * `isMultipleCellValue: false`: `{ id: string, title: string, email?: string, avatar?: string }`
+  * `isMultipleCellValue: true`: `{ id: string, title: string, email?: string, avatar?: string }[]`
+
+Пример:
+```js
+// Возвращаемое значение (isMultipleCellValue: false)
+{
+  id: "user123",
+  title: "John Doe",
+  email: "john@example.com",
+  avatar: "https://example.com/avatar.jpg"
+}
+
+// Возвращаемое значение (isMultipleCellValue: true)
+[
+  {
+    id: "user123",
+    title: "John Doe",
+    email: "john@example.com",
+    avatar: "https://example.com/avatar1.jpg"
+  },
+  {
+    id: "user456",
+    title: "Jane Smith",
+    email: "jane@example.com",
+    avatar: "https://example.com/avatar2.jpg"
+  }
+]
+```

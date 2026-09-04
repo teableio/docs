@@ -1,0 +1,33 @@
+---
+title: "Traiter des enregistrements par lots avec une boucle"
+description: "Utilisez Obtenir des enregistrements et Boucle pour traiter plusieurs enregistrements au cours d’une même exécution de workflow"
+---
+
+<Tip>Nous vous recommandons de créer les exemples d’automatisation directement dans le Chat IA. Décrivez simplement le workflow souhaité : l’IA se charge de toute la configuration, notamment du déclencheur, des actions, du script et des paramètres.</Tip>
+
+## Créer avec l’IA
+
+Ouvrez le Chat IA dans la barre latérale droite de votre table et indiquez à l’IA ce que vous souhaitez. Vous pouvez par exemple dire :
+
+*« Chaque jour à 8 h, recherche toutes les tâches dont la date d’échéance est dépassée et dont le statut n’est pas En retard, puis définis leur statut sur En retard »*
+
+L’IA créera automatiquement le workflow complet. Vous pourrez examiner le script généré, le tester avec des données réelles, puis activer le workflow lorsqu’il sera prêt.
+
+## Configuration manuelle
+
+1. **Créez un workflow** avec le déclencheur **À l’heure planifiée** — tous les jours à 08:00.
+2. **Ajoutez une action** → **Obtenir des enregistrements**.
+   - Table : **Tâches**
+   - Filtre : `Date d’échéance` **est antérieure à** `aujourd’hui` ET `Statut` **n’est pas** `En retard`
+3. Cliquez sur **Tester** pour afficher les enregistrements correspondants.
+4. **Ajoutez une action** → **Mettre à jour l’enregistrement**.
+5. Cliquez sur **Exécuter en boucle** sous le sélecteur de table.
+6. Sélectionnez le tableau renvoyé par l’étape Obtenir des enregistrements.
+7. Associez :
+   - ID de l’enregistrement → ID de l’enregistrement de l’élément actuel (via **+**)
+   - Statut → `En retard`
+8. Cliquez sur **Tester**, puis **activez** le workflow.
+
+## Fonctionnement
+
+L’étape Obtenir des enregistrements renvoie un tableau. Lorsque l’option Boucle est activée, l’étape Mettre à jour l’enregistrement parcourt chaque élément dans l’ordre et le met à jour individuellement.
