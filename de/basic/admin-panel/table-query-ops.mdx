@@ -29,7 +29,11 @@ Jeder Eintrag nennt den zugehörigen Space, die Base und die Tabelle. Klappen Si
 
 **Tiefenanalyse** öffnet den Analysearbeitsbereich mit dieser Tabelle bereits vorausgefüllt.
 
-Wenn der Analysator umfangreiche Teilzeichenfolgensuchen in einer Tabelle erkennt, erstellt er für die gesamte Tabelle eine **erzeugter-Text-GIN**-Empfehlung statt eines Indexes pro Feld. Eine solche Zeile bietet **Suchpfad erstellen** anstelle von **Tiefenanalyse**; **Index hinzufügen** wird nicht angezeigt, weil ein Suchzugriffspfad im Analysearbeitsbereich angewendet wird und zuvor eine **EXPLAIN-Beispielsuche** benötigt. Die Empfehlung wird automatisch abgeschlossen, sobald die Tabelle über den Pfad verfügt.
+Wenn der Analysator umfangreiche Teilzeichenfolgensuchen in einer Tabelle erkennt, erstellt er für die gesamte Tabelle eine **erzeugter-Text-GIN**-Empfehlung statt eines Indexes pro Feld. Eine solche Zeile bietet **Suchpfad erstellen** anstelle von **Tiefenanalyse**; **Index hinzufügen** wird nicht angezeigt. Die Empfehlung wird automatisch abgeschlossen, sobald die Tabelle über den Pfad verfügt.
+
+**Suchpfad erstellen** führt einen Probelauf (Dry Run) für die Tabelle direkt in einem Dialog auf dieser Seite aus. Der Dialog zeigt den Indexanbieter des Kandidaten, die Anzahl abgedeckter Felder, die geschätzten Zeilen sowie die `EXPLAIN`-Kosten vor und nach der Änderung. Geben Sie einen Beispielsuchbegriff ein, der mindestens so lang ist wie die angezeigte Mindestlänge; er dient nur der Prüfung und wird nicht gespeichert. Bei einer großen Tabelle bestätigen Sie zusätzlich das Kontrollkästchen für das Wartungsfenster. Nach der Bestätigung wird der Kandidat erneut geprüft und der Suchpfad aktiviert.
+
+Liefert die Analyse keinen Kandidaten, nennt der Dialog den Grund und ändert nichts. Eine breite Tabelle wird abgelehnt, weil Teable dafür kein Suchdokument über alle Felder aufbaut; ein längerer Suchbegriff ändert daran nichts. Nutzen Sie dann **Ausgewählte Felder analysieren**, um im Analysearbeitsbereich nur die Felder zu analysieren, in denen Nutzer tatsächlich suchen.
 
 Daneben befinden sich zwei weitere Tabs:
 

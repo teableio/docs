@@ -29,7 +29,11 @@ Cada entrada indica el Espacio, la Base y la Tabla a los que pertenece. Expande 
 
 **Análisis profundo** abre el Espacio de trabajo de análisis con esa Tabla ya introducida.
 
-Cuando el analizador detecta un uso intensivo de búsquedas de subcadenas en una Tabla, genera una única recomendación de **GIN de texto generado** para toda la Tabla, en lugar de un índice por Campo. Esa fila ofrece **Crear ruta de búsqueda** en lugar de **Análisis profundo**, y **Añadir índice** no aparece porque las rutas de acceso de búsqueda se aplican desde el Espacio de trabajo de análisis y requieren primero una **Búsqueda de muestra con EXPLAIN**. La recomendación se cierra automáticamente cuando la Tabla dispone de la ruta.
+Cuando el analizador detecta un uso intensivo de búsquedas de subcadenas en una Tabla, genera una única recomendación de **GIN de texto generado** para toda la Tabla, en lugar de un índice por Campo. Esa fila ofrece **Crear ruta de búsqueda** en lugar de **Análisis profundo**, y **Añadir índice** no aparece. La recomendación se cierra automáticamente cuando la Tabla dispone de la ruta.
+
+**Crear ruta de búsqueda** abre un cuadro de diálogo que ejecuta un análisis de prueba (dry run) de la Tabla sin salir de la página. El cuadro muestra el proveedor de índice del candidato, cuántos Campos cubre, las filas estimadas y el coste de `EXPLAIN` antes y después. Escribe un término de búsqueda de ejemplo con al menos la longitud mínima indicada; solo sirve para validar y no se guarda. En una Tabla grande, marca además la casilla de la ventana de mantenimiento. Al confirmar, Teable vuelve a validar el candidato y activa la ruta de búsqueda.
+
+Si el análisis no devuelve ningún candidato, el cuadro explica el motivo y no ejecuta nada. Una Tabla ancha se rechaza porque Teable no crea para ella un documento de búsqueda con todos los Campos, y un término más largo no cambia eso. Usa **Analizar Campos seleccionados** para ir al Espacio de trabajo de análisis y analizar solo los Campos en los que la gente busca realmente.
 
 Hay otras dos pestañas junto a ella:
 

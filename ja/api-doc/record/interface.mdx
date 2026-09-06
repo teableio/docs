@@ -18,12 +18,12 @@ title: "レコードフィールドインターフェース"
 
 ### 1. 数値フィールド
 * type: number
-* 書き込み型: `number`
-* 戻り値の型:
+* 書き込み型：`number`
+* 戻り値の型：
   * `isMultipleCellValue: false`: `number`
   * `isMultipleCellValue: true`: `number[]`
 
-例:
+例：
 ```js
 // 書き込み値
 42
@@ -37,12 +37,12 @@ title: "レコードフィールドインターフェース"
 
 ### 2. 一行テキストフィールド
 * type: singleLineText
-* 書き込み型: `string`
-* 戻り値の型:
+* 書き込み型：`string`
+* 戻り値の型：
   * `isMultipleCellValue: false`: `string`
   * `isMultipleCellValue: true`: `string[]`
 
-例:
+例：
 ```js
 // 書き込み値
 "こんにちは、Teable！"
@@ -56,12 +56,12 @@ title: "レコードフィールドインターフェース"
 
 ### 3. 長文テキストフィールド
 * type: longText
-* 書き込み型: `string`
-* 戻り値の型:
+* 書き込み型：`string`
+* 戻り値の型：
   * `isMultipleCellValue: false`: `string`
   * `isMultipleCellValue: true`: `string[]`
 
-例:
+例：
 ```js
 // 書き込み値
 "これは複数の段落を含められる長いテキストフィールドです..."
@@ -75,12 +75,12 @@ title: "レコードフィールドインターフェース"
 
 ### 4. 単一選択フィールド
 * type: singleSelect
-* 書き込み型: `string`（選択肢の値）
-* 戻り値の型:
+* 書き込み型：`string`（選択肢の値）
+* 戻り値の型：
   * `isMultipleCellValue: false`: `string`
   * `isMultipleCellValue: true`: `string[]`
 
-例:
+例：
 ```js
 // 書き込み値
 "選択肢A"
@@ -94,10 +94,10 @@ title: "レコードフィールドインターフェース"
 
 ### 5. 複数選択フィールド
 * type: multipleSelect
-* 書き込み型: `string[]`（選択肢の値の配列）
-* 戻り値の型: `string[]`
+* 書き込み型：`string[]`（選択肢の値の配列）
+* 戻り値の型：`string[]`
 
-例:
+例：
 ```js
 // 書き込み値
 ["赤", "青", "緑"]
@@ -108,14 +108,14 @@ title: "レコードフィールドインターフェース"
 
 ### 6. リンクフィールド
 * type: link
-* 書き込み型:
+* 書き込み型：
   * `isMultipleCellValue: false`: `{ id: string }`
   * `isMultipleCellValue: true`: `{ id: string }[]`
-* 戻り値の型:
+* 戻り値の型：
   * `isMultipleCellValue: false`: `{ id: string, title?: string }`
   * `isMultipleCellValue: true`: `{ id: string, title?: string }[]`
 
-例:
+例：
 ```js
 // 書き込み値 (isMultipleCellValue: false)
 { id: "rec123456" }
@@ -135,10 +135,10 @@ title: "レコードフィールドインターフェース"
 
 ### 7. 数式フィールド
 * type: formula
-* 書き込み型: 直接書き込みできません
-* 戻り値の型: 数式の結果によって異なり、`string | number | boolean`またはそれぞれの配列形式になります
+* 書き込み型：直接書き込みできません
+* 戻り値の型：数式の結果によって異なり、`string | number | boolean`またはそれぞれの配列形式になります
 
-例:
+例：
 ```js
 // 戻り値 (isMultipleCellValue: false)
 42 // または "結果" または true
@@ -150,7 +150,7 @@ title: "レコードフィールドインターフェース"
 ### 8. 添付ファイルフィールド
 添付ファイルフィールドへ添付ファイルをアップロードするには、専用APIを使用します。詳しくは、[添付ファイルをアップロード](/ja/api-doc/record/upload-attachment)セクションをご覧ください。
 * type: attachment
-* 書き込み型:
+* 書き込み型：
   ```ts
   {
     id: string;
@@ -165,7 +165,7 @@ title: "レコードフィールドインターフェース"
   }[]
   ```
 
-* 戻り値の型:
+* 戻り値の型：
 ```ts
 {
   id: string;
@@ -180,7 +180,7 @@ title: "レコードフィールドインターフェース"
 }[]
 ```
 
-例:
+例：
 ```js
 // 書き込み値
 [
@@ -219,13 +219,13 @@ title: "レコードフィールドインターフェース"
 
 ### 9. 日付フィールド
 * type: date
-* 書き込み型: `string`（ISO 8601形式）
-* 戻り値の型:
+* 書き込み型：`string`（ISO 8601形式）
+* 戻り値の型：
   * `isMultipleCellValue: false`: `string`（ISO 8601形式）
   * `isMultipleCellValue: true`: `string[]`（ISO 8601形式）
 ISO 8601形式の時刻は、`new Date().toISOString()`で取得できます
 
-例:
+例：
 ```js
 // 書き込み値
 "2024-09-02T02:51:03.875Z"
@@ -239,12 +239,12 @@ ISO 8601形式の時刻は、`new Date().toISOString()`で取得できます
 
 ### 10. 作成日時フィールド
 * type: createdTime
-* 書き込み型: 直接書き込みできません
-* 戻り値の型:
+* 書き込み型：直接書き込みできません
+* 戻り値の型：
   * `isMultipleCellValue: false`: `string`（ISO 8601形式）
   * `isMultipleCellValue: true`: `string[]`（ISO 8601形式）
 
-例:
+例：
 ```js
 // 戻り値 (isMultipleCellValue: false)
 "2024-09-02T02:51:03.875Z"
@@ -255,12 +255,12 @@ ISO 8601形式の時刻は、`new Date().toISOString()`で取得できます
 
 ### 11. 最終更新日時フィールド
 * type: lastModifiedTime
-* 書き込み型: 直接書き込みできません
-* 戻り値の型:
+* 書き込み型：直接書き込みできません
+* 戻り値の型：
   * `isMultipleCellValue: false`: `string`（ISO 8601形式）
   * `isMultipleCellValue: true`: `string[]`（ISO 8601形式）
 
-例:
+例：
 ```js
 // 戻り値 (isMultipleCellValue: false)
 "2023-04-15T10:30:00Z"
@@ -271,12 +271,12 @@ ISO 8601形式の時刻は、`new Date().toISOString()`で取得できます
 
 ### 12. チェックボックスフィールド
 * type: checkbox
-* 書き込み型: `boolean`
-* 戻り値の型:
+* 書き込み型：`boolean`
+* 戻り値の型：
   * `isMultipleCellValue: false`: `boolean`
   * `isMultipleCellValue: true`: `boolean[]`
 
-例:
+例：
 ```js
 // 書き込み値
 true
@@ -290,10 +290,10 @@ true
 
 ### 13. ロールアップフィールド
 * type: rollup
-* 書き込み型: 直接書き込みできません
-* 戻り値の型: ロールアップの設定によって異なり、`number | string`またはそれぞれの配列形式になります
+* 書き込み型：直接書き込みできません
+* 戻り値の型：ロールアップの設定によって異なり、`number | string`またはそれぞれの配列形式になります
 
-例:
+例：
 ```js
 // 戻り値 (isMultipleCellValue: false)
 42 // または "集計結果"
@@ -304,12 +304,12 @@ true
 
 ### 14. 評価フィールド
 * type: rating
-* 書き込み型: `number`
-* 戻り値の型:
+* 書き込み型：`number`
+* 戻り値の型：
   * `isMultipleCellValue: false`: `number`
   * `isMultipleCellValue: true`: `number[]`
 
-例:
+例：
 ```js
 // 書き込み値
 4
@@ -323,12 +323,12 @@ true
 
 ### 15. 自動採番フィールド
 * type: autoNumber
-* 書き込み型: 直接書き込みできません
-* 戻り値の型:
+* 書き込み型：直接書き込みできません
+* 戻り値の型：
   * `isMultipleCellValue: false`: `number`
   * `isMultipleCellValue: true`: `number[]`
 
-例:
+例：
 ```js
 // 戻り値 (isMultipleCellValue: false)
 42
@@ -340,14 +340,14 @@ true
 ### 16. ユーザーフィールド
 
 * type: user
-* 書き込み型:
+* 書き込み型：
   * `isMultipleCellValue: false`: `{ id: string, title: string }`
   * `isMultipleCellValue: true`: `{ id: string, title: string }[]`
-* 戻り値の型:
+* 戻り値の型：
   * `isMultipleCellValue: false`: `{ id: string, title: string, email?: string, avatar?: string }`
   * `isMultipleCellValue: true`: `{ id: string, title: string, email?: string, avatar?: string }[]`
 
-例:
+例：
 ```js
 // 書き込み値 (isMultipleCellValue: false)
 { id: "user123", title: "John Doe" }
@@ -384,11 +384,11 @@ true
 ```
 
 ### 17. 作成者フィールド
-* 書き込み型: 直接書き込みできません
-* 戻り値の型:
+* 書き込み型：直接書き込みできません
+* 戻り値の型：
   * `isMultipleCellValue: false`: `{ id: string, title: string, email?: string, avatar?: string }`
   * `isMultipleCellValue: true`: `{ id: string, title: string, email?: string, avatar?: string }[]`
-例:
+例：
 ```js
 // 戻り値 (isMultipleCellValue: false)
 {
@@ -416,12 +416,12 @@ true
 ```
 
 ### 18. 最終更新者フィールド
-* 書き込み型: 直接書き込みできません
-* 戻り値の型:
+* 書き込み型：直接書き込みできません
+* 戻り値の型：
   * `isMultipleCellValue: false`: `{ id: string, title: string, email?: string, avatar?: string }`
   * `isMultipleCellValue: true`: `{ id: string, title: string, email?: string, avatar?: string }[]`
 
-例:
+例：
 ```js
 // 戻り値 (isMultipleCellValue: false)
 {

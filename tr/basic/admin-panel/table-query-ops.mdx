@@ -29,7 +29,11 @@ Her girdi ait olduğu Alanı, Veritabanını ve Tabloyu belirtir. Önerinin arka
 
 **Derin analiz**, ilgili Tablo önceden doldurulmuş olarak analiz çalışma alanını açar.
 
-Analiz aracı bir Tablonun tamamında yoğun alt dize araması algıladığında Alan başına dizin yerine tüm Tablo için tek bir **oluşturulmuş metin GIN** önerisi sunar. Böyle bir satırda **Derin analiz** yerine **Arama yolu oluştur** seçeneği bulunur. Arama erişim yolu analiz çalışma alanından uygulandığı ve önce bir **EXPLAIN örnek araması** gerektirdiği için **Dizin ekle** gösterilmez. Tablo bu yola sahip olduğunda öneri kendiliğinden kapanır.
+Analiz aracı bir Tablonun tamamında yoğun alt dize araması algıladığında Alan başına dizin yerine tüm Tablo için tek bir **oluşturulmuş metin GIN** önerisi sunar. Böyle bir satırda **Derin analiz** yerine **Arama yolu oluştur** seçeneği bulunur. **Dizin ekle** ise gösterilmez. Tablo bu yola sahip olduğunda öneri kendiliğinden kapanır.
+
+**Arama yolu oluştur**, sayfadan çıkmadan tablo için bir deneme çalıştırması (dry run) yapan bir pencere açar. Pencerede adayın dizin sağlayıcısı, kapsanan alan sayısı, tahmini satır sayısı ve öncesi ile sonrası `EXPLAIN` maliyeti görünür. Pencerede belirtilen en az uzunlukta bir örnek arama terimi girin; bu terim yalnızca doğrulama için kullanılır ve saklanmaz. Büyük tablolarda bakım penceresi onay kutusunu da işaretleyin. Onayladığınızda Teable adayı yeniden doğrular ve arama yolunu etkinleştirir.
+
+Analiz hiçbir aday üretmezse pencere nedenini açıklar ve hiçbir işlem yapmaz. Geniş tablolar reddedilir, çünkü Teable bunlar için tüm alanları kapsayan bir arama belgesi oluşturmaz; daha uzun bir arama terimi de bunu değiştirmez. Bu durumda **Seçili alanları analiz et**’e tıklayıp analiz çalışma alanında yalnızca kullanıcıların gerçekten aradığı alanları inceleyin.
 
 Yanında iki sekme daha bulunur:
 

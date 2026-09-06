@@ -29,7 +29,11 @@ Ogni voce indica lo Spazio, la Base e la Tabella a cui appartiene. Espandi una r
 
 **Analisi approfondita** apre l'area di lavoro di analisi con la Tabella già compilata.
 
-Quando l'analizzatore rileva numerose ricerche di sottostringhe in una Tabella, genera un unico suggerimento **GIN per testo generato** per l'intera Tabella, anziché un indice per ogni Campo. Tale riga offre **Crea percorso di ricerca** al posto di **Analisi approfondita** e **Aggiungi indice** non viene visualizzato, perché un percorso di accesso per la ricerca viene applicato dall'area di lavoro di analisi e richiede prima una **ricerca di esempio EXPLAIN**. Il suggerimento si chiude automaticamente quando la Tabella dispone del percorso.
+Quando l'analizzatore rileva numerose ricerche di sottostringhe in una Tabella, genera un unico suggerimento **GIN per testo generato** per l'intera Tabella, anziché un indice per ogni Campo. Tale riga offre **Crea percorso di ricerca** al posto di **Analisi approfondita** e **Aggiungi indice** non viene visualizzato. Il suggerimento si chiude automaticamente quando la Tabella dispone del percorso.
+
+**Crea percorso di ricerca** apre una finestra che esegue un'analisi di prova (dry run) della Tabella senza lasciare la pagina. La finestra mostra il provider di indice del candidato, il numero di Campi coperti, le righe stimate e il costo `EXPLAIN` prima e dopo. Inserisci un termine di ricerca di esempio lungo almeno quanto la lunghezza minima indicata: serve solo alla verifica e non viene salvato. Su una Tabella grande, conferma anche la casella della finestra di manutenzione. Alla conferma Teable verifica di nuovo il candidato e attiva il percorso di ricerca.
+
+Se l'analisi non produce candidati, la finestra ne spiega il motivo e non esegue nulla. Una Tabella molto larga viene rifiutata perché Teable non crea per essa un documento di ricerca su tutti i Campi, e un termine più lungo non cambia questo esito. Usa **Analizza i Campi selezionati** per passare all'area di lavoro di analisi e analizzare solo i Campi in cui gli utenti cercano davvero.
 
 Accanto sono presenti altre due schede:
 
