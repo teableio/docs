@@ -7,20 +7,20 @@ OAuthアプリを使用すると、サードパーティーアプリケーショ
 
 Teableは、次の3つのOAuth 2.0認可モードに対応しています。
 
-- **認可コード + クライアントシークレット**: バックエンドサーバーを持つWebアプリケーション向け
+- **認可コード + クライアントシークレット**：バックエンドサーバーを持つWebアプリケーション向け
 - **認可コード + PKCE**: クライアントシークレットを安全に保管できないネイティブアプリ、CLIツール、SPA、その他のパブリッククライアント向け
-- **デバイス認可グラント**: SSH経由で実行するCLI、コンテナ内、クラウドIDEなど、ブラウザーからのリダイレクトを受信できないクライアント向け
+- **デバイス認可グラント**：SSH経由で実行するCLI、コンテナ内、クラウドIDEなど、ブラウザーからのリダイレクトを受信できないクライアント向け
 
 ## OAuthアプリを作成する
 
 1. Teableアカウントで[設定 > OAuthアプリ](https://app.teable.ai/setting/oauth-app)を開きます。
 2. **新しいOAuthアプリ**をクリックして、新しいアプリケーションを作成します。
 3. 必須情報を入力します。
-   - **OAuthアプリ名**: アプリケーションの内容がわかる名前
+   - **OAuthアプリ名**：アプリケーションの内容がわかる名前
    - **ホームページURL**: アプリケーションのWebサイトの完全なURL
    - **コールバックURL**: 認可後にユーザーがリダイレクトされるURL
-   - **スコープ**: アプリケーションに必要な権限
-   - **デバイスフローを有効化**: デフォルトではオフです。アプリケーションがデバイスコードを使ってユーザーをサインインさせる場合にのみオンにしてください
+   - **スコープ**：アプリケーションに必要な権限
+   - **デバイスフローを有効化**：デフォルトではオフです。アプリケーションがデバイスコードを使ってユーザーをサインインさせる場合にのみオンにしてください
 
 4. アプリを作成したら、**クライアントシークレット**を生成します。再表示できないため、必ずコピーして安全に保管してください。
 
@@ -69,7 +69,7 @@ sequenceDiagram
 GET https://app.teable.ai/api/oauth/authorize
 ```
 
-**クエリパラメーター:**
+**クエリパラメーター：**
 
 | パラメーター | 必須 | 説明 |
 |-----------|----------|-------------|
@@ -79,7 +79,7 @@ GET https://app.teable.ai/api/oauth/authorize
 | `scope` | いいえ | スペース区切りのスコープ一覧。省略した場合は、OAuthアプリに設定されたスコープが使用されます |
 | `state` | いいえ | CSRF攻撃を防ぐためのランダムな文字列。コールバックでそのまま返されます |
 
-**例:**
+**例：**
 
 ```
 https://app.teable.ai/api/oauth/authorize?response_type=code&client_id=YOUR_CLIENT_ID&redirect_uri=https://yourapp.com/callback&scope=table|read%20record|read&state=random_state_string
@@ -98,12 +98,12 @@ https://app.teable.ai/api/oauth/authorize?response_type=code&client_id=YOUR_CLIE
 
 ユーザーが許可（または拒否）すると、TeableはコールバックURLへリダイレクトします。
 
-**成功時:**
+**成功時：**
 ```
 https://yourapp.com/callback?code=AUTHORIZATION_CODE&state=random_state_string
 ```
 
-**拒否時:**
+**拒否時：**
 ```
 https://yourapp.com/callback?error=access_denied&state=random_state_string
 ```
@@ -117,7 +117,7 @@ POST https://app.teable.ai/api/oauth/access_token
 Content-Type: application/x-www-form-urlencoded
 ```
 
-**リクエスト本文:**
+**リクエスト本文：**
 
 | パラメーター | 必須 | 説明 |
 |-----------|----------|-------------|
@@ -127,7 +127,7 @@ Content-Type: application/x-www-form-urlencoded
 | `client_secret` | はい | OAuthアプリのクライアントシークレット |
 | `redirect_uri` | はい | 認可時に使用したredirect_uriと完全に一致する必要があります |
 
-**リクエスト例:**
+**リクエスト例：**
 
 ```bash
 curl -X POST https://app.teable.ai/api/oauth/access_token \
@@ -139,7 +139,7 @@ curl -X POST https://app.teable.ai/api/oauth/access_token \
   -d "redirect_uri=https://yourapp.com/callback"
 ```
 
-**レスポンス:**
+**レスポンス：**
 
 ```json
 {
@@ -157,8 +157,8 @@ curl -X POST https://app.teable.ai/api/oauth/access_token \
 | `token_type` | 常に`Bearer` |
 | `access_token` | APIリクエストに使用するトークン |
 | `refresh_token` | 新しいアクセストークンの取得に使用するトークン |
-| `expires_in` | アクセストークンの有効期間（秒、デフォルト: 600 = 10分） |
-| `refresh_expires_in` | リフレッシュトークンの有効期間（秒、デフォルト: 2592000 = 30日） |
+| `expires_in` | アクセストークンの有効期間（秒、デフォルト：600 = 10分） |
+| `refresh_expires_in` | リフレッシュトークンの有効期間（秒、デフォルト：2592000 = 30日） |
 | `scopes` | 付与されたスコープの配列 |
 
 ## PKCE認可フロー
@@ -187,7 +187,7 @@ const codeChallenge = btoa(String.fromCharCode(...new Uint8Array(digest)))
 GET https://app.teable.ai/api/oauth/authorize
 ```
 
-**クエリパラメーター:**
+**クエリパラメーター：**
 
 | パラメーター | 必須 | 説明 |
 |-----------|----------|-------------|
@@ -199,7 +199,7 @@ GET https://app.teable.ai/api/oauth/authorize
 | `code_challenge` | はい | code_verifierのSHA-256ハッシュ（Base64URLエンコード） |
 | `code_challenge_method` | はい | `S256`である必要があります |
 
-**例:**
+**例：**
 
 ```
 https://app.teable.ai/api/oauth/authorize?response_type=code&client_id=YOUR_CLIENT_ID&redirect_uri=http://127.0.0.1:8080/callback&code_challenge=YOUR_CODE_CHALLENGE&code_challenge_method=S256&state=random_state_string
@@ -218,7 +218,7 @@ POST https://app.teable.ai/api/oauth/access_token
 Content-Type: application/x-www-form-urlencoded
 ```
 
-**リクエスト本文:**
+**リクエスト本文：**
 
 | パラメーター | 必須 | 説明 |
 |-----------|----------|-------------|
@@ -230,7 +230,7 @@ Content-Type: application/x-www-form-urlencoded
 
 <Note>PKCEモードでは`client_secret`は不要です。代わりに`code_verifier`を使用して、クライアントの身元を検証します。</Note>
 
-**リクエスト例:**
+**リクエスト例：**
 
 ```bash
 curl -X POST https://app.teable.ai/api/oauth/access_token \
@@ -314,7 +314,7 @@ POST https://app.teable.ai/api/oauth/access_token
 Content-Type: application/x-www-form-urlencoded
 ```
 
-**リクエスト本文:**
+**リクエスト本文：**
 
 | パラメーター | 必須 | 説明 |
 |-----------|----------|-------------|
@@ -323,7 +323,7 @@ Content-Type: application/x-www-form-urlencoded
 | `client_id` | はい | OAuthアプリのクライアントID |
 | `client_secret` | 条件付き | 標準の認可コードモードでは必須、PKCEモードでは不要です |
 
-**リクエスト例:**
+**リクエスト例：**
 
 ```bash
 curl -X POST https://app.teable.ai/api/oauth/access_token \
@@ -397,12 +397,12 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 
 ## ベストプラクティス
 
-1. **適切なモードを選択する**: バックエンドを持つWebアプリにはクライアントシークレットモード、ネイティブアプリ、CLI、SPAにはPKCEモード、ブラウザーからのリダイレクトを受信できないクライアントにはデバイスフローを使用します
-2. **シークレットを安全に保管する**: クライアント側のコードにクライアントシークレットを絶対に公開しないでください
-3. **stateパラメーターを使用する**: CSRF攻撃を防ぐため、ランダムな`state`パラメーターを必ず含めます
-4. **最小限のスコープを要求する**: アプリケーションで実際に必要な権限だけを要求します
-5. **トークンの更新を処理する**: 有効期限が切れる前にトークンを自動更新する処理を実装します
-6. **トークンを安全に保管する**: アクセストークンとリフレッシュトークンをサーバー上で安全に保管します
+1. **適切なモードを選択する**：バックエンドを持つWebアプリにはクライアントシークレットモード、ネイティブアプリ、CLI、SPAにはPKCEモード、ブラウザーからのリダイレクトを受信できないクライアントにはデバイスフローを使用します
+2. **シークレットを安全に保管する**：クライアント側のコードにクライアントシークレットを絶対に公開しないでください
+3. **stateパラメーターを使用する**：CSRF攻撃を防ぐため、ランダムな`state`パラメーターを必ず含めます
+4. **最小限のスコープを要求する**：アプリケーションで実際に必要な権限だけを要求します
+5. **トークンの更新を処理する**：有効期限が切れる前にトークンを自動更新する処理を実装します
+6. **トークンを安全に保管する**：アクセストークンとリフレッシュトークンをサーバー上で安全に保管します
 
 ## 完全な例
 

@@ -29,7 +29,11 @@ Each entry names the space, base, and table it belongs to. Expand a row to read 
 
 **Deep analysis** opens the analysis workspace with that table already filled in.
 
-When the analyzer sees heavy substring searching across a table, it raises one **generated-text GIN** recommendation for that whole table instead of a per-field index. Such a row offers **Create search path** in place of **Deep analysis**, and **Add index** does not appear, because a search access path is applied from the analysis workspace and needs an **EXPLAIN sample search** first. The recommendation closes on its own once the table has the path.
+When the analyzer sees heavy substring searching across a table, it raises one **generated-text GIN** recommendation for that whole table instead of a per-field index. Such a row offers **Create search path** in place of **Deep analysis**, and **Add index** does not appear. The recommendation closes on its own once the table has the path.
+
+**Create search path** opens a dialog that runs a dry-run analysis of the table right there, without leaving the page. The dialog shows the candidate's index provider, covered field count, estimated rows, and the `EXPLAIN` cost before and after. Enter a sample search term long enough for the minimum probe length it reports; the term is only used to validate the path and is not stored. On a large table, confirm the maintenance-window checkbox as well. Confirming validates the candidate once more and then enables the search path.
+
+If the analysis returns no candidate, the dialog says why instead of enabling anything. A wide table is refused because Teable will not build an all-field search document for it, and a longer search term does not change that. Use **Analyze selected fields** to move to the analysis workspace and analyze only the fields users actually search.
 
 Two more tabs sit beside it:
 

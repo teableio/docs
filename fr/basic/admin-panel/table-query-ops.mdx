@@ -29,7 +29,11 @@ Chaque entrée indique l’Espace, la Base et la Table auxquels elle appartient.
 
 **Analyse approfondie** ouvre l’espace de travail d’analyse avec cette Table déjà renseignée.
 
-Lorsque l’analyseur détecte de nombreuses recherches de sous-chaînes dans une Table, il génère une recommandation **GIN de texte généré** pour l’ensemble de cette Table au lieu d’un index par Champ. Une telle ligne propose **Créer un chemin de recherche** à la place de **Analyse approfondie**, et **Ajouter un index** n’apparaît pas, car un chemin d’accès de recherche est appliqué depuis l’espace de travail d’analyse et nécessite d’abord un **EXPLAIN d’une recherche d’exemple**. La recommandation se ferme automatiquement une fois que la Table dispose du chemin.
+Lorsque l’analyseur détecte de nombreuses recherches de sous-chaînes dans une Table, il génère une recommandation **GIN de texte généré** pour l’ensemble de cette Table au lieu d’un index par Champ. Une telle ligne propose **Créer un chemin de recherche** à la place de **Analyse approfondie**, et **Ajouter un index** n’apparaît pas. La recommandation se ferme automatiquement une fois que la Table dispose du chemin.
+
+**Créer un chemin de recherche** ouvre une boîte de dialogue qui exécute une analyse à blanc (dry run) de la Table sans quitter la page. Elle indique le fournisseur d’index du candidat, le nombre de Champs couverts, les lignes estimées et le coût `EXPLAIN` avant et après. Saisissez un terme de recherche d’exemple au moins aussi long que la longueur minimale affichée : il sert uniquement à la validation et n’est pas conservé. Sur une grande Table, cochez aussi la case de la fenêtre de maintenance. À la confirmation, Teable revalide le candidat puis active le chemin de recherche.
+
+Si l’analyse ne renvoie aucun candidat, la boîte de dialogue en explique la raison et n’applique rien. Une Table large est refusée, car Teable ne construit pas pour elle de document de recherche couvrant tous les Champs, et un terme plus long n’y change rien. Utilisez alors **Analyser les Champs sélectionnés** pour n’analyser dans l’espace de travail que les Champs réellement recherchés.
 
 Deux autres onglets se trouvent à côté :
 
