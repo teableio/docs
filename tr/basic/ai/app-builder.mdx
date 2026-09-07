@@ -85,21 +85,24 @@ Bir ZIP dosyasını içe aktararak uygulamanın kodunu güncelleyebilirsiniz:
 - ZIP, mevcut projenin yerini alır. Dahil etmediğiniz dosyalar yeni sürümden kaldırılır.
 - ZIP tek bir kapsayıcı klasör içeriyorsa Teable bu klasörü kaldırır. En dıştaki proje klasörünü doğrudan sıkıştırabilirsiniz.
 - İçe aktarılan proje, proje kökünde `package.json` dosyasını içermelidir.
-- ZIP içindeki kök `.env` dosyası uygulamanın **Gizli Bilgiler** bölümüne alınır. `.env.local` gibi diğer `.env*` çeşitleri yok sayılır.
+- ZIP içindeki kök `.env` dosyasında yer alan özel değişkenler sizin gizli anahtarlarınız olarak kaydedilir ve aynı adlarla uygulamaya verilir. `.env.local` gibi diğer `.env*` çeşitleri yok sayılır.
 </Note>
 
-#### Gizli Bilgiler
+#### Kimlik Bilgileri ve Yapılandırma
 
-Uygulamanız çalışırken ihtiyaç duyduğu API anahtarları, kimlik bilgileri ve yapılandırma değerleri için **Gizli Bilgiler**'i kullanın. App Builder sohbet panelinde **+** menüsünü açıp **Gizli Bilgiler**'i seçin.
+API anahtarlarını, kimlik bilgilerini ve yapılandırma değerlerini kaynak koda yazmayın. Uygulama **sizin kimlik bilgilerinizi** kullanır: bir OAuth bağlantısını ya da kaydettiğiniz bir gizli anahtarı. App Builder sohbet panelinde **+** → **Daha Fazla** → **Kimlik bilgileri ve yapılandırma**'yı açın ve uygulamaya bir kimlik bilgisi verin.
 
 | Ayrıntı | Davranış |
 | --- | --- |
-| Kullanılabilirlik | Uygulama Gizli Bilgileri, uygulama önizleme ortamında ve yayımlanan uygulamada kullanılabilir |
-| Kod erişimi | Sunucu tarafı uygulama kodu bunları `process.env.MY_API_KEY` gibi ortam değişkenlerinden okuyabilir |
-| Kaydedilen değerler | Gizli bilgi değerleri kaydedildikten sonra yalnızca yazılabilir; bir değeri güncellemek için yeni bir değer girin |
-| Ad biçimi | **Ad** büyük harfle başlamalıdır ve büyük harf, rakam ve alt çizgi içerebilir |
+| Kullanılabilirlik | Uygulamaya verilen kimlik bilgileri hem önizleme ortamında hem de yayımlanmış uygulamada kullanılabilir |
+| Değişken adı | Erişim verirken girdiğiniz takma ad; büyük harfle başlar ve yalnızca büyük harf, rakam ve alt çizgi içerir |
+| Gizli anahtarı okuma | Sunucu tarafı kod `process.env.MY_API_KEY` gibi ortam değişkenlerini okur |
+| Bağlantıyı okuma | Sunucu tarafı kod erişim token'ı için `getConnectionToken('ALIAS')` çağırır |
+| Kaydedilen değerler | Kaydedildikten sonra değerler yalnızca yazılabilir; değiştirmek için yeni bir değer girin |
 
-Bir Gizli Bilgi değeri ekledikten, sildikten veya değiştirdikten sonra uygulama önizleme ortamı yeni değeri kullanır. Yayımlanan uygulama bu değeri ancak yeniden yayımladıktan sonra kullanır. Yalnızca bir Gizli Bilgi açıklamasını düzenlemek yeniden yayımlama gerektirmez.
+Bir yetki ekledikten, kaldırdıktan veya bir kimlik bilgisinin değerini değiştirdikten sonra uygulamanın önizleme ortamı yeni değeri kullanır. Yayımlanmış uygulama ise ancak yeniden yayımladığınızda kullanır.
+
+Bir uygulamayı kopyalamak kimlik bilgilerini kopyalamaz: panelde **Henüz bağlanmadı** yer tutucuları kalır, **Benimkini bağla** ile kendi kimlik bilginizi verirsiniz. Kimlik bilgilerinin yönetimi ve nerede kullanıldıkları için bkz. [Kimlik Bilgileri ve Entegrasyonlar](/tr/basic/credential).
 
 #### Uygulama Dosyalarını Yönetme
 
@@ -162,7 +165,7 @@ Teable, dalınıza hiçbir zaman zorla gönderim yapmaz. Geçmişler ayrıştı�
 
 ### Ortam Değişkenleri ve Yerel Geliştirme
 
-Depo yalnızca kaynak kodu barındırır. Teable, adı `.env` ile başlayan hiçbir dosyayı göndermez: proje kökünde, alt klasörlerde veya commit geçmişinde. Ortam değerleri uygulamanın **Gizli Bilgiler** bölümünde tutulur ve git'e hiçbir zaman girmez. Deponun `.gitignore` dosyasında `.env*` zaten yer aldığından yerel bir klon bu dosyalardan birini yanlışlıkla commit etmez.
+Depo yalnızca kaynak kodu barındırır. Teable, adı `.env` ile başlayan hiçbir dosyayı göndermez: proje kökünde, alt klasörlerde veya commit geçmişinde. Ortam değerleri uygulamaya verilen kimlik bilgilerinden gelir, **Kimlik bilgileri ve yapılandırma** bölümünde tutulur ve git'e hiçbir zaman girmez. Deponun `.gitignore` dosyasında `.env*` zaten yer aldığından yerel bir klon bu dosyalardan birini yanlışlıkla commit etmez.
 
 Uygulamayı kendi bilgisayarınızda çalıştırmak için:
 
@@ -172,13 +175,13 @@ Uygulamayı kendi bilgisayarınızda çalıştırmak için:
   <Step title="Uygulamayı başlatın">`pnpm dev` komutunu çalıştırın.</Step>
 </Steps>
 
-Kopyalanan içerik, uygulamanın Teable'ın kendi korumalı alanında aldığı değerlerle eşleşir: Gizli Bilgileriniz ve platformun uygulamanın API uç noktası, erişim token'ı ve AI erişimi için eklediği değişkenler.
+Kopyalanan içerik, uygulamanın Teable'ın kendi korumalı alanında aldığı değerlerle eşleşir: uygulamaya verilen kimlik bilgileri ve platformun uygulamanın API uç noktası, erişim token'ı ve AI erişimi için eklediği değişkenler.
 
 <Warning>
 Bu dosyadaki `TEABLE_APP_TOKEN` satırı uygulamanın verilerine erişim sağlar; bu nedenle yalnızca uygulamayı düzenleme erişimi olan üyeler bu satırı kopyalayabilir. Dosyayı asla commit etmeyin ve bir issue'ya veya pull request'e hiçbir zaman yapıştırmayın.
 </Warning>
 
-Bir gizli bilgi eklemek veya değiştirmek için yerel dosya yerine Teable'daki **Gizli Bilgiler** bölümünü düzenleyin. GitHub'a commit edilen bir `.env` dosyası Gizli Bilgi oluşturmaz veya güncellemez. Bir gizli bilgiyi değiştirdikten sonra yerel `.env` dosyanızı yenilemek için değişkenleri tekrar kopyalayın.
+Bir kimlik bilgisi eklemek veya değiştirmek için yerel dosya yerine Teable'daki **Kimlik bilgileri ve yapılandırma** bölümünü kullanın. GitHub'a commit edilen bir `.env` dosyası kimlik bilgisi oluşturmaz veya güncellemez. Bir kimlik bilgisini değiştirdikten sonra yerel `.env` dosyanızı yenilemek için değişkenleri tekrar kopyalayın.
 
 ### Deponun Bağlantısını Kaldırma
 
@@ -290,7 +293,7 @@ Bir uygulamayı silmek için üstbilgideki **Ayarlar** (dişli simgesi) düğmes
   </Accordion>
 
   <Accordion title="Uygulama kodunu nasıl indirir veya içe aktarırım?">
-    Düzenleyicide **Kod** sekmesine geçip sekme çubuğundaki **`...`** menüsüne tıklayın, ardından **Kodu indir** veya **Kodu içe aktar** seçeneğini belirleyin. İçe aktarılan ZIP dosyaları en fazla 20 MB olabilir ve mevcut projenin yerini alır; bu nedenle korumak istediğiniz tüm kaynak dosyalarını dahil edin. İçe aktarılan proje kök dizinde `package.json` içermelidir. Kök `.env` dosyası uygulamanın **Gizli Bilgiler** bölümüne aktarılır.
+    Düzenleyicide **Kod** sekmesine geçip sekme çubuğundaki **`...`** menüsüne tıklayın, ardından **Kodu indir** veya **Kodu içe aktar** seçeneğini belirleyin. İçe aktarılan ZIP dosyaları en fazla 20 MB olabilir ve mevcut projenin yerini alır; bu nedenle korumak istediğiniz tüm kaynak dosyalarını dahil edin. İçe aktarılan proje kök dizinde `package.json` içermelidir. Kök `.env` dosyasındaki özel değişkenler sizin gizli anahtarlarınız olarak kaydedilir ve aynı adlarla uygulamaya verilir.
   </Accordion>
 
   <Accordion title="Giriş ayarları canlı uygulamaya ne zaman uygulanır?">
