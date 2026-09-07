@@ -85,21 +85,24 @@ Puedes actualizar el código de la aplicación importando un archivo ZIP:
 - El ZIP sustituye el proyecto existente. Los archivos que omitas se eliminan de la versión nueva.
 - Si el ZIP contiene una carpeta contenedora, Teable elimina esa carpeta. Puedes comprimir directamente la carpeta de nivel superior del proyecto.
 - El proyecto importado debe incluir `package.json` en la raíz del proyecto.
-- Los archivos `.env` situados en la raíz del ZIP se importan en los **Secretos** de la aplicación. Las demás variantes `.env*`, como `.env.local`, se ignoran.
+- Las variables personalizadas de un archivo `.env` situado en la raíz del ZIP se guardan como secretos tuyos y se conceden a la aplicación con esos mismos nombres. Las demás variantes `.env*`, como `.env.local`, se ignoran.
 </Note>
 
-#### Secretos
+#### Credenciales y configuración
 
-Usa **Secretos** para las claves de API, credenciales y valores de configuración que la aplicación necesita durante la ejecución. En el panel de chat de App Builder, abre el menú **+** y elige **Secretos**.
+No escribas claves de API, credenciales ni valores de configuración en el código fuente. Una aplicación usa **tus credenciales**: una conexión OAuth o un secreto que guardas. En el panel de chat del App Builder, abre **+** → **Más** → **Credenciales y configuración** y concede una credencial a la aplicación.
 
 | Detalle | Comportamiento |
 | --- | --- |
-| Disponibilidad | Los Secretos de la aplicación están disponibles en el entorno de vista previa y en la aplicación publicada |
-| Acceso desde el código | El código de servidor de la aplicación puede leerlos desde variables de entorno como `process.env.MY_API_KEY` |
-| Valores guardados | Los valores secretos son de solo escritura después de guardarlos; introduce un valor nuevo para actualizar uno |
-| Formato del nombre | El **Nombre** debe comenzar por una letra mayúscula y puede contener letras mayúsculas, dígitos y guiones bajos |
+| Disponibilidad | Las credenciales concedidas a la aplicación están disponibles en el entorno de vista previa y en la aplicación publicada |
+| Nombre de la variable | El alias que introduces al conceder; empieza por mayúscula y solo admite mayúsculas, dígitos y guiones bajos |
+| Leer un secreto | El código de servidor lee variables de entorno como `process.env.MY_API_KEY` |
+| Leer una conexión | El código de servidor llama a `getConnectionToken('ALIAS')` para obtener un token de acceso |
+| Valores guardados | Los valores son de solo escritura tras guardarlos; introduce uno nuevo para sustituirlo |
 
-Después de añadir, eliminar o cambiar el valor de un Secreto, el entorno de vista previa de la aplicación usa el valor nuevo. La aplicación publicada solo lo usa después de volver a publicarla. Si solo editas la descripción de un Secreto, no es necesario volver a publicar.
+Después de añadir o quitar una concesión, o de sustituir el valor de una credencial, el entorno de vista previa usa el valor nuevo. La aplicación publicada solo lo usa cuando vuelves a publicarla.
+
+Copiar una aplicación no copia sus credenciales: el panel conserva marcadores **Sin vincular** y **Vincular la mía** aporta la tuya. Para gestionar credenciales y ver dónde se usan, consulta [Credenciales e integraciones](/es/basic/credential).
 
 #### Administrar los archivos de la aplicación
 
@@ -162,7 +165,7 @@ Teable nunca fuerza el envío a tu rama. Cuando los historiales divergen, coloca
 
 ### Variables de entorno y desarrollo local
 
-El repositorio solo contiene el código fuente. Teable nunca envía archivos cuyos nombres comiencen por `.env`: ni en la raíz del proyecto, ni en una subcarpeta ni en el historial de confirmaciones. Los valores de entorno residen en los **Secretos** de la aplicación y nunca entran en git. El archivo `.gitignore` del repositorio ya incluye `.env*`, por lo que un clon local no confirmará ninguno por accidente.
+El repositorio solo contiene el código fuente. Teable nunca envía archivos cuyos nombres comiencen por `.env`: ni en la raíz del proyecto, ni en una subcarpeta ni en el historial de confirmaciones. Los valores de entorno proceden de las credenciales concedidas a la aplicación, residen en **Credenciales y configuración** y nunca entran en git. El archivo `.gitignore` del repositorio ya incluye `.env*`, por lo que un clon local no confirmará ninguno por accidente.
 
 Para ejecutar la aplicación en tu propio equipo:
 
@@ -172,13 +175,13 @@ Para ejecutar la aplicación en tu propio equipo:
   <Step title="Iniciar la aplicación">Ejecuta `pnpm dev`.</Step>
 </Steps>
 
-El contenido copiado coincide con lo que recibe la aplicación en el entorno aislado de Teable: tus Secretos y las variables que la plataforma inyecta para el punto de conexión de la API, el token de acceso y el acceso a IA de la aplicación.
+El contenido copiado coincide con lo que recibe la aplicación en el entorno aislado de Teable: las credenciales concedidas a la aplicación y las variables que la plataforma inyecta para el punto de conexión de la API, el token de acceso y el acceso a IA de la aplicación.
 
 <Warning>
 La línea `TEABLE_APP_TOKEN` de ese archivo concede acceso a los datos de la aplicación; por este motivo, solo pueden copiarla los miembros con acceso de edición a la aplicación. Nunca confirmes el archivo ni lo pegues en una incidencia o solicitud de incorporación de cambios.
 </Warning>
 
-Para añadir o cambiar un secreto, edita **Secretos** en Teable en lugar del archivo local. Un archivo `.env` confirmado en GitHub no crea ni actualiza ningún Secreto. Después de cambiar un secreto, vuelve a copiar las variables para actualizar tu archivo `.env` local.
+Para añadir o sustituir una credencial, usa **Credenciales y configuración** en Teable en lugar del archivo local. Un archivo `.env` confirmado en GitHub no crea ni actualiza ninguna credencial. Después de cambiar una credencial, vuelve a copiar las variables para actualizar tu archivo `.env` local.
 
 ### Desvincular el repositorio
 
@@ -290,7 +293,7 @@ Para consultar patrones de instrucciones, consejos de creación, recomendaciones
   </Accordion>
 
   <Accordion title="¿Cómo descargo o importo el código de una aplicación?">
-    Cambia a la pestaña **Código** del editor, haz clic en el menú **`...`** de la barra de pestañas y elige **Descargar código** o **Importar código**. Los archivos ZIP importados pueden tener hasta 20 MB y sustituyen el proyecto existente, así que incluye todos los archivos de origen que quieras conservar. El proyecto importado debe incluir un archivo `package.json` en la raíz. Los archivos `.env` situados en la raíz se importan en los **Secretos** de la aplicación.
+    Cambia a la pestaña **Código** del editor, haz clic en el menú **`...`** de la barra de pestañas y elige **Descargar código** o **Importar código**. Los archivos ZIP importados pueden tener hasta 20 MB y sustituyen el proyecto existente, así que incluye todos los archivos de origen que quieras conservar. El proyecto importado debe incluir un archivo `package.json` en la raíz. Las variables personalizadas de un archivo `.env` situado en la raíz se guardan como secretos tuyos y se conceden a la aplicación con esos mismos nombres.
   </Accordion>
 
   <Accordion title="¿Cuándo se aplican los ajustes de inicio de sesión a la aplicación publicada?">

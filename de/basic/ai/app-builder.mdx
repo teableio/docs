@@ -85,21 +85,24 @@ Sie können den Code der App durch Importieren einer ZIP-Datei aktualisieren:
 - Die ZIP-Datei ersetzt das vorhandene Projekt. Nicht enthaltene Dateien werden aus der neuen Version entfernt.
 - Wenn die ZIP-Datei einen einzelnen umschließenden Ordner enthält, entfernt Teable diesen Ordner. Sie können den äußersten Projektordner direkt komprimieren.
 - Das importierte Projekt muss `package.json` im Stammverzeichnis des Projekts enthalten.
-- Eine `.env`-Datei im Stammverzeichnis der ZIP-Datei wird in die **Secrets** der App eingelesen. Andere `.env*`-Varianten wie `.env.local` werden ignoriert.
+- Eigene Variablen aus einer `.env`-Datei im Stammverzeichnis der ZIP-Datei werden als Ihre Secrets gespeichert und der App unter denselben Namen freigegeben. Andere `.env*`-Varianten wie `.env.local` werden ignoriert.
 </Note>
 
-#### Secrets
+#### Zugangsdaten und Konfiguration
 
-Verwenden Sie **Secrets** für API-Schlüssel, Anmeldedaten und Konfigurationswerte, die Ihre App während der Ausführung benötigt. Öffnen Sie im Chat-Bereich des App-Builders das Menü **+** und wählen Sie **Secrets**.
+Schreiben Sie API-Schlüssel, Anmeldedaten und Konfigurationswerte nicht in den Quellcode. Eine App verwendet **Ihre Zugangsdaten**: eine OAuth-Verbindung oder ein von Ihnen hinterlegtes Secret. Öffnen Sie im Chat-Bereich des App-Builders **+** → **Mehr** → **Zugangsdaten & Konfiguration** und geben Sie Zugangsdaten für die App frei.
 
 | Detail | Verhalten |
 | --- | --- |
-| Verfügbarkeit | App-Secrets sind in der Vorschauumgebung der App und in der veröffentlichten App verfügbar |
-| Codezugriff | Serverseitiger App-Code kann sie aus Umgebungsvariablen wie `process.env.MY_API_KEY` lesen |
-| Gespeicherte Werte | Secret-Werte sind nach dem Speichern nur schreibbar; geben Sie einen neuen Wert ein, um einen Wert zu aktualisieren |
-| Namensformat | Der **Name** muss mit einem Großbuchstaben beginnen und darf Großbuchstaben, Ziffern und Unterstriche enthalten |
+| Verfügbarkeit | Für die App freigegebene Zugangsdaten stehen in der Vorschauumgebung und in der veröffentlichten App zur Verfügung |
+| Variablenname | Der Alias, den Sie bei der Freigabe eingeben; er muss mit einem Großbuchstaben beginnen und darf Großbuchstaben, Ziffern und Unterstriche enthalten |
+| Secret lesen | Serverseitiger App-Code liest Umgebungsvariablen wie `process.env.MY_API_KEY` |
+| Verbindung lesen | Serverseitiger App-Code ruft `getConnectionToken('ALIAS')` für ein Zugriffstoken auf |
+| Gespeicherte Werte | Werte sind nach dem Speichern nur schreibbar; geben Sie einen neuen Wert ein, um einen zu ersetzen |
 
-Nachdem Sie einen Secret-Wert hinzugefügt, gelöscht oder geändert haben, verwendet die Vorschauumgebung der App den neuen Wert. Die veröffentlichte App verwendet ihn erst nach einer erneuten Veröffentlichung. Das Bearbeiten nur einer Secret-Beschreibung erfordert keine erneute Veröffentlichung.
+Nachdem Sie eine Freigabe hinzugefügt oder entfernt oder einen Wert ersetzt haben, verwendet die Vorschauumgebung der App den neuen Wert. Die veröffentlichte App verwendet ihn erst nach einer erneuten Veröffentlichung.
+
+Beim Kopieren einer App werden ihre Zugangsdaten nicht mitkopiert: Im Bereich bleiben Platzhalter mit **Noch nicht gebunden**, und **Meins binden** hinterlegt Ihre eigenen. Zur Verwaltung von Zugangsdaten und zur Frage, wo sie verwendet werden, siehe [Zugangsdaten und Integrationen](/de/basic/credential).
 
 #### App-Dateien verwalten
 
@@ -162,7 +165,7 @@ Teable führt niemals einen Force-Push für Ihren Branch aus. Wenn die Verläufe
 
 ### Umgebungsvariablen und lokale Entwicklung
 
-Das Repository enthält nur Quellcode. Teable pusht niemals eine Datei, deren Name mit `.env` beginnt: weder im Stammverzeichnis des Projekts noch in einem Unterordner oder im Commit-Verlauf. Umgebungswerte befinden sich in den **Secrets** der App und gelangen nie in Git. Die `.gitignore` des Repositorys enthält bereits `.env*`, sodass ein lokaler Klon nicht versehentlich eine solche Datei committet.
+Das Repository enthält nur Quellcode. Teable pusht niemals eine Datei, deren Name mit `.env` beginnt: weder im Stammverzeichnis des Projekts noch in einem Unterordner oder im Commit-Verlauf. Die Umgebungswerte stammen aus den für die App freigegebenen Zugangsdaten, liegen unter **Zugangsdaten & Konfiguration** und gelangen nie in Git. Die `.gitignore` des Repositorys enthält bereits `.env*`, sodass ein lokaler Klon nicht versehentlich eine solche Datei committet.
 
 So führen Sie die App auf Ihrem eigenen Rechner aus:
 
@@ -172,13 +175,13 @@ So führen Sie die App auf Ihrem eigenen Rechner aus:
   <Step title="App starten">Führen Sie `pnpm dev` aus.</Step>
 </Steps>
 
-Der kopierte Inhalt entspricht dem, was die App in der eigenen Sandbox von Teable erhält: Ihre Secrets sowie die Variablen, die die Plattform für den API-Endpunkt, das Zugriffstoken und den KI-Zugriff der App einfügt.
+Der kopierte Inhalt entspricht dem, was die App in der eigenen Sandbox von Teable erhält: die für die App freigegebenen Zugangsdaten sowie die Variablen, die die Plattform für den API-Endpunkt, das Zugriffstoken und den KI-Zugriff der App einfügt.
 
 <Warning>
 Die Zeile `TEABLE_APP_TOKEN` in dieser Datei gewährt Zugriff auf die Daten der App. Deshalb können sie nur Mitglieder mit Bearbeitungszugriff auf die App kopieren. Committen Sie die Datei niemals und fügen Sie sie niemals in ein Issue oder einen Pull Request ein.
 </Warning>
 
-Um ein Secret hinzuzufügen oder zu ändern, bearbeiten Sie **Secrets** in Teable statt der lokalen Datei. Eine in GitHub committete `.env` erstellt oder aktualisiert kein Secret. Kopieren Sie die Variablen nach einer Secret-Änderung erneut, um Ihre lokale `.env` zu aktualisieren.
+Um Zugangsdaten hinzuzufügen oder zu ersetzen, verwenden Sie **Zugangsdaten & Konfiguration** in Teable statt der lokalen Datei. Eine in GitHub committete `.env` erstellt oder aktualisiert keine Zugangsdaten. Kopieren Sie die Variablen nach einer Änderung erneut, um Ihre lokale `.env` zu aktualisieren.
 
 ### Verknüpfung mit dem Repository aufheben
 
@@ -290,7 +293,7 @@ Informationen zu Prompt-Mustern, Tipps zum Erstellen, Hinweisen zum Rollback und
   </Accordion>
 
   <Accordion title="Wie lade ich App-Code herunter oder importiere ihn?">
-    Wechseln Sie im Editor zum Tab **Code**, klicken Sie in der Tab-Leiste auf das Menü **`...`** und wählen Sie dann **Code herunterladen** oder **Code importieren**. Importierte ZIP-Dateien können bis zu 20 MB groß sein und ersetzen das vorhandene Projekt. Schließen Sie daher jede Quelldatei ein, die Sie behalten möchten. Das importierte Projekt muss eine `package.json` im Stammverzeichnis enthalten. Eine `.env`-Datei im Stammverzeichnis wird in die **Secrets** der App importiert.
+    Wechseln Sie im Editor zum Tab **Code**, klicken Sie in der Tab-Leiste auf das Menü **`...`** und wählen Sie dann **Code herunterladen** oder **Code importieren**. Importierte ZIP-Dateien können bis zu 20 MB groß sein und ersetzen das vorhandene Projekt. Schließen Sie daher jede Quelldatei ein, die Sie behalten möchten. Das importierte Projekt muss eine `package.json` im Stammverzeichnis enthalten. Eigene Variablen aus einer `.env`-Datei im Stammverzeichnis werden als Ihre Secrets gespeichert und der App unter denselben Namen freigegeben.
   </Accordion>
 
   <Accordion title="Wann werden Anmeldeeinstellungen auf die Live-App angewendet?">

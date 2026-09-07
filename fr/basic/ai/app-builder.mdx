@@ -85,21 +85,24 @@ Vous pouvez mettre à jour le code de l’application en important un ZIP :
 - Le ZIP remplace le projet existant. Les fichiers que vous omettez sont supprimés de la nouvelle version.
 - Si le ZIP contient un seul dossier enveloppe, Teable retire ce dossier. Vous pouvez compresser directement le dossier de projet le plus externe.
 - Le projet importé doit inclure `package.json` à la racine du projet.
-- Un fichier `.env` à la racine du ZIP est lu dans les **Secrets** de l’application. Les autres variantes `.env*`, telles que `.env.local`, sont ignorées.
+- Les variables personnalisées d’un fichier `.env` à la racine du ZIP sont enregistrées comme vos secrets et accordées à l’application sous les mêmes noms. Les autres variantes `.env*`, telles que `.env.local`, sont ignorées.
 </Note>
 
-#### Secrets
+#### Identifiants et configuration
 
-Utilisez les **Secrets** pour les clés API, les identifiants et les valeurs de configuration dont votre application a besoin lors de son exécution. Dans le panneau de chat du Créateur d’applications, ouvrez le menu **+** et choisissez **Secrets**.
+N’écrivez pas les clés API, les identifiants ni les valeurs de configuration dans le code source. Une application utilise **vos identifiants** : une connexion OAuth ou un secret que vous enregistrez. Dans le panneau de chat de l’App Builder, ouvrez **+** → **Plus** → **Identifiants et configuration**, puis accordez un identifiant à l’application.
 
 | Détail | Comportement |
 | --- | --- |
-| Disponibilité | Les Secrets d’application sont disponibles dans l’environnement d’aperçu de l’application et dans l’application publiée |
-| Accès au code | Le code côté serveur de l’application peut les lire à partir de variables d’environnement telles que `process.env.MY_API_KEY` |
-| Valeurs enregistrées | Les valeurs secrètes sont accessibles en écriture seule après l’enregistrement ; saisissez une nouvelle valeur pour en mettre une à jour |
-| Format du nom | Le **Nom** doit commencer par une lettre majuscule et peut contenir des lettres majuscules, des chiffres et des traits de soulignement |
+| Disponibilité | Les identifiants accordés à l’application sont disponibles dans l’environnement de prévisualisation et dans l’application publiée |
+| Nom de la variable | L’alias saisi lors de l’autorisation ; il commence par une majuscule et n’accepte que majuscules, chiffres et traits de soulignement |
+| Lire un secret | Le code d’application côté serveur lit des variables d’environnement telles que `process.env.MY_API_KEY` |
+| Lire une connexion | Le code d’application côté serveur appelle `getConnectionToken('ALIAS')` pour obtenir un jeton d’accès |
+| Valeurs enregistrées | Les valeurs sont accessibles en écriture seule après l’enregistrement ; saisissez une nouvelle valeur pour en remplacer une |
 
-Après avoir ajouté, supprimé ou modifié une valeur de Secret, l’environnement d’aperçu de l’application utilise la nouvelle valeur. L’application publiée ne l’utilise qu’après une nouvelle publication. La modification de la seule description d’un Secret ne nécessite pas de nouvelle publication.
+Après l’ajout ou le retrait d’une autorisation, ou le remplacement d’une valeur, l’environnement de prévisualisation de l’application utilise la nouvelle valeur. L’application publiée ne l’utilise qu’après une nouvelle publication.
+
+Copier une application ne copie pas ses identifiants : le panneau conserve des emplacements **Pas encore lié**, et **Lier le mien** y place les vôtres. Pour la gestion des identifiants et le suivi de leur utilisation, voir [Identifiants et intégrations](/fr/basic/credential).
 
 #### Gérer les fichiers de l’application
 
@@ -162,7 +165,7 @@ Teable ne force jamais l’envoi vers votre branche. Lorsque les historiques div
 
 ### Variables d’environnement et développement local
 
-Le dépôt ne contient que le code source. Teable n’envoie jamais de fichier dont le nom commence par `.env` : ni à la racine du projet, ni dans un sous-dossier, ni dans l’historique des commits. Les valeurs d’environnement se trouvent dans les **Secrets** de l’application et n’entrent jamais dans git. Le fichier `.gitignore` du dépôt répertorie déjà `.env*`, de sorte qu’un clone local n’en validera pas un par accident.
+Le dépôt ne contient que le code source. Teable n’envoie jamais de fichier dont le nom commence par `.env` : ni à la racine du projet, ni dans un sous-dossier, ni dans l’historique des commits. Les valeurs d’environnement proviennent des identifiants accordés à l’application, se trouvent dans **Identifiants et configuration** et n’entrent jamais dans git. Le fichier `.gitignore` du dépôt répertorie déjà `.env*`, de sorte qu’un clone local n’en validera pas un par accident.
 
 Pour exécuter l’application sur votre propre machine :
 
@@ -172,13 +175,13 @@ Pour exécuter l’application sur votre propre machine :
   <Step title="Démarrer l’application">Exécutez `pnpm dev`.</Step>
 </Steps>
 
-Le contenu copié correspond à ce que l’application reçoit dans le propre bac à sable de Teable : vos Secrets, ainsi que les variables que la plateforme injecte pour le point de terminaison API de l’application, le jeton d’accès et l’accès à l’IA.
+Le contenu copié correspond à ce que l’application reçoit dans le propre bac à sable de Teable : les identifiants accordés à l’application, ainsi que les variables que la plateforme injecte pour le point de terminaison API de l’application, le jeton d’accès et l’accès à l’IA.
 
 <Warning>
 La ligne `TEABLE_APP_TOKEN` de ce fichier donne accès aux données de l’application ; c’est pourquoi seuls les membres disposant d’un accès de modification à l’application peuvent la copier. Ne validez jamais le fichier et ne le collez jamais dans une issue ou une pull request.
 </Warning>
 
-Pour ajouter ou modifier un secret, modifiez les **Secrets** dans Teable plutôt que le fichier local. Un fichier `.env` validé dans GitHub ne crée ni ne met à jour de Secret. Après avoir modifié un secret, copiez à nouveau les variables pour actualiser votre fichier `.env` local.
+Pour ajouter ou remplacer un identifiant, utilisez **Identifiants et configuration** dans Teable plutôt que le fichier local. Un fichier `.env` validé dans GitHub ne crée ni ne met à jour d’identifiant. Après une modification, copiez à nouveau les variables pour actualiser votre fichier `.env` local.
 
 ### Dissocier le dépôt
 
@@ -290,7 +293,7 @@ Pour les modèles de prompts, les conseils de création, les recommandations de 
   </Accordion>
 
   <Accordion title="Comment télécharger ou importer le code de l’application ?">
-    Passez à l’onglet **Code** dans l’éditeur, cliquez sur le menu **`...`** dans la barre d’onglets, puis choisissez **Télécharger le code** ou **Importer le code**. Les fichiers ZIP importés peuvent atteindre 20 Mo et remplacent le projet existant ; incluez donc chaque fichier source que vous souhaitez conserver. Le projet importé doit inclure un fichier `package.json` à la racine. Un fichier `.env` à la racine est importé dans les **Secrets** de l’application.
+    Passez à l’onglet **Code** dans l’éditeur, cliquez sur le menu **`...`** dans la barre d’onglets, puis choisissez **Télécharger le code** ou **Importer le code**. Les fichiers ZIP importés peuvent atteindre 20 Mo et remplacent le projet existant ; incluez donc chaque fichier source que vous souhaitez conserver. Le projet importé doit inclure un fichier `package.json` à la racine. Les variables personnalisées d’un fichier `.env` à la racine sont enregistrées comme vos secrets et accordées à l’application sous les mêmes noms.
   </Accordion>
 
   <Accordion title="Quand les paramètres de connexion s’appliquent-ils à l’application en direct ?">

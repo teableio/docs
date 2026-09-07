@@ -85,21 +85,24 @@ Puoi aggiornare il codice dell'app importando un file ZIP:
 - Il file ZIP sostituisce il progetto esistente. I file omessi vengono rimossi dalla nuova versione.
 - Se il file ZIP contiene un'unica cartella contenitore, Teable la rimuove. Puoi comprimere direttamente la cartella principale del progetto.
 - Il progetto importato deve includere `package.json` nella radice del progetto.
-- Un file `.env` nella radice del file ZIP viene importato nei **Segreti** dell'app. Le altre varianti `.env*`, come `.env.local`, vengono ignorate.
+- Le variabili personalizzate di un file `.env` nella radice del file ZIP vengono salvate come tuoi segreti e concesse all'app con gli stessi nomi. Le altre varianti `.env*`, come `.env.local`, vengono ignorate.
 </Note>
 
-#### Segreti
+#### Credenziali e configurazione
 
-Usa **Segreti** per le chiavi API, le credenziali e i valori di configurazione necessari all'app durante l'esecuzione. Nel pannello della chat di App Builder, apri il menu **+** e scegli **Segreti**.
+Non scrivere chiavi API, credenziali e valori di configurazione nel codice sorgente. Un'app usa **le tue credenziali**: una connessione OAuth o un segreto che salvi. Nel pannello di chat dell'App Builder apri **+** → **Altro** → **Credenziali e configurazione** e concedi una credenziale all'app.
 
 | Dettaglio | Comportamento |
 | --- | --- |
-| Disponibilità | I Segreti dell'app sono disponibili nell'ambiente di anteprima e nell'app pubblicata |
-| Accesso dal codice | Il codice lato server dell'app può leggerli da variabili di ambiente come `process.env.MY_API_KEY` |
-| Valori salvati | Dopo il salvataggio, i valori dei Segreti sono di sola scrittura; inserisci un nuovo valore per aggiornarne uno |
-| Formato del nome | Il **Nome** deve iniziare con una lettera maiuscola e può contenere lettere maiuscole, cifre e trattini bassi |
+| Disponibilità | Le credenziali concesse all'app sono disponibili nell'ambiente di anteprima e nell'app pubblicata |
+| Nome della variabile | L'alias che inserisci al momento della concessione; inizia con una lettera maiuscola e accetta solo lettere maiuscole, cifre e trattini bassi |
+| Leggere un segreto | Il codice lato server legge variabili di ambiente come `process.env.MY_API_KEY` |
+| Leggere una connessione | Il codice lato server chiama `getConnectionToken('ALIAS')` per ottenere un token di accesso |
+| Valori salvati | Dopo il salvataggio i valori sono di sola scrittura; inserisci un nuovo valore per sostituirne uno |
 
-Dopo aver aggiunto, eliminato o modificato il valore di un Segreto, l'ambiente di anteprima dell'app utilizza il nuovo valore. L'app pubblicata lo utilizza soltanto dopo una nuova pubblicazione. La sola modifica della descrizione di un Segreto non richiede una nuova pubblicazione.
+Dopo aver aggiunto o rimosso una concessione, oppure sostituito il valore di una credenziale, l'ambiente di anteprima dell'app usa il nuovo valore. L'app pubblicata lo usa solo dopo una nuova pubblicazione.
+
+La copia di un'app non copia le sue credenziali: nel pannello restano segnaposto **Non associato** e con **Associa la mia** inserisci la tua. Per la gestione delle credenziali e per sapere dove sono usate, vedi [Credenziali e integrazioni](/it/basic/credential).
 
 #### Gestire i file dell'app
 
@@ -162,7 +165,7 @@ Teable non esegue mai il force push del ramo. Quando le cronologie divergono, co
 
 ### Variabili di ambiente e sviluppo locale
 
-Il repository contiene soltanto il codice sorgente. Teable non invia mai file il cui nome inizia con `.env`: né nella radice del progetto, né in una sottocartella, né nella cronologia dei commit. I valori di ambiente risiedono nei **Segreti** dell'app e non entrano mai in git. Il file `.gitignore` del repository elenca già `.env*`, pertanto un clone locale non ne eseguirà accidentalmente il commit.
+Il repository contiene soltanto il codice sorgente. Teable non invia mai file il cui nome inizia con `.env`: né nella radice del progetto, né in una sottocartella, né nella cronologia dei commit. I valori di ambiente provengono dalle credenziali concesse all'app, risiedono in **Credenziali e configurazione** e non entrano mai in git. Il file `.gitignore` del repository elenca già `.env*`, pertanto un clone locale non ne eseguirà accidentalmente il commit.
 
 Per eseguire l'app sul tuo computer:
 
@@ -172,13 +175,13 @@ Per eseguire l'app sul tuo computer:
   <Step title="Avvia l'app">Esegui `pnpm dev`.</Step>
 </Steps>
 
-Il contenuto copiato corrisponde a ciò che l'app riceve nella sandbox di Teable: i tuoi Segreti e le variabili inserite dalla piattaforma per l'endpoint API, il token di accesso e l'accesso IA dell'app.
+Il contenuto copiato corrisponde a ciò che l'app riceve nella sandbox di Teable: le credenziali concesse all'app e le variabili inserite dalla piattaforma per l'endpoint API, il token di accesso e l'accesso IA dell'app.
 
 <Warning>
 La riga `TEABLE_APP_TOKEN` in tale file concede l'accesso ai dati dell'app; per questo motivo soltanto i membri con accesso in modifica all'app possono copiarla. Non eseguire mai il commit del file e non incollarlo mai in un problema o in una pull request.
 </Warning>
 
-Per aggiungere o modificare un segreto, modifica **Segreti** in Teable anziché il file locale. Un file `.env` sottoposto a commit su GitHub non crea né aggiorna un Segreto. Dopo aver modificato un segreto, copia nuovamente le variabili per aggiornare il file `.env` locale.
+Per aggiungere o sostituire una credenziale, usa **Credenziali e configurazione** in Teable anziché il file locale. Un file `.env` sottoposto a commit su GitHub non crea né aggiorna una credenziale. Dopo aver modificato una credenziale, copia nuovamente le variabili per aggiornare il file `.env` locale.
 
 ### Scollegare il repository
 
@@ -290,7 +293,7 @@ Per schemi di prompt, suggerimenti per la creazione, consigli sul ripristino e r
   </Accordion>
 
   <Accordion title="Come posso scaricare o importare il codice dell'app?">
-    Passa alla scheda **Codice** nell'editor, fai clic sul menu **`...`** nella barra delle schede, quindi scegli **Scarica codice** o **Importa codice**. I file ZIP importati possono avere dimensioni massime di 20 MB e sostituiscono il progetto esistente, quindi includi tutti i file sorgente da conservare. Il progetto importato deve includere un file `package.json` nella radice. Un file `.env` nella radice viene importato nei **Segreti** dell'app.
+    Passa alla scheda **Codice** nell'editor, fai clic sul menu **`...`** nella barra delle schede, quindi scegli **Scarica codice** o **Importa codice**. I file ZIP importati possono avere dimensioni massime di 20 MB e sostituiscono il progetto esistente, quindi includi tutti i file sorgente da conservare. Il progetto importato deve includere un file `package.json` nella radice. Le variabili personalizzate di un file `.env` nella radice vengono salvate come tuoi segreti e concesse all'app con gli stessi nomi.
   </Accordion>
 
   <Accordion title="Quando vengono applicate le impostazioni di accesso all'app live?">

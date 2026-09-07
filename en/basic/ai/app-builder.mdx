@@ -85,21 +85,24 @@ You can update the app's code by importing a ZIP:
 - The ZIP replaces the existing project. Files you leave out are removed from the new version.
 - If the ZIP contains one wrapper folder, Teable strips that folder. You can compress the outermost project folder directly.
 - The imported project must include `package.json` at the project root.
-- A root `.env` file in the ZIP is read into the app's **Secrets**. Other `.env*` variants, such as `.env.local`, are ignored.
+- Custom variables in a root `.env` file are stored as your secrets and granted to the app under the same names. Other `.env*` variants, such as `.env.local`, are ignored.
 </Note>
 
-#### Secrets
+#### Credentials and Config
 
-Use **Secrets** for API keys, credentials, and configuration values your app needs while it runs. In the App Builder chat panel, open the **+** menu and choose **Secrets**.
+Keep API keys, credentials, and configuration out of your source. An app uses **your credentials**: an OAuth connection or a secret you store. In the App Builder chat panel, open **+** → **More** → **Credentials & config** and grant a credential to the app.
 
 | Detail | Behavior |
 | --- | --- |
-| Availability | App Secrets are available in the app preview environment and the published app |
-| Code access | Server-side app code can read them from environment variables such as `process.env.MY_API_KEY` |
-| Saved values | Secret values are write-only after saving; enter a new value to update one |
-| Name format | The **Name** must start with an uppercase letter and can contain uppercase letters, digits, and underscores |
+| Availability | Credentials granted to the app are available in the app preview environment and the published app |
+| Variable name | The alias you enter when granting; it must start with an uppercase letter and can contain uppercase letters, digits, and underscores |
+| Reading a secret | Server-side app code reads environment variables such as `process.env.MY_API_KEY` |
+| Reading a connection | Server-side app code calls `getConnectionToken('ALIAS')` for an access token |
+| Saved values | Values are write-only after saving; enter a new value to replace one |
 
-After you add, delete, or change a Secret value, the app preview environment uses the new value. The published app uses it only after you republish. Editing only a Secret description does not require republishing.
+After you add a grant, remove one, or replace a credential value, the app preview environment uses the new value. The published app uses it only after you republish.
+
+Copying an app does not copy its credentials: the panel keeps **Not bound yet** placeholders, and **Bind mine** supplies your own. See [Credentials and Integrations](/en/basic/credential) for managing credentials and checking where they are used.
 
 #### Manage App Files
 
@@ -162,7 +165,7 @@ Teable never force-pushes your branch. When the histories diverge, it parks the 
 
 ### Environment Variables and Local Development
 
-The repository holds source only. Teable never pushes a file whose name starts with `.env`: not at the project root, not in a subfolder, and not in the commit history. Environment values live in the app's **Secrets** and never enter git. The repository's `.gitignore` already lists `.env*`, so a local clone will not commit one by accident.
+The repository holds source only. Teable never pushes a file whose name starts with `.env`: not at the project root, not in a subfolder, and not in the commit history. Environment values come from the credentials granted to the app, live in **Credentials & config**, and never enter git. The repository's `.gitignore` already lists `.env*`, so a local clone will not commit one by accident.
 
 To run the app on your own machine:
 
@@ -172,13 +175,13 @@ To run the app on your own machine:
   <Step title="Start the app">Run `pnpm dev`.</Step>
 </Steps>
 
-The copied content matches what the app receives in Teable's own sandbox: your Secrets, plus the variables the platform injects for the app's API endpoint, access token, and AI access.
+The copied content matches what the app receives in Teable's own sandbox: the credentials granted to the app, plus the variables the platform injects for the app's API endpoint, access token, and AI access.
 
 <Warning>
 The `TEABLE_APP_TOKEN` line in that file grants access to the app's data, which is why only members with edit access to the app can copy it. Never commit the file, and never paste it into an issue or a pull request.
 </Warning>
 
-To add or change a secret, edit **Secrets** in Teable rather than the local file. A `.env` committed to GitHub does not create or update a Secret. After changing a secret, copy the variables again to refresh your local `.env`.
+To add or replace a credential, use **Credentials & config** in Teable rather than the local file. A `.env` committed to GitHub does not create or update a credential. After a credential changes, copy the variables again to refresh your local `.env`.
 
 ### Unlink the Repository
 
@@ -290,7 +293,7 @@ For prompt patterns, build tips, rollback advice, and common troubleshooting, se
   </Accordion>
 
   <Accordion title="How do I download or import app code?">
-    Switch to the **Code** tab in the editor, click the **`...`** menu in the tab bar, then choose **Download code** or **Import code**. Imported ZIP files can be up to 20 MB and replace the existing project, so include every source file you want to keep. The imported project must include a root `package.json`. A root `.env` file is imported into app **Secrets**.
+    Switch to the **Code** tab in the editor, click the **`...`** menu in the tab bar, then choose **Download code** or **Import code**. Imported ZIP files can be up to 20 MB and replace the existing project, so include every source file you want to keep. The imported project must include a root `package.json`. Custom variables in a root `.env` file are stored as your secrets and granted to the app under the same names.
   </Accordion>
 
   <Accordion title="When do login settings apply to the live app?">
