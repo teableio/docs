@@ -1,85 +1,74 @@
 ---
 title: "Table Query Ops"
-description: "Review query risk recommendations for slow tables and confirm database improvements."
+description: "Review search coverage and indexes table by table, configure search, create indexes, and follow the results."
 ---
 
 <Tip>Available for self-hosted Business plan and above</Tip>
 
 Path: Admin Panel → Table Query Ops
 
-Use **Table Query Ops** when views, filters, relations, or searches on a large table become slow. A background analyzer watches the query workload and turns what it observes into recommendations. The page lists them so instance administrators can review the evidence, analyze a specific table in more depth, and confirm any database change.
+Use **Table search and indexes** when views, filters, relations, or searches on a large table become slow. Teable watches the query workload in the background and summarizes each table: how it is searched today, which fields are covered, which physical indexes exist, and how many slow queries it saw recently. Instance administrators configure search coverage, create indexes, and follow the results here.
 
-The counters above the list summarize the current picture: observation windows, requests, slow queries, timeouts, open and accepted recommendations, running and failed tasks, and how many search access paths are ready or degraded.
+<Info>The page only queues tasks; it never changes the database directly. Every change runs asynchronously in the background, so confirm the outcome under **Tasks / history**.</Info>
 
-## Review Recommendations
+## Find the table to work on
 
-The page opens on **Recommendations**, ordered by priority. The analyzer weighs the risk of a query against how heavily the table is used, so the entries most worth acting on come first.
+The page opens on the table list. The state buttons across the top carry their own counts and narrow the list:
 
-Search by table, Base, or Space ID to filter across all recommendations; any other text filters what is already on screen. The status and risk filters narrow the list further.
-
-Each entry names the space, base, and table it belongs to. Expand a row to read the evidence behind the recommendation, the system decision, and the SQL diagnostics:
-
-| Section | What it tells you |
+| State | Meaning |
 | --- | --- |
-| **Trigger** | Where the recommendation came from: observed query traffic, a saved view configuration, or a relation field configuration. A saved-view trigger means no slow query was observed yet; the configuration alone is what raised the risk. |
-| **Access path** | How often this table was reached by sequential scan versus index scan. |
-| **Reasons** | Readable causes such as a large table, no useful index on the filter or sort fields, expensive sorting, or observed timeouts. |
-| **Query shape** | The specific fields being filtered and sorted, with the kind of match each one uses. |
-| **Proposed index** | The fields the recommendation would index, and why. |
+| **All tables** | Every observed table. |
+| **Needs attention** | Tables with slow queries, timeouts, pending recommendations, or failed tasks. Start here. |
+| **Indexed search** | Tables that already have search coverage configured. |
+| **Unconfigured** | Tables with no search coverage yet. |
+| **Unavailable** | Tables that cannot use indexed search right now. The row states why. |
 
-**Deep analysis** opens the analysis workspace with that table already filled in.
+The search box accepts table, Base, and Space names or IDs. Sorting is either **Most slow queries** or **Table name**. **Observation window** covers the last 1 hour, 24 hours, or 7 days, and every observation figure in the list follows that window.
 
-When the analyzer sees heavy substring searching across a table, it raises one **generated-text GIN** recommendation for that whole table instead of a per-field index. Such a row offers **Create search path** in place of **Deep analysis**, and **Add index** does not appear. The recommendation closes on its own once the table has the path.
+Each row gives the table's estimated rows and size, the requests and slow queries within the window, the current search method and field coverage, the number of filter/sort indexes, and the counts of pending recommendations and active tasks. Click a table name to open its detail.
 
-**Create search path** opens a dialog that runs a dry-run analysis of the table right there, without leaving the page. The dialog shows the candidate's index provider, covered field count, estimated rows, and the `EXPLAIN` cost before and after. Enter a sample search term long enough for the minimum probe length it reports; the term is only used to validate the path and is not stored. On a large table, confirm the maintenance-window checkbox as well. Confirming validates the candidate once more and then enables the search path.
+## Configure search coverage
 
-If the analysis returns no candidate, the dialog says why instead of enabling anything. A wide table is refused because Teable will not build an all-field search document for it, and a longer search term does not change that. Use **Analyze selected fields** to move to the analysis workspace and analyze only the fields users actually search.
+The **Search coverage** tab shows the table's current search method, how many fields are covered, and the coverage state of each field. **Show uncovered fields** narrows the list to the fields not yet included; fields marked **Not eligible** cannot contribute to a substring search index.
 
-Two more tabs sit beside it:
+<Info>Coverage is explicit. Fields you add later are not included automatically; configure the table again to bring them in. Searches outside the coverage, or with a probe that is too short, fall back to a slower `ILIKE` scan.</Info>
 
-| Tab | What it shows |
+Choose **Configure search** on a table that has never been configured, or **Update selection / rebuild** on one that has. The dialog asks for:
+
+| Item | What to enter |
 | --- | --- |
-| **Hot tables** | The busiest tables, with requests, slow queries, timeouts, and longest query duration. |
-| **Tasks** | Remediation tasks Teable created, with status, attempts, worker, and the last error. |
+| **Search provider** | `pg_bigm` or `pg_trgm`. If the extension is missing, the dialog says what is missing and who can provision it. |
+| **Representative search text** | Text your users would really search for. It checks substring semantics and collects plan evidence, and is never saved. If it is too short, the dialog names the minimum length. |
+| **Fields** | Select the fields users actually search. Do not select everything on a wide table; building a search document for every field is expensive. |
 
-A banner appears above the list when a configuration problem is holding the process up: search access paths are configured while the runtime flag is off, some tables have a stale or rebuild-pending access path and their search has silently fallen back to the slower `ILIKE` scan, or the oldest queued task has waited long enough to suggest no worker is consuming it. Fix what the banner reports before acting on the recommendations below it.
+**Analyze and dry-run** runs the change without committing it and reports the covered field count, estimated rows, whether plan evidence exists, and the impact of creating or rebuilding. Tables estimated at 50,000 rows or more, or of unknown size, also require the maintenance-window acknowledgement. Then choose **Confirm and queue task**.
 
-### Read the Decision Badge
+<Warning>Creating or rebuilding search coverage generates a search column and a GIN index. It can rewrite the whole table and hold locks, and indexed search is briefly interrupted while it runs. Schedule it inside a maintenance window.</Warning>
 
-Each recommendation carries the latest decision the system made about it:
+What the dialog returns is a task receipt, not a result. Close it and follow the task under **Tasks / history**. Submitting the same change again returns the existing task.
 
-| Badge | Meaning |
-| --- | --- |
-| **Needs manual confirmation** | Only an administrator can apply this one. |
-| **Shadow · would auto-run** | The recommendation meets the acceptance criteria, but automatic execution is not enabled, so nothing changed. |
-| **Auto-executing** / **Auto-executed** | Automatic execution accepted the recommendation and applied it. |
-| **Post-verify failed · backing off** | An automatic change did not pass verification. Teable waits longer before trying that table again. |
-| **Cooling down** | The same scope was changed recently, so the system is holding off. |
-| **On hold** / **Auto-execution not applied** | The plan evidence or the table size did not meet the bar for automatic execution. |
+## Manage filter and sort indexes
 
-<Info>By default Teable only records decisions and creates recommendation and task records; it does not change your database on its own. Automatic execution is opt-in through `V2_TABLE_QUERY_OPS_AUTO_ACCEPT=auto`, and even then it applies only to small tables whose execution plan shows a clear cost improvement. Everything else waits for an administrator.</Info>
+The **Filter / sort indexes** tab lists the physical indexes that serve filter predicates and ordering on this table, each with its validity, whether Teable manages it, its size, and its definition. These are managed separately from substring search indexes.
 
-### Add the Proposed Index
+**Pending actions** below holds the system's index recommendations and says whether plan evidence backs each one. **Review index creation** shows the proposed index, the database it runs against, and the evidence; after you confirm, Teable runs `CREATE INDEX CONCURRENTLY` asynchronously. Large tables and tables of unknown size need the maintenance-window acknowledgement here too.
 
-When a recommendation proposes an index you agree with, click **Add index** on the row. Confirming accepts the recommendation and runs `CREATE INDEX CONCURRENTLY` on the underlying PostgreSQL table; if plan validation was skipped, Teable still builds the index from the recommended fields. The dialog repeats the evidence so you can check it one last time.
+<Info>This page does not delete indexes. Unmanaged and system indexes may protect constraints or serve other workloads, so they are left alone.</Info>
 
-For a table estimated at 50,000 rows or more, the dialog asks you to confirm that a maintenance window is in place before the button becomes available. A concurrent build on a large table takes time and adds load while it runs.
+## Diagnose specific queries
 
-Teable then reports either **Index created** or **Recommendation accepted and queued**. In the second case, follow the task under **Tasks**. If the recommendation has no executable physical column behind it, **Add index** stays disabled and says so; use the analysis workspace to look further instead.
+When someone reports a slow table and no recommendation covers it, open the **Query diagnosis** tab and choose **Analyze queries**. The analysis only reads saved query shapes and available plan evidence; it creates nothing.
 
-## Run a Deep Analysis
+The conclusion is one of **Plan-backed index opportunities found**, **No index opportunity confirmed by the available plans**, or **Insufficient evidence**. Insufficient evidence does not mean a sequential scan happened: a slow observation alone does not establish that the access path is at fault. Below it, each affected query is listed with whether it came from real traffic or a saved view configuration, and the estimated plan cost before and after the proposed index (plan cost, not milliseconds).
 
-Open **Analysis workspace** to analyze a scope on demand, for example when a user reports a slow table that has no recommendation yet.
+## Follow the results
 
-| Analysis type | Use it for |
-| --- | --- |
-| **Queries & indexes** | Find query risks and possible index improvements. |
-| **Substring search** | Check whether a substring search access path could speed up contains searches without changing their matching behavior. |
+The **Tasks / history** tab holds three parts:
 
-Choose **Table**, **Base**, or **Space**, enter the corresponding ID, and select an analysis type. Start with **Table** when you already know which table is slow.
+- **Tasks**: background tasks for this table, with status, attempt count, task kind, and failure reason. When a task eventually succeeded after failing, the error is labelled as a prior attempt.
+- **Search configuration history**: the provider, status, and field list of each past coverage configuration.
+- **Recommendation history**: recommendations that were accepted, dismissed, or superseded.
 
-Click **Generate query report** or **Generate search report**. The report summarizes detected risks and recommended next actions. For a search report, **EXPLAIN sample search** is optional. Add a sample to check result compatibility, query plans, and repeated query timing for the proposed substring search access path. Teable does not save the sample value.
+History loads only the most recent entries; when there are more, a line above the list gives the total.
 
-<Info>The query report does not change the database. Applying a substring search recommendation requires an **EXPLAIN sample search** and administrator confirmation.</Info>
-
-For a large table, review the impact and schedule any confirmed change for a suitable maintenance window.
+<Info>While a table has a queued or running task, the buttons for configuring search and creating indexes stay disabled. Wait for the task to finish.</Info>

@@ -1,85 +1,74 @@
 ---
 title: "Operazioni sulle query delle Tabelle"
-description: "Esamina i suggerimenti relativi ai rischi delle query per le Tabelle lente e conferma i miglioramenti del database."
+description: "Esamina copertura di ricerca e indici Tabella per Tabella, configura la ricerca, crea indici e segui i risultati."
 ---
 
 <Tip>Disponibile per il piano Business Self-hosted e versioni successive</Tip>
 
 Percorso: Amministrazione di sistema → Operazioni sulle query delle Tabelle
 
-Usa **Operazioni sulle query delle Tabelle** quando Viste, filtri, relazioni o ricerche in una Tabella di grandi dimensioni diventano lenti. Un analizzatore in background osserva il carico delle query e trasforma quanto rilevato in suggerimenti. La pagina li elenca affinché gli amministratori dell'istanza possano esaminare le prove, analizzare più a fondo una Tabella specifica e confermare eventuali modifiche al database.
+Usa **Ricerca e indici delle Tabelle** quando Viste, filtri, relazioni o ricerche in una Tabella di grandi dimensioni diventano lenti. Teable osserva il carico delle query in background e riepiloga ogni Tabella: come viene cercata oggi, quali Campi sono coperti, quali indici fisici esistono e quante query lente sono state rilevate di recente. Gli amministratori dell'istanza configurano qui la copertura di ricerca, creano indici e seguono i risultati.
 
-I contatori sopra l'elenco riepilogano la situazione corrente: finestre di osservazione, richieste, query lente, timeout, suggerimenti aperti e accettati, attività in esecuzione e non riuscite e numero di percorsi di accesso per la ricerca pronti o degradati.
+<Info>La pagina si limita ad accodare attività e non modifica mai il database in modo diretto. Ogni modifica viene eseguita in background in modo asincrono, quindi verifica l'esito in **Attività / cronologia**.</Info>
 
-## Esaminare i suggerimenti
+## Individuare la Tabella su cui intervenire
 
-La pagina si apre su **Suggerimenti**, ordinati per priorità. L'analizzatore pondera il rischio di una query rispetto all'intensità d'uso della Tabella, così le voci per cui è più opportuno intervenire vengono mostrate per prime.
+La pagina si apre sull'elenco delle Tabelle. I pulsanti di stato in alto riportano i rispettivi conteggi e restringono l'elenco:
 
-Cerca per ID di Tabella, Base o Spazio per filtrare tutti i suggerimenti; qualsiasi altro testo filtra ciò che è già visualizzato. I filtri di stato e rischio restringono ulteriormente l'elenco.
-
-Ogni voce indica lo Spazio, la Base e la Tabella a cui appartiene. Espandi una riga per leggere le prove alla base del suggerimento, la decisione del sistema e la diagnostica SQL:
-
-| Sezione | Informazioni fornite |
+| Stato | Significato |
 | --- | --- |
-| **Trigger** | Origine del suggerimento: traffico delle query osservato, configurazione di una Vista salvata o configurazione di un Campo di relazione. Un trigger basato su una Vista salvata indica che non è stata ancora osservata alcuna query lenta; è la configurazione stessa ad aver segnalato il rischio. |
-| **Percorso di accesso** | Frequenza con cui questa Tabella è stata raggiunta tramite scansione sequenziale anziché tramite scansione dell'indice. |
-| **Motivi** | Cause leggibili, ad esempio una Tabella di grandi dimensioni, l'assenza di un indice utile nei Campi di filtro o ordinamento, un ordinamento costoso o timeout osservati. |
-| **Forma della query** | Campi specifici filtrati e ordinati, con il tipo di corrispondenza utilizzato da ciascuno. |
-| **Indice proposto** | Campi che il suggerimento indicizzerebbe e relativa motivazione. |
+| **Tutte le Tabelle** | Tutte le Tabelle osservate. |
+| **Richiede attenzione** | Tabelle con query lente, timeout, suggerimenti in sospeso o attività non riuscite. Parti da qui. |
+| **Ricerca indicizzata** | Tabelle con copertura di ricerca già configurata. |
+| **Non configurata** | Tabelle senza copertura di ricerca. |
+| **Non disponibile** | Tabelle che al momento non possono usare la ricerca indicizzata. La riga ne indica il motivo. |
 
-**Analisi approfondita** apre l'area di lavoro di analisi con la Tabella già compilata.
+Il campo di ricerca accetta nomi o ID di Tabella, Base e Spazio. L'ordinamento è per **Più query lente** oppure **Nome Tabella**. La **Finestra di osservazione** copre l'ultima ora, 24 ore o 7 giorni, e tutti i dati di osservazione dell'elenco seguono quella finestra.
 
-Quando l'analizzatore rileva numerose ricerche di sottostringhe in una Tabella, genera un unico suggerimento **GIN per testo generato** per l'intera Tabella, anziché un indice per ogni Campo. Tale riga offre **Crea percorso di ricerca** al posto di **Analisi approfondita** e **Aggiungi indice** non viene visualizzato. Il suggerimento si chiude automaticamente quando la Tabella dispone del percorso.
+Ogni riga riporta righe e dimensioni stimate della Tabella, richieste e query lente della finestra, metodo di ricerca corrente e copertura dei Campi, numero di indici di filtro/ordinamento, oltre ai suggerimenti in sospeso e alle attività attive. Fai clic sul nome di una Tabella per aprirne il dettaglio.
 
-**Crea percorso di ricerca** apre una finestra che esegue un'analisi di prova (dry run) della Tabella senza lasciare la pagina. La finestra mostra il provider di indice del candidato, il numero di Campi coperti, le righe stimate e il costo `EXPLAIN` prima e dopo. Inserisci un termine di ricerca di esempio lungo almeno quanto la lunghezza minima indicata: serve solo alla verifica e non viene salvato. Su una Tabella grande, conferma anche la casella della finestra di manutenzione. Alla conferma Teable verifica di nuovo il candidato e attiva il percorso di ricerca.
+## Configurare la copertura di ricerca
 
-Se l'analisi non produce candidati, la finestra ne spiega il motivo e non esegue nulla. Una Tabella molto larga viene rifiutata perché Teable non crea per essa un documento di ricerca su tutti i Campi, e un termine più lungo non cambia questo esito. Usa **Analizza i Campi selezionati** per passare all'area di lavoro di analisi e analizzare solo i Campi in cui gli utenti cercano davvero.
+La scheda **Copertura di ricerca** mostra il metodo di ricerca corrente della Tabella, quanti Campi sono coperti e lo stato di copertura di ciascun Campo. **Mostra campi non coperti** limita l'elenco ai Campi non ancora inclusi; i Campi contrassegnati come **Non idoneo** non possono contribuire a un indice di ricerca per sottostringa.
 
-Accanto sono presenti altre due schede:
+<Info>La copertura è esplicita. I Campi aggiunti in seguito non vengono inclusi automaticamente: riconfigura la Tabella per integrarli. Le ricerche fuori copertura, o con un termine troppo corto, ripiegano su una scansione `ILIKE` più lenta.</Info>
 
-| Scheda | Contenuto |
+Scegli **Configura ricerca** su una Tabella mai configurata oppure **Aggiorna selezione / ricostruisci** su una già configurata. La finestra di dialogo richiede:
+
+| Voce | Cosa inserire |
 | --- | --- |
-| **Tabelle attive** | Le Tabelle più utilizzate, con richieste, query lente, timeout e durata massima delle query. |
-| **Attività** | Attività correttive create da Teable, con stato, tentativi, worker e ultimo errore. |
+| **Provider di ricerca** | `pg_bigm` o `pg_trgm`. Se manca l'estensione, la finestra indica che cosa manca e chi può installarla. |
+| **Testo di ricerca rappresentativo** | Un testo che i tuoi utenti cercherebbero davvero. Serve a verificare la semantica per sottostringa e a raccogliere prove dal piano, e non viene mai salvato. Se è troppo corto, la finestra indica la lunghezza minima. |
+| **Campi** | Seleziona i Campi che gli utenti cercano davvero. Su una Tabella ampia non selezionarli tutti: creare un documento di ricerca per ogni Campo è oneroso. |
 
-Sopra l'elenco viene visualizzato un banner quando un problema di configurazione blocca il processo: i percorsi di accesso per la ricerca sono configurati mentre il flag del runtime è disattivato, alcune Tabelle hanno un percorso di accesso obsoleto o in attesa di ricostruzione e la ricerca è passata automaticamente alla scansione `ILIKE` più lenta oppure l'attività accodata più vecchia è rimasta in attesa abbastanza a lungo da suggerire che nessun worker la stia elaborando. Correggi quanto segnalato dal banner prima di intervenire sui suggerimenti sottostanti.
+**Analizza ed esegui la simulazione** applica la modifica senza confermarla e riporta il numero di Campi coperti, le righe stimate, l'eventuale presenza di prove dal piano e l'impatto della creazione o della ricostruzione. Le Tabelle stimate a 50.000 righe o più, e quelle di dimensioni sconosciute, richiedono anche la conferma della finestra di manutenzione. Poi scegli **Conferma e accoda attività**.
 
-### Leggere il badge della decisione
+<Warning>La creazione o la ricostruzione della copertura di ricerca genera una colonna di ricerca e un indice GIN. L'operazione può riscrivere l'intera Tabella e mantenere lock, e la ricerca indicizzata si interrompe brevemente durante l'esecuzione. Pianificala in una finestra di manutenzione.</Warning>
 
-Ogni suggerimento riporta la decisione più recente presa dal sistema:
+Quello che la finestra restituisce è una ricevuta dell'attività, non un risultato. Chiudila e segui l'attività in **Attività / cronologia**. Inviando di nuovo la stessa modifica viene restituita l'attività già esistente.
 
-| Badge | Significato |
-| --- | --- |
-| **Richiede conferma manuale** | Soltanto un amministratore può applicarlo. |
-| **Simulazione · verrebbe eseguito automaticamente** | Il suggerimento soddisfa i criteri di accettazione, ma l'esecuzione automatica non è abilitata, quindi non è stata apportata alcuna modifica. |
-| **Esecuzione automatica in corso** / **Eseguito automaticamente** | L'esecuzione automatica ha accettato e applicato il suggerimento. |
-| **Verifica successiva non riuscita · nuovo tentativo ritardato** | Una modifica automatica non ha superato la verifica. Teable attende più a lungo prima di riprovare su quella Tabella. |
-| **Periodo di attesa** | Lo stesso ambito è stato modificato di recente, quindi il sistema attende. |
-| **In sospeso** / **Esecuzione automatica non applicata** | Le prove del piano o le dimensioni della Tabella non hanno soddisfatto i requisiti per l'esecuzione automatica. |
+## Gestire gli indici di filtro e ordinamento
 
-<Info>Per impostazione predefinita, Teable registra soltanto le decisioni e crea i Record dei suggerimenti e delle attività; non modifica autonomamente il database. L'esecuzione automatica è facoltativa e si abilita tramite `V2_TABLE_QUERY_OPS_AUTO_ACCEPT=auto`; anche in tal caso viene applicata soltanto alle Tabelle di piccole dimensioni il cui piano di esecuzione mostra un chiaro miglioramento dei costi. Tutto il resto attende l'intervento di un amministratore.</Info>
+La scheda **Indici di filtro / ordinamento** elenca gli indici fisici che servono le condizioni di filtro e gli ordinamenti di questa Tabella, ciascuno con validità, indicazione se è gestito da Teable, dimensione e definizione. Sono gestiti separatamente dagli indici di ricerca per sottostringa.
 
-### Aggiungere l'indice proposto
+Sotto, le **Azioni in sospeso** raccolgono i suggerimenti di indice del sistema e indicano se sono supportati da prove del piano. **Esamina la creazione dell'indice** mostra l'indice proposto, il database su cui viene eseguito e le prove; dopo la conferma, Teable esegue `CREATE INDEX CONCURRENTLY` in modo asincrono. Anche qui le Tabelle grandi o di dimensioni sconosciute richiedono la conferma della finestra di manutenzione.
 
-Quando un suggerimento propone un indice che approvi, fai clic su **Aggiungi indice** nella riga. La conferma accetta il suggerimento ed esegue `CREATE INDEX CONCURRENTLY` sulla Tabella PostgreSQL sottostante; se la convalida del piano è stata ignorata, Teable crea comunque l'indice dai Campi consigliati. La finestra di dialogo ripete le prove affinché tu possa controllarle un'ultima volta.
+<Info>Questa pagina non elimina indici. Gli indici non gestiti e quelli di sistema possono proteggere vincoli o servire altri carichi di lavoro, quindi non vengono toccati.</Info>
 
-Per una Tabella stimata in almeno 50.000 righe, la finestra di dialogo richiede di confermare che sia attiva una finestra di manutenzione prima di rendere disponibile il pulsante. La creazione simultanea su una Tabella di grandi dimensioni richiede tempo e aggiunge carico durante l'esecuzione.
+## Diagnosticare query specifiche
 
-Teable segnala quindi **Indice creato** oppure **Suggerimento accettato e accodato**. Nel secondo caso, segui l'attività nella scheda **Attività**. Se il suggerimento non dispone di una colonna fisica eseguibile sottostante, **Aggiungi indice** rimane disabilitato e ne indica il motivo; usa invece l'area di lavoro di analisi per approfondire.
+Quando una Tabella viene segnalata come lenta e nessun suggerimento la riguarda, apri la scheda **Diagnosi delle query** e scegli **Analizza query**. L'analisi legge soltanto le forme di query salvate e le prove del piano disponibili, e non crea nulla.
 
-## Eseguire un'analisi approfondita
+La conclusione è **Trovate opportunità di indice supportate dal piano**, **Nessuna opportunità di indice confermata dai piani disponibili** oppure **Prove insufficienti**. Prove insufficienti non significano che si sia verificata una scansione sequenziale: una singola osservazione lenta non dimostra che il percorso di accesso sia la causa. Sotto viene elencata ogni query interessata, con l'indicazione se proviene dal traffico reale o da una configurazione di Vista salvata, e il costo di piano stimato prima e dopo l'indice proposto (costo di piano, non millisecondi).
 
-Apri **Area di lavoro di analisi** per analizzare un ambito su richiesta, ad esempio quando un utente segnala una Tabella lenta per cui non esiste ancora alcun suggerimento.
+## Seguire i risultati
 
-| Tipo di analisi | Utilizzo |
-| --- | --- |
-| **Query e indici** | Individuare i rischi delle query e i possibili miglioramenti degli indici. |
-| **Ricerca di sottostringhe** | Verificare se un percorso di accesso per la ricerca di sottostringhe può velocizzare le ricerche «contiene» senza modificarne il comportamento di corrispondenza. |
+La scheda **Attività / cronologia** ha tre parti:
 
-Scegli **Tabella**, **Base** o **Spazio**, inserisci l'ID corrispondente e seleziona un tipo di analisi. Inizia da **Tabella** quando sai già quale Tabella è lenta.
+- **Attività**: le attività in background di questa Tabella, con stato, numero di tentativi, tipo di attività e motivo dell'errore. Se un'attività è poi riuscita dopo un errore, l'errore è contrassegnato come tentativo precedente.
+- **Cronologia della configurazione di ricerca**: provider, stato ed elenco dei Campi di ogni configurazione di copertura precedente.
+- **Cronologia dei suggerimenti**: suggerimenti accettati, ignorati o sostituiti.
 
-Fai clic su **Genera report delle query** o **Genera report della ricerca**. Il report riepiloga i rischi rilevati e le azioni successive consigliate. Per un report della ricerca, la **ricerca di esempio EXPLAIN** è facoltativa. Aggiungi un esempio per controllare la compatibilità dei risultati, i piani delle query e la temporizzazione delle query ripetute per il percorso di accesso proposto per la ricerca di sottostringhe. Teable non salva il valore di esempio.
+La cronologia carica soltanto le voci più recenti. Se ce ne sono altre, una riga sopra l'elenco ne indica il totale.
 
-<Info>Il report delle query non modifica il database. L'applicazione di un suggerimento per la ricerca di sottostringhe richiede una **ricerca di esempio EXPLAIN** e la conferma di un amministratore.</Info>
-
-Per una Tabella di grandi dimensioni, esamina l'impatto e pianifica qualsiasi modifica confermata in una finestra di manutenzione adeguata.
+<Info>Finché una Tabella ha un'attività accodata o in esecuzione, i pulsanti per configurare la ricerca e creare indici restano disabilitati. Attendi la fine dell'attività.</Info>

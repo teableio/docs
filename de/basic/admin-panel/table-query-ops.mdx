@@ -1,86 +1,74 @@
 ---
 title: "Tabellenabfrage-Operationen"
-description: "Prüfen Sie Empfehlungen zum Abfragerisiko für langsame Tabellen und bestätigen Sie Datenbankverbesserungen."
+description: "Suchabdeckung und Indizes tabellenweise prüfen, Suche konfigurieren, Indizes erstellen und Ergebnisse verfolgen."
 ---
 
 <Tip>Verfügbar ab dem selbst gehosteten Business-Tarif</Tip>
 
 Pfad: Admin-Panel → Tabellenabfrage-Operationen
 
-Verwenden Sie **Tabellenabfrage-Operationen**, wenn Ansichten, Filter, Beziehungen oder Suchen in einer großen Tabelle langsam werden. Ein Hintergrundanalysator überwacht die Abfragelast und erstellt aus seinen Beobachtungen Empfehlungen. Die Seite führt diese auf, damit Instanzadministratoren die Nachweise prüfen, eine bestimmte Tabelle eingehender analysieren und jede Datenbankänderung bestätigen können.
+Verwenden Sie **Tabellensuche und Indizes**, wenn Ansichten, Filter, Beziehungen oder Suchen in einer großen Tabelle langsam werden. Teable beobachtet die Abfragelast im Hintergrund und fasst jede Tabelle zusammen: wie sie derzeit durchsucht wird, welche Felder abgedeckt sind, welche physischen Indizes vorhanden sind und wie viele langsame Abfragen zuletzt beobachtet wurden. Instanzadministratoren konfigurieren hier die Suchabdeckung, erstellen Indizes und verfolgen die Ergebnisse.
 
-Die Zähler über der Liste fassen die aktuelle Lage zusammen: Beobachtungsfenster, Anfragen, langsame Abfragen, Zeitüberschreitungen, offene und angenommene Empfehlungen, laufende und fehlgeschlagene Aufgaben sowie die Anzahl der bereiten oder beeinträchtigten Suchzugriffspfade.
+<Info>Die Seite stellt nur Aufgaben ein und ändert die Datenbank nie direkt. Jede Änderung läuft asynchron im Hintergrund, prüfen Sie das Ergebnis daher unter **Aufgaben / Verlauf**.</Info>
 
-## Empfehlungen prüfen
+## Die passende Tabelle finden
 
-Die Seite öffnet sich mit **Empfehlungen**, nach Priorität sortiert. Der Analysator bewertet das Risiko einer Abfrage im Verhältnis dazu, wie stark die Tabelle genutzt wird. Daher stehen die Einträge mit dem größten Handlungsbedarf zuerst.
+Die Seite öffnet sich mit der Tabellenliste. Die Statusschaltflächen oben tragen jeweils eigene Zähler und grenzen die Liste ein:
 
-Suchen Sie nach Tabellen-, Base- oder Space-ID, um alle Empfehlungen zu filtern; anderer Text filtert, was bereits auf dem Bildschirm angezeigt wird. Die Status- und Risikofilter grenzen die Liste weiter ein.
-
-Jeder Eintrag nennt den zugehörigen Space, die Base und die Tabelle. Klappen Sie eine Zeile auf, um die Nachweise hinter der Empfehlung, die Systementscheidung und die SQL-Diagnostik zu lesen:
-
-| Abschnitt | Aussage |
+| Status | Bedeutung |
 | --- | --- |
-| **Auslöser** | Woher die Empfehlung stammt: beobachteter Abfrageverkehr, eine gespeicherte Ansichtskonfiguration oder eine Beziehungskonfiguration für ein Feld. Ein Auslöser durch eine gespeicherte Ansicht bedeutet, dass noch keine langsame Abfrage beobachtet wurde; allein die Konfiguration hat das Risiko ausgelöst. |
-| **Zugriffspfad** | Wie häufig diese Tabelle über einen sequenziellen Scan gegenüber einem Indexscan erreicht wurde. |
-| **Gründe** | Verständliche Ursachen wie eine große Tabelle, kein nützlicher Index für die Filter- oder Sortierfelder, aufwendige Sortierung oder beobachtete Zeitüberschreitungen. |
-| **Abfragestruktur** | Die konkret gefilterten und sortierten Felder sowie die jeweils verwendete Art der Übereinstimmung. |
-| **Vorgeschlagener Index** | Die Felder, die die Empfehlung indexieren würde, und warum. |
+| **Alle Tabellen** | Alle beobachteten Tabellen. |
+| **Aufmerksamkeit nötig** | Tabellen mit langsamen Abfragen, Zeitüberschreitungen, offenen Empfehlungen oder fehlgeschlagenen Aufgaben. Beginnen Sie hier. |
+| **Indizierte Suche** | Tabellen, für die bereits eine Suchabdeckung konfiguriert ist. |
+| **Nicht konfiguriert** | Tabellen ohne Suchabdeckung. |
+| **Nicht verfügbar** | Tabellen, die derzeit keine indizierte Suche nutzen können. Die Zeile nennt den Grund. |
 
-**Tiefenanalyse** öffnet den Analysearbeitsbereich mit dieser Tabelle bereits vorausgefüllt.
+Das Suchfeld akzeptiert Namen oder IDs von Tabellen, Bases und Spaces. Sortiert wird nach **Meiste langsame Abfragen** oder **Tabellenname**. Das **Beobachtungsfenster** umfasst die letzte Stunde, 24 Stunden oder 7 Tage, und alle Beobachtungswerte der Liste folgen diesem Fenster.
 
-Wenn der Analysator umfangreiche Teilzeichenfolgensuchen in einer Tabelle erkennt, erstellt er für die gesamte Tabelle eine **erzeugter-Text-GIN**-Empfehlung statt eines Indexes pro Feld. Eine solche Zeile bietet **Suchpfad erstellen** anstelle von **Tiefenanalyse**; **Index hinzufügen** wird nicht angezeigt. Die Empfehlung wird automatisch abgeschlossen, sobald die Tabelle über den Pfad verfügt.
+Jede Zeile nennt geschätzte Zeilenzahl und Größe der Tabelle, Anfragen und langsame Abfragen im Fenster, die aktuelle Suchmethode samt Feldabdeckung, die Anzahl der Filter-/Sortierindizes sowie offene Empfehlungen und aktive Aufgaben. Ein Klick auf den Tabellennamen öffnet die Detailansicht.
 
-**Suchpfad erstellen** führt einen Probelauf (Dry Run) für die Tabelle direkt in einem Dialog auf dieser Seite aus. Der Dialog zeigt den Indexanbieter des Kandidaten, die Anzahl abgedeckter Felder, die geschätzten Zeilen sowie die `EXPLAIN`-Kosten vor und nach der Änderung. Geben Sie einen Beispielsuchbegriff ein, der mindestens so lang ist wie die angezeigte Mindestlänge; er dient nur der Prüfung und wird nicht gespeichert. Bei einer großen Tabelle bestätigen Sie zusätzlich das Kontrollkästchen für das Wartungsfenster. Nach der Bestätigung wird der Kandidat erneut geprüft und der Suchpfad aktiviert.
+## Suchabdeckung konfigurieren
 
-Liefert die Analyse keinen Kandidaten, nennt der Dialog den Grund und ändert nichts. Eine breite Tabelle wird abgelehnt, weil Teable dafür kein Suchdokument über alle Felder aufbaut; ein längerer Suchbegriff ändert daran nichts. Nutzen Sie dann **Ausgewählte Felder analysieren**, um im Analysearbeitsbereich nur die Felder zu analysieren, in denen Nutzer tatsächlich suchen.
+Der Tab **Suchabdeckung** zeigt die aktuelle Suchmethode der Tabelle, die Anzahl der abgedeckten Felder und den Abdeckungsstatus jedes Felds. **Nicht abgedeckte Felder anzeigen** beschränkt die Liste auf die noch nicht einbezogenen Felder; Felder mit der Kennzeichnung **Nicht geeignet** können nicht zu einem Substring-Suchindex beitragen.
 
-Daneben befinden sich zwei weitere Tabs:
+<Info>Die Abdeckung wird ausdrücklich festgelegt. Später hinzugefügte Felder kommen nicht automatisch hinzu, konfigurieren Sie die Tabelle erneut, um sie aufzunehmen. Suchen außerhalb der Abdeckung oder mit zu kurzem Suchbegriff fallen auf einen langsameren `ILIKE`-Scan zurück.</Info>
 
-| Tab | Inhalt |
+Wählen Sie **Suche konfigurieren** bei einer noch nicht konfigurierten Tabelle oder **Auswahl aktualisieren / neu aufbauen** bei einer bereits konfigurierten. Der Dialog fragt Folgendes ab:
+
+| Angabe | Was Sie eintragen |
 | --- | --- |
-| **Häufig genutzte Tabellen** | Die am stärksten genutzten Tabellen mit Anfragen, langsamen Abfragen, Zeitüberschreitungen und längster Abfragedauer. |
-| **Aufgaben** | Von Teable erstellte Behebungsaufgaben mit Status, Versuchen, Worker und dem letzten Fehler. |
+| **Suchanbieter** | `pg_bigm` oder `pg_trgm`. Fehlt die Erweiterung, nennt der Dialog, was fehlt und wer es bereitstellen kann. |
+| **Repräsentativer Suchtext** | Text, nach dem Ihre Benutzer tatsächlich suchen würden. Er prüft die Substring-Semantik und sammelt Nachweise aus dem Ausführungsplan und wird nie gespeichert. Ist er zu kurz, nennt der Dialog die Mindestlänge. |
+| **Felder** | Wählen Sie die Felder aus, nach denen Benutzer wirklich suchen. Wählen Sie bei einer breiten Tabelle nicht alles aus, ein Suchdokument über alle Felder ist teuer. |
 
-Über der Liste wird ein Banner angezeigt, wenn ein Konfigurationsproblem den Vorgang aufhält: Suchzugriffspfade sind konfiguriert, während das Laufzeit-Flag deaktiviert ist; manche Tabellen haben einen veralteten oder zur Neuerstellung ausstehenden Zugriffspfad und ihre Suche ist unbemerkt auf den langsameren `ILIKE`-Scan zurückgefallen; oder die älteste in die Warteschlange gestellte Aufgabe wartet lange genug, um darauf hinzuweisen, dass kein Worker sie verarbeitet. Beheben Sie die im Banner gemeldeten Probleme, bevor Sie die darunterstehenden Empfehlungen bearbeiten.
+**Analysieren und Testlauf** führt die Änderung ohne Festschreibung aus und meldet die Anzahl abgedeckter Felder, die geschätzte Zeilenzahl, ob Nachweise aus dem Ausführungsplan vorliegen und welche Auswirkungen das Erstellen oder Neuaufbauen hat. Bei Tabellen mit geschätzt 50.000 Zeilen oder mehr sowie bei unbekannter Größe ist zusätzlich die Bestätigung des Wartungsfensters nötig. Anschließend wählen Sie **Bestätigen und Aufgabe einreihen**.
 
-### Das Entscheidungs-Badge lesen
+<Warning>Beim Erstellen oder Neuaufbauen der Suchabdeckung entstehen eine Suchspalte und ein GIN-Index. Dabei kann die gesamte Tabelle neu geschrieben werden, es werden Sperren gehalten, und die indizierte Suche ist kurzzeitig unterbrochen. Planen Sie den Vorgang in ein Wartungsfenster.</Warning>
 
-Jede Empfehlung trägt die letzte Systementscheidung dazu:
+Der Dialog liefert eine Aufgabenbestätigung, kein Ergebnis. Schließen Sie ihn und verfolgen Sie die Aufgabe unter **Aufgaben / Verlauf**. Wird dieselbe Änderung erneut eingereicht, kommt die bestehende Aufgabe zurück.
 
-| Badge | Bedeutung |
-| --- | --- |
-| **Manuelle Bestätigung erforderlich** | Nur ein Administrator kann diese Empfehlung anwenden. |
-| **Schattenmodus · würde automatisch ausgeführt** | Die Empfehlung erfüllt die Annahmekriterien, aber die automatische Ausführung ist nicht aktiviert; daher wurde nichts geändert. |
-| **Wird automatisch ausgeführt** / **Automatisch ausgeführt** | Die automatische Ausführung hat die Empfehlung angenommen und angewendet. |
-| **Nachprüfung fehlgeschlagen · Wartezeit wird erhöht** | Eine automatische Änderung hat die Überprüfung nicht bestanden. Teable wartet länger, bevor es diese Tabelle erneut versucht. |
-| **Abkühlphase** | Derselbe Bereich wurde kürzlich geändert; daher wartet das System ab. |
-| **Zurückgestellt** / **Automatische Ausführung nicht angewendet** | Die Plan-Nachweise oder die Tabellengröße erfüllten nicht die Voraussetzungen für die automatische Ausführung. |
+## Filter- und Sortierindizes verwalten
 
-<Info>Standardmäßig zeichnet Teable nur Entscheidungen auf und erstellt Empfehlungs- und Aufgabenaufzeichnungen; es ändert Ihre Datenbank nicht selbstständig. Die automatische Ausführung ist über `V2_TABLE_QUERY_OPS_AUTO_ACCEPT=auto` optional aktivierbar und gilt selbst dann nur für kleine Tabellen, deren Ausführungsplan eine eindeutige Kostenverbesserung zeigt. Alles andere wartet auf einen Administrator.</Info>
+Der Tab **Filter- / Sortierindizes** listet die physischen Indizes auf, die Filterbedingungen und Sortierungen dieser Tabelle bedienen, jeweils mit Gültigkeit, Angabe zur Verwaltung durch Teable, Größe und Definition. Sie werden getrennt von den Substring-Suchindizes verwaltet.
 
-### Den vorgeschlagenen Index hinzufügen
+Darunter enthalten die **Ausstehenden Aktionen** die Indexempfehlungen des Systems und geben an, ob Nachweise aus dem Ausführungsplan dafür vorliegen. **Indexerstellung prüfen** zeigt den vorgeschlagenen Index, die ausführende Datenbank und die Nachweise; nach Ihrer Bestätigung führt Teable `CREATE INDEX CONCURRENTLY` asynchron aus. Für große Tabellen und Tabellen unbekannter Größe ist auch hier die Bestätigung des Wartungsfensters nötig.
 
-Wenn eine Empfehlung einen Index vorschlägt, dem Sie zustimmen, klicken Sie in der Zeile auf **Index hinzufügen**. Die Bestätigung nimmt die Empfehlung an und führt `CREATE INDEX CONCURRENTLY` in der zugrunde liegenden PostgreSQL-Tabelle aus; wenn die Planvalidierung übersprungen wurde, erstellt Teable den Index dennoch aus den empfohlenen Feldern. Der Dialog wiederholt die Nachweise, damit Sie sie ein letztes Mal prüfen können.
+<Info>Diese Seite löscht keine Indizes. Nicht verwaltete und System-Indizes können Constraints schützen oder andere Abfragen bedienen und bleiben deshalb unangetastet.</Info>
 
-Bei einer Tabelle mit geschätzten 50.000 Zeilen oder mehr fordert der Dialog Sie auf zu bestätigen, dass ein Wartungsfenster eingerichtet ist, bevor die Schaltfläche verfügbar wird. Eine parallele Erstellung für eine große Tabelle benötigt Zeit und verursacht während der Ausführung zusätzliche Last.
+## Einzelne Abfragen diagnostizieren
 
-Teable meldet anschließend entweder **Index erstellt** oder **Empfehlung angenommen und eingereiht**. Im zweiten Fall verfolgen Sie die Aufgabe unter **Aufgaben**. Wenn die Empfehlung keine ausführbare physische Spalte enthält, bleibt **Index hinzufügen** deaktiviert und weist darauf hin; verwenden Sie stattdessen den Analysearbeitsbereich zur weiteren Untersuchung.
+Wenn eine Tabelle als langsam gemeldet wird und keine Empfehlung dazu vorliegt, öffnen Sie den Tab **Abfragediagnose** und wählen **Abfragen analysieren**. Die Analyse liest nur gespeicherte Abfrageformen und vorhandene Nachweise aus dem Ausführungsplan und erstellt nichts.
 
-## Eine Tiefenanalyse ausführen
+Das Ergebnis lautet **Durch Ausführungsplan gestützte Indexchancen gefunden**, **Keine durch die vorliegenden Pläne bestätigte Indexchance** oder **Unzureichende Nachweise**. Unzureichende Nachweise bedeuten nicht, dass ein sequenzieller Scan stattgefunden hat: Eine langsame Beobachtung allein belegt nicht, dass der Zugriffspfad die Ursache ist. Darunter steht jede betroffene Abfrage mit der Angabe, ob sie aus echtem Verkehr oder einer gespeicherten Ansichtskonfiguration stammt, sowie die geschätzten Plankosten vor und nach dem vorgeschlagenen Index (Plankosten, keine Millisekunden).
 
-Öffnen Sie den **Analysearbeitsbereich**, um einen Bereich bei Bedarf zu analysieren, beispielsweise wenn ein Nutzer eine langsame Tabelle meldet, für die noch keine Empfehlung vorliegt.
+## Ergebnisse verfolgen
 
-| Analysetyp | Verwenden für |
-| --- | --- |
-| **Abfragen und Indizes** | Abfragerisiken und mögliche Indexverbesserungen finden. |
-| **Teilzeichenfolgensuche** | Prüfen, ob ein Suchzugriffspfad für Teilzeichenfolgen Enthält-Suchen beschleunigen kann, ohne deren Übereinstimmungsverhalten zu ändern. |
+Der Tab **Aufgaben / Verlauf** besteht aus drei Teilen:
 
-Wählen Sie **Tabelle**, **Base** oder **Space**, geben Sie die entsprechende ID ein und wählen Sie einen Analysetyp. Beginnen Sie mit **Tabelle**, wenn Sie bereits wissen, welche Tabelle langsam ist.
+- **Aufgaben**: Hintergrundaufgaben dieser Tabelle mit Status, Anzahl der Versuche, Aufgabentyp und Fehlergrund. War eine Aufgabe nach einem Fehlschlag am Ende erfolgreich, ist der Fehler als früherer Versuch gekennzeichnet.
+- **Verlauf der Suchkonfiguration**: Anbieter, Status und Feldliste jeder früheren Abdeckungskonfiguration.
+- **Empfehlungsverlauf**: angenommene, verworfene oder ersetzte Empfehlungen.
 
-Klicken Sie auf **Abfragebericht erstellen** oder **Suchbericht erstellen**. Der Bericht fasst erkannte Risiken und empfohlene nächste Schritte zusammen. Für einen Suchbericht ist **EXPLAIN-Beispielsuche** optional. Fügen Sie ein Beispiel hinzu, um Ergebnis-Kompatibilität, Abfragepläne und wiederholte Abfragezeiten für den vorgeschlagenen Suchzugriffspfad für Teilzeichenfolgen zu prüfen. Teable speichert den Beispielwert nicht.
+Der Verlauf lädt nur die neuesten Einträge. Gibt es mehr, nennt eine Zeile über der Liste die Gesamtzahl.
 
-<Info>Der Abfragebericht ändert die Datenbank nicht. Das Anwenden einer Empfehlung für die Teilzeichenfolgensuche erfordert eine **EXPLAIN-Beispielsuche** und die Bestätigung durch einen Administrator.</Info>
-
-Prüfen Sie bei einer großen Tabelle die Auswirkungen und planen Sie jede bestätigte Änderung für ein geeignetes Wartungsfenster ein.
-
+<Info>Solange für eine Tabelle eine Aufgabe eingereiht ist oder läuft, bleiben die Schaltflächen zum Konfigurieren der Suche und zum Erstellen von Indizes deaktiviert. Warten Sie das Ende der Aufgabe ab.</Info>

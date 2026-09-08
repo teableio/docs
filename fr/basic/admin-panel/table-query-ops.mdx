@@ -1,86 +1,74 @@
 ---
 title: "Opérations de requêtes de Table"
-description: "Examinez les recommandations de risque liées aux requêtes pour les Tables lentes et confirmez les améliorations de la base de données."
+description: "Examinez la couverture de recherche et les index Table par Table, configurez la recherche, créez des index et suivez les résultats."
 ---
 
 <Tip>Disponible à partir du plan Business auto-hébergé</Tip>
 
 Chemin : Administration système → Opérations de requêtes de Table
 
-Utilisez **Opérations de requêtes de Table** lorsque les Vues, filtres, relations ou recherches sur une grande Table deviennent lents. Un analyseur en arrière-plan surveille la charge de travail des requêtes et transforme ses observations en recommandations. La page les répertorie afin que les administrateurs de l’instance puissent examiner les éléments probants, analyser une Table spécifique plus en détail et confirmer toute modification de base de données.
+Utilisez **Recherche et index de Table** lorsque les Vues, filtres, relations ou recherches sur une grande Table deviennent lents. Teable surveille la charge des requêtes en arrière-plan et résume chaque Table : comment elle est recherchée aujourd’hui, quels Champs sont couverts, quels index physiques existent et combien de requêtes lentes ont été observées récemment. Les administrateurs de l’instance configurent ici la couverture de recherche, créent des index et suivent les résultats.
 
-Les compteurs au-dessus de la liste résument la situation actuelle : périodes d’observation, requêtes, requêtes lentes, délais d’expiration, recommandations ouvertes et acceptées, tâches en cours et en échec, ainsi que le nombre de chemins d’accès de recherche prêts ou dégradés.
+<Info>La page met uniquement des tâches en file d’attente, elle ne modifie jamais la base de données directement. Chaque changement s’exécute de façon asynchrone en arrière-plan : vérifiez le résultat sous **Tâches / historique**.</Info>
 
-## Examiner les recommandations
+## Trouver la Table à traiter
 
-La page s’ouvre sur **Recommandations**, classées par priorité. L’analyseur évalue le risque d’une requête par rapport à l’intensité d’utilisation de la Table ; les éléments qui méritent le plus une action apparaissent donc en premier.
+La page s’ouvre sur la liste des Tables. Les boutons d’état en haut portent leur propre compteur et réduisent la liste :
 
-Recherchez par ID de Table, de Base ou d’Espace pour filtrer toutes les recommandations ; tout autre texte filtre ce qui est déjà affiché à l’écran. Les filtres de statut et de risque réduisent davantage la liste.
-
-Chaque entrée indique l’Espace, la Base et la Table auxquels elle appartient. Développez une ligne pour lire les éléments probants de la recommandation, la décision du système et les diagnostics SQL :
-
-| Section | Ce qu’elle indique |
+| État | Signification |
 | --- | --- |
-| **Déclencheur** | L’origine de la recommandation : trafic de requêtes observé, configuration d’une Vue enregistrée ou configuration d’un Champ de relation. Un déclencheur de Vue enregistrée signifie qu’aucune requête lente n’a encore été observée ; la configuration seule a soulevé le risque. |
-| **Chemin d’accès** | La fréquence à laquelle cette Table a été atteinte par analyse séquentielle plutôt que par analyse d’index. |
-| **Raisons** | Des causes compréhensibles telles qu’une grande Table, l’absence d’index utile sur les Champs de filtre ou de tri, un tri coûteux ou des délais d’expiration observés. |
-| **Forme de requête** | Les Champs spécifiques filtrés et triés, avec le type de correspondance utilisé pour chacun. |
-| **Index proposé** | Les Champs que la recommandation indexerait, et pourquoi. |
+| **Toutes les Tables** | Toutes les Tables observées. |
+| **Nécessite une attention** | Tables présentant des requêtes lentes, des délais dépassés, des recommandations en attente ou des tâches en échec. Commencez ici. |
+| **Recherche indexée** | Tables dont la couverture de recherche est déjà configurée. |
+| **Non configurée** | Tables sans couverture de recherche. |
+| **Indisponible** | Tables qui ne peuvent pas utiliser la recherche indexée pour l’instant. La ligne en indique la raison. |
 
-**Analyse approfondie** ouvre l’espace de travail d’analyse avec cette Table déjà renseignée.
+Le champ de recherche accepte les noms ou identifiants de Table, de Base et d’Espace. Le tri se fait par **Plus de requêtes lentes** ou par **Nom de Table**. La **Fenêtre d’observation** couvre la dernière heure, 24 heures ou 7 jours, et toutes les valeurs d’observation de la liste suivent cette fenêtre.
 
-Lorsque l’analyseur détecte de nombreuses recherches de sous-chaînes dans une Table, il génère une recommandation **GIN de texte généré** pour l’ensemble de cette Table au lieu d’un index par Champ. Une telle ligne propose **Créer un chemin de recherche** à la place de **Analyse approfondie**, et **Ajouter un index** n’apparaît pas. La recommandation se ferme automatiquement une fois que la Table dispose du chemin.
+Chaque ligne donne le nombre de lignes et la taille estimés de la Table, les requêtes et requêtes lentes de la fenêtre, la méthode de recherche actuelle et la couverture des Champs, le nombre d’index de filtre/tri, ainsi que les recommandations en attente et les tâches actives. Cliquez sur le nom d’une Table pour ouvrir son détail.
 
-**Créer un chemin de recherche** ouvre une boîte de dialogue qui exécute une analyse à blanc (dry run) de la Table sans quitter la page. Elle indique le fournisseur d’index du candidat, le nombre de Champs couverts, les lignes estimées et le coût `EXPLAIN` avant et après. Saisissez un terme de recherche d’exemple au moins aussi long que la longueur minimale affichée : il sert uniquement à la validation et n’est pas conservé. Sur une grande Table, cochez aussi la case de la fenêtre de maintenance. À la confirmation, Teable revalide le candidat puis active le chemin de recherche.
+## Configurer la couverture de recherche
 
-Si l’analyse ne renvoie aucun candidat, la boîte de dialogue en explique la raison et n’applique rien. Une Table large est refusée, car Teable ne construit pas pour elle de document de recherche couvrant tous les Champs, et un terme plus long n’y change rien. Utilisez alors **Analyser les Champs sélectionnés** pour n’analyser dans l’espace de travail que les Champs réellement recherchés.
+L’onglet **Couverture de recherche** indique la méthode de recherche actuelle de la Table, le nombre de Champs couverts et l’état de couverture de chaque Champ. **Afficher les champs non couverts** restreint la liste aux Champs pas encore inclus ; les Champs marqués **Non éligible** ne peuvent pas alimenter un index de recherche par sous-chaîne.
 
-Deux autres onglets se trouvent à côté :
+<Info>La couverture est explicite. Les Champs ajoutés ensuite ne sont pas inclus automatiquement : reconfigurez la Table pour les intégrer. Les recherches hors couverture, ou dont le terme est trop court, retombent sur un balayage `ILIKE` plus lent.</Info>
 
-| Onglet | Ce qu’il affiche |
+Choisissez **Configurer la recherche** sur une Table jamais configurée, ou **Mettre à jour la sélection / reconstruire** sur une Table déjà configurée. La boîte de dialogue demande :
+
+| Élément | Ce que vous saisissez |
 | --- | --- |
-| **Tables actives** | Les Tables les plus sollicitées, avec les requêtes, requêtes lentes, délais d’expiration et la durée de requête la plus longue. |
-| **Tâches** | Les tâches de remédiation créées par Teable, avec le statut, les tentatives, le worker et la dernière erreur. |
+| **Fournisseur de recherche** | `pg_bigm` ou `pg_trgm`. Si l’extension manque, la boîte de dialogue indique ce qui manque et qui peut l’installer. |
+| **Texte de recherche représentatif** | Un texte que vos utilisateurs rechercheraient réellement. Il sert à vérifier la sémantique de sous-chaîne et à collecter des éléments de plan, et n’est jamais enregistré. S’il est trop court, la boîte de dialogue indique la longueur minimale. |
+| **Champs** | Sélectionnez les Champs que les utilisateurs recherchent vraiment. Ne sélectionnez pas tout sur une Table large : construire un document de recherche pour chaque Champ coûte cher. |
 
-Une bannière apparaît au-dessus de la liste lorsqu’un problème de configuration bloque le processus : des chemins d’accès de recherche sont configurés alors que l’indicateur d’exécution est désactivé, certaines Tables ont un chemin d’accès obsolète ou en attente de reconstruction et leur recherche est silencieusement revenue à l’analyse `ILIKE` plus lente, ou la tâche en file d’attente la plus ancienne attend depuis suffisamment longtemps pour suggérer qu’aucun worker ne la traite. Corrigez ce que la bannière indique avant d’agir sur les recommandations ci-dessous.
+**Analyser et simuler** exécute la modification sans la valider et rend le nombre de Champs couverts, le nombre de lignes estimé, la présence d’éléments de plan et l’impact d’une création ou d’une reconstruction. Les Tables estimées à 50 000 lignes ou plus, ainsi que celles de taille inconnue, exigent en plus la confirmation de la fenêtre de maintenance. Choisissez ensuite **Confirmer et mettre la tâche en file d’attente**.
 
-### Lire le badge de décision
+<Warning>Créer ou reconstruire la couverture de recherche génère une colonne de recherche et un index GIN. L’opération peut réécrire toute la Table, poser des verrous et interrompre brièvement la recherche indexée. Planifiez-la pendant une fenêtre de maintenance.</Warning>
 
-Chaque recommandation porte la dernière décision prise par le système à son sujet :
+La boîte de dialogue renvoie un accusé de réception de tâche, pas un résultat. Fermez-la et suivez la tâche sous **Tâches / historique**. Soumettre à nouveau la même modification renvoie la tâche existante.
 
-| Badge | Signification |
-| --- | --- |
-| **Nécessite une confirmation manuelle** | Seul un administrateur peut appliquer celle-ci. |
-| **Simulation · s’exécuterait automatiquement** | La recommandation répond aux critères d’acceptation, mais l’exécution automatique n’est pas activée ; rien n’a donc changé. |
-| **Exécution automatique en cours** / **Exécution automatique terminée** | L’exécution automatique a accepté la recommandation et l’a appliquée. |
-| **Échec de la post-vérification · nouvelle tentative différée** | Une modification automatique n’a pas réussi la vérification. Teable attend plus longtemps avant de réessayer cette Table. |
-| **Période de refroidissement** | Le même périmètre a été modifié récemment ; le système attend donc. |
-| **En attente** / **Exécution automatique non appliquée** | Les éléments probants du plan ou la taille de la Table n’ont pas atteint le seuil requis pour une exécution automatique. |
+## Gérer les index de filtre et de tri
 
-<Info>Par défaut, Teable enregistre uniquement les décisions et crée des enregistrements de recommandations et de tâches ; il ne modifie pas votre base de données de lui-même. L’exécution automatique est facultative via `V2_TABLE_QUERY_OPS_AUTO_ACCEPT=auto` et, même dans ce cas, elle s’applique uniquement aux petites Tables dont le plan d’exécution montre une nette amélioration des coûts. Tout le reste attend un administrateur.</Info>
+L’onglet **Index de filtre / tri** répertorie les index physiques qui servent les conditions de filtre et les tris de cette Table, chacun avec sa validité, l’indication de gestion par Teable, sa taille et sa définition. Ils sont gérés séparément des index de recherche par sous-chaîne.
 
-### Ajouter l’index proposé
+En dessous, les **Actions en attente** regroupent les recommandations d’index du système et précisent si des éléments de plan les étayent. **Examiner la création d’index** montre l’index proposé, la base de données d’exécution et les éléments probants ; après votre confirmation, Teable exécute `CREATE INDEX CONCURRENTLY` de façon asynchrone. Les grandes Tables et celles de taille inconnue exigent ici aussi la confirmation de la fenêtre de maintenance.
 
-Lorsqu’une recommandation propose un index avec lequel vous êtes d’accord, cliquez sur **Ajouter un index** dans la ligne. La confirmation accepte la recommandation et exécute `CREATE INDEX CONCURRENTLY` sur la Table PostgreSQL sous-jacente ; si la validation du plan a été ignorée, Teable crée tout de même l’index à partir des Champs recommandés. La boîte de dialogue répète les éléments probants afin que vous puissiez les vérifier une dernière fois.
+<Info>Cette page ne supprime pas d’index. Les index non gérés et les index système peuvent protéger des contraintes ou servir d’autres charges de travail ; ils ne sont pas touchés.</Info>
 
-Pour une Table estimée à 50 000 lignes ou plus, la boîte de dialogue vous demande de confirmer qu’une fenêtre de maintenance est prévue avant que le bouton ne devienne disponible. Une création concurrente sur une grande Table prend du temps et ajoute de la charge pendant son exécution.
+## Diagnostiquer des requêtes précises
 
-Teable indique ensuite **Index créé** ou **Recommandation acceptée et mise en file d’attente**. Dans le second cas, suivez la tâche sous **Tâches**. Si la recommandation ne possède aucune colonne physique exécutable associée, **Ajouter un index** reste désactivé et l’indique ; utilisez plutôt l’espace de travail d’analyse pour approfondir.
+Lorsqu’une Table est signalée comme lente sans recommandation associée, ouvrez l’onglet **Diagnostic des requêtes** et choisissez **Analyser les requêtes**. L’analyse lit uniquement les formes de requêtes enregistrées et les éléments de plan disponibles ; elle ne crée rien.
 
-## Exécuter une analyse approfondie
+La conclusion est **Opportunités d’index étayées par un plan trouvées**, **Aucune opportunité d’index confirmée par les plans disponibles** ou **Éléments insuffisants**. Des éléments insuffisants ne signifient pas qu’un balayage séquentiel a eu lieu : une observation lente ne prouve pas à elle seule que le chemin d’accès est en cause. En dessous figure chaque requête concernée, avec l’origine (trafic réel ou configuration de Vue enregistrée) et le coût de plan estimé avant et après l’index proposé (coût de plan, pas des millisecondes).
 
-Ouvrez **Espace de travail d’analyse** pour analyser un périmètre à la demande, par exemple lorsqu’un utilisateur signale une Table lente qui n’a pas encore de recommandation.
+## Suivre les résultats
 
-| Type d’analyse | Utilisez-le pour |
-| --- | --- |
-| **Requêtes et index** | Identifier les risques liés aux requêtes et les améliorations possibles des index. |
-| **Recherche de sous-chaînes** | Vérifier si un chemin d’accès de recherche de sous-chaînes pourrait accélérer les recherches contenant une sous-chaîne sans modifier leur comportement de correspondance. |
+L’onglet **Tâches / historique** comporte trois parties :
 
-Choisissez **Table**, **Base** ou **Espace**, saisissez l’ID correspondant et sélectionnez un type d’analyse. Commencez par **Table** lorsque vous savez déjà quelle Table est lente.
+- **Tâches** : les tâches d’arrière-plan de cette Table, avec statut, nombre de tentatives, type de tâche et cause de l’échec. Lorsqu’une tâche a fini par réussir après un échec, l’erreur est signalée comme une tentative antérieure.
+- **Historique de configuration de recherche** : le fournisseur, le statut et la liste des Champs de chaque configuration de couverture passée.
+- **Historique des recommandations** : les recommandations acceptées, écartées ou remplacées.
 
-Cliquez sur **Générer le rapport de requêtes** ou **Générer le rapport de recherche**. Le rapport résume les risques détectés et les prochaines actions recommandées. Pour un rapport de recherche, **EXPLAIN d’une recherche d’exemple** est facultatif. Ajoutez un exemple pour vérifier la compatibilité des résultats, les plans de requête et les temps de requête répétés pour le chemin d’accès de recherche de sous-chaînes proposé. Teable n’enregistre pas la valeur de l’exemple.
+L’historique ne charge que les entrées les plus récentes. S’il y en a davantage, une ligne au-dessus de la liste en donne le total.
 
-<Info>Le rapport de requêtes ne modifie pas la base de données. L’application d’une recommandation de recherche de sous-chaînes nécessite un **EXPLAIN d’une recherche d’exemple** et la confirmation d’un administrateur.</Info>
-
-Pour une grande Table, examinez l’impact et planifiez toute modification confirmée pendant une fenêtre de maintenance appropriée.
-
+<Info>Tant qu’une tâche est en file d’attente ou en cours sur une Table, les boutons de configuration de la recherche et de création d’index restent désactivés. Attendez la fin de la tâche.</Info>
