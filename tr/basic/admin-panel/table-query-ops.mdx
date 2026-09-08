@@ -1,85 +1,74 @@
 ---
 title: "Tablo Sorgusu İşlemleri"
-description: "Yavaş Tablolara yönelik sorgu riski önerilerini inceleyin ve veritabanı iyileştirmelerini onaylayın."
+description: "Arama kapsamını ve dizinleri Tablo bazında inceleyin, aramayı yapılandırın, dizin oluşturun ve sonuçları izleyin."
 ---
 
 <Tip>Kendi sunucunuzda barındırılan Business ve üzeri planlarda kullanılabilir</Tip>
 
 Yol: Yönetici Paneli → Tablo Sorgusu İşlemleri
 
-Büyük bir Tablodaki Görünümler, filtreler, ilişkiler veya aramalar yavaşladığında **Tablo Sorgusu İşlemlerini** kullanın. Arka plan analiz aracı sorgu iş yükünü izler ve gözlemlerini önerilere dönüştürür. Sayfa bu önerileri listeler; böylece örnek yöneticileri kanıtları inceleyebilir, belirli bir Tabloyu daha ayrıntılı analiz edebilir ve veritabanında yapılacak değişiklikleri onaylayabilir.
+Büyük bir Tablodaki Görünümler, filtreler, ilişkiler veya aramalar yavaşladığında **Tablo araması ve dizinleri** bölümünü kullanın. Teable sorgu iş yükünü arka planda izler ve her Tabloyu özetler: şu anda nasıl arandığı, hangi Alanların kapsandığı, hangi fiziksel dizinlerin bulunduğu ve son dönemde kaç yavaş sorgu görüldüğü. Örnek yöneticileri arama kapsamını burada yapılandırır, dizin oluşturur ve sonuçları izler.
 
-Listenin üzerindeki sayaçlar mevcut durumu özetler: gözlem aralıkları, istekler, yavaş sorgular, zaman aşımları, açık ve kabul edilmiş öneriler, devam eden ve başarısız görevler ile hazır veya performansı düşmüş arama erişim yollarının sayısı.
+<Info>Sayfa yalnızca görev kuyruğa alır; veritabanını hiçbir zaman doğrudan değiştirmez. Her değişiklik arka planda eşzamansız çalışır, bu yüzden sonucu **Görevler / geçmiş** bölümünden doğrulayın.</Info>
 
-## Önerileri İnceleme
+## Üzerinde çalışılacak Tabloyu bulma
 
-Sayfa, önceliğe göre sıralanmış **Öneriler** sekmesinde açılır. Analiz aracı bir sorgunun riskini Tablonun kullanım yoğunluğuyla birlikte değerlendirir; böylece işlem yapılması en faydalı girdiler ilk sırada gösterilir.
+Sayfa Tablo listesiyle açılır. Üstteki durum düğmeleri kendi sayılarını taşır ve listeyi daraltır:
 
-Tüm önerileri filtrelemek için Tablo, Veritabanı veya Alan kimliğiyle arama yapın; diğer metinler yalnızca ekranda bulunanları filtreler. Durum ve risk filtreleri listeyi daha da daraltır.
-
-Her girdi ait olduğu Alanı, Veritabanını ve Tabloyu belirtir. Önerinin arkasındaki kanıtları, sistem kararını ve SQL tanılama bilgilerini okumak için bir satırı genişletin:
-
-| Bölüm | Verdiği bilgiler |
+| Durum | Anlamı |
 | --- | --- |
-| **Tetikleyici** | Önerinin kaynağı: gözlemlenen sorgu trafiği, kaydedilmiş bir Görünüm yapılandırması veya ilişki Alanı yapılandırması. Kaydedilmiş Görünüm tetikleyicisi, henüz yavaş bir sorgu gözlemlenmediği ve riski yalnızca yapılandırmanın ortaya çıkardığı anlamına gelir. |
-| **Erişim yolu** | Bu Tabloya sıralı tarama ve dizin taramasıyla ne sıklıkta erişildiği. |
-| **Nedenler** | Büyük Tablo, filtre veya sıralama Alanlarında kullanışlı bir dizinin bulunmaması, maliyetli sıralama veya gözlemlenen zaman aşımları gibi okunabilir nedenler. |
-| **Sorgu yapısı** | Her birinin kullandığı eşleşme türüyle birlikte filtrelenen ve sıralanan belirli Alanlar. |
-| **Önerilen dizin** | Önerinin dizine ekleyeceği Alanlar ve nedeni. |
+| **Tüm tablolar** | Gözlemlenen bütün Tablolar. |
+| **Dikkat gerektiriyor** | Yavaş sorgusu, zaman aşımı, bekleyen önerisi veya başarısız görevi olan Tablolar. Buradan başlayın. |
+| **Dizinli arama** | Arama kapsamı zaten yapılandırılmış Tablolar. |
+| **Yapılandırılmamış** | Henüz arama kapsamı olmayan Tablolar. |
+| **Kullanılamıyor** | Şu anda dizinli aramayı kullanamayan Tablolar. Satırda nedeni yazar. |
 
-**Derin analiz**, ilgili Tablo önceden doldurulmuş olarak analiz çalışma alanını açar.
+Arama kutusu Tablo, Veritabanı ve Alan adlarını veya kimliklerini kabul eder. Sıralama **En çok yavaş sorgu** ya da **Tablo adı** şeklindedir. **Gözlem penceresi** son 1 saati, 24 saati veya 7 günü kapsar ve listedeki tüm gözlem değerleri bu pencereyi izler.
 
-Analiz aracı bir Tablonun tamamında yoğun alt dize araması algıladığında Alan başına dizin yerine tüm Tablo için tek bir **oluşturulmuş metin GIN** önerisi sunar. Böyle bir satırda **Derin analiz** yerine **Arama yolu oluştur** seçeneği bulunur. **Dizin ekle** ise gösterilmez. Tablo bu yola sahip olduğunda öneri kendiliğinden kapanır.
+Her satırda Tablonun tahmini satır sayısı ve boyutu, pencere içindeki istekler ve yavaş sorgular, geçerli arama yöntemi ve Alan kapsamı, filtre/sıralama dizinlerinin sayısı, bekleyen öneriler ile etkin görevlerin sayısı yer alır. Ayrıntı için Tablo adına tıklayın.
 
-**Arama yolu oluştur**, sayfadan çıkmadan tablo için bir deneme çalıştırması (dry run) yapan bir pencere açar. Pencerede adayın dizin sağlayıcısı, kapsanan alan sayısı, tahmini satır sayısı ve öncesi ile sonrası `EXPLAIN` maliyeti görünür. Pencerede belirtilen en az uzunlukta bir örnek arama terimi girin; bu terim yalnızca doğrulama için kullanılır ve saklanmaz. Büyük tablolarda bakım penceresi onay kutusunu da işaretleyin. Onayladığınızda Teable adayı yeniden doğrular ve arama yolunu etkinleştirir.
+## Arama kapsamını yapılandırma
 
-Analiz hiçbir aday üretmezse pencere nedenini açıklar ve hiçbir işlem yapmaz. Geniş tablolar reddedilir, çünkü Teable bunlar için tüm alanları kapsayan bir arama belgesi oluşturmaz; daha uzun bir arama terimi de bunu değiştirmez. Bu durumda **Seçili alanları analiz et**’e tıklayıp analiz çalışma alanında yalnızca kullanıcıların gerçekten aradığı alanları inceleyin.
+**Arama kapsamı** sekmesi Tablonun geçerli arama yöntemini, kapsanan Alan sayısını ve her Alanın kapsam durumunu gösterir. **Kapsanmayan alanları göster**, listeyi henüz dahil edilmemiş Alanlara indirger; **Uygun değil** olarak işaretlenen Alanlar alt dize arama dizinine katkı veremez.
 
-Yanında iki sekme daha bulunur:
+<Info>Kapsam açıkça belirlenir. Sonradan eklediğiniz Alanlar otomatik olarak dahil edilmez; bunları katmak için Tabloyu yeniden yapılandırın. Kapsam dışındaki aramalar veya çok kısa arama terimleri daha yavaş bir `ILIKE` taramasına geri döner.</Info>
 
-| Sekme | Gösterdiği bilgiler |
+Hiç yapılandırılmamış bir Tabloda **Aramayı yapılandır**, yapılandırılmış bir Tabloda **Seçimi güncelle / yeniden oluştur** seçeneğini kullanın. İletişim kutusu şunları ister:
+
+| Öğe | Ne gireceğiniz |
 | --- | --- |
-| **Yoğun Tablolar** | İstekler, yavaş sorgular, zaman aşımları ve en uzun sorgu süreleriyle birlikte en yoğun Tablolar. |
-| **Görevler** | Teable'ın oluşturduğu düzeltme görevleri; durum, denemeler, worker ve son hata bilgileriyle birlikte. |
+| **Arama sağlayıcısı** | `pg_bigm` veya `pg_trgm`. Uzantı eksikse iletişim kutusu neyin eksik olduğunu ve kimin kurabileceğini yazar. |
+| **Temsili arama metni** | Kullanıcılarınızın gerçekten arayacağı bir metin. Alt dize semantiğini denetler ve plan kanıtı toplar; hiçbir zaman kaydedilmez. Çok kısaysa iletişim kutusu gereken en az uzunluğu belirtir. |
+| **Alanlar** | Kullanıcıların gerçekten aradığı Alanları seçin. Geniş bir Tabloda hepsini seçmeyin; her Alan için arama belgesi oluşturmak pahalıdır. |
 
-Bir yapılandırma sorunu süreci engellediğinde listenin üzerinde bir başlık şeridi görünür: Çalışma zamanı bayrağı kapalıyken arama erişim yolları yapılandırılmış olabilir, bazı Tablolardaki erişim yolu güncelliğini yitirmiş veya yeniden oluşturulmayı bekliyor olabilir ve aramaları sessizce daha yavaş `ILIKE` taramasına dönmüş olabilir ya da kuyruktaki en eski görev, hiçbir worker'ın onu işlemediğini düşündürecek kadar uzun süredir bekliyor olabilir. Aşağıdaki öneriler üzerinde işlem yapmadan önce başlık şeridinde bildirilen sorunu düzeltin.
+**Analiz et ve prova çalıştır**, değişikliği işlemeden yürütür ve kapsanan Alan sayısını, tahmini satır sayısını, plan kanıtının olup olmadığını, oluşturma veya yeniden oluşturmanın etkisini bildirir. Tahminen 50.000 satır ve üzeri ya da boyutu bilinmeyen Tablolarda ayrıca bakım penceresi onayı gerekir. Ardından **Onayla ve görevi kuyruğa al** seçeneğini kullanın.
 
-### Karar Rozetini Okuma
+<Warning>Arama kapsamını oluşturmak veya yeniden oluşturmak bir arama sütunu ile GIN dizini üretir. Tablonun tamamını yeniden yazabilir, kilit tutabilir ve çalışırken dizinli arama kısa süre kesilir. Bunu bir bakım penceresine planlayın.</Warning>
 
-Her öneride sistemin öneri hakkında verdiği en son karar bulunur:
+İletişim kutusunun döndürdüğü şey görev makbuzudur, sonuç değil. Kutuyu kapatın ve görevi **Görevler / geçmiş** bölümünden izleyin. Aynı değişikliği yeniden gönderdiğinizde var olan görev döner.
 
-| Rozet | Anlamı |
-| --- | --- |
-| **Elle onay gerekiyor** | Bunu yalnızca bir yönetici uygulayabilir. |
-| **Gölge · otomatik çalıştırılabilirdi** | Öneri kabul ölçütlerini karşılıyor ancak otomatik yürütme etkinleştirilmediğinden hiçbir şey değişmedi. |
-| **Otomatik yürütülüyor** / **Otomatik yürütüldü** | Otomatik yürütme öneriyi kabul edip uyguladı. |
-| **Son doğrulama başarısız · bekleme süresi artıyor** | Otomatik değişiklik doğrulamadan geçmedi. Teable bu Tabloyu yeniden denemeden önce daha uzun süre bekler. |
-| **Bekleme döneminde** | Aynı kapsam kısa süre önce değiştirildiğinden sistem bekliyor. |
-| **Beklemede** / **Otomatik yürütme uygulanmadı** | Plan kanıtları veya Tablo boyutu otomatik yürütme eşiğini karşılamadı. |
+## Filtre ve sıralama dizinlerini yönetme
 
-<Info>Teable varsayılan olarak yalnızca kararları kaydeder ve öneri ile görev Kayıtları oluşturur; veritabanınızı kendiliğinden değiştirmez. Otomatik yürütme `V2_TABLE_QUERY_OPS_AUTO_ACCEPT=auto` aracılığıyla isteğe bağlı olarak etkinleştirilir ve bu durumda bile yalnızca yürütme planında belirgin bir maliyet iyileşmesi görülen küçük Tablolara uygulanır. Diğer tüm işlemler bir yöneticiyi bekler.</Info>
+**Filtre / sıralama dizinleri** sekmesi, bu Tablodaki filtre koşullarına ve sıralamalara hizmet eden fiziksel dizinleri geçerlilik, Teable tarafından yönetilip yönetilmediği, boyut ve tanım bilgileriyle listeler. Bunlar alt dize arama dizinlerinden ayrı yönetilir.
 
-### Önerilen Dizini Ekleme
+Altındaki **Bekleyen işlemler**, sistemin dizin önerilerini tutar ve her birinin plan kanıtıyla desteklenip desteklenmediğini belirtir. **Dizin oluşturmayı incele**, önerilen dizini, çalıştırılacağı veritabanını ve kanıtları gösterir; onayınızın ardından Teable `CREATE INDEX CONCURRENTLY` komutunu eşzamansız çalıştırır. Büyük ve boyutu bilinmeyen Tablolarda burada da bakım penceresi onayı gerekir.
 
-Bir öneride kabul ettiğiniz bir dizin sunulduğunda satırdaki **Dizin ekle** seçeneğine tıklayın. Onaylama, öneriyi kabul edip temel PostgreSQL Tablosunda `CREATE INDEX CONCURRENTLY` komutunu çalıştırır; plan doğrulaması atlanmışsa Teable yine de önerilen Alanlardan dizini oluşturur. İletişim kutusu, son kez kontrol edebilmeniz için kanıtları tekrar gösterir.
+<Info>Bu sayfa dizin silmez. Yönetilmeyen ve sistem dizinleri kısıtları koruyor ya da başka iş yüklerine hizmet ediyor olabilir, bu yüzden onlara dokunulmaz.</Info>
 
-50.000 veya daha fazla satır içerdiği tahmin edilen Tablolarda iletişim kutusu, düğme kullanılabilir olmadan önce bir bakım aralığının planlandığını onaylamanızı ister. Büyük bir Tabloda eş zamanlı derleme zaman alır ve çalışırken ek yük oluşturur.
+## Belirli sorguları tanılama
 
-Teable daha sonra **Dizin oluşturuldu** veya **Öneri kabul edildi ve kuyruğa alındı** sonucunu bildirir. İkinci durumda görevi **Görevler** bölümünden takip edin. Önerinin arkasında yürütülebilir bir fiziksel sütun yoksa **Dizin ekle** devre dışı kalır ve nedeni gösterir; bunun yerine analiz çalışma alanını kullanarak daha ayrıntılı inceleyin.
+Bir Tablo yavaş olarak bildirildiğinde ve bunu karşılayan bir öneri yoksa **Sorgu tanılama** sekmesini açıp **Sorguları analiz et** seçeneğini kullanın. Analiz yalnızca kayıtlı sorgu biçimlerini ve mevcut plan kanıtlarını okur; hiçbir şey oluşturmaz.
 
-## Derin Analiz Çalıştırma
+Sonuç şunlardan biridir: **Planla desteklenen dizin fırsatları bulundu**, **Mevcut planlar bir dizin fırsatını doğrulamıyor** veya **Yetersiz kanıt**. Yetersiz kanıt, sıralı tarama yapıldığı anlamına gelmez; tek başına yavaş bir gözlem, erişim yolunun sorumlu olduğunu göstermez. Altta, etkilenen her sorgu gerçek trafikten mi yoksa kayıtlı bir Görünüm yapılandırmasından mı geldiğiyle ve önerilen dizin öncesi ile sonrası tahmini plan maliyetiyle (milisaniye değil, plan maliyeti) listelenir.
 
-Örneğin bir kullanıcı henüz önerisi bulunmayan yavaş bir Tablo bildirdiğinde, isteğe bağlı olarak bir kapsamı analiz etmek için **Analiz çalışma alanını** açın.
+## Sonuçları izleme
 
-| Analiz türü | Kullanım amacı |
-| --- | --- |
-| **Sorgular ve dizinler** | Sorgu risklerini ve olası dizin iyileştirmelerini bulma. |
-| **Alt dize araması** | Alt dize araması erişim yolunun, eşleşme davranışını değiştirmeden içerir aramalarını hızlandırıp hızlandıramayacağını kontrol etme. |
+**Görevler / geçmiş** sekmesi üç bölümden oluşur:
 
-**Tablo**, **Veritabanı** veya **Alan** seçeneğini belirleyin, karşılık gelen kimliği girin ve bir analiz türü seçin. Hangi Tablonun yavaş olduğunu zaten biliyorsanız **Tablo** ile başlayın.
+- **Görevler**: bu Tablonun arka plan görevleri; durum, deneme sayısı, görev türü ve hata nedeniyle birlikte. Bir görev başarısızlıktan sonra sonunda başarılı olduysa hata, önceki deneme olarak işaretlenir.
+- **Arama yapılandırması geçmişi**: geçmiş kapsam yapılandırmalarının sağlayıcısı, durumu ve Alan listesi.
+- **Öneri geçmişi**: kabul edilen, yok sayılan veya yerini başkasına bırakan öneriler.
 
-**Sorgu raporu oluştur** veya **Arama raporu oluştur** seçeneğine tıklayın. Rapor, tespit edilen riskleri ve önerilen sonraki eylemleri özetler. Arama raporunda **EXPLAIN örnek araması** isteğe bağlıdır. Önerilen alt dize araması erişim yolunun sonuç uyumluluğunu, sorgu planlarını ve yinelenen sorgu zamanlamasını kontrol etmek için bir örnek ekleyin. Teable örnek değeri kaydetmez.
+Geçmiş yalnızca en yeni kayıtları yükler. Daha fazlası varsa listenin üstündeki satır toplam sayıyı verir.
 
-<Info>Sorgu raporu veritabanını değiştirmez. Bir alt dize araması önerisini uygulamak için **EXPLAIN örnek araması** ve yönetici onayı gerekir.</Info>
-
-Büyük bir Tablo için etkiyi inceleyin ve onaylanan değişiklikleri uygun bir bakım aralığına zamanlayın.
+<Info>Bir Tabloda kuyruğa alınmış veya çalışan bir görev varken, aramayı yapılandırma ve dizin oluşturma düğmeleri devre dışı kalır. Görevin bitmesini bekleyin.</Info>
