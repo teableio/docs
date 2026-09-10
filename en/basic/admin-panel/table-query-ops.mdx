@@ -21,7 +21,8 @@ The page opens on the table list. The state buttons across the top carry their o
 | --- | --- |
 | **All tables** | Every observed table. |
 | **Needs attention** | Tables with slow queries, timeouts, pending recommendations, or failed tasks. Start here. |
-| **Indexed search** | Tables that already have search coverage configured. |
+| **Indexed search** | Tables whose index metadata is published and usable and whose runtime switch is on, so search really runs on the index. |
+| **Configured search** | Tables with a saved search configuration or existing index metadata, including those not yet published. |
 | **Unconfigured** | Tables with no search coverage yet. |
 | **Unavailable** | Tables that cannot use indexed search right now. The row states why. |
 
@@ -29,13 +30,30 @@ The search box accepts table, Base, and Space names or IDs. Sorting is either **
 
 Each row gives the table's estimated rows and size, the requests and slow queries within the window, the current search method and field coverage, the number of filter/sort indexes, and the counts of pending recommendations and active tasks. Click a table name to open its detail.
 
+**About index states**, next to the state buttons, explains how these counts are measured.
+
+## Read the index state
+
+The table list and the table detail both show an index state next to the search method:
+
+| State | Meaning | What to do next |
+| --- | --- | --- |
+| **Not configured** | No saved search configuration and no index metadata. | Choose **Configure search** if the table needs indexed search. |
+| **Configured · pending publication** | The configuration is saved; the index is not published yet. | Check **Tasks / history** for a task still running. |
+| **Published · ready** | The index metadata is published and usable. | Nothing to do. |
+| **Unusable metadata** | The index metadata is broken and cannot serve search. | Run **Update selection / rebuild** again. |
+
+Two lines can appear below the state. **Configured: pg_bigm / pg_trgm** means the saved provider differs from the search method in use, and **Indexed-search runtime switch: off** means the index is ready but the runtime is off, so search still runs `ILIKE`.
+
+<Info>A published index does not mean every search hits it: a probe that is too short, or a field outside the coverage, still falls back to `ILIKE`. This page reports the state of the index, not proof that recent requests hit it.</Info>
+
 ## Configure search coverage
 
-The **Search coverage** tab shows the table's current search method, how many fields are covered, and the coverage state of each field. **Show uncovered fields** narrows the list to the fields not yet included; fields marked **Not eligible** cannot contribute to a substring search index.
+The **Search coverage** tab shows the table's current search method, how many fields are covered, and the **Serving coverage** of each field. **Show uncovered fields** narrows the list to the fields not yet included; fields marked **Not eligible** cannot contribute to a substring search index.
 
-<Info>Coverage is explicit. Fields you add later are not included automatically; configure the table again to bring them in. Searches outside the coverage, or with a probe that is too short, fall back to a slower `ILIKE` scan.</Info>
+<Info>Serving coverage requires published, usable index metadata and the runtime switch on; a saved configuration alone does not count. Coverage is explicit, so fields you add later are not included automatically; configure the table again to bring them in.</Info>
 
-Choose **Configure search** on a table that has never been configured, or **Update selection / rebuild** on one that has. The dialog asks for:
+Choose **Configure search** on a table that has never been configured, or **Update selection / rebuild** on one that has, which opens with the provider and field selection saved last time. The dialog asks for:
 
 | Item | What to enter |
 | --- | --- |

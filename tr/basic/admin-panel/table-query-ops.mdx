@@ -21,7 +21,8 @@ Sayfa Tablo listesiyle açılır. Üstteki durum düğmeleri kendi sayılarını
 | --- | --- |
 | **Tüm tablolar** | Gözlemlenen bütün Tablolar. |
 | **Dikkat gerektiriyor** | Yavaş sorgusu, zaman aşımı, bekleyen önerisi veya başarısız görevi olan Tablolar. Buradan başlayın. |
-| **Dizinli arama** | Arama kapsamı zaten yapılandırılmış Tablolar. |
+| **Dizinli arama** | Dizin meta verileri yayımlanmış ve kullanılabilir olan, çalışma zamanı anahtarı da açık olan Tablolar; arama gerçekten dizin üzerinden çalışır. |
+| **Yapılandırılmış arama** | Kaydedilmiş arama yapılandırması veya dizin meta verisi bulunan Tablolar; henüz yayımlanmamış olanlar dahil. |
 | **Yapılandırılmamış** | Henüz arama kapsamı olmayan Tablolar. |
 | **Kullanılamıyor** | Şu anda dizinli aramayı kullanamayan Tablolar. Satırda nedeni yazar. |
 
@@ -29,13 +30,30 @@ Arama kutusu Tablo, Veritabanı ve Alan adlarını veya kimliklerini kabul eder.
 
 Her satırda Tablonun tahmini satır sayısı ve boyutu, pencere içindeki istekler ve yavaş sorgular, geçerli arama yöntemi ve Alan kapsamı, filtre/sıralama dizinlerinin sayısı, bekleyen öneriler ile etkin görevlerin sayısı yer alır. Ayrıntı için Tablo adına tıklayın.
 
+Durum düğmelerinin yanındaki **Dizin durumları hakkında**, bu sayıların nasıl hesaplandığını açıklar.
+
+## Dizin durumunu okuma
+
+Tablo listesi ve Tablo ayrıntısı, arama yönteminin yanında Tablonun dizin durumunu gösterir:
+
+| Durum | Anlamı | Sonraki adım |
+| --- | --- | --- |
+| **Yapılandırılmamış** | Kaydedilmiş arama yapılandırması da dizin meta verisi de yok. | Tablo dizinli aramaya ihtiyaç duyuyorsa **Aramayı yapılandır** seçeneğini kullanın. |
+| **Yapılandırıldı · yayım bekleniyor** | Yapılandırma kaydedildi, dizin henüz yayımlanmadı. | **Görevler / geçmiş** bölümünde çalışan bir görev olup olmadığına bakın. |
+| **Yayımlandı · hazır** | Dizin meta verileri yayımlandı ve kullanılabilir. | Yapılacak bir şey yok. |
+| **Meta veri kullanılamıyor** | Dizin meta verileri bozuk ve aramaya hizmet edemiyor. | **Seçimi güncelle / yeniden oluştur** işlemini yeniden çalıştırın. |
+
+Durumun altında iki satır görünebilir. **Yapılandırıldı: pg_bigm / pg_trgm**, kaydedilen sağlayıcının kullanılan arama yönteminden farklı olduğunu; **Dizinli arama çalışma zamanı anahtarı: kapalı** ise dizin hazır olsa da çalışma zamanının kapalı olduğunu ve aramanın hâlâ `ILIKE` ile yürüdüğünü gösterir.
+
+<Info>Dizinin yayımlanmış olması her aramanın dizine düşeceği anlamına gelmez: çok kısa bir arama terimi veya kapsam dışındaki bir Alan yine `ILIKE` taramasına geri döner. Bu sayfa dizinin durumunu gösterir, son isteklerin dizine düştüğünü kanıtlamaz.</Info>
+
 ## Arama kapsamını yapılandırma
 
-**Arama kapsamı** sekmesi Tablonun geçerli arama yöntemini, kapsanan Alan sayısını ve her Alanın kapsam durumunu gösterir. **Kapsanmayan alanları göster**, listeyi henüz dahil edilmemiş Alanlara indirger; **Uygun değil** olarak işaretlenen Alanlar alt dize arama dizinine katkı veremez.
+**Arama kapsamı** sekmesi Tablonun geçerli arama yöntemini, kapsanan Alan sayısını ve her Alanın **Etkin kapsamını** gösterir. **Kapsanmayan alanları göster**, listeyi henüz dahil edilmemiş Alanlara indirger; **Uygun değil** olarak işaretlenen Alanlar alt dize arama dizinine katkı veremez.
 
-<Info>Kapsam açıkça belirlenir. Sonradan eklediğiniz Alanlar otomatik olarak dahil edilmez; bunları katmak için Tabloyu yeniden yapılandırın. Kapsam dışındaki aramalar veya çok kısa arama terimleri daha yavaş bir `ILIKE` taramasına geri döner.</Info>
+<Info>Etkin kapsam için dizin meta verilerinin yayımlanmış ve kullanılabilir olması, çalışma zamanı anahtarının da açık olması gerekir; yalnızca yapılandırmayı kaydetmek kapsama sayılmaz. Kapsam açıkça belirlendiğinden sonradan eklediğiniz Alanlar otomatik olarak dahil edilmez; bunları katmak için Tabloyu yeniden yapılandırın.</Info>
 
-Hiç yapılandırılmamış bir Tabloda **Aramayı yapılandır**, yapılandırılmış bir Tabloda **Seçimi güncelle / yeniden oluştur** seçeneğini kullanın. İletişim kutusu şunları ister:
+Hiç yapılandırılmamış bir Tabloda **Aramayı yapılandır**, yapılandırılmış bir Tabloda **Seçimi güncelle / yeniden oluştur** seçeneğini kullanın; bu seçenek en son kaydedilen sağlayıcı ve Alan seçimiyle açılır. İletişim kutusu şunları ister:
 
 | Öğe | Ne gireceğiniz |
 | --- | --- |

@@ -22,40 +22,22 @@ Décrivez une seule fois votre objectif et le flux de travail est prêt, sans au
 
 | Paramètre | Obligatoire | Description |
 |---|---|---|
-| Type de connexion | Oui | IMAP, Gmail ou Outlook |
+| Type de connexion | Oui | IMAP uniquement |
 | Intervalle de relève | Oui | Fréquence de recherche des nouveaux e-mails : de 10 à 60 minutes (10 par défaut) |
 
-## Types de connexion en détail
+## Connecter la boîte aux lettres
 
-### IMAP
-
-IMAP fonctionne avec tous les fournisseurs de messagerie qui prennent en charge le protocole IMAP, notamment les serveurs de messagerie auto-hébergés, les messageries d’entreprise et les fournisseurs tels que Yahoo ou Zoho.
+Le déclencheur se connecte en IMAP et fonctionne donc avec tous les fournisseurs qui prennent en charge le protocole : serveurs auto-hébergés, messageries d’entreprise, fournisseurs tels que Yahoo ou Zoho, ainsi que Gmail et Outlook dès que l’IMAP est activé sur le compte.
 
 | Paramètre | Obligatoire | Description |
 |---|---|---|
 | Hôte | Oui | Adresse de votre serveur IMAP (par exemple, `imap.gmail.com`, `imap.mail.yahoo.com`) |
 | Port | Oui | Généralement 993 (SSL/TLS) ou 143 (non chiffré, déconseillé) |
 | Nom d’utilisateur | Oui | Votre adresse e-mail ou le nom d’utilisateur de votre compte |
-| Mot de passe | Oui | Votre mot de passe d’application (remarque : pas le mot de passe de votre messagerie) |
+| Mot de passe | Oui | Un secret accordé à cette automatisation, et non une valeur saisie dans le déclencheur |
 | Boîte aux lettres | Non | Dossier à surveiller (`INBOX` par défaut) |
 
-### Gmail (OAuth)
-
-La connexion s’effectue au moyen du flux OAuth de Google. Aucun mot de passe n’est nécessaire : vous autorisez Teable à accéder à votre compte Gmail.
-
-| Paramètre | Obligatoire | Description |
-|---|---|---|
-| Compte Google | Oui | Autorisation via OAuth : Teable demande un accès en lecture seule |
-| Libellé | Non | Sélectionnez le libellé Gmail à surveiller (Boîte de réception par défaut) |
-
-### Outlook (OAuth)
-
-La connexion s’effectue au moyen du flux OAuth de Microsoft pour les boîtes aux lettres Outlook et Microsoft 365.
-
-| Paramètre | Obligatoire | Description |
-|---|---|---|
-| Compte Microsoft | Oui | Autorisation via OAuth : Teable demande un accès en lecture seule |
-| Dossier | Non | Sélectionnez le dossier Outlook à surveiller (Boîte de réception par défaut) |
+Pour le mot de passe, cliquez sur **Sélectionner un secret** afin de choisir l’un des secrets accordés à cette automatisation, ou sur **Ajouter un secret** pour en créer un (nom de variable par défaut `IMAP_PASSWORD`). Enregistrez-y le mot de passe d’application ou le code d’autorisation, et non le mot de passe de connexion à la messagerie ; le déclencheur ne conserve que la référence au secret.
 
 ## Données de l’e-mail accessibles aux étapes suivantes
 
@@ -77,7 +59,7 @@ Vous pouvez référencer n’importe laquelle de ces données en cliquant sur **
 1. Ouvrez votre automatisation et ajoutez un nouveau déclencheur.
 2. Sélectionnez **À la réception d’un e-mail**.
 3. Choisissez **IMAP** comme type de connexion.
-4. Saisissez les informations de votre serveur IMAP : hôte, port, nom d’utilisateur et mot de passe.
+4. Saisissez l’hôte, le port et le nom d’utilisateur de votre serveur IMAP, puis sélectionnez ou ajoutez le secret qui contient le mot de passe.
 5. (Facultatif) Modifiez la **Boîte aux lettres** si vous souhaitez surveiller un autre dossier que INBOX.
 6. Définissez l’**Intervalle de relève**, c’est-à-dire la fréquence de recherche des nouveaux e-mails. Un intervalle plus court permet de réagir plus vite, mais sollicite le serveur plus fréquemment.
 7. Cliquez sur **Tester** pour vérifier la connexion. Teable tentera de se connecter à votre boîte aux lettres et vous indiquera si la tentative a réussi ou échoué.
@@ -95,16 +77,16 @@ Vous pouvez référencer n’importe laquelle de ces données en cliquant sur **
 ## Résolution des problèmes
 
 - **Échec de la connexion (IMAP) :** vérifiez l’hôte, le port, le nom d’utilisateur et le mot de passe. Assurez-vous que votre fournisseur de messagerie autorise l’accès IMAP : certains le désactivent par défaut.
-- **Gmail : erreur « Application moins sécurisée » :** Gmail n’autorise pas la connexion avec un simple mot de passe. Utilisez plutôt un **mot de passe d’application**. Consultez [Configurer Gmail IMAP](/fr/basic/automation/trigger/email/gmail-imap) pour obtenir des instructions.
+- **Gmail : erreur « Application moins sécurisée » :** Gmail n’autorise pas la connexion avec un simple mot de passe. Enregistrez plutôt un **mot de passe d’application** comme secret. Consultez [Configurer Gmail IMAP](/fr/basic/automation/trigger/email/gmail-imap) pour obtenir des instructions.
 - **Les e-mails ne sont pas récupérés :** vérifiez l’intervalle de relève. Vérifiez également que les e-mails arrivent bien dans le dossier ou sous le libellé surveillé. Les e-mails placés dans des sous-dossiers ou associés à des libellés filtrés peuvent être ignorés si la mauvaise boîte aux lettres est sélectionnée.
 - **Traitement en double :** le déclencheur mémorise les e-mails déjà traités. Toutefois, si vous désactivez puis réactivez l’automatisation, il peut traiter de nouveau des e-mails récents. Marquez-les comme lus dans votre boîte de réception si nécessaire.
-- **Jeton OAuth expiré :** pour Gmail ou Outlook, autorisez de nouveau la connexion si le jeton OAuth a expiré. Cela se produit généralement après plusieurs mois ou si vous révoquez les autorisations de l’application.
 
 ## Conseils
 
 - Un intervalle de relève plus court permet de réagir plus rapidement aux e-mails, sans toutefois garantir un traitement en temps réel. Pour un véritable traitement en temps réel, envisagez une approche fondée sur les webhooks si votre fournisseur de messagerie les prend en charge.
 - Utilisez les filtres de votre client de messagerie pour acheminer les e-mails pertinents vers un libellé ou un dossier précis, puis demandez à Teable de surveiller uniquement cet emplacement. Vous réduirez ainsi le bruit.
 - Pour les boîtes aux lettres à fort volume, envisagez d’augmenter l’intervalle de relève et de traiter les e-mails par lots afin de ne pas surcharger votre flux de travail.
+- Un déclencheur qui conserve un mot de passe saisi auparavant continue de fonctionner, et le champ affiche **Mot de passe défini. Choisissez un secret pour le remplacer.** Le prochain changement de ce mot de passe devra passer par un secret.
 
 ## Pages associées
 
@@ -112,3 +94,4 @@ Vous pouvez référencer n’importe laquelle de ces données en cliquant sur **
 - [Action Générer avec l’IA](/fr/basic/automation/actions/ai/ai-generate) — utile pour extraire des données structurées du contenu des e-mails
 - [Action Créer un enregistrement](/fr/basic/automation/actions/records/create-record) — souvent associée aux déclencheurs d’e-mail pour consigner les e-mails sous forme d’enregistrements
 - [Envoyer un e-mail](/fr/basic/automation/actions/communication/send-email-overview)
+- [Identifiants et intégrations](/fr/basic/credential) — gérer les secrets et les accorder à une automatisation

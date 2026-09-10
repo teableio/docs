@@ -33,6 +33,7 @@ Per impostazione predefinita, le email vengono inviate tramite il servizio di po
 | CC | No | Destinatari in copia conoscenza |
 | CCN | No | Destinatari in copia conoscenza nascosta |
 | Rispondi a | No | L'indirizzo a cui rispondono i destinatari, se diverso da quello del mittente |
+| Server Email Personalizzato | No | Invia questa azione tramite un account SMTP specifico, senza toccare le altre automazioni |
 
 \* È obbligatorio specificare almeno uno tra **A** e **CCN**.
 
@@ -50,6 +51,16 @@ Per impostazione predefinita, le email vengono inviate tramite il servizio di po
    - **Variabili dinamiche** — fai clic su **+** in qualsiasi punto del corpo per inserire valori provenienti dai passaggi precedenti.
 5. (Facoltativo) Imposta **Nome mittente**, **CC**, **CCN** o **Rispondi a** secondo necessità.
 6. Salva l'azione.
+
+### Assegnare a questa azione un SMTP dedicato
+
+Per inviare solo questa azione tramite un altro account SMTP, fai clic su **Aggiungi Configurazione** sotto **Server Email Personalizzato** e inserisci indirizzo del server, porta, nome utente e dati del mittente.
+
+La password non si digita più qui: fai clic su **Seleziona un segreto** per scegliere uno dei segreti concessi a questa automazione, oppure su **Aggiungi segreto** per crearne uno (nome variabile predefinito `SMTP_PASSWORD`; un secondo account SMTP nello stesso flusso diventa `SMTP_PASSWORD_2`). L'azione conserva un riferimento, quindi il valore in chiaro non entra nella configurazione del flusso e la cronologia delle esecuzioni e le esportazioni lo mostrano mascherato.
+
+**Reimposta** svuota la configurazione e l'azione torna al server di posta predefinito.
+
+<Info>Questa finestra non invia email di prova. A configurazione completata, esegui il flusso una volta per verificare l'invio.</Info>
 
 ## Uso delle variabili nell'oggetto e nel corpo
 

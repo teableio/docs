@@ -72,7 +72,7 @@ Puoi scaricare l'intera app come archivio ZIP in qualsiasi momento:
 2. Fai clic sul menu **`...`** nella barra delle schede.
 3. Seleziona **Scarica codice** per salvare un archivio ZIP che include tutti i file sorgente.
 
-Se l'app utilizza variabili di ambiente personalizzate, l'archivio scaricato può includere un file `.env` nella radice. Esaminalo prima di condividere il file ZIP.
+L'archivio contiene nella radice un file `.env` con le sole variabili di runtime iniettate dalla piattaforma, token di accesso compreso; le credenziali concesse all'app non ne fanno parte. Esamina il contenuto prima di condividere il file ZIP.
 
 #### Importare il codice
 Puoi aggiornare il codice dell'app importando un file ZIP:
@@ -175,13 +175,13 @@ Per eseguire l'app sul tuo computer:
   <Step title="Avvia l'app">Esegui `pnpm dev`.</Step>
 </Steps>
 
-Il contenuto copiato corrisponde a ciò che l'app riceve nella sandbox di Teable: le credenziali concesse all'app e le variabili inserite dalla piattaforma per l'endpoint API, il token di accesso e l'accesso IA dell'app.
+Viene copiato solo ciò che la piattaforma inietta come variabili di runtime: endpoint API, token di accesso e variabili per l'accesso IA. Sotto il pulsante compare la nota **Solo le variabili di runtime iniettate dalla piattaforma: le credenziali concesse non sono incluse**. Le credenziali concesse all'app non escono da Teable: se servono all'esecuzione locale, aggiungi tu i valori nel file `.env`.
 
 <Warning>
 La riga `TEABLE_APP_TOKEN` in tale file concede l'accesso ai dati dell'app; per questo motivo soltanto i membri con accesso in modifica all'app possono copiarla. Non eseguire mai il commit del file e non incollarlo mai in un problema o in una pull request.
 </Warning>
 
-Per aggiungere o sostituire una credenziale, usa **Credenziali e configurazione** in Teable anziché il file locale. Un file `.env` sottoposto a commit su GitHub non crea né aggiorna una credenziale. Dopo aver modificato una credenziale, copia nuovamente le variabili per aggiornare il file `.env` locale.
+Per aggiungere o sostituire una credenziale usata dall'app in produzione, usa **Credenziali e configurazione** in Teable: modificare il file locale o sottoporre a commit un `.env` su GitHub non ha effetto. Quando cambia una variabile di piattaforma, ad esempio dopo aver rigenerato il token di accesso, copia di nuovo le variabili per aggiornare il file `.env` locale.
 
 ### Scollegare il repository
 

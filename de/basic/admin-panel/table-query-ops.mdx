@@ -21,7 +21,8 @@ Die Seite öffnet sich mit der Tabellenliste. Die Statusschaltflächen oben trag
 | --- | --- |
 | **Alle Tabellen** | Alle beobachteten Tabellen. |
 | **Aufmerksamkeit nötig** | Tabellen mit langsamen Abfragen, Zeitüberschreitungen, offenen Empfehlungen oder fehlgeschlagenen Aufgaben. Beginnen Sie hier. |
-| **Indizierte Suche** | Tabellen, für die bereits eine Suchabdeckung konfiguriert ist. |
+| **Indizierte Suche** | Tabellen, deren Indexmetadaten veröffentlicht und nutzbar sind und deren Laufzeitschalter an ist, deren Suche also wirklich über den Index läuft. |
+| **Konfigurierte Suche** | Tabellen mit gespeicherter Suchkonfiguration oder vorhandenen Indexmetadaten, auch noch nicht veröffentlichte. |
 | **Nicht konfiguriert** | Tabellen ohne Suchabdeckung. |
 | **Nicht verfügbar** | Tabellen, die derzeit keine indizierte Suche nutzen können. Die Zeile nennt den Grund. |
 
@@ -29,13 +30,30 @@ Das Suchfeld akzeptiert Namen oder IDs von Tabellen, Bases und Spaces. Sortiert 
 
 Jede Zeile nennt geschätzte Zeilenzahl und Größe der Tabelle, Anfragen und langsame Abfragen im Fenster, die aktuelle Suchmethode samt Feldabdeckung, die Anzahl der Filter-/Sortierindizes sowie offene Empfehlungen und aktive Aufgaben. Ein Klick auf den Tabellennamen öffnet die Detailansicht.
 
+Neben den Statusschaltflächen erklärt **Über Indexzustände**, wie diese Zahlen gezählt werden.
+
+## Indexzustand lesen
+
+Tabellenliste und Detailansicht zeigen neben der Suchmethode den Indexzustand der Tabelle:
+
+| Zustand | Bedeutung | Nächster Schritt |
+| --- | --- | --- |
+| **Nicht konfiguriert** | Keine gespeicherte Suchkonfiguration und keine Indexmetadaten. | Wählen Sie **Suche konfigurieren**, wenn die Tabelle indizierte Suche braucht. |
+| **Konfiguriert · Veröffentlichung ausstehend** | Die Konfiguration ist gespeichert, der Index noch nicht veröffentlicht. | Prüfen Sie unter **Aufgaben / Verlauf**, ob noch eine Aufgabe läuft. |
+| **Veröffentlicht · bereit** | Die Indexmetadaten sind veröffentlicht und nutzbar. | Nichts zu tun. |
+| **Metadaten unbrauchbar** | Die Indexmetadaten sind defekt und können die Suche nicht bedienen. | Führen Sie **Auswahl aktualisieren / neu aufbauen** erneut aus. |
+
+Unter dem Zustand können zwei Zeilen erscheinen: **Konfiguriert: pg_bigm / pg_trgm** bedeutet, dass der gespeicherte Anbieter von der aktuell verwendeten Suchmethode abweicht, und **Laufzeitschalter für indizierte Suche: aus** bedeutet, dass der Index bereit ist, die Laufzeit aber aus ist und die Suche weiterhin `ILIKE` verwendet.
+
+<Info>Ein veröffentlichter Index bedeutet nicht, dass jede Suche ihn trifft: Ein zu kurzer Suchbegriff oder ein Feld außerhalb der Abdeckung fällt weiterhin auf `ILIKE` zurück. Diese Seite zeigt den Zustand des Index, nicht den Nachweis, dass ihn kürzlich Anfragen getroffen haben.</Info>
+
 ## Suchabdeckung konfigurieren
 
-Der Tab **Suchabdeckung** zeigt die aktuelle Suchmethode der Tabelle, die Anzahl der abgedeckten Felder und den Abdeckungsstatus jedes Felds. **Nicht abgedeckte Felder anzeigen** beschränkt die Liste auf die noch nicht einbezogenen Felder; Felder mit der Kennzeichnung **Nicht geeignet** können nicht zu einem Substring-Suchindex beitragen.
+Der Tab **Suchabdeckung** zeigt die aktuelle Suchmethode der Tabelle, die Anzahl der abgedeckten Felder und die **Aktive Abdeckung** jedes Felds. **Nicht abgedeckte Felder anzeigen** beschränkt die Liste auf die noch nicht einbezogenen Felder; Felder mit der Kennzeichnung **Nicht geeignet** können nicht zu einem Substring-Suchindex beitragen.
 
-<Info>Die Abdeckung wird ausdrücklich festgelegt. Später hinzugefügte Felder kommen nicht automatisch hinzu, konfigurieren Sie die Tabelle erneut, um sie aufzunehmen. Suchen außerhalb der Abdeckung oder mit zu kurzem Suchbegriff fallen auf einen langsameren `ILIKE`-Scan zurück.</Info>
+<Info>Aktive Abdeckung setzt veröffentlichte, nutzbare Indexmetadaten und einen eingeschalteten Laufzeitschalter voraus; eine gespeicherte Konfiguration allein zählt nicht. Die Abdeckung wird ausdrücklich festgelegt, später hinzugefügte Felder kommen also nicht automatisch hinzu, konfigurieren Sie die Tabelle erneut, um sie aufzunehmen.</Info>
 
-Wählen Sie **Suche konfigurieren** bei einer noch nicht konfigurierten Tabelle oder **Auswahl aktualisieren / neu aufbauen** bei einer bereits konfigurierten. Der Dialog fragt Folgendes ab:
+Wählen Sie **Suche konfigurieren** bei einer noch nicht konfigurierten Tabelle oder **Auswahl aktualisieren / neu aufbauen** bei einer bereits konfigurierten, wobei der Dialog mit dem zuletzt gespeicherten Anbieter und der zuletzt gespeicherten Feldauswahl öffnet. Der Dialog fragt Folgendes ab:
 
 | Angabe | Was Sie eintragen |
 | --- | --- |

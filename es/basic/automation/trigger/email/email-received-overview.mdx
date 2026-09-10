@@ -22,40 +22,22 @@ Describe el objetivo una sola vez y el flujo de trabajo estará listo, sin neces
 
 | Ajuste | Obligatorio | Descripción |
 |---|---|---|
-| Tipo de conexión | Sí | IMAP, Gmail u Outlook |
+| Tipo de conexión | Sí | Solo IMAP |
 | Intervalo de consulta | Sí | Frecuencia con la que se comprueban los correos nuevos: de 10 a 60 minutos (10 de forma predeterminada) |
 
-## Tipos de conexión en detalle
+## Conectar el buzón
 
-### IMAP
-
-IMAP funciona con cualquier proveedor de correo electrónico compatible con el protocolo IMAP, incluidos servidores de correo autoalojados, correo corporativo y proveedores como Yahoo o Zoho.
+El disparador se conecta por IMAP, así que funciona con cualquier proveedor compatible con el protocolo: servidores de correo autoalojados, correo corporativo, proveedores como Yahoo o Zoho y también Gmail y Outlook una vez que la cuenta tiene IMAP habilitado.
 
 | Ajuste | Obligatorio | Descripción |
 |---|---|---|
 | Host | Sí | Dirección de tu servidor IMAP (p. ej., `imap.gmail.com`, `imap.mail.yahoo.com`) |
 | Puerto | Sí | Normalmente 993 (SSL/TLS) o 143 (sin cifrar, no recomendado) |
 | Nombre de usuario | Sí | Tu dirección de correo electrónico o nombre de usuario de la cuenta |
-| Contraseña | Sí | Tu contraseña de aplicación (ten en cuenta que no es la contraseña de tu correo electrónico) |
+| Contraseña | Sí | Un secreto concedido a esta automatización, no un valor escrito en el disparador |
 | Buzón | No | Carpeta que se supervisará (`INBOX` de forma predeterminada) |
 
-### Gmail (OAuth)
-
-Se conecta mediante el flujo OAuth de Google. No se necesita contraseña: autorizas a Teable a acceder a tu cuenta de Gmail.
-
-| Ajuste | Obligatorio | Descripción |
-|---|---|---|
-| Cuenta de Google | Sí | Autoriza mediante OAuth; Teable solicita acceso de solo lectura |
-| Etiqueta | No | Selecciona una etiqueta de Gmail para supervisarla (Recibidos de forma predeterminada) |
-
-### Outlook (OAuth)
-
-Se conecta mediante el flujo OAuth de Microsoft para buzones de Outlook y Microsoft 365.
-
-| Ajuste | Obligatorio | Descripción |
-|---|---|---|
-| Cuenta de Microsoft | Sí | Autoriza mediante OAuth; Teable solicita acceso de solo lectura |
-| Carpeta | No | Selecciona una carpeta de Outlook para supervisarla (Recibidos de forma predeterminada) |
+Para la contraseña, haz clic en **Selecciona un secreto** y elige uno de los secretos concedidos a esta automatización, o en **Añadir secreto** para crear uno (nombre de variable predeterminado `IMAP_PASSWORD`). Guarda ahí la contraseña de aplicación o el código de autorización, no la contraseña de acceso al buzón; el disparador conserva solo la referencia al secreto.
 
 ## Datos del correo electrónico disponibles para los pasos siguientes
 
@@ -77,7 +59,7 @@ Puedes hacer referencia a cualquiera de ellos haciendo clic en **+** en los Camp
 1. Abre tu Automatización y añade un disparador nuevo.
 2. Selecciona **Cuando se recibe un correo electrónico**.
 3. Elige **IMAP** como tipo de conexión.
-4. Introduce los datos de tu servidor IMAP: host, puerto, nombre de usuario y contraseña.
+4. Introduce el host, el puerto y el nombre de usuario de tu servidor IMAP, y selecciona o añade el secreto que guarda la contraseña.
 5. (Opcional) Cambia el **Buzón** si quieres supervisar una carpeta distinta de INBOX.
 6. Establece el **Intervalo de consulta**, es decir, la frecuencia con la que se comprobarán los correos nuevos. Un intervalo más corto ofrece respuestas más rápidas, pero realiza comprobaciones más frecuentes en el servidor.
 7. Haz clic en **Probar** para verificar la conexión. Teable intentará conectarse a tu buzón e indicará si la operación se realizó correctamente o falló.
@@ -95,16 +77,16 @@ Puedes hacer referencia a cualquiera de ellos haciendo clic en **+** en los Camp
 ## Solución de problemas
 
 - **Error de conexión (IMAP):** vuelve a comprobar el host, el puerto, el nombre de usuario y la contraseña. Asegúrate de que tu proveedor de correo permite el acceso IMAP; algunos proveedores lo deshabilitan de forma predeterminada.
-- **Gmail: error de «aplicación menos segura»:** Gmail no permite iniciar sesión con una contraseña normal. Usa una **Contraseña de aplicación**. Consulta [Configurar IMAP de Gmail](/es/basic/automation/trigger/email/gmail-imap) para ver las instrucciones.
+- **Gmail: error de «aplicación menos segura»:** Gmail no permite iniciar sesión con una contraseña normal. Guarda una **Contraseña de aplicación** como secreto. Consulta [Configurar IMAP de Gmail](/es/basic/automation/trigger/email/gmail-imap) para ver las instrucciones.
 - **No se recogen los correos:** comprueba el intervalo de consulta. Confirma también que los correos llegan a la carpeta o etiqueta supervisada. Los correos de subcarpetas o etiquetas filtradas pueden omitirse si se selecciona el buzón equivocado.
 - **Procesamiento duplicado:** el disparador registra qué correos ya ha procesado. Sin embargo, si desactivas y vuelves a activar la Automatización, es posible que procese de nuevo correos recientes. Marca los correos como leídos en tu bandeja de entrada si es necesario.
-- **Token OAuth caducado:** en Gmail u Outlook, vuelve a autorizar la conexión si el token OAuth ha caducado. Esto suele ocurrir después de varios meses o si revocas los permisos de la aplicación.
 
 ## Consejos
 
 - Un intervalo de consulta más corto ofrece respuestas más rápidas a los correos, pero no garantiza la entrega en tiempo real. Para un procesamiento realmente en tiempo real, considera un enfoque basado en webhooks si tu proveedor de correo lo admite.
 - Usa filtros en tu cliente de correo para dirigir los mensajes pertinentes a una etiqueta o carpeta específica y configura Teable para supervisar únicamente esa etiqueta. Así se reduce el ruido.
 - Para buzones con un volumen elevado, considera aumentar el intervalo de consulta y procesar los mensajes por lotes para no sobrecargar el flujo de trabajo.
+- Un disparador que aún conserve una contraseña escrita sigue funcionando y el campo de contraseña muestra **Contraseña establecida. Elige un secreto para reemplazarla.** El siguiente cambio de esa contraseña solo puede ser un secreto.
 
 ## Contenido relacionado
 
@@ -112,3 +94,4 @@ Puedes hacer referencia a cualquiera de ellos haciendo clic en **+** en los Camp
 - [Acción Generar con IA](/es/basic/automation/actions/ai/ai-generate) — útil para extraer datos estructurados del contenido de los correos
 - [Acción Crear Registro](/es/basic/automation/actions/records/create-record) — suele combinarse con disparadores de correo para registrar correos como Registros
 - [Enviar correo electrónico](/es/basic/automation/actions/communication/send-email-overview)
+- [Credenciales e integraciones](/es/basic/credential) — gestionar secretos y concederlos a una automatización

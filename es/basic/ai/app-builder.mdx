@@ -72,7 +72,7 @@ Puedes descargar toda la aplicación como archivo ZIP en cualquier momento:
 2. Haz clic en el menú **`...`** de la barra de pestañas.
 3. Selecciona **Descargar código** para guardar un archivo ZIP que incluya todos los archivos de origen.
 
-Si la aplicación usa variables de entorno personalizadas, el archivo descargado puede incluir un archivo `.env` en la raíz. Revísalo antes de compartir el ZIP.
+El archivo descargado incluye un `.env` en la raíz que solo contiene las variables de ejecución inyectadas por la plataforma, incluido el token de acceso; las credenciales concedidas a la aplicación no forman parte de él. Revisa el contenido antes de compartir el ZIP.
 
 #### Importar código
 Puedes actualizar el código de la aplicación importando un archivo ZIP:
@@ -175,13 +175,13 @@ Para ejecutar la aplicación en tu propio equipo:
   <Step title="Iniciar la aplicación">Ejecuta `pnpm dev`.</Step>
 </Steps>
 
-El contenido copiado coincide con lo que recibe la aplicación en el entorno aislado de Teable: las credenciales concedidas a la aplicación y las variables que la plataforma inyecta para el punto de conexión de la API, el token de acceso y el acceso a IA de la aplicación.
+Lo copiado son solo las variables de ejecución inyectadas por la plataforma: el punto de conexión de la API, el token de acceso y las variables de acceso a IA. Debajo del botón se indica **Solo las variables de ejecución inyectadas por la plataforma: las credenciales concedidas no se incluyen**. Las credenciales concedidas a la aplicación no salen de Teable; si el trabajo local las necesita, añade tú mismo esos valores al archivo `.env`.
 
 <Warning>
 La línea `TEABLE_APP_TOKEN` de ese archivo concede acceso a los datos de la aplicación; por este motivo, solo pueden copiarla los miembros con acceso de edición a la aplicación. Nunca confirmes el archivo ni lo pegues en una incidencia o solicitud de incorporación de cambios.
 </Warning>
 
-Para añadir o sustituir una credencial, usa **Credenciales y configuración** en Teable en lugar del archivo local. Un archivo `.env` confirmado en GitHub no crea ni actualiza ninguna credencial. Después de cambiar una credencial, vuelve a copiar las variables para actualizar tu archivo `.env` local.
+Para añadir o sustituir una credencial que la aplicación usa en producción, utiliza **Credenciales y configuración** en Teable; editar el archivo local o confirmar un `.env` en GitHub no surte efecto. Cuando cambie una variable de plataforma, por ejemplo tras regenerar el token de acceso, vuelve a copiar las variables para actualizar tu archivo `.env` local.
 
 ### Desvincular el repositorio
 

@@ -33,6 +33,7 @@ Par défaut, les e-mails sont envoyés depuis le service de messagerie intégré
 | CC | Non | Destinataires en copie |
 | CCI | Non | Destinataires en copie cachée |
 | Répondre à | Non | Adresse à laquelle les destinataires répondent (si elle diffère de celle de l’expéditeur) |
+| Serveur Email Personnalisé | Non | Envoie cette action via un compte SMTP précis, sans toucher aux autres automatisations |
 
 \* Au moins l’un des champs **À** ou **CCI** est obligatoire.
 
@@ -50,6 +51,16 @@ Par défaut, les e-mails sont envoyés depuis le service de messagerie intégré
    - **Variables dynamiques** — cliquez sur **+** n’importe où dans le corps pour insérer des valeurs provenant des étapes précédentes.
 5. (Facultatif) Définissez le **Nom de l’expéditeur**, les champs **CC**, **CCI** ou **Répondre à**, selon vos besoins.
 6. Enregistrez l’action.
+
+### Donner à cette action son propre SMTP
+
+Pour envoyer cette seule action via un autre compte SMTP, cliquez sur **Ajouter Configuration** sous **Serveur Email Personnalisé**, puis renseignez l’adresse du serveur, le port, l’identifiant et les informations d’expéditeur.
+
+Le mot de passe ne se saisit plus ici : cliquez sur **Sélectionner un secret** pour choisir l’un des secrets accordés à cette automatisation, ou sur **Ajouter un secret** pour en créer un (nom de variable par défaut `SMTP_PASSWORD` ; un deuxième compte SMTP dans le même workflow devient `SMTP_PASSWORD_2`). L’action conserve une référence : la valeur en clair n’entre pas dans la configuration du workflow, et l’historique d’exécution comme les exports l’affichent masquée.
+
+**Réinitialiser** efface cette configuration et l’action revient au serveur de messagerie par défaut.
+
+<Info>Cette boîte de dialogue n’envoie pas d’e-mail de test. Une fois la configuration terminée, exécutez le workflow une fois pour vérifier l’envoi.</Info>
 
 ## Utilisation de variables dans l’objet et le corps
 

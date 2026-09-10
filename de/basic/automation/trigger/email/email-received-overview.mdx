@@ -22,40 +22,22 @@ Beschreiben Sie Ihr Ziel einmal, und der Workflow ist bereit – eine manuelle E
 
 | Einstellung | Erforderlich | Beschreibung |
 |---|---|---|
-| Verbindungstyp | Ja | IMAP, Gmail oder Outlook |
+| Verbindungstyp | Ja | Nur IMAP |
 | Abfrageintervall | Ja | Wie häufig auf neue E-Mails geprüft wird: 10 bis 60 Minuten (Standard: 10) |
 
-## Verbindungstypen im Detail
+## Postfach verbinden
 
-### IMAP
-
-IMAP funktioniert mit jedem E-Mail-Anbieter, der das IMAP-Protokoll unterstützt – einschließlich selbst gehosteter Mailserver, geschäftlicher E-Mail-Dienste und Anbieter wie Yahoo oder Zoho.
+Der Trigger verbindet sich über IMAP und funktioniert damit mit jedem Anbieter, der das Protokoll unterstützt – auch mit Gmail und Outlook, sobald IMAP im Konto aktiviert ist.
 
 | Einstellung | Erforderlich | Beschreibung |
 |---|---|---|
 | Host | Ja | Die Adresse Ihres IMAP-Servers (z. B. `imap.gmail.com`, `imap.mail.yahoo.com`) |
 | Port | Ja | Üblicherweise 993 (SSL/TLS) oder 143 (unverschlüsselt, nicht empfohlen) |
 | Benutzername | Ja | Ihre E-Mail-Adresse oder der Benutzername Ihres Kontos |
-| Passwort | Ja | Ihr App-Passwort (bitte beachten Sie: nicht Ihr E-Mail-Passwort) |
+| Passwort | Ja | Ein dieser Automatisierung freigegebenes Secret, kein im Trigger eingetippter Wert |
 | Postfach | Nein | Der zu überwachende Ordner (standardmäßig `INBOX`) |
 
-### Gmail (OAuth)
-
-Stellt die Verbindung über den OAuth-Ablauf von Google her. Es ist kein Passwort erforderlich – Sie autorisieren Teable für den Zugriff auf Ihr Gmail-Konto.
-
-| Einstellung | Erforderlich | Beschreibung |
-|---|---|---|
-| Google-Konto | Ja | Autorisierung über OAuth – Teable fordert schreibgeschützten Zugriff an |
-| Label | Nein | Wählen Sie ein zu überwachendes Gmail-Label aus (standardmäßig Posteingang) |
-
-### Outlook (OAuth)
-
-Stellt die Verbindung über den OAuth-Ablauf von Microsoft für Outlook- und Microsoft-365-Postfächer her.
-
-| Einstellung | Erforderlich | Beschreibung |
-|---|---|---|
-| Microsoft-Konto | Ja | Autorisierung über OAuth – Teable fordert schreibgeschützten Zugriff an |
-| Ordner | Nein | Wählen Sie einen zu überwachenden Outlook-Ordner aus (standardmäßig Posteingang) |
+Klicken Sie beim Passwort auf **Secret auswählen**, um eines der dieser Automatisierung freigegebenen Secrets zu nehmen, oder auf **Secret hinzufügen**, um eines anzulegen (Standardvariablenname `IMAP_PASSWORD`). Hinterlegen Sie dort das App-Passwort oder den Autorisierungscode, nicht das Anmeldepasswort des Postfachs; der Trigger speichert nur die Referenz auf das Secret.
 
 ## Welche E-Mail-Daten für nachfolgende Schritte verfügbar sind
 
@@ -77,7 +59,7 @@ Sie können auf jeden dieser Werte verweisen, indem Sie in Ihren Aktionsfeldern 
 1. Öffnen Sie Ihre Automatisierung und fügen Sie einen neuen Auslöser hinzu.
 2. Wählen Sie **Wenn E-Mail empfangen wird** aus.
 3. Wählen Sie **IMAP** als Verbindungstyp aus.
-4. Geben Sie die Daten Ihres IMAP-Servers ein: Host, Port, Benutzername und Passwort.
+4. Geben Sie Host, Port und Benutzernamen Ihres IMAP-Servers ein und wählen oder erstellen Sie dann das Secret mit dem Passwort.
 5. (Optional) Ändern Sie das **Postfach**, wenn Sie einen anderen Ordner als INBOX überwachen möchten.
 6. Legen Sie das **Abfrageintervall** fest – also wie häufig auf neue E-Mails geprüft werden soll. Ein kürzeres Intervall führt zu schnelleren Reaktionen, aber auch zu häufigeren Serverabfragen.
 7. Klicken Sie auf **Testen**, um die Verbindung zu überprüfen. Teable versucht, eine Verbindung zu Ihrem Postfach herzustellen, und meldet Erfolg oder Fehler.
@@ -95,16 +77,16 @@ Sie können auf jeden dieser Werte verweisen, indem Sie in Ihren Aktionsfeldern 
 ## Fehlerbehebung
 
 - **Verbindung fehlgeschlagen (IMAP):** Überprüfen Sie Host, Port, Benutzername und Passwort. Stellen Sie sicher, dass Ihr E-Mail-Anbieter den IMAP-Zugriff zulässt – einige Anbieter deaktivieren ihn standardmäßig.
-- **Gmail: Fehler „Weniger sichere App“:** Gmail erlaubt keine Anmeldung mit einem einfachen Passwort. Verwenden Sie stattdessen ein **App-Passwort**. Eine Anleitung finden Sie unter [Gmail-IMAP einrichten](/de/basic/automation/trigger/email/gmail-imap).
+- **Gmail: Fehler „Weniger sichere App“:** Gmail erlaubt keine Anmeldung mit einem einfachen Passwort. Hinterlegen Sie stattdessen ein **App-Passwort** als Secret. Eine Anleitung finden Sie unter [Gmail-IMAP einrichten](/de/basic/automation/trigger/email/gmail-imap).
 - **E-Mails werden nicht erfasst:** Prüfen Sie das Abfrageintervall. Stellen Sie außerdem sicher, dass die E-Mails im überwachten Ordner bzw. Label eingehen. E-Mails in Unterordnern oder gefilterten Labels werden möglicherweise übersehen, wenn das falsche Postfach ausgewählt ist.
 - **Doppelte Verarbeitung:** Der Auslöser merkt sich, welche E-Mails bereits verarbeitet wurden. Wenn Sie die Automatisierung jedoch deaktivieren und erneut aktivieren, verarbeitet sie möglicherweise kürzlich eingegangene E-Mails erneut. Markieren Sie E-Mails bei Bedarf in Ihrem Posteingang als gelesen.
-- **OAuth-Token abgelaufen:** Autorisieren Sie die Verbindung für Gmail oder Outlook erneut, wenn das OAuth-Token abgelaufen ist. Dies geschieht üblicherweise nach mehreren Monaten oder wenn Sie App-Berechtigungen widerrufen.
 
 ## Tipps
 
 - Ein kürzeres Abfrageintervall ermöglicht schnellere Reaktionen auf E-Mails, garantiert aber keine Verarbeitung in Echtzeit. Erwägen Sie für eine echte Echtzeitverarbeitung einen Webhook-basierten Ansatz, sofern Ihr E-Mail-Anbieter diesen unterstützt.
 - Leiten Sie relevante E-Mails mithilfe von Filtern in Ihrem E-Mail-Client an ein bestimmtes Label oder einen bestimmten Ordner weiter und lassen Sie Teable nur dieses Label überwachen. So reduzieren Sie unerwünschte Meldungen.
 - Erwägen Sie bei Postfächern mit hohem Aufkommen, das Abfrageintervall zu erhöhen und E-Mails stapelweise zu verarbeiten, damit Ihr Workflow nicht überlastet wird.
+- Ein Trigger mit einem früher eingetippten Passwort läuft weiter; im Passwortfeld steht dann **Passwort gesetzt. Wählen Sie ein Secret, um es zu ersetzen.** Beim nächsten Wechsel dieses Passworts ist nur noch ein Secret möglich.
 
 ## Verwandte Themen
 
@@ -112,3 +94,4 @@ Sie können auf jeden dieser Werte verweisen, indem Sie in Ihren Aktionsfeldern 
 - [Aktion „Mit KI generieren“](/de/basic/automation/actions/ai/ai-generate) – hilfreich zum Extrahieren strukturierter Daten aus E-Mail-Inhalten
 - [Aktion „Datensatz erstellen“](/de/basic/automation/actions/records/create-record) – wird häufig mit E-Mail-Auslösern kombiniert, um E-Mails als Datensätze zu protokollieren
 - [E-Mail senden](/de/basic/automation/actions/communication/send-email-overview)
+- [Zugangsdaten und Integrationen](/de/basic/credential) – Secrets verwalten und einer Automatisierung freigeben
