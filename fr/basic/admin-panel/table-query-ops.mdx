@@ -21,7 +21,8 @@ La page s’ouvre sur la liste des Tables. Les boutons d’état en haut portent
 | --- | --- |
 | **Toutes les Tables** | Toutes les Tables observées. |
 | **Nécessite une attention** | Tables présentant des requêtes lentes, des délais dépassés, des recommandations en attente ou des tâches en échec. Commencez ici. |
-| **Recherche indexée** | Tables dont la couverture de recherche est déjà configurée. |
+| **Recherche indexée** | Tables dont les métadonnées d’index sont publiées et exploitables et dont le commutateur d’exécution est activé : la recherche passe réellement par l’index. |
+| **Recherche configurée** | Tables dotées d’une configuration de recherche enregistrée ou de métadonnées d’index, y compris celles qui ne sont pas encore publiées. |
 | **Non configurée** | Tables sans couverture de recherche. |
 | **Indisponible** | Tables qui ne peuvent pas utiliser la recherche indexée pour l’instant. La ligne en indique la raison. |
 
@@ -29,13 +30,30 @@ Le champ de recherche accepte les noms ou identifiants de Table, de Base et d’
 
 Chaque ligne donne le nombre de lignes et la taille estimés de la Table, les requêtes et requêtes lentes de la fenêtre, la méthode de recherche actuelle et la couverture des Champs, le nombre d’index de filtre/tri, ainsi que les recommandations en attente et les tâches actives. Cliquez sur le nom d’une Table pour ouvrir son détail.
 
+À côté des boutons d’état, **À propos des états d’index** explique comment ces compteurs sont calculés.
+
+## Lire l’état de l’index
+
+La liste des Tables et le détail affichent l’état de l’index à côté de la méthode de recherche :
+
+| État | Signification | Étape suivante |
+| --- | --- | --- |
+| **Non configuré** | Aucune configuration de recherche enregistrée ni métadonnées d’index. | Choisissez **Configurer la recherche** si la Table a besoin de la recherche indexée. |
+| **Configuré · publication en attente** | La configuration est enregistrée, l’index n’est pas encore publié. | Vérifiez dans **Tâches / historique** si une tâche est encore en cours. |
+| **Publié · prêt** | Les métadonnées d’index sont publiées et exploitables. | Rien à faire. |
+| **Métadonnées inexploitables** | Les métadonnées d’index sont défectueuses et ne peuvent pas servir la recherche. | Relancez **Mettre à jour la sélection / reconstruire**. |
+
+Deux lignes peuvent apparaître sous l’état. **Configuré : pg_bigm / pg_trgm** signale que le fournisseur enregistré diffère de la méthode de recherche utilisée, et **Commutateur d’exécution de la recherche indexée : désactivé** signale que l’index est prêt mais que l’exécution est coupée, la recherche restant en `ILIKE`.
+
+<Info>Un index publié ne garantit pas que chaque recherche l’utilise : un terme trop court ou un Champ hors couverture retombe sur `ILIKE`. Cette page indique l’état de l’index, elle ne prouve pas que des requêtes récentes l’ont utilisé.</Info>
+
 ## Configurer la couverture de recherche
 
-L’onglet **Couverture de recherche** indique la méthode de recherche actuelle de la Table, le nombre de Champs couverts et l’état de couverture de chaque Champ. **Afficher les champs non couverts** restreint la liste aux Champs pas encore inclus ; les Champs marqués **Non éligible** ne peuvent pas alimenter un index de recherche par sous-chaîne.
+L’onglet **Couverture de recherche** indique la méthode de recherche actuelle de la Table, le nombre de Champs couverts et la **Couverture effective** de chaque Champ. **Afficher les champs non couverts** restreint la liste aux Champs pas encore inclus ; les Champs marqués **Non éligible** ne peuvent pas alimenter un index de recherche par sous-chaîne.
 
-<Info>La couverture est explicite. Les Champs ajoutés ensuite ne sont pas inclus automatiquement : reconfigurez la Table pour les intégrer. Les recherches hors couverture, ou dont le terme est trop court, retombent sur un balayage `ILIKE` plus lent.</Info>
+<Info>La couverture effective suppose des métadonnées d’index publiées et exploitables ainsi qu’un commutateur d’exécution activé ; une configuration enregistrée seule ne compte pas. La couverture est explicite : les Champs ajoutés ensuite ne sont pas inclus automatiquement, reconfigurez la Table pour les intégrer.</Info>
 
-Choisissez **Configurer la recherche** sur une Table jamais configurée, ou **Mettre à jour la sélection / reconstruire** sur une Table déjà configurée. La boîte de dialogue demande :
+Choisissez **Configurer la recherche** sur une Table jamais configurée, ou **Mettre à jour la sélection / reconstruire** sur une Table déjà configurée, qui s’ouvre avec le fournisseur et la sélection de Champs enregistrés la fois précédente. La boîte de dialogue demande :
 
 | Élément | Ce que vous saisissez |
 | --- | --- |

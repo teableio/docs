@@ -72,7 +72,7 @@ Vous pouvez télécharger l’intégralité de l’application sous forme d’ar
 2. Cliquez sur le menu **`...`** dans la barre d’onglets.
 3. Sélectionnez **Télécharger le code** pour enregistrer une archive ZIP qui comprend tous les fichiers sources.
 
-Si l’application utilise des variables d’environnement personnalisées, l’archive téléchargée peut inclure un fichier `.env` à la racine. Examinez-le avant de partager le ZIP.
+L’archive contient à la racine un fichier `.env` qui ne comporte que les variables d’exécution injectées par la plateforme, jeton d’accès compris ; les identifiants accordés à l’application n’y figurent pas. Examinez le contenu avant de partager le ZIP.
 
 #### Importer le code
 Vous pouvez mettre à jour le code de l’application en important un ZIP :
@@ -175,13 +175,13 @@ Pour exécuter l’application sur votre propre machine :
   <Step title="Démarrer l’application">Exécutez `pnpm dev`.</Step>
 </Steps>
 
-Le contenu copié correspond à ce que l’application reçoit dans le propre bac à sable de Teable : les identifiants accordés à l’application, ainsi que les variables que la plateforme injecte pour le point de terminaison API de l’application, le jeton d’accès et l’accès à l’IA.
+Le contenu copié se limite aux variables d’exécution injectées par la plateforme : point de terminaison API, jeton d’accès et variables d’accès à l’IA. Sous le bouton figure la mention **Uniquement les variables d'exécution injectées par la plateforme — les identifiants accordés ne sont pas inclus**. Les identifiants accordés à l’application ne quittent pas Teable ; si l’exécution locale en a besoin, ajoutez vous-même ces valeurs dans le fichier `.env`.
 
 <Warning>
 La ligne `TEABLE_APP_TOKEN` de ce fichier donne accès aux données de l’application ; c’est pourquoi seuls les membres disposant d’un accès de modification à l’application peuvent la copier. Ne validez jamais le fichier et ne le collez jamais dans une issue ou une pull request.
 </Warning>
 
-Pour ajouter ou remplacer un identifiant, utilisez **Identifiants et configuration** dans Teable plutôt que le fichier local. Un fichier `.env` validé dans GitHub ne crée ni ne met à jour d’identifiant. Après une modification, copiez à nouveau les variables pour actualiser votre fichier `.env` local.
+Pour ajouter ou remplacer un identifiant utilisé par l’application en production, passez par **Identifiants et configuration** dans Teable ; modifier le fichier local ou valider un `.env` dans GitHub reste sans effet. Après le changement d’une variable de plateforme, par exemple un jeton d’accès régénéré, copiez à nouveau les variables pour actualiser votre fichier `.env` local.
 
 ### Dissocier le dépôt
 

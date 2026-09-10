@@ -21,7 +21,8 @@ La pagina si apre sull'elenco delle Tabelle. I pulsanti di stato in alto riporta
 | --- | --- |
 | **Tutte le Tabelle** | Tutte le Tabelle osservate. |
 | **Richiede attenzione** | Tabelle con query lente, timeout, suggerimenti in sospeso o attività non riuscite. Parti da qui. |
-| **Ricerca indicizzata** | Tabelle con copertura di ricerca già configurata. |
+| **Ricerca indicizzata** | Tabelle con metadati dell'indice pubblicati e utilizzabili e interruttore di runtime attivo: la ricerca passa davvero dall'indice. |
+| **Ricerca configurata** | Tabelle con una configurazione di ricerca salvata o con metadati dell'indice, comprese quelle non ancora pubblicate. |
 | **Non configurata** | Tabelle senza copertura di ricerca. |
 | **Non disponibile** | Tabelle che al momento non possono usare la ricerca indicizzata. La riga ne indica il motivo. |
 
@@ -29,13 +30,30 @@ Il campo di ricerca accetta nomi o ID di Tabella, Base e Spazio. L'ordinamento �
 
 Ogni riga riporta righe e dimensioni stimate della Tabella, richieste e query lente della finestra, metodo di ricerca corrente e copertura dei Campi, numero di indici di filtro/ordinamento, oltre ai suggerimenti in sospeso e alle attività attive. Fai clic sul nome di una Tabella per aprirne il dettaglio.
 
+Accanto ai pulsanti di stato, **Informazioni sugli stati dell'indice** spiega come vengono conteggiati questi numeri.
+
+## Leggere lo stato dell'indice
+
+L'elenco delle Tabelle e il dettaglio mostrano lo stato dell'indice accanto al metodo di ricerca:
+
+| Stato | Significato | Cosa fare |
+| --- | --- | --- |
+| **Non configurato** | Nessuna configurazione di ricerca salvata né metadati dell'indice. | Scegli **Configura ricerca** se la Tabella ha bisogno della ricerca indicizzata. |
+| **Configurato · pubblicazione in attesa** | La configurazione è salvata, l'indice non è ancora pubblicato. | Controlla in **Attività / cronologia** se c'è ancora un'attività in corso. |
+| **Pubblicato · pronto** | I metadati dell'indice sono pubblicati e utilizzabili. | Nulla da fare. |
+| **Metadati inutilizzabili** | I metadati dell'indice sono danneggiati e non possono servire la ricerca. | Esegui di nuovo **Aggiorna selezione / ricostruisci**. |
+
+Sotto lo stato possono comparire due righe. **Configurato: pg_bigm / pg_trgm** indica che il provider salvato è diverso dal metodo di ricerca in uso, mentre **Interruttore di runtime della ricerca indicizzata: disattivato** indica che l'indice è pronto ma il runtime è spento e la ricerca resta su `ILIKE`.
+
+<Info>Un indice pubblicato non significa che ogni ricerca lo utilizzi: un termine troppo corto o un Campo fuori copertura ripiega comunque su `ILIKE`. Questa pagina riporta lo stato dell'indice, non la prova che le richieste recenti lo abbiano usato.</Info>
+
 ## Configurare la copertura di ricerca
 
-La scheda **Copertura di ricerca** mostra il metodo di ricerca corrente della Tabella, quanti Campi sono coperti e lo stato di copertura di ciascun Campo. **Mostra campi non coperti** limita l'elenco ai Campi non ancora inclusi; i Campi contrassegnati come **Non idoneo** non possono contribuire a un indice di ricerca per sottostringa.
+La scheda **Copertura di ricerca** mostra il metodo di ricerca corrente della Tabella, quanti Campi sono coperti e la **Copertura attiva** di ciascun Campo. **Mostra campi non coperti** limita l'elenco ai Campi non ancora inclusi; i Campi contrassegnati come **Non idoneo** non possono contribuire a un indice di ricerca per sottostringa.
 
-<Info>La copertura è esplicita. I Campi aggiunti in seguito non vengono inclusi automaticamente: riconfigura la Tabella per integrarli. Le ricerche fuori copertura, o con un termine troppo corto, ripiegano su una scansione `ILIKE` più lenta.</Info>
+<Info>La copertura attiva richiede metadati dell'indice pubblicati e utilizzabili e l'interruttore di runtime attivo: la sola configurazione salvata non conta. La copertura è esplicita, quindi i Campi aggiunti in seguito non vengono inclusi automaticamente: riconfigura la Tabella per integrarli.</Info>
 
-Scegli **Configura ricerca** su una Tabella mai configurata oppure **Aggiorna selezione / ricostruisci** su una già configurata. La finestra di dialogo richiede:
+Scegli **Configura ricerca** su una Tabella mai configurata oppure **Aggiorna selezione / ricostruisci** su una già configurata, che si apre con il provider e la selezione di Campi salvati l'ultima volta. La finestra di dialogo richiede:
 
 | Voce | Cosa inserire |
 | --- | --- |

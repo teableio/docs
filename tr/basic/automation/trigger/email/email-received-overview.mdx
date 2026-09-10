@@ -22,40 +22,22 @@ Hedefinizi bir kez açıklayın; iş akışınız elle yapılandırma gerektirme
 
 | Ayar | Zorunlu | Açıklama |
 |---|---|---|
-| Bağlantı Türü | Evet | IMAP, Gmail veya Outlook |
+| Bağlantı Türü | Evet | Yalnızca IMAP |
 | Yoklama Aralığı | Evet | Yeni e-postaların denetlenme sıklığı: 10 ila 60 dakika (varsayılan 10) |
 
-## Bağlantı türlerinin ayrıntıları
+## Posta kutusunu bağlama
 
-### IMAP
-
-IMAP, kendi sunucunuzda barındırılan posta sunucuları, kurumsal e-posta ve Yahoo ya da Zoho gibi sağlayıcılar dahil IMAP protokolünü destekleyen tüm e-posta sağlayıcılarıyla çalışır.
+Tetikleyici IMAP ile bağlanır; bu nedenle kendi sunucunuzda barındırılan posta sunucuları, kurumsal e-posta, Yahoo ya da Zoho gibi sağlayıcılar ve hesabında IMAP etkinleştirilmiş Gmail ile Outlook dahil protokolü destekleyen her sağlayıcıyla çalışır.
 
 | Ayar | Zorunlu | Açıklama |
 |---|---|---|
 | Ana Bilgisayar | Evet | IMAP sunucunuzun adresi (ör. `imap.gmail.com`, `imap.mail.yahoo.com`) |
 | Bağlantı Noktası | Evet | Genellikle 993 (SSL/TLS) veya 143 (şifrelenmemiş, önerilmez) |
 | Kullanıcı Adı | Evet | E-posta adresiniz veya hesap kullanıcı adınız |
-| Parola | Evet | Uygulama parolanız (lütfen unutmayın: e-posta parolanız değil) |
+| Parola | Evet | Bu otomasyona verilen bir gizli anahtar; tetikleyiciye yazılan bir değer değil |
 | Posta Kutusu | Hayır | İzlenecek klasör (varsayılan `INBOX`) |
 
-### Gmail (OAuth)
-
-Google'ın OAuth akışı üzerinden bağlanır. Parola gerekmez; Teable'a Gmail hesabınıza erişme yetkisi verirsiniz.
-
-| Ayar | Zorunlu | Açıklama |
-|---|---|---|
-| Google Hesabı | Evet | OAuth üzerinden yetkilendirin; Teable salt okunur erişim ister |
-| Etiket | Hayır | İzlenecek Gmail etiketini seçin (varsayılan Gelen Kutusu) |
-
-### Outlook (OAuth)
-
-Outlook ve Microsoft 365 posta kutuları için Microsoft'un OAuth akışı üzerinden bağlanır.
-
-| Ayar | Zorunlu | Açıklama |
-|---|---|---|
-| Microsoft Hesabı | Evet | OAuth üzerinden yetkilendirin; Teable salt okunur erişim ister |
-| Klasör | Hayır | İzlenecek Outlook klasörünü seçin (varsayılan Gelen Kutusu) |
+Parola için **Gizli anahtar seç**'e tıklayıp bu otomasyona verilen gizli anahtarlardan birini seçin ya da **Gizli anahtar ekle** ile yeni bir tane oluşturun (varsayılan değişken adı `IMAP_PASSWORD`). Burada uygulama parolasını veya yetkilendirme kodunu saklayın; posta kutusunun oturum açma parolasını değil. Tetikleyicide yalnızca gizli anahtara giden referans tutulur.
 
 ## Sonraki adımlarda kullanılabilen e-posta verileri
 
@@ -77,7 +59,7 @@ Eylem alanlarınızda **+** simgesine tıklayarak bunlardan herhangi birine baş
 1. Otomasyonunuzu açıp yeni bir tetikleyici ekleyin.
 2. **E-posta alındığında** seçeneğini belirleyin.
 3. Bağlantı türü olarak **IMAP** seçin.
-4. IMAP sunucusu ayrıntılarınızı girin: ana bilgisayar, bağlantı noktası, kullanıcı adı ve parola.
+4. IMAP sunucunuzun ana bilgisayar adını, bağlantı noktasını ve kullanıcı adını girin, ardından parolayı tutan gizli anahtarı seçin veya ekleyin.
 5. (İsteğe bağlı) INBOX dışında bir klasörü izlemek istiyorsanız **Posta Kutusunu** değiştirin.
 6. **Yoklama Aralığını**, yani yeni e-postaların ne sıklıkta denetleneceğini ayarlayın. Daha kısa aralık daha hızlı yanıt sağlar ancak sunucu daha sık denetlenir.
 7. Bağlantıyı doğrulamak için **Test et**'e tıklayın. Teable posta kutunuza bağlanmayı dener ve işlemin başarılı olup olmadığını bildirir.
@@ -95,16 +77,16 @@ Eylem alanlarınızda **+** simgesine tıklayarak bunlardan herhangi birine baş
 ## Sorun giderme
 
 - **Bağlantı başarısız oldu (IMAP):** Ana bilgisayarı, bağlantı noktasını, kullanıcı adını ve parolayı yeniden denetleyin. E-posta sağlayıcınızın IMAP erişimine izin verdiğinden emin olun; bazı sağlayıcılar bunu varsayılan olarak devre dışı bırakır.
-- **Gmail: "Daha az güvenli uygulama" hatası:** Gmail, düz parolayla oturum açmaya izin vermez. Bunun yerine bir **Uygulama Parolası** kullanın. Talimatlar için [Gmail IMAP'i yapılandırma](/tr/basic/automation/trigger/email/gmail-imap) sayfasına bakın.
+- **Gmail: "Daha az güvenli uygulama" hatası:** Gmail, düz parolayla oturum açmaya izin vermez. Bunun yerine bir **Uygulama Parolası**'nı gizli anahtar olarak saklayın. Talimatlar için [Gmail IMAP'i yapılandırma](/tr/basic/automation/trigger/email/gmail-imap) sayfasına bakın.
 - **E-postalar alınmıyor:** Yoklama aralığını denetleyin. Ayrıca e-postaların izlenen klasöre/etikete ulaştığını doğrulayın. Yanlış posta kutusu seçilmişse alt klasörlerdeki veya filtrelenmiş etiketlerdeki e-postalar gözden kaçabilir.
 - **Yinelenen işleme:** Tetikleyici, daha önce işlediği e-postaları izler. Ancak otomasyonu devre dışı bırakıp yeniden etkinleştirirseniz son e-postaları yeniden işleyebilir. Gerekirse e-postaları gelen kutunuzda okundu olarak işaretleyin.
-- **OAuth belirtecinin süresi doldu:** Gmail veya Outlook için OAuth belirtecinin süresi dolduysa bağlantıyı yeniden yetkilendirin. Bu genellikle birkaç ay sonra veya uygulama izinlerini iptal ettiğinizde olur.
 
 ## İpuçları
 
 - Daha kısa yoklama aralığı e-postalara daha hızlı yanıt verilmesini sağlar ancak gerçek zamanlı teslimatı garanti etmez. Gerçek zamanlı işleme için e-posta sağlayıcınız destekliyorsa webhook tabanlı bir yaklaşım kullanmayı değerlendirin.
 - İlgili e-postaları belirli bir etikete veya klasöre yönlendirmek için e-posta istemcinizde filtreler kullanın, ardından Teable'ın yalnızca bu etiketi izlemesini sağlayın. Bu, gereksiz iletileri azaltır.
 - Yüksek hacimli posta kutularında iş akışınızı aşırı yüklememek için yoklama aralığını artırmayı ve iletileri toplu işlemeyi değerlendirin.
+- Daha önce parola yazılmış bir tetikleyici çalışmaya devam eder ve parola alanında **Parola ayarlandı. Değiştirmek için bir gizli anahtar seçin.** yazar. Bu parolanın bir sonraki değişikliği yalnızca gizli anahtarla yapılabilir.
 
 ## İlgili konular
 
@@ -112,3 +94,4 @@ Eylem alanlarınızda **+** simgesine tıklayarak bunlardan herhangi birine baş
 - [AI ile oluştur eylemi](/tr/basic/automation/actions/ai/ai-generate) — e-posta içeriğinden yapılandırılmış veri ayıklamak için kullanışlıdır
 - [Kayıt oluştur eylemi](/tr/basic/automation/actions/records/create-record) — e-postaları kayıt olarak kaydetmek için e-posta tetikleyicileriyle yaygın olarak kullanılır
 - [E-posta gönder](/tr/basic/automation/actions/communication/send-email-overview)
+- [Kimlik bilgileri ve entegrasyonlar](/tr/basic/credential) — gizli anahtarları yönetme ve bir otomasyona verme

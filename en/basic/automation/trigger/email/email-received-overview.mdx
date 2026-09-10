@@ -22,40 +22,22 @@ Describe the goal once, and the workflow is ready — no manual setup needed.
 
 | Setting | Required | Description |
 |---|---|---|
-| Connection Type | Yes | IMAP, Gmail, or Outlook |
+| Connection Type | Yes | IMAP only |
 | Poll Interval | Yes | How often to check for new emails: 10 to 60 minutes (default 10) |
 
-## Connection types in detail
+## Connect the mailbox
 
-### IMAP
-
-IMAP works with any email provider that supports the IMAP protocol — including self-hosted mail servers, corporate email, and providers like Yahoo or Zoho.
+The trigger connects over IMAP, which works with any provider that supports the protocol, Gmail and Outlook included once IMAP is enabled on the account.
 
 | Setting | Required | Description |
 |---|---|---|
 | Host | Yes | Your IMAP server address (e.g., `imap.gmail.com`, `imap.mail.yahoo.com`) |
 | Port | Yes | Usually 993 (SSL/TLS) or 143 (unencrypted, not recommended) |
 | Username | Yes | Your email address or account username |
-| Password | Yes | Your app password (Please note: not your email password) |
+| Password | Yes | A secret granted to this automation, not a value typed into the trigger |
 | Mailbox | No | The folder to monitor (defaults to `INBOX`) |
 
-### Gmail (OAuth)
-
-Connects via Google's OAuth flow. No password is needed — you authorize Teable to access your Gmail account.
-
-| Setting | Required | Description |
-|---|---|---|
-| Google Account | Yes | Authorize via OAuth — Teable requests read-only access |
-| Label | No | Select a Gmail label to monitor (defaults to Inbox) |
-
-### Outlook (OAuth)
-
-Connects via Microsoft's OAuth flow for Outlook and Microsoft 365 mailboxes.
-
-| Setting | Required | Description |
-|---|---|---|
-| Microsoft Account | Yes | Authorize via OAuth — Teable requests read-only access |
-| Folder | No | Select an Outlook folder to monitor (defaults to Inbox) |
+For the password, click **Select a secret** to pick one of the secrets granted to this automation, or **Add secret** to create one (default variable name `IMAP_PASSWORD`). Store the app password or authorization code there, not your mailbox login password; the trigger keeps a reference to the secret rather than the value.
 
 ## What email data is available to next steps
 
@@ -77,7 +59,7 @@ You can reference any of these by clicking **+** in your action fields.
 1. Open your automation and add a new trigger.
 2. Select **When email received**.
 3. Choose **IMAP** as the connection type.
-4. Enter your IMAP server details: host, port, username, and password.
+4. Enter your IMAP server details: host, port, and username, then select or add the secret that holds the password.
 5. (Optional) Change the **Mailbox** if you want to monitor a folder other than INBOX.
 6. Set the **Poll Interval** — how often to check for new emails. A shorter interval means faster responses but more frequent server checks.
 7. Click **Test** to verify the connection. Teable will attempt to connect to your mailbox and report success or failure.
@@ -95,16 +77,16 @@ You can reference any of these by clicking **+** in your action fields.
 ## Troubleshooting
 
 - **Connection failed (IMAP):** Double-check your host, port, username, and password. Make sure your email provider allows IMAP access — some providers disable it by default.
-- **Gmail: "Less secure app" error:** Gmail does not allow plain password login. Use an **App Password** instead. See [Set up Gmail IMAP](/en/basic/automation/trigger/email/gmail-imap) for instructions.
-- **Emails not being picked up:** Check the poll interval. Also confirm that the emails are arriving in the monitored folder/label. Emails in subfolders or filtered labels may be missed if the wrong mailbox is selected.
+- **Gmail: "Less secure app" error:** Gmail does not allow plain password login. Store an **App Password** as the secret instead. See [Set up Gmail IMAP](/en/basic/automation/trigger/email/gmail-imap) for instructions.
+- **Emails not being picked up:** Check the poll interval. Also confirm that the emails are arriving in the monitored folder. Emails in subfolders may be missed if the wrong mailbox is selected.
 - **Duplicate processing:** The trigger tracks which emails it has already processed. However, if you deactivate and reactivate the automation, it may reprocess recent emails. Mark emails as read in your inbox if needed.
-- **OAuth token expired:** For Gmail or Outlook, re-authorize the connection if the OAuth token has expired. This typically happens after several months or if you revoke app permissions.
 
 ## Tips
 
 - A shorter poll interval means faster response to emails but does not guarantee real-time delivery. For true real-time processing, consider using a webhook-based approach if your email provider supports it.
 - Use filters in your email client to route relevant emails to a specific label or folder, then have Teable monitor only that label. This reduces noise.
 - For high-volume mailboxes, consider increasing the poll interval and processing in batches to avoid overwhelming your workflow.
+- A trigger that still holds a typed password keeps running, and the password field reads **Password set. Select a secret to replace it.** The next change to that password has to be a secret.
 
 ## Related
 
@@ -112,3 +94,4 @@ You can reference any of these by clicking **+** in your action fields.
 - [AI generate action](/en/basic/automation/actions/ai/ai-generate) — useful for extracting structured data from email content
 - [Create record action](/en/basic/automation/actions/records/create-record) — commonly paired with email triggers to log emails as records
 - [Send email](/en/basic/automation/actions/communication/send-email-overview)
+- [Credentials and integrations](/en/basic/credential) — manage secrets and grant them to an automation

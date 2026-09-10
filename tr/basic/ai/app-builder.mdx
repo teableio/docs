@@ -72,7 +72,7 @@ Uygulamanın tamamını istediğiniz zaman ZIP arşivi olarak indirebilirsiniz:
 2. Sekme çubuğundaki **`...`** menüsüne tıklayın.
 3. Tüm kaynak dosyalarını içeren bir ZIP arşivi kaydetmek için **Kodu indir**'i seçin.
 
-Uygulama özel ortam değişkenleri kullanıyorsa indirilen arşiv kök dizinde bir `.env` dosyası içerebilir. ZIP dosyasını paylaşmadan önce bu dosyayı inceleyin.
+Arşivin kökünde bir `.env` dosyası bulunur ve içinde yalnızca platformun eklediği çalışma zamanı değişkenleri, erişim token'ı dahil, yer alır; uygulamaya verilen kimlik bilgileri bu dosyada değildir. ZIP dosyasını paylaşmadan önce içeriği inceleyin.
 
 #### Kodu İçe Aktarma
 Bir ZIP dosyasını içe aktararak uygulamanın kodunu güncelleyebilirsiniz:
@@ -175,13 +175,13 @@ Uygulamayı kendi bilgisayarınızda çalıştırmak için:
   <Step title="Uygulamayı başlatın">`pnpm dev` komutunu çalıştırın.</Step>
 </Steps>
 
-Kopyalanan içerik, uygulamanın Teable'ın kendi korumalı alanında aldığı değerlerle eşleşir: uygulamaya verilen kimlik bilgileri ve platformun uygulamanın API uç noktası, erişim token'ı ve AI erişimi için eklediği değişkenler.
+Kopyalanan içerik yalnızca platformun eklediği çalışma zamanı değişkenlerinden oluşur: API uç noktası, erişim token'ı ve AI erişimi değişkenleri. Düğmenin altında da **Yalnızca platform tarafından eklenen çalışma zamanı değişkenleri — verilen kimlik bilgileri dahil değildir** yazar. Uygulamaya verilen kimlik bilgileri Teable'dan çıkmaz; yerel çalıştırma bunlara ihtiyaç duyuyorsa ilgili değerleri `.env` dosyasına kendiniz ekleyin.
 
 <Warning>
 Bu dosyadaki `TEABLE_APP_TOKEN` satırı uygulamanın verilerine erişim sağlar; bu nedenle yalnızca uygulamayı düzenleme erişimi olan üyeler bu satırı kopyalayabilir. Dosyayı asla commit etmeyin ve bir issue'ya veya pull request'e hiçbir zaman yapıştırmayın.
 </Warning>
 
-Bir kimlik bilgisi eklemek veya değiştirmek için yerel dosya yerine Teable'daki **Kimlik bilgileri ve yapılandırma** bölümünü kullanın. GitHub'a commit edilen bir `.env` dosyası kimlik bilgisi oluşturmaz veya güncellemez. Bir kimlik bilgisini değiştirdikten sonra yerel `.env` dosyanızı yenilemek için değişkenleri tekrar kopyalayın.
+Uygulamanın canlıda kullandığı bir kimlik bilgisini eklemek veya değiştirmek için Teable'daki **Kimlik bilgileri ve yapılandırma** bölümünü kullanın; yerel dosyayı düzenlemenin veya GitHub'a `.env` commit etmenin bir etkisi olmaz. Erişim token'ının yeniden üretilmesi gibi bir platform değişkeni değiştiğinde, yerel `.env` dosyanızı yenilemek için değişkenleri tekrar kopyalayın.
 
 ### Deponun Bağlantısını Kaldırma
 

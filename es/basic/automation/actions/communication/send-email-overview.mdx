@@ -33,6 +33,7 @@ De forma predeterminada, los correos electrónicos se envían desde el servicio 
 | CC | No | Destinatarios con copia |
 | CCO | No | Destinatarios con copia oculta |
 | Responder a | No | La dirección a la que responderán los destinatarios (si es distinta de la del remitente) |
+| Servidor de Correo Personalizado | No | Envía esta acción a través de una cuenta SMTP concreta sin afectar a las demás automatizaciones |
 
 \* Se requiere al menos uno de los Campos **Para** o **CCO**.
 
@@ -50,6 +51,16 @@ De forma predeterminada, los correos electrónicos se envían desde el servicio 
    - **Variables dinámicas** — haz clic en **+** en cualquier lugar del cuerpo para insertar valores de pasos anteriores.
 5. (Opcional) Configura el **Nombre del remitente**, **CC**, **CCO** o **Responder a**, según sea necesario.
 6. Guarda la acción.
+
+### Dar a esta acción su propio SMTP
+
+Para enviar solo esta acción a través de otra cuenta SMTP, haz clic en **Agregar Configuración** bajo **Servidor de Correo Personalizado** y completa la dirección del servidor, el puerto, el usuario y los datos del remitente.
+
+La contraseña ya no se escribe aquí: haz clic en **Selecciona un secreto** para elegir uno de los secretos concedidos a esta automatización, o en **Añadir secreto** para crear uno (nombre de variable predeterminado `SMTP_PASSWORD`; una segunda cuenta SMTP en el mismo flujo se numera como `SMTP_PASSWORD_2`). La acción guarda una referencia, así que el valor en claro no entra en la configuración del flujo y el historial de ejecuciones y las exportaciones lo muestran enmascarado.
+
+**Restablecer** borra esta configuración y la acción vuelve al servidor de correo predeterminado.
+
+<Info>Este cuadro de diálogo no envía correos de prueba. Cuando termines de configurarlo, ejecuta el flujo una vez para comprobar el envío.</Info>
 
 ## Usar variables en el asunto y el cuerpo
 

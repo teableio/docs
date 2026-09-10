@@ -21,7 +21,8 @@ La página se abre con la lista de Tablas. Los botones de estado de la parte sup
 | --- | --- |
 | **Todas las Tablas** | Todas las Tablas observadas. |
 | **Requiere atención** | Tablas con consultas lentas, tiempos de espera agotados, recomendaciones pendientes o tareas fallidas. Empieza por aquí. |
-| **Búsqueda indexada** | Tablas que ya tienen configurada la cobertura de búsqueda. |
+| **Búsqueda indexada** | Tablas cuyos metadatos de índice están publicados y utilizables y cuyo interruptor de ejecución está activado, de modo que la búsqueda usa realmente el índice. |
+| **Búsqueda configurada** | Tablas con una configuración de búsqueda guardada o con metadatos de índice, incluidas las que aún no se han publicado. |
 | **Sin configurar** | Tablas sin cobertura de búsqueda. |
 | **No disponible** | Tablas que ahora mismo no pueden usar la búsqueda indexada. La fila indica el motivo. |
 
@@ -29,13 +30,30 @@ El cuadro de búsqueda admite nombres o identificadores de Tabla, Base y Espacio
 
 Cada fila muestra las filas y el tamaño estimados de la Tabla, las solicitudes y las consultas lentas de la ventana, el método de búsqueda actual y la cobertura de Campos, el número de índices de filtro/orden, y los recuentos de recomendaciones pendientes y tareas activas. Haz clic en el nombre de una Tabla para abrir su detalle.
 
+Junto a los botones de estado, **Acerca de los estados del índice** explica cómo se calculan estos recuentos.
+
+## Leer el estado del índice
+
+La lista de Tablas y el detalle muestran el estado del índice junto al método de búsqueda:
+
+| Estado | Significado | Qué hacer |
+| --- | --- | --- |
+| **Sin configurar** | No hay configuración de búsqueda guardada ni metadatos de índice. | Elige **Configurar búsqueda** si la Tabla necesita búsqueda indexada. |
+| **Configurado · pendiente de publicación** | La configuración está guardada; el índice aún no se ha publicado. | Comprueba en **Tareas / historial** si queda alguna tarea en curso. |
+| **Publicado · listo** | Los metadatos del índice están publicados y son utilizables. | No hay nada que hacer. |
+| **Metadatos inutilizables** | Los metadatos del índice están dañados y no pueden atender la búsqueda. | Vuelve a ejecutar **Actualizar selección / reconstruir**. |
+
+Bajo el estado pueden aparecer dos líneas. **Configurado: pg_bigm / pg_trgm** indica que el proveedor guardado no coincide con el método de búsqueda en uso, y **Interruptor de ejecución de la búsqueda indexada: desactivado** indica que el índice está listo pero la ejecución está apagada, así que la búsqueda sigue usando `ILIKE`.
+
+<Info>Que un índice esté publicado no significa que todas las búsquedas lo usen: un término demasiado corto o un Campo fuera de la cobertura siguen recurriendo a `ILIKE`. Esta página refleja el estado del índice, no demuestra que las solicitudes recientes lo hayan usado.</Info>
+
 ## Configurar la cobertura de búsqueda
 
-La pestaña **Cobertura de búsqueda** muestra el método de búsqueda actual de la Tabla, cuántos Campos están cubiertos y el estado de cobertura de cada Campo. **Mostrar campos no cubiertos** limita la lista a los Campos aún no incluidos; los Campos marcados como **No apto** no pueden formar parte de un índice de búsqueda por subcadena.
+La pestaña **Cobertura de búsqueda** muestra el método de búsqueda actual de la Tabla, cuántos Campos están cubiertos y la **Cobertura efectiva** de cada Campo. **Mostrar campos no cubiertos** limita la lista a los Campos aún no incluidos; los Campos marcados como **No apto** no pueden formar parte de un índice de búsqueda por subcadena.
 
-<Info>La cobertura es explícita. Los Campos que añadas después no se incluyen de forma automática: vuelve a configurar la Tabla para incorporarlos. Las búsquedas fuera de la cobertura, o con un término demasiado corto, recurren a un escaneo `ILIKE` más lento.</Info>
+<Info>La cobertura efectiva exige metadatos de índice publicados y utilizables y el interruptor de ejecución activado; una configuración guardada por sí sola no cuenta. La cobertura es explícita, así que los Campos que añadas después no se incluyen de forma automática: vuelve a configurar la Tabla para incorporarlos.</Info>
 
-Elige **Configurar búsqueda** en una Tabla que nunca se haya configurado, o **Actualizar selección / reconstruir** en una que sí. El cuadro de diálogo pide:
+Elige **Configurar búsqueda** en una Tabla que nunca se haya configurado, o **Actualizar selección / reconstruir** en una que sí, que abre con el proveedor y la selección de Campos guardados la última vez. El cuadro de diálogo pide:
 
 | Elemento | Qué introducir |
 | --- | --- |

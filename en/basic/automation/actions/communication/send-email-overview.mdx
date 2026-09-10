@@ -33,6 +33,7 @@ By default, emails are sent from Teable's built-in mail service. If you need to 
 | CC | No | Carbon copy recipients |
 | BCC | No | Blind carbon copy recipients |
 | Reply-To | No | The address recipients reply to (if different from the sender) |
+| Custom email server | No | Sends this action through a specific SMTP account, leaving other automations untouched |
 
 \* At least one of **To** or **BCC** is required.
 
@@ -50,6 +51,16 @@ By default, emails are sent from Teable's built-in mail service. If you need to 
    - **Dynamic variables** — click **+** anywhere in the body to insert values from previous steps.
 5. (Optional) Set **Sender Name**, **CC**, **BCC**, or **Reply-To** as needed.
 6. Save the action.
+
+### Give this action its own SMTP
+
+To send this one action through a different SMTP account, click **Add config** under **Custom email server** and fill in the host, port, username, and sender details.
+
+The password is no longer typed in. Click **Select a secret** to pick one of the secrets granted to this automation, or **Add secret** to create one (default variable name `SMTP_PASSWORD`; a second SMTP account in the same workflow is numbered `SMTP_PASSWORD_2`). The action stores a reference, so the plain value never enters the workflow configuration and run history and exports show it masked.
+
+**Reset** clears the config, and the action goes back to the default email server.
+
+<Info>This dialog does not send a test email. Once it is configured, run the workflow once to confirm delivery.</Info>
 
 ## Using variables in subject and body
 

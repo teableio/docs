@@ -72,7 +72,7 @@ Sie können die gesamte App jederzeit als ZIP-Archiv herunterladen:
 2. Klicken Sie in der Tab-Leiste auf das Menü **`...`**.
 3. Wählen Sie **Code herunterladen**, um ein ZIP-Archiv zu speichern, das alle Quelldateien enthält.
 
-Wenn die App eigene Umgebungsvariablen verwendet, kann das heruntergeladene Archiv eine `.env`-Datei im Stammverzeichnis enthalten. Prüfen Sie sie, bevor Sie die ZIP-Datei weitergeben.
+Das Archiv enthält im Stammverzeichnis eine `.env`-Datei mit den von der Plattform injizierten Laufzeitvariablen, einschließlich des Zugriffstokens; die der App freigegebenen Zugangsdaten stehen nicht darin. Prüfen Sie den Inhalt, bevor Sie die ZIP-Datei weitergeben.
 
 #### Code importieren
 Sie können den Code der App durch Importieren einer ZIP-Datei aktualisieren:
@@ -175,13 +175,13 @@ So führen Sie die App auf Ihrem eigenen Rechner aus:
   <Step title="App starten">Führen Sie `pnpm dev` aus.</Step>
 </Steps>
 
-Der kopierte Inhalt entspricht dem, was die App in der eigenen Sandbox von Teable erhält: die für die App freigegebenen Zugangsdaten sowie die Variablen, die die Plattform für den API-Endpunkt, das Zugriffstoken und den KI-Zugriff der App einfügt.
+Kopiert werden nur die von der Plattform injizierten Laufzeitvariablen: API-Endpunkt, Zugriffstoken und die Variablen für den KI-Zugriff. Unter der Schaltfläche steht dazu **Nur von der Plattform injizierte Laufzeitvariablen — gewährte Zugangsdaten sind nicht enthalten**. Die der App freigegebenen Zugangsdaten verlassen Teable nicht; wenn der lokale Lauf sie benötigt, tragen Sie die Werte selbst in die `.env` ein.
 
 <Warning>
 Die Zeile `TEABLE_APP_TOKEN` in dieser Datei gewährt Zugriff auf die Daten der App. Deshalb können sie nur Mitglieder mit Bearbeitungszugriff auf die App kopieren. Committen Sie die Datei niemals und fügen Sie sie niemals in ein Issue oder einen Pull Request ein.
 </Warning>
 
-Um Zugangsdaten hinzuzufügen oder zu ersetzen, verwenden Sie **Zugangsdaten & Konfiguration** in Teable statt der lokalen Datei. Eine in GitHub committete `.env` erstellt oder aktualisiert keine Zugangsdaten. Kopieren Sie die Variablen nach einer Änderung erneut, um Ihre lokale `.env` zu aktualisieren.
+Zugangsdaten, die die App im Betrieb verwendet, fügen Sie in Teable unter **Zugangsdaten & Konfiguration** hinzu oder ersetzen sie dort; die lokale Datei zu ändern oder eine `.env` nach GitHub zu committen, bewirkt nichts. Ändert sich eine Plattformvariable, etwa durch ein neu erzeugtes Zugriffstoken, kopieren Sie die Variablen erneut und überschreiben Ihre lokale `.env`.
 
 ### Verknüpfung mit dem Repository aufheben
 
