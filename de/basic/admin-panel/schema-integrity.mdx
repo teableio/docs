@@ -1,0 +1,41 @@
+---
+title: "Schema integrity"
+description: "Abweichungen zwischen den Felddefinitionen einer Base und ihrer Datenbankstruktur untersuchen und beheben."
+---
+
+<Tip>Verfügbar ab dem selbst gehosteten Business-Plan</Tip>
+
+Pfad: Administrationsbereich → Schema integrity
+
+Die Felddefinitionen, die Teable führt, und die tatsächliche Struktur in der Datenbank sollen einander entsprechen. Laufen sie auseinander, sehen Nutzende Felder, die sich nicht öffnen lassen, Verknüpfungsfelder ohne Werte oder eine Tabelle, deren Lese- und Schreibvorgänge fortlaufend fehlschlagen, ohne erkennbare Ursache. **Schema integrity** findet solche Probleme und behebt sie.
+
+Ein Instanz-Admin kann jede Base der Instanz prüfen, ohne vorher deren Space beizutreten, Mandanten mit kundeneigener Datenbank (BYODB) eingeschlossen.
+
+## Prüfung ausführen
+
+Suchen Sie die Base über das Suchfeld, nach Base, Space, Tabellen-ID oder Name. Die Trefferliste zeigt den zugehörigen **Space**, die verwendete **Data DB** (Standard oder BYODB) und die **Runtime** (v1 oder v2); daran erkennen Sie, dass Sie die richtige erwischt haben. Derselbe Base-Name in verschiedenen Spaces ist häufig.
+
+Klicken Sie in dieser Zeile auf **Check** und im Dialog **Schema-Integrität** auf **Prüfung starten**.
+
+## Ergebnisse lesen
+
+Die Ergebnisse stehen pro Feld und Regel in vier Zuständen:
+
+| Zustand | Bedeutung | Was zu tun ist |
+| --- | --- | --- |
+| **Fehler** | Das Verknüpfungsziel des Felds gibt es nicht mehr, oder die Feldkonfiguration passt nicht zur tatsächlichen Struktur in der Datenbank | Das ist die direkte Ursache fehlschlagender Lese- und Schreibvorgänge und muss behoben werden |
+| **Warnung** | Weicht von der erwarteten Struktur ab, liest und schreibt aber weiterhin korrekt | Beheben, oder notieren und beobachten |
+| **Übersprungen** | Die Regel gilt für dieses Feld nicht und hat nichts beurteilt | Nichts zu tun |
+| **Erfolg** | Entspricht der Erwartung | Nichts zu tun |
+
+Beginnen Sie mit **Fehler**: Eine von Nutzenden gemeldete Störung fällt fast immer in diese Kategorie. Eine **Warnung** erklärt die aktuelle Störung nicht, kann sich aber mit weiteren Änderungen an der Feldstruktur zu einem Fehler entwickeln und lohnt sich deshalb, sobald die Fehler erledigt sind.
+
+## Reparieren
+
+Sie können Regel für Regel **Reparieren** oder mit **Nur Warnungen reparieren** beziehungsweise **Warnungen und Fehler reparieren** in einem Zug arbeiten. Während Sie einer laufenden Störung nachgehen, beheben Sie die Fehler einzeln und prüfen, ob die Störung weg ist, bevor Sie sich den Warnungen zuwenden. So lässt sich ein neues Problem auf eine einzelne Änderung zurückführen.
+
+Eine Reparatur ändert nur die Tabellenstruktur, nicht den Inhalt der Datensätze. Nutzen Sie vorher die Vorschau neben der Reparaturschaltfläche: **Reparaturdetails bestätigen** zeigt die Begründung und das SQL aus dem Probelauf, und nichts wird ausgeführt, bevor Sie bestätigen.
+
+Manche Regeln lassen sich nicht automatisch reparieren und zeigen stattdessen **Manuell**; der Dialog erklärt dann, warum das Problem eine Person braucht. Liefert der Probelauf kein ausführbares SQL, sagt der Dialog das ausdrücklich, und auch dieser Fall braucht eine Person.
+
+Klicken Sie nach der Reparatur auf **Erneut prüfen**, um zu bestätigen, dass das Problem weg ist.

@@ -1,0 +1,41 @@
+---
+title: "Schema integrity"
+description: "Investigate and repair mismatches between a base's field definitions and its database structure."
+---
+
+<Tip>Available for self-hosted Business plan and above</Tip>
+
+Path: Admin Panel → Schema integrity
+
+The field definitions Teable holds and the actual structure in the database are meant to match one another. When they drift apart, users see fields that will not open, link fields that return nothing, or a table whose reads and writes keep failing, with no visible cause. **Schema integrity** locates problems of this kind and repairs them.
+
+An instance admin can check any base in the instance without joining its space first, tenants on a customer-managed database (BYODB) included.
+
+## Run a Check
+
+Find the base with the search box, by base, space, table id, or name. The result list shows the **Space** it belongs to, the **Data DB** it uses (default or BYODB), and its **Runtime** (v1 or v2), which is how you confirm you have the right one. The same base name in different spaces is common.
+
+Click **Check** on that row, then **Run Check** in the **Schema Integrity** dialog.
+
+## Read the Results
+
+Results are listed per field and rule, in four states:
+
+| State | Meaning | What to do |
+| --- | --- | --- |
+| **Error** | The field's link target no longer exists, or the field configuration does not match the actual structure in the database | This is the direct cause of failing reads and writes, and needs repair |
+| **Warning** | It deviates from the expected structure but still reads and writes correctly | Repair it, or note it and watch |
+| **Skipped** | The rule does not apply to this field and made no judgement | Nothing to do |
+| **Success** | It matches what is expected | Nothing to do |
+
+Start with **Error**: a fault a user reported almost always lands in this category. A **Warning** does not explain the current fault, but it can turn into an error as the field structure keeps changing, so it is worth clearing once the errors are handled.
+
+## Repair
+
+You can **Repair** rule by rule, or work in bulk with **Repair warnings only** or **Repair warnings and errors**. While chasing a live fault, repair the errors one at a time and confirm the fault is gone before handling warnings, so that a new problem can be traced to a single change.
+
+A repair changes the table structure only; it does not change record content. Before running one, use the preview next to the repair button: **Confirm repair details** shows the reasoning and the SQL the dry run produced, and nothing is executed until you confirm.
+
+Some rules cannot be repaired automatically and show **Manual** instead; the dialog then explains why the problem needs a person. When the dry run returns no executable SQL, the dialog says so explicitly, and that case needs a person too.
+
+After repairing, click **Re-check** to confirm the problem is gone.

@@ -1,0 +1,41 @@
+---
+title: "Schema integrity"
+description: "Individua e ripara le discrepanze tra le definizioni dei Campi di una base e la struttura del suo database."
+---
+
+<Tip>Disponibile per il piano Business self-hosted e superiori</Tip>
+
+Percorso: Pannello di amministrazione → Schema integrity
+
+Le definizioni dei Campi che Teable conserva e la struttura effettiva nel database dovrebbero corrispondere. Quando divergono, gli utenti vedono Campi che non si aprono, Campi di collegamento che non restituiscono nulla o una tabella le cui letture e scritture continuano a fallire, senza una causa visibile. **Schema integrity** individua problemi di questo tipo e li ripara.
+
+Un amministratore dell'istanza può controllare qualsiasi base dell'istanza senza entrare prima nel suo spazio, inclusi i tenant con database gestito dal cliente (BYODB).
+
+## Eseguire un controllo
+
+Trova la base con la casella di ricerca, per base, spazio, ID tabella o nome. L'elenco dei risultati mostra lo **Space** di appartenenza, il **Data DB** in uso (predefinito o BYODB) e il **Runtime** (v1 o v2): è così che confermi di avere quella giusta. Lo stesso nome di base in spazi diversi è frequente.
+
+Fai clic su **Check** su quella riga, poi su **Avvia controllo** nella finestra **Integrità dello schema**.
+
+## Leggere i risultati
+
+I risultati sono elencati per Campo e per regola, in quattro stati:
+
+| Stato | Significato | Che cosa fare |
+| --- | --- | --- |
+| **Errore** | La destinazione del collegamento del Campo non esiste più, oppure la configurazione del Campo non corrisponde alla struttura effettiva nel database | È la causa diretta di letture e scritture che falliscono, e va riparata |
+| **Avviso** | Si discosta dalla struttura attesa, ma legge e scrive ancora correttamente | Riparalo, oppure annotalo e tienilo d'occhio |
+| **Saltato** | La regola non si applica a questo Campo e non ha espresso alcun giudizio | Nulla da fare |
+| **Riuscito** | Corrisponde a quanto atteso | Nulla da fare |
+
+Parti dagli **Errore**: un guasto segnalato da un utente ricade quasi sempre in questa categoria. Un **Avviso** non spiega il guasto in corso, ma può trasformarsi in errore man mano che la struttura dei Campi continua a cambiare, quindi conviene affrontarlo una volta sistemati gli errori.
+
+## Riparare
+
+Puoi **Riparare** regola per regola, oppure lavorare in blocco con **Ripara solo gli avvisi** o **Ripara avvisi ed errori**. Mentre insegui un guasto in corso, ripara gli errori uno alla volta e verifica che il guasto sia sparito prima di passare agli avvisi: così un problema nuovo resta riconducibile a una singola modifica.
+
+Una riparazione cambia solo la struttura della tabella, non il contenuto dei record. Prima di eseguirla usa l'anteprima accanto al pulsante di riparazione: **Conferma i dettagli della riparazione** mostra il ragionamento e l'SQL prodotti dalla simulazione, e nulla viene eseguito finché non confermi.
+
+Alcune regole non si riparano automaticamente e mostrano **Manuale**; la finestra spiega allora perché il problema richiede una persona. Quando la simulazione non restituisce SQL eseguibile, la finestra lo dice esplicitamente, e anche quel caso richiede una persona.
+
+Dopo la riparazione fai clic su **Controlla di nuovo** per confermare che il problema non c'è più.

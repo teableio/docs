@@ -1,0 +1,41 @@
+---
+title: "Schema integrity"
+description: "Bir base'in alan tanımlarıyla veritabanı yapısı arasındaki uyumsuzlukları inceleyin ve onarın."
+---
+
+<Tip>Self-hosted Business planı ve üzeri için kullanılabilir</Tip>
+
+Yol: Yönetim Paneli → Schema integrity
+
+Teable'ın tuttuğu alan tanımlarıyla veritabanındaki gerçek yapının birbirine uyması beklenir. İkisi birbirinden ayrıldığında kullanıcılar açılmayan alanlar, hiçbir şey döndürmeyen bağlantı alanları ya da okuma ve yazma işlemleri sürekli başarısız olan bir tablo görür; görünürde bir sebep yoktur. **Schema integrity** bu türden sorunları bulur ve onarır.
+
+Örnek yöneticisi, önce ilgili alana katılmadan örnekteki herhangi bir base'i kontrol edebilir; müşteri tarafından yönetilen veritabanı (BYODB) kiracıları da buna dahildir.
+
+## Kontrolü çalıştırma
+
+Base'i arama kutusundan bulun: base, alan, tablo kimliği veya ad ile arayabilirsiniz. Sonuç listesi ait olduğu **Space**, kullandığı **Data DB** (varsayılan veya BYODB) ve **Runtime** (v1 veya v2) bilgisini gösterir; doğru base'i bulduğunuzu böyle doğrularsınız. Aynı base adının farklı alanlarda bulunması sık rastlanan bir durumdur.
+
+İlgili satırdaki **Check** düğmesine, ardından **Şema Bütünlüğü** penceresindeki **Kontrolü başlat** düğmesine tıklayın.
+
+## Sonuçları okuma
+
+Sonuçlar alan ve kural bazında, dört durumda listelenir:
+
+| Durum | Anlamı | Ne yapmalı |
+| --- | --- | --- |
+| **Hata** | Alanın bağlantı hedefi artık yok ya da alan yapılandırması veritabanındaki gerçek yapıyla örtüşmüyor | Başarısız okuma ve yazmaların doğrudan sebebidir, onarılması gerekir |
+| **Uyarı** | Beklenen yapıdan sapıyor ama okuma ve yazma hâlâ düzgün çalışıyor | Onarın ya da not edip izleyin |
+| **Atlandı** | Kural bu alan için geçerli değil, bir değerlendirme yapılmadı | Yapılacak bir şey yok |
+| **Başarılı** | Beklenene uygun | Yapılacak bir şey yok |
+
+**Hata** ile başlayın: bir kullanıcının bildirdiği arıza neredeyse her zaman bu kategoriye düşer. **Uyarı**, mevcut arızayı açıklamaz; ancak alan yapısı değişmeye devam ettikçe hataya dönüşebilir, bu yüzden hatalar halledildikten sonra ele alınmaya değer.
+
+## Onarma
+
+Kural kural **Onar** diyebilir ya da **Yalnızca uyarıları onar** ve **Uyarıları ve hataları onar** ile toplu çalışabilirsiniz. Süren bir arızanın peşindeyken hataları teker teker onarın ve uyarılara geçmeden önce arızanın geçtiğini doğrulayın; böylece yeni bir sorun tek bir değişikliğe bağlanabilir.
+
+Onarım yalnızca tablo yapısını değiştirir, kayıtların içeriğine dokunmaz. Çalıştırmadan önce onarım düğmesinin yanındaki önizlemeyi kullanın: **Onarım ayrıntılarını onaylayın** penceresinde deneme çalıştırmasının ürettiği gerekçe ve SQL görünür; siz onaylamadan hiçbir şey yürütülmez.
+
+Bazı kurallar otomatik onarılamaz ve bunun yerine **Manuel** gösterir; pencere o zaman sorunun neden bir kişiye ihtiyaç duyduğunu açıklar. Deneme çalıştırması yürütülebilir SQL döndürmediğinde pencere bunu açıkça belirtir ve o durum da bir kişiye ihtiyaç duyar.
+
+Onarımdan sonra sorunun geçtiğini doğrulamak için **Tekrar kontrol et** düğmesine tıklayın.

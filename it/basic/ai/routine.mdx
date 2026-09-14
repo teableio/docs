@@ -1,0 +1,112 @@
+---
+title: Routine
+description: Lascia che Cuppy esegua un prompt secondo una pianificazione e controlla il risultato di ogni esecuzione.
+---
+
+<Note>Disponibile in tutti i piani Cloud; la versione self-hosted richiede il piano Business o superiore.</Note>
+
+Una routine affida un prompt a Cuppy e lo ripete secondo una pianificazione: si presta al lavoro che nessuno dovrebbe avviare a mano, come un report giornaliero, una pulizia periodica dei record scaduti, un riepilogo settimanale. Ogni esecuzione è una chat IA completa, quindi una routine può fare tutto ciò che fa la chat IA, incluso leggere e scrivere tabelle, richiamare skill e produrre file.
+
+Una routine è una risorsa della base e compare nella barra laterale sinistra accanto a tabelle, app e automazioni.
+
+<Info>Un'automazione si attiva su un evento, per esempio la modifica di un record, l'invio di un modulo o un webhook, ed esegue i passaggi che hai configurato in anticipo. Una routine si attiva solo sul tempo ed esegue un prompt che l'agente interpreta da sé. Usa un'automazione quando servono passaggi fissi e un esito prevedibile; usa una routine quando vuoi che sia l'agente a decidere ogni volta cosa fare con i dati del momento.</Info>
+
+## Creare una routine
+
+<Steps>
+  <Step title="Creare">
+    Nella barra laterale sinistra fai clic su **+** e scegli **Nuova routine**.
+  </Step>
+  <Step title="Scrivere il prompt">
+    Descrivi in **Prompt** che cosa deve fare ogni esecuzione. Il prompt è l'istruzione completa di un'esecuzione: indica da dove arrivano i dati, come elaborarli e dove va il risultato. Per esempio: «Riepiloga i record aggiunti ieri alla tabella Attività, raggruppali per responsabile e scrivi il riepilogo nella tabella Report giornaliero».
+  </Step>
+  <Step title="Impostare la pianificazione">
+    Scegli una frequenza in **Pianificazione** e imposta **Inizio** e **Fine (facoltativo)** se necessario.
+  </Step>
+  <Step title="Attivare">
+    Fai clic su **Attiva**. La configurazione deve essere già salvata e la pianificazione deve avere un'occorrenza futura.
+  </Step>
+</Steps>
+
+## Impostazioni
+
+Oltre al prompt e alla pianificazione, il modulo contiene queste impostazioni:
+
+| Impostazione | Descrizione |
+| --- | --- |
+| **Modello** | Il modello e il livello di intelligenza con cui gira questa routine. Lascia **Modello predefinito** per usare il modello di chat predefinito dello spazio |
+| **Durata massima di esecuzione (minuti)** | Un'esecuzione che supera questo limite viene interrotta e segnata come non riuscita. Da 5 a 120 minuti; 30 per impostazione predefinita |
+| **Chat** | **Nuova chat a ogni esecuzione** mantiene le esecuzioni indipendenti tra loro; **Continua la chat dell'esecuzione precedente** porta avanti il contesto delle esecuzioni passate e si presta al lavoro che deve riferirsi al risultato precedente |
+| **Inizio** / **Fine (facoltativo)** | I limiti della pianificazione. Senza orario di fine la routine prosegue a tempo indeterminato |
+
+Modello e livello di intelligenza vengono registrati al salvataggio, perciò la cronologia delle esecuzioni mostra su che cosa ha girato davvero ciascuna.
+
+### Pianificazione
+
+Scegli una frequenza tra i preset: **Ogni ora** a un minuto preciso, **Ogni giorno** e **Giorni feriali** a un orario preciso, **Ogni settimana** in un giorno della settimana e a un orario, **Ogni mese** in un giorno e a un orario.
+
+Per qualcosa di più specifico scegli **Personalizzata (RRULE)** e scrivi una regola RFC 5545, per esempio `FREQ=DAILY;BYHOUR=9;BYMINUTE=0`. Una regola personalizzata ha questi limiti:
+
+- La frequenza deve essere `HOURLY`, `DAILY`, `WEEKLY`, `MONTHLY` o `YEARLY`, e tra due esecuzioni deve passare almeno 1 ora.
+- Puoi usare `INTERVAL`, `COUNT`, `BYDAY`, `BYMONTHDAY`, `BYMONTH`, più un `BYMINUTE` e un `BYHOUR`. `COUNT` arriva al massimo a 1000, e `COUNT` o `INTERVAL` richiedono un orario di **Inizio**.
+- Fuso orario e limiti provengono dal modulo, quindi `TZID`, `DTSTART`, `UNTIL` e `BYSECOND` vengono rifiutati.
+
+Per una pianificazione che gira una sola volta, usa una regola personalizzata con `COUNT=1`.
+
+Una pianificazione viene valutata nel fuso orario di chi ha creato la routine e non segue chi la consulta. L'orario mostrato in **Prossima esecuzione** è già convertito nella tua ora locale.
+
+## Bozze, aggiornamenti ed esecuzione immediata
+
+Una routine appena creata è una bozza e non gira secondo la pianificazione finché non la attivi. Quando modifichi una routine attiva, anche la modifica viene salvata come bozza mentre la versione in servizio continua con la vecchia configurazione: fai clic su **Aggiorna** per applicarla o su **Scarta le modifiche** per eliminarla.
+
+**Esegui ora** avvia un'esecuzione senza attendere la pianificazione, utile per verificare un prompt. Una routine non può essere riavviata a mano finché l'esecuzione precedente non è terminata.
+
+Spegni l'interruttore per disattivarla: la pianificazione smette di scattare e la cronologia delle esecuzioni esistente resta.
+
+## Cronologia delle esecuzioni
+
+Apri la routine e passa a **Cronologia delle esecuzioni**. L'elenco si filtra per stato e intervallo di tempo, il che aiuta a individuare un guasto preciso; selezionando un'esecuzione vedi orario pianificato, di avvio e di fine, la durata e la chat completa di quell'esecuzione.
+
+Le esecuzioni sono riportate come **In coda**, **In esecuzione**, **Completata**, **Non riuscita** o **Annullata**. **Annullata** compare quando qualcuno ha interrotto quell'esecuzione, oppure quando la routine o la sua base sono state eliminate.
+
+Un'esecuzione **Non riuscita** indica il motivo, e ogni motivo richiede una risposta diversa:
+
+| Messaggio | Significato | Che cosa fare |
+| --- | --- | --- |
+| **Esecuzione non riuscita** | L'esecuzione è partita ma ha incontrato un errore | Apri la chat di quell'esecuzione e valuta, nel punto dell'errore, se la causa è il prompt o i dati |
+| **Tempo di esecuzione scaduto** | L'esecuzione ha superato la **Durata massima di esecuzione** ed è stata interrotta | Alza la **Durata massima di esecuzione**, oppure dividi il prompt in unità di lavoro più piccole |
+| **Saltata: crediti insufficienti** | I crediti erano esauriti, l'esecuzione non è partita | Ricarica i crediti dello spazio |
+| **Saltata: l'esecuzione precedente era ancora in corso** | L'esecuzione precedente non era finita, quindi questa occorrenza è stata saltata | Abbassa la frequenza, oppure riduci quanto elabora una singola esecuzione |
+| **Saltata: tempo di attesa in coda scaduto** | L'esecuzione ha atteso troppo in coda ed è stata saltata | Un caso isolato non richiede nulla; se si ripete, c'è troppo pianificato nello stesso momento: scagliona le pianificazioni |
+
+La chat di un'esecuzione è in sola lettura. I membri che possono modificare la routine possono proseguirla in fondo per capire come è andata una determinata esecuzione.
+
+<Info>La cronologia delle esecuzioni richiede il permesso di modificare la routine. Proprietario e creatore di una base possono creare, modificare ed eliminare routine; gli altri collaboratori hanno accesso in lettura.</Info>
+
+## Avvisi di errore e disattivazione automatica
+
+Teable invia una notifica quando un'esecuzione non riesce o i crediti finiscono. Va al membro che ha aggiornato la routine per ultimo, indicato sotto **Le notifiche verranno inviate a** in cima alla cronologia delle esecuzioni. Le notifiche di errore non partono a ogni singolo caso, così una lunga serie di errori non sommerge chi le riceve.
+
+Dopo 5 errori consecutivi la routine viene disattivata automaticamente e parte una notifica a sé. Riaccendi l'interruttore una volta risolto il problema; il conteggio riparte da zero dopo la prima esecuzione riuscita.
+
+Non ogni esecuzione senza esito conta in quel totale: quelle saltate perché la precedente era ancora in corso o perché è scaduta l'attesa in coda, insieme a quelle **Annullata**, non sono errori e non producono notifiche. La mancanza di crediti invece conta, quindi lasciare i crediti a zero porta prima o poi alla disattivazione.
+
+## Domande frequenti
+
+<AccordionGroup>
+  <Accordion title="Le routine consumano crediti?">
+    Sì. Ogni esecuzione è una chat IA e viene addebitata sui crediti dello spazio in base all'uso effettivo; compare sotto il tipo **Routine** nel **Riepilogo dell'utilizzo dei crediti** della pagina di fatturazione. Quando i crediti finiscono l'esecuzione viene saltata e parte una notifica, e salti ripetuti portano alla disattivazione.
+  </Accordion>
+
+  <Accordion title="Se modifico il prompt, l'esecuzione in corso ne risente?">
+    No. La modifica viene salvata come bozza e raggiunge la versione in servizio solo con **Aggiorna**. Un'esecuzione già avviata mantiene la configurazione con cui è partita.
+  </Accordion>
+
+  <Accordion title="Le routine di una base installata da un modello partono da sole?">
+    Sì. Dopo l'installazione di un modello le sue routine vengono accese come i suoi workflow. Una pianificazione senza occorrenze future resta una bozza.
+  </Accordion>
+
+  <Accordion title="Con Continua la chat dell'esecuzione precedente il contesto cresce all'infinito?">
+    Quando il contesto si avvicina al limite Teable compatta la chat, quindi le esecuzioni non si interrompono per questo. Scegli **Nuova chat a ogni esecuzione** se ogni esecuzione deve partire da un contesto pulito.
+  </Accordion>
+</AccordionGroup>
