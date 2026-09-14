@@ -1,0 +1,112 @@
+---
+title: Routine
+description: Cuppy führt einen Prompt nach Zeitplan aus; das Ergebnis jedes Laufs steht im Ausführungsverlauf.
+---
+
+<Note>In allen Cloud-Plänen verfügbar; Self-Hosted erfordert Business oder höher.</Note>
+
+Eine Routine übergibt Cuppy einen Prompt und wiederholt ihn nach Zeitplan. Das eignet sich für Arbeit, die niemand von Hand anstoßen soll: ein täglicher Bericht, das regelmäßige Aufräumen abgelaufener Datensätze, eine wöchentliche Auswertung. Jeder Lauf ist ein vollständiger KI-Chat, eine Routine kann also alles, was der KI-Chat kann, einschließlich Lesen und Schreiben von Tabellen, Aufrufen von Skills und Erzeugen von Dateien.
+
+Eine Routine ist eine Ressource innerhalb einer Base und steht in der linken Seitenleiste neben Tabellen, Apps und Automatisierungen.
+
+<Info>Eine Automatisierung wird durch ein Ereignis ausgelöst, etwa eine Datensatzänderung, ein Formular oder einen Webhook, und führt die Schritte aus, die Sie vorher konfiguriert haben. Eine Routine wird nur durch die Zeit ausgelöst und führt einen Prompt aus, den der Agent selbst auslegt. Nehmen Sie eine Automatisierung, wenn Sie feste Schritte und ein vorhersagbares Ergebnis brauchen; nehmen Sie eine Routine, wenn der Agent jedes Mal selbst entscheiden soll, was mit den aktuellen Daten zu tun ist.</Info>
+
+## Routine erstellen
+
+<Steps>
+  <Step title="Anlegen">
+    Klicken Sie in der linken Seitenleiste auf **+** und wählen Sie **Neue Routine**.
+  </Step>
+  <Step title="Prompt schreiben">
+    Beschreiben Sie unter **Prompt**, was jeder Lauf tun soll. Der Prompt ist die vollständige Anweisung für einen Lauf, nennen Sie also die Datenquelle, die Verarbeitung und das Ziel des Ergebnisses. Zum Beispiel: „Werte die Datensätze aus, die gestern in der Tabelle Aufgaben angelegt wurden, gruppiere sie nach zuständiger Person und schreibe die Auswertung in die Tabelle Tagesbericht.“
+  </Step>
+  <Step title="Zeitplan festlegen">
+    Wählen Sie unter **Zeitplan** eine Frequenz und setzen Sie bei Bedarf **Beginn** und **Ende (optional)**.
+  </Step>
+  <Step title="Aktivieren">
+    Klicken Sie auf **Aktivieren**. Die Konfiguration muss gespeichert sein, und der Zeitplan muss einen künftigen Termin enthalten.
+  </Step>
+</Steps>
+
+## Einstellungen
+
+Neben Prompt und Zeitplan enthält das Formular diese Einstellungen:
+
+| Einstellung | Beschreibung |
+| --- | --- |
+| **Modell** | Modell und Denkstufe dieser Routine. Bei **Standardmodell** gilt das Standard-Chatmodell des Space |
+| **Maximale Laufzeit (Minuten)** | Ein Lauf über diesem Limit wird abgebrochen und als fehlgeschlagen gewertet. 5–120 Minuten, Standard 30 |
+| **Chat** | **Neuer Chat für jeden Lauf** hält die Läufe voneinander unabhängig; **Chat des vorherigen Laufs fortsetzen** trägt den Kontext früherer Läufe weiter und eignet sich für Aufgaben, die auf das letzte Ergebnis Bezug nehmen |
+| **Beginn** / **Ende (optional)** | Die Grenzen des Zeitplans. Ohne Endzeit läuft die Routine unbegrenzt weiter |
+
+Modell und Denkstufe werden beim Speichern mit festgehalten, deshalb zeigt der Ausführungsverlauf, womit ein Lauf tatsächlich gelaufen ist.
+
+### Zeitplan
+
+Wählen Sie eine Frequenz aus den Vorlagen: **Stündlich** zu einer bestimmten Minute, **Täglich** und **Werktags** zu einer bestimmten Uhrzeit, **Wöchentlich** an einem Wochentag mit Uhrzeit, **Monatlich** an einem Tag mit Uhrzeit.
+
+Für alles Genauere wählen Sie **Benutzerdefiniert (RRULE)** und schreiben eine RFC-5545-Regel, etwa `FREQ=DAILY;BYHOUR=9;BYMINUTE=0`. Für eigene Regeln gelten diese Grenzen:
+
+- Die Frequenz muss `HOURLY`, `DAILY`, `WEEKLY`, `MONTHLY` oder `YEARLY` sein, und zwischen zwei Läufen muss mindestens 1 Stunde liegen.
+- Erlaubt sind `INTERVAL`, `COUNT`, `BYDAY`, `BYMONTHDAY`, `BYMONTH` sowie je ein `BYMINUTE` und `BYHOUR`. `COUNT` reicht bis 1000, und `COUNT` oder `INTERVAL` setzt einen **Beginn** voraus.
+- Zeitzone und Grenzen kommen aus dem Formular, deshalb werden `TZID`, `DTSTART`, `UNTIL` und `BYSECOND` abgelehnt.
+
+Einen Zeitplan, der nur einmal läuft, schreiben Sie als eigene Regel mit `COUNT=1`.
+
+Ein Zeitplan wird in der Zeitzone der Person ausgewertet, die die Routine angelegt hat, und richtet sich nicht nach der betrachtenden Person. Die angezeigte Zeit unter **Nächster Lauf** ist bereits in Ihre lokale Zeit umgerechnet.
+
+## Entwurf, Aktualisierung und sofortige Ausführung
+
+Eine neue Routine ist ein Entwurf und läuft erst nach dem Aktivieren nach Zeitplan. Bearbeiten Sie eine aktive Routine, wird die Änderung ebenfalls als Entwurf gespeichert, während die aktive Fassung weiter mit der alten Konfiguration läuft: Mit **Aktualisieren** übernehmen Sie sie, mit **Änderungen verwerfen** verwerfen Sie sie.
+
+**Jetzt ausführen** führt einmal aus, ohne auf den Zeitplan zu warten; das eignet sich zum Prüfen eines Prompts. Solange der vorherige Lauf nicht beendet ist, lässt sich eine Routine nicht erneut von Hand starten.
+
+Zum Deaktivieren schalten Sie den Schalter aus. Der Zeitplan löst dann nicht mehr aus, der bestehende Ausführungsverlauf bleibt erhalten.
+
+## Ausführungsverlauf
+
+Öffnen Sie die Routine und wechseln Sie zu **Ausführungsverlauf**. Die Liste lässt sich nach Status und Zeitraum filtern, was das Auffinden eines bestimmten Fehlschlags erleichtert; zu einem ausgewählten Lauf sehen Sie geplante, gestartete und beendete Zeit, die Dauer sowie den vollständigen Chat dieses Laufs.
+
+Läufe werden als **In der Warteschlange**, **Läuft**, **Abgeschlossen**, **Fehlgeschlagen** oder **Abgebrochen** ausgewiesen. **Abgebrochen** erscheint, wenn jemand den Lauf unterbrochen hat oder wenn die Routine oder ihre Base gelöscht wurde.
+
+Ein Lauf mit **Fehlgeschlagen** nennt seinen Grund, und jeder Grund verlangt eine andere Reaktion:
+
+| Meldung | Bedeutung | Was zu tun ist |
+| --- | --- | --- |
+| **Ausführung fehlgeschlagen** | Der Lauf hat begonnen, ist aber auf einen Fehler gestoßen | Öffnen Sie den Chat dieses Laufs und beurteilen Sie an der Fehlerstelle, ob der Prompt oder die Daten die Ursache sind |
+| **Zeitüberschreitung bei der Ausführung** | Der Lauf hat die **Maximale Laufzeit** überschritten und wurde abgebrochen | Erhöhen Sie die **Maximale Laufzeit** oder teilen Sie den Prompt in kleinere Arbeitsschritte |
+| **Übersprungen: nicht genügend Guthaben** | Das Guthaben war aufgebraucht, der Lauf hat nicht begonnen | Guthaben des Space aufstocken |
+| **Übersprungen: die vorherige Ausführung lief noch** | Der vorherige Lauf war nicht fertig, dieser Termin wurde übersprungen | Frequenz senken oder das Arbeitspensum eines Laufs verkleinern |
+| **Übersprungen: Zeitüberschreitung beim Warten in der Warteschlange** | Der Lauf hat zu lange in der Warteschlange gewartet und wurde übersprungen | Einzelfälle brauchen keine Reaktion; tritt es wiederholt auf, ist zu viel gleichzeitig geplant, verteilen Sie die Zeitpläne |
+
+Der Chat eines Laufs ist schreibgeschützt. Mitglieder, die die Routine bearbeiten dürfen, können am Ende weiterfragen, um nachzuvollziehen, wie ein bestimmter Lauf vorgegangen ist.
+
+<Info>Der Ausführungsverlauf setzt die Berechtigung zum Bearbeiten der Routine voraus. Besitzer und Ersteller einer Base können Routinen anlegen, bearbeiten und löschen; andere Mitarbeitende haben Lesezugriff.</Info>
+
+## Fehlerbenachrichtigung und automatische Deaktivierung
+
+Teable benachrichtigt, wenn ein Lauf fehlschlägt oder das Guthaben nicht reicht. Die Benachrichtigung geht an das Mitglied, das die Routine zuletzt aktualisiert hat; oben im Ausführungsverlauf steht unter **Benachrichtigungen werden gesendet an**, wer das ist. Fehlerbenachrichtigungen gehen nicht bei jedem einzelnen Fehlschlag raus, damit eine längere Fehlerserie niemanden überschwemmt.
+
+Nach 5 Fehlschlägen in Folge wird die Routine automatisch deaktiviert, dazu geht eine eigene Benachrichtigung raus. Schalten Sie den Schalter wieder ein, sobald das Problem behoben ist; der Zähler wird nach dem nächsten erfolgreichen Lauf zurückgesetzt.
+
+Nicht jeder erfolglose Lauf zählt dabei mit: Läufe, die übersprungen wurden, weil der vorherige noch lief oder weil die Wartezeit in der Warteschlange abgelaufen ist, sowie **Abgebrochen**-Läufe gelten nicht als Fehlschlag und lösen keine Benachrichtigung aus. Fehlendes Guthaben zählt mit, deshalb führt dauerhaft nicht aufgestocktes Guthaben zur Deaktivierung.
+
+## Häufige Fragen
+
+<AccordionGroup>
+  <Accordion title="Verbrauchen Routinen Guthaben?">
+    Ja. Jeder Lauf ist ein KI-Chat und wird nach tatsächlichem Verbrauch dem Guthaben des Space belastet; auf der Abrechnungsseite steht er in der **Guthabenübersicht** unter dem Typ **Routine**. Reicht das Guthaben nicht, wird der Lauf übersprungen und eine Benachrichtigung verschickt; wiederholtes Überspringen führt zur Deaktivierung.
+  </Accordion>
+
+  <Accordion title="Wirkt sich eine Prompt-Änderung auf den gerade laufenden Lauf aus?">
+    Nein. Die Änderung wird als Entwurf gespeichert und erreicht die aktive Fassung erst mit **Aktualisieren**. Ein bereits laufender Lauf behält die Konfiguration, mit der er gestartet ist.
+  </Accordion>
+
+  <Accordion title="Laufen Routinen in einer aus einer Vorlage installierten Base automatisch?">
+    Ja. Nach der Installation einer Vorlage werden deren Routinen ebenso eingeschaltet wie deren Workflows. Ein Zeitplan ohne künftigen Termin bleibt ein Entwurf.
+  </Accordion>
+
+  <Accordion title="Wächst der Kontext bei „Chat des vorherigen Laufs fortsetzen“ unbegrenzt?">
+    Nähert sich der Kontext seiner Grenze, verdichtet Teable den Chat; Läufe brechen deswegen nicht ab. Wählen Sie **Neuer Chat für jeden Lauf**, wenn jeder Lauf mit einem sauberen Kontext beginnen soll.
+  </Accordion>
+</AccordionGroup>

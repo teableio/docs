@@ -1,0 +1,41 @@
+---
+title: "Schema integrity"
+description: "Investiga y repara los desajustes entre las definiciones de Campo de una base y su estructura de base de datos."
+---
+
+<Tip>Disponible para el plan Business autoalojado y los planes superiores</Tip>
+
+Ruta: Panel de administración → Schema integrity
+
+Las definiciones de Campo que guarda Teable y la estructura real de la base de datos deben corresponderse. Cuando se separan, los usuarios ven Campos que no se abren, Campos de vínculo que no devuelven nada o una tabla cuyas lecturas y escrituras fallan sin causa visible. **Schema integrity** localiza problemas de este tipo y los repara.
+
+Un administrador de la instancia puede comprobar cualquier base de la instancia sin unirse antes a su espacio, incluidos los inquilinos con base de datos gestionada por el cliente (BYODB).
+
+## Ejecutar una comprobación
+
+Localiza la base con el buscador, por base, espacio, ID de tabla o nombre. La lista de resultados muestra el **Space** al que pertenece, la **Data DB** que usa (predeterminada o BYODB) y su **Runtime** (v1 o v2), que es como confirmas que has dado con la correcta. El mismo nombre de base en espacios distintos es habitual.
+
+Haz clic en **Check** en esa fila y luego en **Iniciar comprobación** dentro del diálogo **Integridad del esquema**.
+
+## Leer los resultados
+
+Los resultados se listan por Campo y regla, en cuatro estados:
+
+| Estado | Significado | Qué hacer |
+| --- | --- | --- |
+| **Error** | El destino del vínculo del Campo ya no existe, o la configuración del Campo no coincide con la estructura real de la base de datos | Es la causa directa de las lecturas y escrituras que fallan, y hay que repararlo |
+| **Advertencia** | Se desvía de la estructura esperada, pero sigue leyendo y escribiendo correctamente | Repárala, o anótala y vigílala |
+| **Omitido** | La regla no se aplica a este Campo y no ha emitido juicio | Nada que hacer |
+| **Correcto** | Coincide con lo esperado | Nada que hacer |
+
+Empieza por **Error**: una avería notificada por un usuario cae casi siempre en esta categoría. Una **Advertencia** no explica la avería actual, pero puede convertirse en error a medida que la estructura del Campo sigue cambiando, así que conviene resolverla una vez atendidos los errores.
+
+## Reparar
+
+Puedes **Reparar** regla por regla, o trabajar en bloque con **Reparar solo advertencias** o **Reparar advertencias y errores**. Mientras persigues una avería en curso, repara los errores de uno en uno y confirma que la avería ha desaparecido antes de atender las advertencias, así un problema nuevo se puede atribuir a un único cambio.
+
+Una reparación cambia solo la estructura de la tabla; no cambia el contenido de los registros. Antes de ejecutarla, usa la vista previa junto al botón de reparación: **Confirmar los detalles de la reparación** muestra el razonamiento y el SQL que produjo la simulación, y no se ejecuta nada hasta que confirmas.
+
+Algunas reglas no se pueden reparar automáticamente y muestran **Manual**; el diálogo explica entonces por qué el problema necesita a una persona. Cuando la simulación no devuelve SQL ejecutable, el diálogo lo dice de forma explícita, y ese caso también necesita a una persona.
+
+Después de reparar, haz clic en **Volver a comprobar** para confirmar que el problema ya no está.
