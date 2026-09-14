@@ -30,7 +30,7 @@ Chaque ligne correspond par défaut à une tâche et celle-ci change d’état s
 Pour affiner la liste :
 
 - Cliquez sur les tuiles d’état au-dessus de la table pour filtrer par état : **En attente**, **Active**, **Différée**, **Échouée**, **Terminée (conservée)**, etc. Vous pouvez en sélectionner plusieurs à la fois ; survolez une tuile pour connaître la signification de cet état.
-- Filtrez par **Espace**, **Base**, **Cause** ou **Résultat**, recherchez une tâche, une Base, un Espace ou une erreur, ou définissez un temps de traitement minimal pour faire apparaître les tâches lentes.
+- Filtrez par **Espace**, **Projet**, **Cause** ou **Résultat**, recherchez une tâche, un Projet, un Espace ou une erreur, ou définissez un temps de traitement minimal pour faire apparaître les tâches lentes.
 - Cliquez sur une ligne pour ouvrir la **Traçabilité calculée** : horodatages de la file d’attente, délai de livraison, temps de traitement, raison complète de l’échec avec le SQL masqué d’une livraison échouée, et détails de propagation décrits ci-dessous.
 
 <Info>**Terminée** ne signifie pas que la tâche a effectué un travail. Le badge de résultat indique ce que la livraison a réellement fait : **Traitée** a exécuté la tâche, **Aucune opération** n’a rien trouvé à faire, **Différée** l’a replanifiée pour plus tard et **Mise en attente** signifie que son périmètre est suspendu. Le filtre **Résultat** restreint la liste selon ce résultat et indique le nombre de livraisons couvertes par chacun ; associer **Terminée (conservée)** à **Traitée** ne conserve donc que les livraisons ayant réellement exécuté la tâche.</Info>
@@ -58,7 +58,7 @@ Lorsqu’une valeur calculée semble incorrecte ou est arrivée tardivement, ouv
 
 <Info>Le nombre **Échouée** et **Maintenance des anomalies** indiquent différents types de problèmes ; leurs nombres peuvent donc différer.</Info>
 
-**Maintenance des anomalies** regroupe les anomalies par groupes de problèmes, un par Base, table source et erreur, ce qui permet d’identifier facilement une cause racine unique. Examinez la raison de l’échec et corrigez le problème sous-jacent avant toute récupération. Développez un groupe pour consulter les détails de son erreur et les tâches qu’il couvre ; ces lignes sont destinées à l’inspection et la récupération s’exécute toujours sur le groupe dans son ensemble.
+**Maintenance des anomalies** regroupe les anomalies par groupes de problèmes, un par Projet, table source et erreur, ce qui permet d’identifier facilement une cause racine unique. Examinez la raison de l’échec et corrigez le problème sous-jacent avant toute récupération. Développez un groupe pour consulter les détails de son erreur et les tâches qu’il couvre ; ces lignes sont destinées à l’inspection et la récupération s’exécute toujours sur le groupe dans son ensemble.
 
 Les actions proposées par un groupe dépendent de son type :
 
@@ -70,7 +70,7 @@ Les actions proposées par un groupe dépendent de son type :
 
 Après la récupération d’un groupe, Teable indique le nombre de tâches restaurées, celles nouvellement mises en file d’attente ou déjà dans la file, et celles livrées ou différées. Les workers consomment ensuite le groupe selon les limites actuelles de concurrence et de fractionnement des tâches.
 
-Un groupe marqué **Base supprimée** appartient à une Base qui n’existe plus. Sa récupération échouerait immédiatement à nouveau ; **Ignorer le groupe** est donc la seule action proposée.
+Un groupe marqué **Projet supprimé** appartient à un Projet qui n’existe plus. Sa récupération échouerait immédiatement à nouveau ; **Ignorer le groupe** est donc la seule action proposée.
 
 Déplacer une table vers la corbeille ne crée plus d’anomalies ici. Une tâche calculée qui référence toujours une table placée dans la corbeille ignore les étapes qui la lisent, termine les étapes ciblant des tables actives, puis se termine.
 
@@ -101,9 +101,9 @@ La section de la file d’attente comporte deux contrôles de concurrence. Chacu
 | Contrôle | Ce qu’il limite |
 | --- | --- |
 | **Concurrence par processus** | Nombre de tâches calculées que chaque processus worker traite simultanément. |
-| **Plafonds de prise en charge par Base** | Nombre de tâches calculées exécutées simultanément pour une Base (**Par Base**) et pour une table source au sein de celle-ci (**Par table initiale**). Les deux valeurs sont définies sur 2 par défaut et acceptent des valeurs de 1 à 16. |
+| **Plafonds de prise en charge par Projet** | Nombre de tâches calculées exécutées simultanément pour un Projet (**Par Projet**) et pour une table source au sein de celle-ci (**Par table initiale**). Les deux valeurs sont définies sur 2 par défaut et acceptent des valeurs de 1 à 16. |
 
-Augmentez les plafonds de prise en charge lorsqu’une Base très sollicitée constitue le goulot d’étranglement, et la concurrence par processus lorsque de nombreuses Bases sont mises en file d’attente simultanément.
+Augmentez les plafonds de prise en charge lorsqu’un Projet très sollicitée constitue le goulot d’étranglement, et la concurrence par processus lorsque de nombreuses Projets sont mises en file d’attente simultanément.
 
 <Warning>Une concurrence plus élevée accroît la charge sur votre base de données. Les Espaces qui stockent leurs données dans un [locataire de base de données](/fr/basic/admin-panel/database-tenant) conservent les valeurs par défaut de l’environnement pour les plafonds de prise en charge, car leurs pools de connexions sont dimensionnés pour ces valeurs.</Warning>
 

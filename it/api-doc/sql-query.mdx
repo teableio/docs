@@ -11,12 +11,12 @@ Teable consente di collegarsi al database PostgreSQL sottostante tramite strumen
 
 ### Creare una connessione al database
 
-1. **Apri una Tabella**: per prima cosa, apri una Tabella qualsiasi nella Base a cui vuoi collegarti.
-2. **Accedi alla pagina Progettazione**: fai clic sull'icona ⚙️ nell'angolo in alto a destra per accedere alla pagina Progettazione della Base.
+1. **Apri una Tabella**: per prima cosa, apri una Tabella qualsiasi nel Progetto a cui vuoi collegarti.
+2. **Accedi alla pagina Progettazione**: fai clic sull'icona ⚙️ nell'angolo in alto a destra per accedere alla pagina Progettazione del Progetto.
 
 <img
   src="/images/api/sql-query/2026-05-29-sql-query-open-design-page-en.png"
-  alt="Apertura della pagina Progettazione della Base"
+  alt="Apertura della pagina Progettazione del Progetto"
   className="docs-screenshot"
 />
 
@@ -50,7 +50,7 @@ SELECT * FROM "bseamGnQT65TVSCzIaC"."clients" LIMIT 100
 **Nota:** in PostgreSQL, racchiudi i nomi di schemi e Tabelle tra virgolette doppie `"` per mantenere la distinzione tra maiuscole e minuscole.
 
 Per scrivere questa query, devi conoscere tre elementi:
-- **Nome dello schema (BaseId)**: l'identificatore della Base che inizia con `bse`
+- **Nome dello schema (BaseId)**: l'identificatore del Progetto che inizia con `bse`
 - **Nome della Tabella**: il nome fisico della Tabella in PostgreSQL
 - **Nomi dei Campi**: i nomi effettivi delle colonne nel database
 
@@ -58,27 +58,27 @@ Le sezioni seguenti spiegano come trovare ciascuno di questi elementi.
 
 ### Trovare il BaseId (nome dello schema)
 
-Ogni Base in Teable corrisponde a uno **schema** in PostgreSQL. Il BaseId è il nome dello schema utilizzato nelle query SQL.
+Ogni Progetto in Teable corrisponde a uno **schema** in PostgreSQL. Il BaseId è il nome dello schema utilizzato nelle query SQL.
 
 **Metodo 1:** osserva l'URL: la stringa che inizia con `bse` è il BaseId.
 
 <img
   src="/images/api/sql-query/2026-05-29-sql-query-base-id-url.png"
-  alt="ID della Base nell'URL"
+  alt="ID del Progetto nell'URL"
   className="docs-screenshot"
 />
 
-**Metodo 2:** nell'interfaccia Progettazione della Base, il nome dello schema visualizzato è il BaseId.
+**Metodo 2:** nell'interfaccia Progettazione del Progetto, il nome dello schema visualizzato è il BaseId.
 
 <img
   src="/images/api/sql-query/2026-05-29-sql-query-design-page-schema.png"
-  alt="Nome dello schema nella pagina Progettazione della Base"
+  alt="Nome dello schema nella pagina Progettazione del Progetto"
   className="docs-screenshot"
 />
 
 ### Trovare i nomi delle Tabelle
 
-I nomi delle Tabelle nell'interfaccia di Teable non vengono sincronizzati automaticamente con i nomi fisici delle Tabelle del database. Controlla il nome effettivo della Tabella del database nell'interfaccia Progettazione della Base.
+I nomi delle Tabelle nell'interfaccia di Teable non vengono sincronizzati automaticamente con i nomi fisici delle Tabelle del database. Controlla il nome effettivo della Tabella del database nell'interfaccia Progettazione del Progetto.
 
 <img
   src="/images/api/sql-query/2026-05-29-sql-query-table-info.png"
@@ -122,13 +122,13 @@ Le Tabelle che iniziano con `junction_` vengono generate dal sistema per gestire
 
 ### Note sulle autorizzazioni
 
-La connessione al database è limitata esclusivamente alla Base corrente. Gli schemi PostgreSQL garantiscono l'isolamento delle autorizzazioni, assicurando che sia possibile accedere soltanto alle Tabelle della propria Base.
+La connessione al database è limitata esclusivamente al Progetto corrente. Gli schemi PostgreSQL garantiscono l'isolamento delle autorizzazioni, assicurando che sia possibile accedere soltanto alle Tabelle del proprio Progetto.
 
 Durante la connessione potresti vedere altri baseId (nomi di schema), ma non potrai accedere al loro contenuto.
 
 <img
   src="/images/api/sql-query/2026-05-29-sql-query-tableplus-base-id.png"
-  alt="ID della Base in TablePlus"
+  alt="ID del Progetto in TablePlus"
   className="docs-screenshot"
 />
 

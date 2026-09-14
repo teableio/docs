@@ -30,7 +30,7 @@ De forma predeterminada, cada fila corresponde a una tarea y cambia de estado en
 Para acotar la lista:
 
 - Haz clic en los mosaicos de estado situados sobre la Tabla para filtrar por estado: **En espera**, **Activo**, **Retrasado**, **Fallido**, **Completado (conservado)**, entre otros. Puedes seleccionar varios a la vez; al pasar el cursor sobre un mosaico se explica el significado de ese estado.
-- Filtra por **Espacio**, **Base**, **Causa** o **Resultado**; busca una tarea, Base, Espacio o error; o establece un tiempo mínimo de procesamiento para localizar las tareas lentas.
+- Filtra por **Espacio**, **Proyecto**, **Causa** o **Resultado**; busca una tarea, Proyecto, Espacio o error; o establece un tiempo mínimo de procesamiento para localizar las tareas lentas.
 - Haz clic en una fila para abrir el **Linaje de cálculos**: marcas de tiempo de la cola, retraso de entrega, tiempo de procesamiento, el motivo completo del fallo con el SQL censurado de una entrega fallida y los detalles de propagación descritos a continuación.
 
 <Info>**Completado** no significa que la tarea haya realizado trabajo. El distintivo de resultado indica lo que hizo realmente la entrega: **Procesado** ejecutó la tarea, **Sin operación** no encontró nada pendiente, **Aplazado** la reprogramó para más adelante y **Apartado** significa que su ámbito está en pausa. El filtro **Resultado** acota la lista según ese resultado y muestra cuántas entregas abarca cada uno; por tanto, combinar **Completado (conservado)** con **Procesado** deja únicamente las entregas que realmente ejecutaron la tarea.</Info>
@@ -58,7 +58,7 @@ Cuando un valor calculado parezca incorrecto o llegue con retraso, abre **Linaje
 
 <Info>El recuento de **Fallidas** y el **Mantenimiento de anomalías** muestran tipos de problemas diferentes, por lo que sus cifras pueden no coincidir.</Info>
 
-**Mantenimiento de anomalías** agrupa las anomalías por problema, una por cada Base, Tabla de origen y error, para facilitar la detección de una única causa raíz. Revisa el motivo del fallo y corrige el problema subyacente antes de recuperar nada. Expande un grupo para consultar los detalles del error y las tareas que abarca; esas filas sirven para examinarlas, pero la recuperación siempre se ejecuta sobre el grupo completo.
+**Mantenimiento de anomalías** agrupa las anomalías por problema, una por cada Proyecto, Tabla de origen y error, para facilitar la detección de una única causa raíz. Revisa el motivo del fallo y corrige el problema subyacente antes de recuperar nada. Expande un grupo para consultar los detalles del error y las tareas que abarca; esas filas sirven para examinarlas, pero la recuperación siempre se ejecuta sobre el grupo completo.
 
 Las acciones disponibles para un grupo dependen de su tipo:
 
@@ -70,7 +70,7 @@ Las acciones disponibles para un grupo dependen de su tipo:
 
 Después de recuperar un grupo, Teable informa de cuántas tareas ha restaurado, cuántas se han añadido a la cola o ya estaban en ella y cuántas se han entregado o aplazado. A continuación, los procesos de trabajo consumen el grupo con los límites actuales de simultaneidad y división de tareas.
 
-Un grupo marcado como **Base eliminada** pertenece a una Base que ya no existe. Su recuperación volvería a fallar de inmediato, por lo que **Descartar grupo** es la única acción disponible.
+Un grupo marcado como **Proyecto eliminado** pertenece a un Proyecto que ya no existe. Su recuperación volvería a fallar de inmediato, por lo que **Descartar grupo** es la única acción disponible.
 
 Mover una Tabla a la papelera ya no crea anomalías aquí. Las tareas calculadas que aún hacen referencia a una Tabla enviada a la papelera omiten los pasos que la leen, completan los pasos dirigidos a Tablas activas y finalizan.
 
@@ -101,8 +101,8 @@ La sección de la cola tiene dos controles de simultaneidad. Cada uno escribe un
 | Control | Qué limita |
 | --- | --- |
 | **Simultaneidad por proceso** | Cuántas tareas calculadas gestiona a la vez cada proceso de trabajo. |
-| **Límites de reclamación por Base** | Cuántas tareas calculadas se ejecutan al mismo tiempo para una Base (**Por Base**) y para una Tabla de origen dentro de ella (**Por Tabla inicial**). Ambos valores son 2 de forma predeterminada y admiten valores del 1 al 16. |
+| **Límites de reclamación por Proyecto** | Cuántas tareas calculadas se ejecutan al mismo tiempo para un Proyecto (**Por Proyecto**) y para una Tabla de origen dentro de ella (**Por Tabla inicial**). Ambos valores son 2 de forma predeterminada y admiten valores del 1 al 16. |
 
-Aumenta los límites de reclamación cuando el cuello de botella sea una única Base con mucha actividad, y la simultaneidad por proceso cuando haya muchas Bases en cola a la vez.
+Aumenta los límites de reclamación cuando el cuello de botella sea una única Proyecto con mucha actividad, y la simultaneidad por proceso cuando haya muchas Proyectos en cola a la vez.
 
 <Warning>Una simultaneidad mayor aumenta la carga de la base de datos. Los Espacios que almacenan sus datos en un [inquilino de base de datos](/es/basic/admin-panel/database-tenant) conservan los valores predeterminados del entorno para los límites de reclamación, ya que sus grupos de conexiones están dimensionados para esos valores.</Warning>

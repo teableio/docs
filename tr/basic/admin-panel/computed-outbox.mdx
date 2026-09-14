@@ -30,7 +30,7 @@ Varsayılan olarak her satır bir görevi temsil eder ve Teable görevi yeniden 
 Listeyi daraltmak için:
 
 - Duruma göre filtrelemek için Tablonun üzerindeki durum kutucuklarına tıklayın: **Bekliyor**, **Etkin**, **Ertelendi**, **Başarısız**, **Tamamlandı (saklanıyor)** vb. Aynı anda birkaçını seçebilirsiniz; bir kutucuğun üzerine geldiğinizde o durumun anlamı açıklanır.
-- **Alan**, **Veritabanı**, **Neden** veya **Sonuç** ölçütüne göre filtreleyin; görev, Veritabanı, Alan ya da hata arayın veya yavaş görevleri ortaya çıkarmak için asgari işleme süresi belirleyin.
+- **Alan**, **Proje**, **Neden** veya **Sonuç** ölçütüne göre filtreleyin; görev, Proje, Alan ya da hata arayın veya yavaş görevleri ortaya çıkarmak için asgari işleme süresi belirleyin.
 - **Hesaplama kökenini** açmak için bir satıra tıklayın: kuyruk zaman damgaları, teslimat gecikmesi, işleme süresi, başarısız bir teslimatın maskelenmiş SQL'iyle birlikte tam hata nedeni ve aşağıda açıklanan yayılma ayrıntıları.
 
 <Info>**Tamamlandı**, görevin işlem yaptığı anlamına gelmez. Sonuç rozeti, teslimatın gerçekte ne yaptığını gösterir: **İşlendi** görevi çalıştırdı, **İşlem yok** yapılacak bir şey kalmadığını belirledi, **Ertelendi** görevi daha sonrası için yeniden zamanladı ve **Park edildi** görevin kapsamının duraklatıldığı anlamına gelir. **Sonuç** filtresi listeyi bu sonuca göre daraltıp her birinin kaç teslimatı kapsadığını gösterir; böylece **Tamamlandı (saklanıyor)** ile **İşlendi** eşleştirildiğinde yalnızca görevi gerçekten çalıştıran teslimatlar kalır.</Info>
@@ -58,7 +58,7 @@ Hesaplanan bir değer yanlış göründüğünde veya geç ulaştığında arkas
 
 <Info>**Başarısız** sayısı ve **Anomali yönetimi** farklı sorun türlerini gösterdiğinden sayıları farklı olabilir.</Info>
 
-**Anomali yönetimi**, tek bir temel nedenin kolayca fark edilebilmesi için anomalileri her Veritabanı, kaynak Tablo ve hata için bir tane olacak şekilde sorun gruplarında toplar. Herhangi bir şeyi kurtarmadan önce hata nedenini inceleyip temel sorunu giderin. Hata ayrıntılarını ve kapsadığı görevleri okumak için bir grubu genişletin; bu satırlar inceleme amaçlıdır ve kurtarma her zaman grubun tamamında çalışır.
+**Anomali yönetimi**, tek bir temel nedenin kolayca fark edilebilmesi için anomalileri her Proje, kaynak Tablo ve hata için bir tane olacak şekilde sorun gruplarında toplar. Herhangi bir şeyi kurtarmadan önce hata nedenini inceleyip temel sorunu giderin. Hata ayrıntılarını ve kapsadığı görevleri okumak için bir grubu genişletin; bu satırlar inceleme amaçlıdır ve kurtarma her zaman grubun tamamında çalışır.
 
 Bir grubun sunduğu eylemler türüne bağlıdır:
 
@@ -70,7 +70,7 @@ Bir grubun sunduğu eylemler türüne bağlıdır:
 
 Bir grup kurtarıldıktan sonra Teable kaç görevin geri yüklendiğini, kaçının yeni veya daha önce kuyruğa alınmış olduğunu ve kaçının teslim edildiğini veya ertelendiğini bildirir. Worker'lar daha sonra grubu mevcut eş zamanlılık ve görev bölme sınırları altında işler.
 
-**Veritabanı silindi** olarak işaretlenen bir grup, artık mevcut olmayan bir Veritabanına aittir. Kurtarılması hemen yeniden başarısız olacağından sunulan tek eylem **Grubu at** olur.
+**Proje silindi** olarak işaretlenen bir grup, artık mevcut olmayan bir Projeye aittir. Kurtarılması hemen yeniden başarısız olacağından sunulan tek eylem **Grubu at** olur.
 
 Bir Tabloyu çöp kutusuna taşımak artık burada anomali oluşturmaz. Çöp kutusundaki bir Tabloya hâlâ başvuran hesaplama görevi, o Tabloyu okuyan adımları atlar, etkin Tabloları hedefleyen adımları tamamlar ve sona erer.
 
@@ -101,8 +101,8 @@ Kuyruk bölümünde iki eş zamanlılık denetimi bulunur. Her biri, her işlemi
 | Denetim | Sınırladığı öğe |
 | --- | --- |
 | **İşlem başına eş zamanlılık** | Her worker işleminin aynı anda yönettiği hesaplama görevi sayısı. |
-| **Veritabanı başına görev alma sınırları** | Bir Veritabanı için (**Veritabanı başına**) ve içindeki bir kaynak Tablo için (**Başlangıç Tablosu başına**) aynı anda çalışan hesaplama görevi sayısı. Her ikisinin varsayılan değeri 2'dir ve 1 ile 16 arasında değerleri kabul eder. |
+| **Proje başına görev alma sınırları** | Bir Proje için (**Proje başına**) ve içindeki bir kaynak Tablo için (**Başlangıç Tablosu başına**) aynı anda çalışan hesaplama görevi sayısı. Her ikisinin varsayılan değeri 2'dir ve 1 ile 16 arasında değerleri kabul eder. |
 
-Darboğazı tek bir yoğun Veritabanı oluşturuyorsa görev alma sınırlarını, aynı anda çok sayıda Veritabanı kuyruktaysa işlem başına eş zamanlılığı artırın.
+Darboğazı tek bir yoğun Proje oluşturuyorsa görev alma sınırlarını, aynı anda çok sayıda Proje kuyruktaysa işlem başına eş zamanlılığı artırın.
 
 <Warning>Daha yüksek eş zamanlılık, veritabanınıza daha fazla yük bindirir. Verilerini bir [veritabanı kiracısında](/tr/basic/admin-panel/database-tenant) saklayan Alanlar, bağlantı havuzları bu değerlere göre boyutlandırıldığından görev alma sınırları için ortam varsayılanlarını kullanmaya devam eder.</Warning>

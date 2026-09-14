@@ -11,12 +11,12 @@ Teableでは、外部ツールから基盤となるPostgreSQLデータベース�
 
 ### データベース接続を作成する
 
-1. **テーブルを開く**：まず、接続するベース内の任意のテーブルを開きます。
-2. **設計ページを開く**：右上の⚙️アイコンをクリックして、ベース設計ページを開きます。
+1. **テーブルを開く**：まず、接続するプロジェクト内の任意のテーブルを開きます。
+2. **設計ページを開く**：右上の⚙️アイコンをクリックして、プロジェクト設計ページを開きます。
 
 <img
   src="/images/api/sql-query/2026-05-29-sql-query-open-design-page-en.png"
-  alt="ベース設計ページを開く"
+  alt="プロジェクト設計ページを開く"
   className="docs-screenshot"
 />
 
@@ -50,7 +50,7 @@ SELECT * FROM "bseamGnQT65TVSCzIaC"."clients" LIMIT 100
 **注：** PostgreSQLでは、大文字と小文字を区別した状態を維持するため、スキーマ名とテーブル名を二重引用符`"`で囲みます。
 
 このクエリを記述するには、次の3つの情報が必要です。
-- **スキーマ名（BaseId）**: `bse`で始まるベース識別子
+- **スキーマ名（BaseId）**: `bse`で始まるプロジェクト識別子
 - **テーブル名**：PostgreSQL内の物理テーブル名
 - **フィールド名**：データベース内の実際の列名
 
@@ -58,27 +58,27 @@ SELECT * FROM "bseamGnQT65TVSCzIaC"."clients" LIMIT 100
 
 ### BaseId（スキーマ名）を確認する
 
-Teableの各ベースは、PostgreSQL内の1つの**スキーマ**に対応します。BaseIdは、SQLクエリで使用するスキーマ名です。
+Teableの各プロジェクトは、PostgreSQL内の1つの**スキーマ**に対応します。BaseIdは、SQLクエリで使用するスキーマ名です。
 
 **方法1:** URLを確認します。`bse`で始まる文字列がBaseIdです。
 
 <img
   src="/images/api/sql-query/2026-05-29-sql-query-base-id-url.png"
-  alt="URL内のベースID"
+  alt="URL内のプロジェクトID"
   className="docs-screenshot"
 />
 
-**方法2:** ベース設計画面に表示されているスキーマ名がBaseIdです。
+**方法2:** プロジェクト設計画面に表示されているスキーマ名がBaseIdです。
 
 <img
   src="/images/api/sql-query/2026-05-29-sql-query-design-page-schema.png"
-  alt="ベース設計ページ内のスキーマ名"
+  alt="プロジェクト設計ページ内のスキーマ名"
   className="docs-screenshot"
 />
 
 ### テーブル名を確認する
 
-Teable画面上のテーブル名は、物理データベースのテーブル名と自動的には同期されません。実際のデータベーステーブル名は、ベース設計画面で確認してください。
+Teable画面上のテーブル名は、物理データベースのテーブル名と自動的には同期されません。実際のプロジェクトテーブル名は、プロジェクト設計画面で確認してください。
 
 <img
   src="/images/api/sql-query/2026-05-29-sql-query-table-info.png"
@@ -122,13 +122,13 @@ Teableでは、次のシステムフィールドが自動的に作成されま�
 
 ### 権限に関する注意事項
 
-データベース接続の範囲は、現在のベースだけに限定されます。PostgreSQLのスキーマによって権限が分離されるため、自分のベース内にあるテーブルだけにアクセスできます。
+データベース接続の範囲は、現在のプロジェクトだけに限定されます。PostgreSQLのスキーマによって権限が分離されるため、自分のプロジェクト内にあるテーブルだけにアクセスできます。
 
 接続時に他のbaseId（スキーマ名）が表示される場合がありますが、その内容にはアクセスできません。
 
 <img
   src="/images/api/sql-query/2026-05-29-sql-query-tableplus-base-id.png"
-  alt="TablePlus内のベースID"
+  alt="TablePlus内のプロジェクトID"
   className="docs-screenshot"
 />
 

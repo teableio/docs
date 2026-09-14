@@ -1,6 +1,6 @@
 ---
-title: "Base-übergreifender Zugriff"
-description: "Lesen und schreiben Sie Daten aus verschiedenen Bases in einem einzigen Workflow"
+title: "Projekt-übergreifender Zugriff"
+description: "Lesen und schreiben Sie Daten aus verschiedenen Projekte in einem einzigen Workflow"
 ---
 
 {/* mintlify-resync: 2026-05-26 */}
@@ -10,74 +10,74 @@ Wir empfehlen dringend, Automatisierungen mit „Skript ausführen“ zu erstell
 Bitte beachten Sie: Wenn Sie Aktionen manuell hinzufügen, kann die KI sie später weder erkennen noch ändern.
 </Tip>
 
-Standardmäßig arbeiten Automatisierungsaktionen mit Tabellen innerhalb der Base des Workflows. Der Base-übergreifende Zugriff ermöglicht einem Workflow, Daten aus einer anderen Base zu lesen und dorthin zu schreiben. Verwenden Sie ihn für Workflows, die sich über Abteilungen, Projekte oder Datensätze erstrecken.
+Standardmäßig arbeiten Automatisierungsaktionen mit Tabellen innerhalb des Projekts des Workflows. Der Projekt-übergreifende Zugriff ermöglicht einem Workflow, Daten aus einer anderen Projekt zu lesen und dorthin zu schreiben. Verwenden Sie ihn für Workflows, die sich über Abteilungen, Projekte oder Datensätze erstrecken.
 
-Eine Automatisierung in einer Vertriebs-Base kann beispielsweise einen Abwicklungsdatensatz in einer separaten Betriebs-Base erstellen. Ebenso kann ein Berichts-Workflow Daten aus mehreren Projekt-Bases in einer Zusammenfassung bündeln.
+Eine Automatisierung in einer Vertriebs-Projekt kann beispielsweise einen Abwicklungsdatensatz in einer separaten Betriebs-Projekt erstellen. Ebenso kann ein Berichts-Workflow Daten aus mehreren Projekt-Projekte in einer Zusammenfassung bündeln.
 
 ## Unterstützte Aktionen
 
-| Aktion | Base-übergreifende Unterstützung |
+| Aktion | Projekt-übergreifende Unterstützung |
 |---|---|
 | Datensatz erstellen | Ja |
 | Datensatz aktualisieren | Ja |
 | Datensätze abrufen | Ja |
 
-Dies sind die drei datensatzbezogenen Aktionen. Andere Aktionen („E-Mail senden“, „HTTP-Anfrage“ usw.) benötigen keinen Base-übergreifenden Zugriff, da sie nicht auf eine bestimmte Tabelle abzielen.
+Dies sind die drei datensatzbezogenen Aktionen. Andere Aktionen („E-Mail senden“, „HTTP-Anfrage“ usw.) benötigen keinen Projekt-übergreifenden Zugriff, da sie nicht auf eine bestimmte Tabelle abzielen.
 
 ## Einrichtung
 
 1. Öffnen Sie in Ihrem Workflow eine unterstützte Aktion („Datensatz erstellen“, „Datensatz aktualisieren“ oder „Datensätze abrufen“).
-2. Klicken Sie neben der Auswahl **Tabelle** auf **Base-übergreifender Zugriff**.
-3. Ein Bereich mit allen Spaces und Bases, auf die Ihr Konto zugreifen kann, wird geöffnet. Wählen Sie zuerst den Ziel-**Space** und dann die Ziel-**Base** aus.
-4. Wählen Sie die **Tabelle** in dieser Base aus. Wenn die Aktion dies unterstützt, können Sie auch eine bestimmte **Ansicht** auswählen.
-5. Ordnen Sie die Felder zu und konfigurieren Sie die Aktion wie gewohnt. Die Feldliste zeigt nun die Felder der Zieltabelle an, nicht die Felder der aktuellen Base.
+2. Klicken Sie neben der Auswahl **Tabelle** auf **Projekt-übergreifender Zugriff**.
+3. Ein Bereich mit allen Spaces und Projekte, auf die Ihr Konto zugreifen kann, wird geöffnet. Wählen Sie zuerst den Ziel-**Space** und dann die Ziel-**Projekt** aus.
+4. Wählen Sie die **Tabelle** in diesem Projekt aus. Wenn die Aktion dies unterstützt, können Sie auch eine bestimmte **Ansicht** auswählen.
+5. Ordnen Sie die Felder zu und konfigurieren Sie die Aktion wie gewohnt. Die Feldliste zeigt nun die Felder der Zieltabelle an, nicht die Felder des aktuellen Projekts.
 6. Speichern Sie die Aktion.
 
 ## Konkretes Beispiel: Vom Vertrieb zur Abwicklung
 
-Angenommen, Sie haben zwei Bases:
+Angenommen, Sie haben zwei Projekte:
 
-- **Vertriebs-Base** – enthält eine Tabelle „Abschlüsse“, in der das Vertriebsteam abgeschlossene Geschäfte verfolgt.
-- **Betriebs-Base** – enthält eine Tabelle „Abwicklung“, in der das Betriebsteam den Versand verwaltet.
+- **Vertriebs-Projekt** – enthält eine Tabelle „Abschlüsse“, in der das Vertriebsteam abgeschlossene Geschäfte verfolgt.
+- **Betriebs-Projekt** – enthält eine Tabelle „Abwicklung“, in der das Betriebsteam den Versand verwaltet.
 
 Wenn ein Geschäft abgeschlossen wird, möchten Sie automatisch einen Abwicklungsdatensatz erstellen:
 
-1. **Auslöser:** Verwenden Sie in der Vertriebs-Base „Wenn Datensatz Bedingungen erfüllt“ mit dem Filter: `Phase` entspricht `Erfolgreich abgeschlossen`.
-2. **Aktion:** „Datensatz erstellen“ mit Base-übergreifendem Zugriff auf die Betriebs-Base > Tabelle „Abwicklung“.
+1. **Auslöser:** Verwenden Sie in der Vertriebs-Projekt „Wenn Datensatz Bedingungen erfüllt“ mit dem Filter: `Phase` entspricht `Erfolgreich abgeschlossen`.
+2. **Aktion:** „Datensatz erstellen“ mit Projekt-übergreifendem Zugriff auf die Betriebs-Projekt > Tabelle „Abwicklung“.
 3. **Feldzuordnung:** Ordnen Sie Kundenname, Produkt, Menge und Versandadresse des Geschäfts den entsprechenden Feldern in der Tabelle „Abwicklung“ zu.
 
-Bei jedem Geschäftsabschluss wird nun automatisch ein Abwicklungsdatensatz in der Betriebs-Base erstellt – eine manuelle Übergabe ist nicht erforderlich.
+Bei jedem Geschäftsabschluss wird nun automatisch ein Abwicklungsdatensatz in der Betriebs-Projekt erstellt – eine manuelle Übergabe ist nicht erforderlich.
 
 ## Berechtigungsmodell
 
-Wenn Sie Workflow-Aktualisierungen erstellen, bearbeiten oder anwenden, prüft Teable jede Base-übergreifende Aktion anhand der Berechtigungen der Person, die sie gerade bearbeitet:
+Wenn Sie Workflow-Aktualisierungen erstellen, bearbeiten oder anwenden, prüft Teable jede Projekt-übergreifende Aktion anhand der Berechtigungen der Person, die sie gerade bearbeitet:
 
-| Aktion | Erforderliche Berechtigung für die Ziel-Base |
+| Aktion | Erforderliche Berechtigung für die Ziel-Projekt |
 |---|---|
 | Datensätze abrufen | Felder und Datensätze lesen |
 | Datensatz erstellen | Felder und Datensätze lesen sowie Datensätze erstellen |
 | Datensatz aktualisieren | Felder und Datensätze lesen sowie Datensätze aktualisieren |
 
-Aktive Workflow-Ausführungen verwenden für die Ziel-Base die Laufzeitidentität der Teable-Automatisierung. Datensätze, die durch eine Base-übergreifende Aktion erstellt oder aktualisiert werden, erscheinen in Datensatzmetadaten und Überwachungsansichten als **Automatisierungsroboter**.
+Aktive Workflow-Ausführungen verwenden für die Ziel-Projekt die Laufzeitidentität der Teable-Automatisierung. Datensätze, die durch eine Projekt-übergreifende Aktion erstellt oder aktualisiert werden, erscheinen in Datensatzmetadaten und Überwachungsansichten als **Automatisierungsroboter**.
 
 ### Was bei Zugriffsänderungen geschieht
 
-Verfügt die aktuell bearbeitende Person nicht über die erforderliche Berechtigung für die Ziel-Base, hindert Teable sie daran, Base-übergreifende Aktionen hinzuzufügen oder zu ändern, die auf diese Base verweisen. Enthält ein Entwurf bereits Base-übergreifende Aktionen, auf die diese Person nicht zugreifen kann, verhindert Teable außerdem das Anwenden des Entwurfs. Die bereits aktive Version wird weiter ausgeführt. Teable prüft die Berechtigungen erneut, sobald jemand den Workflow wieder bearbeitet oder anwendet.
+Verfügt die aktuell bearbeitende Person nicht über die erforderliche Berechtigung für die Ziel-Projekt, hindert Teable sie daran, Projekt-übergreifende Aktionen hinzuzufügen oder zu ändern, die auf dieses Projekt verweisen. Enthält ein Entwurf bereits Projekt-übergreifende Aktionen, auf die diese Person nicht zugreifen kann, verhindert Teable außerdem das Anwenden des Entwurfs. Die bereits aktive Version wird weiter ausgeführt. Teable prüft die Berechtigungen erneut, sobald jemand den Workflow wieder bearbeitet oder anwendet.
 
 So beheben Sie beim Bearbeiten oder Anwenden eines Workflows einen Berechtigungsfehler:
 
-1. Bitten Sie eine Person mit Zugriff auf beide Bases, den Workflow zu bearbeiten und anzuwenden.
-2. Oder stellen Sie die erforderlichen Berechtigungen für die Ziel-Base wieder her und wenden Sie den Workflow erneut an.
+1. Bitten Sie eine Person mit Zugriff auf beide Projekte, den Workflow zu bearbeiten und anzuwenden.
+2. Oder stellen Sie die erforderlichen Berechtigungen für die Ziel-Projekt wieder her und wenden Sie den Workflow erneut an.
 
 ## Tipps
 
-- Base-übergreifender Zugriff kann Bases in verschiedenen **Spaces** erreichen. Die Person, die den Workflow konfiguriert oder anwendet, muss über die erforderlichen Berechtigungen für die Ziel-Base verfügen.
-- Bei der Zuordnung von Feldern über Bases hinweg müssen die Feldtypen kompatibel sein. Beispielsweise können Sie einem Anhangsfeld kein Textfeld zuordnen.
-- Wenn Sie eine Ziel-Base umstrukturieren (Tabellen umbenennen oder Felder löschen), funktionieren Base-übergreifende Aktionen nicht mehr, die auf diese Tabellen und Felder verweisen. Aktualisieren Sie Ihren Workflow nach strukturellen Änderungen.
-- Erwägen Sie bei komplexen Base-übergreifenden Workflows, Ihre Automatisierungen in einer zentralen „Hub“-Base zu bündeln, um sie übersichtlich zu organisieren.
+- Projekt-übergreifender Zugriff kann Projekte in verschiedenen **Spaces** erreichen. Die Person, die den Workflow konfiguriert oder anwendet, muss über die erforderlichen Berechtigungen für die Ziel-Projekt verfügen.
+- Bei der Zuordnung von Feldern über Projekte hinweg müssen die Feldtypen kompatibel sein. Beispielsweise können Sie einem Anhangsfeld kein Textfeld zuordnen.
+- Wenn Sie eine Ziel-Projekt umstrukturieren (Tabellen umbenennen oder Felder löschen), funktionieren Projekt-übergreifende Aktionen nicht mehr, die auf diese Tabellen und Felder verweisen. Aktualisieren Sie Ihren Workflow nach strukturellen Änderungen.
+- Erwägen Sie bei komplexen Projekt-übergreifenden Workflows, Ihre Automatisierungen in einer zentralen „Hub“-Projekt zu bündeln, um sie übersichtlich zu organisieren.
 
 ## Verwandte Themen
 
-- [Datensatz erstellen](/de/basic/automation/actions/records/create-record) – Datensätze in der aktuellen oder einer anderen Base erstellen
-- [Datensatz aktualisieren](/de/basic/automation/actions/records/update-record) – Datensätze in der aktuellen oder einer anderen Base aktualisieren
-- [Datensätze abrufen](/de/basic/automation/actions/records/get-records) – Datensätze aus der aktuellen oder einer anderen Base abrufen
+- [Datensatz erstellen](/de/basic/automation/actions/records/create-record) – Datensätze in der aktuellen oder einer anderen Projekt erstellen
+- [Datensatz aktualisieren](/de/basic/automation/actions/records/update-record) – Datensätze in der aktuellen oder einer anderen Projekt aktualisieren
+- [Datensätze abrufen](/de/basic/automation/actions/records/get-records) – Datensätze aus der aktuellen oder einer anderen Projekt abrufen
