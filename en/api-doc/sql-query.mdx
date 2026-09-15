@@ -11,12 +11,12 @@ Teable allows you to connect to its underlying PostgreSQL database through exter
 
 ### Creating a Database Connection
 
-1. **Open a Table**: First, open any table within the base you want to connect to.
-2. **Enter Design Page**: Click the ⚙️ icon in the top right corner to enter the Base Design page.
+1. **Open a Table**: First, open any table within the project you want to connect to.
+2. **Enter Design Page**: Click the ⚙️ icon in the top right corner to enter the Project Design page.
 
 <img
   src="/images/api/sql-query/2026-05-29-sql-query-open-design-page-en.png"
-  alt="Open the Base Design page"
+  alt="Open the Project Design page"
   className="docs-screenshot"
 />
 
@@ -50,7 +50,7 @@ SELECT * FROM "bseamGnQT65TVSCzIaC"."clients" LIMIT 100
 **Note:** In PostgreSQL, use double quotes `"` around schema and table names to preserve case sensitivity.
 
 To write this query, you'll need to know three things:
-- **Schema name (BaseId)**: The base identifier starting with `bse`
+- **Schema name (BaseId)**: The project identifier starting with `bse`
 - **Table name**: The physical table name in PostgreSQL
 - **Field names**: The actual column names in the database
 
@@ -58,27 +58,27 @@ The following sections explain how to find each of these.
 
 ### Finding the BaseId (Schema Name)
 
-Each Base in Teable corresponds to a **schema** in PostgreSQL. The BaseId is the schema name used in SQL queries.
+Each Project in Teable corresponds to a **schema** in PostgreSQL. The BaseId is the schema name used in SQL queries.
 
 **Method 1:** Look at the URL - the string starting with `bse` is the BaseId.
 
 <img
   src="/images/api/sql-query/2026-05-29-sql-query-base-id-url.png"
-  alt="Base ID in the URL"
+  alt="Project ID in the URL"
   className="docs-screenshot"
 />
 
-**Method 2:** In the Base Design interface, the schema name shown is the BaseId.
+**Method 2:** In the Project Design interface, the schema name shown is the BaseId.
 
 <img
   src="/images/api/sql-query/2026-05-29-sql-query-design-page-schema.png"
-  alt="Schema name in the Base Design page"
+  alt="Schema name in the Project Design page"
   className="docs-screenshot"
 />
 
 ### Finding Table Names
 
-Table names in Teable interface don't automatically sync with physical database table names. Check the Base Design Interface for the actual database table name.
+Table names in Teable interface don't automatically sync with physical database table names. Check the Project Design Interface for the actual database table name.
 
 <img
   src="/images/api/sql-query/2026-05-29-sql-query-table-info.png"
@@ -122,13 +122,13 @@ Tables starting with `junction_` are system-generated tables for handling ManyTo
 
 ### Permission Notes
 
-The database connection is scoped to the current base only. PostgreSQL schemas provide permission isolation, ensuring you can only access tables within your base.
+The database connection is scoped to the current project only. PostgreSQL schemas provide permission isolation, ensuring you can only access tables within your project.
 
 You may see other baseIds (schema names) when connecting, but you cannot access their content.
 
 <img
   src="/images/api/sql-query/2026-05-29-sql-query-tableplus-base-id.png"
-  alt="Base ID in TablePlus"
+  alt="Project ID in TablePlus"
   className="docs-screenshot"
 />
 

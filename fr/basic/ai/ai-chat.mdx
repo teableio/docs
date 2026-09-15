@@ -35,7 +35,7 @@ Lorsque vous collez un long bloc de texte brut, Teable le convertit en pièce jo
 - **Mes secrets** : ouvrez **+** → **Plus** → **Mes secrets** pour enregistrer des clés API ou d’autres identifiants dans **Paramètres** → **Intégrations**. Ces valeurs vous appartiennent, le Chat IA peut les lire à l’exécution comme variables d’environnement, et vous pouvez les accorder à telle application ou telle automatisation. Voir [Identifiants et intégrations](/fr/basic/credential).
 - **Demandes d’identifiants** : lorsque l’IA a besoin d’un compte tiers ou d’un secret, elle épingle une carte de demande dans la conversation. Choisissez **Connecter mon compte** pour lancer un parcours OAuth, ou accordez un identifiant que vous possédez déjà. **Ignorer** ne le fournit pas ; l’IA poursuit les parties qu’elle peut réaliser sans lui.
 - **Scraper** : ouvrez le menu **+** et choisissez **Scraper**, puis une plateforme et un type de données. Les entrées sont de deux sortes : certaines extraient à partir d’un lien que vous collez, par exemple **profil personnel** sur LinkedIn ou **avis sur le produit** sur Amazon ; d’autres cherchent par mot-clé, hashtag ou nom, par exemple **recherche de vidéos** sur TikTok ou **publications d'un subreddit** sur Reddit. Teable pré-remplit l’instruction correspondante dans la saisie du chat et laisse à la fin la partie que vous devez compléter. **Page web quelconque** accepte directement un lien collé.
-- **Compétences** : ouvrez le menu **+** et choisissez **Compétences** pour importer, activer, désactiver ou essayer des compétences dans le chat actuel. Lors de l’importation, choisissez qui peut l’utiliser : **Personnel** la réserve à votre usage, **Base** la donne aux collaborateurs de cette base et **Espace** la donne à tous les membres de cet espace. Saisissez `/` dans le champ de saisie pour choisir une compétence activée. Pour connecter ou migrer un système externe, consultez [Tout connecter et migrer](/fr/basic/ai/connect-everything).
+- **Compétences** : ouvrez le menu **+** et choisissez **Compétences** pour importer, activer, désactiver ou essayer des compétences dans le chat actuel. Lors de l’importation, choisissez qui peut l’utiliser : **Personnel** la réserve à votre usage, **Projet** la donne aux collaborateurs de ce projet et **Espace** la donne à tous les membres de cet espace. Saisissez `/` dans le champ de saisie pour choisir une compétence activée. Pour connecter ou migrer un système externe, consultez [Tout connecter et migrer](/fr/basic/ai/connect-everything).
 - **Utilisation du contexte** : l’anneau à côté du champ de saisie indique la part de la fenêtre de contexte du modèle actuellement utilisée par la conversation. Cliquez dessus pour afficher le pourcentage et le nombre de jetons. Lorsque le contexte est plein, Teable compacte la conversation ; démarrez un nouveau chat si vous souhaitez un contexte vierge.
 - **Gérer les fichiers** : ouvrez **+** → **Plus** → **Gérer les fichiers** pour consulter les fichiers dans le bac à sable du chat actuel. Vous pouvez prévisualiser les fichiers pris en charge, télécharger des fichiers ou supprimer les fichiers et dossiers dont vous n’avez plus besoin. Une conversation doit exister avant que ses fichiers puissent être gérés.
 - **File de messages** : envoyer un autre message pendant que l’IA travaille ne l’interrompt pas. Le message attend dans une file au-dessus du champ de saisie et est envoyé lorsque l’exécution actuelle se termine. Les éléments en attente conservent les mêmes pastilles de table, vue, pièce jointe et sélection que la saisie du chat ; **Supprimer** en retire un, **...** → **Modifier le message** le replace dans le champ de saisie, et un élément uniquement textuel propose aussi **Orienter** pour transmettre son texte à l’exécution en cours au lieu d’attendre.
@@ -145,9 +145,9 @@ Lorsqu’une réponse présente plusieurs fichiers à la fois, utilisez **Tout t
 
 ### Mémoire
 
-La mémoire stocke les informations dont vous demandez explicitement à Cuppy de se souvenir. La mémoire est définie par utilisateur et par Base : chaque utilisateur dans chaque Base dispose d’un contexte de mémoire indépendant, et la mémoire enregistrée dans une autre Base n’apparaît pas automatiquement dans la Base actuelle.
+La mémoire stocke les informations dont vous demandez explicitement à Cuppy de se souvenir. La mémoire est définie par utilisateur et par Projet : chaque utilisateur dans chaque Projet dispose d’un contexte de mémoire indépendant, et la mémoire enregistrée dans un autre Projet n’apparaît pas automatiquement dans le Projet actuel.
 
-- Enregistrer la mémoire dans la Base actuelle
+- Enregistrer la mémoire dans le Projet actuel
 
 Indiquez dans la conversation ce dont Cuppy doit se souvenir :
 
@@ -155,12 +155,12 @@ Indiquez dans la conversation ce dont Cuppy doit se souvenir :
 Veuillez mémoriser xxx.
 ```
 
-- Réutiliser la mémoire d’une autre Base
+- Réutiliser la mémoire d’un autre Projet
 
-Demandez à Cuppy de lire une autre Base et d’enregistrer les parties pertinentes dans la Base actuelle :
+Demandez à Cuppy de lire un autre Projet et d’enregistrer les parties pertinentes dans le Projet actuel :
 
 ```text
-Cuppy, veuillez lire la mémoire de la Base ID bsexxxxxxxxxxxx et enregistrer la mémoire pertinente dans cette Base actuelle.
+Cuppy, veuillez lire la mémoire du Projet portant l’ID bsexxxxxxxxxxxx et enregistrer la mémoire pertinente dans ce Projet actuel.
 ```
 
 ### Gérer les tâches longues
@@ -244,8 +244,8 @@ Ouvrez **+** → **Plus** → **Gérer les artefacts** pour parcourir tout ce qu
     Saisissez `@` dans le champ de saisie et sélectionnez le nœud que vous souhaitez référencer dans le Chat IA. Pour les sélections dans la vue Grille, vous pouvez également sélectionner des lignes, des colonnes, une cellule ou une plage de cellules, puis utiliser **Ajouter au Chat** dans le menu contextuel.
   </Accordion>
 
-  <Accordion title="Le Chat IA peut-il fonctionner dans une autre base ?">
-    Oui. L’IA n’est pas limitée à la Base à laquelle appartient le chat ; elle peut rechercher les autres Bases auxquelles vous avez accès et y travailler. Nommez la Base dans votre demande, par exemple « comparer cette table avec la table des commandes dans la Base Ventes ». `@` répertorie uniquement les nœuds de la Base actuelle, et tout ce que vous ne dirigez pas ailleurs se produit toujours dans la Base propre au chat.
+  <Accordion title="Le Chat IA peut-il fonctionner dans un autre projet ?">
+    Oui. L’IA n’est pas limitée au Projet auquel appartient le chat ; elle peut rechercher les autres Projets auxquels vous avez accès et y travailler. Nommez le Projet dans votre demande, par exemple « comparer cette table avec la table des commandes dans le Projet Ventes ». `@` répertorie uniquement les nœuds du Projet actuel, et tout ce que vous ne dirigez pas ailleurs se produit toujours dans le Projet propre au chat.
   </Accordion>
 
   <Accordion title="Les graphiques et rapports créés par l’IA sont-ils enregistrés ?">
@@ -255,8 +255,8 @@ Ouvrez **+** → **Plus** → **Gérer les artefacts** pour parcourir tout ce qu
     Pas par défaut. Vous seul pouvez ouvrir vos propres artefacts. Activez **Activer le partage** dans la visionneuse et envoyez le lien, en choisissant **Membres de l’espace** si l’artefact doit rester dans l’espace.
   </Accordion>
 
-  <Accordion title="La mémoire est-elle conservée entre les Bases ?">
-    Non. La mémoire est définie par utilisateur et par Base. Si vous souhaitez réutiliser la mémoire d’une autre Base, demandez à Cuppy de lire la mémoire de cette Base et d’enregistrer les parties pertinentes dans la Base actuelle.
+  <Accordion title="La mémoire est-elle conservée entre les Projets ?">
+    Non. La mémoire est définie par utilisateur et par Projet. Si vous souhaitez réutiliser la mémoire d’un autre Projet, demandez à Cuppy de lire la mémoire de ce Projet et d’enregistrer les parties pertinentes dans le Projet actuel.
   </Accordion>
 
   <Accordion title="Le Chat IA peut-il continuer à travailler en arrière-plan après mon départ ?">
@@ -284,11 +284,11 @@ Ouvrez **+** → **Plus** → **Gérer les artefacts** pour parcourir tout ce qu
   </Accordion>
 
   <Accordion title="Comment utiliser les compétences dans le Chat IA ?">
-    Ouvrez le menu **+** et choisissez **Compétences** pour importer ou gérer des compétences, ou saisissez `/` dans le champ de saisie pour choisir une compétence activée. Lors de l’importation, choisissez qui peut utiliser la compétence : personnel pour vos propres chats, base lorsque les collaborateurs de la même Base en ont besoin, et espace lorsque tous les membres de l’espace doivent l’utiliser. Les utilisateurs qui peuvent gérer la Base peuvent ajouter des compétences de Base, et les propriétaires et créateurs d’espace peuvent ajouter des compétences d’espace. Si le Chat IA présente un fichier `.skill`, utilisez **Installer** sur la carte de fichier pour l’ajouter.
+    Ouvrez le menu **+** et choisissez **Compétences** pour importer ou gérer des compétences, ou saisissez `/` dans le champ de saisie pour choisir une compétence activée. Lors de l’importation, choisissez qui peut utiliser la compétence : personnel pour vos propres chats, projet lorsque les collaborateurs du même Projet en ont besoin, et espace lorsque tous les membres de l’espace doivent l’utiliser. Les utilisateurs qui peuvent gérer le Projet peuvent ajouter des compétences de Projet, et les propriétaires et créateurs d’espace peuvent ajouter des compétences d’espace. Si le Chat IA présente un fichier `.skill`, utilisez **Installer** sur la carte de fichier pour l’ajouter.
   </Accordion>
 
   <Accordion title="Quelle compétence s’applique lorsque deux d’entre elles portent le même nom ?">
-    Une seule version est toujours active, et la version d’équipe partagée l’emporte sur une copie personnelle : une compétence de Base prévaut sur une compétence d’espace, et une compétence d’espace prévaut sur une compétence personnelle. Dans une conversation d’application ou de bot, la compétence ajoutée pour cette application ou ce bot est prioritaire. Pour faire passer tout le monde à une nouvelle version, mettez à jour la copie dans la Base ou l’espace.
+    Une seule version est toujours active, et la version d’équipe partagée l’emporte sur une copie personnelle : une compétence de Projet prévaut sur une compétence d’espace, et une compétence d’espace prévaut sur une compétence personnelle. Dans une conversation d’application ou de bot, la compétence ajoutée pour cette application ou ce bot est prioritaire. Pour faire passer tout le monde à une nouvelle version, mettez à jour la copie dans le Projet ou l’espace.
   </Accordion>
 
   <Accordion title="Quels fichiers restent dans Gérer les fichiers ?">

@@ -11,12 +11,12 @@ Teable ermöglicht es Ihnen, über externe Tools für schreibgeschützte Abfrage
 
 ### Erstellen einer Datenbankverbindung
 
-1. **Eine Tabelle öffnen**: Öffnen Sie zunächst eine beliebige Tabelle in der Base, mit der Sie sich verbinden möchten.
-2. **Zur Designseite wechseln**: Klicken Sie auf das ⚙️-Symbol oben rechts, um zur Seite „Base-Design“ zu gelangen.
+1. **Eine Tabelle öffnen**: Öffnen Sie zunächst eine beliebige Tabelle im Projekt, mit dem Sie sich verbinden möchten.
+2. **Zur Designseite wechseln**: Klicken Sie auf das ⚙️-Symbol oben rechts, um zur Seite „Projekt-Design“ zu gelangen.
 
 <img
   src="/images/api/sql-query/2026-05-29-sql-query-open-design-page-en.png"
-  alt="Seite „Base-Design“ öffnen"
+  alt="Seite „Projekt-Design“ öffnen"
   className="docs-screenshot"
 />
 
@@ -50,7 +50,7 @@ SELECT * FROM "bseamGnQT65TVSCzIaC"."clients" LIMIT 100
 **Hinweis:** Verwenden Sie in PostgreSQL doppelte Anführungszeichen `"` um Schema- und Tabellennamen, damit die Groß- und Kleinschreibung erhalten bleibt.
 
 Zum Schreiben dieser Abfrage benötigen Sie drei Informationen:
-- **Schemaname (BaseId)**: Die mit `bse` beginnende Kennung der Base
+- **Schemaname (BaseId)**: Die mit `bse` beginnende Kennung des Projekts
 - **Tabellenname**: Der physische Tabellenname in PostgreSQL
 - **Feldnamen**: Die tatsächlichen Spaltennamen in der Datenbank
 
@@ -58,27 +58,27 @@ In den folgenden Abschnitten wird erläutert, wie Sie jede dieser Informationen 
 
 ### Die BaseId (Schemaname) finden
 
-Jede Base in Teable entspricht einem **Schema** in PostgreSQL. Die BaseId ist der in SQL-Abfragen verwendete Schemaname.
+Jedes Projekt in Teable entspricht einem **Schema** in PostgreSQL. Die BaseId ist der in SQL-Abfragen verwendete Schemaname.
 
 **Methode 1:** Sehen Sie sich die URL an – die mit `bse` beginnende Zeichenfolge ist die BaseId.
 
 <img
   src="/images/api/sql-query/2026-05-29-sql-query-base-id-url.png"
-  alt="Base-ID in der URL"
+  alt="Projekt-ID in der URL"
   className="docs-screenshot"
 />
 
-**Methode 2:** In der Oberfläche „Base-Design“ ist der angezeigte Schemaname die BaseId.
+**Methode 2:** In der Oberfläche „Projekt-Design“ ist der angezeigte Schemaname die BaseId.
 
 <img
   src="/images/api/sql-query/2026-05-29-sql-query-design-page-schema.png"
-  alt="Schemaname auf der Seite „Base-Design“"
+  alt="Schemaname auf der Seite „Projekt-Design“"
   className="docs-screenshot"
 />
 
 ### Tabellennamen finden
 
-Tabellennamen in der Teable-Oberfläche werden nicht automatisch mit physischen Datenbanktabellennamen synchronisiert. Prüfen Sie in der Oberfläche „Base-Design“ den tatsächlichen Datenbanktabellennamen.
+Tabellennamen in der Teable-Oberfläche werden nicht automatisch mit physischen Datenbanktabellennamen synchronisiert. Prüfen Sie in der Oberfläche „Projekt-Design“ den tatsächlichen Datenbanktabellennamen.
 
 <img
   src="/images/api/sql-query/2026-05-29-sql-query-table-info.png"
@@ -122,13 +122,13 @@ Tabellen, die mit `junction_` beginnen, sind vom System generierte Tabellen zur 
 
 ### Hinweise zu Berechtigungen
 
-Die Datenbankverbindung ist auf die aktuelle Base beschränkt. PostgreSQL-Schemas bieten eine Berechtigungsisolation und stellen sicher, dass Sie nur auf Tabellen innerhalb Ihrer Base zugreifen können.
+Die Datenbankverbindung ist auf das aktuelle Projekt beschränkt. PostgreSQL-Schemas bieten eine Berechtigungsisolation und stellen sicher, dass Sie nur auf Tabellen innerhalb Ihres Projekts zugreifen können.
 
 Beim Verbinden sehen Sie möglicherweise andere BaseIds (Schemanamen), können jedoch nicht auf deren Inhalte zugreifen.
 
 <img
   src="/images/api/sql-query/2026-05-29-sql-query-tableplus-base-id.png"
-  alt="Base-ID in TablePlus"
+  alt="Projekt-ID in TablePlus"
   className="docs-screenshot"
 />
 

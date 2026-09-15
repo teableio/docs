@@ -11,12 +11,12 @@ Teable 允许您通过外部工具连接底层 PostgreSQL 数据库进行只读�
 
 ### 创建数据库连接
 
-1. **进入表格**：首先，打开您想要连接的数据库中的任意一个表格。
-2. **进入设计页面**：点击右上角的 ⚙️ 图标，进入数据库设计页面。
+1. **进入表格**：首先，打开您想要连接的项目中的任意一个表格。
+2. **进入设计页面**：点击右上角的 ⚙️ 图标，进入项目设计页面。
 
 <img
   src="/images/api/sql-query/2026-05-29-sql-query-open-design-page-zh.png"
-  alt="进入数据库设计页面"
+  alt="进入项目设计页面"
   className="docs-screenshot"
 />
 
@@ -51,35 +51,35 @@ SELECT * FROM "bseamGnQT65TVSCzIaC"."clients" LIMIT 100
 
 编写查询语句需要知道以下三个信息：
 
-- **Schema 名称（数据库 ID）**：以 `bse` 开头的数据库标识符
+- **Schema 名称（项目 ID）**：以 `bse` 开头的项目标识符
 - **表名**：PostgreSQL 中的物理表名
 - **字段名**：数据库中的实际列名
 
 以下章节将说明如何获取这些信息。
 
-### 获取数据库 ID（BaseId / Schema 名称）
+### 获取项目 ID（BaseId / Schema 名称） {#获取数据库-idbaseid--schema-名称}
 
-Teable 中的每个数据库（Base）对应 PostgreSQL 中的一个 **schema**。BaseId 就是 SQL 查询中使用的 schema 名称。
+Teable 中的每个项目对应 PostgreSQL 中的一个 **schema**。BaseId 就是 SQL 查询中使用的 schema 名称。
 
 **方法一**：查看 URL，以 `bse` 开头的字符串就是 BaseId。
 
 <img
   src="/images/api/sql-query/2026-05-29-sql-query-base-id-url.png"
-  alt="URL 中的数据库 ID"
+  alt="URL 中的项目 ID"
   className="docs-screenshot"
 />
 
-**方法二**：在数据库设计界面中，显示的 schema 名就是 BaseId。
+**方法二**：在项目设计界面中，显示的 schema 名就是 BaseId。
 
 <img
   src="/images/api/sql-query/2026-05-29-sql-query-design-page-schema.png"
-  alt="数据库设计页面中的 schema 名称"
+  alt="项目设计页面中的 schema 名称"
   className="docs-screenshot"
 />
 
 ### 获取表名
 
-Teable 界面上的表名不会自动同步到物理数据库表名。请在数据库设计界面中查看实际的数据库表名。
+Teable 界面上的表名不会自动同步到物理数据库表名。请在项目设计界面中查看实际的数据库表名。
 
 <img
   src="/images/api/sql-query/2026-05-29-sql-query-table-info.png"
@@ -123,13 +123,13 @@ Teable 自动创建以下系统字段（无法重命名）：
 
 ### 权限说明
 
-数据库连接的访问范围仅限于当前数据库。PostgreSQL 的 schema 提供了权限隔离，确保您只能访问自己数据库中的表。
+数据库连接的访问范围仅限于当前项目。PostgreSQL 的 schema 提供了权限隔离，确保您只能访问自己项目中的表。
 
 连接时您可能会看到其他的 BaseId（schema 名称），但无法访问它们的内容。
 
 <img
   src="/images/api/sql-query/2026-05-29-sql-query-tableplus-base-id.png"
-  alt="TablePlus 中的数据库 ID"
+  alt="TablePlus 中的项目 ID"
   className="docs-screenshot"
 />
 

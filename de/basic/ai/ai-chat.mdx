@@ -35,7 +35,7 @@ Wenn Sie einen langen Block mit Klartext einfügen, wandelt Teable ihn in einen 
 - **Meine Secrets**: Öffnen Sie **+** → **Mehr** → **Meine Secrets**, um API-Schlüssel oder andere Anmeldedaten unter **Einstellungen** → **Integrationen** zu hinterlegen. Die Werte gehören Ihnen, der KI-Chat kann sie zur Laufzeit als Umgebungsvariablen lesen, und Sie können sie einzelnen Apps und Automatisierungen freigeben. Siehe [Zugangsdaten und Integrationen](/de/basic/credential).
 - **Anfragen nach Zugangsdaten**: Wenn die KI ein Drittanbieterkonto oder ein Secret benötigt, heftet sie eine entsprechende Karte an die Unterhaltung. Wählen Sie **Mein Konto verbinden** für einen OAuth-Vorgang oder geben Sie vorhandene Zugangsdaten frei. Mit **Überspringen** stellen Sie sie nicht bereit; die KI fährt mit den Teilen fort, die sie auch ohne erledigen kann.
 - **Scraper**: Öffnen Sie das Menü **+** und wählen Sie **Scraper**, dann eine Plattform und einen Datentyp. Es gibt zwei Arten von Einträgen: Die einen scrapen einen eingefügten Link, etwa **Persönliches Profil** bei LinkedIn oder **Produktbewertungen** bei Amazon; die anderen suchen nach Stichwort, Hashtag oder Name, etwa **Videosuche** bei TikTok oder **Beiträge eines Subreddits** bei Reddit. Teable füllt die passende Anweisung in der Chat-Eingabe vor und lässt den zu ergänzenden Teil am Ende offen. **Beliebige Webseite** nimmt einen eingefügten Link direkt entgegen.
-- **Skills**: Öffnen Sie das Menü **+** und wählen Sie **Skills**, um Skills im aktuellen Chat zu importieren, zu aktivieren, zu deaktivieren oder auszuprobieren. Wählen Sie beim Import aus, wer ihn verwenden kann: **Persönlich** beschränkt ihn auf Sie selbst, **Base** gibt ihn Mitarbeitenden in dieser Base und **Space** allen Personen in diesem Space. Geben Sie `/` im Eingabefeld ein, um einen aktivierten Skill auszuwählen. Informationen zum Verbinden oder Migrieren eines externen Systems finden Sie unter [Alles verbinden und migrieren](/de/basic/ai/connect-everything).
+- **Skills**: Öffnen Sie das Menü **+** und wählen Sie **Skills**, um Skills im aktuellen Chat zu importieren, zu aktivieren, zu deaktivieren oder auszuprobieren. Wählen Sie beim Import aus, wer ihn verwenden kann: **Persönlich** beschränkt ihn auf Sie selbst, **Projekt** gibt ihn Mitarbeitenden in diesem Projekt und **Space** allen Personen in diesem Space. Geben Sie `/` im Eingabefeld ein, um einen aktivierten Skill auszuwählen. Informationen zum Verbinden oder Migrieren eines externen Systems finden Sie unter [Alles verbinden und migrieren](/de/basic/ai/connect-everything).
 - **Kontextnutzung**: Der Ring neben dem Eingabefeld zeigt, wie viel des Kontextfensters des Modells die Unterhaltung derzeit nutzt. Klicken Sie darauf, um den Prozentsatz und die Token-Anzahlen anzuzeigen. Wenn der Kontext voll ist, verdichtet Teable die Unterhaltung; starten Sie stattdessen einen neuen Chat, wenn Sie einen sauberen Kontext wünschen.
 - **Dateien verwalten**: Öffnen Sie **+** → **Mehr** → **Dateien verwalten**, um Dateien in der Sandbox des aktuellen Chats anzuzeigen. Sie können unterstützte Dateien in der Vorschau anzeigen, Dateien herunterladen oder nicht mehr benötigte Dateien und Ordner löschen. Eine Unterhaltung muss bestehen, bevor ihre Dateien verwaltet werden können.
 - **Nachrichtenwarteschlange**: Das Senden einer weiteren Nachricht, während die KI arbeitet, unterbricht sie nicht. Die Nachricht wartet in einer Warteschlange über dem Eingabefeld und wird gesendet, wenn der aktuelle Durchlauf endet. Elemente in der Warteschlange behalten dieselben Chips für Tabelle, Ansicht, Anhang und Auswahl wie die Chat-Eingabe; **Entfernen** verwirft eines, **...** → **Nachricht bearbeiten** legt es zurück in das Eingabefeld, und ein reines Textelement bietet zusätzlich **Steuern**, um seinen Text an den laufenden Durchlauf zu übergeben, statt zu warten.
@@ -145,9 +145,9 @@ Wenn eine Antwort mehrere Dateien gleichzeitig enthält, verwenden Sie unter den
 
 ### Erinnerung
 
-Die Erinnerung speichert Informationen, an deren Speicherung Sie Cuppy ausdrücklich bitten. Die Erinnerung ist nach Benutzer und Base abgegrenzt: Jede Person hat in jeder Base einen unabhängigen Erinnerungskontext, und eine in einer anderen Base gespeicherte Erinnerung erscheint nicht automatisch in der aktuellen.
+Die Erinnerung speichert Informationen, an deren Speicherung Sie Cuppy ausdrücklich bitten. Die Erinnerung ist nach Benutzer und Projekt abgegrenzt: Jede Person hat in jedem Projekt einen unabhängigen Erinnerungskontext, und eine in einem anderen Projekt gespeicherte Erinnerung erscheint nicht automatisch im aktuellen Projekt.
 
-- Erinnerung in der aktuellen Base speichern
+- Erinnerung in dem aktuellen Projekt speichern
 
 Sagen Sie in der Unterhaltung, woran Cuppy sich erinnern soll:
 
@@ -155,12 +155,12 @@ Sagen Sie in der Unterhaltung, woran Cuppy sich erinnern soll:
 Bitte merke dir xxx.
 ```
 
-- Erinnerung aus einer anderen Base wiederverwenden
+- Erinnerung aus einem anderen Projekt wiederverwenden
 
-Bitten Sie Cuppy, eine andere Base zu lesen und die relevanten Teile in der aktuellen Base zu speichern:
+Bitten Sie Cuppy, ein anderes Projekt zu lesen und die relevanten Teile in dem aktuellen Projekt zu speichern:
 
 ```text
-Cuppy, bitte lies die Erinnerung für die Base-ID bsexxxxxxxxxxxx und speichere die relevante Erinnerung in dieser aktuellen Base.
+Cuppy, bitte lies die Erinnerung für die Projekt-ID bsexxxxxxxxxxxx und speichere die relevante Erinnerung in diesem aktuellen Projekt.
 ```
 
 ### Lange Aufgaben bearbeiten
@@ -244,8 +244,8 @@ Artefakte sind für die Person, die sie erstellt hat, privat. Verwenden Sie dahe
     Geben Sie `@` in das Eingabefeld ein und wählen Sie den Knoten aus, auf den der KI-Chat verweisen soll. Bei Auswahlen in der Rasteransicht können Sie auch Zeilen, Spalten, eine einzelne Zelle oder einen Zellbereich auswählen und dann im Kontextmenü **Zum Chat hinzufügen** verwenden.
   </Accordion>
 
-  <Accordion title="Kann der KI-Chat in einer anderen Base arbeiten?">
-    Ja. Die KI ist nicht auf die Base beschränkt, zu der der Chat gehört; sie kann andere Bases, auf die Sie Zugriff haben, suchen und darin arbeiten. Nennen Sie die Base in Ihrer Anfrage, zum Beispiel „Vergleiche diese Tabelle mit der Bestelltabelle in der Sales-Base“. `@` listet nur Knoten in der aktuellen Base auf, und alles, worauf Sie nicht anders verweisen, geschieht weiterhin in der eigenen Base des Chats.
+  <Accordion title="Kann der KI-Chat in einem anderen Projekt arbeiten?">
+    Ja. Die KI ist nicht auf das Projekt beschränkt, zu dem der Chat gehört; sie kann andere Projekte, auf die Sie Zugriff haben, suchen und darin arbeiten. Nennen Sie das Projekt in Ihrer Anfrage, zum Beispiel „Vergleiche diese Tabelle mit der Bestelltabelle im Sales-Projekt“. `@` listet nur Knoten in dem aktuellen Projekt auf, und alles, worauf Sie nicht anders verweisen, geschieht weiterhin in dem eigenen Projekt des Chats.
   </Accordion>
 
   <Accordion title="Werden die von der KI erstellten Diagramme und Berichte gespeichert?">
@@ -255,8 +255,8 @@ Artefakte sind für die Person, die sie erstellt hat, privat. Verwenden Sie dahe
     Standardmäßig nicht. Nur Sie können Ihre eigenen Artefakte öffnen. Aktivieren Sie in der Ansicht **Freigabe aktivieren** und senden Sie den Link. Wählen Sie **Space-Mitglieder**, wenn das Artefakt innerhalb des Space bleiben soll.
   </Accordion>
 
-  <Accordion title="Wird die Erinnerung zwischen Bases übernommen?">
-    Nein. Die Erinnerung ist nach Benutzer und Base abgegrenzt. Wenn Sie eine Erinnerung aus einer anderen Base wiederverwenden möchten, bitten Sie Cuppy, die Erinnerung dieser Base zu lesen und die relevanten Teile in der aktuellen Base zu speichern.
+  <Accordion title="Wird die Erinnerung zwischen Projekten übernommen?">
+    Nein. Die Erinnerung ist nach Benutzer und Projekt abgegrenzt. Wenn Sie eine Erinnerung aus einem anderen Projekt wiederverwenden möchten, bitten Sie Cuppy, die Erinnerung dieses Projekts zu lesen und die relevanten Teile in dem aktuellen Projekt zu speichern.
   </Accordion>
 
   <Accordion title="Kann der KI-Chat im Hintergrund weiterarbeiten, nachdem ich ihn verlassen habe?">
@@ -284,11 +284,11 @@ Artefakte sind für die Person, die sie erstellt hat, privat. Verwenden Sie dahe
   </Accordion>
 
   <Accordion title="Wie verwende ich Skills im KI-Chat?">
-    Öffnen Sie das Menü **+** und wählen Sie **Skills**, um Skills zu importieren oder zu verwalten, oder geben Sie `/` in das Eingabefeld ein, um einen aktivierten Skill auszuwählen. Wählen Sie beim Import aus, wer den Skill verwenden kann: persönlich für Ihre eigenen Chats, Base, wenn Mitarbeitende in derselben Base ihn benötigen, und Space, wenn ihn alle Personen im Space verwenden sollen. Personen, die die Base verwalten können, können Base-Skills hinzufügen; Space-Eigentümer und -Ersteller können Space-Skills hinzufügen. Wenn der KI-Chat eine `.skill`-Datei zeigt, verwenden Sie auf der Dateikarte **Installieren**, um sie hinzuzufügen.
+    Öffnen Sie das Menü **+** und wählen Sie **Skills**, um Skills zu importieren oder zu verwalten, oder geben Sie `/` in das Eingabefeld ein, um einen aktivierten Skill auszuwählen. Wählen Sie beim Import aus, wer den Skill verwenden kann: persönlich für Ihre eigenen Chats, Projekt, wenn Mitarbeitende in demselben Projekt ihn benötigen, und Space, wenn ihn alle Personen im Space verwenden sollen. Personen, die das Projekt verwalten können, können Projekt-Skills hinzufügen; Space-Eigentümer und -Ersteller können Space-Skills hinzufügen. Wenn der KI-Chat eine `.skill`-Datei zeigt, verwenden Sie auf der Dateikarte **Installieren**, um sie hinzuzufügen.
   </Accordion>
 
   <Accordion title="Welcher Skill gilt, wenn zwei davon denselben Namen haben?">
-    Es ist immer nur eine Version wirksam, und die gemeinsam genutzte Teamversion hat Vorrang vor einer persönlichen Kopie: Ein Base-Skill schlägt einen Space-Skill, und ein Space-Skill schlägt einen persönlichen. In einer App- oder Bot-Unterhaltung hat der für diese App oder diesen Bot hinzugefügte Skill Vorrang. Um alle auf eine neue Version umzustellen, aktualisieren Sie die Kopie in der Base oder im Space.
+    Es ist immer nur eine Version wirksam, und die gemeinsam genutzte Teamversion hat Vorrang vor einer persönlichen Kopie: Ein Projekt-Skill schlägt einen Space-Skill, und ein Space-Skill schlägt einen persönlichen. In einer App- oder Bot-Unterhaltung hat der für diese App oder diesen Bot hinzugefügte Skill Vorrang. Um alle auf eine neue Version umzustellen, aktualisieren Sie die Kopie in dem Projekt oder im Space.
   </Accordion>
 
   <Accordion title="Welche Dateien bleiben in Dateien verwalten?">
