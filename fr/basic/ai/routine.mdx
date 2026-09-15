@@ -1,0 +1,112 @@
+---
+title: Routine
+description: Laissez Cuppy exécuter un prompt selon une planification et consultez le résultat de chaque exécution.
+---
+
+<Note>Disponible avec tous les forfaits Cloud ; l’auto-hébergement nécessite Business ou une offre supérieure.</Note>
+
+Une routine confie un prompt à Cuppy et le répète selon une planification, ce qui convient au travail que personne ne devrait déclencher à la main : un rapport quotidien, un nettoyage périodique des enregistrements expirés, une synthèse hebdomadaire. Chaque exécution est une conversation d’IA complète : une routine peut donc tout ce que peut la conversation d’IA, y compris lire et écrire des tables, appeler des compétences et produire des fichiers.
+
+Une routine est une ressource de la base et figure dans la barre latérale gauche, aux côtés des tables, des applications et des automatisations.
+
+<Info>Une automatisation se déclenche sur un événement, par exemple une modification d’enregistrement, l’envoi d’un formulaire ou un webhook, et exécute les étapes que vous avez configurées à l’avance. Une routine se déclenche uniquement sur le temps et exécute un prompt que l’agent interprète lui-même. Prenez une automatisation quand il vous faut des étapes fixes et un résultat prévisible ; prenez une routine quand vous voulez que l’agent décide à chaque fois quoi faire des données du moment.</Info>
+
+## Créer une routine
+
+<Steps>
+  <Step title="Créer">
+    Dans la barre latérale gauche, cliquez sur **+** et choisissez **Nouvelle routine**.
+  </Step>
+  <Step title="Rédiger le prompt">
+    Décrivez dans **Prompt** ce que doit faire chaque exécution. Le prompt constitue l’instruction complète d’une exécution : indiquez d’où viennent les données, comment les traiter et où va le résultat. Par exemple : « Synthétise les enregistrements ajoutés hier dans la table Tâches, regroupe-les par responsable et écris la synthèse dans la table Rapport quotidien. »
+  </Step>
+  <Step title="Définir la planification">
+    Choisissez une fréquence sous **Planification** et renseignez **Début** et **Fin (facultatif)** si nécessaire.
+  </Step>
+  <Step title="Activer">
+    Cliquez sur **Activer**. La configuration doit être enregistrée et la planification doit comporter une occurrence à venir.
+  </Step>
+</Steps>
+
+## Réglages
+
+Outre le prompt et la planification, le formulaire comporte ces réglages :
+
+| Réglage | Description |
+| --- | --- |
+| **Modèle** | Le modèle et le niveau d’intelligence sur lesquels tourne cette routine. Laissez **Modèle par défaut** pour utiliser le modèle de conversation par défaut de l’espace |
+| **Durée maximale d’exécution (minutes)** | Une exécution qui dépasse cette limite est arrêtée et marquée en échec. De 5 à 120 minutes ; 30 par défaut |
+| **Conversation** | **Nouvelle conversation à chaque exécution** garde les exécutions indépendantes les unes des autres ; **Poursuivre la conversation de l’exécution précédente** reporte le contexte des exécutions passées, ce qui convient au travail qui doit s’appuyer sur le résultat précédent |
+| **Début** / **Fin (facultatif)** | Les bornes de la planification. Sans heure de fin, la routine continue indéfiniment |
+
+Le modèle et le niveau d’intelligence sont enregistrés au moment de la sauvegarde : l’historique d’exécution montre donc sur quoi chaque exécution a réellement tourné.
+
+### Planification
+
+Choisissez une fréquence parmi les préréglages : **Toutes les heures** à une minute donnée, **Tous les jours** et **Jours ouvrés** à une heure donnée, **Toutes les semaines** un jour de semaine à une heure, **Tous les mois** un jour à une heure.
+
+Pour quelque chose de plus précis, choisissez **Personnalisée (RRULE)** et écrivez une règle RFC 5545, par exemple `FREQ=DAILY;BYHOUR=9;BYMINUTE=0`. Une règle personnalisée est soumise à ces limites :
+
+- La fréquence doit valoir `HOURLY`, `DAILY`, `WEEKLY`, `MONTHLY` ou `YEARLY`, et deux exécutions doivent être espacées d’au moins 1 heure.
+- Vous pouvez utiliser `INTERVAL`, `COUNT`, `BYDAY`, `BYMONTHDAY`, `BYMONTH`, plus un `BYMINUTE` et un `BYHOUR`. `COUNT` plafonne à 1000, et `COUNT` ou `INTERVAL` exige une heure de **Début**.
+- Le fuseau horaire et les bornes proviennent du formulaire : `TZID`, `DTSTART`, `UNTIL` et `BYSECOND` sont donc rejetés.
+
+Pour une planification qui ne s’exécute qu’une fois, utilisez une règle personnalisée avec `COUNT=1`.
+
+Une planification est évaluée dans le fuseau horaire de la personne qui a créé la routine et ne suit pas celui qui la consulte. L’heure affichée sous **Prochaine exécution** est déjà convertie dans votre heure locale.
+
+## Brouillons, mises à jour et exécution immédiate
+
+Une routine nouvellement créée est un brouillon et ne s’exécute selon la planification qu’une fois activée. Quand vous modifiez une routine active, la modification est elle aussi enregistrée en brouillon tandis que la version en service continue avec l’ancienne configuration : cliquez sur **Mettre à jour** pour l’appliquer, ou sur **Abandonner les modifications** pour la jeter.
+
+**Exécuter maintenant** lance une exécution sans attendre la planification, ce qui sert à vérifier un prompt. Une routine ne peut pas être relancée à la main tant que son exécution précédente n’est pas terminée.
+
+Coupez l’interrupteur pour la désactiver : la planification cesse de se déclencher et l’historique d’exécution existant est conservé.
+
+## Historique d’exécution
+
+Ouvrez la routine et passez à **Historique d’exécution**. La liste se filtre par statut et par période, ce qui aide à retrouver un échec précis ; en sélectionnant une exécution, vous voyez ses heures de planification, de démarrage et de fin, sa durée et la conversation complète de cette exécution.
+
+Les exécutions sont signalées comme **En file d’attente**, **En cours**, **Terminée**, **Échec** ou **Annulée**. **Annulée** apparaît lorsque quelqu’un a interrompu cette exécution, ou lorsque la routine ou sa base a été supprimée.
+
+Une exécution en **Échec** indique son motif, et chaque motif appelle une réponse différente :
+
+| Message | Signification | Que faire |
+| --- | --- | --- |
+| **Échec de l’exécution** | L’exécution a démarré mais a rencontré une erreur | Ouvrez la conversation de cette exécution et déterminez, au point de l’échec, si le prompt ou les données sont en cause |
+| **Délai d’exécution dépassé** | L’exécution a dépassé la **Durée maximale d’exécution** et a été arrêtée | Augmentez la **Durée maximale d’exécution**, ou découpez le prompt en unités de travail plus petites |
+| **Ignorée : crédits insuffisants** | Les crédits étaient épuisés, l’exécution n’a pas démarré | Rechargez les crédits de l’espace |
+| **Ignorée : l’exécution précédente était toujours en cours** | L’exécution précédente n’était pas terminée, cette occurrence a été ignorée | Réduisez la fréquence, ou allégez ce que traite une exécution |
+| **Ignorée : délai d’attente en file dépassé** | L’exécution a trop attendu dans la file et a été ignorée | Un cas isolé ne demande rien ; si cela se répète, trop de choses sont planifiées en même temps : échelonnez les planifications |
+
+La conversation d’une exécution est en lecture seule. Les membres autorisés à modifier la routine peuvent la poursuivre à la fin pour comprendre comment une exécution donnée s’est déroulée.
+
+<Info>L’historique d’exécution requiert le droit de modifier la routine. Le propriétaire et le créateur d’une base peuvent créer, modifier et supprimer des routines ; les autres collaborateurs ont un accès en lecture.</Info>
+
+## Alertes d’échec et désactivation automatique
+
+Teable envoie une notification lorsqu’une exécution échoue ou que les crédits manquent. Elle part vers le membre qui a mis à jour la routine en dernier, nommé sous **Les notifications seront envoyées à** en haut de l’historique d’exécution. Les notifications d’échec ne partent pas à chaque fois, afin qu’une longue série d’échecs ne submerge pas son destinataire.
+
+Après 5 échecs consécutifs, la routine est désactivée automatiquement et une notification distincte est envoyée. Rallumez l’interrupteur une fois le problème réglé ; le compteur repart à zéro après la première exécution réussie.
+
+Toutes les exécutions sans succès ne comptent pas dans ce total : celles ignorées parce que la précédente était encore en cours ou parce que l’attente en file a expiré, ainsi que les exécutions **Annulée**, ne sont pas des échecs et ne produisent aucune notification. Un manque de crédits compte, en revanche : laisser les crédits à sec finit par désactiver la routine.
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Les routines consomment-elles des crédits ?">
+    Oui. Chaque exécution est une conversation d’IA, facturée sur les crédits de l’espace selon l’usage réel, et listée sous le type **Routine** dans le **Récapitulatif d’utilisation des crédits** de la page de facturation. Quand les crédits manquent, l’exécution est ignorée et une notification est envoyée ; des omissions répétées finissent par désactiver la routine.
+  </Accordion>
+
+  <Accordion title="Si je modifie le prompt, cela affecte-t-il l’exécution en cours ?">
+    Non. La modification est enregistrée en brouillon et n’atteint la version en service qu’au clic sur **Mettre à jour**. Une exécution déjà lancée conserve la configuration avec laquelle elle a démarré.
+  </Accordion>
+
+  <Accordion title="Les routines d’une base installée depuis un modèle s’exécutent-elles automatiquement ?">
+    Oui. Après l’installation d’un modèle, ses routines sont activées comme le sont ses workflows. Une planification sans occurrence à venir reste un brouillon.
+  </Accordion>
+
+  <Accordion title="Avec Poursuivre la conversation de l’exécution précédente, le contexte grossit-il sans fin ?">
+    Lorsque le contexte approche de sa limite, Teable compacte la conversation : les exécutions ne sont donc pas interrompues pour cette raison. Choisissez **Nouvelle conversation à chaque exécution** si chaque exécution doit partir d’un contexte vierge.
+  </Accordion>
+</AccordionGroup>

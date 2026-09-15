@@ -1,0 +1,112 @@
+---
+title: Rutina
+description: Deja que Cuppy ejecute un prompt según una programación y revisa el resultado de cada ejecución.
+---
+
+<Note>Disponible en todos los planes de Cloud; la versión autoalojada requiere el plan Business o uno superior.</Note>
+
+Una rutina entrega un prompt a Cuppy y lo repite según una programación, lo que encaja con el trabajo que nadie debería lanzar a mano: un informe diario, una limpieza periódica de registros caducados, un resumen semanal. Cada ejecución es un chat de IA completo, así que una rutina puede hacer todo lo que hace el chat de IA, incluido leer y escribir tablas, invocar habilidades y generar archivos.
+
+Una rutina es un recurso dentro de una base y aparece en la barra lateral izquierda junto a las tablas, las aplicaciones y las automatizaciones.
+
+<Info>Una automatización se dispara con un evento, como un cambio en un registro, el envío de un formulario o un webhook, y ejecuta los pasos que configuraste de antemano. Una rutina se dispara solo con el tiempo y ejecuta un prompt que el agente interpreta por su cuenta. Usa una automatización cuando necesites pasos fijos y un resultado previsible; usa una rutina cuando quieras que el agente decida cada vez qué hacer con los datos actuales.</Info>
+
+## Crear una rutina
+
+<Steps>
+  <Step title="Crear">
+    En la barra lateral izquierda, haz clic en **+** y elige **Nueva rutina**.
+  </Step>
+  <Step title="Escribir el prompt">
+    Describe en **Prompt** lo que debe hacer cada ejecución. El prompt es la instrucción completa de una ejecución, así que indica de dónde salen los datos, cómo procesarlos y dónde va el resultado. Por ejemplo: «Resume los registros añadidos ayer a la tabla Tareas, agrúpalos por responsable y escribe el resumen en la tabla Informe diario».
+  </Step>
+  <Step title="Definir la programación">
+    Elige una frecuencia en **Programación** y define **Inicio** y **Fin (opcional)** si lo necesitas.
+  </Step>
+  <Step title="Activar">
+    Haz clic en **Activar**. La configuración debe estar guardada y la programación debe tener alguna ocurrencia futura.
+  </Step>
+</Steps>
+
+## Ajustes
+
+Además del prompt y la programación, el formulario incluye estos ajustes:
+
+| Ajuste | Descripción |
+| --- | --- |
+| **Modelo** | El modelo y el nivel de inteligencia con los que se ejecuta esta rutina. Deja **Modelo predeterminado** para usar el modelo de chat predeterminado del espacio |
+| **Tiempo máximo de ejecución (minutos)** | Una ejecución que supere este límite se detiene y se marca como fallida. De 5 a 120 minutos; 30 por defecto |
+| **Chat** | **Nuevo chat en cada ejecución** mantiene las ejecuciones independientes entre sí; **Continuar el chat de la ejecución anterior** arrastra el contexto de las ejecuciones previas, lo que encaja con el trabajo que necesita consultar el resultado anterior |
+| **Inicio** / **Fin (opcional)** | Los límites de la programación. Sin hora de fin, la rutina sigue ejecutándose de forma indefinida |
+
+El modelo y el nivel de inteligencia quedan registrados al guardar, por eso el historial de ejecuciones muestra con qué se ejecutó realmente cada una.
+
+### Programación
+
+Elige una frecuencia entre los ajustes preestablecidos: **Cada hora** en un minuto concreto, **Cada día** y **Días laborables** a una hora concreta, **Cada semana** en un día de la semana y una hora, **Cada mes** en un día y una hora.
+
+Para algo más específico, elige **Personalizada (RRULE)** y escribe una regla RFC 5545, como `FREQ=DAILY;BYHOUR=9;BYMINUTE=0`. Una regla personalizada tiene estos límites:
+
+- La frecuencia debe ser `HOURLY`, `DAILY`, `WEEKLY`, `MONTHLY` o `YEARLY`, y entre dos ejecuciones debe haber al menos 1 hora.
+- Puedes usar `INTERVAL`, `COUNT`, `BYDAY`, `BYMONTHDAY`, `BYMONTH`, más un `BYMINUTE` y un `BYHOUR`. `COUNT` llega como máximo a 1000, y `COUNT` o `INTERVAL` exigen una hora de **Inicio**.
+- La zona horaria y los límites vienen del formulario, así que `TZID`, `DTSTART`, `UNTIL` y `BYSECOND` se rechazan.
+
+Para una programación que se ejecute una sola vez, usa una regla personalizada con `COUNT=1`.
+
+Una programación se evalúa en la zona horaria de quien creó la rutina y no sigue a quien la consulta. La hora que aparece en **Próxima ejecución** ya está convertida a tu hora local.
+
+## Borradores, actualizaciones y ejecución inmediata
+
+Una rutina nueva es un borrador y no se ejecuta según la programación hasta que la activas. Cuando editas una rutina activa, el cambio también se guarda como borrador mientras la versión en curso sigue con la configuración anterior: haz clic en **Actualizar** para aplicarlo o en **Descartar los cambios** para desecharlo.
+
+**Ejecutar ahora** lanza una ejecución sin esperar a la programación, algo útil para comprobar un prompt. Una rutina no se puede volver a lanzar a mano hasta que termine su ejecución anterior.
+
+Apaga el interruptor para desactivarla. La programación deja de dispararse y el historial de ejecuciones existente se conserva.
+
+## Historial de ejecuciones
+
+Abre la rutina y ve a **Historial de ejecuciones**. La lista se puede filtrar por estado e intervalo de tiempo, lo que ayuda a localizar un fallo concreto; al seleccionar una ejecución verás sus horas de planificación, inicio y fin, su duración y el chat completo de esa ejecución.
+
+Las ejecuciones se informan como **En cola**, **En ejecución**, **Completada**, **Fallida** o **Cancelada**. **Cancelada** aparece cuando alguien interrumpió esa ejecución, o cuando se ha eliminado la rutina o su base.
+
+Una ejecución **Fallida** indica su motivo, y cada motivo pide una respuesta distinta:
+
+| Mensaje | Significado | Qué hacer |
+| --- | --- | --- |
+| **La ejecución falló** | La ejecución empezó pero se topó con un error | Abre el chat de esa ejecución y deduce en el punto del fallo si la causa es el prompt o los datos |
+| **La ejecución agotó el tiempo de espera** | La ejecución superó el **Tiempo máximo de ejecución** y se detuvo | Sube el **Tiempo máximo de ejecución** o divide el prompt en unidades de trabajo más pequeñas |
+| **Omitida: créditos insuficientes** | Se acabaron los créditos, así que la ejecución no llegó a empezar | Recarga los créditos del espacio |
+| **Omitida: la ejecución anterior seguía en curso** | La ejecución anterior no había terminado, así que se omitió esta ocurrencia | Baja la frecuencia o reduce cuánto procesa cada ejecución |
+| **Omitida: se agotó el tiempo de espera en la cola** | La ejecución esperó demasiado en la cola y se omitió | Si es puntual, no requiere nada; si se repite, hay demasiado programado a la vez, así que escalona las programaciones |
+
+El chat de una ejecución es de solo lectura. Los miembros que pueden editar la rutina pueden continuarlo al final para investigar cómo transcurrió una ejecución concreta.
+
+<Info>El historial de ejecuciones requiere permiso para editar la rutina. El propietario y el creador de una base pueden crear, editar y eliminar rutinas; el resto de colaboradores tiene acceso de lectura.</Info>
+
+## Avisos de fallo y desactivación automática
+
+Teable envía una notificación cuando una ejecución falla o se acaban los créditos. Va al miembro que actualizó la rutina por última vez, indicado bajo **Las notificaciones se enviarán a** en la parte superior del historial de ejecuciones. Las notificaciones de fallo no se envían en cada ocasión, para que una racha larga de fallos no inunde a quien las recibe.
+
+Tras 5 fallos consecutivos la rutina se desactiva automáticamente y se envía una notificación aparte. Vuelve a encender el interruptor una vez resuelto el problema; el recuento se reinicia tras la siguiente ejecución correcta.
+
+No toda ejecución sin éxito cuenta para ese total: las ejecuciones omitidas porque la anterior seguía en curso o porque agotaron la espera en la cola, junto con las **Canceladas**, no son fallos y no generan notificación. La falta de créditos sí cuenta, así que dejar los créditos sin recargar acaba desactivando la rutina.
+
+## Preguntas frecuentes
+
+<AccordionGroup>
+  <Accordion title="¿Las rutinas consumen créditos?">
+    Sí. Cada ejecución es un chat de IA y se carga a los créditos del espacio según el uso real; aparece bajo el tipo **Rutina** en el **Resumen de uso de créditos** de la página de facturación. Cuando se acaban los créditos la ejecución se omite y se envía una notificación, y las omisiones repetidas acaban desactivando la rutina.
+  </Accordion>
+
+  <Accordion title="Si edito el prompt, ¿afecta a la ejecución en curso?">
+    No. El cambio se guarda como borrador y solo llega a la versión activa cuando haces clic en **Actualizar**. Una ejecución ya en marcha conserva la configuración con la que empezó.
+  </Accordion>
+
+  <Accordion title="¿Las rutinas de una base instalada desde una plantilla se ejecutan solas?">
+    Sí. Tras instalar una plantilla, sus rutinas se encienden igual que sus flujos de trabajo. Una programación sin ocurrencias futuras se queda en borrador.
+  </Accordion>
+
+  <Accordion title="Con Continuar el chat de la ejecución anterior, ¿el contexto crece sin límite?">
+    Cuando el contexto se acerca a su límite, Teable compacta el chat, así que las ejecuciones no se interrumpen por eso. Elige **Nuevo chat en cada ejecución** cuando cada ejecución deba partir de un contexto limpio.
+  </Accordion>
+</AccordionGroup>

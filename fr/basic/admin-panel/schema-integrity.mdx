@@ -1,0 +1,41 @@
+---
+title: "Schema integrity"
+description: "Diagnostiquer et réparer les écarts entre les définitions de champs d’une base et la structure de sa base de données."
+---
+
+<Tip>Disponible avec le forfait Business auto-hébergé et les forfaits supérieurs</Tip>
+
+Chemin : Panneau d’administration → Schema integrity
+
+Les définitions de champs que conserve Teable et la structure réelle de la base de données sont censées correspondre. Lorsqu’elles divergent, les utilisateurs voient des champs qui refusent de s’ouvrir, des champs de lien qui ne renvoient rien, ou une table dont les lectures et les écritures échouent en continu, sans cause apparente. **Schema integrity** localise ce type de problème et le répare.
+
+Un administrateur d’instance peut vérifier n’importe quelle base de l’instance sans rejoindre son espace au préalable, y compris les locataires sur base de données gérée par le client (BYODB).
+
+## Lancer une vérification
+
+Retrouvez la base avec le champ de recherche, par base, espace, identifiant de table ou nom. La liste des résultats indique le **Space** auquel elle appartient, la **Data DB** qu’elle utilise (par défaut ou BYODB) et sa **Runtime** (v1 ou v2), ce qui permet de confirmer que vous tenez la bonne. Un même nom de base dans des espaces différents est courant.
+
+Cliquez sur **Check** sur cette ligne, puis sur **Lancer la vérification** dans la boîte de dialogue **Intégrité du schéma**.
+
+## Lire les résultats
+
+Les résultats sont listés par champ et par règle, selon quatre états :
+
+| État | Signification | Que faire |
+| --- | --- | --- |
+| **Erreur** | La cible du lien du champ n’existe plus, ou la configuration du champ ne correspond pas à la structure réelle en base | C’est la cause directe des lectures et écritures qui échouent, et cela demande une réparation |
+| **Avertissement** | S’écarte de la structure attendue, mais lit et écrit toujours correctement | Réparez-le, ou notez-le et surveillez |
+| **Ignoré** | La règle ne s’applique pas à ce champ et n’a rien jugé | Rien à faire |
+| **Succès** | Conforme à ce qui est attendu | Rien à faire |
+
+Commencez par **Erreur** : une panne signalée par un utilisateur relève presque toujours de cette catégorie. Un **Avertissement** n’explique pas la panne en cours, mais il peut se transformer en erreur à mesure que la structure des champs évolue : il vaut donc d’être traité une fois les erreurs réglées.
+
+## Réparer
+
+Vous pouvez **Réparer** règle par règle, ou traiter en lot avec **Réparer uniquement les avertissements** ou **Réparer les avertissements et les erreurs**. Tant que vous poursuivez une panne en cours, réparez les erreurs une à une et vérifiez que la panne a disparu avant de vous occuper des avertissements : un nouveau problème reste ainsi rattachable à une seule modification.
+
+Une réparation ne modifie que la structure de la table, pas le contenu des enregistrements. Avant de l’exécuter, servez-vous de l’aperçu à côté du bouton de réparation : **Confirmer les détails de la réparation** montre le raisonnement et le SQL produits par la simulation, et rien ne s’exécute avant votre confirmation.
+
+Certaines règles ne peuvent pas être réparées automatiquement et affichent **Manuel** ; la boîte de dialogue explique alors pourquoi le problème demande une intervention humaine. Quand la simulation ne renvoie aucun SQL exécutable, la boîte de dialogue le dit explicitement, et ce cas demande lui aussi une intervention humaine.
+
+Après réparation, cliquez sur **Vérifier à nouveau** pour confirmer que le problème a disparu.

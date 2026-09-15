@@ -33,7 +33,7 @@ Retrieves records from a table and returns them as an array. Use the results in 
 ## How to set it up
 
 1. Add a **Get Records** action to your workflow.
-2. Choose the **Table** you want to query. Use [Cross-Base Access](/en/basic/automation/actions/records/cross-base) if the table is in a different base.
+2. Choose the **Table** you want to query. Use [Cross-Project Access](/en/basic/automation/actions/records/cross-base) if the table is in a different project.
 3. (Optional) Select a **View** to inherit that view's filter, sort, and field visibility settings.
 4. (Optional) Add **Filter** conditions to narrow the results. For example, `Status` equals `Active` and `Due Date` is before today.
 5. (Optional) Set **Skip** and **Take** for pagination. For example, Skip 0 and Take 100 to get the first 100 records.
@@ -80,11 +80,11 @@ To process an entire large table, you could use multiple Get Records steps with 
 - Get Records does not modify any data — it is read-only.
 - If the query returns zero records, subsequent steps referencing the results will receive an empty array. Make sure your workflow handles this gracefully (e.g., do not send an email saying "here are your results" when there are no results).
 - Filters in Get Records work the same as view filters: you can combine conditions with AND/OR logic.
-- When using Cross-Base Access, the query runs under the workflow creator's permissions. If the creator loses access to the target base, the step will fail.
+- When using Cross-Project Access, the query runs under the workflow creator's permissions. If the creator loses access to the target project, the step will fail.
 
 ## Related
 
-- [Cross-base access](/en/basic/automation/actions/records/cross-base) — query tables in other bases
+- [Cross-project access](/en/basic/automation/actions/records/cross-base) — query tables in other projects
 - [Loop (batch)](../logic/loop-run) — iterate over the results array
 - [Create record](/en/basic/automation/actions/records/create-record) — create records based on retrieved data
 - [Update record](/en/basic/automation/actions/records/update-record) — update records found by Get Records

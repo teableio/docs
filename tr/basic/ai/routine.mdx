@@ -1,0 +1,112 @@
+---
+title: Rutin
+description: Cuppy bir prompt'u zamanlamaya göre çalıştırsın, her çalıştırmanın sonucunu çalıştırma geçmişinden inceleyin.
+---
+
+<Note>Tüm Cloud planlarında kullanılabilir; self-hosted için Business veya üzeri gerekir.</Note>
+
+Rutin, bir prompt'u Cuppy'ye devreder ve zamanlamaya göre tekrarlar. Bu, kimsenin elle başlatmasına gerek olmayan işler için uygundur: günlük rapor, süresi dolmuş kayıtların düzenli temizliği, haftalık özet. Her çalıştırma eksiksiz bir AI sohbetidir; dolayısıyla bir rutin, tablo okuyup yazmak, beceri çağırmak ve dosya üretmek dahil AI sohbetin yaptığı her şeyi yapabilir.
+
+Rutin, base içindeki bir kaynaktır ve sol kenar çubuğunda tablolar, uygulamalar ve otomasyonların yanında yer alır.
+
+<Info>Otomasyon; kayıt değişikliği, form gönderimi veya webhook gibi bir olayla tetiklenir ve önceden yapılandırdığınız adımları çalıştırır. Rutin yalnızca zamanla tetiklenir ve ajanın kendisinin yorumladığı bir prompt'u çalıştırır. Sabit adımlara ve öngörülebilir sonuca ihtiyacınız varsa otomasyonu; ajanın her seferinde güncel veriye bakıp kendisi karar vermesini istiyorsanız rutini seçin.</Info>
+
+## Rutin oluşturma
+
+<Steps>
+  <Step title="Oluşturun">
+    Sol kenar çubuğunda **+** düğmesine tıklayıp **Yeni rutin** seçeneğini seçin.
+  </Step>
+  <Step title="Prompt'u yazın">
+    **Prompt** alanında her çalıştırmanın ne yapacağını anlatın. Prompt, bir çalıştırmanın tüm talimatıdır; bu yüzden verinin nereden geldiğini, nasıl işleneceğini ve sonucun nereye yazılacağını belirtin. Örneğin: "Görevler tablosuna dün eklenen kayıtları özetle, sorumluya göre grupla ve özeti Günlük Rapor tablosuna yaz."
+  </Step>
+  <Step title="Zamanlamayı belirleyin">
+    **Zamanlama** altında bir sıklık seçin, gerekiyorsa **Başlangıç** ve **Bitiş (isteğe bağlı)** değerlerini girin.
+  </Step>
+  <Step title="Etkinleştirin">
+    **Etkinleştir** düğmesine tıklayın. Yapılandırmanın kaydedilmiş olması ve zamanlamada gelecekte bir çalıştırmanın bulunması gerekir.
+  </Step>
+</Steps>
+
+## Ayarlar
+
+Prompt ve zamanlamanın dışında formda şu ayarlar bulunur:
+
+| Ayar | Açıklama |
+| --- | --- |
+| **Model** | Bu rutinin çalıştığı model ve zekâ düzeyi. **Varsayılan model** bırakıldığında alanın varsayılan sohbet modeli kullanılır |
+| **Maksimum çalışma süresi (dakika)** | Bu sınırı aşan çalıştırma durdurulur ve başarısız sayılır. 5–120 dakika; varsayılan 30 |
+| **Sohbet** | **Her çalıştırmada yeni sohbet**, çalıştırmaları birbirinden bağımsız tutar; **Önceki çalıştırmanın sohbetine devam et**, önceki çalıştırmaların bağlamını taşır ve son sonuca başvurması gereken işler için uygundur |
+| **Başlangıç** / **Bitiş (isteğe bağlı)** | Zamanlamanın sınırları. Bitiş zamanı verilmezse rutin süresiz çalışmaya devam eder |
+
+Model ve zekâ düzeyi kaydederken birlikte yazılır; bu sayede çalıştırma geçmişinde her çalıştırmanın gerçekte neyle çalıştığı görünür.
+
+### Zamanlama
+
+Sıklığı hazır seçeneklerden belirleyin: dakikası verilen **Saatlik**, saati verilen **Günlük** ve **Hafta içi**, gün ve saati verilen **Haftalık**, ayın günü ve saati verilen **Aylık**.
+
+Daha özel bir kurala ihtiyaç duyarsanız **Özel (RRULE)** seçeneğini seçip `FREQ=DAILY;BYHOUR=9;BYMINUTE=0` gibi bir RFC 5545 kuralı yazın. Özel kuralın sınırları şunlardır:
+
+- Sıklık `HOURLY`, `DAILY`, `WEEKLY`, `MONTHLY` veya `YEARLY` olmalı ve iki çalıştırma arasında en az 1 saat bulunmalıdır.
+- `INTERVAL`, `COUNT`, `BYDAY`, `BYMONTHDAY`, `BYMONTH` ile birer `BYMINUTE` ve `BYHOUR` kullanılabilir. `COUNT` en fazla 1000 olabilir; `COUNT` veya `INTERVAL` kullanıldığında **Başlangıç** zamanı gerekir.
+- Saat dilimi ve sınırlar formdan gelir; bu nedenle `TZID`, `DTSTART`, `UNTIL` ve `BYSECOND` kabul edilmez.
+
+Yalnızca bir kez çalışacak zamanlamayı `COUNT=1` içeren özel bir kuralla yazın.
+
+Zamanlama, rutini oluşturan kişinin saat dilimine göre hesaplanır ve görüntüleyene göre değişmez. Arayüzde görünen **Sonraki çalıştırma** zamanı ise kendi yerel saatinize çevrilmiştir.
+
+## Taslak, güncelleme ve hemen çalıştırma
+
+Yeni oluşturulan rutin bir taslaktır ve siz etkinleştirene kadar zamanlamaya göre çalışmaz. Etkin bir rutini düzenlediğinizde değişiklik yine taslak olarak kaydedilir, yayındaki sürüm eski yapılandırmayla çalışmayı sürdürür: uygulamak için **Güncelle**, vazgeçmek için **Değişiklikleri sil** düğmesine tıklayın.
+
+**Şimdi çalıştır**, zamanlamayı beklemeden bir kez çalıştırır; prompt'u denemek için elverişlidir. Önceki çalıştırma bitmeden aynı rutin elle yeniden çalıştırılamaz.
+
+Durdurmak için anahtarı kapatın. Zamanlama artık tetiklenmez, mevcut çalıştırma geçmişi korunur.
+
+## Çalıştırma Geçmişi
+
+Rutini açıp **Çalıştırma Geçmişi** sekmesine geçin. Liste duruma ve tarih aralığına göre filtrelenebilir; bu, belirli bir hatayı bulmayı kolaylaştırır. Bir çalıştırmayı seçtiğinizde planlanan, başlangıç ve bitiş zamanlarını, süreyi ve o çalıştırmanın tüm sohbetini görürsünüz.
+
+Çalıştırmalar **Sırada**, **Çalışıyor**, **Tamamlandı**, **Başarısız** veya **İptal** olarak bildirilir. **İptal**, çalıştırmayı birinin durdurduğu ya da rutinin veya base'inin silindiği durumlarda görünür.
+
+**Başarısız** bir çalıştırma nedenini bildirir ve her neden farklı bir karşılık gerektirir:
+
+| Mesaj | Anlamı | Ne yapmalı |
+| --- | --- | --- |
+| **Çalıştırma başarısız oldu** | Çalıştırma başladı ama bir hatayla karşılaştı | O çalıştırmanın sohbetini açıp hata noktasından sorunun prompt'ta mı veride mi olduğuna karar verin |
+| **Çalıştırma zaman aşımına uğradı** | Çalıştırma **Maksimum çalışma süresi** sınırını aşıp durduruldu | **Maksimum çalışma süresi** değerini yükseltin ya da prompt'u daha küçük iş parçalarına bölün |
+| **Atlandı: yeterli kredi yok** | Kredi tükendiği için çalıştırma hiç başlamadı | Alanın kredisini yükleyin |
+| **Atlandı: önceki çalıştırma hâlâ devam ediyordu** | Önceki çalıştırma bitmediği için bu sefer atlandı | Sıklığı düşürün ya da tek çalıştırmanın işlediği miktarı azaltın |
+| **Atlandı: sırada bekleme zaman aşımına uğradı** | Çalıştırma sırada fazla bekleyip atlandı | Tek seferlik durumlar için bir şey gerekmez; tekrarlıyorsa aynı ana çok iş yığılmıştır, zamanlamaları birbirinden ayırın |
+
+Bir çalıştırmanın sohbeti salt okunurdur. Rutini düzenleyebilen üyeler, belirli bir çalıştırmanın nasıl ilerlediğini incelemek için sohbetin sonundan devam edebilir.
+
+<Info>Çalıştırma geçmişi için rutini düzenleme izni gerekir. Bir base'in sahibi ve oluşturucusu rutin oluşturabilir, düzenleyebilir ve silebilir; diğer iş arkadaşlarının erişimi okuma düzeyindedir.</Info>
+
+## Hata bildirimleri ve otomatik durdurma
+
+Bir çalıştırma başarısız olduğunda veya kredi bittiğinde Teable bildirim gönderir. Bildirim, rutini en son güncelleyen üyeye gider; kim olduğu çalıştırma geçmişinin üstünde **Bildirimler şu kişiye gönderilecek** satırında yazar. Uzun bir hata serisi alıcıyı boğmasın diye hata bildirimleri her seferinde gönderilmez.
+
+Art arda 5 hatadan sonra rutin otomatik olarak durdurulur ve ayrı bir bildirim gider. Sorun giderildikten sonra anahtarı yeniden açın; sayaç, sonraki başarılı çalıştırmadan sonra sıfırlanır.
+
+Her başarısız çalıştırma bu sayıya girmez: önceki çalıştırma sürdüğü için ya da sırada bekleme süresi dolduğu için atlanan çalıştırmalar ve **İptal** edilenler hata sayılmaz, bildirim de üretmez. Kredi yetersizliği ise sayılır; bu yüzden kredi yüklenmediğinde rutin er geç durdurulur.
+
+## Sık sorulan sorular
+
+<AccordionGroup>
+  <Accordion title="Rutinler kredi harcar mı?">
+    Harcar. Her çalıştırma bir AI sohbetidir ve gerçek kullanıma göre alanın kredisinden düşülür; faturalandırma sayfasındaki **Kredi Kullanım Bilgileri** bölümünde **Rutin** türü altında listelenir. Kredi bittiğinde çalıştırma atlanır ve bildirim gönderilir; atlamalar tekrarlanırsa rutin durdurulur.
+  </Accordion>
+
+  <Accordion title="Prompt'u düzenlersem süren çalıştırma etkilenir mi?">
+    Etkilenmez. Değişiklik taslak olarak kaydedilir ve yayındaki sürüme ancak **Güncelle** düğmesine tıkladığınızda geçer. Başlamış bir çalıştırma, başlarken aldığı yapılandırmayla sürer.
+  </Accordion>
+
+  <Accordion title="Şablondan kurulan bir base'teki rutinler kendiliğinden çalışır mı?">
+    Çalışır. Şablon kurulduktan sonra rutinleri, iş akışları gibi açılır. Gelecekte çalıştırması bulunmayan bir zamanlama taslak olarak kalır.
+  </Accordion>
+
+  <Accordion title="Önceki çalıştırmanın sohbetine devam edince bağlam sınırsız büyür mü?">
+    Bağlam sınırına yaklaştığında Teable sohbeti sıkıştırır, bu yüzden çalıştırmalar bu nedenle kesilmez. Her çalıştırmanın temiz bir bağlamla başlamasını istiyorsanız **Her çalıştırmada yeni sohbet** seçeneğini seçin.
+  </Accordion>
+</AccordionGroup>

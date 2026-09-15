@@ -35,10 +35,26 @@ When you paste a long block of plain text, Teable converts it to a Markdown atta
 - **My secrets**: Open **+** → **More** → **My secrets** to store API keys or other credentials in **Settings** → **Integrations**. The values are yours, AI Chat can read them as environment variables at runtime, and you can grant them to individual apps and automations. See [Credentials and Integrations](/en/basic/credential).
 - **Credential requests**: When AI needs a third-party account or a secret, it pins a credential request card to the conversation. Choose **Connect my account** to run an OAuth flow, or grant a credential you already have. Click **Skip** to withhold it; AI continues with the parts it can complete without it.
 - **Scraper**: Open the **+** menu and choose **Scraper**, then pick a platform and a data type. Entries come in two kinds: some scrape a link you paste, such as **personal profile** on LinkedIn or **product reviews** on Amazon; others search by keyword, hashtag, or name, such as **video search** on TikTok or **posts of a subreddit** on Reddit. Teable prefills the matching instruction in the chat input and leaves the part you need to fill in at the end. **Any web page** takes a pasted link directly.
-- **Skills**: Open the **+** menu and choose **Skills** to import, enable, disable, or try skills in the current chat. When you import one, choose who can use it: **Personal** keeps it to yourself, **Base** gives it to collaborators in this base, and **Space** gives it to everyone in this space. Type `/` in the input box to choose an enabled skill. To connect or migrate an external system, see [Connect & Migrate Everything](/en/basic/ai/connect-everything).
+- **Skills**: Open the **+** menu and choose **Skills** to import, enable, disable, or try skills in the current chat. When you import one, choose who can use it: **Personal** keeps it to yourself, **Project** gives it to collaborators in this project, and **Space** gives it to everyone in this space. Type `/` in the input box to choose an enabled skill. To connect or migrate an external system, see [Connect & Migrate Everything](/en/basic/ai/connect-everything).
 - **Context usage**: The ring next to the input box shows how much of the model's context window the conversation currently uses. Click it for the percentage and token counts. When the context fills up, Teable compacts the conversation; start a new chat if you want a clean context instead.
 - **Manage files**: Open **+** → **More** → **Manage files** to view files in the current chat sandbox. You can preview supported files, download files, or delete files and folders you no longer need. A conversation must exist before its files can be managed.
 - **Message queue**: Sending another message while AI is working does not interrupt it. The message waits in a queue above the input box and goes out when the current run ends. Queued items keep the same table, view, attachment, and selection chips as the chat input; **Remove** drops one, **...** → **Edit message** puts it back in the input box, and a text-only item also offers **Steer** to hand its text to the running turn instead of waiting.
+
+## Manage Chats
+
+Click **History** at the top right of the chat panel to see your chats in the current base, and search them by name.
+
+The dot next to a chat name marks which chats need you. **Waiting for your reply** means the turn has stopped at a point that needs you: a question from the agent, an authorization, a table to pick, or a credential request. It will not continue until you answer. **Reply failed** means the last reply did not finish properly; open it and ask again. **Generating…** and the unread dot only report progress and new replies, and need nothing from you.
+
+The **...** menu on a chat offers **Pin**, **Rename**, **Archive**, and delete. Deleting also removes all of its messages and cannot be undone.
+
+History shows the 100 most recent chats. Pin the ones you use often: a pinned chat leads the list and is exempt from that limit, so it is never pushed out as new chats pile up. You can also drag a chat to reposition it.
+
+App Builder chats are named after their app and cannot be archived.
+
+### Archived Chats
+
+Archiving takes a chat out of the history list without deleting anything. Open your avatar at the bottom left → **Settings** → **Archived chats** to see chats you archived across bases. **Restore** brings one back to its base's chat history, and you can delete it here once you are sure you no longer need it.
 
 ## Common Uses
 
@@ -129,9 +145,9 @@ When a reply presents several files at once, use **Download all** below the file
 
 ### Memory
 
-Memory stores information you explicitly ask Cuppy to remember. Memory is scoped by user and Base: each user in each Base has an independent memory context, and memory saved in another Base will not automatically appear in the current one.
+Memory stores information you explicitly ask Cuppy to remember. Memory is scoped by user and Project: each user in each Project has an independent memory context, and memory saved in another Project will not automatically appear in the current one.
 
-- Save memory in the current Base
+- Save memory in the current Project
 
 Say what Cuppy should remember in the conversation:
 
@@ -139,12 +155,12 @@ Say what Cuppy should remember in the conversation:
 Please remember xxx.
 ```
 
-- Reuse memory from another Base
+- Reuse memory from another Project
 
-Ask Cuppy to read another Base and save the relevant parts into the current Base:
+Ask Cuppy to read another Project and save the relevant parts into the current Project:
 
 ```text
-Cuppy, please read the memory for Base ID bsexxxxxxxxxxxx and save the relevant memory into this current Base.
+Cuppy, please read the memory for Project ID bsexxxxxxxxxxxx and save the relevant memory into this current Project.
 ```
 
 ### Handle Long Tasks
@@ -228,8 +244,8 @@ Open **+** → **More** → **Manage artifacts** to browse everything you have c
     Type `@` in the input box and select the node you want AI Chat to reference. For Grid view selections, you can also select rows, columns, a single cell, or a cell range, then use **Add to Chat** from the context menu.
   </Accordion>
 
-  <Accordion title="Can AI Chat work in another base?">
-    Yes. AI is not limited to the base the chat belongs to; it can look up the other bases you have access to and work in them. Name the base in your request, for example "compare this table with the orders table in the Sales base". `@` only lists nodes in the current base, and anything you do not point elsewhere still happens in the chat's own base.
+  <Accordion title="Can AI Chat work in another project?">
+    Yes. AI is not limited to the project the chat belongs to; it can look up the other projects you have access to and work in them. Name the project in your request, for example "compare this table with the orders table in the Sales project". `@` only lists nodes in the current project, and anything you do not point elsewhere still happens in the chat's own project.
   </Accordion>
 
   <Accordion title="Are the charts and reports AI creates saved?">
@@ -239,8 +255,8 @@ Open **+** → **More** → **Manage artifacts** to browse everything you have c
     Not by default. Only you can open your own artifacts. Turn on **Enable sharing** in the viewer and send the link, choosing **Space members** if the artifact should stay inside the space.
   </Accordion>
 
-  <Accordion title="Does memory carry across Bases?">
-    No. Memory is scoped by user and Base. If you want to reuse memory from another Base, ask Cuppy to read that Base's memory and save the relevant parts into the current Base.
+  <Accordion title="Does memory carry across Projects?">
+    No. Memory is scoped by user and Project. If you want to reuse memory from another Project, ask Cuppy to read that Project's memory and save the relevant parts into the current Project.
   </Accordion>
 
   <Accordion title="Can AI Chat keep working in the background after I leave?">
@@ -268,11 +284,11 @@ Open **+** → **More** → **Manage artifacts** to browse everything you have c
   </Accordion>
 
   <Accordion title="How do I use Skills in AI Chat?">
-    Open the **+** menu and choose **Skills** to import or manage skills, or type `/` in the input box to choose an enabled skill. Choose who can use the skill when you import it: personal for your own chats, base when collaborators in the same base need it, and space when everyone in the space does. Users who can manage the base can add base skills, and space owners and creators can add space skills. If AI Chat presents a `.skill` file, use **Install** on the file card to add it.
+    Open the **+** menu and choose **Skills** to import or manage skills, or type `/` in the input box to choose an enabled skill. Choose who can use the skill when you import it: personal for your own chats, project when collaborators in the same project need it, and space when everyone in the space does. Users who can manage the project can add project skills, and space owners and creators can add space skills. If AI Chat presents a `.skill` file, use **Install** on the file card to add it.
   </Accordion>
 
   <Accordion title="Which skill applies when two of them share a name?">
-    Only one version is ever in effect, and the shared team version wins over a personal copy: a base skill beats a space skill, and a space skill beats a personal one. In an app or bot conversation, the skill added for that app or bot comes first. To move everyone to a new version, update the copy in the base or space.
+    Only one version is ever in effect, and the shared team version wins over a personal copy: a project skill beats a space skill, and a space skill beats a personal one. In an app or bot conversation, the skill added for that app or bot comes first. To move everyone to a new version, update the copy in the project or space.
   </Accordion>
 
   <Accordion title="Which files stay in Manage files?">

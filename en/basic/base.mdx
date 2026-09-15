@@ -1,42 +1,44 @@
 ---
 title: "Overview"
-description: "Create, manage, import and export bases. Move data between Teable Cloud spaces or migrate between Cloud and Self-Hosted instances using .tea files."
+description: "Create, manage, import and export projects. Move data between Teable Cloud spaces or migrate between Cloud and Self-Hosted instances using .tea files."
 ---
 
 {/* mintlify-resync: 2026-05-26 */}
-A base is a tool for storing and processing all information for a specific project. Each space can have multiple bases, and each base can work independently, providing a clear information structure for specific projects or table collections.
+A project groups related tables, apps, and automations in one place. Each space can contain multiple projects, and each project has its own resources and collaboration permissions.
 
-For users unfamiliar with bases, you can think of them as workbooks in Excel, where each workbook can contain multiple sheets.
+<Note>Project is the product name for the resource called `base` in the API and CLI. API fields such as `baseId`, the `bse` ID prefix, and `/base/...` URLs stay the same.</Note>
 
-## Create and Manage Bases
+For users unfamiliar with projects, you can think of them as workbooks in Excel, where each workbook can contain multiple sheets.
 
-### Adding a Base
+## Create and Manage Projects {#create-and-manage-bases}
+
+### Adding a Project {#adding-a-base}
 
 1. Enter a space
-2. Click "Create Base" in the upper right corner
+2. Click "Create Project" in the upper right corner
 
 <img
   src="/images/docs/base/2026-05-22-base-create.png"
-  alt="Create a base"
+  alt="Create a project"
   className="docs-screenshot"
 />
 
-### Renaming/Deleting a Base
+### Renaming/Deleting a Project {#renamingdeleting-a-base}
 
 1. Enter a space
-2. Hover over a base
+2. Hover over a project
 3. Click the "···" button to open the menu
 4. Click "Rename" or "Delete"
 
 <img
   src="/images/docs/base/2026-05-22-base-rename-delete.png"
-  alt="Rename or delete a base"
+  alt="Rename or delete a project"
   className="docs-screenshot"
 />
 
-### Organize Resources in a Base
+### Organize Resources in a Project {#organize-resources-in-a-base}
 
-After entering a base, the left sidebar shows the resources in the current base, such as tables, apps, and automations. You can use folders to organize these resources and make large bases easier to browse.
+After entering a project, the left sidebar shows the resources in the current project, such as tables, apps, and automations. You can use folders to organize these resources and make large projects easier to browse.
 
 Common operations include:
 
@@ -46,40 +48,40 @@ Common operations include:
 - **Add descriptions**: For tables, apps, and automations, click **Add description** under the resource name in the header. Use descriptions to record purpose, owner, handoff notes, or usage rules. Teable opens a description the first time you open its resource, and once more after it changes.
 - **Check node info**: Open a resource's `...` menu and choose **Node info** to view the folder, table, automation, or app ID, plus created and modified information.
 
-### Duplicate a Base to Another Space {#duplicate-a-base-to-another-space}
+### Duplicate a Project to Another Space {#duplicate-a-base-to-another-space}
 
-Step 1: In the space, select the base you want to duplicate;
+Step 1: In the space, select the project you want to duplicate;
 
-Step 2: Click the menu icon and select the Copy Base option;
+Step 2: Click the menu icon and select the Copy Project option;
 
 Step 3: In the popup, choose the target space. You need Creator permissions in that space.
 
-For larger bases, Teable shows progress in the duplicate dialog while it copies the base structure, records, and attachments. Keep the dialog open until the copy finishes. Revision history and collaborators are not copied.
+For larger projects, Teable shows progress in the duplicate dialog while it copies the project structure, records, and attachments. Keep the dialog open until the copy finishes. Revision history and collaborators are not copied.
 
-If the base contains Link, Lookup, Rollup, Conditional Lookup, or Conditional Rollup fields that point to another Space, Teable shows the affected fields before duplication. If you continue, Teable converts those fields to **Single line text** in the duplicated base.
+If the project contains Link, Lookup, Rollup, Conditional Lookup, or Conditional Rollup fields that point to another Space, Teable shows the affected fields before duplication. If you continue, Teable converts those fields to **Single line text** in the duplicated project.
 
 <img
   src="/images/docs/base/2026-05-22-base-duplicate.png"
-  alt="Duplicate a base to another space"
+  alt="Duplicate a project to another space"
   className="docs-screenshot"
 />
 
-### Move a Base Between Spaces
+### Move a Project Between Spaces {#move-a-base-between-spaces}
 
-If you have the required Space permissions, you can move a base to another Space. If the move would leave relationship-based fields pointing across Spaces, Teable warns you and lists the affected fields. When you confirm, Teable converts those fields to **Single line text** as part of the move.
+If you have the required Space permissions, you can move a project to another Space. If the move would leave relationship-based fields pointing across Spaces, Teable warns you and lists the affected fields. When you confirm, Teable converts those fields to **Single line text** as part of the move.
 
-## Import and Export Bases
+## Import and Export Projects {#import-and-export-bases}
 
 <Card title="Connect & Migrate Everything" icon="sparkles" href="/en/basic/ai/connect-everything">
   Use AI Chat to migrate Airtable, Baserow, NocoDB, SmartSuite, and other systems into Teable.
 </Card>
 
-### Import Base (Data Migration)
+### Import Project (Data Migration) {#import-base-data-migration}
 
-The `.tea` file format imports a complete base with all its tables, fields, data, and configurations. This is useful for:
-- **Data Migration**: Move bases between different Teable instances (e.g., from Cloud to Self-Hosted)
-- **Backup Restoration**: Restore a previously exported base
-- **Template Sharing**: Share complete base structures with other teams
+The `.tea` file format imports a complete project with all its tables, fields, data, and configurations. This is useful for:
+- **Data Migration**: Move projects between different Teable instances (e.g., from Cloud to Self-Hosted)
+- **Backup Restoration**: Restore a previously exported project
+- **Template Sharing**: Share complete project structures with other teams
 
 **Steps:**
 1. Enter the space
@@ -89,19 +91,19 @@ The `.tea` file format imports a complete base with all its tables, fields, data
 
 <img
   src="/images/docs/base/2026-05-22-base-import.png"
-  alt="Import a base from a .tea file"
+  alt="Import a project from a .tea file"
   className="docs-screenshot"
 />
 
-<Tip>If you want to create a base from Airtable, choose **Import from Airtable** in the same import dialog.</Tip>
+<Tip>If you want to create a project from Airtable, choose **Import from Airtable** in the same import dialog.</Tip>
 
-### Export Base (Backup & Migration) {#export-base-backup-&-migration}
+### Export Project (Backup & Migration) {#export-base-backup-&-migration}
 
-Export your base to a `.tea` file for backup or migration purposes. The exported file contains all tables, fields, data, views, and configurations.
+Export your project to a `.tea` file for backup or migration purposes. The exported file contains all tables, fields, data, views, and configurations.
 
 **Steps:**
 1. Enter the space
-2. Hover your mouse over the base you want to export
+2. Hover your mouse over the project you want to export
 3. Click the 「···」 button to open the menu
 4. Click 「Export」
 5. Keep **Include records** turned on to export record data. Turn it off to export only the structure and configuration.
@@ -110,28 +112,28 @@ Export your base to a `.tea` file for backup or migration purposes. The exported
 
 <img
   src="/images/docs/base/2026-05-22-base-export.png"
-  alt="Export a base to a .tea file"
+  alt="Export a project to a .tea file"
   className="docs-screenshot"
 />
 
 <Note>
-- To migrate data between Teable instances, export your base from the source instance, then import the `.tea` file to the target instance. All data and configurations will be preserved.
-- Teable converts cross-base relation fields to **Single line text** fields in the exported file.
-- When you duplicate or move a base across Spaces, cross-Space relationship fields are converted to **Single line text**.
+- To migrate data between Teable instances, export your project from the source instance, then import the `.tea` file to the target instance. All data and configurations will be preserved.
+- Teable converts cross-project relation fields to **Single line text** fields in the exported file.
+- When you duplicate or move a project across Spaces, cross-Space relationship fields are converted to **Single line text**.
 </Note>
 
-## Share a Base
+## Share a Project {#share-a-base}
 
-Bases can be shared through public links. The sharing scope can be the entire base or the currently selected item.
+Projects can be shared through public links. The sharing scope can be the entire project or the currently selected item.
 
-1. Enter the target base
-2. Open the share menu for the base or selected item
+1. Enter the target project
+2. Open the share menu for the project or selected item
 3. Turn on **Share to web**
 4. Copy the share link or QR code
 
 <img
   src="/images/docs/base/2026-05-22-base-share-entry.png"
-  alt="Open base sharing"
+  alt="Open project sharing"
   className="docs-screenshot"
 />
 
@@ -139,29 +141,29 @@ Sharing scopes include:
 
 | Scope | Description |
 |------|------|
-| **Share entire base** | Shares all items in the current base. New tables and folders added later are automatically included. |
+| **Share entire project** | Shares all items in the current project. New tables and folders added later are automatically included. |
 | **Share selected item** | Shares the currently selected item. When a folder is shared, its child items are included. |
 
 In the share settings, you can configure link permissions, **Allow viewers to copy data**, password access, regenerate the link, delete the share link, or copy the embed config.
 
 <img
   src="/images/docs/base/2026-05-22-base-share-settings.png"
-  alt="Base sharing settings"
+  alt="Project sharing settings"
   className="docs-screenshot"
 />
 
 If the sharing scope includes an app, the app must be published before it can be accessed through the public link.
 
-## Features Within a Base
+## Features Within a Project {#features-within-a-base}
 
-A base can contain multiple tables for recording and organizing work or business-related information.
+A project can contain multiple tables for recording and organizing work or business-related information.
 
-For example: A customer management base might have separate tables for "Customer Companies," "Customer Contacts," and "Customer Follow-up Records," while a meeting room management base might have separate tables for recording "Meeting Room Management," "Meeting Room Equipment," and "Meeting Room Reservations."
+For example: A customer management project might have separate tables for "Customer Companies," "Customer Contacts," and "Customer Follow-up Records," while a meeting room management project might have separate tables for recording "Meeting Room Management," "Meeting Room Equipment," and "Meeting Room Reservations."
 
-Therefore, most features within a base are related to tables:
+Therefore, most features within a project are related to tables:
 
-* **Creating Tables**: Bases allow users to create new tables based on project-specific needs, where users can define table structure, fields, and data types.
-* **Editing Tables**: Users can edit existing tables within the base, including adding, deleting, and modifying records.
-* **Exporting and Importing Data**: Bases support exporting data to CSV, and importing data in both CSV and XLSX formats.
+* **Creating Tables**: Projects allow users to create new tables based on project-specific needs, where users can define table structure, fields, and data types.
+* **Editing Tables**: Users can edit existing tables within the project, including adding, deleting, and modifying records.
+* **Exporting and Importing Data**: Projects support exporting data to CSV, and importing data in both CSV and XLSX formats.
 
 Refer to the [Tables section](/en/basic/table) for more information about tables.

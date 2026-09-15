@@ -30,7 +30,7 @@ Each row is one task by default, and it moves through states in place as Teable 
 To narrow the list:
 
 - Click the state tiles above the table to filter by state: **Waiting**, **Active**, **Delayed**, **Failed**, **Completed (retained)**, and so on. You can select several at once, and hovering a tile explains what that state means.
-- Filter by **Space**, **Base**, **Cause**, or **Outcome**, search for a task, Base, Space, or error, or set a minimum processing time to surface slow tasks.
+- Filter by **Space**, **Project**, **Cause**, or **Outcome**, search for a task, Project, Space, or error, or set a minimum processing time to surface slow tasks.
 - Click a row to open **Computed lineage**: queue timestamps, delivery lag, processing time, the full failure reason with the redacted SQL for a failed delivery, and the propagation detail described below.
 
 <Info>**Completed** does not mean the task did work. The outcome badge says what the delivery actually did: **Processed** ran the task, **No-op** found nothing left to do, **Deferred** rescheduled it for later, and **Parked** means its scope is paused. The **Outcome** filter narrows the list by that result and shows how many deliveries each one covers, so pairing **Completed (retained)** with **Processed** leaves only the deliveries that really ran the task.</Info>
@@ -58,7 +58,7 @@ When a computed value looks wrong or arrived late, open **Computed lineage** to 
 
 <Info>The **Failed** count and **Anomaly maintenance** show different types of problems, so their numbers may differ.</Info>
 
-**Anomaly maintenance** collects anomalies into problem groups, one per Base, source table, and error, so a single root cause is easy to spot. Review the failure reason and fix the underlying problem before you recover anything. Expand a group to read its error details and the tasks it covers; those rows are for inspection, and recovery always runs on the group as a whole.
+**Anomaly maintenance** collects anomalies into problem groups, one per Project, source table, and error, so a single root cause is easy to spot. Review the failure reason and fix the underlying problem before you recover anything. Expand a group to read its error details and the tasks it covers; those rows are for inspection, and recovery always runs on the group as a whole.
 
 The actions a group offers depend on its type:
 
@@ -70,7 +70,7 @@ The actions a group offers depend on its type:
 
 After a group recovery, Teable reports how many tasks it restored, how many were newly queued or already queued, and how many were delivered or deferred. Workers then consume the group under the current concurrency and task-splitting limits.
 
-A group marked **Base deleted** belongs to a Base that no longer exists. Recovering it would fail again immediately, so **Discard group** is the only action offered.
+A group marked **Project deleted** belongs to a Project that no longer exists. Recovering it would fail again immediately, so **Discard group** is the only action offered.
 
 Moving a table to the trash no longer creates anomalies here. A computed task that still references a trashed table skips the steps that read it, finishes the steps that target live tables, and completes.
 
@@ -101,8 +101,8 @@ The queue section has two concurrency controls. Each one writes a cluster-wide o
 | Control | What it limits |
 | --- | --- |
 | **Per-process concurrency** | How many computed tasks each worker process handles at once. |
-| **Per-base claim caps** | How many computed tasks run at the same time for one Base (**Per base**) and for one source table within it (**Per seed table**). Both default to 2 and accept values from 1 to 16. |
+| **Per-project claim caps** | How many computed tasks run at the same time for one Project (**Per project**) and for one source table within it (**Per seed table**). Both default to 2 and accept values from 1 to 16. |
 
-Raise the claim caps when one busy Base is the bottleneck, and per-process concurrency when many Bases are queued at the same time.
+Raise the claim caps when one busy Project is the bottleneck, and per-process concurrency when many Projects are queued at the same time.
 
 <Warning>Higher concurrency puts more load on your database. Spaces that store their data in a [database tenant](/en/basic/admin-panel/database-tenant) keep the environment defaults for the claim caps, because their connection pools are sized for those values.</Warning>

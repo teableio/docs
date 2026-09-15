@@ -30,7 +30,7 @@ Per impostazione predefinita, ogni riga rappresenta un'attività e cambia stato 
 Per restringere l'elenco:
 
 - Fai clic sui riquadri di stato sopra la Tabella per filtrare in base allo stato: **In attesa**, **Attivo**, **Ritardato**, **Non riuscito**, **Completato (conservato)** e così via. Puoi selezionarne più di uno contemporaneamente; passando il puntatore su un riquadro viene spiegato il significato dello stato.
-- Filtra per **Spazio**, **Base**, **Causa** o **Esito**, cerca un'attività, una Base, uno Spazio o un errore oppure imposta un tempo minimo di elaborazione per far emergere le attività lente.
+- Filtra per **Spazio**, **Progetto**, **Causa** o **Esito**, cerca un'attività, un Progetto, uno Spazio o un errore oppure imposta un tempo minimo di elaborazione per far emergere le attività lente.
 - Fai clic su una riga per aprire la **Discendenza dei calcoli**: timestamp della coda, ritardo di consegna, tempo di elaborazione, motivo completo dell'errore con SQL oscurato per una consegna non riuscita e i dettagli di propagazione descritti di seguito.
 
 <Info>**Completato** non significa che l'attività abbia eseguito operazioni. Il badge dell'esito indica cosa ha effettivamente fatto la consegna: **Elaborato** ha eseguito l'attività, **Nessuna operazione** non ha trovato altro da fare, **Rinviato** l'ha riprogrammata per un momento successivo e **Parcheggiato** indica che il suo ambito è in pausa. Il filtro **Esito** restringe l'elenco in base a tale risultato e mostra quante consegne comprende ciascuno, pertanto abbinando **Completato (conservato)** a **Elaborato** rimangono soltanto le consegne che hanno realmente eseguito l'attività.</Info>
@@ -58,7 +58,7 @@ Quando un valore calcolato appare errato o arriva in ritardo, apri **Discendenza
 
 <Info>Il conteggio **Non riuscite** e la **Manutenzione anomalie** mostrano tipi di problemi differenti, pertanto i numeri possono non coincidere.</Info>
 
-**Manutenzione anomalie** raccoglie le anomalie in gruppi di problemi, uno per Base, Tabella di origine ed errore, rendendo semplice individuare un'unica causa principale. Esamina il motivo dell'errore e correggi il problema sottostante prima di eseguire qualsiasi ripristino. Espandi un gruppo per leggerne i dettagli dell'errore e le attività incluse; tali righe servono all'ispezione e il ripristino viene sempre eseguito sull'intero gruppo.
+**Manutenzione anomalie** raccoglie le anomalie in gruppi di problemi, uno per Progetto, Tabella di origine ed errore, rendendo semplice individuare un'unica causa principale. Esamina il motivo dell'errore e correggi il problema sottostante prima di eseguire qualsiasi ripristino. Espandi un gruppo per leggerne i dettagli dell'errore e le attività incluse; tali righe servono all'ispezione e il ripristino viene sempre eseguito sull'intero gruppo.
 
 Le azioni offerte da un gruppo dipendono dal relativo tipo:
 
@@ -70,7 +70,7 @@ Le azioni offerte da un gruppo dipendono dal relativo tipo:
 
 Dopo il ripristino di un gruppo, Teable indica quante attività ha ripristinato, quante sono state appena accodate o erano già in coda e quante sono state consegnate o rinviate. I worker elaborano quindi il gruppo nel rispetto dei limiti correnti di concorrenza e suddivisione delle attività.
 
-Un gruppo contrassegnato come **Base eliminata** appartiene a una Base non più esistente. Il suo ripristino fallirebbe di nuovo immediatamente, pertanto **Elimina gruppo** è l'unica azione disponibile.
+Un gruppo contrassegnato come **Progetto eliminato** appartiene a un Progetto non più esistente. Il suo ripristino fallirebbe di nuovo immediatamente, pertanto **Elimina gruppo** è l'unica azione disponibile.
 
 Lo spostamento di una Tabella nel cestino non crea più anomalie in questa sezione. Un'attività di calcolo che fa ancora riferimento a una Tabella nel cestino ignora i passaggi che la leggono, completa quelli destinati alle Tabelle attive e termina.
 
@@ -101,8 +101,8 @@ La sezione della coda include due controlli di concorrenza. Ciascuno imposta una
 | Controllo | Elemento limitato |
 | --- | --- |
 | **Concorrenza per processo** | Numero di attività di calcolo gestite contemporaneamente da ciascun processo worker. |
-| **Limiti di acquisizione per Base** | Numero di attività di calcolo eseguite contemporaneamente per una Base (**Per Base**) e per una Tabella di origine al suo interno (**Per Tabella iniziale**). Entrambi hanno come valore predefinito 2 e accettano valori da 1 a 16. |
+| **Limiti di acquisizione per Progetto** | Numero di attività di calcolo eseguite contemporaneamente per un Progetto (**Per Progetto**) e per una Tabella di origine al suo interno (**Per Tabella iniziale**). Entrambi hanno come valore predefinito 2 e accettano valori da 1 a 16. |
 
-Aumenta i limiti di acquisizione quando il collo di bottiglia è una singola Base molto attiva, e la concorrenza per processo quando sono accodate contemporaneamente molte Base.
+Aumenta i limiti di acquisizione quando il collo di bottiglia è un singolo Progetto molto attivo, e la concorrenza per processo quando sono accodati contemporaneamente molti Progetti.
 
 <Warning>Una concorrenza maggiore aumenta il carico sul database. Gli Spazi che archiviano i dati in un [tenant di database](/it/basic/admin-panel/database-tenant) mantengono i valori predefiniti dell'ambiente per i limiti di acquisizione, poiché i relativi pool di connessioni sono dimensionati per tali valori.</Warning>
