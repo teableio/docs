@@ -91,3 +91,11 @@ Les résultats de Formule peuvent également utiliser les paramètres de [mise e
 - **Vérifier les références de champs** : vérifiez que les noms de Champs sont correctement écrits.
 - **Tester étape par étape** : décomposez les formules complexes en éléments plus petits et testez-les séparément.
 - **Éviter les calculs répétés** : si le même calcul est utilisé à plusieurs endroits, envisagez d’en stocker le résultat dans un Champ distinct.
+
+### Limites de complexité
+
+À l’enregistrement d’une formule, Teable la déploie d’abord dans la structure qui participe réellement au calcul, puis vérifie la taille de cette structure. Si une limite est dépassée, l’enregistrement est refusé et le message indique ce qui dépasse et la limite en vigueur — nombre de nœuds déployés, profondeur d’imbrication du calcul, profondeur des références entre formules — et la modification n’est pas enregistrée.
+
+Une formule courte peut dépasser elle aussi : quand une formule en référence une autre, qui en référence une troisième, la structure déployée grossit vite. Stocker les résultats intermédiaires dans des Champs distincts et réduire les références répétées et les branches complexes suffit généralement à repasser sous la limite.
+
+Si une formule enregistrée atteint une limite pendant le calcul, le Champ signale `La compilation de la formule dépasse la limite de calcul ; les résultats n’ont pas été mis à jour` dans l’[activité des Champs calculés](/fr/basic/view/grid). Une fois la formule simplifiée, la prochaine écriture recalcule le Champ.

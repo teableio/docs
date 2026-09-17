@@ -117,6 +117,14 @@ A single piece of text or a number rarely reaches 256 KB. The limit is usually h
 
 The fix is to keep the details out of the cell: use a Rollup to count or sum the linked records, or look up a shorter field such as a status or a number. Open the linked table when you need to read the full content.
 
+The same panel can also report these failures:
+
+| Message | What it means | What to do |
+| --- | --- | --- |
+| `Formula compilation exceeds the computation limit; results have not been updated` | The expanded structure of the formula is over the limit | Simplify the formula, or move intermediate results into their own fields; see [Formula](/en/basic/field/formula) |
+| `Computed results have not been updated due to a resource limit` | The calculation hit a database resource limit | Change fewer records at a time; contact an administrator if it keeps happening |
+| `Computation did not finish; some results were not updated` | The computation chain is too deep to finish in one pass | Reduce chained references between fields, then edit the source data again to trigger a new calculation |
+
 ## Notes
 
 - Hidden fields, sorting, filtering, grouping, and similar settings apply only to the current view.

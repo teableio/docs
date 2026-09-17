@@ -91,3 +91,11 @@ I risultati delle formule possono anche utilizzare le impostazioni di [formattaz
 - **Verifica i riferimenti ai Campi**: accertati che i nomi dei Campi siano scritti correttamente.
 - **Esegui test passo dopo passo**: suddividi le formule complesse in parti più piccole e testale separatamente.
 - **Evita calcoli ripetuti**: se lo stesso calcolo viene usato in più punti, valuta la possibilità di archiviare il risultato in un Campo separato.
+
+### Limiti di complessità
+
+Quando salvi una formula, Teable la espande prima nella struttura che partecipa davvero al calcolo, poi ne verifica le dimensioni. Se supera un limite, il salvataggio viene rifiutato e il messaggio indica che cosa eccede e quale limite si applica — il numero di nodi espansi, la profondità di annidamento del calcolo, la profondità dei riferimenti tra formule — e la modifica non viene salvata.
+
+Anche una formula breve può superare il limite: se una formula ne richiama un'altra, che a sua volta ne richiama una terza, la struttura espansa cresce in fretta. Salvare i risultati intermedi in Campi separati e ridurre riferimenti ripetuti e rami complessi di solito basta per rientrare.
+
+Se una formula salvata raggiunge un limite durante il calcolo, il Campo segnala `La compilazione della formula supera il limite di calcolo; i risultati non sono stati aggiornati` nell'[attività dei Campi calcolati](/it/basic/view/grid). Semplificata la formula, la scrittura successiva ricalcola il Campo.

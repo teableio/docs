@@ -91,3 +91,11 @@ Los resultados de las fórmulas también pueden usar opciones de [formato](/es/b
 - **Verifica las referencias a campos**: Confirma que los nombres de los campos estén escritos correctamente.
 - **Prueba paso a paso**: Divide las fórmulas complejas en partes más pequeñas y pruébalas por separado.
 - **Evita cálculos repetidos**: Si el mismo cálculo se utiliza en varios lugares, considera almacenar el resultado en un campo independiente.
+
+### Límites de complejidad
+
+Al guardar una fórmula, Teable la expande primero a la estructura que participa realmente en el cálculo y luego comprueba el tamaño de esa estructura. Si supera un límite, el guardado se rechaza y el mensaje indica qué se ha excedido y cuál es el límite aplicable —el número de nodos expandidos, la profundidad de anidamiento del cálculo, la profundidad de las referencias entre fórmulas— y el cambio no se guarda.
+
+Una fórmula corta también puede excederse: si una fórmula referencia a otra y esa a una tercera, la estructura expandida crece deprisa. Guardar los resultados intermedios en campos propios y reducir las referencias repetidas y las ramas complejas suele bastar para volver por debajo del límite.
+
+Si una fórmula guardada alcanza un límite durante el cálculo, el campo indica `La compilación de la fórmula supera el límite de cálculo; los resultados no se actualizaron` en la [actividad de los Campos calculados](/es/basic/view/grid). Una vez simplificada la fórmula, la siguiente escritura vuelve a calcular el campo.

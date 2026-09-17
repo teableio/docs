@@ -91,3 +91,11 @@ Formula results can also use [formatting](/en/basic/field/common/formatter) and 
 - **Verify field references**: Confirm that field names are written correctly.
 - **Test step by step**: Break complex formulas into smaller parts and test them separately.
 - **Avoid repeated calculations**: If the same calculation is used in several places, consider storing the result in a separate field.
+
+### Complexity Limits
+
+When you save a formula, Teable first expands it into the structure that actually takes part in the computation, then checks the size of that structure. If it exceeds a limit, the save is rejected and the message names what went over and the limit that applies — the number of expanded nodes, the nesting depth of the computation, the depth of references between formulas — and the change is not saved.
+
+A short formula can still go over: when one formula references another, and that one references a third, the expanded structure grows quickly. Storing intermediate results in their own fields and cutting repeated references and complex branches usually brings it back under the limit.
+
+If a saved formula hits a limit while computing, the field reports `Formula compilation exceeds the computation limit; results have not been updated` in [computed field activity](/en/basic/view/grid). Once the formula is simpler, the next write recomputes the field.
