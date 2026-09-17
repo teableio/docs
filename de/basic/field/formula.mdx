@@ -91,3 +91,11 @@ Formelergebnisse können außerdem Einstellungen für [Formatierung](/de/basic/f
 - **Feldverweise überprüfen**: Vergewissern Sie sich, dass Feldnamen korrekt geschrieben sind.
 - **Schrittweise testen**: Teilen Sie komplexe Formeln in kleinere Teile auf und testen Sie diese separat.
 - **Wiederholte Berechnungen vermeiden**: Wenn dieselbe Berechnung an mehreren Stellen verwendet wird, sollten Sie das Ergebnis in einem separaten Feld speichern.
+
+### Komplexitätsgrenzen
+
+Beim Speichern einer Formel entfaltet Teable sie zuerst zu der Struktur, die tatsächlich an der Berechnung teilnimmt, und prüft dann deren Größe. Wird eine Grenze überschritten, lehnt Teable das Speichern ab und nennt in der Meldung, was übersteht und welche Grenze gilt — die Zahl der entfalteten Knoten, die Verschachtelungstiefe der Berechnung, die Tiefe der Verweise zwischen Formeln — und die Änderung wird nicht gespeichert.
+
+Auch eine kurze Formel kann darüber liegen: Verweist eine Formel auf eine zweite und diese auf eine dritte, wächst die entfaltete Struktur schnell. Zwischenergebnisse in eigenen Feldern zu speichern und wiederholte Verweise sowie komplexe Verzweigungen zu reduzieren, bringt sie meist wieder unter die Grenze.
+
+Erreicht eine gespeicherte Formel während der Berechnung eine Grenze, meldet das Feld in der [Aktivität berechneter Felder](/de/basic/view/grid) `Die Formelkompilierung überschreitet das Berechnungslimit; die Ergebnisse wurden nicht aktualisiert`. Ist die Formel vereinfacht, berechnet der nächste Schreibvorgang das Feld neu.
