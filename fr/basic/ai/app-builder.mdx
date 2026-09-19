@@ -36,7 +36,7 @@ Le Créateur d’applications propose une double interface, destinée à la fois
 Le centre de commande de votre application.
 - **Modification en langage naturel** : décrivez des changements tels que *« Rends l’en-tête bleu »* ou *« Ajoute un formulaire de soumission pour les nouveaux Enregistrements »*.
 - **Routage automatique** : l’IA comprend le composant ou la page auquel vous faites référence et le modifie directement.
-- **Intégrations** : lorsqu’une tâche de l’application nécessite l’accès à un compte tiers, le Créateur d’applications peut afficher une carte telle que **Connecter Slack** dans le panneau de chat. Cliquez sur **Connecter** pour autoriser OAuth. Cliquez sur **Ignorer** pour annuler cette autorisation ; l’IA poursuit les parties qu’elle peut réaliser sans cette connexion.
+- **Demandes d’identifiants** : lorsque l’application a besoin d’accéder à un compte tiers ou à un secret à l’exécution, le Créateur d’applications épingle une carte dans le panneau de chat, par exemple **Cette application a besoin de votre connexion Slack**. Cliquez sur **Connecter mon compte** pour lancer un parcours OAuth ; la nouvelle connexion est aussitôt accordée à cette application. Si vous disposez déjà d’une connexion ou d’un secret utilisable, accordez-le simplement : inutile de vous reconnecter. **Ignorer** ne fournit pas l’identifiant ; l’IA poursuit les parties qu’elle peut réaliser sans lui.
 - **Compétences** : ouvrez le menu **+** et choisissez **Compétences** pour gérer les compétences de cette conversation d’application. Une compétence ajoutée ici est disponible uniquement pour l’application actuelle ; les compétences partagées avec le Projet et l’Espace de l’application peuvent également être utilisées ici. Saisissez `/` dans le champ de saisie pour choisir une compétence activée.
 - **Gérer les fichiers** : ouvrez **+** → **Plus** → **Gérer les fichiers** pour afficher les fichiers dans le bac à sable de l’application. Utilisez cette option pour prévisualiser les fichiers pris en charge, télécharger les fichiers générés ou supprimer les fichiers et dossiers dont vous n’avez plus besoin.
 - **Effacer la conversation** : si la conversation actuelle s’est écartée du sujet, cliquez sur **Effacer le chat** dans l’angle inférieur droit du panneau pour démarrer une nouvelle session. Cela efface l’historique de chat de la conversation actuelle, mais ne supprime pas l’application elle-même. Lors de la première utilisation, une confirmation s’affiche et vous pouvez choisir de ne plus l’afficher la prochaine fois.
@@ -272,6 +272,15 @@ Teable suit automatiquement chaque déploiement.
   alt="Historique des versions de l’application"
   className="docs-screenshot"
 />
+
+Le Créateur d’applications enregistre les modifications de chaque tour comme une nouvelle version. Quand l’enregistrement échoue, une carte apparaît dans la conversation.
+
+<Warning>
+Les modifications du tour concerné ne subsistent que dans le bac à sable ; elles sont perdues quand celui-ci est recyclé, et régénérer la réponse ne les enregistre pas davantage. Traitez la carte sans tarder.
+</Warning>
+
+- **Échec de l’enregistrement de la version** : cette version n’a pas été enregistrée. Laissez le Créateur d’applications continuer : le prochain enregistrement réussi emportera aussi ces modifications.
+- **Modifications trop volumineuses pour être enregistrées** : ce tour dépasse la limite de taille à l’enregistrement. Cliquez sur **Envoyer à l’IA** sur la carte : le Créateur d’applications recherche les artefacts de test, fichiers de débogage ou pièces jointes trop volumineux, fait le ménage, puis enregistre de nouveau. Ces fichiers peuvent déjà figurer dans l’historique des commits non enregistrés ; les supprimer ne suffit pas toujours, laissez le Créateur d’applications nettoyer aussi cet historique.
 
 ### Correction automatique
 Si vos modifications de code personnalisé provoquent une erreur de compilation, le déploiement échoue.
