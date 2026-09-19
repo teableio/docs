@@ -36,7 +36,7 @@ App Builder offre una doppia interfaccia, sia per gli utenti non tecnici sia per
 Il centro di comando della tua app.
 - **Modifica con linguaggio naturale**: descrivi modifiche come *«Rendi blu l'intestazione»* o *«Aggiungi un modulo per l'invio di nuovi Record»*.
 - **Indirizzamento automatico**: l'IA comprende a quale componente o pagina fai riferimento e lo modifica direttamente.
-- **Integrazioni**: quando l'attività dell'app richiede l'accesso a un account di terze parti, App Builder può mostrare nel pannello della chat una scheda come **Collega Slack**. Fai clic su **Collega** per autorizzare tramite OAuth. Fai clic su **Ignora** per annullare l'autorizzazione; l'IA continua con le parti che può completare senza tale connessione.
+- **Richieste di credenziali**: quando l'app ha bisogno di accedere a un account di terze parti o a un segreto durante l'esecuzione, App Builder fissa una scheda nel pannello della chat, per esempio **Questa app ha bisogno della tua connessione Slack**. Fai clic su **Collega il mio account** per avviare un flusso OAuth; la nuova connessione viene concessa subito a questa app. Se possiedi già una connessione o un segreto utilizzabile, ti basta concederlo: non serve collegarsi di nuovo. Con **Salta** non fornisci la credenziale e l'IA continua con le parti che può completare senza di essa.
 - **Skill**: apri il menu **+** e scegli **Skill** per gestire le skill della conversazione di questa app. Una skill aggiunta qui è disponibile soltanto per l'app corrente; qui è inoltre possibile utilizzare le skill condivise con il Progetto e lo Spazio dell'app. Digita `/` nella casella di input per scegliere una skill abilitata.
 - **Gestisci file**: apri **+** → **Altro** → **Gestisci file** per visualizzare i file nella sandbox dell'app. Usalo per visualizzare in anteprima i file supportati, scaricare i file generati oppure eliminare file e cartelle non più necessari.
 - **Cancella conversazione**: se la conversazione corrente ha perso il filo, fai clic su **Cancella chat** nell'angolo in basso a destra del pannello per avviare una nuova sessione. In questo modo viene cancellata la cronologia della chat per la conversazione corrente, ma l'app non viene eliminata. Al primo utilizzo viene mostrata una conferma e puoi scegliere di non visualizzarla più in futuro.
@@ -272,6 +272,15 @@ Teable tiene automaticamente traccia di ogni distribuzione.
   alt="Cronologia delle versioni dell'app"
   className="docs-screenshot"
 />
+
+App Builder salva le modifiche di ogni giro come una nuova versione. Quando il salvataggio non riesce, nella chat compare una scheda.
+
+<Warning>
+Le modifiche del giro non riuscito restano solo nella sandbox: vanno perse quando la sandbox viene rilasciata e non vengono salvate nemmeno rigenerando la risposta. Intervieni sulla scheda per tempo.
+</Warning>
+
+- **Salvataggio della versione non riuscito**: questa versione non è stata salvata. Lascia proseguire App Builder: il primo salvataggio riuscito porterà con sé anche queste modifiche.
+- **Modifiche troppo grandi per il salvataggio**: questo giro supera il limite di dimensione per il salvataggio. Fai clic su **Invia all'IA** nella scheda: App Builder cerca artefatti di test, file di debug o allegati troppo grandi, li ripulisce e salva di nuovo. Quei file possono essere già finiti nella cronologia dei commit non salvati, quindi cancellarli può non bastare: lascia che sia App Builder a sistemare anche quella.
 
 ### Correzione automatica
 Se le modifiche al codice personalizzato causano un errore di build, la distribuzione non riesce.

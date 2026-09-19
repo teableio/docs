@@ -36,7 +36,7 @@ Der App-Builder bietet eine duale Oberfläche für nicht technische Nutzer und E
 Die Kommandozentrale für Ihre App.
 - **Bearbeitung in natürlicher Sprache**: Beschreiben Sie Änderungen wie *„Mache die Kopfzeile blau“* oder *„Füge ein Übermittlungsformular für neue Datensätze hinzu“*.
 - **Automatisches Routing**: Die KI versteht, auf welche Komponente oder Seite Sie sich beziehen, und ändert sie direkt.
-- **Integrationen**: Wenn die App-Aufgabe Zugriff auf ein Drittanbieter-Konto benötigt, kann der App-Builder im Chat-Bereich eine Karte wie **Slack verbinden** anzeigen. Klicken Sie auf **Verbinden**, um sich per OAuth zu autorisieren. Klicken Sie auf **Überspringen**, um diese Autorisierung abzubrechen; die KI fährt mit den Teilen fort, die sie ohne diese Verbindung abschließen kann.
+- **Anfragen nach Zugangsdaten**: Braucht die App zur Laufzeit Zugriff auf ein Drittanbieter-Konto oder ein Secret, heftet der App-Builder eine Karte an den Chat-Bereich, etwa **Diese App benötigt Ihre Slack-Verbindung**. Mit **Mein Konto verbinden** starten Sie den OAuth-Vorgang; die neue Verbindung wird dieser App sofort freigegeben. Haben Sie bereits eine passende Verbindung oder ein passendes Secret, geben Sie es einfach frei – ein erneutes Verbinden entfällt. Mit **Überspringen** stellen Sie die Zugangsdaten nicht bereit; die KI fährt mit den Teilen fort, die sie auch ohne erledigen kann.
 - **Skills**: Öffnen Sie das Menü **+** und wählen Sie **Skills**, um Skills für diese App-Unterhaltung zu verwalten. Ein hier hinzugefügter Skill ist nur für die aktuelle App verfügbar; die mit dem Projekt und dem Space der App geteilten Skills können hier ebenfalls verwendet werden. Geben Sie `/` in das Eingabefeld ein, um einen aktivierten Skill auszuwählen.
 - **Dateien verwalten**: Öffnen Sie **+** → **Mehr** → **Dateien verwalten**, um Dateien in der App-Sandbox anzuzeigen. Verwenden Sie dies, um unterstützte Dateien in der Vorschau anzuzeigen, generierte Dateien herunterzuladen oder nicht mehr benötigte Dateien und Ordner zu löschen.
 - **Unterhaltung löschen**: Wenn die aktuelle Unterhaltung vom Thema abgekommen ist, klicken Sie unten rechts im Bereich auf **Chat löschen**, um eine neue Sitzung zu beginnen. Dadurch wird der Chatverlauf der aktuellen Unterhaltung gelöscht, nicht jedoch die App selbst. Bei der ersten Verwendung wird eine Bestätigung angezeigt, und Sie können festlegen, dass sie beim nächsten Mal nicht wieder angezeigt wird.
@@ -272,6 +272,15 @@ Teable verfolgt jede Bereitstellung automatisch.
   alt="Versionsverlauf der App"
   className="docs-screenshot"
 />
+
+Der App-Builder speichert die Änderungen jedes Durchlaufs als neue Version. Schlägt das Speichern fehl, erscheint im Chat eine Karte.
+
+<Warning>
+Die Änderungen des fehlgeschlagenen Durchlaufs liegen nur noch in der Sandbox; sie gehen verloren, sobald die Sandbox eingezogen wird, und ein erneut erzeugte Antwort speichert sie nicht nach. Reagieren Sie zügig auf die Karte.
+</Warning>
+
+- **Version konnte nicht gespeichert werden**: Diese Version wurde nicht gespeichert. Lassen Sie den App-Builder weiterarbeiten; der nächste erfolgreiche Speichervorgang nimmt diese Änderungen mit.
+- **Änderungen zu groß zum Speichern**: Dieser Durchlauf überschreitet das Größenlimit fürs Speichern. Klicken Sie auf der Karte auf **An KI senden**: Der App-Builder sucht nach übergroßen Testartefakten, Debug-Dateien oder Anhängen, räumt sie weg und speichert erneut. Solche Dateien stecken womöglich schon in der noch nicht gespeicherten Commit-Historie, Löschen allein genügt dann nicht – lassen Sie den App-Builder auch das bereinigen.
 
 ### Automatische Fehlerbehebung
 Wenn Ihre Änderungen am eigenen Code einen Build-Fehler verursachen, schlägt die Bereitstellung fehl.

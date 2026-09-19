@@ -35,7 +35,6 @@ Besides the prompt and the schedule, the form carries these settings:
 | Setting | Description |
 | --- | --- |
 | **Model** | The model and effort level this routine runs on. Leave **Default model** to use the space's default chat model |
-| **Max run time (minutes)** | A run past this limit is stopped and marked failed. 5–120 minutes; default 30 |
 | **Chat** | **New chat for every run** keeps runs independent of each other; **Continue the previous run's chat** carries the context of earlier runs forward, which suits work that needs to refer to the last result |
 | **Starting** / **Ending (optional)** | The bounds of the schedule. Without an end time the routine keeps running indefinitely |
 
@@ -74,7 +73,6 @@ A **Failed** run states its reason, and each reason calls for a different respon
 | Message | Meaning | What to do |
 | --- | --- | --- |
 | **Run failed** | The run started but hit an error | Open the conversation for that run and judge from the failure point whether the prompt or the data is at fault |
-| **Run timed out** | The run passed **Max run time** and was stopped | Raise **Max run time**, or split the prompt into smaller units of work |
 | **Skipped: not enough credits** | Credits ran out, so the run never started | Top up the space's credits |
 | **Skipped: the previous run was still in progress** | The previous run had not finished, so this occurrence was skipped | Lower the frequency, or reduce how much one run processes |
 | **Skipped: timed out waiting in the queue** | The run waited too long in the queue and was skipped | Occasional occurrences need no action; a recurring one means too much is scheduled at the same time, so stagger the schedules |

@@ -36,7 +36,7 @@ App Builder ofrece una interfaz doble tanto para usuarios sin conocimientos téc
 El centro de control de tu aplicación.
 - **Edición mediante lenguaje natural**: Describe cambios como *«Haz que el encabezado sea azul»* o *«Añade un formulario para enviar Registros nuevos»*.
 - **Enrutamiento automático**: La IA entiende a qué componente o página te refieres y lo modifica directamente.
-- **Integraciones**: Cuando la tarea de la aplicación necesita acceso a una cuenta externa, App Builder puede mostrar una tarjeta como **Conectar Slack** en el panel de chat. Haz clic en **Conectar** para autorizar mediante OAuth. Haz clic en **Omitir** para cancelar la autorización; la IA continuará con las partes que pueda completar sin esa conexión.
+- **Solicitudes de credenciales**: Cuando la aplicación necesita acceder a una cuenta externa o a un secreto al ejecutarse, App Builder fija una tarjeta en el panel de chat, por ejemplo **Esta aplicación necesita tu conexión de Slack**. Haz clic en **Conectar mi cuenta** para iniciar un flujo de OAuth; la nueva conexión se concede de inmediato a esta aplicación. Si ya tienes una conexión o un secreto que sirva, basta con concederlo: no hace falta volver a conectar. Con **Omitir** no facilitas la credencial; la IA continúa con las partes que puede completar sin ella.
 - **Habilidades**: Abre el menú **+** y elige **Habilidades** para administrar las habilidades de esta conversación de la aplicación. Las habilidades añadidas aquí solo están disponibles para la aplicación actual; también pueden usarse las que se comparten con el Proyecto y el Espacio de la aplicación. Escribe `/` en el cuadro de entrada para elegir una habilidad habilitada.
 - **Administrar archivos**: Abre **+** → **Más** → **Administrar archivos** para consultar los archivos del entorno aislado de la aplicación. Úsalo para obtener una vista previa de los archivos compatibles, descargar archivos generados o eliminar los archivos y carpetas que ya no necesites.
 - **Borrar conversación**: Si la conversación actual se ha desviado, haz clic en **Borrar chat** en la esquina inferior derecha del panel para iniciar una sesión nueva. Esto borra el historial del chat de la conversación actual, pero no elimina la aplicación. La primera vez se muestra una confirmación, y puedes elegir que no vuelva a aparecer.
@@ -272,6 +272,15 @@ Teable realiza un seguimiento automático de cada implementación.
   alt="Historial de versiones de la aplicación"
   className="docs-screenshot"
 />
+
+App Builder guarda los cambios de cada ronda como una versión nueva. Cuando el guardado falla, aparece una tarjeta en el chat.
+
+<Warning>
+Los cambios de la ronda fallida solo quedan en el sandbox; se pierden cuando el sandbox se recicla, y regenerar la respuesta tampoco los guarda. Atiende la tarjeta cuanto antes.
+</Warning>
+
+- **No se pudo guardar la versión**: esta versión no se guardó. Deja que App Builder siga trabajando: el próximo guardado correcto se llevará también estos cambios.
+- **Cambios demasiado grandes para guardar**: esta ronda supera el límite de tamaño de guardado. Pulsa **Enviar a la IA** en la tarjeta y App Builder buscará artefactos de prueba, archivos de depuración o adjuntos demasiado grandes, los limpiará y volverá a guardar. Esos archivos pueden estar ya en el historial de confirmaciones sin guardar, así que borrarlos puede no bastar: deja que App Builder también ordene ese historial.
 
 ### Corrección automática
 Si tus cambios en el código personalizado provocan un error de compilación, la implementación fallará. 
