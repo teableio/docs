@@ -1,0 +1,74 @@
+---
+title: "When Connector Event Received"
+description: "Run a workflow when a connected third-party app reports an event"
+---
+
+<Note>Available on all Cloud plans; Self-Hosted requires Business or higher, with connector events turned on by whoever runs the deployment.</Note>
+
+Start a workflow from something that happens inside a connected app such as GitHub, Gmail, or Slack: a new email arrives, an issue is opened, a message is posted. The app delivers the event to Teable directly, so you do not have to host a webhook URL or poll for changes.
+
+## Build with AI
+
+Open AI chat in the right sidebar of any table and describe what you need.
+
+AI handles everything: it picks the right trigger, maps the relevant fields, and sets up the actions.
+
+Describe the goal once and the workflow is ready, with no manual configuration.
+
+**Example:** *"When a new issue is opened in my GitHub repo, create a record in the Tasks table"*
+
+## How to Set It Up
+
+<Steps>
+  <Step title="Pick the trigger">
+    Create a workflow and choose **When connector event received** as the trigger.
+  </Step>
+  <Step title="Choose the app and the event">
+    Pick the app under **App**, then the specific event under **Event**. Every event in the list carries a one-line summary and a badge; the badges are explained below.
+  </Step>
+  <Step title="Choose the account">
+    Under **Account**, pick which connected account receives the event. If you have never connected this app, connect it from the same dropdown: the new connection is granted to this workflow automatically.
+  </Step>
+  <Step title="Fill in the parameters">
+    Fill in the **Parameters** the event needs, such as a repository, a channel, or a label. Fields marked * are required. Click **Save** when you are done.
+  </Step>
+  <Step title="Activate">
+    Add the actions that follow, then turn the workflow on. The subscription is created when the workflow is activated, so a draft receives nothing.
+  </Step>
+</Steps>
+
+Changing the app or the event clears the steps after the trigger, and variables that referenced the previous event stop resolving, so those steps have to be configured again.
+
+## Event Badges
+
+| Badge | What it means |
+| --- | --- |
+| **Instant** | The app pushes the event, which arrives shortly after it happens |
+| **Polling · may take a few minutes** | Teable asks the app periodically, so do not rely on these events where timing matters |
+| **High volume** | This event fires often in practice, and every firing counts as an automation run |
+| **Deprecated** | The app has deprecated this event and may stop sending it, so choose another one |
+
+## Data Available After the Trigger
+
+The event itself lands in the **event** variable, which later steps insert through **+**. The variable is empty right after you configure the trigger: an actual event has to arrive first. Click **Test trigger**, and once the panel shows **Waiting for an event**, go into the app and do something that fires it. A polling event may take a few minutes.
+
+The event that arrives stays on the trigger as sample data, so later steps can reference its fields. Click **Stop waiting** to end the wait early; after about 30 minutes without an event the panel reports **Stopped waiting. No event arrived.**
+
+## When the Connection Drops
+
+The trigger stops receiving events when the account grant is revoked, the connected account is removed, the app stops the subscription (expired credentials or an unhealthy subscription), or the subscription could not be created. The workflow itself is not switched off, but nothing new runs until it is restored.
+
+Teable notifies the member who last edited the workflow, and the trigger panel shows **Disconnected — reconnect the account or pick another one**. Restore it according to the cause:
+
+- Click **Reconnect** on the same account under **Settings** → **Integrations**, and the subscription is rebuilt on its own.
+- To use a different account, go back to the trigger, pick another **Account**, and save.
+- When the subscription failed to be created, check the parameters and save again to retry.
+
+## After a Copy or an Import
+
+Credentials do not travel with a workflow. After you copy a workflow, or import or copy a project, the trigger reads **Account not authorized**: pick one of your own accounts and save before the workflow can subscribe again.
+
+## Related Docs
+
+- [Credentials and Integrations](/en/basic/credential)
+- [Routine](/en/basic/ai/routine)

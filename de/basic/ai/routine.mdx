@@ -5,11 +5,11 @@ description: Cuppy führt einen Prompt nach Zeitplan aus; das Ergebnis jedes Lau
 
 <Note>In allen Cloud-Plänen verfügbar; Self-Hosted erfordert Business oder höher.</Note>
 
-Eine Routine übergibt Cuppy einen Prompt und wiederholt ihn nach Zeitplan. Das eignet sich für Arbeit, die niemand von Hand anstoßen soll: ein täglicher Bericht, das regelmäßige Aufräumen abgelaufener Datensätze, eine wöchentliche Auswertung. Jeder Lauf ist ein vollständiger KI-Chat, eine Routine kann also alles, was der KI-Chat kann, einschließlich Lesen und Schreiben von Tabellen, Aufrufen von Skills und Erzeugen von Dateien.
+Eine Routine übergibt Cuppy einen Prompt und wiederholt ihn, entweder nach Zeitplan oder immer dann, wenn eine verbundene Drittanbieter-App ein Ereignis meldet. Das eignet sich für Arbeit, die niemand von Hand anstoßen soll: ein täglicher Bericht, das regelmäßige Aufräumen abgelaufener Datensätze, das Ablegen einer eingehenden E-Mail. Jeder Lauf ist ein vollständiger KI-Chat, eine Routine kann also alles, was der KI-Chat kann, einschließlich Lesen und Schreiben von Tabellen, Aufrufen von Skills und Erzeugen von Dateien.
 
 Eine Routine ist eine Ressource innerhalb eines Projekts und steht in der linken Seitenleiste neben Tabellen, Apps und Automatisierungen.
 
-<Info>Eine Automatisierung wird durch ein Ereignis ausgelöst, etwa eine Datensatzänderung, ein Formular oder einen Webhook, und führt die Schritte aus, die Sie vorher konfiguriert haben. Eine Routine wird nur durch die Zeit ausgelöst und führt einen Prompt aus, den der Agent selbst auslegt. Nehmen Sie eine Automatisierung, wenn Sie feste Schritte und ein vorhersagbares Ergebnis brauchen; nehmen Sie eine Routine, wenn der Agent jedes Mal selbst entscheiden soll, was mit den aktuellen Daten zu tun ist.</Info>
+<Info>Eine Automatisierung führt die Schritte aus, die Sie vorher konfiguriert haben, eine Routine dagegen einen Prompt, den der Agent selbst auslegt. Beide können nach Zeitplan ausgelöst werden, und beide durch ein Ereignis aus einer verbundenen Drittanbieter-App. Nehmen Sie eine Automatisierung, wenn Sie feste Schritte und ein vorhersagbares Ergebnis brauchen; nehmen Sie eine Routine, wenn der Agent jedes Mal selbst entscheiden soll, was mit den aktuellen Daten zu tun ist.</Info>
 
 ## Routine erstellen
 
@@ -20,29 +20,37 @@ Eine Routine ist eine Ressource innerhalb eines Projekts und steht in der linken
   <Step title="Prompt schreiben">
     Beschreiben Sie unter **Prompt**, was jeder Lauf tun soll. Der Prompt ist die vollständige Anweisung für einen Lauf, nennen Sie also die Datenquelle, die Verarbeitung und das Ziel des Ergebnisses. Zum Beispiel: „Werte die Datensätze aus, die gestern in der Tabelle Aufgaben angelegt wurden, gruppiere sie nach zuständiger Person und schreibe die Auswertung in die Tabelle Tagesbericht.“
   </Step>
-  <Step title="Zeitplan festlegen">
-    Wählen Sie unter **Zeitplan** eine Frequenz und setzen Sie bei Bedarf **Beginn** und **Ende (optional)**.
+  <Step title="Auslöser wählen">
+    Wählen Sie unter **Auslöser** entweder **Nach Zeitplan** oder **Bei Connector-Ereignis** und füllen Sie die Einstellungen der jeweiligen Art aus.
   </Step>
   <Step title="Aktivieren">
-    Klicken Sie auf **Aktivieren**. Die Konfiguration muss gespeichert sein, und der Zeitplan muss einen künftigen Termin enthalten.
+    Klicken Sie auf **Aktivieren**. Die Konfiguration muss gespeichert sein: **Nach Zeitplan** braucht einen künftigen Termin, **Bei Connector-Ereignis** ein nutzbares Konto.
   </Step>
 </Steps>
 
 ## Einstellungen
 
-Neben Prompt und Zeitplan enthält das Formular diese Einstellungen:
+Neben Prompt und Auslöser enthält das Formular diese Einstellungen:
 
 | Einstellung | Beschreibung |
 | --- | --- |
 | **Modell** | Modell und Denkstufe dieser Routine. Bei **Standardmodell** gilt das Standard-Chatmodell des Space |
 | **Chat** | **Neuer Chat für jeden Lauf** hält die Läufe voneinander unabhängig; **Chat des vorherigen Laufs fortsetzen** trägt den Kontext früherer Läufe weiter und eignet sich für Aufgaben, die auf das letzte Ergebnis Bezug nehmen |
-| **Beginn** / **Ende (optional)** | Die Grenzen des Zeitplans. Ohne Endzeit läuft die Routine unbegrenzt weiter |
+| **Beginn** / **Ende (optional)** | Die Grenzen des Zeitplans, nur für **Nach Zeitplan**. Ohne Endzeit läuft die Routine unbegrenzt weiter |
 
 Modell und Denkstufe werden beim Speichern mit festgehalten, deshalb zeigt der Ausführungsverlauf, womit ein Lauf tatsächlich gelaufen ist.
 
+### Auslöser
+
+**Nach Zeitplan** führt die Routine zu den Zeiten aus, die Sie festlegen; die Einstellungen dazu stehen unten unter Zeitplan.
+
+**Bei Connector-Ereignis** führt sie einmal aus, sobald eine verbundene Drittanbieter-App ein Ereignis meldet, etwa eine neue E-Mail oder ein neues Issue. Wählen Sie die App, das Ereignis, das **Konto**, das es empfängt, und die Parameter, die das Ereignis verlangt; konfiguriert wird das genau wie der Auslöser der Automatisierung, beschrieben unter [Wenn ein Connector-Ereignis eingeht](/de/basic/automation/trigger/external/connector-event). Eine Routine mit diesem Auslöser hat keine **Nächste Ausführung** und nutzt weder den Zeitplan noch dessen Grenzen.
+
+Wird die Freigabe des Kontos entzogen, das verbundene Konto entfernt oder das Abonnement von der App gestoppt, meldet die Routine **Abonnement getrennt** und empfängt keine Ereignisse mehr; Teable benachrichtigt das Mitglied, das sie zuletzt aktualisiert hat. Verbinden Sie dasselbe Konto erneut, baut sich das Abonnement von selbst wieder auf; für ein anderes Konto wählen Sie es im Auslöser aus und speichern.
+
 ### Zeitplan
 
-Wählen Sie eine Frequenz aus den Vorlagen: **Stündlich** zu einer bestimmten Minute, **Täglich** und **Werktags** zu einer bestimmten Uhrzeit, **Wöchentlich** an einem Wochentag mit Uhrzeit, **Monatlich** an einem Tag mit Uhrzeit.
+Der Zeitplan gilt nur für **Nach Zeitplan**. Wählen Sie eine Frequenz aus den Vorlagen: **Stündlich** zu einer bestimmten Minute, **Täglich** und **Werktags** zu einer bestimmten Uhrzeit, **Wöchentlich** an einem Wochentag mit Uhrzeit, **Monatlich** an einem Tag mit Uhrzeit.
 
 Für alles Genauere wählen Sie **Benutzerdefiniert (RRULE)** und schreiben eine RFC-5545-Regel, etwa `FREQ=DAILY;BYHOUR=9;BYMINUTE=0`. Für eigene Regeln gelten diese Grenzen:
 
@@ -56,15 +64,17 @@ Ein Zeitplan wird in der Zeitzone der Person ausgewertet, die die Routine angele
 
 ## Entwurf, Aktualisierung und sofortige Ausführung
 
-Eine neue Routine ist ein Entwurf und läuft erst nach dem Aktivieren nach Zeitplan. Bearbeiten Sie eine aktive Routine, wird die Änderung ebenfalls als Entwurf gespeichert, während die aktive Fassung weiter mit der alten Konfiguration läuft: Mit **Aktualisieren** übernehmen Sie sie, mit **Änderungen verwerfen** verwerfen Sie sie.
+Eine neue Routine ist ein Entwurf und läuft erst nach dem Aktivieren von selbst. Bearbeiten Sie eine aktive Routine, wird die Änderung ebenfalls als Entwurf gespeichert, während die aktive Fassung weiter mit der alten Konfiguration läuft: Mit **Aktualisieren** übernehmen Sie sie, mit **Änderungen verwerfen** verwerfen Sie sie.
 
-**Jetzt ausführen** führt einmal aus, ohne auf den Zeitplan zu warten; das eignet sich zum Prüfen eines Prompts. Solange der vorherige Lauf nicht beendet ist, lässt sich eine Routine nicht erneut von Hand starten.
+**Jetzt ausführen** führt einmal aus, ohne auf den Auslöser zu warten; das eignet sich zum Prüfen eines Prompts. Solange der vorherige Lauf nicht beendet ist, lässt sich eine Routine nicht erneut von Hand starten.
 
-Zum Deaktivieren schalten Sie den Schalter aus. Der Zeitplan löst dann nicht mehr aus, der bestehende Ausführungsverlauf bleibt erhalten.
+Bei einer noch nicht aktivierten Routine mit Connector-Ereignis zeigt **Jetzt ausführen** stattdessen **Warten auf ein Ereignis**: Lösen Sie das Ereignis in der App aus, und Teable führt die Routine mit dem eingehenden Ereignis einmal aus; der Lauf erscheint dann im Ausführungsverlauf. Mit **Nicht mehr warten** brechen Sie das Warten ab. Eine aktive Routine empfängt ihre Ereignisse ohnehin und braucht das weder, noch lässt sie es zu.
+
+Zum Deaktivieren schalten Sie den Schalter aus. Die Routine löst dann nicht mehr aus, der bestehende Ausführungsverlauf bleibt erhalten.
 
 ## Ausführungsverlauf
 
-Öffnen Sie die Routine und wechseln Sie zu **Ausführungsverlauf**. Die Liste lässt sich nach Status und Zeitraum filtern, was das Auffinden eines bestimmten Fehlschlags erleichtert; zu einem ausgewählten Lauf sehen Sie geplante, gestartete und beendete Zeit, die Dauer sowie den vollständigen Chat dieses Laufs.
+Öffnen Sie die Routine und wechseln Sie zu **Ausführungsverlauf**. Die Liste lässt sich nach Status und Zeitraum filtern, was das Auffinden eines bestimmten Fehlschlags erleichtert; zu einem ausgewählten Lauf sehen Sie die **Lauf-ID**, den **Auslöser** und den vollständigen Chat dieses Laufs. Der **Auslöser** steht auf **Geplant**, **Ereignis** oder **Manuell**; ein geplanter Lauf zeigt zusätzlich unter **Geplant** den Termin an, den er bedient hat.
 
 Läufe werden als **In der Warteschlange**, **Läuft**, **Abgeschlossen**, **Fehlgeschlagen** oder **Abgebrochen** ausgewiesen. **Abgebrochen** erscheint, wenn jemand den Lauf unterbrochen hat oder wenn die Routine oder ihr Projekt gelöscht wurde.
 
@@ -103,7 +113,7 @@ Nicht jeder erfolglose Lauf zählt dabei mit: Läufe, die übersprungen wurden, 
   </Accordion>
 
   <Accordion title="Laufen Routinen in einem aus einer Vorlage installierten Projekt automatisch?">
-    Ja. Nach der Installation einer Vorlage werden deren Routinen ebenso eingeschaltet wie deren Workflows. Ein Zeitplan ohne künftigen Termin bleibt ein Entwurf.
+    Geplante schon. Nach der Installation einer Vorlage werden sie ebenso eingeschaltet wie deren Workflows, und ein Zeitplan ohne künftigen Termin bleibt ein Entwurf. Routinen mit Connector-Ereignis werden nicht eingeschaltet: Zugangsdaten kommen mit einer Vorlage nicht mit, wählen Sie also erst ein eigenes Konto aus.
   </Accordion>
 
   <Accordion title="Wächst der Kontext bei „Chat des vorherigen Laufs fortsetzen“ unbegrenzt?">

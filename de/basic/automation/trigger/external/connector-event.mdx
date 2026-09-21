@@ -1,0 +1,74 @@
+---
+title: "Wenn ein Connector-Ereignis eingeht"
+description: "Einen Workflow starten, wenn eine verbundene Drittanbieter-App ein Ereignis meldet"
+---
+
+<Note>In allen Cloud-Tarifen verfügbar; Self-Hosted erfordert Business oder höher, und der Betreiber der Installation muss Connector-Ereignisse einschalten.</Note>
+
+Starten Sie einen Workflow aus etwas, das in einer verbundenen App wie GitHub, Gmail oder Slack passiert: eine neue E-Mail kommt an, ein Issue wird eröffnet, eine Nachricht wird gepostet. Die App liefert das Ereignis direkt an Teable, Sie müssen also keine Webhook-URL betreiben und nichts abfragen.
+
+## Mit KI erstellen
+
+Öffnen Sie den KI-Chat in der rechten Seitenleiste einer beliebigen Tabelle und beschreiben Sie, was Sie brauchen.
+
+Die KI erledigt den Rest: Sie wählt den passenden Auslöser, ordnet die betroffenen Felder zu und richtet die Aktionen ein.
+
+Beschreiben Sie das Ziel einmal, und der Workflow steht, ganz ohne manuelle Konfiguration.
+
+**Beispiel:** *"Wenn in meinem GitHub-Repository ein neues Issue eröffnet wird, lege einen Datensatz in der Tabelle Aufgaben an"*
+
+## So richten Sie es ein
+
+<Steps>
+  <Step title="Auslöser wählen">
+    Legen Sie einen Workflow an und wählen Sie **Wenn ein Connector-Ereignis eingeht** als Auslöser.
+  </Step>
+  <Step title="App und Ereignis wählen">
+    Wählen Sie die App unter **App** und danach das konkrete Ereignis unter **Ereignis**. Jedes Ereignis in der Liste trägt eine kurze Beschreibung und ein Kennzeichen; die Kennzeichen sind unten erklärt.
+  </Step>
+  <Step title="Konto wählen">
+    Wählen Sie unter **Konto**, welches verbundene Konto das Ereignis empfängt. Haben Sie diese App noch nie verbunden, verbinden Sie sie aus derselben Auswahl heraus: die neue Verbindung wird dem Workflow automatisch freigegeben.
+  </Step>
+  <Step title="Parameter ausfüllen">
+    Füllen Sie die **Parameter** aus, die das Ereignis verlangt, etwa ein Repository, einen Kanal oder ein Label. Mit * markierte Felder sind Pflicht. Klicken Sie danach auf **Speichern**.
+  </Step>
+  <Step title="Aktivieren">
+    Ergänzen Sie die folgenden Aktionen und schalten Sie den Workflow ein. Das Abonnement entsteht erst beim Aktivieren, ein Entwurf empfängt also nichts.
+  </Step>
+</Steps>
+
+Wechseln Sie App oder Ereignis, werden die nachfolgenden Schritte geleert, und Variablen, die auf das vorherige Ereignis verwiesen, lassen sich nicht mehr auflösen; diese Schritte müssen dann neu konfiguriert werden.
+
+## Kennzeichen der Ereignisse
+
+| Kennzeichen | Bedeutung |
+| --- | --- |
+| **Sofort** | Die App schickt das Ereignis, es trifft kurz nach seinem Eintreten ein |
+| **Abfrage · kann einige Minuten dauern** | Teable fragt die App regelmäßig ab; verlassen Sie sich darauf nicht, wenn es auf das Timing ankommt |
+| **Löst häufig aus** | Dieses Ereignis tritt in der Praxis oft ein, und jedes Auslösen zählt als Automatisierungslauf |
+| **Veraltet** | Die App hat das Ereignis als veraltet markiert und sendet es möglicherweise nicht mehr; wählen Sie ein anderes |
+
+## Daten nach dem Auslösen
+
+Das Ereignis selbst landet in der Variable **event**, die nachfolgende Schritte über **+** einfügen. Direkt nach dem Konfigurieren ist die Variable noch leer: es muss erst ein echtes Ereignis eintreffen. Klicken Sie auf **Auslöser testen**, und sobald das Panel **Warten auf ein Ereignis** zeigt, lösen Sie es in der App aus. Bei einem Abfrage-Ereignis kann das einige Minuten dauern.
+
+Das eingetroffene Ereignis bleibt als Beispieldatensatz am Auslöser, sodass die folgenden Schritte seine Felder ansprechen können. Mit **Nicht mehr warten** brechen Sie früher ab; nach etwa 30 Minuten ohne Ereignis meldet das Panel **Das Warten wurde beendet, ohne dass ein Ereignis eingetroffen ist.**
+
+## Wenn die Verbindung abreißt
+
+Der Auslöser empfängt keine Ereignisse mehr, wenn die Freigabe des Kontos entzogen wird, das verbundene Konto entfernt wird, die App das Abonnement stoppt (abgelaufene Zugangsdaten oder ein nicht funktionierendes Abonnement) oder das Abonnement nicht angelegt werden konnte. Der Workflow selbst wird nicht abgeschaltet, es läuft aber nichts Neues, bis er wiederhergestellt ist.
+
+Teable benachrichtigt das Mitglied, das den Workflow zuletzt bearbeitet hat, und das Auslöser-Panel zeigt **Getrennt – verbinden Sie das Konto erneut oder wählen Sie ein anderes**. Je nach Ursache stellen Sie ihn so wieder her:
+
+- Klicken Sie unter **Einstellungen** → **Integrationen** bei demselben Konto auf **Neu verbinden**; das Abonnement baut sich von selbst wieder auf.
+- Für ein anderes Konto gehen Sie zurück zum Auslöser, wählen ein anderes **Konto** und speichern.
+- Ließ sich das Abonnement nicht anlegen, prüfen Sie die Parameter und speichern erneut, um es nochmals zu versuchen.
+
+## Nach einer Kopie oder einem Import
+
+Zugangsdaten wandern nicht mit einem Workflow mit. Nachdem Sie einen Workflow kopiert oder ein Projekt importiert oder kopiert haben, meldet der Auslöser **Konto nicht autorisiert**: Wählen Sie eines Ihrer eigenen Konten und speichern Sie, bevor der Workflow wieder abonnieren kann.
+
+## Verwandte Dokumente
+
+- [Zugangsdaten und Integrationen](/de/basic/credential)
+- [Routine](/de/basic/ai/routine)
