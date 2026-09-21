@@ -5,11 +5,11 @@ description: Cuppy bir prompt'u zamanlamaya göre çalıştırsın, her çalış
 
 <Note>Tüm Cloud planlarında kullanılabilir; self-hosted için Business veya üzeri gerekir.</Note>
 
-Rutin, bir prompt'u Cuppy'ye devreder ve zamanlamaya göre tekrarlar. Bu, kimsenin elle başlatmasına gerek olmayan işler için uygundur: günlük rapor, süresi dolmuş kayıtların düzenli temizliği, haftalık özet. Her çalıştırma eksiksiz bir AI sohbetidir; dolayısıyla bir rutin, tablo okuyup yazmak, beceri çağırmak ve dosya üretmek dahil AI sohbetin yaptığı her şeyi yapabilir.
+Rutin, bir prompt'u Cuppy'ye devreder ve onu ya zamanlamaya göre ya da bağlı bir üçüncü taraf uygulama bir olay bildirdiğinde tekrarlar. Bu, kimsenin elle başlatmasına gerek olmayan işler için uygundur: günlük rapor, süresi dolmuş kayıtların düzenli temizliği, gelen bir e-postanın anında dosyalanması. Her çalıştırma eksiksiz bir AI sohbetidir; dolayısıyla bir rutin, tablo okuyup yazmak, beceri çağırmak ve dosya üretmek dahil AI sohbetin yaptığı her şeyi yapabilir.
 
 Rutin, proje içindeki bir kaynaktır ve sol kenar çubuğunda tablolar, uygulamalar ve otomasyonların yanında yer alır.
 
-<Info>Otomasyon; kayıt değişikliği, form gönderimi veya webhook gibi bir olayla tetiklenir ve önceden yapılandırdığınız adımları çalıştırır. Rutin yalnızca zamanla tetiklenir ve ajanın kendisinin yorumladığı bir prompt'u çalıştırır. Sabit adımlara ve öngörülebilir sonuca ihtiyacınız varsa otomasyonu; ajanın her seferinde güncel veriye bakıp kendisi karar vermesini istiyorsanız rutini seçin.</Info>
+<Info>Otomasyon, önceden yapılandırdığınız adımları çalıştırır; rutin ise ajanın kendisinin yorumladığı bir prompt'u çalıştırır. İkisi de zamanlamayla tetiklenebilir, ikisi de bağlı bir üçüncü taraf uygulamadan gelen bir olayla tetiklenebilir. Sabit adımlara ve öngörülebilir sonuca ihtiyacınız varsa otomasyonu; ajanın her seferinde güncel veriye bakıp kendisi karar vermesini istiyorsanız rutini seçin.</Info>
 
 ## Rutin oluşturma
 
@@ -20,29 +20,37 @@ Rutin, proje içindeki bir kaynaktır ve sol kenar çubuğunda tablolar, uygulam
   <Step title="Prompt'u yazın">
     **Prompt** alanında her çalıştırmanın ne yapacağını anlatın. Prompt, bir çalıştırmanın tüm talimatıdır; bu yüzden verinin nereden geldiğini, nasıl işleneceğini ve sonucun nereye yazılacağını belirtin. Örneğin: "Görevler tablosuna dün eklenen kayıtları özetle, sorumluya göre grupla ve özeti Günlük Rapor tablosuna yaz."
   </Step>
-  <Step title="Zamanlamayı belirleyin">
-    **Zamanlama** altında bir sıklık seçin, gerekiyorsa **Başlangıç** ve **Bitiş (isteğe bağlı)** değerlerini girin.
+  <Step title="Tetikleyiciyi seçin">
+    **Tetikleyici** altında **Zamanlamaya göre** veya **Bağlayıcı olayında** seçeneğini belirleyin, ardından o türün istediği ayarları doldurun.
   </Step>
   <Step title="Etkinleştirin">
-    **Etkinleştir** düğmesine tıklayın. Yapılandırmanın kaydedilmiş olması ve zamanlamada gelecekte bir çalıştırmanın bulunması gerekir.
+    **Etkinleştir** düğmesine tıklayın. Yapılandırmanın kaydedilmiş olması gerekir: **Zamanlamaya göre** için gelecekte bir çalıştırma, **Bağlayıcı olayında** için kullanılabilir bir hesap gerekir.
   </Step>
 </Steps>
 
 ## Ayarlar
 
-Prompt ve zamanlamanın dışında formda şu ayarlar bulunur:
+Prompt ve tetikleyicinin dışında formda şu ayarlar bulunur:
 
 | Ayar | Açıklama |
 | --- | --- |
 | **Model** | Bu rutinin çalıştığı model ve zekâ düzeyi. **Varsayılan model** bırakıldığında alanın varsayılan sohbet modeli kullanılır |
 | **Sohbet** | **Her çalıştırmada yeni sohbet**, çalıştırmaları birbirinden bağımsız tutar; **Önceki çalıştırmanın sohbetine devam et**, önceki çalıştırmaların bağlamını taşır ve son sonuca başvurması gereken işler için uygundur |
-| **Başlangıç** / **Bitiş (isteğe bağlı)** | Zamanlamanın sınırları. Bitiş zamanı verilmezse rutin süresiz çalışmaya devam eder |
+| **Başlangıç** / **Bitiş (isteğe bağlı)** | Zamanlamanın sınırları; yalnızca **Zamanlamaya göre** için kullanılır. Bitiş zamanı verilmezse rutin süresiz çalışmaya devam eder |
 
 Model ve zekâ düzeyi kaydederken birlikte yazılır; bu sayede çalıştırma geçmişinde her çalıştırmanın gerçekte neyle çalıştığı görünür.
 
+### Tetikleyici
+
+**Zamanlamaya göre**, rutini belirlediğiniz saatlerde çalıştırır; ayarları aşağıdaki Zamanlama bölümündedir.
+
+**Bağlayıcı olayında**, bağlı bir üçüncü taraf uygulama bir olay bildirdiğinde rutini bir kez çalıştırır; örneğin yeni bir e-posta ya da yeni bir sorun kaydı. Uygulamayı, olayı, olayı alacak **Hesap** değerini ve olayın istediği parametreleri seçmeniz yeterlidir; yapılandırma, [Bağlayıcı olayı alındığında](/tr/basic/automation/trigger/external/connector-event) bölümünde anlatılan otomasyon tetikleyicisiyle aynıdır. Bu tetikleyicideki bir rutinin **Sonraki çalıştırma** saati olmaz; zamanlamayı ve sınırlarını da kullanmaz.
+
+Hesap yetkisi geri alındığında, bağlı hesap kaldırıldığında ya da uygulama aboneliği durdurduğunda rutin **Abonelik kesildi** durumuna geçer ve olay almayı bırakır; Teable, rutini en son güncelleyen üyeye bildirim gönderir. Aynı hesabı yeniden bağladığınızda abonelik kendiliğinden kurulur; başka bir hesaba geçmek için tetikleyicide hesabı yeniden seçip kaydedin.
+
 ### Zamanlama
 
-Sıklığı hazır seçeneklerden belirleyin: dakikası verilen **Saatlik**, saati verilen **Günlük** ve **Hafta içi**, gün ve saati verilen **Haftalık**, ayın günü ve saati verilen **Aylık**.
+Zamanlama yalnızca **Zamanlamaya göre** için kullanılır. Sıklığı hazır seçeneklerden belirleyin: dakikası verilen **Saatlik**, saati verilen **Günlük** ve **Hafta içi**, gün ve saati verilen **Haftalık**, ayın günü ve saati verilen **Aylık**.
 
 Daha özel bir kurala ihtiyaç duyarsanız **Özel (RRULE)** seçeneğini seçip `FREQ=DAILY;BYHOUR=9;BYMINUTE=0` gibi bir RFC 5545 kuralı yazın. Özel kuralın sınırları şunlardır:
 
@@ -56,15 +64,17 @@ Zamanlama, rutini oluşturan kişinin saat dilimine göre hesaplanır ve görün
 
 ## Taslak, güncelleme ve hemen çalıştırma
 
-Yeni oluşturulan rutin bir taslaktır ve siz etkinleştirene kadar zamanlamaya göre çalışmaz. Etkin bir rutini düzenlediğinizde değişiklik yine taslak olarak kaydedilir, yayındaki sürüm eski yapılandırmayla çalışmayı sürdürür: uygulamak için **Güncelle**, vazgeçmek için **Değişiklikleri sil** düğmesine tıklayın.
+Yeni oluşturulan rutin bir taslaktır ve siz etkinleştirene kadar kendiliğinden çalışmaz. Etkin bir rutini düzenlediğinizde değişiklik yine taslak olarak kaydedilir, yayındaki sürüm eski yapılandırmayla çalışmayı sürdürür: uygulamak için **Güncelle**, vazgeçmek için **Değişiklikleri sil** düğmesine tıklayın.
 
-**Şimdi çalıştır**, zamanlamayı beklemeden bir kez çalıştırır; prompt'u denemek için elverişlidir. Önceki çalıştırma bitmeden aynı rutin elle yeniden çalıştırılamaz.
+**Şimdi çalıştır**, tetikleyiciyi beklemeden bir kez çalıştırır; prompt'u denemek için elverişlidir. Önceki çalıştırma bitmeden aynı rutin elle yeniden çalıştırılamaz.
 
-Durdurmak için anahtarı kapatın. Zamanlama artık tetiklenmez, mevcut çalıştırma geçmişi korunur.
+Henüz etkinleştirilmemiş bir bağlayıcı olayı rutininde **Şimdi çalıştır**, bunun yerine **Olay bekleniyor** gösterir: uygulamada o olayı tetikleyin; Teable gelen olayı kullanarak rutini bir kez çalıştırır ve çalıştırma geçmişe düşer. Beklemeyi kesmek için **Beklemeyi durdur** düğmesine tıklayın. Etkin bir rutin olaylarını zaten alır; bu yüzden buna ne ihtiyacı vardır ne de izin verilir.
+
+Durdurmak için anahtarı kapatın. Rutin artık tetiklenmez, mevcut çalıştırma geçmişi korunur.
 
 ## Çalıştırma Geçmişi
 
-Rutini açıp **Çalıştırma Geçmişi** sekmesine geçin. Liste duruma ve tarih aralığına göre filtrelenebilir; bu, belirli bir hatayı bulmayı kolaylaştırır. Bir çalıştırmayı seçtiğinizde planlanan, başlangıç ve bitiş zamanlarını, süreyi ve o çalıştırmanın tüm sohbetini görürsünüz.
+Rutini açıp **Çalıştırma Geçmişi** sekmesine geçin. Liste duruma ve tarih aralığına göre filtrelenebilir; bu, belirli bir hatayı bulmayı kolaylaştırır. Bir çalıştırmayı seçtiğinizde **Çalıştırma kimliği**, **Tetikleyici** ve o çalıştırmanın tüm sohbeti görünür. **Tetikleyici**; **Zamanlanmış**, **Olay** veya **Manuel** olur ve zamanlanmış bir çalıştırma ayrıca karşılık geldiği **Planlanan** saati gösterir.
 
 Çalıştırmalar **Sırada**, **Çalışıyor**, **Tamamlandı**, **Başarısız** veya **İptal** olarak bildirilir. **İptal**, çalıştırmayı birinin durdurduğu ya da rutinin veya projesinin silindiği durumlarda görünür.
 
@@ -103,7 +113,7 @@ Her başarısız çalıştırma bu sayıya girmez: önceki çalıştırma sürd�
   </Accordion>
 
   <Accordion title="Şablondan kurulan bir projedeki rutinler kendiliğinden çalışır mı?">
-    Çalışır. Şablon kurulduktan sonra rutinleri, iş akışları gibi açılır. Gelecekte çalıştırması bulunmayan bir zamanlama taslak olarak kalır.
+    Zamanlanmış olanlar çalışır. Şablon kurulduktan sonra iş akışları gibi açılırlar ve gelecekte çalıştırması bulunmayan bir zamanlama taslak olarak kalır. Bağlayıcı olayı rutinleri açılmaz: kimlik bilgileri şablonla birlikte gelmediğinden, etkinleştirmeden önce kendi hesabınızı seçin.
   </Accordion>
 
   <Accordion title="Önceki çalıştırmanın sohbetine devam edince bağlam sınırsız büyür mü?">

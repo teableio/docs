@@ -1,0 +1,74 @@
+---
+title: "Al recibir un evento de conector"
+description: "Ejecuta un flujo de trabajo cuando una aplicación de terceros conectada informa un evento"
+---
+
+<Note>Disponible en todos los planes de la nube; la versión autoalojada requiere el plan Business o superior y que quien gestiona el despliegue habilite los eventos de conector.</Note>
+
+Arranca un flujo de trabajo a partir de algo que ocurre dentro de una aplicación conectada como GitHub, Gmail o Slack: llega un correo, se abre una incidencia, se publica un mensaje. La aplicación entrega el evento directamente a Teable, así que no tienes que alojar una URL de webhook ni consultar cambios.
+
+## Crear con IA
+
+Abre el chat de IA en la barra lateral derecha de cualquier tabla y describe lo que necesitas.
+
+La IA se encarga de todo: elige el activador adecuado, asigna los campos pertinentes y configura las acciones.
+
+Describe el objetivo una vez y el flujo queda listo, sin configuración manual.
+
+**Ejemplo:** *"Cuando se abra una incidencia nueva en mi repositorio de GitHub, crea un registro en la tabla Tareas"*
+
+## Cómo configurarlo
+
+<Steps>
+  <Step title="Elegir el activador">
+    Crea un flujo de trabajo y elige **Al recibir un evento de conector** como activador.
+  </Step>
+  <Step title="Elegir la aplicación y el evento">
+    Selecciona la aplicación en **App** y después el evento concreto en **Evento**. Cada evento de la lista lleva una descripción breve y una etiqueta; las etiquetas se explican más abajo.
+  </Step>
+  <Step title="Elegir la cuenta">
+    En **Cuenta**, elige qué cuenta conectada recibe el evento. Si nunca has conectado esta aplicación, conéctala desde el mismo desplegable: la conexión nueva se concede automáticamente a este flujo de trabajo.
+  </Step>
+  <Step title="Rellenar los parámetros">
+    Rellena los **Parámetros** que pide el evento, como un repositorio, un canal o una etiqueta. Los campos marcados con * son obligatorios. Haz clic en **Guardar** cuando termines.
+  </Step>
+  <Step title="Activar">
+    Añade las acciones siguientes y enciende el flujo de trabajo. La suscripción se crea al activarlo, así que un borrador no recibe nada.
+  </Step>
+</Steps>
+
+Al cambiar la aplicación o el evento se vacían los pasos posteriores y las variables que apuntaban al evento anterior dejan de resolverse, de modo que esos pasos hay que configurarlos de nuevo.
+
+## Etiquetas de los eventos
+
+| Etiqueta | Qué significa |
+| --- | --- |
+| **Instantáneo** | La aplicación envía el evento, que llega poco después de producirse |
+| **Sondeo · puede tardar unos minutos** | Teable consulta la aplicación cada cierto tiempo, así que no cuentes con estos eventos cuando el momento importa |
+| **Se activa a menudo** | En la práctica este evento se dispara mucho, y cada disparo cuenta como una ejecución de automatización |
+| **Obsoleto** | La aplicación marcó el evento como obsoleto y podría dejar de enviarlo, así que elige otro |
+
+## Datos disponibles tras el activador
+
+El evento en sí llega a la variable **event**, que los pasos posteriores insertan con **+**. Justo después de configurar el activador la variable está vacía: antes tiene que llegar un evento real. Haz clic en **Probar activador** y, cuando el panel muestre **Esperando un evento**, entra en la aplicación y haz algo que lo dispare. Un evento de sondeo puede tardar unos minutos.
+
+El evento recibido se queda en el activador como dato de ejemplo, para que los pasos siguientes puedan usar sus campos. Haz clic en **Dejar de esperar** para cortar la espera; tras unos 30 minutos sin eventos, el panel indica **Se dejó de esperar sin recibir ningún evento.**
+
+## Cuando se corta la conexión
+
+El activador deja de recibir eventos si se revoca la concesión de la cuenta, se elimina la cuenta conectada, la aplicación detiene la suscripción (credenciales caducadas o una suscripción que no funciona) o la suscripción no se pudo crear. El flujo de trabajo no se apaga, pero no se produce ninguna ejecución nueva hasta restablecerlo.
+
+Teable avisa al miembro que editó el flujo por última vez y el panel del activador muestra **Desconectado: vuelve a conectar la cuenta o elige otra**. Restablécelo según la causa:
+
+- Haz clic en **Volver a conectar** sobre esa misma cuenta en **Ajustes** → **Integraciones**: la suscripción se reconstruye sola.
+- Para usar otra cuenta, vuelve al activador, elige otra **Cuenta** y guarda.
+- Si la suscripción no se pudo crear, revisa los parámetros y guarda de nuevo para reintentarlo.
+
+## Después de copiar o importar
+
+Las credenciales no acompañan al flujo de trabajo. Tras copiar un flujo, o importar o copiar un proyecto, el activador indica **Cuenta no autorizada**: elige una cuenta tuya y guarda antes de que el flujo pueda volver a suscribirse.
+
+## Documentos relacionados
+
+- [Credenciales e integraciones](/es/basic/credential)
+- [Rutina](/es/basic/ai/routine)

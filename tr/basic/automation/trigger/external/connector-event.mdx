@@ -1,0 +1,74 @@
+---
+title: "Bağlayıcı olayı alındığında"
+description: "Bağlı bir üçüncü taraf uygulama bir olay bildirdiğinde iş akışını çalıştırın"
+---
+
+<Note>Tüm bulut planlarında kullanılabilir; kendi sunucunuzda barındırılan sürüm için Business veya üzeri bir plan gerekir ve bağlayıcı olaylarının kurulumu yöneten tarafça açılmış olması gerekir.</Note>
+
+Bir iş akışını, GitHub, Gmail veya Slack gibi bağlı bir uygulamada olup bitenden başlatın: yeni bir e-posta gelir, bir sorun kaydı açılır, bir mesaj gönderilir. Olayı uygulama doğrudan Teable'a iletir; bu yüzden bir webhook adresi barındırmanız ya da değişiklikleri yoklamanız gerekmez.
+
+## AI ile oluşturma
+
+Herhangi bir tablonun sağ kenar çubuğunda AI sohbetini açın ve ne istediğinizi anlatın.
+
+Gerisini AI halleder: doğru tetikleyiciyi seçer, ilgili alanları eşler ve eylemleri kurar.
+
+Hedefi bir kez anlatın, iş akışı elle yapılandırmaya gerek kalmadan hazır olsun.
+
+**Örnek:** *"GitHub depomda yeni bir sorun kaydı açıldığında Görevler tablosunda bir kayıt oluştur"*
+
+## Nasıl kurulur
+
+<Steps>
+  <Step title="Tetikleyiciyi seçin">
+    Bir iş akışı oluşturun ve tetikleyici olarak **Bağlayıcı olayı alındığında** seçeneğini belirleyin.
+  </Step>
+  <Step title="Uygulamayı ve olayı seçin">
+    **Uygulama** altında uygulamayı, ardından **Olay** altında belirli olayı seçin. Listedeki her olayın tek satırlık bir açıklaması ve bir etiketi vardır; etiketler aşağıda açıklanmıştır.
+  </Step>
+  <Step title="Hesabı seçin">
+    **Hesap** altında olayı hangi bağlı hesabın alacağını seçin. Bu uygulamayı hiç bağlamadıysanız aynı açılır listeden bağlayın: yeni bağlantı bu iş akışına kendiliğinden verilir.
+  </Step>
+  <Step title="Parametreleri doldurun">
+    Olayın istediği **Parametreler** alanını doldurun; örneğin bir depo, bir kanal veya bir etiket. * işaretli alanlar zorunludur. Bitirince **Kaydet** düğmesine tıklayın.
+  </Step>
+  <Step title="Etkinleştirin">
+    Sonraki eylemleri ekleyip iş akışını açın. Abonelik iş akışı etkinleştirildiğinde kurulur, dolayısıyla bir taslak hiçbir şey almaz.
+  </Step>
+</Steps>
+
+Uygulamayı ya da olayı değiştirdiğinizde sonraki adımlar temizlenir ve önceki olaya başvuran değişkenler artık çözümlenmez; bu adımları yeniden yapılandırmanız gerekir.
+
+## Olay etiketleri
+
+| Etiket | Anlamı |
+| --- | --- |
+| **Anında** | Olayı uygulama gönderir ve olay, gerçekleştikten kısa süre sonra ulaşır |
+| **Yoklama · birkaç dakika sürebilir** | Teable uygulamayı düzenli aralıklarla yoklar; zamanlamanın önemli olduğu yerlerde bu olaylara güvenmeyin |
+| **Sık tetiklenir** | Bu olay uygulamada çok sık gerçekleşir ve her tetiklenme bir otomasyon çalıştırması sayılır |
+| **Kullanım dışı** | Uygulama bu olayı kullanım dışı bıraktı ve göndermeyi durdurabilir; başka bir olay seçin |
+
+## Tetikleyiciden sonra kullanılabilen veriler
+
+Olayın kendisi **event** değişkenine düşer; sonraki adımlar bunu **+** ile ekler. Tetikleyiciyi yapılandırdıktan hemen sonra değişken boştur: önce gerçek bir olayın gelmesi gerekir. **Tetikleyiciyi test et** düğmesine tıklayın ve panel **Olay bekleniyor** gösterdiğinde uygulamaya gidip olayı tetikleyin. Yoklamalı bir olayın ulaşması birkaç dakika sürebilir.
+
+Gelen olay örnek veri olarak tetikleyicide kalır, böylece sonraki adımlar alanlarına başvurabilir. Beklemeyi erken bitirmek için **Beklemeyi durdur** düğmesine tıklayın; yaklaşık 30 dakika boyunca olay gelmezse panelde **Hiçbir olay gelmeden bekleme sona erdi.** yazar.
+
+## Bağlantı koptuğunda
+
+Hesap yetkisi geri alındığında, bağlı hesap kaldırıldığında, uygulama aboneliği durdurduğunda (kimlik bilgilerinin süresi dolmuş ya da abonelik sağlıksız) veya abonelik oluşturulamadığında tetikleyici olay almayı bırakır. İş akışının kendisi kapanmaz, ama düzelene kadar yeni bir çalıştırma olmaz.
+
+Teable, iş akışını en son düzenleyen üyeye bildirim gönderir; tetikleyici panelinde de **Bağlantı kesildi — hesabı yeniden bağlayın veya başka birini seçin** yazar. Nedene göre düzeltin:
+
+- **Ayarlar** → **Entegrasyonlar** altında aynı hesapta **Yeniden bağla** düğmesine tıklayın; abonelik kendiliğinden kurulur.
+- Başka bir hesap kullanacaksanız tetikleyiciye dönüp başka bir **Hesap** seçin ve kaydedin.
+- Abonelik oluşturulamadıysa parametreleri kontrol edip yeniden kaydedin; böylece yeniden denenir.
+
+## Kopyalama veya içe aktarmadan sonra
+
+Kimlik bilgileri iş akışıyla birlikte taşınmaz. Bir iş akışını kopyaladıktan ya da bir projeyi içe aktardıktan veya kopyaladıktan sonra tetikleyicide **Hesap yetkilendirilmedi** yazar: kendi hesaplarınızdan birini seçip kaydedin ki iş akışı yeniden abone olabilsin.
+
+## İlgili belgeler
+
+- [Kimlik Bilgileri ve Entegrasyonlar](/tr/basic/credential)
+- [Rutin](/tr/basic/ai/routine)

@@ -5,11 +5,11 @@ description: Lascia che Cuppy esegua un prompt secondo una pianificazione e cont
 
 <Note>Disponibile in tutti i piani Cloud; la versione self-hosted richiede il piano Business o superiore.</Note>
 
-Una routine affida un prompt a Cuppy e lo ripete secondo una pianificazione: si presta al lavoro che nessuno dovrebbe avviare a mano, come un report giornaliero, una pulizia periodica dei record scaduti, un riepilogo settimanale. Ogni esecuzione è una chat IA completa, quindi una routine può fare tutto ciò che fa la chat IA, incluso leggere e scrivere tabelle, richiamare skill e produrre file.
+Una routine affida un prompt a Cuppy e lo ripete, secondo una pianificazione oppure ogni volta che un'app di terze parti collegata segnala un evento: si presta al lavoro che nessuno dovrebbe avviare a mano, come un report giornaliero, una pulizia periodica dei record scaduti, l'archiviazione di una email appena arriva. Ogni esecuzione è una chat IA completa, quindi una routine può fare tutto ciò che fa la chat IA, incluso leggere e scrivere tabelle, richiamare skill e produrre file.
 
 Una routine è una risorsa del progetto e compare nella barra laterale sinistra accanto a tabelle, app e automazioni.
 
-<Info>Un'automazione si attiva su un evento, per esempio la modifica di un record, l'invio di un modulo o un webhook, ed esegue i passaggi che hai configurato in anticipo. Una routine si attiva solo sul tempo ed esegue un prompt che l'agente interpreta da sé. Usa un'automazione quando servono passaggi fissi e un esito prevedibile; usa una routine quando vuoi che sia l'agente a decidere ogni volta cosa fare con i dati del momento.</Info>
+<Info>Un'automazione esegue i passaggi che hai configurato in anticipo, mentre una routine esegue un prompt che l'agente interpreta da sé. Entrambe possono attivarsi secondo una pianificazione ed entrambe su un evento proveniente da un'app di terze parti collegata. Usa un'automazione quando servono passaggi fissi e un esito prevedibile; usa una routine quando vuoi che sia l'agente a decidere ogni volta cosa fare con i dati del momento.</Info>
 
 ## Creare una routine
 
@@ -20,29 +20,37 @@ Una routine è una risorsa del progetto e compare nella barra laterale sinistra 
   <Step title="Scrivere il prompt">
     Descrivi in **Prompt** che cosa deve fare ogni esecuzione. Il prompt è l'istruzione completa di un'esecuzione: indica da dove arrivano i dati, come elaborarli e dove va il risultato. Per esempio: «Riepiloga i record aggiunti ieri alla tabella Attività, raggruppali per responsabile e scrivi il riepilogo nella tabella Report giornaliero».
   </Step>
-  <Step title="Impostare la pianificazione">
-    Scegli una frequenza in **Pianificazione** e imposta **Inizio** e **Fine (facoltativo)** se necessario.
+  <Step title="Scegliere l'attivatore">
+    In **Attivatore** scegli **In base a una pianificazione** oppure **Su evento del connettore**, poi compila le impostazioni richieste da quella scelta.
   </Step>
   <Step title="Attivare">
-    Fai clic su **Attiva**. La configurazione deve essere già salvata e la pianificazione deve avere un'occorrenza futura.
+    Fai clic su **Attiva**. La configurazione deve essere già salvata: **In base a una pianificazione** richiede un'occorrenza futura, **Su evento del connettore** un account utilizzabile.
   </Step>
 </Steps>
 
 ## Impostazioni
 
-Oltre al prompt e alla pianificazione, il modulo contiene queste impostazioni:
+Oltre al prompt e all'attivatore, il modulo contiene queste impostazioni:
 
 | Impostazione | Descrizione |
 | --- | --- |
 | **Modello** | Il modello e il livello di intelligenza con cui gira questa routine. Lascia **Modello predefinito** per usare il modello di chat predefinito dello spazio |
 | **Chat** | **Nuova chat a ogni esecuzione** mantiene le esecuzioni indipendenti tra loro; **Continua la chat dell'esecuzione precedente** porta avanti il contesto delle esecuzioni passate e si presta al lavoro che deve riferirsi al risultato precedente |
-| **Inizio** / **Fine (facoltativo)** | I limiti della pianificazione. Senza orario di fine la routine prosegue a tempo indeterminato |
+| **Inizio** / **Fine (facoltativo)** | I limiti della pianificazione, usati solo da **In base a una pianificazione**. Senza orario di fine la routine prosegue a tempo indeterminato |
 
 Modello e livello di intelligenza vengono registrati al salvataggio, perciò la cronologia delle esecuzioni mostra su che cosa ha girato davvero ciascuna.
 
+### Attivatore
+
+**In base a una pianificazione** esegue la routine negli orari che imposti, configurati più sotto in Pianificazione.
+
+**Su evento del connettore** la esegue una volta ogni volta che un'app di terze parti collegata segnala un evento, per esempio una nuova email o una nuova issue. Scegli l'app, l'evento, l'**Account** che lo riceve e i parametri richiesti dall'evento; la configurazione è la stessa dell'attivatore dell'automazione, descritto in [Alla ricezione di un evento del connettore](/it/basic/automation/trigger/external/connector-event). Una routine su questo attivatore non ha un orario di **Prossima esecuzione** e non usa né la pianificazione né i suoi limiti.
+
+Se la concessione dell'account viene revocata, se l'account collegato viene rimosso o se l'app interrompe la sottoscrizione, la routine segnala **Sottoscrizione disconnessa** e smette di ricevere eventi, e Teable avvisa il membro che l'ha aggiornata per ultimo. Ricollegando lo stesso account la sottoscrizione si ricostruisce da sola; per usarne un altro, selezionalo nell'attivatore e salva.
+
 ### Pianificazione
 
-Scegli una frequenza tra i preset: **Ogni ora** a un minuto preciso, **Ogni giorno** e **Giorni feriali** a un orario preciso, **Ogni settimana** in un giorno della settimana e a un orario, **Ogni mese** in un giorno e a un orario.
+La pianificazione serve solo a **In base a una pianificazione**. Scegli una frequenza tra i preset: **Ogni ora** a un minuto preciso, **Ogni giorno** e **Giorni feriali** a un orario preciso, **Ogni settimana** in un giorno della settimana e a un orario, **Ogni mese** in un giorno e a un orario.
 
 Per qualcosa di più specifico scegli **Personalizzata (RRULE)** e scrivi una regola RFC 5545, per esempio `FREQ=DAILY;BYHOUR=9;BYMINUTE=0`. Una regola personalizzata ha questi limiti:
 
@@ -56,15 +64,17 @@ Una pianificazione viene valutata nel fuso orario di chi ha creato la routine e 
 
 ## Bozze, aggiornamenti ed esecuzione immediata
 
-Una routine appena creata è una bozza e non gira secondo la pianificazione finché non la attivi. Quando modifichi una routine attiva, anche la modifica viene salvata come bozza mentre la versione in servizio continua con la vecchia configurazione: fai clic su **Aggiorna** per applicarla o su **Scarta le modifiche** per eliminarla.
+Una routine appena creata è una bozza e non gira da sola finché non la attivi. Quando modifichi una routine attiva, anche la modifica viene salvata come bozza mentre la versione in servizio continua con la vecchia configurazione: fai clic su **Aggiorna** per applicarla o su **Scarta le modifiche** per eliminarla.
 
-**Esegui ora** avvia un'esecuzione senza attendere la pianificazione, utile per verificare un prompt. Una routine non può essere riavviata a mano finché l'esecuzione precedente non è terminata.
+**Esegui ora** avvia un'esecuzione senza attendere l'attivatore, utile per verificare un prompt. Una routine non può essere riavviata a mano finché l'esecuzione precedente non è terminata.
 
-Spegni l'interruttore per disattivarla: la pianificazione smette di scattare e la cronologia delle esecuzioni esistente resta.
+Su una routine a evento del connettore non ancora attiva, **Esegui ora** mostra invece **In attesa di un evento**: attiva quell'evento nell'app e Teable userà quello che riceve per una sola esecuzione, che comparirà poi nella cronologia. Fai clic su **Smetti di attendere** per interrompere l'attesa. Una routine attiva riceve già i suoi eventi, quindi non ne ha bisogno e non lo consente.
+
+Spegni l'interruttore per disattivarla: la routine smette di scattare e la cronologia delle esecuzioni esistente resta.
 
 ## Cronologia delle esecuzioni
 
-Apri la routine e passa a **Cronologia delle esecuzioni**. L'elenco si filtra per stato e intervallo di tempo, il che aiuta a individuare un guasto preciso; selezionando un'esecuzione vedi orario pianificato, di avvio e di fine, la durata e la chat completa di quell'esecuzione.
+Apri la routine e passa a **Cronologia delle esecuzioni**. L'elenco si filtra per stato e intervallo di tempo, il che aiuta a individuare un guasto preciso; selezionando un'esecuzione vedi il suo **ID esecuzione**, il suo **Attivatore** e la chat completa di quell'esecuzione. L'**Attivatore** riporta **Pianificato**, **Evento** o **Manuale**, e un'esecuzione pianificata mostra anche l'orario **Pianificata** a cui corrispondeva.
 
 Le esecuzioni sono riportate come **In coda**, **In esecuzione**, **Completata**, **Non riuscita** o **Annullata**. **Annullata** compare quando qualcuno ha interrotto quell'esecuzione, oppure quando la routine o il suo progetto sono stati eliminati.
 
@@ -103,7 +113,7 @@ Non ogni esecuzione senza esito conta in quel totale: quelle saltate perché la 
   </Accordion>
 
   <Accordion title="Le routine di un progetto installato da un modello partono da sole?">
-    Sì. Dopo l'installazione di un modello le sue routine vengono accese come i suoi workflow. Una pianificazione senza occorrenze future resta una bozza.
+    Quelle pianificate sì. Dopo l'installazione di un modello vengono accese come i suoi workflow, e una pianificazione senza occorrenze future resta una bozza. Le routine a evento del connettore non vengono accese: le credenziali non arrivano con il modello, quindi scegli prima un account tuo.
   </Accordion>
 
   <Accordion title="Con Continua la chat dell'esecuzione precedente il contesto cresce all'infinito?">
