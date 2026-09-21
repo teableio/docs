@@ -5,11 +5,11 @@ description: Let Cuppy run a prompt on a schedule and review the result of every
 
 <Note>Available on all Cloud plans; Self-Hosted requires Business or higher.</Note>
 
-A routine hands a prompt to Cuppy and repeats it on a schedule, which suits work that nobody needs to trigger by hand: a daily report, a periodic cleanup of expired records, a weekly roll-up. Every run is a full AI chat, so a routine can do everything AI chat can, including reading and writing tables, calling skills, and producing files.
+A routine hands a prompt to Cuppy and repeats it, either on a schedule or whenever a connected third-party app reports an event. That suits work nobody needs to trigger by hand: a daily report, a periodic cleanup of expired records, filing a new email as it arrives. Every run is a full AI chat, so a routine can do everything AI chat can, including reading and writing tables, calling skills, and producing files.
 
 A routine is a resource inside a project and sits in the left sidebar next to tables, apps, and automations.
 
-<Info>An automation fires on an event such as a record change, a form submission, or a webhook, and runs the steps you configured in advance. A routine fires only on time, and runs a prompt the agent interprets itself. Use an automation when you need fixed steps and predictable output; use a routine when you want the agent to decide what to do with the current data each time.</Info>
+<Info>An automation runs the steps you configured in advance, while a routine runs a prompt the agent interprets itself. Both can fire on a schedule, and both can fire on an event from a connected third-party app. Use an automation when you need fixed steps and predictable output; use a routine when you want the agent to decide what to do with the current data each time.</Info>
 
 ## Create a Routine
 
@@ -20,29 +20,37 @@ A routine is a resource inside a project and sits in the left sidebar next to ta
   <Step title="Write the prompt">
     Describe what each run should do in **Prompt**. The prompt is the entire instruction for a run, so state where the data comes from, how to process it, and where the result goes. For example, "Summarize records added to the Tasks table yesterday, group them by owner, and write the summary to the Daily Report table."
   </Step>
-  <Step title="Set the schedule">
-    Choose a frequency under **Schedule**, and set **Starting** and **Ending (optional)** as needed.
+  <Step title="Choose the trigger">
+    Under **Trigger**, choose **On a schedule** or **On a connector event**, then fill in the settings that kind needs.
   </Step>
   <Step title="Activate">
-    Click **Activate**. The configuration must be saved first, and the schedule must have a future occurrence.
+    Click **Activate**. The configuration must be saved first: **On a schedule** needs a future occurrence, and **On a connector event** needs a usable account.
   </Step>
 </Steps>
 
 ## Settings
 
-Besides the prompt and the schedule, the form carries these settings:
+Besides the prompt and the trigger, the form carries these settings:
 
 | Setting | Description |
 | --- | --- |
 | **Model** | The model and effort level this routine runs on. Leave **Default model** to use the space's default chat model |
 | **Chat** | **New chat for every run** keeps runs independent of each other; **Continue the previous run's chat** carries the context of earlier runs forward, which suits work that needs to refer to the last result |
-| **Starting** / **Ending (optional)** | The bounds of the schedule. Without an end time the routine keeps running indefinitely |
+| **Starting** / **Ending (optional)** | The bounds of the schedule, used by **On a schedule** only. Without an end time the routine keeps running indefinitely |
 
 The model and effort level are recorded when you save, so run history shows what each run actually used.
 
+### Trigger
+
+**On a schedule** runs the routine at the times you set, configured under Schedule below.
+
+**On a connector event** runs it once whenever a connected third-party app reports an event, such as a new email or a new issue. Pick the app, the event, the **Account** that receives it, and whatever parameters the event takes; it is configured exactly like the automation trigger, described in [When Connector Event Received](/en/basic/automation/trigger/external/connector-event). A routine on this trigger has no **Next run** time and uses neither the schedule nor the bounds.
+
+If the account grant is revoked, the connected account is removed, or the app stops the subscription, the routine reports **Subscription disconnected** and stops receiving events, and Teable notifies the member who last updated it. Reconnecting the same account rebuilds the subscription on its own; to use a different one, pick another account and save.
+
 ### Schedule
 
-Pick a frequency from the presets: **Hourly** at a given minute, **Daily** and **Weekdays** at a given time, **Weekly** on a weekday and time, **Monthly** on a day and time.
+The schedule is used by **On a schedule** only. Pick a frequency from the presets: **Hourly** at a given minute, **Daily** and **Weekdays** at a given time, **Weekly** on a weekday and time, **Monthly** on a day and time.
 
 For anything more specific, choose **Custom (RRULE)** and write an RFC 5545 rule, such as `FREQ=DAILY;BYHOUR=9;BYMINUTE=0`. A custom rule has these limits:
 
@@ -56,15 +64,17 @@ A schedule is evaluated in the timezone of whoever created the routine and does 
 
 ## Drafts, Updates, and Running Now
 
-A new routine is a draft and does not run on schedule until you activate it. When you edit an active routine, the change is also saved as a draft while the live version keeps running on the old configuration: click **Update** to apply it, or **Discard changes** to drop it.
+A new routine is a draft and does not run by itself until you activate it. When you edit an active routine, the change is also saved as a draft while the live version keeps running on the old configuration: click **Update** to apply it, or **Discard changes** to drop it.
 
-**Run now** executes once without waiting for the schedule, which is useful for checking a prompt. A routine cannot be run by hand again until its previous run has finished.
+**Run now** executes once without waiting for the trigger, which is useful for checking a prompt. A routine cannot be run by hand again until its previous run has finished.
 
-Turn the switch off to deactivate. The schedule stops firing, and existing run history is kept.
+On a connector-event routine that is not yet active, **Run now** shows **Waiting for an event** instead: go into the app and do something that fires the event, and Teable uses the one it receives for a single run, which then appears in run history. Click **Stop waiting** to end the wait early. An active routine already receives its events, so it neither needs nor allows this.
+
+Turn the switch off to deactivate. The routine stops firing, and existing run history is kept.
 
 ## Run History
 
-Open the routine and switch to **Run history**. The run list can be filtered by status and time range, which helps locate a particular failure; selecting a run shows its planned, started, and finished times, its duration, and the full conversation of that run.
+Open the routine and switch to **Run history**. The run list can be filtered by status and time range, which helps locate a particular failure; selecting a run shows its **Run ID**, its **Trigger**, and the full conversation of that run. **Trigger** reads **Scheduled**, **Event**, or **Manual**, and a **Scheduled** run also shows the **Planned** time it served.
 
 Runs are reported as **Queued**, **Running**, **Completed**, **Failed**, or **Canceled**. **Canceled** appears when someone interrupted that run, or when the routine or its project has been deleted.
 
@@ -103,7 +113,7 @@ Not every unsuccessful run counts toward that total: runs skipped because the pr
   </Accordion>
 
   <Accordion title="Do routines in a project installed from a template run automatically?">
-    Yes. After a template install its routines are switched on the way its workflows are. A schedule with no future occurrence stays a draft.
+    Scheduled ones do. After a template install they are switched on the way its workflows are, and a schedule with no future occurrence stays a draft. Connector-event routines are not switched on: credentials do not come over with a template, so pick one of your own accounts before activating.
   </Accordion>
 
   <Accordion title="With Continue the previous run's chat, does the context grow without limit?">

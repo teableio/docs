@@ -5,11 +5,11 @@ description: Deja que Cuppy ejecute un prompt según una programación y revisa 
 
 <Note>Disponible en todos los planes de Cloud; la versión autoalojada requiere el plan Business o uno superior.</Note>
 
-Una rutina entrega un prompt a Cuppy y lo repite según una programación, lo que encaja con el trabajo que nadie debería lanzar a mano: un informe diario, una limpieza periódica de registros caducados, un resumen semanal. Cada ejecución es un chat de IA completo, así que una rutina puede hacer todo lo que hace el chat de IA, incluido leer y escribir tablas, invocar habilidades y generar archivos.
+Una rutina entrega un prompt a Cuppy y lo repite, ya sea según una programación o cada vez que una app de terceros conectada informa un evento. Eso encaja con el trabajo que nadie debería lanzar a mano: un informe diario, una limpieza periódica de registros caducados, archivar un correo en cuanto llega. Cada ejecución es un chat de IA completo, así que una rutina puede hacer todo lo que hace el chat de IA, incluido leer y escribir tablas, invocar habilidades y generar archivos.
 
 Una rutina es un recurso dentro de un proyecto y aparece en la barra lateral izquierda junto a las tablas, las aplicaciones y las automatizaciones.
 
-<Info>Una automatización se dispara con un evento, como un cambio en un registro, el envío de un formulario o un webhook, y ejecuta los pasos que configuraste de antemano. Una rutina se dispara solo con el tiempo y ejecuta un prompt que el agente interpreta por su cuenta. Usa una automatización cuando necesites pasos fijos y un resultado previsible; usa una rutina cuando quieras que el agente decida cada vez qué hacer con los datos actuales.</Info>
+<Info>Una automatización ejecuta los pasos que configuraste de antemano, mientras que una rutina ejecuta un prompt que el agente interpreta por su cuenta. Ambas pueden dispararse según una programación y ambas pueden dispararse con un evento de una app de terceros conectada. Usa una automatización cuando necesites pasos fijos y un resultado previsible; usa una rutina cuando quieras que el agente decida cada vez qué hacer con los datos actuales.</Info>
 
 ## Crear una rutina
 
@@ -20,29 +20,37 @@ Una rutina es un recurso dentro de un proyecto y aparece en la barra lateral izq
   <Step title="Escribir el prompt">
     Describe en **Prompt** lo que debe hacer cada ejecución. El prompt es la instrucción completa de una ejecución, así que indica de dónde salen los datos, cómo procesarlos y dónde va el resultado. Por ejemplo: «Resume los registros añadidos ayer a la tabla Tareas, agrúpalos por responsable y escribe el resumen en la tabla Informe diario».
   </Step>
-  <Step title="Definir la programación">
-    Elige una frecuencia en **Programación** y define **Inicio** y **Fin (opcional)** si lo necesitas.
+  <Step title="Elegir el activador">
+    En **Activador**, elige **Según programación** o **Por evento de conector** y rellena los ajustes que pide cada opción.
   </Step>
   <Step title="Activar">
-    Haz clic en **Activar**. La configuración debe estar guardada y la programación debe tener alguna ocurrencia futura.
+    Haz clic en **Activar**. La configuración debe estar guardada: **Según programación** necesita alguna ocurrencia futura y **Por evento de conector** necesita una cuenta utilizable.
   </Step>
 </Steps>
 
 ## Ajustes
 
-Además del prompt y la programación, el formulario incluye estos ajustes:
+Además del prompt y el activador, el formulario incluye estos ajustes:
 
 | Ajuste | Descripción |
 | --- | --- |
 | **Modelo** | El modelo y el nivel de inteligencia con los que se ejecuta esta rutina. Deja **Modelo predeterminado** para usar el modelo de chat predeterminado del espacio |
 | **Chat** | **Nuevo chat en cada ejecución** mantiene las ejecuciones independientes entre sí; **Continuar el chat de la ejecución anterior** arrastra el contexto de las ejecuciones previas, lo que encaja con el trabajo que necesita consultar el resultado anterior |
-| **Inicio** / **Fin (opcional)** | Los límites de la programación. Sin hora de fin, la rutina sigue ejecutándose de forma indefinida |
+| **Inicio** / **Fin (opcional)** | Los límites de la programación, solo para **Según programación**. Sin hora de fin, la rutina sigue ejecutándose de forma indefinida |
 
 El modelo y el nivel de inteligencia quedan registrados al guardar, por eso el historial de ejecuciones muestra con qué se ejecutó realmente cada una.
 
+### Activador
+
+**Según programación** ejecuta la rutina en los horarios que definas, configurados más abajo en Programación.
+
+**Por evento de conector** la ejecuta una vez cada vez que una app de terceros conectada informa un evento, como un correo nuevo o una incidencia nueva. Elige la app, el evento, la **Cuenta** que lo recibe y los parámetros que pida el evento; se configura igual que el activador de la automatización, descrito en [Al recibir un evento de conector](/es/basic/automation/trigger/external/connector-event). Una rutina con este activador no tiene hora de **Próxima ejecución** y no usa la programación ni sus límites.
+
+Si se revoca la concesión de la cuenta, se elimina la cuenta conectada o la app detiene la suscripción, la rutina muestra **Suscripción desconectada** y deja de recibir eventos, y Teable avisa al miembro que la actualizó por última vez. Al volver a conectar la misma cuenta, la suscripción se reconstruye sola; para usar otra cuenta, selecciónala en el activador y guarda.
+
 ### Programación
 
-Elige una frecuencia entre los ajustes preestablecidos: **Cada hora** en un minuto concreto, **Cada día** y **Días laborables** a una hora concreta, **Cada semana** en un día de la semana y una hora, **Cada mes** en un día y una hora.
+La programación solo se usa con **Según programación**. Elige una frecuencia entre los ajustes preestablecidos: **Cada hora** en un minuto concreto, **Cada día** y **Días laborables** a una hora concreta, **Cada semana** en un día de la semana y una hora, **Cada mes** en un día y una hora.
 
 Para algo más específico, elige **Personalizada (RRULE)** y escribe una regla RFC 5545, como `FREQ=DAILY;BYHOUR=9;BYMINUTE=0`. Una regla personalizada tiene estos límites:
 
@@ -56,15 +64,17 @@ Una programación se evalúa en la zona horaria de quien creó la rutina y no si
 
 ## Borradores, actualizaciones y ejecución inmediata
 
-Una rutina nueva es un borrador y no se ejecuta según la programación hasta que la activas. Cuando editas una rutina activa, el cambio también se guarda como borrador mientras la versión en curso sigue con la configuración anterior: haz clic en **Actualizar** para aplicarlo o en **Descartar los cambios** para desecharlo.
+Una rutina nueva es un borrador y no se ejecuta por su cuenta hasta que la activas. Cuando editas una rutina activa, el cambio también se guarda como borrador mientras la versión en curso sigue con la configuración anterior: haz clic en **Actualizar** para aplicarlo o en **Descartar los cambios** para desecharlo.
 
-**Ejecutar ahora** lanza una ejecución sin esperar a la programación, algo útil para comprobar un prompt. Una rutina no se puede volver a lanzar a mano hasta que termine su ejecución anterior.
+**Ejecutar ahora** lanza una ejecución sin esperar al activador, algo útil para comprobar un prompt. Una rutina no se puede volver a lanzar a mano hasta que termine su ejecución anterior.
 
-Apaga el interruptor para desactivarla. La programación deja de dispararse y el historial de ejecuciones existente se conserva.
+En una rutina por evento de conector que todavía no está activa, **Ejecutar ahora** muestra **Esperando un evento**: dispara ese evento en la app y Teable usará el que reciba para una única ejecución, que luego aparece en el historial. Haz clic en **Dejar de esperar** para cortar la espera. Una rutina activa ya recibe sus eventos, así que no lo necesita ni lo admite.
+
+Apaga el interruptor para desactivarla. La rutina deja de dispararse y el historial de ejecuciones existente se conserva.
 
 ## Historial de ejecuciones
 
-Abre la rutina y ve a **Historial de ejecuciones**. La lista se puede filtrar por estado e intervalo de tiempo, lo que ayuda a localizar un fallo concreto; al seleccionar una ejecución verás sus horas de planificación, inicio y fin, su duración y el chat completo de esa ejecución.
+Abre la rutina y ve a **Historial de ejecuciones**. La lista se puede filtrar por estado e intervalo de tiempo, lo que ayuda a localizar un fallo concreto; al seleccionar una ejecución verás su **ID de ejecución**, su **Activador** y el chat completo de esa ejecución. El **Activador** indica **Programado**, **Evento** o **Manual**, y una ejecución programada muestra además la hora **Planificada** a la que correspondía.
 
 Las ejecuciones se informan como **En cola**, **En ejecución**, **Completada**, **Fallida** o **Cancelada**. **Cancelada** aparece cuando alguien interrumpió esa ejecución, o cuando se ha eliminado la rutina o su proyecto.
 
@@ -103,7 +113,7 @@ No toda ejecución sin éxito cuenta para ese total: las ejecuciones omitidas po
   </Accordion>
 
   <Accordion title="¿Las rutinas de un proyecto instalado desde una plantilla se ejecutan solas?">
-    Sí. Tras instalar una plantilla, sus rutinas se encienden igual que sus flujos de trabajo. Una programación sin ocurrencias futuras se queda en borrador.
+    Las programadas sí. Tras instalar una plantilla se encienden igual que sus flujos de trabajo, y una programación sin ocurrencias futuras se queda en borrador. Las rutinas por evento de conector no se encienden: las credenciales no llegan con la plantilla, así que elige una cuenta tuya antes de activarlas.
   </Accordion>
 
   <Accordion title="Con Continuar el chat de la ejecución anterior, ¿el contexto crece sin límite?">

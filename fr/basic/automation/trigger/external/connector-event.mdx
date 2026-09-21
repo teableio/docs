@@ -1,0 +1,74 @@
+---
+title: "Lorsqu’un événement de connecteur est reçu"
+description: "Exécuter un workflow lorsqu’une application tierce connectée signale un événement"
+---
+
+<Note>Disponible sur toutes les formules Cloud ; l’auto-hébergement exige la formule Business ou supérieure, avec les événements de connecteur activés par l’exploitant de l’installation.</Note>
+
+Démarrez un workflow à partir de ce qui se passe dans une application connectée comme GitHub, Gmail ou Slack : un e-mail arrive, un ticket est ouvert, un message est publié. L’application livre l’événement directement à Teable : vous n’avez ni URL de webhook à héberger ni interrogation à mettre en place.
+
+## Créer avec l’IA
+
+Ouvrez le chat IA dans la barre latérale droite de n’importe quelle table et décrivez ce dont vous avez besoin.
+
+L’IA s’occupe de tout : elle choisit le bon déclencheur, associe les champs concernés et configure les actions.
+
+Décrivez l’objectif une fois et le workflow est prêt, sans configuration manuelle.
+
+**Exemple :** *"Quand un nouveau ticket est ouvert dans mon dépôt GitHub, crée un enregistrement dans la table Tâches"*
+
+## Comment le configurer
+
+<Steps>
+  <Step title="Choisir le déclencheur">
+    Créez un workflow et choisissez **Lorsqu'un événement de connecteur est reçu** comme déclencheur.
+  </Step>
+  <Step title="Choisir l’application et l’événement">
+    Sélectionnez l’application sous **Application**, puis l’événement précis sous **Événement**. Chaque événement de la liste porte un résumé d’une ligne et un badge ; les badges sont expliqués plus bas.
+  </Step>
+  <Step title="Choisir le compte">
+    Sous **Compte**, choisissez quel compte connecté reçoit l’événement. Si vous n’avez jamais connecté cette application, connectez-la depuis la même liste : la nouvelle connexion est accordée automatiquement à ce workflow.
+  </Step>
+  <Step title="Renseigner les paramètres">
+    Renseignez les **Paramètres** demandés par l’événement, par exemple un dépôt, un canal ou une étiquette. Les champs marqués * sont obligatoires. Cliquez ensuite sur **Enregistrer**.
+  </Step>
+  <Step title="Activer">
+    Ajoutez les actions qui suivent, puis activez le workflow. L’abonnement est créé à l’activation : un brouillon ne reçoit rien.
+  </Step>
+</Steps>
+
+Changer l’application ou l’événement vide les étapes suivantes, et les variables qui faisaient référence à l’événement précédent cessent d’être résolues : ces étapes sont donc à reconfigurer.
+
+## Badges des événements
+
+| Badge | Signification |
+| --- | --- |
+| **Instantané** | L’application pousse l’événement, qui arrive peu après sa survenue |
+| **Interrogation · peut prendre quelques minutes** | Teable interroge l’application périodiquement : ne comptez pas dessus quand le délai compte |
+| **Se déclenche souvent** | Cet événement survient beaucoup en pratique, et chaque déclenchement compte comme une exécution d’automatisation |
+| **Obsolète** | L’application a rendu l’événement obsolète et pourrait cesser de l’envoyer : choisissez-en un autre |
+
+## Données disponibles après le déclencheur
+
+L’événement lui-même arrive dans la variable **event**, que les étapes suivantes insèrent via **+**. Juste après la configuration, la variable est vide : un véritable événement doit d’abord arriver. Cliquez sur **Tester le déclencheur** et, dès que le panneau affiche **En attente d’un événement**, allez le déclencher dans l’application. Un événement par interrogation peut mettre quelques minutes.
+
+L’événement reçu reste sur le déclencheur comme donnée d’exemple, de sorte que les étapes suivantes puissent utiliser ses champs. Cliquez sur **Arrêter d’attendre** pour interrompre l’attente ; après une trentaine de minutes sans événement, le panneau indique **L’attente s’est arrêtée sans qu’aucun événement n’arrive.**
+
+## Quand la connexion est rompue
+
+Le déclencheur cesse de recevoir des événements lorsque l’autorisation du compte est révoquée, que le compte connecté est supprimé, que l’application arrête l’abonnement (identifiants expirés ou abonnement défaillant) ou que l’abonnement n’a pas pu être créé. Le workflow n’est pas désactivé, mais plus aucune exécution n’a lieu tant qu’il n’est pas rétabli.
+
+Teable prévient le membre qui a modifié le workflow en dernier, et le panneau du déclencheur affiche **Déconnecté — reconnectez le compte ou choisissez-en un autre**. Rétablissez-le selon la cause :
+
+- Cliquez sur **Reconnecter** pour ce même compte dans **Paramètres** → **Intégrations** : l’abonnement se reconstruit tout seul.
+- Pour utiliser un autre compte, revenez au déclencheur, choisissez un autre **Compte** et enregistrez.
+- Si l’abonnement n’a pas pu être créé, vérifiez les paramètres et enregistrez à nouveau pour réessayer.
+
+## Après une copie ou un import
+
+Les identifiants ne suivent pas un workflow. Après avoir copié un workflow, ou importé ou copié un projet, le déclencheur affiche **Compte non autorisé** : choisissez l’un de vos comptes et enregistrez pour que le workflow puisse se réabonner.
+
+## Documents liés
+
+- [Identifiants et intégrations](/fr/basic/credential)
+- [Routine](/fr/basic/ai/routine)

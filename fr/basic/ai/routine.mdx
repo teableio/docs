@@ -5,11 +5,11 @@ description: Laissez Cuppy exécuter un prompt selon une planification et consul
 
 <Note>Disponible avec tous les forfaits Cloud ; l’auto-hébergement nécessite Business ou une offre supérieure.</Note>
 
-Une routine confie un prompt à Cuppy et le répète selon une planification, ce qui convient au travail que personne ne devrait déclencher à la main : un rapport quotidien, un nettoyage périodique des enregistrements expirés, une synthèse hebdomadaire. Chaque exécution est une conversation d’IA complète : une routine peut donc tout ce que peut la conversation d’IA, y compris lire et écrire des tables, appeler des compétences et produire des fichiers.
+Une routine confie un prompt à Cuppy et le répète, soit selon une planification, soit chaque fois qu’une application tierce connectée signale un événement. Cela convient au travail que personne ne devrait déclencher à la main : un rapport quotidien, un nettoyage périodique des enregistrements expirés, le classement d’un e-mail dès son arrivée. Chaque exécution est une conversation d’IA complète : une routine peut donc tout ce que peut la conversation d’IA, y compris lire et écrire des tables, appeler des compétences et produire des fichiers.
 
 Une routine est une ressource du projet et figure dans la barre latérale gauche, aux côtés des tables, des applications et des automatisations.
 
-<Info>Une automatisation se déclenche sur un événement, par exemple une modification d’enregistrement, l’envoi d’un formulaire ou un webhook, et exécute les étapes que vous avez configurées à l’avance. Une routine se déclenche uniquement sur le temps et exécute un prompt que l’agent interprète lui-même. Prenez une automatisation quand il vous faut des étapes fixes et un résultat prévisible ; prenez une routine quand vous voulez que l’agent décide à chaque fois quoi faire des données du moment.</Info>
+<Info>Une automatisation exécute les étapes que vous avez configurées à l’avance, tandis qu’une routine exécute un prompt que l’agent interprète lui-même. Toutes deux peuvent se déclencher selon une planification, et toutes deux sur un événement provenant d’une application tierce connectée. Prenez une automatisation quand il vous faut des étapes fixes et un résultat prévisible ; prenez une routine quand vous voulez que l’agent décide à chaque fois quoi faire des données du moment.</Info>
 
 ## Créer une routine
 
@@ -20,29 +20,37 @@ Une routine est une ressource du projet et figure dans la barre latérale gauche
   <Step title="Rédiger le prompt">
     Décrivez dans **Prompt** ce que doit faire chaque exécution. Le prompt constitue l’instruction complète d’une exécution : indiquez d’où viennent les données, comment les traiter et où va le résultat. Par exemple : « Synthétise les enregistrements ajoutés hier dans la table Tâches, regroupe-les par responsable et écris la synthèse dans la table Rapport quotidien. »
   </Step>
-  <Step title="Définir la planification">
-    Choisissez une fréquence sous **Planification** et renseignez **Début** et **Fin (facultatif)** si nécessaire.
+  <Step title="Choisir le déclencheur">
+    Sous **Déclencheur**, choisissez **Selon une planification** ou **Sur événement de connecteur**, puis renseignez les réglages propres à ce choix.
   </Step>
   <Step title="Activer">
-    Cliquez sur **Activer**. La configuration doit être enregistrée et la planification doit comporter une occurrence à venir.
+    Cliquez sur **Activer**. La configuration doit être enregistrée : **Selon une planification** exige une occurrence à venir, et **Sur événement de connecteur** un compte utilisable.
   </Step>
 </Steps>
 
 ## Réglages
 
-Outre le prompt et la planification, le formulaire comporte ces réglages :
+Outre le prompt et le déclencheur, le formulaire comporte ces réglages :
 
 | Réglage | Description |
 | --- | --- |
 | **Modèle** | Le modèle et le niveau d’intelligence sur lesquels tourne cette routine. Laissez **Modèle par défaut** pour utiliser le modèle de conversation par défaut de l’espace |
 | **Conversation** | **Nouvelle conversation à chaque exécution** garde les exécutions indépendantes les unes des autres ; **Poursuivre la conversation de l’exécution précédente** reporte le contexte des exécutions passées, ce qui convient au travail qui doit s’appuyer sur le résultat précédent |
-| **Début** / **Fin (facultatif)** | Les bornes de la planification. Sans heure de fin, la routine continue indéfiniment |
+| **Début** / **Fin (facultatif)** | Les bornes de la planification, utilisées uniquement par **Selon une planification**. Sans heure de fin, la routine continue indéfiniment |
 
 Le modèle et le niveau d’intelligence sont enregistrés au moment de la sauvegarde : l’historique d’exécution montre donc sur quoi chaque exécution a réellement tourné.
 
+### Déclencheur
+
+**Selon une planification** exécute la routine aux heures que vous définissez, réglées plus bas sous Planification.
+
+**Sur événement de connecteur** l’exécute une fois chaque fois qu’une application tierce connectée signale un événement, par exemple un nouvel e-mail ou un nouveau ticket. Choisissez l’application, l’événement, le **Compte** qui le reçoit et les paramètres demandés par l’événement ; la configuration est la même que pour le déclencheur d’automatisation, décrit dans [Lorsqu’un événement de connecteur est reçu](/fr/basic/automation/trigger/external/connector-event). Une routine sur ce déclencheur n’a pas d’heure de **Prochaine exécution** et n’utilise ni la planification ni ses bornes.
+
+Si l’autorisation du compte est révoquée, si le compte connecté est supprimé ou si l’application arrête l’abonnement, la routine affiche **Abonnement déconnecté** et cesse de recevoir des événements ; Teable prévient le membre qui l’a mise à jour en dernier. Reconnecter le même compte reconstruit l’abonnement tout seul ; pour en utiliser un autre, sélectionnez-le dans le déclencheur et enregistrez.
+
 ### Planification
 
-Choisissez une fréquence parmi les préréglages : **Toutes les heures** à une minute donnée, **Tous les jours** et **Jours ouvrés** à une heure donnée, **Toutes les semaines** un jour de semaine à une heure, **Tous les mois** un jour à une heure.
+La planification ne sert qu’à **Selon une planification**. Choisissez une fréquence parmi les préréglages : **Toutes les heures** à une minute donnée, **Tous les jours** et **Jours ouvrés** à une heure donnée, **Toutes les semaines** un jour de semaine à une heure, **Tous les mois** un jour à une heure.
 
 Pour quelque chose de plus précis, choisissez **Personnalisée (RRULE)** et écrivez une règle RFC 5545, par exemple `FREQ=DAILY;BYHOUR=9;BYMINUTE=0`. Une règle personnalisée est soumise à ces limites :
 
@@ -56,15 +64,17 @@ Une planification est évaluée dans le fuseau horaire de la personne qui a cré
 
 ## Brouillons, mises à jour et exécution immédiate
 
-Une routine nouvellement créée est un brouillon et ne s’exécute selon la planification qu’une fois activée. Quand vous modifiez une routine active, la modification est elle aussi enregistrée en brouillon tandis que la version en service continue avec l’ancienne configuration : cliquez sur **Mettre à jour** pour l’appliquer, ou sur **Abandonner les modifications** pour la jeter.
+Une routine nouvellement créée est un brouillon et ne s’exécute d’elle-même qu’une fois activée. Quand vous modifiez une routine active, la modification est elle aussi enregistrée en brouillon tandis que la version en service continue avec l’ancienne configuration : cliquez sur **Mettre à jour** pour l’appliquer, ou sur **Abandonner les modifications** pour la jeter.
 
-**Exécuter maintenant** lance une exécution sans attendre la planification, ce qui sert à vérifier un prompt. Une routine ne peut pas être relancée à la main tant que son exécution précédente n’est pas terminée.
+**Exécuter maintenant** lance une exécution sans attendre le déclencheur, ce qui sert à vérifier un prompt. Une routine ne peut pas être relancée à la main tant que son exécution précédente n’est pas terminée.
 
-Coupez l’interrupteur pour la désactiver : la planification cesse de se déclencher et l’historique d’exécution existant est conservé.
+Sur une routine à événement de connecteur pas encore activée, **Exécuter maintenant** affiche plutôt **En attente d’un événement** : déclenchez cet événement dans l’application, et Teable s’en sert pour une exécution unique, qui apparaît ensuite dans l’historique. Cliquez sur **Arrêter d’attendre** pour interrompre l’attente. Une routine active reçoit déjà ses événements : elle n’en a pas besoin et ne l’autorise pas.
+
+Coupez l’interrupteur pour la désactiver : la routine cesse de se déclencher et l’historique d’exécution existant est conservé.
 
 ## Historique d’exécution
 
-Ouvrez la routine et passez à **Historique d’exécution**. La liste se filtre par statut et par période, ce qui aide à retrouver un échec précis ; en sélectionnant une exécution, vous voyez ses heures de planification, de démarrage et de fin, sa durée et la conversation complète de cette exécution.
+Ouvrez la routine et passez à **Historique d’exécution**. La liste se filtre par statut et par période, ce qui aide à retrouver un échec précis ; en sélectionnant une exécution, vous voyez son **ID d’exécution**, son **Déclencheur** et la conversation complète de cette exécution. Le **Déclencheur** indique **Planifié**, **Événement** ou **Manuel**, et une exécution planifiée affiche en plus l’heure **Planifiée** à laquelle elle correspondait.
 
 Les exécutions sont signalées comme **En file d’attente**, **En cours**, **Terminée**, **Échec** ou **Annulée**. **Annulée** apparaît lorsque quelqu’un a interrompu cette exécution, ou lorsque la routine ou son projet a été supprimé.
 
@@ -103,7 +113,7 @@ Toutes les exécutions sans succès ne comptent pas dans ce total : celles ignor
   </Accordion>
 
   <Accordion title="Les routines d’un projet installé depuis un modèle s’exécutent-elles automatiquement ?">
-    Oui. Après l’installation d’un modèle, ses routines sont activées comme le sont ses workflows. Une planification sans occurrence à venir reste un brouillon.
+    Les routines planifiées, oui. Après l’installation d’un modèle, elles sont activées comme le sont ses workflows, et une planification sans occurrence à venir reste un brouillon. Les routines à événement de connecteur ne sont pas activées : les identifiants n’arrivent pas avec le modèle, choisissez donc d’abord un compte à vous.
   </Accordion>
 
   <Accordion title="Avec Poursuivre la conversation de l’exécution précédente, le contexte grossit-il sans fin ?">

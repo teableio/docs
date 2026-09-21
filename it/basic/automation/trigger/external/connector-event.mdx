@@ -1,0 +1,74 @@
+---
+title: "Alla ricezione di un evento del connettore"
+description: "Esegui un workflow quando un'app di terze parti collegata segnala un evento"
+---
+
+<Note>Disponibile in tutti i piani Cloud; la versione self-hosted richiede il piano Business o superiore e che chi gestisce l'installazione abiliti gli eventi del connettore.</Note>
+
+Fai partire un workflow da qualcosa che accade dentro un'app collegata come GitHub, Gmail o Slack: arriva una nuova email, viene aperta una issue, viene pubblicato un messaggio. L'app consegna l'evento direttamente a Teable, quindi non devi ospitare un URL webhook né interrogare nulla.
+
+## Creare con l'IA
+
+Apri la chat IA nella barra laterale destra di una tabella qualsiasi e descrivi ciò che ti serve.
+
+All'IA pensa a tutto: sceglie l'attivatore giusto, mappa i campi pertinenti e imposta le azioni.
+
+Descrivi l'obiettivo una volta e il workflow è pronto, senza configurazione manuale.
+
+**Esempio:** *"Quando viene aperta una nuova issue nel mio repository GitHub, crea un record nella tabella Attività"*
+
+## Come configurarlo
+
+<Steps>
+  <Step title="Scegliere l'attivatore">
+    Crea un workflow e scegli **Alla ricezione di un evento del connettore** come attivatore.
+  </Step>
+  <Step title="Scegliere app ed evento">
+    Seleziona l'app in **App**, poi l'evento specifico in **Evento**. Ogni evento dell'elenco riporta una riga di descrizione e un'etichetta; le etichette sono spiegate più sotto.
+  </Step>
+  <Step title="Scegliere l'account">
+    In **Account** scegli quale account collegato riceve l'evento. Se non hai mai collegato questa app, collegala dallo stesso menu: la nuova connessione viene concessa automaticamente a questo workflow.
+  </Step>
+  <Step title="Compilare i parametri">
+    Compila i **Parametri** richiesti dall'evento, per esempio un repository, un canale o un'etichetta. I campi con * sono obbligatori. Al termine fai clic su **Salva**.
+  </Step>
+  <Step title="Attivare">
+    Aggiungi le azioni successive, poi accendi il workflow. La sottoscrizione nasce all'attivazione, quindi una bozza non riceve nulla.
+  </Step>
+</Steps>
+
+Cambiando app o evento i passaggi successivi vengono svuotati e le variabili che facevano riferimento all'evento precedente smettono di risolversi: quei passaggi vanno riconfigurati.
+
+## Etichette degli eventi
+
+| Etichetta | Che cosa significa |
+| --- | --- |
+| **Istantaneo** | L'app invia l'evento, che arriva poco dopo essersi verificato |
+| **Polling · può richiedere qualche minuto** | Teable interroga l'app periodicamente, quindi non contarci quando il tempismo conta |
+| **Si attiva spesso** | Nella pratica questo evento scatta molto, e ogni scatto conta come un'esecuzione di automazione |
+| **Deprecato** | L'app ha deprecato l'evento e potrebbe smettere di inviarlo: scegline un altro |
+
+## Dati disponibili dopo l'attivatore
+
+L'evento vero e proprio finisce nella variabile **event**, che i passaggi successivi inseriscono con **+**. Subito dopo la configurazione la variabile è vuota: deve prima arrivare un evento reale. Fai clic su **Prova attivatore** e, quando il pannello mostra **In attesa di un evento**, vai nell'app e fai qualcosa che lo scateni. Un evento in polling può richiedere qualche minuto.
+
+L'evento arrivato resta sull'attivatore come dato di esempio, così i passaggi seguenti possono usarne i campi. Fai clic su **Smetti di attendere** per interrompere l'attesa; dopo circa 30 minuti senza eventi il pannello riporta **Attesa terminata senza ricevere eventi.**
+
+## Quando la connessione cade
+
+L'attivatore smette di ricevere eventi se la concessione dell'account viene revocata, se l'account collegato viene rimosso, se l'app interrompe la sottoscrizione (credenziali scadute o sottoscrizione non funzionante) o se la sottoscrizione non è stata creata. Il workflow non viene spento, ma non produce nuove esecuzioni finché non lo ripristini.
+
+Teable avvisa il membro che ha modificato il workflow per ultimo e il pannello dell'attivatore mostra **Disconnesso: ricollega l'account o scegline un altro**. Ripristinalo in base alla causa:
+
+- Fai clic su **Ricollega** sullo stesso account in **Impostazioni** → **Integrazioni**: la sottoscrizione si ricostruisce da sola.
+- Per usare un altro account, torna all'attivatore, scegli un altro **Account** e salva.
+- Se la sottoscrizione non è stata creata, controlla i parametri e salva di nuovo per riprovare.
+
+## Dopo una copia o un'importazione
+
+Le credenziali non viaggiano con il workflow. Dopo aver copiato un workflow, o importato o copiato un progetto, l'attivatore riporta **Account non autorizzato**: scegli un account tuo e salva prima che il workflow possa sottoscriversi di nuovo.
+
+## Documenti correlati
+
+- [Credenziali e integrazioni](/it/basic/credential)
+- [Routine](/it/basic/ai/routine)
