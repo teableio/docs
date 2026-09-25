@@ -99,6 +99,12 @@ python3 scripts/changelog_order.py --write
 python3 scripts/changelog_order.py
 ```
 
+The `Changelog date order` workflow validates all current language changelogs
+on pull requests and pushes. It also corrects ordering after direct writes to
+`main`, including automated backfills. This repair happens after the push;
+publishers should run the sorter before committing to avoid a temporarily
+misordered deployment. Archived year files are outside this check.
+
 Push to origin main branch, the changes will be deployed to production automatically.
 
 #### Troubleshooting

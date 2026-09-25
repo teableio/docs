@@ -1,0 +1,60 @@
+name: Changelog date order
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: changelog-order-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: Check changelog date order
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python3 -m unittest discover -s scripts -p 'test_*.py'
+      - run: python3 scripts/changelog_order.py
+
+  # Existing automated publishers write directly to main. Repair those writes
+  # as well as reporting them, without granting write access to PR jobs.
+  repair:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python3 -m unittest discover -s scripts -p 'test_*.py'
+      - name: Sort and commit only changelog ordering
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3; do
+            # Recompute on the latest main if a publisher raced this job.
+            git fetch origin main
+            git reset --hard origin/main
+            python3 scripts/changelog_order.py --write
+            python3 scripts/changelog_order.py
+            git add -- '*/changelog.mdx'
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'fix: keep changelogs in descending date order'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          echo 'Could not publish changelog ordering repair after three attempts.' >&2
+          exit 1
