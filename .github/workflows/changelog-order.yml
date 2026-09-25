@@ -23,6 +23,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: python3 -m unittest discover -s scripts -p 'test_*.py'
+      - run: node --test scripts/test_changelog_publisher_order.cjs
       - run: python3 scripts/changelog_order.py
 
   # Existing automated publishers write directly to main. Repair those writes
@@ -40,6 +41,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: python3 -m unittest discover -s scripts -p 'test_*.py'
+      - run: node --test scripts/test_changelog_publisher_order.cjs
       - name: Sort and commit only changelog ordering
         run: |
           set -euo pipefail

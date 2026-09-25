@@ -105,6 +105,13 @@ on pull requests and pushes. It also corrects ordering after direct writes to
 publishers should run the sorter before committing to avoid a temporarily
 misordered deployment. Archived year files are outside this check.
 
+The Teable `Publish Website Changelog` automation (also used by the scheduled
+publisher) sorts and validates its English and Chinese entries before creating
+GitHub blobs. It embeds the functions from
+`scripts/changelog_publisher_order.cjs`; keep that copy synchronized with this
+tested source when updating the automation. Run its regression checks with
+`node --test scripts/test_changelog_publisher_order.cjs`.
+
 Push to origin main branch, the changes will be deployed to production automatically.
 
 #### Troubleshooting
