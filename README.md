@@ -88,6 +88,17 @@ Use explicit `<img>` for docs screenshots:
 
 ### Publishing Changes
 
+Changelog entries must be ordered by release date, newest first, in every
+language. Backfilled releases belong below newer announcements, even when
+published later. Keep same-day entries in their existing editorial order.
+
+Before publishing a changelog, run:
+
+```bash
+python3 scripts/changelog_order.py --write
+python3 scripts/changelog_order.py
+```
+
 Push to origin main branch, the changes will be deployed to production automatically.
 
 #### Troubleshooting
