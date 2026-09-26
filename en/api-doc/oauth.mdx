@@ -33,13 +33,22 @@ Scopes define what actions your OAuth App can perform. Available scopes are orga
 | Resource | Scopes |
 |----------|--------|
 | **App** | `app\|create`, `app\|read`, `app\|update`, `app\|delete` |
-| **Project** | `base\|read`, `base\|read_all`, `base\|update`, `base\|table_import`, `base\|table_export`, `base\|query_data` |
-| **Table** | `table\|create`, `table\|delete`, `table\|export`, `table\|import`, `table\|read`, `table\|update`, `table\|trash_read`, `table\|trash_update`, `table\|trash_reset` |
+| **Project** | `base\|create`, `base\|delete`, `base\|read`, `base\|read_all`, `base\|update`, `base\|table_import`, `base\|table_export`, `base\|query_data`, `base\|authority_matrix_config` |
+| **Table** | `table\|create`, `table\|delete`, `table\|export`, `table\|import`, `table\|read`, `table\|update`, `table\|trash_read`, `table\|trash_update`, `table\|trash_reset`, `table\|archive_read`, `table\|archive_manage` |
 | **View** | `view\|create`, `view\|delete`, `view\|read`, `view\|update` |
 | **Field** | `field\|create`, `field\|delete`, `field\|read`, `field\|update` |
-| **Record** | `record\|comment`, `record\|create`, `record\|delete`, `record\|read`, `record\|update` |
+| **Record** | `record\|comment`, `record\|create`, `record\|delete`, `record\|read`, `record\|update`, `record\|archive` |
 | **Automation** | `automation\|create`, `automation\|delete`, `automation\|read`, `automation\|update` |
-| **User** | `user\|email_read`, `user\|integrations` |
+| **Routine** | `routine\|create`, `routine\|delete`, `routine\|read`, `routine\|update` |
+| **User** | `user\|email_read`, `user\|integrations`, `user\|spaces_read`, `user\|self_hosted_licenses_read`, `user\|notifications_send` |
+
+The following user scopes let your app read account information or reach the user:
+
+| Scope | Purpose |
+|------|------|
+| `user\|spaces_read` | Adds `spaces` to the response of the user info endpoint `GET /api/auth/user`: the spaces where the user occupies a seat, with each space's subscription tier, seat count, and whether it is on a trial. Returned on Teable Cloud only |
+| `user\|self_hosted_licenses_read` | Adds `selfHostedLicenses` to the user info response: the self-hosted licenses the user purchased that are still valid, with subscription tier, seat count, and whether each is a trial. Returned on Teable Cloud only |
+| `user\|notifications_send` | Sends in-app notifications to the authorizing user. See [Sending Notifications to Users](#sending-notifications-to-users) |
 
 <Tip>Request only the scopes your application actually needs. Users will see the requested permissions during authorization.</Tip>
 
@@ -92,7 +101,7 @@ Users will see an authorization page showing:
 - The requested permissions (scopes)
 - Options to approve or deny access
 
-If the user has previously authorized your app (within 7 days by default), they will be redirected immediately without seeing the authorization page again.
+If the user has previously authorized your app (within 7 days by default) and every scope in this request was already approved, they will be redirected immediately without seeing the authorization page again. If the request adds new scopes, the user has to confirm again; after they do, the previously approved scopes are kept.
 
 ### Step 3: Handle the Callback
 
@@ -304,6 +313,25 @@ curl https://app.teable.ai/api/base/access/all \
 ```
 
 This endpoint returns all Projects the current user has permission to access. You can use the `baseId` from the response for subsequent API calls.
+
+## Sending Notifications to Users
+
+With the `user|notifications_send` scope, your app can use the access token to send in-app notifications to that user. Notifications appear in the user's notification center and show which app sent them.
+
+```bash
+curl -X POST https://app.teable.ai/api/notifications \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"externalId": "order-1024-shipped", "text": "Order 1024 has shipped", "url": "https://yourapp.com/orders/1024"}'
+```
+
+| Parameter | Required | Description |
+|------|------|------|
+| `externalId` | Yes | Your app's own notification ID: 1-128 letters, digits, or `_` `.` `:` `-`. Sending the same ID to the same user again does not create a new notification |
+| `text` | Yes | Notification body in plain text, up to 500 characters. Teable does not translate it, so write it in the user's language |
+| `url` | No | The address opened when the user clicks the notification. It must use https, and its host must match your app's homepage or one of its callback URLs |
+
+In the response, `status` is `created` when the notification was delivered, `duplicate` when that `externalId` was already sent, and `muted` when the user has turned off notifications from your app. Each app can send at most 30 notifications per minute to a single user and 600 per minute across all users. Beyond that, the API returns 429 with a `Retry-After` header.
 
 ## Refreshing Access Tokens
 

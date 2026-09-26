@@ -33,13 +33,22 @@ Los ámbitos definen qué acciones puede realizar tu aplicación OAuth. Los ámb
 | Recurso | Ámbitos |
 |----------|--------|
 | **Aplicación** | `app\|create`, `app\|read`, `app\|update`, `app\|delete` |
-| **Proyecto** | `base\|read`, `base\|read_all`, `base\|update`, `base\|table_import`, `base\|table_export`, `base\|query_data` |
-| **Tabla** | `table\|create`, `table\|delete`, `table\|export`, `table\|import`, `table\|read`, `table\|update`, `table\|trash_read`, `table\|trash_update`, `table\|trash_reset` |
+| **Proyecto** | `base\|create`, `base\|delete`, `base\|read`, `base\|read_all`, `base\|update`, `base\|table_import`, `base\|table_export`, `base\|query_data`, `base\|authority_matrix_config` |
+| **Tabla** | `table\|create`, `table\|delete`, `table\|export`, `table\|import`, `table\|read`, `table\|update`, `table\|trash_read`, `table\|trash_update`, `table\|trash_reset`, `table\|archive_read`, `table\|archive_manage` |
 | **Vista** | `view\|create`, `view\|delete`, `view\|read`, `view\|update` |
 | **Campo** | `field\|create`, `field\|delete`, `field\|read`, `field\|update` |
-| **Registro** | `record\|comment`, `record\|create`, `record\|delete`, `record\|read`, `record\|update` |
+| **Registro** | `record\|comment`, `record\|create`, `record\|delete`, `record\|read`, `record\|update`, `record\|archive` |
 | **Automatización** | `automation\|create`, `automation\|delete`, `automation\|read`, `automation\|update` |
-| **Usuario** | `user\|email_read`, `user\|integrations` |
+| **Rutina** | `routine\|create`, `routine\|delete`, `routine\|read`, `routine\|update` |
+| **Usuario** | `user\|email_read`, `user\|integrations`, `user\|spaces_read`, `user\|self_hosted_licenses_read`, `user\|notifications_send` |
+
+Los siguientes ámbitos de usuario sirven para leer información de la cuenta o comunicarse con el usuario:
+
+| Ámbito | Uso |
+|------|------|
+| `user\|spaces_read` | Añade `spaces` a la respuesta del endpoint de información del usuario `GET /api/auth/user`: los Espacios en los que el usuario ocupa una plaza, con el plan de suscripción, el número de plazas y si se trata de una prueba en cada uno. Solo lo devuelve Teable Cloud |
+| `user\|self_hosted_licenses_read` | Añade `selfHostedLicenses` a la respuesta del endpoint de información del usuario: las licencias de implementación autoalojada que el usuario compró y siguen vigentes, con el plan de suscripción, el número de plazas y si se trata de una prueba. Solo lo devuelve Teable Cloud |
+| `user\|notifications_send` | Envía notificaciones dentro de la aplicación al usuario que autorizó el acceso. Consulta [Enviar notificaciones a los usuarios](#enviar-notificaciones-a-los-usuarios) |
 
 <Tip>Solicita únicamente los ámbitos que tu aplicación realmente necesita. Los usuarios verán los permisos solicitados durante la autorización.</Tip>
 
@@ -92,7 +101,7 @@ Los usuarios verán una página de autorización que muestra:
 - Los permisos solicitados (ámbitos)
 - Opciones para aprobar o denegar el acceso
 
-Si el usuario ya autorizó tu aplicación anteriormente (de forma predeterminada, en los últimos 7 días), se le redirigirá de inmediato sin volver a mostrarle la página de autorización.
+Si el usuario ya autorizó tu aplicación anteriormente (de forma predeterminada, en los últimos 7 días), y todos los ámbitos solicitados ya se aprobaron antes, se le redirigirá de inmediato sin volver a mostrarle la página de autorización. Si la solicitud incluye ámbitos nuevos, el usuario debe confirmarlos de nuevo; tras confirmar, los ámbitos aprobados anteriormente se conservan.
 
 ### Paso 3: Gestionar la llamada de retorno
 
@@ -304,6 +313,25 @@ curl https://app.teable.ai/api/base/access/all \
 ```
 
 Este endpoint devuelve todos los Proyectos a los que el usuario actual tiene permiso de acceso. Puedes usar el `baseId` de la respuesta para las llamadas posteriores a la API.
+
+## Enviar notificaciones a los usuarios
+
+Con el ámbito `user|notifications_send`, tu aplicación puede usar el token de acceso para enviar notificaciones dentro de la aplicación a ese usuario. La notificación aparece en el centro de notificaciones del usuario e indica de qué aplicación procede.
+
+```bash
+curl -X POST https://app.teable.ai/api/notifications \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"externalId": "order-1024-shipped", "text": "El pedido 1024 se ha enviado", "url": "https://yourapp.com/orders/1024"}'
+```
+
+| Parámetro | Obligatorio | Descripción |
+|------|------|------|
+| `externalId` | Sí | ID de notificación propio de tu aplicación, de 1-128 letras, dígitos o `_` `.` `:` `-`. Volver a enviar el mismo ID al mismo usuario no crea una notificación nueva |
+| `text` | Sí | Cuerpo de la notificación en texto plano, de 500 caracteres como máximo. Teable no lo traduce, así que escríbelo en el idioma del usuario |
+| `url` | No | Dirección que se abre al hacer clic en la notificación. Debe usar https y tener el mismo host que la página de inicio de la aplicación o alguna de sus URL de redirección |
+
+Un `status` con valor `created` en la respuesta indica que la notificación se entregó; `duplicate`, que ese `externalId` ya se había enviado, y `muted`, que el usuario desactivó las notificaciones de la aplicación. Cada aplicación puede enviar como máximo 30 notificaciones por minuto al mismo usuario y 600 por minuto en total para todos los usuarios. Si se supera el límite, se devuelve 429 con la cabecera `Retry-After`.
 
 ## Actualizar tokens de acceso
 

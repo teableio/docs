@@ -33,13 +33,22 @@ description: "أنشئ عمليات تكامل تتيح للمستخدمين ا�
 | المورد | النطاقات |
 |----------|--------|
 | **التطبيق** | `app\|create`, `app\|read`, `app\|update`, `app\|delete` |
-| **المشروع** | `base\|read`, `base\|read_all`, `base\|update`, `base\|table_import`, `base\|table_export`, `base\|query_data` |
-| **الجدول** | `table\|create`, `table\|delete`, `table\|export`, `table\|import`, `table\|read`, `table\|update`, `table\|trash_read`, `table\|trash_update`, `table\|trash_reset` |
+| **المشروع** | `base\|create`, `base\|delete`, `base\|read`, `base\|read_all`, `base\|update`, `base\|table_import`, `base\|table_export`, `base\|query_data`, `base\|authority_matrix_config` |
+| **الجدول** | `table\|create`, `table\|delete`, `table\|export`, `table\|import`, `table\|read`, `table\|update`, `table\|trash_read`, `table\|trash_update`, `table\|trash_reset`, `table\|archive_read`, `table\|archive_manage` |
 | **طريقة العرض** | `view\|create`, `view\|delete`, `view\|read`, `view\|update` |
 | **الحقل** | `field\|create`, `field\|delete`, `field\|read`, `field\|update` |
-| **السجل** | `record\|comment`, `record\|create`, `record\|delete`, `record\|read`, `record\|update` |
+| **السجل** | `record\|comment`, `record\|create`, `record\|delete`, `record\|read`, `record\|update`, `record\|archive` |
 | **الأتمتة** | `automation\|create`, `automation\|delete`, `automation\|read`, `automation\|update` |
-| **المستخدم** | `user\|email_read`, `user\|integrations` |
+| **الروتين** | `routine\|create`, `routine\|delete`, `routine\|read`, `routine\|update` |
+| **المستخدم** | `user\|email_read`, `user\|integrations`, `user\|spaces_read`, `user\|self_hosted_licenses_read`, `user\|notifications_send` |
+
+تُستخدم نطاقات المستخدم التالية لقراءة معلومات الحساب أو للوصول إلى المستخدم:
+
+| النطاق | الاستخدام |
+|------|------|
+| `user\|spaces_read` | يضيف `spaces` إلى استجابة نقطة نهاية معلومات المستخدم `GET /api/auth/user`: المساحات التي يشغل فيها المستخدم مقعدًا، مع مستوى الاشتراك وعدد المقاعد وما إذا كانت تجريبية لكل مساحة. تُرجَع على Teable Cloud فقط |
+| `user\|self_hosted_licenses_read` | يضيف `selfHostedLicenses` إلى استجابة نقطة نهاية معلومات المستخدم: تراخيص النشر ذاتي الاستضافة التي اشتراها المستخدم ولا تزال سارية، مع مستوى الاشتراك وعدد المقاعد وما إذا كانت تجريبية. تُرجَع على Teable Cloud فقط |
+| `user\|notifications_send` | يرسل إشعارات داخل التطبيق إلى المستخدم المفوِّض. راجع [إرسال الإشعارات إلى المستخدمين](#إرسال-الإشعارات-إلى-المستخدمين) |
 
 <Tip>لا تطلب إلا النطاقات التي يحتاج إليها تطبيقك فعليًا. سيرى المستخدمون الأذونات المطلوبة أثناء التفويض.</Tip>
 
@@ -92,7 +101,7 @@ https://app.teable.ai/api/oauth/authorize?response_type=code&client_id=YOUR_CLIE
 - الأذونات المطلوبة (النطاقات)
 - خياري الموافقة على الوصول أو رفضه
 
-إذا سبق للمستخدم تفويض تطبيقك (خلال 7 أيام افتراضيًا)، فستتم إعادة توجيهه فورًا من دون رؤية صفحة التفويض مرة أخرى.
+إذا سبق للمستخدم تفويض تطبيقك (خلال 7 أيام افتراضيًا) وكانت جميع النطاقات المطلوبة هذه المرة قد وافق عليها من قبل، فستتم إعادة توجيهه فورًا من دون رؤية صفحة التفويض مرة أخرى. وإذا طلبت نطاقات جديدة، فعلى المستخدم التأكيد من جديد، وتبقى النطاقات التي وافق عليها سابقًا محفوظة بعد التأكيد.
 
 ### الخطوة 3: معالجة معاودة الاتصال
 
@@ -304,6 +313,25 @@ curl https://app.teable.ai/api/base/access/all \
 ```
 
 تُرجع نقطة النهاية هذه جميع المشاريع التي يملك المستخدم الحالي إذنًا للوصول إليها. ويمكنك استخدام `baseId` من الاستجابة في استدعاءات API اللاحقة.
+
+## إرسال الإشعارات إلى المستخدمين
+
+بعد الحصول على النطاق `user|notifications_send`، يستطيع تطبيقك استخدام رمز الوصول لإرسال إشعارات داخل التطبيق إلى ذلك المستخدم. تظهر الإشعارات في مركز الإشعارات لدى المستخدم مع بيان التطبيق الذي أرسلها.
+
+```bash
+curl -X POST https://app.teable.ai/api/notifications \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"externalId": "order-1024-shipped", "text": "تم شحن الطلب 1024", "url": "https://yourapp.com/orders/1024"}'
+```
+
+| المعلمة | مطلوبة | الوصف |
+|------|------|------|
+| `externalId` | نعم | معرّف الإشعار الخاص بتطبيقك، من 1-128 حرفًا من الأحرف أو الأرقام أو `_` `.` `:` `-`. إرسال المعرّف نفسه مرة أخرى إلى المستخدم نفسه لا ينشئ إشعارًا جديدًا |
+| `text` | نعم | نص الإشعار، نص عادي بحد أقصى 500 حرف. لا يترجمه Teable، لذا اكتبه بلغة المستخدم |
+| `url` | لا | العنوان الذي يُفتح عند النقر على الإشعار. يجب أن يستخدم https وأن يكون مضيفه مطابقًا للصفحة الرئيسية للتطبيق أو لأحد عناوين URL لمعاودة الاتصال |
+
+تعني قيمة `status` في الاستجابة `created` أن الإشعار قد سُلِّم، و`duplicate` أن `externalId` هذا أُرسل من قبل، و`muted` أن المستخدم أوقف الإشعارات من هذا التطبيق. يستطيع كل تطبيق إرسال 30 إشعارًا في الدقيقة كحد أقصى إلى المستخدم الواحد، و600 في الدقيقة لجميع المستخدمين مجتمعين. وعند تجاوز الحد تُرجَع الاستجابة 429 مع الترويسة `Retry-After`.
 
 ## تحديث رموز الوصول
 

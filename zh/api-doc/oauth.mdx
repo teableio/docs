@@ -33,13 +33,22 @@ Teable 支持三种 OAuth 2.0 授权模式：
 | 资源 | 权限范围 |
 |------|----------|
 | **应用** | `app\|create`, `app\|read`, `app\|update`, `app\|delete` |
-| **项目** | `base\|read`, `base\|read_all`, `base\|update`, `base\|table_import`, `base\|table_export`, `base\|query_data` |
-| **表格** | `table\|create`, `table\|delete`, `table\|export`, `table\|import`, `table\|read`, `table\|update`, `table\|trash_read`, `table\|trash_update`, `table\|trash_reset` |
+| **项目** | `base\|create`, `base\|delete`, `base\|read`, `base\|read_all`, `base\|update`, `base\|table_import`, `base\|table_export`, `base\|query_data`, `base\|authority_matrix_config` |
+| **表格** | `table\|create`, `table\|delete`, `table\|export`, `table\|import`, `table\|read`, `table\|update`, `table\|trash_read`, `table\|trash_update`, `table\|trash_reset`, `table\|archive_read`, `table\|archive_manage` |
 | **视图** | `view\|create`, `view\|delete`, `view\|read`, `view\|update` |
 | **字段** | `field\|create`, `field\|delete`, `field\|read`, `field\|update` |
-| **记录** | `record\|comment`, `record\|create`, `record\|delete`, `record\|read`, `record\|update` |
+| **记录** | `record\|comment`, `record\|create`, `record\|delete`, `record\|read`, `record\|update`, `record\|archive` |
 | **自动化** | `automation\|create`, `automation\|delete`, `automation\|read`, `automation\|update` |
-| **用户** | `user\|email_read`, `user\|integrations` |
+| **例行任务** | `routine\|create`, `routine\|delete`, `routine\|read`, `routine\|update` |
+| **用户** | `user\|email_read`, `user\|integrations`, `user\|spaces_read`, `user\|self_hosted_licenses_read`, `user\|notifications_send` |
+
+以下用户权限范围用于读取账户信息或触达用户：
+
+| 权限范围 | 用途 |
+|------|------|
+| `user\|spaces_read` | 在用户信息接口 `GET /api/auth/user` 的返回中增加 `spaces`：用户占用席位的空间，以及每个空间的订阅等级、席位数和是否试用。仅 Teable Cloud 返回 |
+| `user\|self_hosted_licenses_read` | 在用户信息接口的返回中增加 `selfHostedLicenses`：用户购买且仍有效的私有化部署许可证，以及订阅等级、席位数和是否试用。仅 Teable Cloud 返回 |
+| `user\|notifications_send` | 向授权用户发送站内通知，见 [向用户发送通知](#向用户发送通知) |
 
 <Tip>只请求应用实际需要的权限范围。用户在授权时会看到请求的权限列表。</Tip>
 
@@ -92,7 +101,7 @@ https://app.teable.ai/api/oauth/authorize?response_type=code&client_id=YOUR_CLIE
 - 请求的权限（范围）
 - 批准或拒绝选项
 
-如果用户之前已授权过您的应用（默认 7 天内有效），将直接重定向而不再显示授权页面。
+如果用户之前已授权过您的应用（默认 7 天内有效），且本次请求的权限范围都已被批准过，将直接重定向而不再显示授权页面。请求了新的权限范围时，用户需要重新确认；确认后，之前批准的范围仍然保留。
 
 ### 步骤 3：处理回调
 
@@ -304,6 +313,25 @@ curl https://app.teable.ai/api/base/access/all \
 ```
 
 该接口返回当前用户有权限访问的所有项目，可从中获取 `baseId` 用于后续 API 调用。
+
+## 向用户发送通知
+
+获得 `user|notifications_send` 权限范围后，应用可以用访问令牌向该用户发送站内通知。通知会显示在用户的通知中心，并注明来自哪个应用。
+
+```bash
+curl -X POST https://app.teable.ai/api/notifications \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"externalId": "order-1024-shipped", "text": "订单 1024 已发货", "url": "https://yourapp.com/orders/1024"}'
+```
+
+| 参数 | 必填 | 描述 |
+|------|------|------|
+| `externalId` | 是 | 应用自己的通知 ID，1-128 位字母、数字或 `_` `.` `:` `-`。同一 ID 重复发送给同一用户不会产生新通知 |
+| `text` | 是 | 通知正文，纯文本，最多 500 个字符。Teable 不会翻译，请使用用户的语言 |
+| `url` | 否 | 点击通知后打开的地址，必须是 https，且主机与应用主页或某个回调 URL 相同 |
+
+响应中的 `status` 为 `created` 表示已送达，`duplicate` 表示该 `externalId` 已发送过，`muted` 表示用户关闭了该应用的通知。每个应用对同一用户每分钟最多发送 30 条，全部用户合计每分钟最多 600 条，超出时返回 429 并带有 `Retry-After`。
 
 ## 刷新访问令牌
 
