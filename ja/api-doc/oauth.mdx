@@ -33,13 +33,22 @@ Teableは、次の3つのOAuth 2.0認可モードに対応しています。
 | リソース | スコープ |
 |----------|--------|
 | **アプリ** | `app\|create`, `app\|read`, `app\|update`, `app\|delete` |
-| **プロジェクト** | `base\|read`, `base\|read_all`, `base\|update`, `base\|table_import`, `base\|table_export`, `base\|query_data` |
-| **テーブル** | `table\|create`, `table\|delete`, `table\|export`, `table\|import`, `table\|read`, `table\|update`, `table\|trash_read`, `table\|trash_update`, `table\|trash_reset` |
+| **プロジェクト** | `base\|create`, `base\|delete`, `base\|read`, `base\|read_all`, `base\|update`, `base\|table_import`, `base\|table_export`, `base\|query_data`, `base\|authority_matrix_config` |
+| **テーブル** | `table\|create`, `table\|delete`, `table\|export`, `table\|import`, `table\|read`, `table\|update`, `table\|trash_read`, `table\|trash_update`, `table\|trash_reset`, `table\|archive_read`, `table\|archive_manage` |
 | **ビュー** | `view\|create`, `view\|delete`, `view\|read`, `view\|update` |
 | **フィールド** | `field\|create`, `field\|delete`, `field\|read`, `field\|update` |
-| **レコード** | `record\|comment`, `record\|create`, `record\|delete`, `record\|read`, `record\|update` |
+| **レコード** | `record\|comment`, `record\|create`, `record\|delete`, `record\|read`, `record\|update`, `record\|archive` |
 | **自動化** | `automation\|create`, `automation\|delete`, `automation\|read`, `automation\|update` |
-| **ユーザー** | `user\|email_read`, `user\|integrations` |
+| **ルーティン** | `routine\|create`, `routine\|delete`, `routine\|read`, `routine\|update` |
+| **ユーザー** | `user\|email_read`, `user\|integrations`, `user\|spaces_read`, `user\|self_hosted_licenses_read`, `user\|notifications_send` |
+
+次のユーザースコープは、アカウント情報の読み取りやユーザーへの連絡に使います。
+
+| スコープ | 用途 |
+|------|------|
+| `user\|spaces_read` | ユーザー情報 API `GET /api/auth/user` のレスポンスに `spaces` を追加します。ユーザーが席を占めているスペースと、各スペースのサブスクリプションプラン、席数、トライアル中かどうかが含まれます。Teable Cloud でのみ返されます |
+| `user\|self_hosted_licenses_read` | ユーザー情報 API のレスポンスに `selfHostedLicenses` を追加します。ユーザーが購入した有効なセルフホストライセンスと、そのサブスクリプションプラン、席数、トライアル中かどうかが含まれます。Teable Cloud でのみ返されます |
+| `user\|notifications_send` | 認可したユーザーにアプリ内通知を送信します。[ユーザーに通知を送信する](#ユーザーに通知を送信する) を参照してください |
 
 <Tip>アプリケーションで実際に必要なスコープだけをリクエストしてください。認可時に、要求された権限がユーザーへ表示されます。</Tip>
 
@@ -92,7 +101,7 @@ https://app.teable.ai/api/oauth/authorize?response_type=code&client_id=YOUR_CLIE
 - 要求された権限（スコープ）
 - アクセスを許可または拒否するための選択肢
 
-ユーザーが以前にアプリを認可している場合（デフォルトでは7日以内）、認可ページを再表示せず、すぐにリダイレクトされます。
+ユーザーが以前にアプリを認可していて（デフォルトでは7日以内）、今回リクエストしたスコープがすべて承認済みの場合は、認可ページを再表示せず、すぐにリダイレクトされます。新しいスコープをリクエストした場合は、ユーザーが改めて確認する必要があります。確認後も、以前に承認したスコープはそのまま保持されます。
 
 ### ステップ3: コールバックを処理する
 
@@ -304,6 +313,25 @@ curl https://app.teable.ai/api/base/access/all \
 ```
 
 このエンドポイントは、現在のユーザーがアクセス権限を持つすべてのプロジェクトを返します。レスポンス内の`baseId`を以降のAPI呼び出しに使用できます。
+
+## ユーザーに通知を送信する
+
+`user|notifications_send` スコープを取得すると、アプリはアクセストークンを使ってそのユーザーにアプリ内通知を送信できます。通知はユーザーの通知センターに表示され、どのアプリから届いたかが明記されます。
+
+```bash
+curl -X POST https://app.teable.ai/api/notifications \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"externalId": "order-1024-shipped", "text": "注文 1024 を発送しました", "url": "https://yourapp.com/orders/1024"}'
+```
+
+| パラメーター | 必須 | 説明 |
+|------|------|------|
+| `externalId` | はい | アプリ独自の通知 ID。1-128 文字の英数字または `_` `.` `:` `-` で指定します。同じ ID を同じユーザーに再送しても、新しい通知は作成されません |
+| `text` | はい | 通知の本文。プレーンテキストで最大 500 文字です。Teable は翻訳しないため、ユーザーの言語で記述してください |
+| `url` | いいえ | 通知をクリックしたときに開く URL。https で、ホストがアプリのホームページまたはいずれかのコールバック URL と同じである必要があります |
+
+レスポンスの `status` が `created` の場合は配信済み、`duplicate` はその `externalId` が送信済み、`muted` はユーザーがそのアプリの通知をオフにしていることを示します。送信数の上限は、アプリごとに同一ユーザーあたり 1 分間に 30 件、全ユーザー合計で 1 分間に 600 件です。超えると 429 と `Retry-After` が返されます。
 
 ## アクセストークンを更新する
 

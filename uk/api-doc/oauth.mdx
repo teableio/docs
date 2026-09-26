@@ -33,13 +33,22 @@ Teable підтримує три режими авторизації OAuth 2.0:
 | Ресурс | Області дозволів |
 |----------|--------|
 | **Застосунок** | `app\|create`, `app\|read`, `app\|update`, `app\|delete` |
-| **Проєкт** | `base\|read`, `base\|read_all`, `base\|update`, `base\|table_import`, `base\|table_export`, `base\|query_data` |
-| **Таблиця** | `table\|create`, `table\|delete`, `table\|export`, `table\|import`, `table\|read`, `table\|update`, `table\|trash_read`, `table\|trash_update`, `table\|trash_reset` |
+| **Проєкт** | `base\|create`, `base\|delete`, `base\|read`, `base\|read_all`, `base\|update`, `base\|table_import`, `base\|table_export`, `base\|query_data`, `base\|authority_matrix_config` |
+| **Таблиця** | `table\|create`, `table\|delete`, `table\|export`, `table\|import`, `table\|read`, `table\|update`, `table\|trash_read`, `table\|trash_update`, `table\|trash_reset`, `table\|archive_read`, `table\|archive_manage` |
 | **Перегляд** | `view\|create`, `view\|delete`, `view\|read`, `view\|update` |
 | **Поле** | `field\|create`, `field\|delete`, `field\|read`, `field\|update` |
-| **Запис** | `record\|comment`, `record\|create`, `record\|delete`, `record\|read`, `record\|update` |
+| **Запис** | `record\|comment`, `record\|create`, `record\|delete`, `record\|read`, `record\|update`, `record\|archive` |
 | **Автоматизація** | `automation\|create`, `automation\|delete`, `automation\|read`, `automation\|update` |
-| **Користувач** | `user\|email_read`, `user\|integrations` |
+| **Рутина** | `routine\|create`, `routine\|delete`, `routine\|read`, `routine\|update` |
+| **Користувач** | `user\|email_read`, `user\|integrations`, `user\|spaces_read`, `user\|self_hosted_licenses_read`, `user\|notifications_send` |
+
+Ці області дозволів користувача дають змогу читати дані облікового запису або звертатися до користувача:
+
+| Область дозволів | Призначення |
+|------|------|
+| `user\|spaces_read` | Додає `spaces` до відповіді кінцевої точки інформації про користувача `GET /api/auth/user`: Простори, де користувач займає місце, а також план підписки, кількість місць і ознаку пробного періоду для кожного Простору. Повертається лише в Teable Cloud |
+| `user\|self_hosted_licenses_read` | Додає `selfHostedLicenses` до відповіді кінцевої точки інформації про користувача: чинні ліцензії на самостійне розгортання, придбані користувачем, а також план підписки, кількість місць і ознаку пробного періоду. Повертається лише в Teable Cloud |
+| `user\|notifications_send` | Надсилає авторизованому користувачу сповіщення в Teable. Див. [Надсилання сповіщень користувачам](#надсилання-сповіщень-користувачам) |
 
 <Tip>Запитуйте лише ті області дозволів, які справді потрібні вашому застосунку. Під час авторизації користувачі бачитимуть запитані дозволи.</Tip>
 
@@ -92,7 +101,7 @@ https://app.teable.ai/api/oauth/authorize?response_type=code&client_id=YOUR_CLIE
 - Запитані дозволи (області дозволів)
 - Варіанти надання або відхилення доступу
 
-Якщо користувач уже авторизував ваш застосунок (за замовчуванням протягом останніх 7 днів), його буде негайно переспрямовано без повторного показу сторінки авторизації.
+Якщо користувач уже авторизував ваш застосунок (за замовчуванням протягом останніх 7 днів) і всі запитані області дозволів уже були схвалені, його буде негайно переспрямовано без повторного показу сторінки авторизації. Якщо запит містить нові області дозволів, користувач має підтвердити їх знову; після підтвердження раніше схвалені області зберігаються.
 
 ### Крок 3. Обробіть зворотний виклик
 
@@ -304,6 +313,25 @@ curl https://app.teable.ai/api/base/access/all \
 ```
 
 Ця кінцева точка повертає всі Проєкти, до яких поточний користувач має дозвіл на доступ. Значення `baseId` із відповіді можна використовувати в наступних викликах API.
+
+## Надсилання сповіщень користувачам
+
+З областю дозволів `user|notifications_send` застосунок може надсилати користувачу сповіщення в Teable за допомогою його токена доступу. Сповіщення з’являються в центрі сповіщень користувача з позначкою, від якого застосунку вони надійшли.
+
+```bash
+curl -X POST https://app.teable.ai/api/notifications \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"externalId": "order-1024-shipped", "text": "Замовлення 1024 відправлено", "url": "https://yourapp.com/orders/1024"}'
+```
+
+| Параметр | Обов’язковий | Опис |
+|------|------|------|
+| `externalId` | Так | Власний ідентифікатор сповіщення в застосунку: 1-128 літер, цифр або символів `_` `.` `:` `-`. Повторне надсилання того самого ідентифікатора тому самому користувачу не створює нового сповіщення |
+| `text` | Так | Текст сповіщення, звичайний текст, не більше 500 символів. Teable його не перекладає, тому пишіть мовою користувача |
+| `url` | Ні | Адреса, яка відкривається після натискання на сповіщення. Має використовувати https і той самий хост, що й домашня сторінка застосунку або одна з URL-адрес зворотного виклику |
+
+Поле `status` у відповіді має значення `created`, якщо сповіщення доставлено, `duplicate`, якщо цей `externalId` уже надсилали, і `muted`, якщо користувач вимкнув сповіщення від цього застосунку. Кожен застосунок може надсилати одному користувачу до 30 сповіщень за хвилину і до 600 за хвилину всім користувачам разом. У разі перевищення повертається 429 із заголовком `Retry-After`.
 
 ## Оновлення токенів доступу
 

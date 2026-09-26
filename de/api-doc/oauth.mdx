@@ -33,13 +33,22 @@ Scopes legen fest, welche Aktionen Ihre OAuth-App ausführen kann. Die verfügba
 | Ressource | Scopes |
 |----------|--------|
 | **App** | `app\|create`, `app\|read`, `app\|update`, `app\|delete` |
-| **Projekt** | `base\|read`, `base\|read_all`, `base\|update`, `base\|table_import`, `base\|table_export`, `base\|query_data` |
-| **Tabelle** | `table\|create`, `table\|delete`, `table\|export`, `table\|import`, `table\|read`, `table\|update`, `table\|trash_read`, `table\|trash_update`, `table\|trash_reset` |
+| **Projekt** | `base\|create`, `base\|delete`, `base\|read`, `base\|read_all`, `base\|update`, `base\|table_import`, `base\|table_export`, `base\|query_data`, `base\|authority_matrix_config` |
+| **Tabelle** | `table\|create`, `table\|delete`, `table\|export`, `table\|import`, `table\|read`, `table\|update`, `table\|trash_read`, `table\|trash_update`, `table\|trash_reset`, `table\|archive_read`, `table\|archive_manage` |
 | **Ansicht** | `view\|create`, `view\|delete`, `view\|read`, `view\|update` |
 | **Feld** | `field\|create`, `field\|delete`, `field\|read`, `field\|update` |
-| **Datensatz** | `record\|comment`, `record\|create`, `record\|delete`, `record\|read`, `record\|update` |
+| **Datensatz** | `record\|comment`, `record\|create`, `record\|delete`, `record\|read`, `record\|update`, `record\|archive` |
 | **Automatisierung** | `automation\|create`, `automation\|delete`, `automation\|read`, `automation\|update` |
-| **Nutzer** | `user\|email_read`, `user\|integrations` |
+| **Routine** | `routine\|create`, `routine\|delete`, `routine\|read`, `routine\|update` |
+| **Nutzer** | `user\|email_read`, `user\|integrations`, `user\|spaces_read`, `user\|self_hosted_licenses_read`, `user\|notifications_send` |
+
+Mit den folgenden Nutzer-Scopes können Sie Kontoinformationen lesen oder Nutzer erreichen:
+
+| Scope | Zweck |
+|------|------|
+| `user\|spaces_read` | Ergänzt die Antwort des Nutzerinformations-Endpunkts `GET /api/auth/user` um `spaces`: die Spaces, in denen der Nutzer einen Platz belegt, jeweils mit Abonnementstufe, Anzahl der Plätze und Angabe, ob es sich um eine Testversion handelt. Nur in Teable Cloud verfügbar |
+| `user\|self_hosted_licenses_read` | Ergänzt die Antwort des Nutzerinformations-Endpunkts um `selfHostedLicenses`: die vom Nutzer gekauften, noch gültigen Lizenzen für selbstgehostete Bereitstellungen, jeweils mit Abonnementstufe, Anzahl der Plätze und Angabe, ob es sich um eine Testversion handelt. Nur in Teable Cloud verfügbar |
+| `user\|notifications_send` | Sendet dem autorisierenden Nutzer In-App-Benachrichtigungen, siehe [Benachrichtigungen an Nutzer senden](#benachrichtigungen-an-nutzer-senden) |
 
 <Tip>Fordern Sie nur die Scopes an, die Ihre Anwendung tatsächlich benötigt. Nutzer sehen die angeforderten Berechtigungen während der Autorisierung.</Tip>
 
@@ -92,7 +101,7 @@ Nutzer sehen eine Autorisierungsseite mit:
 - Den angeforderten Berechtigungen (Scopes)
 - Optionen zum Genehmigen oder Ablehnen des Zugriffs
 
-Wenn der Nutzer Ihre App zuvor autorisiert hat (standardmäßig innerhalb von 7 Tagen), wird er sofort weitergeleitet, ohne die Autorisierungsseite erneut zu sehen.
+Wenn der Nutzer Ihre App zuvor autorisiert hat (standardmäßig innerhalb von 7 Tagen) und alle angeforderten Scopes bereits genehmigt wurden, wird er sofort weitergeleitet, ohne die Autorisierungsseite erneut zu sehen. Fordert die App neue Scopes an, muss der Nutzer erneut zustimmen; die zuvor genehmigten Scopes bleiben danach erhalten.
 
 ### Schritt 3: Den Callback verarbeiten
 
@@ -304,6 +313,25 @@ curl https://app.teable.ai/api/base/access/all \
 ```
 
 Dieser Endpunkt gibt alle Projekte zurück, für die der aktuelle Nutzer eine Zugriffsberechtigung hat. Sie können die `baseId` aus der Antwort für nachfolgende API-Aufrufe verwenden.
+
+## Benachrichtigungen an Nutzer senden
+
+Mit dem Scope `user|notifications_send` kann Ihre App diesem Nutzer über sein Zugriffstoken In-App-Benachrichtigungen senden. Die Benachrichtigung erscheint im Benachrichtigungscenter des Nutzers und zeigt an, von welcher App sie stammt.
+
+```bash
+curl -X POST https://app.teable.ai/api/notifications \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"externalId": "order-1024-shipped", "text": "Bestellung 1024 wurde versandt", "url": "https://yourapp.com/orders/1024"}'
+```
+
+| Parameter | Erforderlich | Beschreibung |
+|-----------|----------|-------------|
+| `externalId` | Ja | Die eigene Benachrichtigungs-ID Ihrer App, 1-128 Zeichen aus Buchstaben, Ziffern oder `_` `.` `:` `-`. Wird dieselbe ID erneut an denselben Nutzer gesendet, entsteht keine neue Benachrichtigung |
+| `text` | Ja | Der Benachrichtigungstext als reiner Text, höchstens 500 Zeichen. Teable übersetzt ihn nicht, verwenden Sie daher die Sprache des Nutzers |
+| `url` | Nein | Die Adresse, die sich beim Klick auf die Benachrichtigung öffnet. Sie muss https verwenden und denselben Host haben wie die Homepage der App oder eine ihrer Callback-URLs |
+
+Der `status` in der Antwort ist `created`, wenn die Benachrichtigung zugestellt wurde, `duplicate`, wenn diese `externalId` bereits gesendet wurde, und `muted`, wenn der Nutzer Benachrichtigungen dieser App deaktiviert hat. Jede App kann einem Nutzer höchstens 30 Benachrichtigungen pro Minute senden und allen Nutzern zusammen höchstens 600 pro Minute. Darüber hinaus antwortet die API mit 429 und einem `Retry-After`-Header.
 
 ## Zugriffstoken aktualisieren
 

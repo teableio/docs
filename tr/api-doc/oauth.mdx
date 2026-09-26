@@ -33,13 +33,22 @@ Kapsamlar, OAuth Uygulamanızın hangi işlemleri gerçekleştirebileceğini bel
 | Kaynak | Kapsamlar |
 |----------|--------|
 | **Uygulama** | `app\|create`, `app\|read`, `app\|update`, `app\|delete` |
-| **Proje** | `base\|read`, `base\|read_all`, `base\|update`, `base\|table_import`, `base\|table_export`, `base\|query_data` |
-| **Tablo** | `table\|create`, `table\|delete`, `table\|export`, `table\|import`, `table\|read`, `table\|update`, `table\|trash_read`, `table\|trash_update`, `table\|trash_reset` |
+| **Proje** | `base\|create`, `base\|delete`, `base\|read`, `base\|read_all`, `base\|update`, `base\|table_import`, `base\|table_export`, `base\|query_data`, `base\|authority_matrix_config` |
+| **Tablo** | `table\|create`, `table\|delete`, `table\|export`, `table\|import`, `table\|read`, `table\|update`, `table\|trash_read`, `table\|trash_update`, `table\|trash_reset`, `table\|archive_read`, `table\|archive_manage` |
 | **Görünüm** | `view\|create`, `view\|delete`, `view\|read`, `view\|update` |
 | **Alan** | `field\|create`, `field\|delete`, `field\|read`, `field\|update` |
-| **Kayıt** | `record\|comment`, `record\|create`, `record\|delete`, `record\|read`, `record\|update` |
+| **Kayıt** | `record\|comment`, `record\|create`, `record\|delete`, `record\|read`, `record\|update`, `record\|archive` |
 | **Otomasyon** | `automation\|create`, `automation\|delete`, `automation\|read`, `automation\|update` |
-| **Kullanıcı** | `user\|email_read`, `user\|integrations` |
+| **Rutin** | `routine\|create`, `routine\|delete`, `routine\|read`, `routine\|update` |
+| **Kullanıcı** | `user\|email_read`, `user\|integrations`, `user\|spaces_read`, `user\|self_hosted_licenses_read`, `user\|notifications_send` |
+
+Aşağıdaki kullanıcı kapsamları, hesap bilgilerini okumak veya kullanıcıya ulaşmak için kullanılır:
+
+| Kapsam | Amaç |
+|------|------|
+| `user\|spaces_read` | Kullanıcı bilgisi uç noktası `GET /api/auth/user` yanıtına `spaces` ekler: kullanıcının koltuk kullandığı Alanlar ve her Alanın abonelik planı, koltuk sayısı ve deneme sürümünde olup olmadığı. Yalnızca Teable Cloud'da döndürülür |
+| `user\|self_hosted_licenses_read` | Kullanıcı bilgisi uç noktasının yanıtına `selfHostedLicenses` ekler: kullanıcının satın aldığı ve hâlâ geçerli olan kendi sunucunuzda barındırma lisansları ile bunların abonelik planı, koltuk sayısı ve deneme sürümünde olup olmadığı. Yalnızca Teable Cloud'da döndürülür |
+| `user\|notifications_send` | Yetkilendiren kullanıcıya uygulama içi bildirim gönderir. Bkz. [Kullanıcılara Bildirim Gönderme](#kullanıcılara-bildirim-gönderme) |
 
 <Tip>Yalnızca uygulamanızın gerçekten ihtiyaç duyduğu kapsamları isteyin. Kullanıcılar, yetkilendirme sırasında istenen izinleri görür.</Tip>
 
@@ -92,7 +101,7 @@ Kullanıcılara aşağıdakileri gösteren bir yetkilendirme sayfası sunulur:
 - İstenen izinler (kapsamlar)
 - Erişimi onaylama veya reddetme seçenekleri
 
-Kullanıcı uygulamanızı daha önce yetkilendirdiyse (varsayılan olarak son 7 gün içinde), yetkilendirme sayfasını yeniden görmeden hemen yönlendirilir.
+Kullanıcı uygulamanızı daha önce yetkilendirdiyse (varsayılan olarak son 7 gün içinde) ve istenen kapsamların tümü daha önce onaylandıysa, yetkilendirme sayfasını yeniden görmeden hemen yönlendirilir. Yeni bir kapsam istendiğinde kullanıcının yeniden onay vermesi gerekir; onayladıktan sonra daha önce onaylanan kapsamlar da korunur.
 
 ### 3. Adım: Geri Çağırmayı İşleme
 
@@ -304,6 +313,25 @@ curl https://app.teable.ai/api/base/access/all \
 ```
 
 Bu uç nokta, mevcut kullanıcının erişim iznine sahip olduğu tüm Projeleri döndürür. Sonraki API çağrılarında yanıttaki `baseId` değerini kullanabilirsiniz.
+
+## Kullanıcılara Bildirim Gönderme
+
+`user|notifications_send` kapsamı verildiğinde uygulamanız, erişim token'ıyla o kullanıcıya uygulama içi bildirim gönderebilir. Bildirim kullanıcının bildirim merkezinde görünür ve hangi uygulamadan geldiği belirtilir.
+
+```bash
+curl -X POST https://app.teable.ai/api/notifications \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"externalId": "order-1024-shipped", "text": "1024 numaralı sipariş kargoya verildi", "url": "https://yourapp.com/orders/1024"}'
+```
+
+| Parametre | Zorunlu | Açıklama |
+|------|------|------|
+| `externalId` | Evet | Uygulamanızın kendi bildirim kimliği; 1-128 karakter uzunluğunda harf, rakam veya `_` `.` `:` `-`. Aynı kimlik aynı kullanıcıya tekrar gönderilirse yeni bildirim oluşturulmaz |
+| `text` | Evet | Bildirim metni; düz metin, en fazla 500 karakter. Teable metni çevirmez, kullanıcının dilini kullanın |
+| `url` | Hayır | Bildirime tıklandığında açılan adres. https olmalı ve ana makinesi uygulamanın ana sayfası veya geri çağırma URL'lerinden biriyle aynı olmalıdır |
+
+Yanıttaki `status` değeri `created` ise bildirim iletilmiştir, `duplicate` ise bu `externalId` daha önce gönderilmiştir, `muted` ise kullanıcı bu uygulamanın bildirimlerini kapatmıştır. Her uygulama aynı kullanıcıya dakikada en fazla 30, tüm kullanıcılara toplamda dakikada en fazla 600 bildirim gönderebilir; sınır aşıldığında `Retry-After` başlığıyla birlikte 429 döndürülür.
 
 ## Erişim Token'larını Yenileme
 
