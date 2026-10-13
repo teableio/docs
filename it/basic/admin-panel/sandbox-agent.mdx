@@ -12,22 +12,38 @@ La pagina **Sandbox Agent** contiene le schede **Impostazioni** e **Sandbox** pe
 
 <Info>Per la configurazione Self-hosted, distribuisci innanzitutto il piano runtime completo. Consulta [Architettura](/it/deploy/architecture).</Info>
 
-## Limiti del runtime
+## Impostazioni generali
 
-Configura i limiti del runtime nella scheda **Impostazioni**:
+Configura i limiti del runtime in **Impostazioni generali**, nella scheda **Impostazioni**:
 
 | Impostazione | Descrizione |
 |------|------|
 | **Timeout di inattività del flusso** | Imposta quando viene terminato un flusso inattivo |
 | **Timeout di inattività** | Imposta quando viene riciclata una sandbox inattiva |
 | **Limite di chat simultanee** | Imposta il numero di agenti che ciascun utente può eseguire contemporaneamente. AI Chat e App Builder sono entrambi agenti |
-| **vCPU** | Imposta il numero di CPU virtuali per ciascuna istanza sandbox |
-| **Memoria** | Imposta il limite di memoria per ciascuna istanza sandbox |
-| **Disco temporaneo** | Imposta il limite di archiviazione effimera per ciascuna istanza sandbox |
 | **Impegno di ragionamento** | Imposta l'impegno di ragionamento predefinito per gli agenti |
+| **Modalità manutenzione** | Quando è attiva, AI Chat, la generazione e l'anteprima delle app e le Routine non avviano nuovi turni, mentre quelli in corso terminano normalmente. Attivala prima di aggiornare o sottoporre a manutenzione l'istanza |
+| **Avviso di manutenzione** | Finché la modalità manutenzione è attiva, viene mostrato agli utenti insieme all'avviso di manutenzione. Usalo per spiegarne il motivo e quando prevedi di ripristinare il servizio |
+
+## Risorse della sandbox
+
+In **Sandbox resources**, nella scheda **Impostazioni**, imposta innanzitutto i valori predefiniti di **vCPU**, **Memoria** e **Disco temporaneo** per ciascuna sandbox.
+
+Per assegnare risorse diverse a un tipo di lavoro, compila le celle corrispondenti nella tabella **Per-scenario settings**. Le celle vuote usano il valore predefinito:
+
+| Scenario | Come viene usata la sandbox |
+|------|------|
+| **Chat IA** | Chat con l'IA in un progetto; una per utente, condivisa da tutte le sue conversazioni |
+| **Generatore di app** | Generazione e anteprima delle app; una per app |
+| **Bot di messaggistica** | Risposte ai messaggi in Feishu, Slack o Telegram; una per bot |
+| **Routine** | Esecuzione pianificata delle Routine; una per Routine |
+
+Per esempio, se le anteprime delle app falliscono spesso per memoria insufficiente, puoi aumentare la memoria solo per **Generatore di app** senza toccare gli altri scenari. Prima del salvataggio, una finestra di conferma elenca ogni modifica, inclusi gli scenari che seguono ancora il valore predefinito e che quindi cambiano insieme a esso.
+
+Le nuove impostazioni valgono solo per le sandbox create in seguito; quelle già in esecuzione non cambiano. Per applicarle subito, distruggi in blocco le sandbox di quel tipo dalla scheda **Sandbox**.
 
 ## Scheda Sandbox
 
-Usa la scheda **Sandbox** per visualizzare e gestire le sessioni sandbox correnti.
+Usa la scheda **Sandbox** per visualizzare e gestire le sessioni sandbox correnti. Puoi filtrarle per stato, tipo e altri criteri.
 
-La chiusura delle sessioni attive interrompe il lavoro degli agenti o le anteprime delle app in esecuzione. Prima di procedere, segui le richieste di conferma mostrate nel prodotto.
+La chiusura delle sessioni attive interrompe il lavoro degli agenti o le anteprime delle app in esecuzione. Prima di procedere, segui le richieste di conferma mostrate nel prodotto. **Distruzione in blocco** distrugge tutte le sandbox che corrispondono ai filtri correnti e richiede di digitare `DESTROY` per confermare. Gli URL di anteprima delle app distribuite si interrompono subito, finché il proprietario dell'app non riapre la sessione.

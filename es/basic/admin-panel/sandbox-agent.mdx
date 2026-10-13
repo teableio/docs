@@ -12,22 +12,38 @@ La página **Agente de entorno aislado** contiene las pestañas **Configuración
 
 <Info>Para una instalación autoalojada, implementa primero el plano de ejecución con todas las funciones. Consulta [Arquitectura](/es/deploy/architecture).</Info>
 
-## Límites de ejecución
+## Configuración general
 
-Configura los límites de ejecución en la pestaña **Configuración**:
+Configura los límites de ejecución en **Configuración general**, dentro de la pestaña **Configuración**:
 
 | Ajuste | Descripción |
 |------|------|
 | **Tiempo de espera por inactividad del flujo** | Establece cuándo se debe finalizar un flujo inactivo |
 | **Tiempo de espera por inactividad** | Establece cuándo se debe reciclar un entorno aislado inactivo |
 | **Límite de chats simultáneos** | Establece cuántos agentes puede ejecutar cada usuario al mismo tiempo. Tanto el Chat de IA como App Builder son agentes |
-| **vCPU** | Establece el número de CPU virtuales para cada instancia de entorno aislado |
-| **Memoria** | Establece el límite de memoria para cada instancia de entorno aislado |
-| **Disco temporal** | Establece el límite de almacenamiento efímero para cada instancia de entorno aislado |
 | **Esfuerzo de razonamiento** | Establece el esfuerzo de razonamiento predeterminado de los agentes |
+| **Modo de mantenimiento** | Mientras está activado, el Chat de IA, la generación de aplicaciones, las vistas previas y las rutinas no inician turnos nuevos; los que ya están en curso terminan con normalidad. Actívalo antes de actualizar o mantener la instancia |
+| **Aviso de mantenimiento** | Mientras el modo de mantenimiento está activado, se muestra a los usuarios junto al mensaje de mantenimiento. Úsalo para explicar el motivo y cuándo se prevé recuperar el servicio |
+
+## Recursos de los entornos aislados
+
+En **Sandbox resources**, dentro de la pestaña **Configuración**, establece primero los valores predeterminados de **vCPU**, **Memoria** y **Disco temporal** para cada entorno aislado.
+
+Si un tipo de trabajo necesita otros recursos, rellena la celda correspondiente en la tabla **Per-scenario settings**. Las celdas vacías usan los valores predeterminados:
+
+| Escenario | Cómo se usa el entorno aislado |
+|------|------|
+| **Chat de IA** | Conversar con la IA en un Proyecto. Uno por usuario, compartido por todas sus conversaciones |
+| **Creador de aplicaciones** | Generar y previsualizar aplicaciones. Uno por aplicación |
+| **Bot de mensajería** | Responder mensajes en Feishu, Slack y Telegram. Uno por bot |
+| **Rutina** | Ejecutar rutinas según su programación. Uno por rutina |
+
+Por ejemplo, si las vistas previas de aplicaciones fallan a menudo por falta de memoria, puedes subir solo la memoria de **Creador de aplicaciones** sin afectar a los demás escenarios. Antes de guardar, un cuadro de confirmación enumera cada cambio; los escenarios que siguen usando el valor predeterminado cambian junto con él y también aparecen en la lista.
+
+La nueva configuración solo se aplica a los entornos aislados que se creen a partir de ese momento; los que están en ejecución no se ven afectados. Para aplicarla de inmediato, destruye por lotes los entornos aislados del tipo correspondiente en la pestaña **Entornos aislados**.
 
 ## Pestaña Entornos aislados
 
-Usa la pestaña **Entornos aislados** para consultar y administrar las sesiones actuales de estos entornos.
+Usa la pestaña **Entornos aislados** para consultar y administrar las sesiones actuales de estos entornos. Puedes filtrarlas por estado, tipo y otros criterios.
 
-Finalizar las sesiones activas interrumpe el trabajo que estén ejecutando los agentes o las vistas previas de aplicaciones. Antes de continuar, sigue las indicaciones de confirmación que aparecen en el producto.
+Finalizar las sesiones activas interrumpe el trabajo que estén ejecutando los agentes o las vistas previas de aplicaciones. Antes de continuar, sigue las indicaciones de confirmación que aparecen en el producto. **Destrucción por lotes** destruye todos los entornos aislados que coinciden con los filtros actuales y pide escribir `DESTROY` para confirmar. Las URL de vista previa de las aplicaciones desplegadas se interrumpen de inmediato hasta que el propietario de la aplicación vuelva a abrir el chat.

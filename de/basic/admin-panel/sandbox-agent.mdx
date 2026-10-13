@@ -12,23 +12,38 @@ Die Seite **Sandbox-Agent** enthält die Tabs **Einstellungen** und **Sandboxes*
 
 <Info>Stellen Sie bei einer selbst gehosteten Einrichtung zuerst die Runtime-Plane mit vollem Funktionsumfang bereit. Siehe [Architektur](/de/deploy/architecture).</Info>
 
-## Laufzeitlimits
+## Allgemeine Einstellungen
 
-Konfigurieren Sie Laufzeitlimits im Tab **Einstellungen**:
+Konfigurieren Sie Laufzeitlimits unter **Allgemeine Einstellungen** im Tab **Einstellungen**:
 
 | Einstellung | Beschreibung |
 |------|------|
 | **Leerlauf-Timeout für Streams** | Legen Sie fest, wann ein inaktiver Stream beendet wird |
 | **Leerlauf-Timeout** | Legen Sie fest, wann eine inaktive Sandbox wiederverwendet wird |
 | **Limit gleichzeitiger Chats** | Legen Sie fest, wie viele Agents jeder Benutzer gleichzeitig ausführen kann. KI-Chat und App Builder sind beide Agents |
-| **vCPUs** | Legen Sie die Anzahl virtueller CPUs für jede Sandbox-Instanz fest |
-| **Arbeitsspeicher** | Legen Sie das Arbeitsspeicherlimit für jede Sandbox-Instanz fest |
-| **Temporärer Speicher** | Legen Sie das Limit für den flüchtigen Speicher jeder Sandbox-Instanz fest |
 | **Denkaufwand** | Legen Sie den Standard-Denkaufwand für Agents fest |
+| **Wartungsmodus** | Ist der Modus aktiv, starten KI-Chat, App-Erstellung, Vorschauen und Routinen keine neuen Runden; bereits laufende Runden werden normal beendet. Aktivieren Sie ihn vor einem Upgrade oder einer Wartung der Instanz |
+| **Wartungshinweis** | Wird Benutzern im Wartungsmodus zusammen mit der Wartungsmeldung angezeigt. Erläutern Sie hier den Grund der Wartung und wann der Dienst voraussichtlich wieder verfügbar ist |
+
+## Sandbox-Ressourcen
+
+Legen Sie unter **Sandbox resources** im Tab **Einstellungen** zuerst die Standardwerte für **vCPU-Anzahl**, **Memory** und **Temporary Disk** jeder Sandbox fest.
+
+Wenn eine bestimmte Art von Arbeit andere Ressourcen erhalten soll, füllen Sie die passenden Zellen in der Tabelle **Per-scenario settings** aus. Leere Zellen verwenden die Standardwerte.
+
+| Szenario | Wie die Sandbox genutzt wird |
+|------|------|
+| **KI-Chat** | Chatten mit der KI in einem Projekt. Eine pro Benutzer, gemeinsam genutzt von allen Chats dieses Benutzers |
+| **App Builder** | Erstellen und Vorschau von Apps. Eine pro App |
+| **IM-Bot** | Antworten auf Nachrichten in Feishu, Slack und Telegram. Eine pro Bot |
+| **Routine** | Routinen nach Zeitplan ausführen. Eine pro Routine |
+
+Wenn App-Vorschauen zum Beispiel häufig wegen zu wenig Arbeitsspeicher fehlschlagen, erhöhen Sie nur den Arbeitsspeicher für **App Builder**, ohne andere Szenarien zu beeinflussen. Vor dem Speichern listet ein Bestätigungsdialog jede Änderung auf. Szenarien, die noch einem Standardwert folgen, ändern sich mit ihm und werden ebenfalls aufgeführt.
+
+Neue Einstellungen gelten nur für danach erstellte Sandboxes; laufende Sandboxes behalten ihre Ressourcen. Damit die Einstellungen sofort wirken, zerstören Sie die betroffenen Sandboxes im Tab **Sandboxes** stapelweise nach Typ.
 
 ## Tab „Sandboxes“
 
-Verwenden Sie den Tab **Sandboxes**, um aktuelle Sandbox-Sitzungen anzuzeigen und zu verwalten.
+Verwenden Sie den Tab **Sandboxes**, um aktuelle Sandbox-Sitzungen anzuzeigen und zu verwalten. Sie können sie nach Status, Typ und weiteren Kriterien filtern.
 
-Das Beenden aktiver Sitzungen unterbricht laufende Agent-Arbeit oder App-Vorschauen. Folgen Sie den Bestätigungsaufforderungen im Produkt, bevor Sie fortfahren.
-
+Das Beenden aktiver Sitzungen unterbricht laufende Agent-Arbeit oder App-Vorschauen. Folgen Sie den Bestätigungsaufforderungen im Produkt, bevor Sie fortfahren. **Stapelweise zerstören** zerstört alle Sandboxes, die den aktuellen Filtern entsprechen; zur Bestätigung geben Sie `DESTROY` ein. Vorschau-Links bereitgestellter Apps sind sofort unterbrochen, bis der App-Eigentümer den Chat erneut öffnet.
