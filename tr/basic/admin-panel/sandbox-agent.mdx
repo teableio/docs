@@ -12,22 +12,38 @@ Yol: Yönetici Paneli → Korumalı Alan Aracısı
 
 <Info>Kendi sunucunuzda barındırma kurulumu için önce tüm özelliklere sahip çalışma zamanı düzlemini dağıtın. [Mimari](/tr/deploy/architecture) bölümüne bakın.</Info>
 
-## Çalışma Zamanı Sınırları
+## Genel Ayarlar
 
-Çalışma zamanı sınırlarını **Ayarlar** sekmesinde yapılandırın:
+Çalışma zamanı sınırlarını **Ayarlar** sekmesindeki **Genel ayarlar** bölümünde yapılandırın:
 
 | Ayar | Açıklama |
 |------|------|
 | **Akış Boşta Kalma Zaman Aşımı** | Boşta kalan bir akışın ne zaman sonlandırılacağını belirler |
 | **Boşta Kalma Zaman Aşımı** | Etkin olmayan bir korumalı alanın ne zaman yeniden kullanılacağını belirler |
 | **Eş Zamanlı Sohbet Sınırı** | Her kullanıcının aynı anda kaç Aracı çalıştırabileceğini belirler. AI Chat ve App Builder'ın ikisi de Aracıdır |
-| **vCPU'lar** | Her korumalı alan örneğinin sanal CPU sayısını belirler |
-| **Bellek** | Her korumalı alan örneğinin bellek sınırını belirler |
-| **Geçici Disk** | Her korumalı alan örneğinin geçici depolama sınırını belirler |
 | **Düşünme Çabası** | Aracılar için varsayılan düşünme çabasını belirler |
+| **Bakım modu** | Açıkken AI Sohbet, uygulama oluşturma, önizlemeler ve rutinler yeni bir sohbet turu başlatmaz; devam eden sohbetler normal şekilde tamamlanır. Örneği yükseltmeden veya bakıma almadan önce açın |
+| **Bakım bildirimi** | Bakım modu açıkken bakım uyarısıyla birlikte kullanıcılara gösterilir. Bakımın nedenini ve tahmini dönüş zamanını açıklamak için kullanın |
+
+## Korumalı Alan Kaynakları
+
+**Ayarlar** sekmesindeki **Sandbox resources** bölümünde önce her korumalı alan için varsayılan **vCPU Sayısı**, **Memory** ve **Temporary Disk** değerlerini belirleyin.
+
+Belirli bir iş türüne farklı kaynak ayırmak için **Per-scenario settings** tablosunda ilgili hücreleri doldurun. Boş bırakılan hücreler varsayılan değeri kullanır:
+
+| Senaryo | Korumalı alanın kullanımı |
+|------|------|
+| **AI Sohbet** | Projede AI ile sohbet. Kullanıcı başına bir tane; aynı kullanıcının sohbetleri bunu paylaşır |
+| **Uygulama oluşturucu** | Uygulama oluşturma ve önizleme. Uygulama başına bir tane |
+| **IM botu** | Feishu, Slack ve Telegram'da mesajlara yanıt verme. Bot başına bir tane |
+| **Rutin** | Rutinlerin zamanlamaya göre otomatik çalışması. Rutin başına bir tane |
+
+Örneğin uygulama önizlemeleri bellek yetersizliği nedeniyle sık sık başarısız oluyorsa yalnızca **Uygulama oluşturucu** belleğini artırabilirsiniz; diğer senaryolar etkilenmez. Kaydetmeden önce onay penceresi her değişikliği listeler. Hâlâ varsayılanı izleyen senaryolar varsayılanla birlikte değişeceği için onlar da listede yer alır.
+
+Yeni ayarlar yalnızca bundan sonra oluşturulan korumalı alanlara uygulanır; çalışmakta olan korumalı alanlar etkilenmez. Ayarların hemen geçerli olması için **Korumalı Alanlar** sekmesinde türe göre filtreleyip ilgili korumalı alanları toplu olarak yok edin.
 
 ## Korumalı Alanlar Sekmesi
 
-Mevcut korumalı alan oturumlarını görüntülemek ve yönetmek için **Korumalı Alanlar** sekmesini kullanın.
+Mevcut korumalı alan oturumlarını görüntülemek ve yönetmek için **Korumalı Alanlar** sekmesini kullanın. Listeyi durum, tür ve diğer ölçütlere göre filtreleyebilirsiniz.
 
-Etkin oturumların sonlandırılması, çalışmakta olan Aracı görevlerini veya uygulama önizlemelerini kesintiye uğratır. Devam etmeden önce ürün içindeki onay istemlerini izleyin.
+Etkin oturumların sonlandırılması, çalışmakta olan Aracı görevlerini veya uygulama önizlemelerini kesintiye uğratır. Devam etmeden önce ürün içindeki onay istemlerini izleyin. **Toplu yok et** düğmesine tıklarsanız geçerli filtreyle eşleşen tüm korumalı alanlar yok edilir; onaylamak için `DESTROY` yazmanız gerekir. Dağıtılmış uygulamaların önizleme bağlantıları hemen çalışmaz hâle gelir ve uygulama sahibi oturumu yeniden açana kadar böyle kalır.

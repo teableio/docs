@@ -12,22 +12,38 @@ The **Sandbox Agent** page contains **Settings** and **Sandboxes** tabs for conf
 
 <Info>For self-hosted setup, deploy the full-featured runtime plane first. See [Architecture](/en/deploy/architecture).</Info>
 
-## Runtime Limits
+## General Settings
 
-Configure runtime limits in the **Settings** tab:
+Configure runtime limits under **General settings** in the **Settings** tab:
 
 | Setting | Description |
 |------|------|
 | **Stream Idle Timeout** | Set when an idle stream is terminated |
 | **Idle Timeout** | Set when an inactive sandbox is recycled |
 | **Concurrent Chat Limit** | Set how many Agents each user can run at the same time. AI Chat and App Builder are both Agents |
-| **vCPUs** | Set the number of virtual CPUs for each sandbox instance |
-| **Memory** | Set the memory limit for each sandbox instance |
-| **Temporary Disk** | Set the ephemeral storage limit for each sandbox instance |
 | **Thinking Effort** | Set the default thinking effort for agents |
+| **Maintenance Mode** | When on, AI Chat, app building, previews, and routines don't start new turns, and turns already running finish normally. Turn it on before upgrading or maintaining the instance |
+| **Maintenance Notice** | Shown to users alongside the maintenance message while maintenance mode is on. Use it to explain the reason and when service is expected back |
+
+## Sandbox Resources
+
+Under **Sandbox resources** in the **Settings** tab, first set the default **vCPUs**, **Memory**, and **Temporary Disk** for each sandbox.
+
+To give a type of work different resources, fill in the matching cells in the **Per-scenario settings** table. Empty cells use the defaults.
+
+| Scenario | How the sandbox is used |
+|------|------|
+| **AI chat** | Chatting with AI in a project. One per user, shared by all of that user's chats |
+| **App Builder** | Building and previewing apps. One per app |
+| **IM bot** | Replying to messages in Feishu, Slack, and Telegram. One per bot |
+| **Routine** | Running routines on a schedule. One per routine |
+
+For example, if app previews often fail because they run out of memory, raise only the memory for **App Builder** without affecting other scenarios. Before saving, a confirmation dialog lists every change. Scenarios that still follow a default change along with it, and they're listed too.
+
+New settings apply only to sandboxes created afterward; running sandboxes keep their current resources. To apply the settings right away, batch-destroy the relevant sandboxes by type in the **Sandboxes** tab.
 
 ## Sandboxes Tab
 
-Use the **Sandboxes** tab to view and manage current sandbox sessions.
+Use the **Sandboxes** tab to view and manage current sandbox sessions. You can filter them by status, type, and other conditions.
 
-Ending active sessions interrupts running Agent work or app previews. Follow the in-product confirmation prompts before continuing.
+Ending active sessions interrupts running Agent work or app previews. Follow the in-product confirmation prompts before continuing. Clicking **Batch destroy** destroys all sandboxes matching the current filters, and you need to type `DESTROY` to confirm. Preview links for deployed apps stop working right away until the app owner reopens the chat.

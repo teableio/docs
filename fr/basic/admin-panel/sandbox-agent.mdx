@@ -12,23 +12,39 @@ La page **Agent sandbox** contient les onglets **Paramètres** et **Sandboxes** 
 
 <Info>Pour une configuration auto-hébergée, déployez d’abord le plan d’exécution complet. Consultez [Architecture](/fr/deploy/architecture).</Info>
 
-## Limites d’exécution
+## Paramètres généraux
 
-Configurez les limites d’exécution dans l’onglet **Paramètres** :
+Configurez les limites d’exécution dans la section **Paramètres généraux** de l’onglet **Paramètres** :
 
 | Paramètre | Description |
 |------|------|
 | **Délai d’inactivité du flux** | Définit à quel moment un flux inactif est arrêté |
 | **Délai d’inactivité** | Définit à quel moment un sandbox inactif est recyclé |
 | **Limite de chats simultanés** | Définit le nombre d’Agents que chaque utilisateur peut exécuter simultanément. Le Chat IA et le Créateur d’applications sont tous deux des Agents |
-| **vCPU** | Définit le nombre de processeurs virtuels pour chaque instance de sandbox |
-| **Mémoire** | Définit la limite de mémoire pour chaque instance de sandbox |
-| **Disque temporaire** | Définit la limite de stockage éphémère pour chaque instance de sandbox |
 | **Effort de réflexion** | Définit l’effort de réflexion par défaut des agents |
+| **Mode maintenance** | Une fois activé, le Chat IA, la génération d’applications, les aperçus et les routines ne démarrent plus de nouveaux tours ; ceux déjà en cours se terminent normalement. À activer avant de mettre à jour ou d’entretenir l’instance |
+| **Message de maintenance** | Affiché aux utilisateurs avec l’avis de maintenance tant que le mode maintenance est actif. Permet d’indiquer la raison de la maintenance et l’heure de retour prévue |
+
+## Ressources des sandboxes
+
+Dans la section **Sandbox resources** de l’onglet **Paramètres**, définissez d’abord les valeurs par défaut de **Nombre de vCPU**, **Memory** et **Temporary Disk** pour chaque sandbox.
+
+Si un type de travail a besoin d’autres ressources, renseignez la cellule correspondante dans le tableau **Per-scenario settings**. Les cellules vides utilisent les valeurs par défaut :
+
+| Scénario | Utilisation du sandbox |
+|------|------|
+| **Chat IA** | Discuter avec l’IA dans un Projet. Un par utilisateur, partagé par toutes ses conversations |
+| **Générateur d’applications** | Générer et prévisualiser des applications. Un par application |
+| **Bot de messagerie** | Répondre aux messages dans Feishu, Slack et Telegram. Un par bot |
+| **Routine** | Exécuter les routines selon leur planification. Un par routine |
+
+Par exemple, si les aperçus d’applications échouent souvent faute de mémoire, vous pouvez augmenter uniquement la mémoire de **Générateur d’applications** sans toucher aux autres scénarios. Avant l’enregistrement, une boîte de confirmation liste chaque modification ; les scénarios qui suivent encore la valeur par défaut changent avec elle et figurent aussi dans la liste.
+
+La nouvelle configuration ne s’applique qu’aux sandboxes créés ensuite ; les sandboxes en cours d’exécution ne sont pas concernés. Pour l’appliquer immédiatement, détruisez par lot les sandboxes du type concerné dans l’onglet **Sandboxes**.
 
 ## Onglet Sandboxes
 
-Utilisez l’onglet **Sandboxes** pour afficher et gérer les sessions sandbox en cours.
+Utilisez l’onglet **Sandboxes** pour afficher et gérer les sessions sandbox en cours, avec des filtres par statut, type et autres critères.
 
-Mettre fin à des sessions actives interrompt le travail en cours des Agents ou les aperçus d’applications. Suivez les invites de confirmation affichées dans le produit avant de continuer.
+Mettre fin à des sessions actives interrompt le travail en cours des Agents ou les aperçus d’applications. Suivez les invites de confirmation affichées dans le produit avant de continuer. **Détruire par lot** détruit tous les sandboxes correspondant aux filtres actuels et demande de saisir `DESTROY` pour confirmer. Les URL d’aperçu des applications déployées sont interrompues immédiatement, jusqu’à ce que le propriétaire de l’application rouvre le chat.
 
