@@ -45,6 +45,8 @@ The table list and the table detail both show an index state next to the search 
 
 Two lines can appear below the state. **Configured: pg_bigm / pg_trgm** means the saved provider differs from the search method in use, and **Indexed-search runtime switch: off** means the index is ready but the runtime is off, so search still runs `ILIKE`.
 
+When a notice at the top of the page reports tables whose configured search index is not serving, search on those tables falls back to `ILIKE`. If it also says the task worker is off, set `V2_TABLE_QUERY_OPS_TASK_WORKER_ENABLED` to `true` on the backend and restart so the indexes can be rebuilt.
+
 <Info>A published index does not mean every search hits it: a probe that is too short, or a field outside the coverage, still falls back to `ILIKE`. This page reports the state of the index, not proof that recent requests hit it.</Info>
 
 ## Configure search coverage
