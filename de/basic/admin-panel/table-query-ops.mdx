@@ -45,6 +45,8 @@ Tabellenliste und Detailansicht zeigen neben der Suchmethode den Indexzustand de
 
 Unter dem Zustand können zwei Zeilen erscheinen: **Konfiguriert: pg_bigm / pg_trgm** bedeutet, dass der gespeicherte Anbieter von der aktuell verwendeten Suchmethode abweicht, und **Laufzeitschalter für indizierte Suche: aus** bedeutet, dass der Index bereit ist, die Laufzeit aber aus ist und die Suche weiterhin `ILIKE` verwendet.
 
+Meldet ein Hinweis oben auf der Seite Tabellen, deren konfigurierter Suchindex nicht greift, fällt die Suche in diesen Tabellen auf `ILIKE` zurück. Meldet er außerdem, dass der Task-Worker ausgeschaltet ist, setzen Sie im Backend `V2_TABLE_QUERY_OPS_TASK_WORKER_ENABLED` auf `true` und starten Sie neu, damit die Indizes neu aufgebaut werden können.
+
 <Info>Ein veröffentlichter Index bedeutet nicht, dass jede Suche ihn trifft: Ein zu kurzer Suchbegriff oder ein Feld außerhalb der Abdeckung fällt weiterhin auf `ILIKE` zurück. Diese Seite zeigt den Zustand des Index, nicht den Nachweis, dass ihn kürzlich Anfragen getroffen haben.</Info>
 
 ## Suchabdeckung konfigurieren

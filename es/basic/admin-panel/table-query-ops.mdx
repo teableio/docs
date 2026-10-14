@@ -45,6 +45,8 @@ La lista de Tablas y el detalle muestran el estado del índice junto al método 
 
 Bajo el estado pueden aparecer dos líneas. **Configurado: pg_bigm / pg_trgm** indica que el proveedor guardado no coincide con el método de búsqueda en uso, y **Interruptor de ejecución de la búsqueda indexada: desactivado** indica que el índice está listo pero la ejecución está apagada, así que la búsqueda sigue usando `ILIKE`.
 
+Cuando un aviso en la parte superior de la página informa de Tablas cuyo índice de búsqueda configurado no está en servicio, la búsqueda en esas Tablas recurre a `ILIKE`. Si además indica que el worker de tareas está desactivado, define `V2_TABLE_QUERY_OPS_TASK_WORKER_ENABLED` como `true` en el backend y reinicia para que los índices puedan reconstruirse.
+
 <Info>Que un índice esté publicado no significa que todas las búsquedas lo usen: un término demasiado corto o un Campo fuera de la cobertura siguen recurriendo a `ILIKE`. Esta página refleja el estado del índice, no demuestra que las solicitudes recientes lo hayan usado.</Info>
 
 ## Configurar la cobertura de búsqueda

@@ -34,7 +34,7 @@ commit only images processed according to these rules.
 - `docs` maps to the Help Center Docs tab. Do not flatten
   `images/docs/{topic}/` into `images/{topic}/`.
 - `{topic}` maps to the navigation name in `docs.json`, such as `ai`, `base`,
-  `space`, `sso`, `authority-matrix`, `get-id`, `sql-query`, or `activate`.
+  `space`, `sso`, `authority-matrix`, `get-id`, or `activate`.
 - Do not put new screenshots in the `images/` root.
 - Do not commit random staging folders.
 - Put unreferenced images in `images/orphans/YYYY-MM-DD/...` first. Do not

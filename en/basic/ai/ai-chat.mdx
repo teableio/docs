@@ -34,7 +34,7 @@ When you paste a long block of plain text, Teable converts it to a Markdown atta
 - **Intelligence**: Choose the **Intelligence** level separately in the model menu. It controls thinking depth; higher levels produce more thorough reasoning.
 - **My secrets**: Open **+** → **More** → **My secrets** to store API keys or other credentials in **Settings** → **Integrations**. The values are yours, AI Chat can read them as environment variables at runtime, and you can grant them to individual apps and automations. See [Credentials and Integrations](/en/basic/credential).
 - **Authorization cards**: When AI needs a third-party account or a secret, it pins a card to the conversation and waits for you before the turn goes on. When Cuppy needs the account to do the task itself, click **Connect** to run an OAuth flow; when an app or automation needs the credential at run time, choose **Connect my account** or grant a credential you already have. Click **Skip** to withhold it; AI continues with the parts it can complete without it. See [Credentials and Integrations](/en/basic/credential).
-- **Scraper**: Open the **+** menu and choose **Scraper**, then pick a platform and a data type. Entries come in two kinds: some scrape a link you paste, such as **personal profile** on LinkedIn or **product reviews** on Amazon; others search by keyword, hashtag, or name, such as **video search** on TikTok or **posts of a subreddit** on Reddit. Teable prefills the matching instruction in the chat input and leaves the part you need to fill in at the end. **Any web page** takes a pasted link directly.
+- **Scraper**: Open the **+** menu and choose **Scraper**. Platforms are grouped under headings such as **Social**, **E-commerce**, **Business intelligence**, and **Search & web**, and the search box at the top finds a platform or data type. Point to a platform to open its data types, such as **Profiles**, **Posts**, **Videos**, or **Comments**; entries without types, such as **Companies** or **People**, are picked with a single click. Teable prefills the instruction in the chat input, and you fill in a link, keyword, or name after **What to scrape**. **Any web page** takes a pasted link directly. The AI picks a suitable source among several, and each scrape shows in the chat as a **Scrape data** row with the source and the credits it used.
 - **Skills**: Open the **+** menu and choose **Skills** to import, enable, disable, or try skills in the current chat. When you import one, choose who can use it: **Personal** keeps it to yourself, **Project** gives it to collaborators in this project, and **Space** gives it to everyone in this space. Type `/` in the input box to choose an enabled skill. To connect or migrate an external system, see [Connect & Migrate Everything](/en/basic/ai/connect-everything).
 - **Context usage**: The ring next to the input box shows how much of the model's context window the conversation currently uses. Click it for the percentage and token counts. When the context fills up, Teable compacts the conversation; start a new chat if you want a clean context instead.
 - **Manage files**: Open **+** → **More** → **Manage files** to view files in the current chat sandbox. You can preview supported files, download files, or delete files and folders you no longer need. A conversation must exist before its files can be managed.
@@ -46,11 +46,13 @@ Click **History** at the top right of the chat panel to see your chats in the cu
 
 The dot next to a chat name marks which chats need you. **Waiting for your reply** means the turn has stopped at a point that needs you: a question from the agent, an authorization, a table to pick, or a credential request. It will not continue until you answer. **Reply failed** means the last reply did not finish properly; open it and ask again. **Generating…** and the unread dot only report progress and new replies, and need nothing from you.
 
-The **...** menu on a chat offers **Pin**, **Rename**, **Archive**, and delete. Deleting also removes all of its messages and cannot be undone.
+Hover over a chat to **Pin** or **Archive** it directly. Right-click a chat (long-press on a touch screen) for the full menu: **Rename**, **Pin**, **Mark as read** or **Mark as unread**, **Archive**, and **Permanent delete**. Permanent delete also removes all of its messages and cannot be undone. After archiving, the notice offers **Undo** to restore the chat right away and **View** to open your archived chats.
+
+When there are unread chats, a **Mark all as read** button appears to the right of the search box and clears every unread dot in the list.
 
 History shows the 100 most recent chats. Pin the ones you use often: a pinned chat leads the list and is exempt from that limit, so it is never pushed out as new chats pile up. You can also drag a chat to reposition it.
 
-App Builder chats are named after their app and cannot be archived.
+App Builder chats are named after their app and cannot be renamed or archived.
 
 ### Archived Chats
 
@@ -333,7 +335,7 @@ Open **+** → **More** → **Manage artifacts** to browse everything you have c
   <Accordion title="What if the platform I need is not in the Scraper menu?">
     The menu holds the common platforms. Just describe in plain language which site and what content you want, and the AI will find a matching data source.
   </Accordion>
-  <Accordion title="How many records does one scrape return?">
-    For list content such as search results, feeds, and comments, each link or keyword returns at most 10 records by default. Ask for a specific number if you need more, up to 50. Scraping a single page returns that one record and is not affected by this limit.
+  <Accordion title="How much data does one scrape return, and what does it cost?">
+    For lists such as search results, posts, and comments, the AI fetches a small number of results by default; state a number in your request if you need more. Each scrape uses credits at the source's actual price. Before it runs, Teable holds the most the scrape could cost, and the scrape cannot run if the space does not have enough credits. A scrape whose maximum cost exceeds 150 credits is refused; ask for fewer results or split it into several scrapes.
   </Accordion>
 </AccordionGroup>

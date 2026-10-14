@@ -45,6 +45,8 @@ L'elenco delle Tabelle e il dettaglio mostrano lo stato dell'indice accanto al m
 
 Sotto lo stato possono comparire due righe. **Configurato: pg_bigm / pg_trgm** indica che il provider salvato è diverso dal metodo di ricerca in uso, mentre **Interruttore di runtime della ricerca indicizzata: disattivato** indica che l'indice è pronto ma il runtime è spento e la ricerca resta su `ILIKE`.
 
+Quando un avviso in cima alla pagina segnala Tabelle con un indice di ricerca configurato ma non attivo, la ricerca su quelle Tabelle ripiega su `ILIKE`. Se l'avviso indica anche che il worker delle attività è spento, imposta `V2_TABLE_QUERY_OPS_TASK_WORKER_ENABLED` su `true` nel backend e riavvia, così gli indici potranno essere ricostruiti.
+
 <Info>Un indice pubblicato non significa che ogni ricerca lo utilizzi: un termine troppo corto o un Campo fuori copertura ripiega comunque su `ILIKE`. Questa pagina riporta lo stato dell'indice, non la prova che le richieste recenti lo abbiano usato.</Info>
 
 ## Configurare la copertura di ricerca

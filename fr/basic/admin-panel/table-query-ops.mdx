@@ -45,6 +45,8 @@ La liste des Tables et le détail affichent l’état de l’index à côté de 
 
 Deux lignes peuvent apparaître sous l’état. **Configuré : pg_bigm / pg_trgm** signale que le fournisseur enregistré diffère de la méthode de recherche utilisée, et **Commutateur d’exécution de la recherche indexée : désactivé** signale que l’index est prêt mais que l’exécution est coupée, la recherche restant en `ILIKE`.
 
+Lorsqu’une notification en haut de la page signale des Tables dont l’index de recherche configuré n’est pas en service, la recherche sur ces Tables retombe sur `ILIKE`. Si elle indique aussi que le worker de tâches est désactivé, définissez `V2_TABLE_QUERY_OPS_TASK_WORKER_ENABLED` sur `true` côté backend, puis redémarrez pour que les index puissent être reconstruits.
+
 <Info>Un index publié ne garantit pas que chaque recherche l’utilise : un terme trop court ou un Champ hors couverture retombe sur `ILIKE`. Cette page indique l’état de l’index, elle ne prouve pas que des requêtes récentes l’ont utilisé.</Info>
 
 ## Configurer la couverture de recherche
