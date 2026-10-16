@@ -93,7 +93,7 @@ mode: "wide"
 | TONOW | 現在の日付と別の日付の間の日数を計算します。| `date, unit` | Number | `TONOW({Date}, "day") => 25` |
 | DATETIME_DIFF | 指定した単位で日時の差を返します。デフォルトの単位は秒です。（単位指定子の一覧を参照） | `date1, date2, [unit]` | Number | `DATETIME_DIFF("2022-08-01", "2023-09-08", "day") => 403` |
 | WORKDAY | 指定した休日を除き、開始日から指定した営業日数だけ移動した日付を返します | `date, count, [holidayStr]` | Datetime | `WORKDAY("2023-09-08", 200) => "2024-06-14 00:00:00"` |
-| WORKDAY_DIFF | date1とdate2の間の営業日数を返します。営業日からは週末と、ISO形式の日付をカンマで区切った任意の休日一覧が除外されます。| `date1, date2, [holidayStr]` | Number | `WORKDAY_DIFF("2023-06-18", "2023-10-01") => 75` |
+| WORKDAY_DIFF | date1とdate2の間の営業日数を返します。開始日と終了日も、営業日であれば日数に含めます。営業日からは週末と、ISO形式の日付をカンマで区切った任意の休日一覧が除外されます。date2がdate1より前の場合、結果は負の値になります。| `date1, date2, [holidayStr]` | Number | `WORKDAY_DIFF("2026-03-09", "2026-03-13") => 5` `WORKDAY_DIFF("2026-03-13", "2026-03-09") => -5` |
 | IS_SAME | 2つの日付を指定単位で比較し、同じかどうかを判定します。同じ場合はtrue、それ以外の場合はfalseを返します。| `date1, date2, [unit]` | Boolean | `IS_SAME("2023-09-08", "2023-09-10") => false` |
 | IS_AFTER | date1がdate2より後かどうかを判定します。後の場合はtrue、それ以外の場合はfalseを返します。| `date1, date2, [unit]` | Boolean | `IS_AFTER("2023-09-10", "2023-09-08") => true` `IS_AFTER("2023-09-10", "2023-09-08", "month") => false` |
 

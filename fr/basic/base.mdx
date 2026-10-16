@@ -82,6 +82,30 @@ Si le Projet contient des Champs Lien, Recherche, Agrégation, Recherche conditi
 
 Si vous disposez des autorisations d’Espace requises, vous pouvez déplacer un Projet vers un autre Espace. Si le déplacement laisse des Champs basés sur des relations pointer entre des Espaces, Teable vous avertit et répertorie les Champs concernés. Lorsque vous confirmez, Teable convertit ces Champs en **Texte sur une ligne** dans le cadre du déplacement.
 
+### Déplacer des ressources vers un autre Projet
+
+Vous pouvez déplacer des Tables, des dossiers, des applications, des automatisations et des routines vers un autre Projet du même Espace. Leurs données et leur configuration restent inchangées ; seul le Projet auquel elles appartiennent change.
+
+<Warning>La vérification effectuée avant le déplacement ne garantit pas de trouver toutes les références : certaines références dans les scripts d’automatisation ou le code des applications peuvent lui échapper. Après le déplacement, vérifiez bien que vos processus ne sont pas affectés et corrigez ce qui doit l’être.</Warning>
+
+1. Dans la barre latérale gauche, ouvrez le menu `...` de la ressource et sélectionnez **Déplacer**.
+2. Choisissez un Projet dans **Projet cible**. Teable vérifie d’abord l’impact du déplacement.
+3. Consultez les résultats de la vérification, puis cliquez sur **Déplacer**.
+4. Une fois le déplacement terminé, vérifiez que les automatisations, applications et routines concernées fonctionnent toujours correctement, et ajustez-les si nécessaire.
+
+La vérification se contente de lire la configuration du Projet et ne modifie aucune donnée. Elle indique :
+
+- **Si le déplacement est possible** : Teable affiche la raison et bloque le déplacement lorsque le Projet cible se trouve dans un autre Espace, que l’un des deux Projets est en lecture seule, que vous n’avez pas les autorisations nécessaires ou que le Projet cible contient déjà un dossier du même nom.
+- **Ressources susceptibles de ne plus fonctionner** : les automatisations et applications qui restent dans le Projet actuel mais font référence à une Table déplacée peuvent ne plus fonctionner après le déplacement. C’est le cas, par exemple, si un déclencheur ou une action d’automatisation cible cette Table, si un script ou une requête HTTP contient l’ID de la Table, ou si une application utilise cette Table pour la connexion ou y fait référence dans son code.
+- **Liens entre Projets** : les Champs Lien entre une Table déplacée et une Table restée dans le Projet d’origine deviennent des liens entre Projets et continuent de fonctionner.
+
+**Déplacer tout ce qui est référencé** est activé par défaut : les ressources de la chaîne de références sont déplacées ensemble, afin de ne laisser aucune référence rompue. Les Tables liées ne sont pas déplacées.
+
+<Note>
+- Vous devez pouvoir supprimer la ressource dans le Projet actuel et créer le même type de ressource dans le Projet cible.
+- Lorsque la Matrice d’autorité est activée, les règles d’autorisation liées aux rôles du Projet actuel ne peuvent pas suivre les ressources et sont supprimées. Les ressources déplacées suivent alors les paramètres d’autorisation du Projet cible. Pour conserver les mêmes restrictions, configurez-les de nouveau dans le Projet cible.
+</Note>
+
 ## Importer et exporter des Projets {#importer-et-exporter-des-bases}
 
 <Card title="Tout connecter et migrer" icon="sparkles" href="/fr/basic/ai/connect-everything">

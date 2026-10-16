@@ -82,6 +82,30 @@ If the project contains Link, Lookup, Rollup, Conditional Lookup, or Conditional
 
 If you have the required Space permissions, you can move a project to another Space. If the move would leave relationship-based fields pointing across Spaces, Teable warns you and lists the affected fields. When you confirm, Teable converts those fields to **Single line text** as part of the move.
 
+### Move Resources to Another Project
+
+You can move tables, folders, apps, automations, and routines to another project in the same Space. Their data and configuration stay the same; only the project they belong to changes.
+
+<Warning>The pre-move check cannot guarantee that it finds every reference. Some references in automation scripts or app code can be missed. After moving, make sure to check that your workflows are not affected, and adjust anything that is.</Warning>
+
+1. In the left sidebar, open the resource's `...` menu and select **Move**.
+2. Choose a project under **Target project**. Teable first checks what the move will affect.
+3. Review the check results and click **Move**.
+4. After the move, check that the related automations, apps, and routines still run correctly, and adjust them as needed.
+
+The check only reads the project's configuration and does not change any data. It reports:
+
+- **Whether the move is allowed**: Teable shows the reason and blocks the move when the target project is in a different Space, either project is read-only, you lack permission, or the target project already has a folder with the same name.
+- **Resources that may stop working**: Automations and apps that stay in the current project but reference a moved table may stop working after the move. For example, an automation trigger or action points to the table, a script or HTTP request contains the table ID, or an app signs in with the table or references it in code.
+- **Cross-project links**: Link fields between a moved table and a table that stays behind become cross-project links and keep working.
+
+**Move everything referenced** is on by default and moves the resources along the reference chain together, so no broken references are left behind. Linked tables do not move.
+
+<Note>
+- You need permission to delete the resource in the current project and to create the same type of resource in the target project.
+- When the Authority Matrix is enabled, permission rules bound to roles in the current project cannot move with the resources and are removed. The moved resources then follow the target project's permission settings. To keep the same restrictions, configure them again in the target project.
+</Note>
+
 ## Import and Export Projects {#import-and-export-bases}
 
 <Card title="Connect & Migrate Everything" icon="sparkles" href="/en/basic/ai/connect-everything">

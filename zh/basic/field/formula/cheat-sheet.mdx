@@ -98,7 +98,7 @@ mode: "wide"
 | TONOW          | 计算当前日期与另一个日期之间的天数。| `date, unit`                 | Number   | `TONOW({Date}, "day") => 25`                                                                                                               |
 | DATETIME\_DIFF | 返回指定单位的日期时间差异，默认单位是秒。| `date1, date2, [unit]`       | Number   | `DATETIME_DIFF("2022-08-01", "2023-09-08", "day") => 403`                                                                                  |
 | WORKDAY        | 返回从开始日期起算的工作日，不包括指定假期。| `date, count, [holidayStr]`  | Datetime | `WORKDAY("2023-09-08", 200) => "2024-06-14 00:00:00"`                                                                                      |
-| WORKDAY\_DIFF  | 返回 `date1` 和 `date2` 之间的工作日数。工作日不包括周末和可选假日列表，假日列表使用 ISO 日期并用逗号分隔。| `date1, date2, [holidayStr]` | Number   | `WORKDAY_DIFF("2023-06-18", "2023-10-01") => 75`                                                                                           |
+| WORKDAY\_DIFF  | 返回 `date1` 和 `date2` 之间的工作日数，起止日期是工作日时都计入。工作日不包括周末和可选假日列表，假日列表使用 ISO 日期并用逗号分隔。`date2` 早于 `date1` 时结果为负数。| `date1, date2, [holidayStr]` | Number   | `WORKDAY_DIFF("2026-03-09", "2026-03-13") => 5` `WORKDAY_DIFF("2026-03-13", "2026-03-09") => -5` |
 | IS\_SAME       | 按指定单位比较两个日期是否相同。相同返回 `true`，否则返回 `false`。| `date1, date2, [unit]`       | Boolean  | `IS_SAME("2023-09-08", "2023-09-10") => false`                                                                                             |
 | IS\_AFTER      | 判断 `date1` 是否晚于 `date2`。如果是，返回 `true`，否则返回 `false`。| `date1, date2, [unit]`       | Boolean  | `IS_AFTER("2023-09-10", "2023-09-08") => true` `IS_AFTER("2023-09-10", "2023-09-08", "month") => false` |
 

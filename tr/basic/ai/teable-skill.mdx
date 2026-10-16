@@ -40,3 +40,27 @@ Yeni GitHub issue'larını <Hata Takipçisi> {tablo URL'sini yapıştırın} iç
 ```
 
 </CodeGroup>
+
+## MCP ile Bağlanma
+
+Claude Code, Cursor ve Codex gibi MCP istemcileri, skill'i yüklemeden Teable'ın MCP sunucusuna doğrudan da bağlanabilir. İstemciden Proje ve tablo yapısını görüntüleyebilir, kayıtları okuyup yazabilir ve Teable API'sini çağırabilirsiniz. İstemci sizin adınıza, her Projede sahip olduğunuz izinlerle çalışır.
+
+<Steps>
+  <Step title="MCP ayarlarını açın">
+    Sol alttaki avatarınıza tıklayın ve **Ayarlar** → **MCP** bölümünü açın. Sayfada sunucu URL'si ve her istemci için kurulum adımları gösterilir.
+  </Step>
+  <Step title="Sunucuyu istemcinize ekleyin">
+    İstemcinizi seçin ve sayfadaki komutu veya yapılandırmayı kopyalayın. Claude Code için terminalde şunu çalıştırın:
+
+    ```bash
+    claude mcp add --transport http teable <sunucu URL'si>
+    ```
+  </Step>
+  <Step title="Oturum açın ve yetki verin">
+    İlk bağlantıda istemci bir tarayıcı açar. Teable'da oturum açın, **Bu URL'yi tanıyorum ve güveniyorum** seçeneğini işaretleyin ve yetkilendirmeyi tamamlamak için **Devam Et**'e tıklayın.
+  </Step>
+</Steps>
+
+Yetki verilen istemciler, ilk bağlanma ve son kullanım zamanlarıyla birlikte **MCP** sayfasındaki **Bağlı istemciler** altında listelenir. Artık kullanmadığınız bir istemcinin erişimini iptal etmek için istemciye tıklayın ve **Kaldır**'ı seçin.
+
+CI, betikler veya tarayıcı olmayan ortamlar için **Kişisel erişim tokenleri** bölümünü genişletin ve bunun yerine bir [kişisel erişim token'ı](/tr/api-doc/token) ile bağlanın: Tüm kaynakları ve tüm izin kapsamlarını içeren bir token oluşturun ve bunu `Authorization` başlığında gönderin. Sayfa, her istemci için ilgili kurulumu gösterir.
