@@ -41,3 +41,26 @@ Prüfe <Aufgabentabelle> {Tabellen-URL einfügen} und markiere überfällige Auf
 
 </CodeGroup>
 
+## Über MCP verbinden
+
+MCP-Clients wie Claude Code, Cursor und Codex können sich auch direkt mit dem MCP-Server von Teable verbinden, ohne den Skill zu installieren. Im Client können Sie die Struktur von Projekten und Tabellen einsehen, Datensätze lesen und schreiben sowie die Teable-API aufrufen. Der Client handelt in Ihrem Namen und hat in jedem Projekt dieselben Berechtigungen wie Sie.
+
+<Steps>
+  <Step title="MCP-Einstellungen öffnen">
+    Klicken Sie unten links auf Ihr Profilbild und öffnen Sie **Einstellungen** → **MCP**. Die Seite zeigt die Server-URL und die Einrichtungsschritte für jeden Client.
+  </Step>
+  <Step title="Server im Client hinzufügen">
+    Wählen Sie Ihren Client aus und kopieren Sie den Befehl oder die Konfiguration von der Seite. Für Claude Code führen Sie Folgendes in einem Terminal aus:
+
+    ```bash
+    claude mcp add --transport http teable <Server-URL>
+    ```
+  </Step>
+  <Step title="Anmelden und autorisieren">
+    Bei der ersten Verbindung öffnet der Client einen Browser. Melden Sie sich bei Teable an, wählen Sie **Ich kenne diese URL und vertraue ihr** aus und klicken Sie auf **Fortfahren**, um die Autorisierung abzuschließen.
+  </Step>
+</Steps>
+
+Autorisierte Clients erscheinen auf der Seite **MCP** unter **Verbundene Clients**, zusammen mit dem Zeitpunkt der ersten Verbindung und der letzten Nutzung. Wenn Sie einen Client nicht mehr verwenden möchten, klicken Sie darauf und wählen Sie **Entfernen**, um seinen Zugriff zu widerrufen.
+
+Für CI, Skripte oder Umgebungen ohne Browser klappen Sie stattdessen **Persönliche Zugangstoken** auf und verbinden sich mit einem [persönlichen Zugriffstoken](/de/api-doc/token): Erstellen Sie ein Token mit allen Ressourcen und allen Berechtigungsbereichen und senden Sie es im Header `Authorization`. Die Seite zeigt die passende Einrichtung für jeden Client.

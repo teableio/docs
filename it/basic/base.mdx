@@ -82,6 +82,30 @@ Se il Progetto contiene Campi Collegamento, Lookup, Rollup, Lookup condizionale 
 
 Se disponi delle autorizzazioni necessarie nello Spazio, puoi spostare un Progetto in un altro Spazio. Se lo spostamento lascia Campi basati su relazioni che puntano a Spazi diversi, Teable ti avvisa ed elenca i Campi interessati. Quando confermi, Teable converte tali Campi in **Testo su una riga** durante lo spostamento.
 
+### Spostare risorse in un altro Progetto
+
+Puoi spostare Tabelle, cartelle, app, Automazioni e routine in un altro Progetto dello stesso Spazio. Dati e configurazione restano invariati; cambia solo il Progetto a cui appartengono.
+
+<Warning>Il controllo che precede lo spostamento non garantisce di individuare tutti i riferimenti: alcuni riferimenti negli script delle Automazioni o nel codice delle app possono sfuggire. Dopo lo spostamento, verifica sempre che i tuoi processi non ne risentano e correggi ciò che serve.</Warning>
+
+1. Nella barra laterale sinistra, apri il menu `...` della risorsa e seleziona **Sposta**.
+2. Scegli un Progetto in **Progetto di destinazione**. Teable verifica prima gli effetti dello spostamento.
+3. Esamina i risultati del controllo e fai clic su **Sposta**.
+4. Al termine dello spostamento, verifica che le Automazioni, le app e le routine correlate funzionino ancora correttamente e modificale se necessario.
+
+Il controllo si limita a leggere la configurazione del Progetto e non modifica alcun dato. Riporta:
+
+- **Se lo spostamento è consentito**: Teable mostra il motivo e blocca lo spostamento quando il Progetto di destinazione si trova in un altro Spazio, uno dei due Progetti è di sola lettura, non disponi delle autorizzazioni necessarie o il Progetto di destinazione contiene già una cartella con lo stesso nome.
+- **Risorse che potrebbero smettere di funzionare**: le Automazioni e le app che restano nel Progetto corrente ma fanno riferimento a una Tabella spostata potrebbero non funzionare più dopo lo spostamento. Succede, ad esempio, se un trigger o un'azione di un'Automazione punta alla Tabella, se uno script o una richiesta HTTP contiene l'ID della Tabella, oppure se un'app usa la Tabella per l'accesso o vi fa riferimento nel codice.
+- **Collegamenti tra Progetti**: i Campi Collegamento tra una Tabella spostata e una Tabella rimasta nel Progetto di origine diventano collegamenti tra Progetti e continuano a funzionare.
+
+**Sposta tutto ciò a cui si fa riferimento** è attivo per impostazione predefinita e sposta insieme le risorse della catena di riferimenti, così da non lasciare riferimenti interrotti. Le Tabelle collegate non vengono spostate.
+
+<Note>
+- Devi poter eliminare la risorsa nel Progetto corrente e creare lo stesso tipo di risorsa nel Progetto di destinazione.
+- Quando la Matrice di autorità è attiva, le regole di autorizzazione associate ai ruoli del Progetto corrente non possono seguire le risorse e vengono rimosse. Le risorse spostate seguono quindi le impostazioni di autorizzazione del Progetto di destinazione. Per mantenere le stesse restrizioni, configurale di nuovo nel Progetto di destinazione.
+</Note>
+
 ## Importare ed esportare Progetti {#importare-ed-esportare-base}
 
 <Card title="Collega e migra tutto" icon="sparkles" href="/it/basic/ai/connect-everything">

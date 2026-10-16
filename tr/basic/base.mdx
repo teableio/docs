@@ -82,6 +82,30 @@ Projede başka bir Alanı gösteren Bağlantı, Arama, Toplama, Koşullu Arama v
 
 Gerekli Alan izinlerine sahipseniz bir Projeyi başka bir Alana taşıyabilirsiniz. Taşıma sonucunda ilişki tabanlı alanlar Alanlar arasında bağlantı kuracaksa Teable sizi uyarır ve etkilenen alanları listeler. Onayladığınızda Teable, taşıma işleminin bir parçası olarak bu alanları **Tek satırlı metin** alanlarına dönüştürür.
 
+### Kaynakları Başka Bir Projeye Taşıma
+
+Tabloları, klasörleri, uygulamaları, otomasyonları ve rutinleri aynı Alandaki başka bir Projeye taşıyabilirsiniz. Verileri ve yapılandırmaları aynı kalır; yalnızca ait oldukları Proje değişir.
+
+<Warning>Taşıma öncesi denetim, tüm referansları bulacağını garanti edemez. Otomasyon betiklerindeki veya uygulama kodundaki bazı referanslar gözden kaçabilir. Taşıdıktan sonra iş süreçlerinizin etkilenmediğini mutlaka kontrol edin, etkilenen bir şey varsa düzenleyin.</Warning>
+
+1. Sol kenar çubuğunda kaynağın `...` menüsünü açın ve **Taşı**'yı seçin.
+2. **Hedef proje** altında bir Proje seçin. Teable önce taşımanın neleri etkileyeceğini denetler.
+3. Denetim sonuçlarını inceleyin ve **Taşı**'ya tıklayın.
+4. Taşıma tamamlandıktan sonra ilgili otomasyonların, uygulamaların ve rutinlerin düzgün çalıştığını kontrol edin, gerekirse düzenleyin.
+
+Denetim yalnızca Projenin yapılandırmasını okur, hiçbir veriyi değiştirmez. Sonuçlarda şunlar yer alır:
+
+- **Taşımaya izin verilip verilmediği**: Hedef Proje farklı bir Alandaysa, Projelerden biri salt okunursa, izniniz yoksa veya hedef Projede aynı adlı bir klasör zaten varsa Teable nedenini gösterir ve taşımayı engeller.
+- **Çalışmayabilecek kaynaklar**: Geçerli Projede kalan ancak taşınan bir tabloya başvuran otomasyonlar ve uygulamalar taşımadan sonra çalışmayabilir. Örneğin bir otomasyonun tetikleyicisi veya eylemi bu tabloyu hedefler, bir betik ya da HTTP isteği tablonun kimliğini içerir veya bir uygulama bu tabloyla oturum açar ya da kodunda ona başvurur.
+- **Projeler arası bağlantılar**: Taşınan bir tablo ile yerinde kalan bir tablo arasındaki Bağlantı alanları, Projeler arası bağlantılara dönüşür ve çalışmaya devam eder.
+
+**Referans verilen her şeyi taşı** varsayılan olarak açıktır ve referans zincirindeki kaynakları birlikte taşır; böylece geride bozuk referans kalmaz. Bağlantılı tablolar taşınmaz.
+
+<Note>
+- Geçerli Projede kaynağı silme ve hedef Projede aynı türde kaynak oluşturma izniniz olmalıdır.
+- Yetki Matrisi etkinse geçerli Projedeki rollere bağlı izin kuralları kaynaklarla birlikte taşınamaz ve kaldırılır. Taşınan kaynaklar bundan sonra hedef Projenin izin ayarlarına tabi olur. Aynı kısıtlamaları korumak için bunları hedef Projede yeniden yapılandırın.
+</Note>
+
 ## Projeleri İçe ve Dışa Aktarma {#veritabanlarını-i̇çe-ve-dışa-aktarma}
 
 <Card title="Her Şeyi Bağlama ve Taşıma" icon="sparkles" href="/tr/basic/ai/connect-everything">

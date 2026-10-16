@@ -82,6 +82,30 @@ Si el Proyecto contiene Campos de Enlace, Búsqueda, Acumulación, Búsqueda con
 
 Si tienes los permisos de Espacio necesarios, puedes mover un Proyecto a otro Espacio. Si el traslado provocaría que los Campos basados en relaciones apuntaran a otros Espacios, Teable te avisa y enumera los Campos afectados. Al confirmar, Teable convierte esos Campos en **Texto de una sola línea** como parte del traslado.
 
+### Mover recursos a otro Proyecto
+
+Puedes mover Tablas, carpetas, aplicaciones, automatizaciones y rutinas a otro Proyecto del mismo Espacio. Sus datos y su configuración no cambian; solo cambia el Proyecto al que pertenecen.
+
+<Warning>La comprobación previa al traslado no garantiza que encuentre todas las referencias. Algunas referencias en scripts de automatizaciones o en el código de aplicaciones pueden pasar desapercibidas. Después del traslado, comprueba sin falta que tus flujos de trabajo no se vean afectados y ajusta lo que haga falta.</Warning>
+
+1. En la barra lateral izquierda, abre el menú `...` del recurso y elige **Mover**.
+2. Elige un Proyecto en **Proyecto de destino**. Teable comprueba primero a qué afectará el traslado.
+3. Revisa los resultados de la comprobación y haz clic en **Mover**.
+4. Después del traslado, comprueba que las automatizaciones, aplicaciones y rutinas relacionadas siguen funcionando correctamente y ajústalas si es necesario.
+
+La comprobación solo lee la configuración del Proyecto y no modifica ningún dato. Muestra lo siguiente:
+
+- **Si se permite el traslado**: Teable indica el motivo y bloquea el traslado cuando el Proyecto de destino está en otro Espacio, alguno de los dos Proyectos es de solo lectura, no tienes permiso o el Proyecto de destino ya tiene una carpeta con el mismo nombre.
+- **Recursos que pueden dejar de funcionar**: Las automatizaciones y aplicaciones que se quedan en el Proyecto actual pero hacen referencia a una Tabla movida pueden dejar de funcionar tras el traslado. Por ejemplo, cuando un desencadenador o una acción de una automatización apunta a la Tabla, un script o una solicitud HTTP contiene el ID de la Tabla, o una aplicación usa la Tabla para el inicio de sesión o hace referencia a ella en su código.
+- **Enlaces entre Proyectos**: Los Campos de Enlace entre una Tabla movida y una Tabla que se queda en el Proyecto actual pasan a ser enlaces entre Proyectos y siguen funcionando.
+
+**Mover todo lo referenciado** está activado de forma predeterminada y traslada también los recursos de la cadena de referencias, para que no queden referencias rotas. Las Tablas enlazadas no se mueven.
+
+<Note>
+- Necesitas permiso para eliminar el recurso en el Proyecto actual y para crear ese mismo tipo de recurso en el Proyecto de destino.
+- Si la Matriz de Autoridad está activada, las reglas de permisos vinculadas a roles del Proyecto actual no pueden trasladarse con los recursos y se eliminan. A partir de entonces, los recursos movidos siguen la configuración de permisos del Proyecto de destino. Para mantener las mismas restricciones, vuelve a configurarlas en el Proyecto de destino.
+</Note>
+
 ## Importar y exportar Proyectos {#importar-y-exportar-bases}
 
 <Card title="Conectar y migrar todo" icon="sparkles" href="/es/basic/ai/connect-everything">

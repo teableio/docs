@@ -40,3 +40,27 @@ npx skills add https://github.com/teableio/agent-skills
 ```
 
 </CodeGroup>
+
+## 通过 MCP 连接
+
+Claude Code、Cursor、Codex 等支持 MCP 的客户端也可以不安装技能，直接连接 Teable 的 MCP 服务器，在客户端中查看项目和表格结构、读写记录、调用 Teable API。客户端以你的身份操作，权限与你在各项目中的权限一致。
+
+<Steps>
+  <Step title="打开 MCP 设置">
+    点击左下角头像，打开 **设置** → **MCP**。页面会显示服务器 URL，并按客户端给出配置步骤。
+  </Step>
+  <Step title="把服务器添加到客户端">
+    选择你使用的客户端，复制页面上的命令或配置。以 Claude Code 为例，在终端运行：
+
+    ```bash
+    claude mcp add --transport http teable <服务器 URL>
+    ```
+  </Step>
+  <Step title="登录并授权">
+    首次连接时，客户端会打开浏览器。登录 Teable 后，勾选 **我认可并信任此 URL**，点击 **继续** 完成授权。
+  </Step>
+</Steps>
+
+授权过的客户端会显示在 **MCP** 页面的 **已连接的客户端** 中，可以查看首次连接和上次使用时间。不再使用某个客户端时，点击它并选择 **移除**，即可撤销授权。
+
+在 CI、脚本或没有浏览器的环境中，展开 **个人访问令牌**，改用[个人访问令牌](/zh/api-doc/token)连接：创建一个包含全部资源和全部权限范围的令牌，放在 `Authorization` 请求头中发送。页面会给出各客户端对应的写法。

@@ -82,6 +82,30 @@ Wenn das Projekt Link-, Lookup-, Rollup-, bedingte Lookup- oder bedingte Rollup-
 
 Wenn Sie über die erforderlichen Space-Berechtigungen verfügen, können Sie ein Projekt in einen anderen Space verschieben. Falls durch das Verschieben beziehungsbasierte Felder über Spaces hinweg verweisen würden, warnt Teable Sie und listet die betroffenen Felder auf. Nach Ihrer Bestätigung wandelt Teable diese Felder beim Verschieben in **Einzeiliger Text** um.
 
+### Ressourcen in ein anderes Projekt verschieben
+
+Sie können Tabellen, Ordner, Apps, Automatisierungen und Routinen in ein anderes Projekt im selben Space verschieben. Daten und Konfiguration bleiben unverändert; es ändert sich nur das Projekt, zu dem sie gehören.
+
+<Warning>Die Prüfung vor dem Verschieben kann nicht garantieren, dass sie alle Verweise findet. Einzelne Verweise in Automatisierungsskripten oder App-Code können übersehen werden. Prüfen Sie nach dem Verschieben unbedingt, ob Ihre Abläufe betroffen sind, und passen Sie Betroffenes an.</Warning>
+
+1. Öffnen Sie in der linken Seitenleiste das Menü `...` der Ressource und wählen Sie **Verschieben**.
+2. Wählen Sie unter **Zielprojekt** ein Projekt aus. Teable prüft zunächst, welche Auswirkungen das Verschieben hat.
+3. Sehen Sie sich das Prüfergebnis an und klicken Sie auf **Verschieben**.
+4. Prüfen Sie nach dem Verschieben, ob die zugehörigen Automatisierungen, Apps und Routinen weiterhin korrekt laufen, und passen Sie sie bei Bedarf an.
+
+Die Prüfung liest nur die Konfiguration des Projekts und ändert keine Daten. Sie zeigt Folgendes an:
+
+- **Ob das Verschieben möglich ist**: Teable nennt den Grund und blockiert das Verschieben, wenn das Zielprojekt in einem anderen Space liegt, eines der beiden Projekte schreibgeschützt ist, Ihnen die Berechtigung fehlt oder das Zielprojekt bereits einen Ordner mit demselben Namen enthält.
+- **Ressourcen, die nicht mehr funktionieren könnten**: Automatisierungen und Apps, die im aktuellen Projekt bleiben, aber auf eine verschobene Tabelle verweisen, funktionieren danach möglicherweise nicht mehr. Das ist etwa der Fall, wenn ein Trigger oder eine Aktion einer Automatisierung auf die Tabelle zeigt, ein Skript oder eine HTTP-Anfrage die Tabellen-ID enthält oder eine App die Tabelle für die Anmeldung nutzt oder im Code auf sie verweist.
+- **Projektübergreifende Verknüpfungen**: Link-Felder zwischen einer verschobenen Tabelle und einer Tabelle, die im Projekt bleibt, werden zu projektübergreifenden Verknüpfungen und funktionieren weiter.
+
+**Alles Referenzierte mitverschieben** ist standardmäßig aktiviert und verschiebt die Ressourcen entlang der Verweiskette mit, sodass keine fehlerhaften Verweise zurückbleiben. Verknüpfte Tabellen werden nicht mitverschoben.
+
+<Note>
+- Sie benötigen die Berechtigung, die Ressource im aktuellen Projekt zu löschen und eine Ressource desselben Typs im Zielprojekt zu erstellen.
+- Ist die Berechtigungsmatrix aktiviert, können Berechtigungsregeln, die an Rollen im aktuellen Projekt gebunden sind, nicht mitverschoben werden und werden entfernt. Für die verschobenen Ressourcen gelten dann die Berechtigungseinstellungen des Zielprojekts. Um dieselben Einschränkungen beizubehalten, richten Sie sie im Zielprojekt erneut ein.
+</Note>
+
 ## Projekte importieren und exportieren {#bases-importieren-und-exportieren}
 
 <Card title="Alles verbinden und migrieren" icon="sparkles" href="/de/basic/ai/connect-everything">
