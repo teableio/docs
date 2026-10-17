@@ -15,7 +15,7 @@ issues become additional numbered items. Production-only checks remain explicit.
 | 02 | Disambiguate duplicate page titles in every locale | Unique, accurate source titles and matching local title/H1 | Complete |
 | 03 | Add missing localized descriptions | Every current MDX page has a specific description; local metadata matches | Complete |
 | 04 | Repair archive resources and indexing | Missing images restored using existing assets; superseded archive pages excluded from indexing | Complete locally |
-| 05 | Reconcile navigation and language counterparts | Useful hidden docs reachable in navigation; retired pages have an explicit disposition | Pending |
+| 05 | Reconcile navigation and language counterparts | Useful hidden docs reachable in navigation; retired pages have an explicit disposition | Complete locally |
 | 06 | Bound changelog size and heading depth | Recent updates stay at existing URL; history is accessible; old hashes resolve; publisher/order checks pass | Pending |
 | 07 | Repair video structured data | No empty JSON-LD; video data is valid and matches visible media | Pending |
 | 08 | Add localized documentation homepages | Indexable hub for every locale with working Docs/API/Deployment/Changelog paths | Pending |
@@ -70,3 +70,11 @@ each fix here before committing it.
 - Restarted local preview: verified noindex and guide links on all 29 pages; all 57 image URLs return HTTP 200 with image content types. Full Mintlify anchor/redirect link check now passes with zero failures.
 - Independent review caught an unrelated example mapping and ambiguous organization-to-instance relationships; corrected the example destination and labeled related guides explicitly. Final review passed.
 - After deployment, confirm the 20 previously indexed historical URLs leave sitemap and expose noindex.
+
+### 05 — Navigation and retired routes
+
+- Added Docker and Nginx to their existing localized Self-hosted groups in all 11 languages. Added legacy Dashboard to Deprecated and applied noindex.
+- Removed 11 retired space AI settings stubs and configured explicit permanent redirects to the same-language custom model guides.
+- Documented the 34 intentionally hidden/noindex pages (enterprise organization features, consolidated migration guides and language router); none are accidental navigation omissions.
+- Restarted local preview and checked all 11 locales: Docker/Nginx navigation and indexability, Dashboard navigation/noindex, retired route destinations and target HTTP 200. Local dev emits 307 even with `permanent: true`; verify hosted 308 after deployment, together with Docker/Nginx canonical and reciprocal hreflang.
+- Full Mintlify link check passed. Independent subagent review passed with no actionable findings.
