@@ -13,7 +13,7 @@ issues become additional numbered items. Production-only checks remain explicit.
 | --- | --- | --- | --- |
 | 01 | Repair active-document anchors | All active anchors resolve in local HTML; Mintlify active-file link check passes | Complete |
 | 02 | Disambiguate duplicate page titles in every locale | Unique, accurate source titles and matching local title/H1 | Complete |
-| 03 | Add missing localized descriptions | Every current MDX page has a specific description; local metadata matches | Pending |
+| 03 | Add missing localized descriptions | Every current MDX page has a specific description; local metadata matches | Complete |
 | 04 | Repair archive resources and indexing | Missing images restored using existing assets; superseded archive pages excluded from indexing | Pending |
 | 05 | Reconcile navigation and language counterparts | Useful hidden docs reachable in navigation; retired pages have an explicit disposition | Pending |
 | 06 | Bound changelog size and heading depth | Recent updates stay at existing URL; history is accessible; old hashes resolve; publisher/order checks pass | Pending |
@@ -55,3 +55,10 @@ each fix here before committing it.
 - Restarted local preview; all 232 changed pages match their source title in rendered title/H1.
 - Independent review identified terminology and translation issues; corrected them and passed re-review.
 - New local-runtime issue: bulk hot reload exceeded Node’s default 4 GB heap and then the file-descriptor limit. Restarted with 8 GB heap and `ulimit -n 65536`; full HTTP verification passed. Keep this in the changelog-size investigation and document the reliable preview command.
+
+### 03 — Localized descriptions
+
+- Added 143 page-specific descriptions for changelogs, deployment, formula grammar, API references and Chinese conditional logic. All 1,741 current MDX pages now have nonempty descriptions.
+- Restarted local preview and verified all 143 changed meta descriptions against source.
+- Independent review found a Turkish FieldId terminology issue; corrected it and passed final review.
+- Corrected an audit counting error found during archive investigation: sitemap has 20 historical `/archive/` pages, plus 77 current `*/api-reference/archive/*` endpoints. The earlier 97 figure mixed those categories; current API endpoints must remain indexable.
