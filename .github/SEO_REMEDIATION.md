@@ -1,7 +1,7 @@
 # Docs SEO remediation
 
 Branch: `codex/docs-seo-remediation`. Baseline: `63203ad`.
-Source audit: `../Research/docs-seo-audit-2026-10-17.md`.
+Source audit: `../../Research/docs-seo-audit-2026-10-17.md`.
 
 Each numbered item is a separate fix and commit. Before committing, run its
 checks against the running local Mintlify preview, request an independent
@@ -11,7 +11,7 @@ issues become additional numbered items. Production-only checks remain explicit.
 
 | ID | Fix | Acceptance | Status |
 | --- | --- | --- | --- |
-| 01 | Repair active-document anchors | All active anchors resolve in local HTML; Mintlify active-file link check passes | Pending |
+| 01 | Repair active-document anchors | All active anchors resolve in local HTML; Mintlify active-file link check passes | Complete |
 | 02 | Disambiguate duplicate page titles in every locale | Unique, accurate source titles and matching local title/H1 | Pending |
 | 03 | Add missing localized descriptions | Every current MDX page has a specific description; local metadata matches | Pending |
 | 04 | Repair archive resources and indexing | Missing images restored using existing assets; superseded archive pages excluded from indexing | Pending |
@@ -40,3 +40,10 @@ issues become additional numbered items. Production-only checks remain explicit.
 
 Append the local checks, reviewer result and any remaining deployment checks for
 each fix here before committing it.
+
+### 01 — Active anchors
+
+- Corrected all 24 failing links across 17 active files, preserving existing target IDs.
+- Started Mintlify locally on port 3000; checked 32 links against 12 rendered target pages with no missing IDs.
+- Mintlify full link check now reports only the 57 known archive image failures; active-file failures are zero.
+- Independent subagent review passed: 24 changed links checked against 13 target pages, no actionable findings.
