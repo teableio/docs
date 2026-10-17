@@ -12,7 +12,7 @@ issues become additional numbered items. Production-only checks remain explicit.
 | ID | Fix | Acceptance | Status |
 | --- | --- | --- | --- |
 | 01 | Repair active-document anchors | All active anchors resolve in local HTML; Mintlify active-file link check passes | Complete |
-| 02 | Disambiguate duplicate page titles in every locale | Unique, accurate source titles and matching local title/H1 | Pending |
+| 02 | Disambiguate duplicate page titles in every locale | Unique, accurate source titles and matching local title/H1 | Complete |
 | 03 | Add missing localized descriptions | Every current MDX page has a specific description; local metadata matches | Pending |
 | 04 | Repair archive resources and indexing | Missing images restored using existing assets; superseded archive pages excluded from indexing | Pending |
 | 05 | Reconcile navigation and language counterparts | Useful hidden docs reachable in navigation; retired pages have an explicit disposition | Pending |
@@ -47,3 +47,11 @@ each fix here before committing it.
 - Started Mintlify locally on port 3000; checked 32 links against 12 rendered target pages with no missing IDs.
 - Mintlify full link check now reports only the 57 known archive image failures; active-file failures are zero.
 - Independent subagent review passed: 24 changed links checked against 13 target pages, no actionable findings.
+
+### 02 — Page titles
+
+- Replaced ambiguous overview titles and distinguished instance administration, member fields, script authoring, AI script generation and API references across all 11 locales.
+- Full source scan: no duplicate titles within a locale. Mintlify build validation passed.
+- Restarted local preview; all 232 changed pages match their source title in rendered title/H1.
+- Independent review identified terminology and translation issues; corrected them and passed re-review.
+- New local-runtime issue: bulk hot reload exceeded Node’s default 4 GB heap and then the file-descriptor limit. Restarted with 8 GB heap and `ulimit -n 65536`; full HTTP verification passed. Keep this in the changelog-size investigation and document the reliable preview command.
