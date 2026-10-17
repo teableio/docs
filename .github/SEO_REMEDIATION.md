@@ -14,7 +14,7 @@ issues become additional numbered items. Production-only checks remain explicit.
 | 01 | Repair active-document anchors | All active anchors resolve in local HTML; Mintlify active-file link check passes | Complete |
 | 02 | Disambiguate duplicate page titles in every locale | Unique, accurate source titles and matching local title/H1 | Complete |
 | 03 | Add missing localized descriptions | Every current MDX page has a specific description; local metadata matches | Complete |
-| 04 | Repair archive resources and indexing | Missing images restored using existing assets; superseded archive pages excluded from indexing | Pending |
+| 04 | Repair archive resources and indexing | Missing images restored using existing assets; superseded archive pages excluded from indexing | Complete locally |
 | 05 | Reconcile navigation and language counterparts | Useful hidden docs reachable in navigation; retired pages have an explicit disposition | Pending |
 | 06 | Bound changelog size and heading depth | Recent updates stay at existing URL; history is accessible; old hashes resolve; publisher/order checks pass | Pending |
 | 07 | Repair video structured data | No empty JSON-LD; video data is valid and matches visible media | Pending |
@@ -62,3 +62,11 @@ each fix here before committing it.
 - Restarted local preview and verified all 143 changed meta descriptions against source.
 - Independent review found a Turkish FieldId terminology issue; corrected it and passed final review.
 - Corrected an audit counting error found during archive investigation: sitemap has 20 historical `/archive/` pages, plus 77 current `*/api-reference/archive/*` endpoints. The earlier 97 figure mixed those categories; current API endpoints must remain indexable.
+
+### 04 — Archive resources and indexing
+
+- Retained 29 historical source pages for old links, all explicitly noindex; 20 previously lacked noindex. Added localized historical notes and related current guides, with a per-page disposition in `seo-archive-policy.json`.
+- Repaired all 57 image references using their existing original assets. Current record archive API pages remain indexable and untouched.
+- Restarted local preview: verified noindex and guide links on all 29 pages; all 57 image URLs return HTTP 200 with image content types. Full Mintlify anchor/redirect link check now passes with zero failures.
+- Independent review caught an unrelated example mapping and ambiguous organization-to-instance relationships; corrected the example destination and labeled related guides explicitly. Final review passed.
+- After deployment, confirm the 20 previously indexed historical URLs leave sitemap and expose noindex.
