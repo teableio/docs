@@ -18,10 +18,11 @@ issues become additional numbered items. Production-only checks remain explicit.
 | 05 | Reconcile navigation and language counterparts | Useful hidden docs reachable in navigation; retired pages have an explicit disposition | Complete locally |
 | 06 | Bound changelog size and heading depth | Recent updates stay at existing URL; history is accessible; old hashes resolve; publisher/order checks pass | Complete locally |
 | 07 | Repair video structured data | No empty JSON-LD; video data is valid and matches visible media | Complete locally |
-| 08 | Add localized documentation homepages | Indexable hub for every locale with working Docs/API/Deployment/Changelog paths | Pending |
-| 09 | Configure docs analytics | Verified measurement ID, supported Mintlify integration, local preview avoids production collection | Pending |
+| 08 | Add localized documentation homepages | Indexable hub for every locale with working Docs/API/Deployment/Changelog paths | Complete locally |
+| 09 | Configure docs analytics | Verified measurement ID, supported Mintlify integration, local preview avoids production collection | Waiting for dedicated stream ID |
 | 10 | Add release regression checks | CI validates links, metadata, navigation, archive policy and changelog structure | Pending |
 | 11 | Maintain changelog publishing conventions | New automated releases keep H2 headings, monthly bounds and history footer; backfill/republication remain safe | Pending |
+| 12 | Make Card destinations crawlable | Current documentation cards expose real anchors without losing existing navigation behavior | Pending |
 
 ## Validation boundaries and discoveries
 
@@ -98,3 +99,13 @@ each fix here before committing it.
 - Restarted local preview and checked all 132 changelog pages: no empty JSON-LD scripts remain (the local CLI emits no platform-generated JSON-LD); source video tags and every attribute are unchanged.
 - Independent review verified that all non-script content is unchanged and no MDX custom VideoObject/dangerouslySetInnerHTML blocks remain. Review passed.
 - After deployment, parse Mintlify’s platform-generated JSON-LD and confirm no empty scripts; publisher recurrence is covered by item 11.
+
+- New issue found during fix 08: Mintlify Card href renders as div/role=link without an anchor in both local and production HTML (confirmed on English AI overview). Homepages now have explicit anchor links; audit and repair remaining current cards in item 12.
+- GA4 investigation: existing shared stream `7563554072` in property `428837143` has enhanced browser-history pageviews enabled. Mintlify’s native integration calls gtag config on route changes. Reusing the shared stream risks duplicate pageviews; changing its global settings could affect the main site/app. Requested a dedicated docs Measurement ID because the connected MCP cannot create streams.
+
+### 08 — Localized documentation homepages
+
+- Added 11 locale index pages with localized introductory metadata, four primary documentation sections and six popular guides; added each as the first Docs navigation group. Card descriptions reuse existing localized page metadata.
+- Root language selection now lands on the selected `/locale` homepage; malformed locale-cookie encoding falls back safely. Two router tests cover all languages, preference precedence, query/hash preservation and content routes.
+- Restarted local preview: all 11 `/locale` URLs return HTTP 200 directly, each has its localized title, description, one H1 and indexable robots. All 110 destination links return 200. Core Card destinations are explicit rendered anchors.
+- Full link check and independent subagent review passed. Production canonical/hreflang and sitemap remain deployment checks.

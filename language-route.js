@@ -7,7 +7,6 @@
   var locales = ["en", "zh", "ru", "de", "fr", "es", "it", "ja", "tr", "uk", "ar"];
   var localeCookie = "TEABLE_DOCS_LOCALE";
   var routerPath = "/en/locale-router";
-  var overviewPath = "/basic/ai/overview";
   var lastObservedPath = window.location.pathname;
 
   function localeFromPath(pathname) {
@@ -35,7 +34,11 @@
     for (var index = 0; index < cookies.length; index += 1) {
       var cookie = cookies[index].trim();
       if (cookie.indexOf(prefix) === 0) {
-        return localeFromTag(decodeURIComponent(cookie.slice(prefix.length)));
+        try {
+          return localeFromTag(decodeURIComponent(cookie.slice(prefix.length)));
+        } catch (_) {
+          return null;
+        }
       }
     }
 
@@ -107,6 +110,6 @@
 
   var locale = readLocaleCookie() || preferredBrowserLocale();
   window.location.replace(
-    "/" + locale + overviewPath + window.location.search + window.location.hash
+    "/" + locale + window.location.search + window.location.hash
   );
 })();
