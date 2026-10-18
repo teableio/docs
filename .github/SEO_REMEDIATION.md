@@ -22,7 +22,8 @@ issues become additional numbered items. Production-only checks remain explicit.
 | 09 | Configure docs analytics | Verified measurement ID, supported Mintlify integration, local preview avoids production collection | Waiting for dedicated stream ID |
 | 10 | Add release regression checks | CI validates links, metadata, navigation, archive policy and changelog structure | Pending |
 | 11 | Maintain changelog publishing conventions | New automated releases keep H2 headings, monthly bounds and history footer; backfill/republication remain safe | Pending |
-| 12 | Make Card destinations crawlable | Current documentation cards expose real anchors without losing existing navigation behavior | Pending |
+| 12 | Make Card destinations crawlable | Current documentation cards expose real anchors without losing existing navigation behavior | Complete locally |
+| 13 | Verify invalid historical release date | Replace impossible June 31, 2024 labels using authoritative evidence and preserve historical hashes | Pending |
 
 ## Validation boundaries and discoveries
 
@@ -109,3 +110,12 @@ each fix here before committing it.
 - Root language selection now lands on the selected `/locale` homepage; malformed locale-cookie encoding falls back safely. Two router tests cover all languages, preference precedence, query/hash preservation and content routes.
 - Restarted local preview: all 11 `/locale` URLs return HTTP 200 directly, each has its localized title, description, one H1 and indexable robots. All 110 destination links return 200. Core Card destinations are explicit rendered anchors.
 - Full link check and independent subagent review passed. Production canonical/hreflang and sitemap remain deployment checks.
+
+- New issue found while extending publisher checks: all 11 annual 2024 changelogs contain June 31, 2024, an impossible date. Item 13 requires source verification; do not guess June 30 or July 31.
+
+### 12 — Crawlable Card links
+
+- Confirmed both local and production Mintlify Card href outputs div/role=link without an anchor. Replaced 474 current cards across 121 MDX files with native anchor wrappers, retaining full-card navigation, original destinations, titles, icons and descriptions. External links use noopener/noreferrer.
+- No card bodies contain interactive descendants; removed Card href props to avoid nested interaction. Added focused CSS for hover, focus and full-card appearance. Homepage cards now use the same native-link pattern.
+- Restarted local preview and verified every one of the 474 wrappers across all 121 pages: exact href, expected Card child, no nested interactive elements. Mintlify build validation passed.
+- Independent review compared all source transformations and sampled rendered AI, SSO, security and homepage HTML; passed with no findings.
