@@ -25,10 +25,9 @@ issues become additional numbered items. Production-only checks remain explicit.
 | 12 | Make Card destinations crawlable | Current documentation cards expose real anchors without losing existing navigation behavior | Complete locally |
 | 13 | Verify invalid historical release dates | Correct July 31 and July 24, 2024 labels using authoritative evidence and preserve historical hashes | Complete |
 | 14 | Correct Gmail guide heading hierarchy | Each localized guide has one page H1 and preserves all existing section hashes | Complete |
-
 | 15 | Update Gmail setup instructions | Current Google account prerequisites and app-password steps in all locales; legacy hashes retained | Complete |
-
 | 16 | Correct archive AI guide headings | Two retained guides have one H1, retain old hashes and remain noindex | Complete |
+| 17 | Resolve Chinese Artifact FAQ ID collision | Section and accordion IDs are unique; old section hash and ARIA links remain valid | Complete |
 
 ## Validation boundaries and discoveries
 
@@ -158,3 +157,8 @@ each fix here before committing it.
 
 - The rendered regression scan discovered duplicate H1s in the English and Chinese historical AI field practical guides. Demoted their 19 body headings by one level; text, images, historical notices and noindex remain unchanged.
 - Local preview checks and independent review passed for both pages: one H1, all 19 previously published section IDs and noindex retained.
+
+### 17 — Artifact section and FAQ IDs
+
+- The full rendered scan found one remaining duplicate content ID: the Chinese AI chat Artifact section and a sharing FAQ both rendered `artifact`. Gave the Accordion its own supported `artifact-sharing-faq` ID, retaining the existing section hash.
+- Local HTTP checks and independent subagent review passed: content IDs are unique, `#artifact` remains the H2, and the FAQ’s aria-controls/aria-labelledby refer to the matching panel/title. The final full-site HTML check passed all 1,869 pages.
