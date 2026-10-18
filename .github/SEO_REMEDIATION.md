@@ -28,6 +28,8 @@ issues become additional numbered items. Production-only checks remain explicit.
 
 | 15 | Update Gmail setup instructions | Current Google account prerequisites and app-password steps in all locales; legacy hashes retained | Complete |
 
+| 16 | Correct archive AI guide headings | Two retained guides have one H1, retain old hashes and remain noindex | Complete |
+
 ## Validation boundaries and discoveries
 
 - This is a Mintlify content repository without `package.json`; the generic Node
@@ -151,3 +153,8 @@ each fix here before committing it.
 - Replaced obsolete personal Gmail IMAP-toggle steps and app/device dropdown instructions in all 11 locales. Google confirms IMAP is always enabled for personal Gmail; managed accounts need administrator-approved access and app-password availability.
 - Linked current Google account entry points, documented two-step verification prerequisites and password revocation, and removed three screenshots of previous settings screens. Evidence and legacy IDs are recorded in `gmail-setup-evidence.json`.
 - Restarted local preview: all 11 pages have one H1, five appropriately nested sections and all 55 old hashes. Independent review rechecked Google’s primary documentation, translations and rendered English/Chinese/Japanese samples; passed.
+
+### 16 — Archive AI guide headings
+
+- The rendered regression scan discovered duplicate H1s in the English and Chinese historical AI field practical guides. Demoted their 19 body headings by one level; text, images, historical notices and noindex remain unchanged.
+- Local preview checks and independent review passed for both pages: one H1, all 19 previously published section IDs and noindex retained.
