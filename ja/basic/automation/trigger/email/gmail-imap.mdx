@@ -1,50 +1,43 @@
 ---
 title: "Gmail IMAP を設定する"
-description: "Teable で使用する Gmail IMAP を有効にし、アプリパスワードを作成する方法"
+description: "Teable のメール自動化に向けて Gmail の IMAP アクセスを確認し、アプリパスワードを作成する方法"
 ---
 
-## Gmail IMAP を有効にしてアプリパスワードを作成する方法
+<span id="gmail-imap-を有効にしてアプリパスワードを作成する方法" />
 
-このガイドでは、Teable が受信メールを自動取得できるように Gmail アカウントを準備する方法を説明します。
+## メール自動化に向けて Gmail を準備する {#gmail-setup-section-1}
 
+Teable のメール受信トリガーで使用する Gmail アカウントを準備します。
 
-### Gmail で IMAP を有効にする
+<span id="gmail-で-imap-を有効にする" />
 
-1. Webブラウザーで Gmail を開きます。
-2. **設定 → すべての設定を表示**をクリックします。
-3. **メール転送と POP/IMAP** タブを開きます。
-4. **IMAP アクセス**までスクロールします。
-5. **IMAP を有効にする**を選択します。
-6. 任意：**自動消去をオン**と**フォルダーサイズを制限しない**はデフォルトのままにします。
-7. **変更を保存**をクリックします。
+### IMAP アクセスを確認する {#gmail-setup-section-2}
 
-**スクリーンショット例：**
-![IMAP を有効にする](https://dxshyegpql0u3hra.public.blob.vercel-storage.com/9a53be669002acaefbae6ab98d57405b.png)
+- **個人用 Gmail：**IMAP は常に有効です。2025 年 1 月以降、Gmail に「IMAP を有効にする」切り替えは表示されません。[Google の Gmail 設定ガイド](https://support.google.com/mail/answer/7126229)をご覧ください。
+- **Google Workspace：**アカウントで IMAP アクセスと接続方法が許可されているか、管理者に確認してください。管理者は [Google 管理コンソール](https://knowledge.workspace.google.com/admin/sync/turn-pop-and-imap-on-or-off-for-users)で IMAP アクセスと許可するクライアントを管理します。
 
-### 2段階認証プロセスを有効にする
+<span id="2段階認証プロセスを有効にする" />
 
-1. **https://myaccount.google.com/** を開いてログインします。
-2. **セキュリティ → 2段階認証プロセス**を選択します。
-3. 手順に従い、SMS、認証アプリ、セキュリティキーのいずれかで 2FA を有効にします。
+### 2段階認証プロセスを有効にする {#gmail-setup-section-3}
 
-**スクリーンショット例：**
-![2FA の設定](https://dxshyegpql0u3hra.public.blob.vercel-storage.com/00047fb62cbf7ca042a4edeb7c511f0a.png)
+1. [Google アカウントのセキュリティ設定](https://myaccount.google.com/security)を開き、接続する Gmail アカウントでログインします。
+2. **2段階認証プロセス**を開き、Google の手順に従って有効にします。
 
-### アプリパスワードを作成する
+<span id="アプリパスワードを作成する" />
 
-1. 2段階認証プロセスを有効にした後、**アプリパスワード**を開きます。
-   - 直接リンク：[https://myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
-2. **アプリを選択**で `メール` を選択します。
-3. **デバイスを選択**で `その他` を選び、`Teable IMAP` と名付けます。
-4. **生成**をクリックします。
-5. **16文字のパスワード**をコピーします（Teable で必要になります）。
+### アプリパスワードを作成する {#gmail-setup-section-4}
 
-**スクリーンショット例：**
-![アプリパスワード](https://dxshyegpql0u3hra.public.blob.vercel-storage.com/f6a7753ef8d3d99901495d4ea79758f2.png)
+1. [アプリパスワード](https://myaccount.google.com/apppasswords)を開きます。再ログインを求められる場合があります。
+2. 画面の案内に従い、`Teable IMAP` という名前でアプリパスワードを作成します。
+3. 生成された **16 文字のアプリパスワード**をコピーし、Teable の Gmail 接続のパスワードとして使用します。
 
+この項目が表示されない場合は、2段階認証プロセスが有効か確認してください。セキュリティキーのみで認証するアカウント、高度な保護機能を利用するアカウント、職場や学校のアカウントでは、アプリパスワードを利用できない場合があります。組織で管理されるアカウントでは、利用が許可されているか管理者に確認してください。[Google のアプリパスワードの説明](https://support.google.com/accounts/answer/185833)をご覧ください。
 
-### 注意事項
+<span id="注意事項" />
 
-- Teable では Gmail のメインパスワードではなく、生成した**アプリパスワード**を使用します。
-- 新しい未読メールだけがオートメーションを開始します。
-- アプリパスワードが表示されるのは一度だけです。安全に保管してください。
+### 注意事項 {#gmail-setup-section-5}
+
+- Teable ではアプリパスワードを使用します。通常の Google アカウントのパスワードでは代用できません。
+- Google がパスワードを表示するのは一度だけです。安全に保管し、接続を使わなくなったら取り消してください。
+- Google アカウントのパスワードを変更すると、既存のアプリパスワードは取り消されます。新しく作成して Teable の接続を更新してください。
+- 新しい未読メールのみがオートメーションを開始します。

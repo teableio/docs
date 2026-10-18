@@ -26,7 +26,7 @@ issues become additional numbered items. Production-only checks remain explicit.
 | 13 | Verify invalid historical release dates | Correct July 31 and July 24, 2024 labels using authoritative evidence and preserve historical hashes | Complete |
 | 14 | Correct Gmail guide heading hierarchy | Each localized guide has one page H1 and preserves all existing section hashes | Complete |
 
-| 15 | Update Gmail setup instructions | Current Google account prerequisites and app-password steps in all locales; legacy hashes retained | In progress |
+| 15 | Update Gmail setup instructions | Current Google account prerequisites and app-password steps in all locales; legacy hashes retained | Complete |
 
 ## Validation boundaries and discoveries
 
@@ -145,3 +145,9 @@ each fix here before committing it.
 - Restarted local preview and checked all 11 guides: one H1 each and all 55 previously published section hashes retained.
 - Independent subagent review passed: source changes are limited to heading levels; rendered English, Chinese and French samples also retain all old hashes.
 - New content issue: the guides still ask users to enable personal Gmail IMAP, an option Google removed in January 2025. Current account prerequisites and application-password instructions are tracked separately in item 15.
+
+### 15 — Current Gmail setup instructions
+
+- Replaced obsolete personal Gmail IMAP-toggle steps and app/device dropdown instructions in all 11 locales. Google confirms IMAP is always enabled for personal Gmail; managed accounts need administrator-approved access and app-password availability.
+- Linked current Google account entry points, documented two-step verification prerequisites and password revocation, and removed three screenshots of previous settings screens. Evidence and legacy IDs are recorded in `gmail-setup-evidence.json`.
+- Restarted local preview: all 11 pages have one H1, five appropriately nested sections and all 55 old hashes. Independent review rechecked Google’s primary documentation, translations and rendered English/Chinese/Japanese samples; passed.
