@@ -24,7 +24,9 @@ issues become additional numbered items. Production-only checks remain explicit.
 | 11 | Maintain changelog publishing conventions | New automated releases keep H2 headings, monthly bounds and history footer; backfill/republication remain safe | Complete locally |
 | 12 | Make Card destinations crawlable | Current documentation cards expose real anchors without losing existing navigation behavior | Complete locally |
 | 13 | Verify invalid historical release dates | Correct July 31 and July 24, 2024 labels using authoritative evidence and preserve historical hashes | Complete |
-| 14 | Correct Gmail guide heading hierarchy | Each localized guide has one page H1 and preserves all existing section hashes | Pending |
+| 14 | Correct Gmail guide heading hierarchy | Each localized guide has one page H1 and preserves all existing section hashes | Complete |
+
+| 15 | Update Gmail setup instructions | Current Google account prerequisites and app-password steps in all locales; legacy hashes retained | In progress |
 
 ## Validation boundaries and discoveries
 
@@ -136,3 +138,10 @@ each fix here before committing it.
 - Stabilized 969 annual heading IDs with safe IDs and raw aliases so backfills cannot renumber previously shared hashes. Restarted preview and verified all 969 aliases across 22 rendered annual pages.
 - Independent review caught nested-fence/code-example corruption, cross-entry ID collisions and ambiguous same-day replacement. Fixed all three, with 17 Python and 12 Node regression tests passing. True code examples remain unchanged; ambiguous same-day updates fail before any files are written and must be combined into one Update.
 - Final review passed, including independent test execution and rendered anchor samples. Live workflow execution is a deployment follow-up.
+
+### 14 — Gmail heading hierarchy
+
+- Demoted the five body headings in each of the 11 localized Gmail IMAP guides by one level; page metadata provides the single H1.
+- Restarted local preview and checked all 11 guides: one H1 each and all 55 previously published section hashes retained.
+- Independent subagent review passed: source changes are limited to heading levels; rendered English, Chinese and French samples also retain all old hashes.
+- New content issue: the guides still ask users to enable personal Gmail IMAP, an option Google removed in January 2025. Current account prerequisites and application-password instructions are tracked separately in item 15.
