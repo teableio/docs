@@ -17,7 +17,7 @@ issues become additional numbered items. Production-only checks remain explicit.
 | 04 | Repair archive resources and indexing | Missing images restored using existing assets; superseded archive pages excluded from indexing | Complete locally |
 | 05 | Reconcile navigation and language counterparts | Useful hidden docs reachable in navigation; retired pages have an explicit disposition | Complete locally |
 | 06 | Bound changelog size and heading depth | Recent updates stay at existing URL; history is accessible; old hashes resolve; publisher/order checks pass | Complete locally |
-| 07 | Repair video structured data | No empty JSON-LD; video data is valid and matches visible media | Pending |
+| 07 | Repair video structured data | No empty JSON-LD; video data is valid and matches visible media | Complete locally |
 | 08 | Add localized documentation homepages | Indexable hub for every locale with working Docs/API/Deployment/Changelog paths | Pending |
 | 09 | Configure docs analytics | Verified measurement ID, supported Mintlify integration, local preview avoids production collection | Pending |
 | 10 | Add release regression checks | CI validates links, metadata, navigation, archive policy and changelog structure | Pending |
@@ -91,3 +91,10 @@ each fix here before committing it.
 - Mintlify build validation passed. Five Python order tests and ten Node navigation/publisher tests passed, including all published old hashes, SPA label changes and real-footer insertion/republication. Full link check passed.
 - Independent review found re-normalized special-character IDs and a stale aria-label; both corrected and re-reviewed. Future publisher recurrence is item 11.
 - RSS remains enabled on all changelogs. Local RSS endpoint is 404; verify feed contents on a deployed preview before merging.
+
+### 07 — Empty video structured data
+
+- Removed 407 unsupported custom VideoObject script blocks from 110 changelog files. Mintlify strips their dangerouslySetInnerHTML content; several also used the site-wide image instead of a video thumbnail. Removing invalid declarations preserves visible media without inventing missing metadata.
+- Restarted local preview and checked all 132 changelog pages: no empty JSON-LD scripts remain (the local CLI emits no platform-generated JSON-LD); source video tags and every attribute are unchanged.
+- Independent review verified that all non-script content is unchanged and no MDX custom VideoObject/dangerouslySetInnerHTML blocks remain. Review passed.
+- After deployment, parse Mintlify’s platform-generated JSON-LD and confirm no empty scripts; publisher recurrence is covered by item 11.
