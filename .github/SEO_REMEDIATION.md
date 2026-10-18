@@ -23,7 +23,7 @@ issues become additional numbered items. Production-only checks remain explicit.
 | 10 | Add release regression checks | CI validates links, metadata, navigation, archive policy and changelog structure | Pending |
 | 11 | Maintain changelog publishing conventions | New automated releases keep H2 headings, monthly bounds and history footer; backfill/republication remain safe | Pending |
 | 12 | Make Card destinations crawlable | Current documentation cards expose real anchors without losing existing navigation behavior | Complete locally |
-| 13 | Verify invalid historical release date | Replace impossible June 31, 2024 labels using authoritative evidence and preserve historical hashes | Pending |
+| 13 | Verify invalid historical release dates | Correct July 31 and July 24, 2024 labels using authoritative evidence and preserve historical hashes | Complete |
 
 ## Validation boundaries and discoveries
 
@@ -119,3 +119,9 @@ each fix here before committing it.
 - No card bodies contain interactive descendants; removed Card href props to avoid nested interaction. Added focused CSS for hover, focus and full-card appearance. Homepage cards now use the same native-link pattern.
 - Restarted local preview and verified every one of the 474 wrappers across all 121 pages: exact href, expected Card child, no nested interactive elements. Mintlify build validation passed.
 - Independent review compared all source transformations and sampled rendered AI, SSO, security and homepage HTML; passed with no findings.
+
+### 13 — Historical release dates
+
+- GitHub Releases API confirms view embedding in v1.3.1 (2024-07-31T02:17:49Z) and unique/nonempty constraints plus API query builder in v1.3.0-beta.0 (2024-07-24T05:11:04Z). Corrected the two June labels in all 11 locales; content is unchanged. Evidence URLs and every old/new label are recorded in `changelog-date-corrections.json`.
+- Preserved 22 old date hashes with aliases. Restarted local preview and checked both new labels and all old anchors on every locale’s 2024 page; all 2024 dates now parse and remain correctly ordered.
+- Independent subagent review re-fetched the two authoritative releases and checked translated labels, unchanged content and rendered old/new IDs; passed.
