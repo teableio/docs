@@ -118,3 +118,31 @@ Push to origin main branch, the changes will be deployed to production automatic
 
 - Mintlify dev isn't running - Run `mintlify install` it'll re-install dependencies.
 - Page loads as a 404 - Make sure you are running in a folder with docs.json
+
+### Changelog history and local preview
+
+The main `*/changelog.mdx` pages contain recent releases. January–September 2026
+entries live in `*/changelog-2026-MM.mdx`; annual 2024 and 2025 pages retain their
+existing URLs. Monthly pages and their RSS feeds are reachable from the changelog
+navigation and the history links at the end of the main page.
+
+Use `##` for a release title and `###` for its subsections. The page title provides
+the single H1. Preserve explicit heading IDs and adjacent legacy `<span id>`
+aliases: Mintlify normalizes custom heading IDs differently from some historical
+automatic IDs. The main page's `data-changelog-*` attributes route previously
+shared hashes to the correct month. Keep those attributes after the last Update
+so the publisher can prepend entries without moving the history footer.
+
+Run `node --test scripts/test_changelog_navigation.cjs` and the publisher tests
+when changing history navigation. RSS generation and hosted permanent redirects
+need a deployed preview; the local CLI does not serve RSS feeds.
+
+For this large multilingual repository, a reliable local preview command is:
+
+```bash
+ulimit -n 65536
+NODE_OPTIONS=--max-old-space-size=8192 npx --yes mintlify dev --no-open
+```
+
+Restart the preview after a large batch of MDX edits before checking the rendered
+pages, to avoid accumulating hot-reload memory during a full-site review.

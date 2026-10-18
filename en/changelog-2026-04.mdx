@@ -1,0 +1,561 @@
+---
+title: "Changelog 2026-04"
+sidebarTitle: "2026-04"
+description: "Teable releases, improvements, and fixes for 2026-04."
+rss: true
+---
+
+<Update label="Apr 30, 2026">
+
+## Integration setup and AI stability optimization {#integration-setup-and-ai-stability-optimization}
+
+### Feature Updates {#feature-updates-64}
+
+* Improved the **Hidden Fields** panel: clicking a field name now jumps directly to its column for faster review.
+
+* Updated **Field Visibility** interactions: use the existing toggle to show or hide fields. Target columns are now **highlighted** after navigation.
+
+* **Personal Settings** and **Workspace Settings** are now combined into a single settings dialog for easier management.
+
+* Reorganized the settings interface with clearer groups and a two-column layout, making **Account, Preferences, Workspace, Members, Billing** easier to find.
+
+* Added a **No Prefix** option for bulk attachment downloads to keep original filenames.
+
+<span id="fixes-&amp;-improvements-43" />
+
+### Fixes & Improvements {#fixes-&-improvements-43}
+
+* Fixed credit tracking for AI image generation with **openai/gpt-image-2**: **Field AI generation** now appears correctly in **Credit usage summary**.
+
+* Improved **data integrity checks and repairs**: broken metadata references and invalid rollup references are now handled more safely.
+
+* Improved resource metering for scraping tasks, with more accurate counts for failed or interrupted runs.
+
+* Fixed sidebar folder rename focus behavior: focus now stays on the current folder after renaming.
+
+* Improved attachment display and file size formatting for a clearer, more consistent file experience.
+
+* Improved error messages in **AI Chat** and **AI Field**: invalid model or Provider settings now return clear validation errors.
+
+* Improved stability for abnormal AI configurations, making legacy or manually edited issues easier to identify and handle.
+
+* Fixed an issue where some menus in **Space Settings** displayed raw keys instead of proper labels.
+
+* Fixed failures in Base duplication or `.tea` imports under specific error conditions, with automatic repair for legacy bad data.
+
+* Improved timezone validation compatibility: legacy supported timezones now pass validation correctly.
+
+* Improved date-time filter stability in AI workflows, especially for range conditions like created time.
+
+* Improved AI Assistant understanding of project context and preset skills, plus more accurate table and record search results.
+
+* Optimized **Agent Computer** and field normalization in automations for better stability in filtering, attachments, and search.
+
+* **CuppyClaw** now defaults to a horizontal layout on first launch of a blank page for a more consistent first-use experience.
+
+* Improved record query stability in sharing and collaboration scenarios, reducing inconsistencies caused by expired caches.
+
+* Improved **Agent Computer** stability during shutdown, startup, and recovery, with more reliable cleanup for long-running tasks.
+
+* When reopening past conversations, the model selector now shows the actual model used instead of the current default.
+
+* Fixed incorrect updates to **bidirectional linked records** in v2 database engine environments for more reliable sync and calculations.
+
+* Updated product copy and setup instructions for the IMAP email trigger to reduce missing or inconsistent labels.
+
+</Update>
+
+<Update label="Apr 29, 2026">
+
+## AI chat stability and Run Script guidance optimization {#ai-chat-stability-and-run-script-guidance-optimization}
+
+### Feature Updates {#feature-updates-65}
+
+* You can now **send a new message while a response is still streaming**, making conversations feel smoother and more natural.
+
+* Multi-select replies now stay in sync more reliably during streaming, and interrupted responses recover more consistently.
+
+* Improved the **Script configuration experience** with clearer input fields and editor states for easier setup and editing.
+
+* Added visual feedback when a script triggers an AI conversation, making the **AI conversation entry point** easier to recognize.
+
+* Refined parts of the interface, localized copy, and code highlighting for a more consistent and polished experience.
+
+### Bug Fixes {#bug-fixes}
+
+* Fixed an issue where external users with edit permission could **not upload images or other attachments** via shared Base links, causing uploads to stall at 0%.
+
+* Fixed a chat input sync issue when switching between nodes, especially after opening Script configuration fields.
+
+* Fixed an issue where the input box still showed a pause action after a response had finished.
+
+* Improved editing stability for external collaborators in shared tables, especially in file collection workflows using personal email accounts.
+
+* Improved stability when switching chat panels so new messages and assistant replies no longer disappear as easily after changing views.
+
+* Fixed an issue in App Builder where some file edits appeared saved in preview but were not actually saved.
+
+* Optimized the Next.js configuration guide in App Builder for a smoother getting-started experience.
+
+* Fixed an issue where attachments added in the Base welcome dialog did not appear.
+
+* Improved file handling in App Builder so uploaded files are now prepared for AI in advance and ready to use immediately.
+
+</Update>
+
+<Update label="Apr 28, 2026">
+
+## New Trigger: When Email Receive (IMAP) {#new-trigger-when-email-receive-imap}
+
+> Introduced a new IMAP email trigger and improved reliability with clearer runtime error feedback.
+
+### 1. Email Receive Trigger (IMAP) {#1-email-receive-trigger-imap}
+
+A brand-new automation trigger: **When email received**. Connect any IMAP mailbox and automatically capture incoming emails into Teable — perfect for managing partnerships, customer support, and building a knowledge base.
+
+<video controls preload="none" className="w-full aspect-video changelog-lazy-video" data-src="https://dxshyegpql0u3hra.public.blob.vercel-storage.com/68cee74c433beae00977490611c8b5ad.mp4" />
+
+<AccordionGroup>
+<Accordion title="Automation Reliability (9)">
+- Fixed automated emails failing to send when an attachment file was missing, and resolved a scheduling delay where triggers didn&apos;t fire at the configured interval.
+- Fixed a bug where changing the email-sending code broke multi-recipient delivery in automations.
+- Improved the Email Receive trigger with better loop interval input, required-field validation, and a clearer 60-minute limit notice.
+- Fixed batch record creation via paste not fully triggering `recordCreated` automation events for all rows.
+- Added Gmail SMTP setup guide for sending emails within Automation Script actions.
+- Fixed batch automation runs (28,000+ emails) experiencing a 30-minute delay on the first email due to slow pending-job loading.
+- Improved the automation enable/disable toggle visibility — previously too subtle, causing users to miss that their automation wasn&apos;t active.
+- Automation scripts using OAuth integrations no longer fail due to expired access tokens — the system now automatically refreshes them behind the scenes.
+- The &quot;Get Records&quot; action in automations now shows clear, actionable error messages when filter conditions are incomplete, instead of cryptic validation errors.
+</Accordion>
+
+<Accordion title="Trigger UX (1)">
+- Added the missing icon for the &quot;When email received&quot; trigger.
+</Accordion>
+</AccordionGroup>
+
+</Update>
+
+<Update label="Apr 27, 2026">
+
+## AI Chat Improvements and PDF Preview Support {#ai-chat-improvements-and-pdf-preview-support}
+
+### Feature Updates {#feature-updates-66}
+
+* **PDF previews are more reliable:** Older PDFs now show cover thumbnails more consistently, just like newly uploaded files.
+
+* **AI chat feels smoother:** Responses, loading states, auto-scroll, and reconnecting after brief network drops are now more stable.
+
+* **Follow-up chats work better:** Your latest message is now used correctly in the next AI response, so you do not need to repeat yourself as often.
+
+* **Code and file output is easier to follow:** Streaming output is smoother, stays scrolled to the latest content, and flickers less.
+
+* **Files and errors are clearer:** File names are cleaner, errors are less distracting, and retries respond faster.
+
+* **Mobile app previews are more stable:** App previews load and display better on smaller screens.
+
+* **HTML previews can go full screen:** Dashboards, charts, and other large previews are easier to view in chat.
+
+* **Automation failure alerts are less noisy:** Repeated failures are grouped together, so you can spot ongoing issues without duplicate alerts.
+
+### Bug Fixes {#bug-fixes-2}
+
+* Fixed overflow in the **Run Script unsubscribe list** when showing 100 records per page.
+
+* Fixed chat messages sometimes appearing in the wrong conversation for newly created apps.
+
+* Fixed **CLI row queries** sometimes ignoring the current view filters.
+
+* Fixed the **CuppyClaw Beta modal** on small screens so action buttons stay visible.
+
+* Fixed publishing failures for apps with large images or videos.
+
+* Fixed unreliable search for **date fields** in v2 global search.
+
+* Fixed occasional v2 page loading errors when opening table views.
+
+* Fixed formula and computed field issues caused by corrupted metadata or schema inconsistencies.
+
+* Improved v2 record creation speed, especially for tables with computed fields.
+
+* Fixed duplicate Stripe trial subscriptions when changing plans.
+
+* Fixed button alignment in **Grid view** with **Compact** row height.
+
+* Fixed automation debugging so script crash errors appear directly in **Execution Result**.
+
+* Fixed automation script files being duplicated instead of updated in place.
+
+* Fixed some formulas showing linked record IDs instead of record names.
+
+* Fixed formulas like `= BLANK()` failing when there was a space after `=`.
+
+* Improved recovery for missing thumbnails on older PDF attachments.
+
+</Update>
+
+<Update label="Apr 23, 2026">
+
+## External Editing with No Extra Cost {#external-editing-with-no-extra-cost}
+
+> External collaborators can now edit with no extra seats required. Expand collaboration at no additional cost, with clearer table sharing and view sharing.
+
+### 1. Editable Shared Tables {#1-editable-shared-tables}
+
+Collaborate externally without extra seats and scale collaboration more easily. Login is required, so every edit stays traceable.
+
+<video controls preload="none" className="w-full aspect-video changelog-lazy-video" data-src="https://dxshyegpql0u3hra.public.blob.vercel-storage.com/76d35ea66fe764063d3031e27970f99f.mp4" />
+
+### 2. Share Specific Tables or Views {#2-share-specific-tables-or-views}
+
+When sharing, you can control exactly what is exposed through shared tables or views, so collaborators only see the data they need.
+
+<video controls preload="none" className="w-full aspect-video changelog-lazy-video" data-src="https://dxshyegpql0u3hra.public.blob.vercel-storage.com/e8d56e6f45c4f2c921e5e02e791a6750.mp4" />
+
+<span id="3-duplicate-&amp;-delete-tables" />
+
+### 3. Duplicate & Delete Tables {#3-duplicate-&-delete-tables}
+
+You can now duplicate an entire table in one click, and delete tables you no longer need — keeping your base clean and organized.
+
+<AccordionGroup>
+<Accordion title="Sharing &amp; Permission Fixes (5)">
+- Unified the share button style in Form views to match other view types.
+- Fixed extra white space appearing below the Share settings panel.
+- Fixed a permission error when switching between tables while previewing a template.
+- Fixed read-only users incorrectly seeing an index repair prompt that required permissions they didn&apos;t have.
+- Fixed a reflected XSS vulnerability in auth pages where the `redirect` parameter accepted `javascript:` URIs.
+</Accordion>
+
+<Accordion title="General Fixes &amp; Improvements (6)">
+- Migrated all public-facing links from `teable.io` to `teable.ai`, including docs, releases, and npm packages.
+- Fixed a billing page error that prevented users from viewing their plan details.
+- Improved validation and permission checks when Link fields auto-create and establish relationships.
+- Fixed copy-paste showing a success message while the cell content remained unchanged.
+- Fixed the first-column statistics hover area having a transparent background that caused visual bleed-through.
+- Enhanced Link field search with support for table-style views and field selection.
+</Accordion>
+</AccordionGroup>
+
+</Update>
+
+<Update label="Apr 22, 2026">
+
+## AI Chat, PDF Preview, and Stability Fixes {#ai-chat-pdf-preview-and-stability-fixes}
+
+### Features {#features}
+
+* Improved **Billing details**: all AI Chat tool calls from the same conversation are now grouped into one record with total credits shown. A **Model ID** column was added, and the detail section is now expanded by default.
+
+* You can now open a table in a **new window** with **⌘ + Click** (Ctrl + Click on Windows), making it easier to compare data side by side.
+
+* Attachment fields now show a **PDF preview** (first page) directly in the cell, and file thumbnails have been improved for easier identification.
+
+* Custom domains now support editing a custom subdomain on **teable.app** — you can use `your-name.teable.app` for your published app.
+
+### Bug Fixes {#bug-fixes-3}
+
+* Fixed an issue where deleting records could cause errors in certain tables and views.
+
+* Improved filter stability — invalid or mismatched filter conditions are now skipped automatically instead of crashing the view. Clearer warnings are shown for problematic rules.
+
+* Added an inline hint in the **Gmail IMAP Password** field to clarify that Gmail requires an **App Password** instead of your regular account password.
+
+* Fixed an issue where **Today** date filters could create unusable rules, especially when generated by AI.
+
+* Fixed an issue where importing a `.tea` file could fail when a Select field contained duplicate options.
+
+* Fixed an issue where automations could get stuck in a pending state; affected tasks are now retried automatically.
+
+* Fixed an issue where trial licenses were not shown in the license list.
+
+* Fixed a mobile issue where the Space list could not be scrolled.
+
+* Fixed in v2 an issue where copying a Lookup field and converting it to a Single Select could clear existing data.
+
+* Fixed in v2 an issue where bulk paste in a filtered view could append new rows instead of updating visible ones.
+
+* Fixed an issue where the `updateRecord` automation trigger could be missing fields, causing scripts to loop unexpectedly.
+
+* Fixed an issue where AI Chat could use the wrong default model; the correct default is now applied consistently.
+
+* Fixed incorrect credit limit prompts for users with custom **Minimax** model configurations.
+
+* Fixed an issue in **App Builder Chat** where switching models did not always take effect.
+
+* Fixed in v2 an issue where filters using **is / is not** with empty values could match unintended records.
+
+* Fixed an issue where error indicators in Apps could remain visible after the error was resolved.
+
+* Fixed an issue where the Space base list was not fully displayed even when there was enough space.
+
+* Unified the styling of share-related icons for a more consistent look.
+
+* Fixed an issue where grouped field default values were not auto-filled correctly on the .cn site.
+
+* Fixed in v2 an issue where linked records could not be selected repeatedly in a relationship field.
+
+* Fixed an issue where AI-generated single-select values did not appear until the page was refreshed.
+
+* Fixed an issue where the value **0** was incorrectly treated as blank in formulas.
+
+* Fixed an issue where deleted Apps could still be accessed via their publish links.
+
+* Fixed an issue where pasting the same value into a cell could still trigger automations and AI recalculation unnecessarily.
+
+* Fixed an issue where dragging items in the sidebar could accidentally trigger a file upload prompt in the AI Chat panel.
+
+* Fixed an issue where the AI API ignored the selected model and always used the default one.
+
+* Fixed an issue where Apps created through General Chat did not inherit your selected model.
+
+* Fixed layout issues on the **Plan** and **Pricing** pages, including dark mode display problems.
+
+* Fixed an issue where the **TEXTBEFORE** formula function was unavailable.
+
+* Fixed an issue where long base names in **Cuppy/Claw** could overflow the dialog boundary.
+
+* Fixed in v2 an issue where date fields did not support search.
+
+* Fixed an issue where downloading invoice attachments by email could return far more files than expected.
+
+* Fixed false-positive error cards in **App Builder preview** caused by recoverable rendering issues.
+
+* Fixed in v2 an issue where converting certain legacy fields could corrupt settings and cause query errors.
+
+* Fixed in v2 an issue where cross-base lookup fields could not be deleted.
+
+* Fixed an issue where AI used the wrong timezone when working with date and time fields, which could lead to incorrect results.
+
+</Update>
+
+<Update label="Apr 20, 2026">
+
+## Formula, Search, and Stability Updates {#formula-search-and-stability-updates}
+
+- Added the `TEXTBEFORE` and `TEXTSPLIT` formula functions for extracting text before a delimiter and splitting text by a delimiter.
+- Global search now supports date fields.
+- Bulk attachment downloads now respect the current search results and include attachments from matching rows only.
+- Improved formula comparisons when numeric values are blank, reducing incorrect matches in edge cases.
+- Improved the App Builder preview experience by reducing unnecessary preview errors and improving sync stability after refresh.
+- Improved task recovery across the system to reduce cases where workflows get stuck, stay unresponsive for too long, or enter abnormal states.
+- Refined parts of the CuppyClaw UI, including modal sizing, tab layout, and spacing consistency.
+- Improved undo/redo snapshot consistency for record changes in V2, making recovery more reliable in complex editing scenarios.
+- Improved V2 progress handling during large undo/redo replays, with more stable feedback for long-running operations.
+- Enhanced V2 schema diagnostics to help identify structure-related issues faster.
+
+</Update>
+
+<Update label="Apr 17, 2026">
+
+## Claude Opus 4.7 is now in Teable {#claude-opus-4-7-is-now-in-teable}
+
+We&apos;ve found it better at handling complex tasks, with **stronger multi-step reasoning** and **more reliable agent workflows**. It delivers up to 14% better performance on complex workflows, with tool errors reduced to 2/3, and reduces document reasoning errors by 21% when working with source information.
+
+This makes Teable better for real-world work where data needs to be processed, organized, and turned into action. It gives teams **a new top-end model option** for their **most demanding workflows in Teable**.
+
+You can try it in Teable now.
+
+<img loading="lazy" alt="Claude Opus 4.7 is now in Teable" src="https://dxshyegpql0u3hra.public.blob.vercel-storage.com/2c31e71e7578d8768c8125d71d08e9d8.png" />
+
+</Update>
+
+<Update label="Apr 15, 2026">
+
+## AI Chat Now Understands Your Views {#ai-chat-now-understands-your-views}
+
+> Teable's View-Aware AI Chat gives you precise control over every piece of data, every row and column, every table, and every view.
+
+### 1. What You See Is What AI Gets {#1-what-you-see-is-what-ai-gets}
+
+AI Chat now perceives your active table view — including filters, sorts, and groupings. When you ask it to update data, it operates within your current view context, not the entire table.
+
+<video controls preload="none" className="w-full aspect-video changelog-lazy-video" data-src="https://dxshyegpql0u3hra.public.blob.vercel-storage.com/c406297a1b490b96dee0ea751e4b0996.mp4" />
+
+### 2. Precise CRUD via Chat {#2-precise-crud-via-chat}
+
+Create, read, update, and delete data using natural language. Ask AI to "mark row 123 as High Value and row 456 as Follow-up," and it updates them instantly.
+
+<video controls preload="none" className="w-full aspect-video changelog-lazy-video" data-src="https://dxshyegpql0u3hra.public.blob.vercel-storage.com/d6d0d6cefa2ab434a992b48b980ece4c.mp4" />
+
+### 3. Improved AI Field Output {#3-improved-ai-field-output}
+
+AI-generated field content is now more polished and accurate, with better formatting and fewer edge cases in output quality.
+
+<AccordionGroup>
+<Accordion title="AI &amp; Chat Fixes (4)">
+- Fixed the AI settings reset button restoring the last saved model instead of the actual default.
+- Fixed AI Chat attachment example upload failing during the onboarding flow.
+- Fixed the Trash cleanup processor repeatedly failing due to a 404 error on deleted chat resources.
+- Fixed the Created Time column stopped auto-updating for new records.
+</Accordion>
+
+<Accordion title="V2 Database Engine Upgrade — Invite-only Beta (15)">
+- Fixed a stack overflow error in V2 computed field polling.
+- Fixed database duplication failing with errors whether records were included or excluded.
+- Fixed newly created tables not appearing in the sidebar navigation until a manual refresh.
+- Optimized V2 computed field recalculation to avoid unnecessary full-table recomputation.
+- Added Sentry tags to distinguish V1/V2 environments for faster issue triage.
+- Rebuilt Create Table and Restore Table operations under the V2 architecture for improved reliability.
+- Fixed Formula fields not displaying values in real-time after creation in V2 — previously required a page refresh.
+- Fixed V2 trigger chains not properly propagating updates to dependent AI fields and automations.
+- Fixed the API view filter returning all records instead of the filtered subset in V2.
+- Integrated the V2 authorization module into the plugin architecture for unified permission handling.
+- Introduced a plugin system with Hook and constraint injection for safe, flexible extensibility.
+- Enhanced observability for Formula, Rollup, and Lookup computation tasks with better tracing and monitoring.
+- Improved monitoring and resource usage for better overall stability.
+- Improved real-time update reliability with recoverable and concurrency-safe outbox processing.
+- Added a fast-path optimization for conditional aggregation to reduce redundant computation.
+</Accordion>
+</AccordionGroup>
+
+</Update>
+
+<Update label="Apr 10, 2026">
+
+## New Teable Agent: Super Intelligent at a Much Lower Cost {#new-teable-agent-super-intelligent-at-a-much-lower-cost}
+
+> We've made a major upgrade to the Teable Agent engine — dramatically improving AI Chat's ability to handle complex tasks, while reducing credit consumption to just 20% to 3% of previous levels—or even lower.
+
+<img loading="lazy" alt="New Teable Agent: Super Intelligent at a Much Lower Cost" src="https://dxshyegpql0u3hra.public.blob.vercel-storage.com/87ec36b881d632b915dd3680b5b5f117.png" />
+
+### What's New {#what’s-new}
+
+- **Credit consumption drastically reduced** — in our complex task benchmarks, efficiency improved 5–30x, or even higher.
+- **Enhanced large file processing** — AI Chat can now handle dozens of Excel/CSV files at once, or PDF documents up to 100 pages.
+- **Significantly improved complex task capabilities** — for example, provide your Airtable API key to AI Chat and migrate an entire base to Teable:
+
+  > \{Your Airtable Token\} <br/> Use this Airtable token to read all content and create a migration plan to Teable. If the data volume is large, please use the maximum write throughput available.
+
+  *Tip: Remember to delete your token after the migration is complete.*
+
+- **Model switching support** — AI Chat now lets you switch between models, including Opus, Sonnet, Haiku, and MiniMax.
+- **Uninterrupted AI Chat sessions** — fixed internal server error disruptions so conversations stay smooth from start to finish.
+- **Clear task timing visibility** — each conversation turn now shows execution time at completion.
+- **Credit usage visibility** — tap the bottom-right three-dot menu to view credit consumption once a conversation ends.
+- **Lean, faster conversation UI** — redesigned interface is more compact, responsive, and focused on high-value information.
+- **Parallel sub-task execution** — support for sub-agents enables concurrent workflows and faster completion of complex tasks.
+- **CuppyClaw is here** — access the Teable Agent directly in Slack, Telegram, and Feishu.
+- **Prompt while running** — you can now send follow-up instructions even while the Agent is still executing.
+- **Granular credit transparency** — added a detailed credit usage breakdown in Settings → Billing.
+
+### Our Thoughts {#our-thoughts}
+
+We believe that after this update, Teable Agent has reached a top-tier level in the industry in both credit efficiency and intelligence. You can now use Teable AI Chat with much greater confidence to describe your needs and build what you want.
+
+Combined with our at-cost, zero-markup credit pricing, Teable is built to make every credit go further: More use. More power. More gain.
+
+### What's Next {#what’s-next}
+
+- Support for skill usage and management.
+- CuppyClaw support for WhatsApp.
+- V2 database engine upgrade for faster, more powerful data processing at larger scale.
+- Login authentication system with support for email, Google, Teable, and more sign-in methods.
+- Support in-app AI features in App Builder.
+- A series of product capability enhancements.
+
+### Important Notes {#important-notes}
+
+- During AI conversations, occasional session interruptions may occur. As a temporary workaround, start a new conversation or click "Clear Chat" in App Builder. This is a known issue and will be fixed within 1–2 weeks.
+- During AI conversations, Question Cards may occasionally display incorrectly. This is a known issue and will be fixed within 1–2 weeks.
+- The New Agent Engine is currently in **Beta** — there may be rough edges. We're committed to continuous iteration toward a flawless experience. If you encounter any issues, please share your feedback and we'll address them promptly: [New Agent Engine Feedback Form](https://app.teable.ai/share/shrX1qxpciRUj1Jww2b/view)
+
+</Update>
+
+<Update label="Apr 08, 2026">
+
+## Markdown Support in Long Text Field {#markdown-support-in-long-text-field}
+
+> Long Text fields now render Markdown natively — write structured content in your cells, and toggle between plain text and Markdown with one click.
+
+### 1. Write Markdown, See It Rendered {#1-write-markdown-see-it-rendered}
+
+Long Text fields support full Markdown rendering. Write headings, lists, code blocks, and more — all visible right inside the cell. Toggle between plain text and Markdown in one click.
+
+<video controls preload="none" className="w-full aspect-video changelog-lazy-video" data-src="https://dxshyegpql0u3hra.public.blob.vercel-storage.com/8f4ea9cecb1706e088a53980061d52e6.mp4" />
+
+### 2. Paste Formatted Text, Get Markdown {#2-paste-formatted-text-get-markdown}
+
+Copy content from Notion, Google Docs — Teable automatically converts it to clean Markdown. No manual reformatting needed.
+
+<video controls preload="none" className="w-full aspect-video changelog-lazy-video" data-src="https://dxshyegpql0u3hra.public.blob.vercel-storage.com/d5295114d3b2fcca3500d67b382fe31b.mp4" />
+
+<AccordionGroup>
+<Accordion title="Field &amp; Data Fixes (10)">
+- Fixed an issue where the Long Text editor had extra blank space at the bottom in multi-line mode.
+- Fixed Markdown expanded view jumping to the bottom of content and line break rendering issues.
+- Fixed an issue where clicking into a text or Long Text field wouldn&apos;t register the first character typed.
+- Fixed long single/multi-select values not wrapping in the record modification history page.
+- Fixed a crash when duplicating a Sum field and converting it to Currency or Percentage format.
+- Fixed an issue where copying a Link field and switching it from one-way to two-way created a duplicate field name in the linked table.
+- Fixed Multi-Select Rollup returning empty results when using the &quot;Deduplicate array&quot; aggregation.
+- Fixed an issue where modifying Link field configuration (dedup or switching one-way to two-way) could silently delete all linked data in the column.
+- Fixed the number field config where &quot;Decimal&quot; type label was easily confused with the precision setting below it.
+- Fixed Lookup, Rollup, and Formula fields not recalculating after deleting records they depended on.
+</Accordion>
+
+<Accordion title="Security &amp; Stability (2)">
+- Fixed an SSR login crash caused by `window.location.origin` being used in a server-side rendering context.
+- Fixed `.tea` export files being downloaded as `.zip`, which prevented them from being re-imported.
+</Accordion>
+
+<Accordion title="V2 Database Engine Upgrade — Invite-only Beta (4)">
+- Supports native V2 batch `updateRecords`, enabling more efficient bulk data operations.
+- Fixed Link field displaying the primary key as &quot;untitled&quot; instead of the actual value in the V2 environment.
+- Fixed converting a Single Select to Multi-Select incorrectly clearing existing values in V2.
+- Fixed slow and unreliable search results in the Link field selector under V2.
+</Accordion>
+</AccordionGroup>
+
+</Update>
+
+<Update label="Apr 02, 2026">
+
+## New App Builder Engine is Beta {#new-app-builder-engine-is-beta}
+
+> We&apos;ve rebuilt the App Builder Engine from the ground up — delivering a smoother, more stable app-building experience with support for more complex applications, while **reducing credit consumption to 30%–50%** of previous levels.
+
+<img loading="lazy" alt="New App Builder Engine is Beta" src="https://dxshyegpql0u3hra.public.blob.vercel-storage.com/58bafa09ba4f4bdeb52edf8024f59606.png" />
+
+### What&apos;s New {#what’s-new-2}
+
+- **Interactive Q&A Flow**: When requirements are unclear or additional environment variables are needed, the AI now asks key questions before generating.
+- **Manual Stop**: You can now stop generation mid-process instead of waiting for it to finish.
+- **Smart Preview**: The preview area supports auto warm-up, status feedback, and automatic retry on failure.
+- **Real-time Dev Logs**: A new log panel shows runtime logs and error messages directly in the builder.
+- **Code Generation Awareness**: Watch code being generated in real-time with streaming output.
+- **Model Selection**: Choose between Pro and Max tiers for clearer capability levels.
+- **Binary File Preview**: Images and other binary files now render correctly in the editor without corruption.
+- **Session Recovery**: Refresh or re-enter the page and pick up right where you left off — generation progress and chat history are preserved.
+- **Environment Variables**: Configure env vars for third-party integrations, significantly expanding the range of apps you can build.
+- **Self-Hosted Ready**: No extra configuration or v0 service purchase needed — full end-to-end experience out of the box.
+
+### Experience Improvements {#experience-improvements}
+
+- **Credit consumption reduced to 30%–50% of previous levels**, effectively a 2–3x efficiency improvement.
+- More granular preview loading states (warming up / generating / page loading) to reduce the feeling of being &quot;stuck.&quot;
+- Chat and preview sync is more stable — fewer blank screens, duplicate messages, and state mismatches.
+- Smarter preview refresh with fewer unnecessary full-page reloads and flickers.
+- Clearer error messages on publish failure for faster debugging.
+- More reliable sync between app name, change description, and generated output.
+
+### Deprecations {#deprecations}
+
+- Retired the legacy v0 generation pipeline — all generation now uses the new App Builder Engine.
+- Removed the old &quot;page init retry&quot; mechanism in favor of a unified generation and recovery flow.
+- Removed legacy &quot;pending app cards&quot; and other transitional UI — merged into the new chat and task views.
+
+### What&apos;s Next {#what’s-next-2}
+
+- Login authentication system with support for email, Google, Teable, and more sign-in methods.
+- Support in-app AI features in App Builder.
+
+### Important Notes {#important-notes-2}
+
+- AI inside App Builder apps is not supported yet. So apps like invoice/receipt recognition, which rely on AI to read images, will currently fail. We&apos;re aware of this limitation and plan to improve it in future updates.
+- The New App Builder is currently in **Beta** — there may be rough edges. If you encounter any issues, please share your feedback and we&apos;ll address them promptly: [App Builder Feedback Form](https://app.teable.ai/share/shrX1qxpciRUj1Jww2b/view)
+
+</Update>
+
+<span id="changelog-labels" data-date-picker-label="Jump to date" hidden />
+
+[Latest releases](/en/changelog)

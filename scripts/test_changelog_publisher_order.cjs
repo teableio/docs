@@ -57,3 +57,16 @@ test('the publisher sorter preserves both real production changelogs byte-for-by
     assert.equal(sortChangelogUpdates(source), source);
   }
 });
+
+test('publishing into the real changelogs keeps monthly history links and hash routing metadata after the last entry', () => {
+  for (const [locale, label] of [['en', 'Oct 16, 2026'], ['zh', '2026-10-16']]) {
+    const source = readFileSync(path.join(__dirname, '..', locale, 'changelog.mdx'), 'utf8');
+    const footer = source.slice(source.lastIndexOf('</Update>') + '</Update>'.length);
+    const newEntry = entry(label, '## New release\n\n### Details\n\nBody with literal $& text.');
+    const result = upsertChangelogByDate(source, label, newEntry);
+    assert.equal(labels(result)[0], label);
+    assert.ok(result.endsWith(footer));
+    assert.ok(result.includes(newEntry));
+    assert.equal(upsertChangelogByDate(result, label, newEntry), result);
+  }
+});

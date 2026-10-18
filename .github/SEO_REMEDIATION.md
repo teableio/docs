@@ -16,11 +16,12 @@ issues become additional numbered items. Production-only checks remain explicit.
 | 03 | Add missing localized descriptions | Every current MDX page has a specific description; local metadata matches | Complete |
 | 04 | Repair archive resources and indexing | Missing images restored using existing assets; superseded archive pages excluded from indexing | Complete locally |
 | 05 | Reconcile navigation and language counterparts | Useful hidden docs reachable in navigation; retired pages have an explicit disposition | Complete locally |
-| 06 | Bound changelog size and heading depth | Recent updates stay at existing URL; history is accessible; old hashes resolve; publisher/order checks pass | Pending |
+| 06 | Bound changelog size and heading depth | Recent updates stay at existing URL; history is accessible; old hashes resolve; publisher/order checks pass | Complete locally |
 | 07 | Repair video structured data | No empty JSON-LD; video data is valid and matches visible media | Pending |
 | 08 | Add localized documentation homepages | Indexable hub for every locale with working Docs/API/Deployment/Changelog paths | Pending |
 | 09 | Configure docs analytics | Verified measurement ID, supported Mintlify integration, local preview avoids production collection | Pending |
 | 10 | Add release regression checks | CI validates links, metadata, navigation, archive policy and changelog structure | Pending |
+| 11 | Maintain changelog publishing conventions | New automated releases keep H2 headings, monthly bounds and history footer; backfill/republication remain safe | Pending |
 
 ## Validation boundaries and discoveries
 
@@ -78,3 +79,15 @@ each fix here before committing it.
 - Documented the 34 intentionally hidden/noindex pages (enterprise organization features, consolidated migration guides and language router); none are accidental navigation omissions.
 - Restarted local preview and checked all 11 locales: Docker/Nginx navigation and indexability, Dashboard navigation/noindex, retired route destinations and target HTTP 200. Local dev emits 307 even with `permanent: true`; verify hosted 308 after deployment, together with Docker/Nginx canonical and reciprocal hreflang.
 - Full Mintlify link check passed. Independent subagent review passed with no actionable findings.
+
+- New issue found during fix 06: automated publishers still generate H1 headings, and historical backfills currently target the main file. Track publishing normalization and rollover in item 11; static archive changes alone do not prevent recurrence.
+
+### 06 — Changelog history and heading structure
+
+- Split January–September 2026 into 99 localized monthly pages; the main URLs retain October’s seven entries and crawlable history links. Each locale retains all 123 original updates.
+- Normalized release/subsection heading levels across current and historical changelogs and restored the visible page H1. Captured actual historical IDs before migration and retained them explicitly, including 228 raw span aliases for IDs Mintlify otherwise re-normalizes.
+- Updated custom TOC, lazy video and date picker behavior for monthly/annual routes; labels come from locale MDX and refresh on SPA language changes. Old main-page hashes route to their original month.
+- Restarted preview and checked 132 rendered pages: one H1 each, every historical ID exists, all history links present, and main HTML size reduced 88.0–89.2% (English 2,583,851 → 309,886 bytes).
+- Mintlify build validation passed. Five Python order tests and ten Node navigation/publisher tests passed, including all published old hashes, SPA label changes and real-footer insertion/republication. Full link check passed.
+- Independent review found re-normalized special-character IDs and a stale aria-label; both corrected and re-reviewed. Future publisher recurrence is item 11.
+- RSS remains enabled on all changelogs. Local RSS endpoint is 404; verify feed contents on a deployed preview before merging.

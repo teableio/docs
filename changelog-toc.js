@@ -10,13 +10,33 @@
   var tocHiddenQuery = window.matchMedia("(width < 1280px)");
 
   function isChangelogPage() {
-    var currentPath = document.documentElement.getAttribute("data-current-path") || window.location.pathname;
-    return /\/changelog\/?$/.test(currentPath);
+    return /\/changelog(?:-\d{4}(?:-\d{2})?)?\/?$/.test(window.location.pathname);
   }
 
   function syncCurrentPath() {
-    if (isChangelogPage() && !document.documentElement.getAttribute("data-current-path")) {
-      document.documentElement.setAttribute("data-current-path", window.location.pathname);
+    document.documentElement.setAttribute("data-current-path", window.location.pathname);
+  }
+
+  function redirectHistoricalAnchor() {
+    if (!/\/changelog\/?$/.test(window.location.pathname) || !window.location.hash) {
+      return;
+    }
+    var anchor;
+    try {
+      anchor = decodeURIComponent(window.location.hash.slice(1));
+    } catch (_) {
+      return;
+    }
+    if (document.getElementById(anchor)) {
+      return;
+    }
+    var histories = document.querySelectorAll("[data-changelog-month][data-changelog-anchors]");
+    for (var index = 0; index < histories.length; index += 1) {
+      if (histories[index].getAttribute("data-changelog-anchors").split("|").indexOf(anchor) !== -1) {
+        var path = window.location.pathname.replace(/\/changelog\/?$/, "/changelog-" + histories[index].getAttribute("data-changelog-month"));
+        window.location.replace(path + window.location.search + "#" + encodeURIComponent(anchor));
+        return;
+      }
     }
   }
 
@@ -33,14 +53,16 @@
 
   function collectPairs() {
     syncCurrentPath();
-    syncDatePicker();
 
     if (!isChangelogPage()) {
       pairs = [];
       clearActiveState();
+      removeDatePicker();
       return;
     }
 
+    redirectHistoricalAnchor();
+    syncDatePicker();
     setupLazyVideos();
 
     var tocItems = Array.prototype.slice.call(document.querySelectorAll("#table-of-contents .toc-item"));
@@ -191,6 +213,8 @@
       datePicker = createDatePicker();
       datePickerIds = "";
     }
+    var labels = document.getElementById("changelog-labels");
+    datePicker.querySelector("select").setAttribute("aria-label", labels ? labels.getAttribute("data-date-picker-label") : document.title);
 
     var ids = updates.map(function (update) {
       return update.id;
@@ -221,7 +245,6 @@
       "<select></select>";
 
     var select = picker.querySelector("select");
-    select.setAttribute("aria-label", /^\/zh(\/|$)/.test(window.location.pathname) ? "跳转到日期" : "Jump to date");
     select.addEventListener("change", function () {
       var target = document.getElementById(select.value);
       if (!target) {
