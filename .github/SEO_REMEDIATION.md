@@ -20,7 +20,7 @@ issues become additional numbered items. Production-only checks remain explicit.
 | 07 | Repair video structured data | No empty JSON-LD; video data is valid and matches visible media | Complete locally |
 | 08 | Add localized documentation homepages | Indexable hub for every locale with working Docs/API/Deployment/Changelog paths | Complete locally |
 | 09 | Configure docs analytics | Verified measurement ID, supported Mintlify integration, local preview avoids production collection | Waiting for dedicated stream ID |
-| 10 | Add release regression checks | CI validates links, metadata, navigation, archive policy and changelog structure | Pending |
+| 10 | Add release regression checks | CI validates links, metadata, navigation, archive policy and changelog structure | Complete locally |
 | 11 | Maintain changelog publishing conventions | New automated releases keep H2 headings, monthly bounds and history footer; backfill/republication remain safe | Complete locally |
 | 12 | Make Card destinations crawlable | Current documentation cards expose real anchors without losing existing navigation behavior | Complete locally |
 | 13 | Verify invalid historical release dates | Correct July 31 and July 24, 2024 labels using authoritative evidence and preserve historical hashes | Complete |
@@ -157,6 +157,20 @@ each fix here before committing it.
 
 - The rendered regression scan discovered duplicate H1s in the English and Chinese historical AI field practical guides. Demoted their 19 body headings by one level; text, images, historical notices and noindex remain unchanged.
 - Local preview checks and independent review passed for both pages: one H1, all 19 previously published section IDs and noindex retained.
+
+### 09 — GA4 status confirmed
+
+- Rechecked the repository and production HTML: the docs have no GA4 integration or Google measurement tag. The connected GA4 property `428837143`, filtered to exact hostname `help.teable.ai` over the last 90 days, returns no rows. This property currently provides no docs traffic data.
+- Existing shared stream `7563554072` has browser-history pageviews enabled while Mintlify also sends route pageviews. A dedicated docs stream ID is still needed to configure collection without changing shared-site behavior. The connected API cannot create or list Web streams; no GA4 Admin settings have been changed.
+- Item 09 remains open. Actual event receipt and route-pageview counts also require a deployed environment after configuration.
+
+### 10 — SEO regression checks
+
+- Added read-only source checks for all 1,840 current pages and 29 archive pages: localized metadata, title uniqueness, heading levels, native card markup, navigation/dispositions, indexability, retired redirects, release periods, RSS flags and historical aliases. Code examples remain excluded.
+- Added an HTML checker with a full-site option. The final local run passed all 1,869 pages, including historical hashes, native Card destinations, robots policies, unique content IDs and retired-route destinations.
+- Independent review found three meaningful gaps: accidental noindex on important pages, duplicate IDs and deletion of old route redirects. Added independent policies and regression tests for each; re-review passed. The HTML scan also found and led to separate fixes 16 and 17.
+- All 24 Python tests and 12 Node tests passed; fixed-version Mintlify build validation and full anchor/redirect link checks passed with zero broken links. Workflow YAML parses and uses read-only permissions for checks.
+- Added the `Docs SEO` CI workflow, dependency installation for the existing test workflow, reliable documented commands and ignored Python caches. Live CI execution and server-managed production checks remain release follow-ups.
 
 ### 17 — Artifact section and FAQ IDs
 
