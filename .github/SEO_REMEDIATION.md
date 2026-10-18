@@ -21,9 +21,10 @@ issues become additional numbered items. Production-only checks remain explicit.
 | 08 | Add localized documentation homepages | Indexable hub for every locale with working Docs/API/Deployment/Changelog paths | Complete locally |
 | 09 | Configure docs analytics | Verified measurement ID, supported Mintlify integration, local preview avoids production collection | Waiting for dedicated stream ID |
 | 10 | Add release regression checks | CI validates links, metadata, navigation, archive policy and changelog structure | Pending |
-| 11 | Maintain changelog publishing conventions | New automated releases keep H2 headings, monthly bounds and history footer; backfill/republication remain safe | Pending |
+| 11 | Maintain changelog publishing conventions | New automated releases keep H2 headings, monthly bounds and history footer; backfill/republication remain safe | Complete locally |
 | 12 | Make Card destinations crawlable | Current documentation cards expose real anchors without losing existing navigation behavior | Complete locally |
 | 13 | Verify invalid historical release dates | Correct July 31 and July 24, 2024 labels using authoritative evidence and preserve historical hashes | Complete |
+| 14 | Correct Gmail guide heading hierarchy | Each localized guide has one page H1 and preserves all existing section hashes | Pending |
 
 ## Validation boundaries and discoveries
 
@@ -125,3 +126,13 @@ each fix here before committing it.
 - GitHub Releases API confirms view embedding in v1.3.1 (2024-07-31T02:17:49Z) and unique/nonempty constraints plus API query builder in v1.3.0-beta.0 (2024-07-24T05:11:04Z). Corrected the two June labels in all 11 locales; content is unchanged. Evidence URLs and every old/new label are recorded in `changelog-date-corrections.json`.
 - Preserved 22 old date hashes with aliases. Restarted local preview and checked both new labels and all old anchors on every locale’s 2024 page; all 2024 dates now parse and remain correctly ordered.
 - Independent subagent review re-fetched the two authoritative releases and checked translated labels, unchanged content and rendered old/new IDs; passed.
+
+- Full source heading scan for item 10 found one remaining duplicate H1 pattern outside changelogs: the Gmail IMAP guide in all 11 locales. Track its heading hierarchy and hash preservation in item 14.
+
+### 11 — Publishing maintenance
+
+- Added maintenance for direct automated writes: H2/subsection normalization, unsupported JSON-LD cleanup, stable new heading IDs, latest-month bounds, monthly history/navigation/footer updates and historical republication into existing monthly/annual pages. Locale messages are centralized in `changelog-locales.json`.
+- Existing main-branch repair workflow runs maintenance with its existing retry model; PR checks remain read-only. Publishers can run the same command before committing.
+- Stabilized 969 annual heading IDs with safe IDs and raw aliases so backfills cannot renumber previously shared hashes. Restarted preview and verified all 969 aliases across 22 rendered annual pages.
+- Independent review caught nested-fence/code-example corruption, cross-entry ID collisions and ambiguous same-day replacement. Fixed all three, with 17 Python and 12 Node regression tests passing. True code examples remain unchanged; ambiguous same-day updates fail before any files are written and must be combined into one Update.
+- Final review passed, including independent test execution and rendered anchor samples. Live workflow execution is a deployment follow-up.

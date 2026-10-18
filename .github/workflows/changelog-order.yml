@@ -24,6 +24,7 @@ jobs:
           python-version: '3.12'
       - run: python3 -m unittest discover -s scripts -p 'test_*.py'
       - run: node --test scripts/test_changelog_publisher_order.cjs
+      - run: python3 scripts/changelog_maintenance.py
       - run: python3 scripts/changelog_order.py
 
   # Existing automated publishers write directly to main. Repair those writes
@@ -42,7 +43,7 @@ jobs:
           python-version: '3.12'
       - run: python3 -m unittest discover -s scripts -p 'test_*.py'
       - run: node --test scripts/test_changelog_publisher_order.cjs
-      - name: Sort and commit only changelog ordering
+      - name: Maintain changelog history, structure and ordering
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
@@ -51,11 +52,13 @@ jobs:
             # Recompute on the latest main if a publisher raced this job.
             git fetch origin main
             git reset --hard origin/main
+            python3 scripts/changelog_maintenance.py --write
+            python3 scripts/changelog_maintenance.py
             python3 scripts/changelog_order.py --write
             python3 scripts/changelog_order.py
-            git add -- '*/changelog.mdx'
+            git add -- '*/changelog*.mdx' docs.json .github/changelog-history-anchors.json
             if git diff --cached --quiet; then exit 0; fi
-            git commit -m 'fix: keep changelogs in descending date order'
+            git commit -m 'fix: maintain changelog history and publishing structure'
             if git push origin HEAD:main; then exit 0; fi
           done
           echo 'Could not publish changelog ordering repair after three attempts.' >&2
