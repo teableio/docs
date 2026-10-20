@@ -3,6 +3,116 @@ title: "Registro delle modifiche 2026"
 rss: true
 ---
 
+<Update label="20 ott 2026">
+
+# Collega gli strumenti IA a Teable con MCP
+
+Teable ora dispone di un server MCP ufficiale. Collega **Claude Code, Codex, Cursor** o qualsiasi altro client MCP e lavora con i tuoi dati Teable tramite una conversazione. Ad esempio, chiedi quali funzionalità sono state rilasciate questa settimana nel tuo repository e aggiorna la roadmap in Teable. Può consultare e aggiornare i record e creare tabelle, campi e viste, sempre nel rispetto dei tuoi permessi Teable.
+
+<video controls playsInline preload="auto" className="w-full aspect-video" poster="https://dxshyegpql0u3hra.public.blob.vercel-storage.com/38ab53314236be0c7e63a70c8736ab10.png" src="https://media-static.teable.ai/video/1571b575ae42e0a9.mp4" aria-label="Collega gli strumenti IA a Teable con MCP" />
+
+<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({"@context":"https://schema.org","@type":"VideoObject","name":"Collega gli strumenti IA a Teable con MCP","description":"Teable ora dispone di un server MCP ufficiale. Collega Claude Code, Codex, Cursor o qualsiasi altro client MCP e lavora con i tuoi dati Teable tramite una conversazione. Ad esempio, chiedi quali funzionalità sono state rilasciate questa settimana nel tuo repository e aggiorna la roadmap in Teable. Può consultare e aggiornare i record e creare tabelle, campi e viste, sempre nel rispetto dei tuoi permessi Teable.","thumbnailUrl":"https://dxshyegpql0u3hra.public.blob.vercel-storage.com/38ab53314236be0c7e63a70c8736ab10.png","uploadDate":"2026-10-20T00:00:00+08:00","contentUrl":"https://media-static.teable.ai/video/1571b575ae42e0a9.mp4"}) }} />
+
+## Come collegarsi
+
+Non serve alcun token API. In Claude Code, esegui:
+
+```bash
+claude mcp add --transport http teable https://mcp.teable.ai/mcp
+```
+
+Poi esegui `/mcp`, scegli **teable → Authenticate** e approva l’accesso nel browser.
+
+In Codex CLI, esegui:
+
+```bash
+codex mcp add teable --url https://mcp.teable.ai/mcp
+```
+
+Poi esegui `codex mcp login teable` e approva l’accesso nel browser.
+
+Per Cursor e altri client, apri **Settings → MCP** in Teable per copiare i passaggi di configurazione. Da lì puoi anche vedere i client collegati e rimuoverli in qualsiasi momento.
+
+</Update>
+
+<Update label="19 ott 2026">
+
+# Filtri, IA ed esperienza generale migliorati
+
+## Aggiornamenti delle funzionalità
+
+* Aggiunti i predefiniti per le date: «Quest’anno», «L’anno scorso» e «L’anno prossimo» aiutano a trovare rapidamente i periodi desiderati.
+
+* Aggiunto «Aggiungi alla chat»: i menu dei dettagli dei record possono aggiungerli alla chat mantenendo il contesto delle tabelle collegate e delle viste filtrate.
+
+* Aggiunti i passaggi di attivazione degli skill: la chat web mostra nomi, descrizioni e istruzioni espandibili; i messaggi che iniziano con `/skill-name` attivano correttamente lo skill.
+
+* Risultati estesi mostrati come file: i risultati voluminosi dello scraping web e degli strumenti sono disponibili in file leggibili.
+
+## Correzioni e miglioramenti
+
+* Feedback degli strumenti migliorato: le operazioni non riuscite mostrano stati e messaggi più chiari.
+
+* Regole di notifica dei campi utente migliorate: i campi creati tramite API non inviano notifiche senza `shouldNotify: true`.
+
+* Priorità delle viste elenco IA migliorate: vengono mostrati tutti i valori numerici salvati, anche fuori da «Alta», «Media» e «Bassa».
+
+* Coerenza dei campi in App Builder migliorata: le regole più recenti si applicano ai workspace nuovi, mantenuti ed esistenti.
+
+* Testo a riga singola migliorato: gli spazi esterni vengono rimossi, ritorni e tabulazioni diventano spazi e i valori incollati riusano meglio i record collegati.
+
+* Testo lungo migliorato: gli spazi esterni vengono rimossi, i ritorni e le tabulazioni interne restano invariati e i valori composti solo da spazi diventano vuoti.
+
+* Visibilità dei campi obbligatori nei moduli corretta: i campi senza valore predefinito restano visibili e gli altri seguono la configurazione.
+
+* Interazione con i link testuali migliorata: gli URL si aprono al primo clic senza selezionare la cella.
+
+* Interazione con valutazioni e caselle migliorata: il primo clic imposta il valore, un altro clic sul valore corrente lo cancella.
+
+* Comportamento delle percentuali unificato: `50` viene salvato come `0,5` e mostrato come `50 %`.
+
+* Trascrizione vocale ripristinata: l’input vocale supporta il nuovo modello e migra automaticamente le configurazioni precedenti.
+
+</Update>
+
+<Update label="18 ott 2026">
+
+# Query strutturate, collaborazione e stabilità migliorate
+
+## Aggiornamenti delle funzionalità
+
+* Aggiunte le query strutturate: selezione dei campi, alias, filtri, ordinamento, paginazione e aggregazioni tramite accesso unificato API e CLI.
+
+* Aggiunta la libreria delle query: supporta ID stabili, versioni, riferimenti fissati o più recenti, condivisione, ripristino e protezione dai conflitti.
+
+* Permessi di importazione CSV ampliati: gli editor possono aggiungere dati a tabelle esistenti e l’editor responsabile viene registrato.
+
+## Correzioni e miglioramenti
+
+* Corretta la configurazione dei campi: opzioni, visualizzazioni, rollup, formule, unicità e requisiti vengono applicati e ricalcolati correttamente.
+
+* Campi dell’ultima modifica migliorati: tracciano tutti i campi, rimuovono riferimenti eliminati e conservano la cronologia.
+
+* Corrette le notifiche dei record copiati: gli assegnatari nei campi membro ricevono le notifiche dopo la copia.
+
+* Migliorata la conversione in testo a riga singola: gli allegati diventano nomi file, i contatori dei clic vengono cancellati e i nomi con virgole vengono protetti.
+
+* Rafforzata la validazione dei rollup condizionali: i campi sorgente fuori dalla tabella obiettivo vengono rifiutati.
+
+* Migliorata l’affidabilità di IA e workflow: diminuiscono i fallimenti prima dell’avvio di automazioni, campi e azioni IA, attività ricorrenti e generazione multimediale.
+
+* Migliorato il filtro dei campi utente: etichette e ordine in cinese semplificato sono stati aggiornati.
+
+* Ripristinati i permessi dei record archiviati: proprietari e amministratori possono visualizzarli, ripristinarli ed eliminarli definitivamente.
+
+* Migliorata la selezione dei modelli della chat IA: supporta lo scorrimento e mantiene visibile lo sforzo di ragionamento.
+
+* Migliorati i limiti dei clic dei pulsanti: sono accettati solo interi positivi e gli aggiornamenti non validi non sovrascrivono le impostazioni.
+
+</Update>
+
+
+
 <Update label="15 ott 2026">
 
 # Esegui le attività IA secondo un programma

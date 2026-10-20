@@ -3,6 +3,116 @@ title: "2026 Değişiklik Günlüğü"
 rss: true
 ---
 
+<Update label="20 Ekim 2026">
+
+# Yapay zeka araçlarını MCP ile Teable’a bağlayın
+
+Teable artık resmi bir MCP sunucusuna sahip. **Claude Code, Codex, Cursor** veya başka bir MCP istemcisini bağlayarak Teable verilerinizle sohbet ederek çalışabilirsiniz. Örneğin, deponuzda bu hafta nelerin yayınlandığını kontrol etmesini ve Teable’daki yol haritanızı güncellemesini isteyebilirsiniz. Kendi Teable izinleriniz dahilinde kayıtları sorgulayabilir ve güncelleyebilir, tablolar, alanlar ve görünümler oluşturabilir.
+
+<video controls playsInline preload="auto" className="w-full aspect-video" poster="https://dxshyegpql0u3hra.public.blob.vercel-storage.com/38ab53314236be0c7e63a70c8736ab10.png" src="https://media-static.teable.ai/video/1571b575ae42e0a9.mp4" aria-label="Yapay zeka araçlarını MCP ile Teable’a bağlayın" />
+
+<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({"@context":"https://schema.org","@type":"VideoObject","name":"Yapay zeka araçlarını MCP ile Teable’a bağlayın","description":"Teable artık resmi bir MCP sunucusuna sahip. Claude Code, Codex, Cursor veya başka bir MCP istemcisini bağlayarak Teable verilerinizle sohbet ederek çalışabilirsiniz. Örneğin, deponuzda bu hafta nelerin yayınlandığını kontrol etmesini ve Teable’daki yol haritanızı güncellemesini isteyebilirsiniz. Kendi Teable izinleriniz dahilinde kayıtları sorgulayabilir ve güncelleyebilir, tablolar, alanlar ve görünümler oluşturabilir.","thumbnailUrl":"https://dxshyegpql0u3hra.public.blob.vercel-storage.com/38ab53314236be0c7e63a70c8736ab10.png","uploadDate":"2026-10-20T00:00:00+08:00","contentUrl":"https://media-static.teable.ai/video/1571b575ae42e0a9.mp4"}) }} />
+
+## Nasıl bağlanılır
+
+API token’ına gerek yoktur. Claude Code’da şunu çalıştırın:
+
+```bash
+claude mcp add --transport http teable https://mcp.teable.ai/mcp
+```
+
+Ardından `/mcp` komutunu çalıştırın, **teable → Authenticate** seçeneğini belirleyin ve tarayıcınızdan erişimi onaylayın.
+
+Codex CLI’da şu komutu çalıştırın:
+
+```bash
+codex mcp add teable --url https://mcp.teable.ai/mcp
+```
+
+Ardından `codex mcp login teable` komutunu çalıştırın ve tarayıcınızdan erişimi onaylayın.
+
+Cursor ve diğer istemciler için kopyalanmaya hazır kurulum adımlarını Teable’da **Settings → MCP** bölümünde bulabilirsiniz. Bağlı istemcileri burada görüntüleyebilir ve istediğiniz zaman kaldırabilirsiniz.
+
+</Update>
+
+<Update label="19 Ekim 2026">
+
+# Filtreler, yapay zeka ve genel deneyim geliştirildi
+
+## Özellik güncellemeleri
+
+* Tarih filtresi hazır ayarları eklendi: «Bu Yıl», «Geçen Yıl» ve «Gelecek Yıl» seçenekleriyle hedef dönemleri hızlıca bulun.
+
+* «Sohbete Ekle» eklendi: Kayıt detay menüleri, bağlı tabloların ve filtrelenmiş görünümlerin bağlamını koruyarak kayıtları sohbete ekleyebilir.
+
+* Beceri etkinleştirme adımları eklendi: Web sohbeti beceri adlarını, açıklamalarını ve açılabilir talimatları gösterir; `/skill-name` ile başlayan mesajlar ilgili beceriyi etkinleştirir.
+
+* Büyük sonuçlar dosya olarak gösterilir: Büyük web kazıma ve araç sonuçları, tam erişim için okunabilir dosyalar halinde sunulur.
+
+## Düzeltmeler ve iyileştirmeler
+
+* Araç yürütme geri bildirimi geliştirildi: Başarısız işlemler daha anlaşılır durum ve mesajlar gösterir.
+
+* Kullanıcı alanı bildirim kuralları geliştirildi: API ile oluşturulan kullanıcı alanları yalnızca `shouldNotify: true` açıkça ayarlanırsa bildirim gönderir.
+
+* Yapay zeka liste görünümü öncelikleri geliştirildi: «Yüksek», «Orta» ve «Düşük» dışındaki değerler dahil tüm sayısal öncelikler gösterilir.
+
+* App Builder alan tutarlılığı geliştirildi: En güncel görüntüleme kuralları yeni, korunan ve mevcut çalışma alanlarında tutarlı şekilde uygulanır.
+
+* Tek satırlı metin işleme geliştirildi: Baş ve sondaki boşluklar kaldırılır, satır sonları ve sekmeler boşluğa çevrilir, yapıştırılan değerler bağlı kayıtları daha güvenilir yeniden kullanır.
+
+* Uzun metin işleme geliştirildi: Dış boşluklar kaldırılır, iç satır sonları ve sekmeler korunur, yalnızca boşluk içeren içerik boş kaydedilir.
+
+* Formlardaki zorunlu alan görünürlüğü düzeltildi: Varsayılanı olmayan zorunlu alanlar görünür kalır, diğerleri yapılandırmayı izler.
+
+* Metin bağlantısı etkileşimi geliştirildi: Hücreyi seçmeden ilk tıklamada URL açılır.
+
+* Derecelendirme ve onay kutusu etkileşimi geliştirildi: İlk tıklama değeri ayarlar, mevcut değere tekrar tıklamak değeri temizler.
+
+* Yüzde alanı davranışı birleştirildi: `50` değeri `0,5` olarak kaydedilir ve `50%` gösterilir.
+
+* Ses transkripsiyonu geri yüklendi: Ses girişi yeni transkripsiyon modelini destekler ve eski yapılandırmaları otomatik taşır.
+
+</Update>
+
+<Update label="18 Ekim 2026">
+
+# Yapılandırılmış sorgular, iş birliği ve kararlılık geliştirildi
+
+## Özellik güncellemeleri
+
+* Yapılandırılmış sorgular eklendi: Alan seçimi, takma adlar, filtreler, sıralama, sayfalama ve toplama işlemleri birleşik API ve CLI erişimiyle kullanılabilir.
+
+* Sorgu Kitaplığı eklendi: Sabit sorgu kimlikleri, sürümleme, sabitlenmiş veya en yeni referanslar, paylaşım kontrolleri, geri yükleme ve çakışma koruması desteklenir.
+
+* CSV içe aktarma izinleri genişletildi: Editörler mevcut tablolara CSV ekleyebilir ve işlemden sorumlu editör kaydedilir.
+
+## Düzeltmeler ve iyileştirmeler
+
+* Alan yapılandırması düzeltildi: Seçenekler, görünümler, rollup’lar, formüller, benzersizlik ve zorunluluklar doğru uygulanır ve bağımlılıklar yeniden hesaplanır.
+
+* Son değiştirilme alanları geliştirildi: Tüm alanları izler, silinen referansları kaldırır ve geçmişi korur.
+
+* Kopyalanan kayıt bildirimleri düzeltildi: Üye alanlarındaki atanan kişiler kayıt kopyalandıktan sonra bildirim alır.
+
+* Tek satırlı metne dönüştürme geliştirildi: Ekler dosya adlarına dönüşür, düğme tıklama sayıları temizlenir ve virgül içeren kullanıcı adları korunur.
+
+* Koşullu rollup doğrulaması güçlendirildi: Seçilen hedef tablonun dışındaki kaynak alanlar reddedilir.
+
+* Yapay zeka ve iş akışı güvenilirliği geliştirildi: Otomasyon, yapay zeka alanı ve eylemleri, yinelenen görevler ve medya üretimi öncesi hatalar azaltılır.
+
+* Kullanıcı alanı filtreleme geliştirildi: Basitleştirilmiş Çince etiketler ve sıralama güncellendi.
+
+* Arşivlenen kayıt izinleri geri yüklendi: Sahipler ve matris yöneticileri kayıtları görüntüleyebilir, geri yükleyebilir ve kalıcı olarak silebilir.
+
+* Yapay zeka sohbet modeli seçimi geliştirildi: Kaydırma desteklenir ve akıl yürütme düzeyi görünür kalır.
+
+* Düğme tıklama sınırları geliştirildi: Yalnızca pozitif tam sayılar kabul edilir ve geçersiz güncellemeler mevcut ayarları değiştirmez.
+
+</Update>
+
+
+
 <Update label="15 Ekim 2026">
 
 # Yapay zeka görevlerini zamanlayın
