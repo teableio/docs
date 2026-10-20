@@ -4,10 +4,6 @@
   var scrollScheduled = false;
   var refreshTimer = null;
   var lazyVideoObserver = null;
-  var datePicker = null;
-  var datePickerIds = "";
-  // Mintlify only shows the table of contents (the date list) at xl; keep in sync with style.css.
-  var tocHiddenQuery = window.matchMedia("(width < 1280px)");
 
   function isChangelogPage() {
     var currentPath = document.documentElement.getAttribute("data-current-path") || window.location.pathname;
@@ -33,7 +29,6 @@
 
   function collectPairs() {
     syncCurrentPath();
-    syncDatePicker();
 
     if (!isChangelogPage()) {
       pairs = [];
@@ -173,110 +168,6 @@
     }
   }
 
-  function updateLabelText(update) {
-    var label = update.querySelector("[data-component-part='update-label']");
-    return label ? label.textContent.trim() : update.id;
-  }
-
-  // Below xl there is no table of contents, so a floating native <select> lets readers jump between dates.
-  function syncDatePicker() {
-    var updates = Array.prototype.slice.call(document.querySelectorAll(".update-container[id]"));
-
-    if (updates.length < 2) {
-      removeDatePicker();
-      return;
-    }
-
-    if (!datePicker || !datePicker.isConnected) {
-      datePicker = createDatePicker();
-      datePickerIds = "";
-    }
-
-    var ids = updates.map(function (update) {
-      return update.id;
-    }).join(",");
-
-    if (ids !== datePickerIds) {
-      var select = datePicker.querySelector("select");
-      select.textContent = "";
-      updates.forEach(function (update) {
-        var option = document.createElement("option");
-        option.value = update.id;
-        option.textContent = updateLabelText(update);
-        select.appendChild(option);
-      });
-      datePickerIds = ids;
-    }
-
-    updateDatePickerValue();
-  }
-
-  function createDatePicker() {
-    var picker = document.createElement("div");
-    picker.id = "changelog-date-picker";
-    picker.innerHTML =
-      '<span class="changelog-date-picker-value"></span>' +
-      '<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
-      'stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>' +
-      "<select></select>";
-
-    var select = picker.querySelector("select");
-    select.setAttribute("aria-label", /^\/zh(\/|$)/.test(window.location.pathname) ? "跳转到日期" : "Jump to date");
-    select.addEventListener("change", function () {
-      var target = document.getElementById(select.value);
-      if (!target) {
-        return;
-      }
-
-      target.scrollIntoView({ block: "start" });
-      window.history.replaceState(window.history.state, "", "#" + target.id);
-      updateDatePickerValue();
-    });
-
-    document.body.appendChild(picker);
-    return picker;
-  }
-
-  function removeDatePicker() {
-    if (datePicker) {
-      datePicker.remove();
-      datePicker = null;
-      datePickerIds = "";
-    }
-  }
-
-  function updateDatePickerValue() {
-    if (!datePicker || !tocHiddenQuery.matches) {
-      return;
-    }
-
-    var updates = document.querySelectorAll(".update-container[id]");
-    var anchor = Math.min(window.innerHeight * 0.35, 260);
-    var active = updates[0];
-
-    for (var index = 1; index < updates.length; index += 1) {
-      if (updates[index].getBoundingClientRect().top > anchor) {
-        break;
-      }
-      active = updates[index];
-    }
-
-    if (!active) {
-      return;
-    }
-
-    var select = datePicker.querySelector("select");
-    var value = datePicker.querySelector(".changelog-date-picker-value");
-    var text = updateLabelText(active);
-
-    if (select.value !== active.id) {
-      select.value = active.id;
-    }
-    if (value.textContent !== text) {
-      value.textContent = text;
-    }
-  }
-
   function scheduleActiveStateUpdate() {
     if (scrollScheduled) {
       return;
@@ -286,7 +177,6 @@
     window.requestAnimationFrame(function () {
       scrollScheduled = false;
       updateActiveState(false);
-      updateDatePickerValue();
     });
   }
 
@@ -295,16 +185,7 @@
   window.addEventListener("hashchange", scheduleCollectPairs);
   window.addEventListener("DOMContentLoaded", collectPairs);
 
-  // Ignore the date picker's own updates so refreshing it does not schedule another refresh.
-  new MutationObserver(function (records) {
-    var external = records.some(function (record) {
-      return !datePicker || !datePicker.contains(record.target);
-    });
-
-    if (external) {
-      scheduleCollectPairs();
-    }
-  }).observe(document.documentElement, {
+  new MutationObserver(scheduleCollectPairs).observe(document.documentElement, {
     childList: true,
     subtree: true,
   });
