@@ -4,6 +4,7 @@ import argparse
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 import html
+import gzip
 import json
 from pathlib import Path
 import re
@@ -145,10 +146,14 @@ def main():
         url_route = route[:-len('/index')] if route.endswith('/index') else route
         url = args.base_url.rstrip('/') + '/' + urllib.parse.quote(url_route, safe='/')
         try:
-            with urllib.request.urlopen(url, timeout=90) as response:
+            request = urllib.request.Request(url, headers={'Accept-Encoding': 'gzip', 'User-Agent': 'Teable-Docs-SEO-Check/1.0'})
+            with urllib.request.urlopen(request, timeout=90) as response:
                 if response.status != 200:
                     return [f'{route}: HTTP {response.status}']
-                raw = response.read().decode('utf-8')
+                payload = response.read()
+                if response.headers.get('Content-Encoding', '').lower() == 'gzip':
+                    payload = gzip.decompress(payload)
+                raw = payload.decode('utf-8')
             source = (args.root / (route + '.mdx')).read_text()
             return [f'{route}: {message}' for message in page_errors(route, source, raw, hashes.get(route, []), route in noindex_routes)]
         except (OSError, ValueError) as error:

@@ -4,13 +4,147 @@ description: "Teable’ın en son sürümlerini, yeni özelliklerini, iyileştir
 rss: true
 ---
 
+<Update label="20 Ekim 2026">
+<span id="2026-10-20-yapay-zeka-araçlarını-mcp-ile-teable-a-bağlayın" />
+<span id="2026-10-20-nasıl-bağlanılır" />
+
+<span id="yapay-zeka-araçlarını-mcp-ile-teable’a-bağlayın" />
+
+## Yapay zeka araçlarını MCP ile Teable’a bağlayın {#release-2026-10-20-section-1}
+
+Teable artık resmi bir MCP sunucusuna sahip. **Claude Code, Codex, Cursor** veya başka bir MCP istemcisini bağlayarak Teable verilerinizle sohbet ederek çalışabilirsiniz. Örneğin, deponuzda bu hafta nelerin yayınlandığını kontrol etmesini ve Teable’daki yol haritanızı güncellemesini isteyebilirsiniz. Kendi Teable izinleriniz dahilinde kayıtları sorgulayabilir ve güncelleyebilir, tablolar, alanlar ve görünümler oluşturabilir.
+
+<video controls playsInline preload="auto" className="w-full aspect-video" poster="https://dxshyegpql0u3hra.public.blob.vercel-storage.com/38ab53314236be0c7e63a70c8736ab10.png" src="https://media-static.teable.ai/video/1571b575ae42e0a9.mp4" aria-label="Yapay zeka araçlarını MCP ile Teable’a bağlayın" />
+
+<span id="nasıl-bağlanılır" />
+
+### Nasıl bağlanılır {#release-2026-10-20-section-2}
+
+API token’ına gerek yoktur. Claude Code’da şunu çalıştırın:
+
+```bash
+claude mcp add --transport http teable https://mcp.teable.ai/mcp
+```
+
+Ardından `/mcp` komutunu çalıştırın, **teable → Authenticate** seçeneğini belirleyin ve tarayıcınızdan erişimi onaylayın.
+
+Codex CLI’da şu komutu çalıştırın:
+
+```bash
+codex mcp add teable --url https://mcp.teable.ai/mcp
+```
+
+Ardından `codex mcp login teable` komutunu çalıştırın ve tarayıcınızdan erişimi onaylayın.
+
+Cursor ve diğer istemciler için kopyalanmaya hazır kurulum adımlarını Teable’da **Settings → MCP** bölümünde bulabilirsiniz. Bağlı istemcileri burada görüntüleyebilir ve istediğiniz zaman kaldırabilirsiniz.
+
+</Update>
+
+<Update label="19 Ekim 2026">
+<span id="2026-10-19-filtreler-yapay-zeka-ve-genel-deneyim-geliştirildi" />
+<span id="2026-10-19-özellik-güncellemeleri" />
+<span id="2026-10-19-düzeltmeler-ve-iyileştirmeler" />
+
+<span id="filtreler-yapay-zeka-ve-genel-deneyim-geliştirildi" />
+
+## Filtreler, yapay zeka ve genel deneyim geliştirildi {#release-2026-10-19-section-1}
+
+<span id="özellik-güncellemeleri" />
+
+### Özellik güncellemeleri {#release-2026-10-19-section-2}
+
+* Tarih filtresi hazır ayarları eklendi: «Bu Yıl», «Geçen Yıl» ve «Gelecek Yıl» seçenekleriyle hedef dönemleri hızlıca bulun.
+
+* «Sohbete Ekle» eklendi: Kayıt detay menüleri, bağlı tabloların ve filtrelenmiş görünümlerin bağlamını koruyarak kayıtları sohbete ekleyebilir.
+
+* Beceri etkinleştirme adımları eklendi: Web sohbeti beceri adlarını, açıklamalarını ve açılabilir talimatları gösterir; `/skill-name` ile başlayan mesajlar ilgili beceriyi etkinleştirir.
+
+* Büyük sonuçlar dosya olarak gösterilir: Büyük web kazıma ve araç sonuçları, tam erişim için okunabilir dosyalar halinde sunulur.
+
+<span id="düzeltmeler-ve-iyileştirmeler" />
+
+### Düzeltmeler ve iyileştirmeler {#release-2026-10-19-section-3}
+
+* Araç yürütme geri bildirimi geliştirildi: Başarısız işlemler daha anlaşılır durum ve mesajlar gösterir.
+
+* Kullanıcı alanı bildirim kuralları geliştirildi: API ile oluşturulan kullanıcı alanları yalnızca `shouldNotify: true` açıkça ayarlanırsa bildirim gönderir.
+
+* Yapay zeka liste görünümü öncelikleri geliştirildi: «Yüksek», «Orta» ve «Düşük» dışındaki değerler dahil tüm sayısal öncelikler gösterilir.
+
+* App Builder alan tutarlılığı geliştirildi: En güncel görüntüleme kuralları yeni, korunan ve mevcut çalışma alanlarında tutarlı şekilde uygulanır.
+
+* Tek satırlı metin işleme geliştirildi: Baş ve sondaki boşluklar kaldırılır, satır sonları ve sekmeler boşluğa çevrilir, yapıştırılan değerler bağlı kayıtları daha güvenilir yeniden kullanır.
+
+* Uzun metin işleme geliştirildi: Dış boşluklar kaldırılır, iç satır sonları ve sekmeler korunur, yalnızca boşluk içeren içerik boş kaydedilir.
+
+* Formlardaki zorunlu alan görünürlüğü düzeltildi: Varsayılanı olmayan zorunlu alanlar görünür kalır, diğerleri yapılandırmayı izler.
+
+* Metin bağlantısı etkileşimi geliştirildi: Hücreyi seçmeden ilk tıklamada URL açılır.
+
+* Derecelendirme ve onay kutusu etkileşimi geliştirildi: İlk tıklama değeri ayarlar, mevcut değere tekrar tıklamak değeri temizler.
+
+* Yüzde alanı davranışı birleştirildi: `50` değeri `0,5` olarak kaydedilir ve `50%` gösterilir.
+
+* Ses transkripsiyonu geri yüklendi: Ses girişi yeni transkripsiyon modelini destekler ve eski yapılandırmaları otomatik taşır.
+
+</Update>
+
+<Update label="18 Ekim 2026">
+<span id="2026-10-18-yapılandırılmış-sorgular-iş-birliği-ve-kararlılık-geliştirildi" />
+<span id="2026-10-18-özellik-güncellemeleri" />
+<span id="2026-10-18-düzeltmeler-ve-iyileştirmeler" />
+
+<span id="yapılandırılmış-sorgular-iş-birliği-ve-kararlılık-geliştirildi" />
+
+## Yapılandırılmış sorgular, iş birliği ve kararlılık geliştirildi {#release-2026-10-18-section-1}
+
+<span id="özellik-güncellemeleri-2" />
+
+### Özellik güncellemeleri {#release-2026-10-18-section-2}
+
+* Yapılandırılmış sorgular eklendi: Alan seçimi, takma adlar, filtreler, sıralama, sayfalama ve toplama işlemleri birleşik API ve CLI erişimiyle kullanılabilir.
+
+* Sorgu Kitaplığı eklendi: Sabit sorgu kimlikleri, sürümleme, sabitlenmiş veya en yeni referanslar, paylaşım kontrolleri, geri yükleme ve çakışma koruması desteklenir.
+
+* CSV içe aktarma izinleri genişletildi: Editörler mevcut tablolara CSV ekleyebilir ve işlemden sorumlu editör kaydedilir.
+
+<span id="düzeltmeler-ve-iyileştirmeler-2" />
+
+### Düzeltmeler ve iyileştirmeler {#release-2026-10-18-section-3}
+
+* Alan yapılandırması düzeltildi: Seçenekler, görünümler, rollup’lar, formüller, benzersizlik ve zorunluluklar doğru uygulanır ve bağımlılıklar yeniden hesaplanır.
+
+* Son değiştirilme alanları geliştirildi: Tüm alanları izler, silinen referansları kaldırır ve geçmişi korur.
+
+* Kopyalanan kayıt bildirimleri düzeltildi: Üye alanlarındaki atanan kişiler kayıt kopyalandıktan sonra bildirim alır.
+
+* Tek satırlı metne dönüştürme geliştirildi: Ekler dosya adlarına dönüşür, düğme tıklama sayıları temizlenir ve virgül içeren kullanıcı adları korunur.
+
+* Koşullu rollup doğrulaması güçlendirildi: Seçilen hedef tablonun dışındaki kaynak alanlar reddedilir.
+
+* Yapay zeka ve iş akışı güvenilirliği geliştirildi: Otomasyon, yapay zeka alanı ve eylemleri, yinelenen görevler ve medya üretimi öncesi hatalar azaltılır.
+
+* Kullanıcı alanı filtreleme geliştirildi: Basitleştirilmiş Çince etiketler ve sıralama güncellendi.
+
+* Arşivlenen kayıt izinleri geri yüklendi: Sahipler ve matris yöneticileri kayıtları görüntüleyebilir, geri yükleyebilir ve kalıcı olarak silebilir.
+
+* Yapay zeka sohbet modeli seçimi geliştirildi: Kaydırma desteklenir ve akıl yürütme düzeyi görünür kalır.
+
+* Düğme tıklama sınırları geliştirildi: Yalnızca pozitif tam sayılar kabul edilir ve geçersiz güncellemeler mevcut ayarları değiştirmez.
+
+</Update>
+
 <Update label="15 Ekim 2026">
 
-## Yapay zeka görevlerini zamanlayın {#yapay-zeka-görevlerini-zamanlayın}
+<span id="yapay-zeka-görevlerini-zamanlayın" />
+
+## Yapay zeka görevlerini zamanlayın {#release-2026-10-15-section-1}
 
 Yapay zekadan her gün aynı işi yapmasını istemeyi bırakın. **Zamanlanmış Rutinler** ile Teable AI’a neyi ne zaman yapacağını söyleyin, ardından görevi etkinleştirerek belirlediğiniz zamanlarda çalışmasını sağlayın.
 
-### 1. Bir kez ayarlayın, gerisini yapay zekaya bırakın {#1-bir-kez-ayarlayın-gerisini-yapay-zekaya-bırakın}
+<span id="1-bir-kez-ayarlayın-gerisini-yapay-zekaya-bırakın" />
+
+### 1. Bir kez ayarlayın, gerisini yapay zekaya bırakın {#release-2026-10-15-section-2}
 
 Her sabah gecikmiş görevleri kontrol edin veya her cuma satışları özetleyin. Her seferinde yeni bir istek başlatmak yerine tekrarlanan işleri zamanlanmış bir göreve dönüştürün.
 
@@ -18,7 +152,9 @@ Görevler önceki sohbeti sürdürebilir ve önceki sonuçları bir sonraki çal
 
 <video controls playsInline preload="none" className="w-full aspect-video" poster="https://dxshyegpql0u3hra.public.blob.vercel-storage.com/5151c79bd36f33d9ca6295fa0a736561.png" src="https://media-static.teable.ai/video/fc40d3213810bbe8.mp4" aria-label="Yapay zeka görevlerini zamanlayın" />
 
-### 2. Çalışan görevleri inceleyin. Sonrakileri yönetin. {#2-çalışan-görevleri-inceleyin-sonrakileri-yönetin}
+<span id="2-çalışan-görevleri-inceleyin-sonrakileri-yönetin" />
+
+### 2. Çalışan görevleri inceleyin. Sonrakileri yönetin. {#release-2026-10-15-section-3}
 
 Her çalıştırmanın durumunu ve sonuçlarını görmek için **çalıştırma geçmişini** inceleyin. İhtiyaçlarınız değiştiğinde talimatları veya zamanlamayı değiştirin, görevi hemen çalıştırın ya da sonraki çalıştırmaları duraklatın.
 
@@ -26,9 +162,13 @@ Her çalıştırmanın durumunu ve sonuçlarını görmek için **çalıştırma
 
 <Update label="14 Ekim 2026">
 
-## Yapay zeka, formüller ve alan güvenilirliğinde iyileştirmeler {#yapay-zeka-formüller-ve-alan-güvenilirliğinde-iyileştirmeler}
+<span id="yapay-zeka-formüller-ve-alan-güvenilirliğinde-iyileştirmeler" />
 
-### Hata Düzeltmeleri ve İyileştirmeler {#hata-düzeltmeleri-ve-i̇yileştirmeler}
+## Yapay zeka, formüller ve alan güvenilirliğinde iyileştirmeler {#release-2026-10-14-section-1}
+
+<span id="hata-düzeltmeleri-ve-i̇yileştirmeler" />
+
+### Hata Düzeltmeleri ve İyileştirmeler {#release-2026-10-14-section-2}
 
 * **Geliştirilmiş yapay zeka sohbeti ve App Builder geçmiş güvenilirliği**: Sohbetler ilk başarılı mesajdan sonra görünür; okunmamış durum yeniden bağlanmaya devam eder.
 
@@ -64,13 +204,19 @@ Her çalıştırmanın durumunu ve sonuçlarını görmek için **çalıştırma
 
 <Update label="13 Ekim 2026">
 
-## Veri kaynağı çıkarma ve kararlılık güncellemeleri {#veri-kaynağı-çıkarma-ve-kararlılık-güncellemeleri}
+<span id="veri-kaynağı-çıkarma-ve-kararlılık-güncellemeleri" />
 
-### Özellik Güncellemeleri {#özellik-güncellemeleri}
+## Veri kaynağı çıkarma ve kararlılık güncellemeleri {#release-2026-10-13-section-1}
+
+<span id="özellik-güncellemeleri-3" />
+
+### Özellik Güncellemeleri {#release-2026-10-13-section-2}
 
 * **Kazıma veri kaynağı dizini eklendi**: Agent, CLI ve web genelinde platforma veya veri türüne göre uç noktaları keşfedin, çalıştırın ve izleyin.
 
-### Hata Düzeltmeleri ve İyileştirmeler {#hata-düzeltmeleri-ve-i̇yileştirmeler-2}
+<span id="hata-düzeltmeleri-ve-i̇yileştirmeler-2" />
+
+### Hata Düzeltmeleri ve İyileştirmeler {#release-2026-10-13-section-3}
 
 * **Base veritabanı erişimi değiştirildi**: Base düzeyindeki salt okunur bağlantılar ve PostgreSQL kimlik bilgileri kaldırıldı; mevcut SQL sorguları etkilenmeden kalır.
 
@@ -92,9 +238,13 @@ Her çalıştırmanın durumunu ve sonuçlarını görmek için **çalıştırma
 
 <Update label="12 Ekim 2026">
 
-## Yapay zeka, performans ve kararlılık optimizasyonu {#yapay-zeka-performans-ve-kararlılık-optimizasyonu}
+<span id="yapay-zeka-performans-ve-kararlılık-optimizasyonu" />
 
-### Düzeltmeler ve İyileştirmeler {#düzeltmeler-ve-i̇yileştirmeler}
+## Yapay zeka, performans ve kararlılık optimizasyonu {#release-2026-10-12-section-1}
+
+<span id="düzeltmeler-ve-i̇yileştirmeler" />
+
+### Düzeltmeler ve İyileştirmeler {#release-2026-10-12-section-2}
 
 * **Geliştirilmiş API mesaj işleme**: API mesajlarının beklenmedik şekilde kuyruğa girmesi düzeltildi ve yeni kullanıcı katılım konuşmalarının düzgün çalışmasını sağladı.
 
@@ -122,13 +272,19 @@ Her çalıştırmanın durumunu ve sonuçlarını görmek için **çalıştırma
 
 <Update label="11 Ekim 2026">
 
-## Çoklu Hesap Entegrasyonu ve Kararlılık Güncellemeleri {#çoklu-hesap-entegrasyonu-ve-kararlılık-güncellemeleri}
+<span id="çoklu-hesap-entegrasyonu-ve-kararlılık-güncellemeleri" />
 
-### Özellik Güncellemeleri {#özellik-güncellemeleri-2}
+## Çoklu Hesap Entegrasyonu ve Kararlılık Güncellemeleri {#release-2026-10-11-section-1}
+
+<span id="özellik-güncellemeleri-4" />
+
+### Özellik Güncellemeleri {#release-2026-10-11-section-2}
 - **Çoklu hesap bağlantıları eklendi**: Uygulamalar birden fazla hesabı bağlayabilir, iş akışlarında net etiketler gösterebilir ve seçilen hesabı güvenilir bir şekilde kullanabilir.
 - **İçe aktarma sırasında hesap değiştirme eklendi**: Sohbet ve mobil dahil Google Sheets ve Airtable içe aktarma işlemlerindeki hesapları değiştirin, bağlayın veya yeniden yetkilendirin.
 
-### Hata Düzeltmeleri ve İyileştirmeler {#hata-düzeltmeleri-ve-i̇yileştirmeler-3}
+<span id="hata-düzeltmeleri-ve-i̇yileştirmeler-3" />
+
+### Hata Düzeltmeleri ve İyileştirmeler {#release-2026-10-11-section-3}
 - **Geliştirilmiş App Builder dosyaları**: Tür denetimi ve lint hataları düzeltildi; OAuth kimlik bilgileri eşitleme sırasında otomatik onarılır ve yeni etkinleştirilen giriş özelliklerine ilgili düzeltmeler uygulanır.
 - **Açıklığa kavuşturulmuş Akıllı AI model etiketleri**: Varsayılan katman artık diğer katmanlarla eşleşen 1,0 kat kredi çarpanını gösteriyor.
 - **Güçlendirilmiş çekirdek güvenliği**: Gelişmiş kimlik doğrulama, izinler, paylaşım, şablonlar, eklentiler, içe aktarmalar, dışa aktarmalar, ekler ve içerik önizleme korumaları.
@@ -150,15 +306,21 @@ Her çalıştırmanın durumunu ve sonuçlarını görmek için **çalıştırma
 
 <Update label="6 Ekim 2026">
 
-## Veri Dışa Aktarma, Topluluk Geri Bildirimi ve Kararlılık Güncellemeleri {#veri-dışa-aktarma-topluluk-geri-bildirimi-ve-kararlılık-güncellemeleri}
+<span id="veri-dışa-aktarma-topluluk-geri-bildirimi-ve-kararlılık-güncellemeleri" />
 
-### Özellik Güncellemeleri {#özellik-güncellemeleri-3}
+## Veri Dışa Aktarma, Topluluk Geri Bildirimi ve Kararlılık Güncellemeleri {#release-2026-10-06-section-1}
+
+<span id="özellik-güncellemeleri-5" />
+
+### Özellik Güncellemeleri {#release-2026-10-06-section-2}
 
 * **Topluluk geri bildirimi eklendi**: Web ve mobil **Destekle İletişime Geçin** artık genel veya özel istekler ve sorun raporları için Teable Community formlarını açıyor.
 
 * **Silme öncesi veri aktarımları eklendi**: Kullanıcılar ve yöneticiler, hesapları veya çöpe atılan alanları silmeden önce CSV verilerinin, uygulama paketlerinin ve eklerinin e-postayla dışa aktarılmasını talep edebilir.
 
-### Hata Düzeltmeleri ve İyileştirmeler {#hata-düzeltmeleri-ve-i̇yileştirmeler-4}
+<span id="hata-düzeltmeleri-ve-i̇yileştirmeler-4" />
+
+### Hata Düzeltmeleri ve İyileştirmeler {#release-2026-10-06-section-3}
 
 * **Geliştirilmiş veri aktarımı bütünlüğü ve güvenilirliği**: Hesap dışa aktarımları, sahip olunan çöpe atılmış alanları, daha temiz klasörleri, eksik ek bildirimlerini ve başarısız uygulama paketi indirmeleri için otomatik yeniden denemeleri içerir.
 
@@ -180,9 +342,13 @@ Her çalıştırmanın durumunu ve sonuçlarını görmek için **çalıştırma
 
 <Update label="1 Ekim 2026">
 
-## OAuth Bildirimler, Paylaşım ve Senkronizasyon Yükseltmeleri {#oauth-bildirimler-paylaşım-ve-senkronizasyon-yükseltmeleri}
+<span id="oauth-bildirimler-paylaşım-ve-senkronizasyon-yükseltmeleri" />
 
-### Özellik Güncellemeleri {#özellik-güncellemeleri-4}
+## OAuth Bildirimler, Paylaşım ve Senkronizasyon Yükseltmeleri {#release-2026-10-01-section-1}
+
+<span id="özellik-güncellemeleri-6" />
+
+### Özellik Güncellemeleri {#release-2026-10-01-section-2}
 
 * **OAuth uygulama bildirimleri eklendi**: Yetkili uygulamalar, uygulama içi bildirimler gönderebilir. Kullanıcılar bireysel uygulamaları sessize alabilir; Yetkinin iptal edilmesi bildirimleri durdurur.
 
@@ -192,7 +358,9 @@ Her çalıştırmanın durumunu ve sonuçlarını görmek için **çalıştırma
 
 * **Veri toplama için kota ayırma**: Bakiyeyi doğrular, tahmini kullanımı ayırır ve arızalardan sonra kotayı serbest bırakır. Entegrasyonları, CLI ve Aracıyı güncelleyin: `limit` → `limitPerInput`.
 
-### Düzeltmeler ve İyileştirmeler {#düzeltmeler-ve-i̇yileştirmeler-2}
+<span id="düzeltmeler-ve-i̇yileştirmeler-2" />
+
+### Düzeltmeler ve İyileştirmeler {#release-2026-10-01-section-3}
 
 * **İyileştirilmiş OAuth yetkilendirme akışı**: İlerleme gösterir ve başarıdan sonra kapanır; başarısızlıklar veya reddedilmeler nedenleri ve bir kapatma düğmesini görüntüler.
 
@@ -218,20 +386,20 @@ Her çalıştırmanın durumunu ve sonuçlarını görmek için **çalıştırma
 - [2025](/tr/changelog-2025)
 - [2024](/tr/changelog-2024)
 
-<span data-changelog-month="2026-01" data-changelog-anchors="23-ocak-2026|otomasyon-webhook-tetikleyicileri-kullanıma-sunuldu|öne-çıkan-1-saniyeler-içinde-kurulum|öne-çıkan-2-hızla-test-edin-her-şeyi-görün|öne-çıkan-3-tek-istem-veriler-yazıldı|13-ocak-2026|ücretsiz-ai-ve-sınırsız-ücretsiz-davet|ai-herkes-i̇çin-ücretsiz|görüntüleyiciler-ve-yorumcular-artık-ücretsiz|ai-kredileri-artık-koltuk-sayısıyla-ölçekleniyor|7-ocak-2026|teable-app-builder-2-0-ile-tanışın|1-otomatik-düzelt-düğmesi|2-canlı-kod-düzenleme|3-app-builder-vision|4-kararlılık-ve-güvenilirlik|5-oluşturma-deneyimi|6-performans|7-şablon-merkezi" hidden />
+<span data-changelog-month="2026-01" data-changelog-anchors="23-ocak-2026|release-2026-01-23-section-1|release-2026-01-23-section-2|release-2026-01-23-section-3|release-2026-01-23-section-4|otomasyon-webhook-tetikleyicileri-kullanıma-sunuldu|öne-çıkan-1-saniyeler-içinde-kurulum|öne-çıkan-2-hızla-test-edin-her-şeyi-görün|öne-çıkan-3-tek-istem-veriler-yazıldı|13-ocak-2026|release-2026-01-13-section-1|release-2026-01-13-section-2|release-2026-01-13-section-3|release-2026-01-13-section-4|ücretsiz-ai-ve-sınırsız-ücretsiz-davet|ai-herkes-i̇çin-ücretsiz|görüntüleyiciler-ve-yorumcular-artık-ücretsiz|ai-kredileri-artık-koltuk-sayısıyla-ölçekleniyor|7-ocak-2026|release-2026-01-07-section-1|release-2026-01-07-section-2|release-2026-01-07-section-3|release-2026-01-07-section-4|release-2026-01-07-section-5|release-2026-01-07-section-6|release-2026-01-07-section-7|release-2026-01-07-section-8|teable-app-builder-2-0-ile-tanışın|1-otomatik-düzelt-düğmesi|2-canlı-kod-düzenleme|3-app-builder-vision|4-kararlılık-ve-güvenilirlik|5-oluşturma-deneyimi|6-performans|7-şablon-merkezi" hidden />
 
-<span data-changelog-month="2026-02" data-changelog-anchors="7-şubat-2026|claude-opus-4-6-ve-171-model-kullanıma-sunuldu|teable-varsayılan-modeli-claude-opus-4-6|ai-alanları-model-seçimi-yükseltmesi" hidden />
+<span data-changelog-month="2026-02" data-changelog-anchors="7-şubat-2026|release-2026-02-07-section-1|release-2026-02-07-section-2|release-2026-02-07-section-3|claude-opus-4-6-ve-171-model-kullanıma-sunuldu|teable-varsayılan-modeli-claude-opus-4-6|ai-alanları-model-seçimi-yükseltmesi" hidden />
 
-<span data-changelog-month="2026-03" data-changelog-anchors="31-mart-2026|uygulama-özel-alan-adı-kullanıma-sunuldu|13-mart-2026|ekleri-toplu-i̇ndirme-kullanıma-sunuldu|1-hücreden-toplu-i̇ndirme|2-alandan-toplu-i̇ndirme|3-ön-ek-kullanarak-toplu-i̇ndirme|4-klasörlere-toplu-i̇ndirme" hidden />
+<span data-changelog-month="2026-03" data-changelog-anchors="31-mart-2026|release-2026-03-31-section-1|uygulama-özel-alan-adı-kullanıma-sunuldu|13-mart-2026|release-2026-03-13-section-1|release-2026-03-13-section-2|release-2026-03-13-section-3|release-2026-03-13-section-4|release-2026-03-13-section-5|ekleri-toplu-i̇ndirme-kullanıma-sunuldu|1-hücreden-toplu-i̇ndirme|2-alandan-toplu-i̇ndirme|3-ön-ek-kullanarak-toplu-i̇ndirme|4-klasörlere-toplu-i̇ndirme" hidden />
 
-<span data-changelog-month="2026-04" data-changelog-anchors="30-nisan-2026|entegrasyon-kurulumu-ve-ai-kararlılığı-optimizasyonu|özellik-güncellemeleri-60|düzeltmeler-ve-i̇yileştirmeler-35|29-nisan-2026|ai-chat-kararlılığı-ve-komut-dosyası-çalıştırma-yönlendirmesi-optimizasyonu|özellik-güncellemeleri-61|hata-düzeltmeleri|28-nisan-2026|yeni-tetikleyici-e-posta-alındığında-imap|1-e-posta-alma-tetikleyicisi-imap|27-nisan-2026|ai-chat-i̇yileştirmeleri-ve-pdf-önizleme-desteği|özellik-güncellemeleri-62|hata-düzeltmeleri-2|23-nisan-2026|ek-ücret-olmadan-harici-düzenleme|1-düzenlenebilir-paylaşılan-tablolar|2-belirli-tabloları-veya-görünümleri-paylaşın|3-tabloları-çoğaltın-ve-silin|22-nisan-2026|ai-chat-pdf-önizleme-ve-kararlılık-düzeltmeleri|özellikler|hata-düzeltmeleri-3|20-nisan-2026|formül-arama-ve-kararlılık-güncellemeleri|17-nisan-2026|claude-opus-4-7-artık-teable’da|15-nisan-2026|ai-chat-artık-görünümlerinizi-anlıyor|1-ai-gördüklerinizi-alır|2-sohbet-üzerinden-hassas-crud-i̇şlemleri|3-i̇yileştirilmiş-ai-alanı-çıktısı|10-nisan-2026|yeni-teable-agent-çok-daha-düşük-maliyetle-süper-akıllı|yenilikler|düşüncelerimiz|sırada-ne-var|önemli-notlar|8-nisan-2026|uzun-metin-alanında-markdown-desteği|1-markdown-yazın-i̇şlenmiş-hâlini-görün|2-biçimlendirilmiş-metni-yapıştırın-markdown-elde-edin|2-nisan-2026|yeni-app-builder-motoru-beta-aşamasında|yenilikler-2|deneyim-i̇yileştirmeleri|kullanımdan-kaldırılanlar|sırada-ne-var-2|önemli-notlar-2" hidden />
+<span data-changelog-month="2026-04" data-changelog-anchors="30-nisan-2026|release-2026-04-30-section-1|release-2026-04-30-section-2|release-2026-04-30-section-3|entegrasyon-kurulumu-ve-ai-kararlılığı-optimizasyonu|özellik-güncellemeleri-62|düzeltmeler-ve-i̇yileştirmeler-35|29-nisan-2026|release-2026-04-29-section-1|release-2026-04-29-section-2|release-2026-04-29-section-3|ai-chat-kararlılığı-ve-komut-dosyası-çalıştırma-yönlendirmesi-optimizasyonu|özellik-güncellemeleri-63|hata-düzeltmeleri|28-nisan-2026|release-2026-04-28-section-1|release-2026-04-28-section-2|yeni-tetikleyici-e-posta-alındığında-imap|1-e-posta-alma-tetikleyicisi-imap|27-nisan-2026|release-2026-04-27-section-1|release-2026-04-27-section-2|release-2026-04-27-section-3|ai-chat-i̇yileştirmeleri-ve-pdf-önizleme-desteği|özellik-güncellemeleri-64|hata-düzeltmeleri-2|23-nisan-2026|release-2026-04-23-section-1|release-2026-04-23-section-2|release-2026-04-23-section-3|release-2026-04-23-section-4|ek-ücret-olmadan-harici-düzenleme|1-düzenlenebilir-paylaşılan-tablolar|2-belirli-tabloları-veya-görünümleri-paylaşın|3-tabloları-çoğaltın-ve-silin|22-nisan-2026|release-2026-04-22-section-1|release-2026-04-22-section-2|release-2026-04-22-section-3|ai-chat-pdf-önizleme-ve-kararlılık-düzeltmeleri|özellikler|hata-düzeltmeleri-3|20-nisan-2026|release-2026-04-20-section-1|formül-arama-ve-kararlılık-güncellemeleri|17-nisan-2026|release-2026-04-17-section-1|claude-opus-4-7-artık-teable’da|15-nisan-2026|release-2026-04-15-section-1|release-2026-04-15-section-2|release-2026-04-15-section-3|release-2026-04-15-section-4|ai-chat-artık-görünümlerinizi-anlıyor|1-ai-gördüklerinizi-alır|2-sohbet-üzerinden-hassas-crud-i̇şlemleri|3-i̇yileştirilmiş-ai-alanı-çıktısı|10-nisan-2026|release-2026-04-10-section-1|release-2026-04-10-section-2|release-2026-04-10-section-3|release-2026-04-10-section-4|release-2026-04-10-section-5|yeni-teable-agent-çok-daha-düşük-maliyetle-süper-akıllı|yenilikler|düşüncelerimiz|sırada-ne-var|önemli-notlar|8-nisan-2026|release-2026-04-08-section-1|release-2026-04-08-section-2|release-2026-04-08-section-3|uzun-metin-alanında-markdown-desteği|1-markdown-yazın-i̇şlenmiş-hâlini-görün|2-biçimlendirilmiş-metni-yapıştırın-markdown-elde-edin|2-nisan-2026|release-2026-04-02-section-1|release-2026-04-02-section-2|release-2026-04-02-section-3|release-2026-04-02-section-4|release-2026-04-02-section-5|release-2026-04-02-section-6|yeni-app-builder-motoru-beta-aşamasında|yenilikler-2|deneyim-i̇yileştirmeleri|kullanımdan-kaldırılanlar|sırada-ne-var-2|önemli-notlar-2" hidden />
 
-<span data-changelog-month="2026-05" data-changelog-anchors="30-mayıs-2026|paylaşım-izinleri-ve-kararlılık-iyileştirmeleri|özellik-güncellemeleri-48|düzeltmeler-ve-i̇yileştirmeler-25|28-mayıs-2026|paylaşılan-düzenleme-güvenlik-ve-yapay-zekâ-geliştirmeleri|özellik-güncellemeleri-49|düzeltmeler-ve-i̇yileştirmeler-26|26-mayıs-2026|bağlantılar-izinler-ve-kararlılık|özellik-güncellemeleri-50|düzeltmeler-ve-i̇yileştirmeler-27|25-mayıs-2026|hesaplama-ve-arama-performansı-optimizasyonu|özellik-güncellemeleri-51|düzeltmeler-ve-i̇yileştirmeler-28|22-mayıs-2026|otomasyon-cli-ve-kararlılık-güncellemeleri|özellik-güncellemeleri-52|düzeltmeler-ve-i̇yileştirmeler-29|19-mayıs-2026|teable-kredileri-10-kat-arttı|18-mayıs-2026|ai-deneyimi-ve-kararlılık-güncellemeleri|özellik-güncellemeleri-53|düzeltmeler-ve-i̇yileştirmeler-30|16-mayıs-2026|ai-ses-ve-markdown-optimizasyonu|özellik-güncellemeleri-54|düzeltmeler-ve-i̇yileştirmeler-31|15-mayıs-2026|ai-chat-deneyimi-ve-kararlılık-optimizasyonu|özellik-güncellemeleri-55|düzeltmeler-ve-i̇yileştirmeler-32|14-mayıs-2026|ai-chat’te-herhangi-bir-düğümü-@-etiketleyin|1-herhangi-bir-düğümle-veya-aynı-anda-birden-fazla-düğümle-çalışın|2-yazarken-düğümleri-bulun|3-veritabanları-arası-çalışma-i̇çin-bir-teable-url’si-yapıştırın|13-mayıs-2026|ai-otomasyon-ve-kararlılık-optimizasyonu|özellik-güncellemeleri-56|hata-düzeltmeleri-ve-i̇yileştirmeler-28|12-mayıs-2026|app-builder-i̇çin-yerleşik-oturum-açma|1-tek-tıklamayla-oturum-açmayı-etkinleştirin|2-uygulamanıza-kimlerin-erişebileceğini-denetleyin|3-oturum-açmış-kullanıcıları-mevcut-bir-tabloyla-yönetin|11-mayıs-2026|ai-görüntü-geliştirme-ve-içe-aktarma-optimizasyonu|özellik-güncellemeleri-57|düzeltmeler-ve-i̇yileştirmeler-33|9-mayıs-2026|alan-ayarları-ve-kararlılık-optimizasyonu|özellik-güncellemeleri-58|düzeltmeler-ve-i̇yileştirmeler-34|8-mayıs-2026|app-builder-ve-kararlılık-optimizasyonu|özellik-güncellemeleri-59|hata-düzeltmeleri-ve-i̇yileştirmeler-29|6-mayıs-2026|bağlantı-alanları-i̇çin-görsel-gezinme|1-bağlı-tabloya-anında-gidin|2-bağlantı-yolunu-açıkça-görün" hidden />
+<span data-changelog-month="2026-05" data-changelog-anchors="30-mayıs-2026|release-2026-05-30-section-1|release-2026-05-30-section-2|release-2026-05-30-section-3|paylaşım-izinleri-ve-kararlılık-iyileştirmeleri|özellik-güncellemeleri-50|düzeltmeler-ve-i̇yileştirmeler-25|28-mayıs-2026|release-2026-05-28-section-1|release-2026-05-28-section-2|release-2026-05-28-section-3|paylaşılan-düzenleme-güvenlik-ve-yapay-zekâ-geliştirmeleri|özellik-güncellemeleri-51|düzeltmeler-ve-i̇yileştirmeler-26|26-mayıs-2026|release-2026-05-26-section-1|release-2026-05-26-section-2|release-2026-05-26-section-3|bağlantılar-izinler-ve-kararlılık|özellik-güncellemeleri-52|düzeltmeler-ve-i̇yileştirmeler-27|25-mayıs-2026|release-2026-05-25-section-1|release-2026-05-25-section-2|release-2026-05-25-section-3|hesaplama-ve-arama-performansı-optimizasyonu|özellik-güncellemeleri-53|düzeltmeler-ve-i̇yileştirmeler-28|22-mayıs-2026|release-2026-05-22-section-1|release-2026-05-22-section-2|release-2026-05-22-section-3|otomasyon-cli-ve-kararlılık-güncellemeleri|özellik-güncellemeleri-54|düzeltmeler-ve-i̇yileştirmeler-29|19-mayıs-2026|release-2026-05-19-section-1|teable-kredileri-10-kat-arttı|18-mayıs-2026|release-2026-05-18-section-1|release-2026-05-18-section-2|release-2026-05-18-section-3|ai-deneyimi-ve-kararlılık-güncellemeleri|özellik-güncellemeleri-55|düzeltmeler-ve-i̇yileştirmeler-30|16-mayıs-2026|release-2026-05-16-section-1|release-2026-05-16-section-2|release-2026-05-16-section-3|ai-ses-ve-markdown-optimizasyonu|özellik-güncellemeleri-56|düzeltmeler-ve-i̇yileştirmeler-31|15-mayıs-2026|release-2026-05-15-section-1|release-2026-05-15-section-2|release-2026-05-15-section-3|ai-chat-deneyimi-ve-kararlılık-optimizasyonu|özellik-güncellemeleri-57|düzeltmeler-ve-i̇yileştirmeler-32|14-mayıs-2026|release-2026-05-14-section-1|release-2026-05-14-section-2|release-2026-05-14-section-3|release-2026-05-14-section-4|ai-chat’te-herhangi-bir-düğümü-@-etiketleyin|1-herhangi-bir-düğümle-veya-aynı-anda-birden-fazla-düğümle-çalışın|2-yazarken-düğümleri-bulun|3-veritabanları-arası-çalışma-i̇çin-bir-teable-url’si-yapıştırın|13-mayıs-2026|release-2026-05-13-section-1|release-2026-05-13-section-2|release-2026-05-13-section-3|ai-otomasyon-ve-kararlılık-optimizasyonu|özellik-güncellemeleri-58|hata-düzeltmeleri-ve-i̇yileştirmeler-28|12-mayıs-2026|release-2026-05-12-section-1|release-2026-05-12-section-2|release-2026-05-12-section-3|release-2026-05-12-section-4|app-builder-i̇çin-yerleşik-oturum-açma|1-tek-tıklamayla-oturum-açmayı-etkinleştirin|2-uygulamanıza-kimlerin-erişebileceğini-denetleyin|3-oturum-açmış-kullanıcıları-mevcut-bir-tabloyla-yönetin|11-mayıs-2026|release-2026-05-11-section-1|release-2026-05-11-section-2|release-2026-05-11-section-3|ai-görüntü-geliştirme-ve-içe-aktarma-optimizasyonu|özellik-güncellemeleri-59|düzeltmeler-ve-i̇yileştirmeler-33|9-mayıs-2026|release-2026-05-09-section-1|release-2026-05-09-section-2|release-2026-05-09-section-3|alan-ayarları-ve-kararlılık-optimizasyonu|özellik-güncellemeleri-60|düzeltmeler-ve-i̇yileştirmeler-34|8-mayıs-2026|release-2026-05-08-section-1|release-2026-05-08-section-2|release-2026-05-08-section-3|app-builder-ve-kararlılık-optimizasyonu|özellik-güncellemeleri-61|hata-düzeltmeleri-ve-i̇yileştirmeler-29|6-mayıs-2026|release-2026-05-06-section-1|release-2026-05-06-section-2|release-2026-05-06-section-3|bağlantı-alanları-i̇çin-görsel-gezinme|1-bağlı-tabloya-anında-gidin|2-bağlantı-yolunu-açıkça-görün" hidden />
 
-<span data-changelog-month="2026-06" data-changelog-anchors="30-haziran-2026|hesaplama-kurtarma-ve-yapay-zekâ-optimizasyonu|özellik-güncellemeleri-39|düzeltmeler-ve-i̇yileştirmeler-14|28-haziran-2026|geri-dönüşüm-kutusu-ve-alan-kurtarma-optimizasyonu|düzeltmeler-ve-i̇yileştirmeler-15|27-haziran-2026|tablo-özellikleri-ve-performans-optimizasyonu|özellik-güncellemeleri-40|düzeltmeler-ve-i̇yileştirmeler-16|26-haziran-2026|yapay-zekâ-oluşturma-ve-i̇çe-aktarma-optimizasyonu|özellik-güncellemeleri-41|düzeltmeler-ve-i̇yileştirmeler-17|25-haziran-2026|yapay-zekâ-i̇çe-aktarma-ve-kararlılık-i̇yileştirmeleri|özellik-güncellemeleri-42|düzeltmeler-ve-i̇yileştirmeler-18|24-haziran-2026|agent-computer-artık-çok-daha-güçlü|17-haziran-2026|izgara-görünümünde-seçim-özeti|16-haziran-2026|i̇çe-aktarma-gizlilik-ve-kararlılık-i̇yileştirmeleri|özellik-güncellemeleri-43|düzeltmeler-ve-i̇yileştirmeler-19|15-haziran-2026|uygulama-oluşturma-ve-kararlılık-optimizasyonu|özellik-güncellemeleri-44|düzeltmeler-ve-i̇yileştirmeler-20|12-haziran-2026|uygulama-dağıtımı-ve-kararlılık-optimizasyonu|özellik-güncellemeleri-45|düzeltmeler-ve-i̇yileştirmeler-21|9-haziran-2026|i̇çe-aktarma-denetim-ve-performans-optimizasyonu|özellik-güncellemeleri-46|düzeltmeler-ve-i̇yileştirmeler-22|4-haziran-2026|yapay-zekâ-okuma-denetim-ve-yayımlama-optimizasyonu|özellik-güncellemeleri-47|düzeltmeler-ve-i̇yileştirmeler-23|2-haziran-2026|i̇çe-aktarma-düzeltmeleri-ve-kararlılık-iyileştirmeleri|düzeltmeler-ve-i̇yileştirmeler-24" hidden />
+<span data-changelog-month="2026-06" data-changelog-anchors="30-haziran-2026|release-2026-06-30-section-1|release-2026-06-30-section-2|release-2026-06-30-section-3|hesaplama-kurtarma-ve-yapay-zekâ-optimizasyonu|özellik-güncellemeleri-41|düzeltmeler-ve-i̇yileştirmeler-14|28-haziran-2026|release-2026-06-28-section-1|release-2026-06-28-section-2|geri-dönüşüm-kutusu-ve-alan-kurtarma-optimizasyonu|düzeltmeler-ve-i̇yileştirmeler-15|27-haziran-2026|release-2026-06-27-section-1|release-2026-06-27-section-2|release-2026-06-27-section-3|tablo-özellikleri-ve-performans-optimizasyonu|özellik-güncellemeleri-42|düzeltmeler-ve-i̇yileştirmeler-16|26-haziran-2026|release-2026-06-26-section-1|release-2026-06-26-section-2|release-2026-06-26-section-3|yapay-zekâ-oluşturma-ve-i̇çe-aktarma-optimizasyonu|özellik-güncellemeleri-43|düzeltmeler-ve-i̇yileştirmeler-17|25-haziran-2026|release-2026-06-25-section-1|release-2026-06-25-section-2|release-2026-06-25-section-3|yapay-zekâ-i̇çe-aktarma-ve-kararlılık-i̇yileştirmeleri|özellik-güncellemeleri-44|düzeltmeler-ve-i̇yileştirmeler-18|24-haziran-2026|release-2026-06-24-section-1|agent-computer-artık-çok-daha-güçlü|17-haziran-2026|release-2026-06-17-section-1|izgara-görünümünde-seçim-özeti|16-haziran-2026|release-2026-06-16-section-1|release-2026-06-16-section-2|release-2026-06-16-section-3|i̇çe-aktarma-gizlilik-ve-kararlılık-i̇yileştirmeleri|özellik-güncellemeleri-45|düzeltmeler-ve-i̇yileştirmeler-19|15-haziran-2026|release-2026-06-15-section-1|release-2026-06-15-section-2|release-2026-06-15-section-3|uygulama-oluşturma-ve-kararlılık-optimizasyonu|özellik-güncellemeleri-46|düzeltmeler-ve-i̇yileştirmeler-20|12-haziran-2026|release-2026-06-12-section-1|release-2026-06-12-section-2|release-2026-06-12-section-3|uygulama-dağıtımı-ve-kararlılık-optimizasyonu|özellik-güncellemeleri-47|düzeltmeler-ve-i̇yileştirmeler-21|9-haziran-2026|release-2026-06-09-section-1|release-2026-06-09-section-2|release-2026-06-09-section-3|i̇çe-aktarma-denetim-ve-performans-optimizasyonu|özellik-güncellemeleri-48|düzeltmeler-ve-i̇yileştirmeler-22|4-haziran-2026|release-2026-06-04-section-1|release-2026-06-04-section-2|release-2026-06-04-section-3|yapay-zekâ-okuma-denetim-ve-yayımlama-optimizasyonu|özellik-güncellemeleri-49|düzeltmeler-ve-i̇yileştirmeler-23|2-haziran-2026|release-2026-06-02-section-1|release-2026-06-02-section-2|i̇çe-aktarma-düzeltmeleri-ve-kararlılık-iyileştirmeleri|düzeltmeler-ve-i̇yileştirmeler-24" hidden />
 
-<span data-changelog-month="2026-07" data-changelog-anchors="31-temmuz-2026|gpt-fiyat-i̇ndirimleri-teable-kullanıcılarına-otomatik-olarak-yansıtılıyor-|30-temmuz-2026|i̇zin-yönetimi-performans-ve-deneyim-optimizasyonu|özellik-güncellemeleri-27|hata-düzeltmeleri-ve-i̇yileştirmeler-19|28-temmuz-2026|ai-agent’ları-için-teable-skill|basit-başlangıç-i̇stemleri|yerel-dosyalar-→-teable|platformlar-arası-veriler-→-teable|teable-verilerini-temizleme-veya-düzenleme|27-temmuz-2026|i̇ş-birliği-denetim-ve-kararlılık-i̇yileştirmeleri|hata-düzeltmeleri-ve-i̇yileştirmeler-20|26-temmuz-2026|eşitleme-gezinme-ve-kararlılık-i̇yileştirmeleri|özellik-güncellemeleri-28|hata-düzeltmeleri-ve-i̇yileştirmeler-21|24-temmuz-2026|davet-bildirimleri-performans-ve-kararlılık|özellik-güncellemeleri-29|hata-düzeltmeleri-ve-i̇yileştirmeler-22|23-temmuz-2026|teable-3-0-ile-tanışın-i̇şletmeler-için-ai-elektronik-tablosu|teable-3-0’daki-yenilikler|-product-hunt-lansmanımızı-destekleyin|22-temmuz-2026|ai-bağlamı-kısa-bağlantılar-ve-performans-optimizasyonu|özellik-güncellemeleri-30|hata-düzeltmeleri-ve-optimizasyonlar-2|21-temmuz-2026|geliştirilmiş-airtable-i̇çe-aktarma-deneyimi|özellik-güncellemeleri-31|hata-düzeltmeleri-ve-optimizasyonlar-3|20-temmuz-2026|performans-arama-ve-kararlılık-i̇yileştirmeleri|hata-düzeltmeleri-ve-i̇yileştirmeler-23|18-temmuz-2026|hesaplanan-alanlar-ve-kararlılık-optimizasyonu|özellik-güncellemeleri-32|düzeltmeler-ve-i̇yileştirmeler-8|17-temmuz-2026|kararlılık-ve-performans-optimizasyonu|düzeltmeler-ve-i̇yileştirmeler-9|16-temmuz-2026|güvenlik-ve-kararlılık-optimizasyonu|düzeltmeler-ve-i̇yileştirmeler-10|15-temmuz-2026|ai-belleği-ve-dosya-i̇ndirmeleri|1-talimatları-konuşmalar-arasında-hatırlayın|2-ai-tarafından-oluşturulan-dosyaları-i̇ndirin|14-temmuz-2026|ai-uygulama-oluşturma-ve-performans-optimizasyonu|özellik-güncellemeleri-33|düzeltmeler-ve-i̇yileştirmeler-11|13-temmuz-2026|kopyalama-ve-hesaplama-performansı-optimizasyonları|hata-düzeltmeleri-ve-i̇yileştirmeler-24|12-temmuz-2026|şablon-alan-ve-kararlılık-güncellemeleri|özellik-güncellemeleri-34|hata-düzeltmeleri-ve-i̇yileştirmeler-25|10-temmuz-2026|gpt-5-6-artık-teable’da|9-temmuz-2026|geçmiş-ai-ve-kararlılık-optimizasyonu|düzeltmeler-ve-i̇yileştirmeler-12|8-temmuz-2026|skill’ler-artık-kullanılabilir|1-yerleşik-skill’lerle-dosyaları-i̇şleyin|2-kendi-skill’lerinizi-oluşturun|7-temmuz-2026|performans-ai-ve-kararlılık-optimizasyonları|hata-düzeltmeleri-ve-i̇yileştirmeler-26|6-temmuz-2026|ai-faturalandırma-ve-kararlılık-optimizasyonu|özellik-güncellemeleri-35|düzeltmeler-ve-i̇yileştirmeler-13|3-temmuz-2026|ai-i̇zinler-ve-kararlılık|özellik-güncellemeleri-36|hata-düzeltmeleri-ve-optimizasyonlar-4|2-temmuz-2026|ai-formüller-ve-i̇ş-akışı-optimizasyonu|özellik-güncellemeleri-37|hata-düzeltmeleri-ve-optimizasyonlar-5|1-temmuz-2026|dosya-yönetimi-ve-kararlılık-optimizasyonu|özellik-güncellemeleri-38|hata-düzeltmeleri-ve-i̇yileştirmeler-27" hidden />
+<span data-changelog-month="2026-07" data-changelog-anchors="31-temmuz-2026|release-2026-07-31-section-1|gpt-fiyat-i̇ndirimleri-teable-kullanıcılarına-otomatik-olarak-yansıtılıyor-|30-temmuz-2026|release-2026-07-30-section-1|release-2026-07-30-section-2|release-2026-07-30-section-3|i̇zin-yönetimi-performans-ve-deneyim-optimizasyonu|özellik-güncellemeleri-29|hata-düzeltmeleri-ve-i̇yileştirmeler-19|28-temmuz-2026|release-2026-07-28-section-1|release-2026-07-28-section-2|release-2026-07-28-section-3|release-2026-07-28-section-4|release-2026-07-28-section-5|ai-agent’ları-için-teable-skill|basit-başlangıç-i̇stemleri|yerel-dosyalar-→-teable|platformlar-arası-veriler-→-teable|teable-verilerini-temizleme-veya-düzenleme|27-temmuz-2026|release-2026-07-27-section-1|release-2026-07-27-section-2|i̇ş-birliği-denetim-ve-kararlılık-i̇yileştirmeleri|hata-düzeltmeleri-ve-i̇yileştirmeler-20|26-temmuz-2026|release-2026-07-26-section-1|release-2026-07-26-section-2|release-2026-07-26-section-3|eşitleme-gezinme-ve-kararlılık-i̇yileştirmeleri|özellik-güncellemeleri-30|hata-düzeltmeleri-ve-i̇yileştirmeler-21|24-temmuz-2026|release-2026-07-24-section-1|release-2026-07-24-section-2|release-2026-07-24-section-3|davet-bildirimleri-performans-ve-kararlılık|özellik-güncellemeleri-31|hata-düzeltmeleri-ve-i̇yileştirmeler-22|23-temmuz-2026|release-2026-07-23-section-1|release-2026-07-23-section-2|release-2026-07-23-section-3|teable-3-0-ile-tanışın-i̇şletmeler-için-ai-elektronik-tablosu|teable-3-0’daki-yenilikler|-product-hunt-lansmanımızı-destekleyin|22-temmuz-2026|release-2026-07-22-section-1|release-2026-07-22-section-2|release-2026-07-22-section-3|ai-bağlamı-kısa-bağlantılar-ve-performans-optimizasyonu|özellik-güncellemeleri-32|hata-düzeltmeleri-ve-optimizasyonlar-2|21-temmuz-2026|release-2026-07-21-section-1|release-2026-07-21-section-2|release-2026-07-21-section-3|geliştirilmiş-airtable-i̇çe-aktarma-deneyimi|özellik-güncellemeleri-33|hata-düzeltmeleri-ve-optimizasyonlar-3|20-temmuz-2026|release-2026-07-20-section-1|release-2026-07-20-section-2|performans-arama-ve-kararlılık-i̇yileştirmeleri|hata-düzeltmeleri-ve-i̇yileştirmeler-23|18-temmuz-2026|release-2026-07-18-section-1|release-2026-07-18-section-2|release-2026-07-18-section-3|hesaplanan-alanlar-ve-kararlılık-optimizasyonu|özellik-güncellemeleri-34|düzeltmeler-ve-i̇yileştirmeler-8|17-temmuz-2026|release-2026-07-17-section-1|release-2026-07-17-section-2|kararlılık-ve-performans-optimizasyonu|düzeltmeler-ve-i̇yileştirmeler-9|16-temmuz-2026|release-2026-07-16-section-1|release-2026-07-16-section-2|güvenlik-ve-kararlılık-optimizasyonu|düzeltmeler-ve-i̇yileştirmeler-10|15-temmuz-2026|release-2026-07-15-section-1|release-2026-07-15-section-2|release-2026-07-15-section-3|ai-belleği-ve-dosya-i̇ndirmeleri|1-talimatları-konuşmalar-arasında-hatırlayın|2-ai-tarafından-oluşturulan-dosyaları-i̇ndirin|14-temmuz-2026|release-2026-07-14-section-1|release-2026-07-14-section-2|release-2026-07-14-section-3|ai-uygulama-oluşturma-ve-performans-optimizasyonu|özellik-güncellemeleri-35|düzeltmeler-ve-i̇yileştirmeler-11|13-temmuz-2026|release-2026-07-13-section-1|release-2026-07-13-section-2|kopyalama-ve-hesaplama-performansı-optimizasyonları|hata-düzeltmeleri-ve-i̇yileştirmeler-24|12-temmuz-2026|release-2026-07-12-section-1|release-2026-07-12-section-2|release-2026-07-12-section-3|şablon-alan-ve-kararlılık-güncellemeleri|özellik-güncellemeleri-36|hata-düzeltmeleri-ve-i̇yileştirmeler-25|10-temmuz-2026|release-2026-07-10-section-1|gpt-5-6-artık-teable’da|9-temmuz-2026|release-2026-07-09-section-1|release-2026-07-09-section-2|geçmiş-ai-ve-kararlılık-optimizasyonu|düzeltmeler-ve-i̇yileştirmeler-12|8-temmuz-2026|release-2026-07-08-section-1|release-2026-07-08-section-2|release-2026-07-08-section-3|skill’ler-artık-kullanılabilir|1-yerleşik-skill’lerle-dosyaları-i̇şleyin|2-kendi-skill’lerinizi-oluşturun|7-temmuz-2026|release-2026-07-07-section-1|release-2026-07-07-section-2|performans-ai-ve-kararlılık-optimizasyonları|hata-düzeltmeleri-ve-i̇yileştirmeler-26|6-temmuz-2026|release-2026-07-06-section-1|release-2026-07-06-section-2|release-2026-07-06-section-3|ai-faturalandırma-ve-kararlılık-optimizasyonu|özellik-güncellemeleri-37|düzeltmeler-ve-i̇yileştirmeler-13|3-temmuz-2026|release-2026-07-03-section-1|release-2026-07-03-section-2|release-2026-07-03-section-3|ai-i̇zinler-ve-kararlılık|özellik-güncellemeleri-38|hata-düzeltmeleri-ve-optimizasyonlar-4|2-temmuz-2026|release-2026-07-02-section-1|release-2026-07-02-section-2|release-2026-07-02-section-3|ai-formüller-ve-i̇ş-akışı-optimizasyonu|özellik-güncellemeleri-39|hata-düzeltmeleri-ve-optimizasyonlar-5|1-temmuz-2026|release-2026-07-01-section-1|release-2026-07-01-section-2|release-2026-07-01-section-3|dosya-yönetimi-ve-kararlılık-optimizasyonu|özellik-güncellemeleri-40|hata-düzeltmeleri-ve-i̇yileştirmeler-27" hidden />
 
-<span data-changelog-month="2026-08" data-changelog-anchors="31-ağustos-2026|i̇branice-desteği-ve-çok-dilli-deneyim-optimizasyonu|özellik-güncellemeleri-14|hata-düzeltmeleri-ve-i̇yileştirmeler-7|29-ağustos-2026|agent-kuyruğu-hesaplama-ve-kararlılık-optimizasyonları|özellik-güncellemeleri-15|hata-düzeltmeleri-ve-i̇yileştirmeler-8|28-ağustos-2026|i̇çerik-oluşturma-tablo-i̇çe-aktarma-ve-optimizasyon|özellik-güncellemeleri-16|hata-düzeltmeleri-ve-i̇yileştirmeler-9|27-ağustos-2026|mobil-deneyim-hesaplama-ve-kararlılık-optimizasyonları|hata-düzeltmeleri-ve-i̇yileştirmeler-10|26-ağustos-2026|aug-25-2026|özellik-güncellemeleri-17|düzeltmeler-ve-i̇yileştirmeler-5|25-ağustos-2026|teable-artık-arapça-i̇talyanca-ve-i̇spanyolcayı-destekliyor|21-ağustos-2026|çok-dillilik-performans-ve-kararlılık-yükseltmeleri|özellik-güncellemeleri-18|düzeltmeler-ve-optimizasyonlar|20-ağustos-2026|hesaplamalar-i̇lişkiler-ve-performans-optimizasyonu|hata-düzeltmeleri-ve-deneyim-i̇yileştirmeleri|19-ağustos-2026|başlangıç-deneyimi-performans-ve-kararlılık-i̇yileştirmeleri|özellik-güncellemeleri-19|hata-düzeltmeleri-ve-i̇yileştirmeler-11|18-ağustos-2026|app-builder’da-ai-özellikleri-oluşturun|1-ai’ı-doğrudan-uygulamanıza-ekleyin|2-ai-api-anahtarı-yapılandırması-gerekmez|17-ağustos-2026|paylaşılan-skill’ler-ve-performans-yükseltmeleri|özellik-güncellemeleri-20|düzeltmeler-ve-i̇yileştirmeler-6|14-ağustos-2026|çoklu-uygulama-oluşturma-toplu-i̇ndirmeler-ve-kararlılık-i̇yileştirmeleri|özellik-güncellemeleri-21|hata-düzeltmeleri-ve-optimizasyonlar|13-ağustos-2026|geliştirilmiş-performans-gerçek-zamanlı-yanıt-hızı-ve-kararlılık|özellik-güncellemeleri-22|hata-düzeltmeleri-ve-i̇yileştirmeler-12|12-ağustos-2026|marka-özelleştirme-ve-kararlılık-i̇yileştirmeleri|özellik-güncellemeleri-23|hata-düzeltmeleri-ve-i̇yileştirmeler-13|11-ağustos-2026|veri-arşivleme-duyurusu-sınırsız-satır-artık-mümkün|1-kayıtları-silmek-yerine-arşivleyin|2-arşivlenmiş-kayıtları-i̇stediğiniz-zaman-görüntüleyin|3-arşivlenmiş-kayıtlar-satır-sınırınıza-dâhil-edilmez|10-ağustos-2026|veritabanı-geçişi-ve-kararlılık-i̇yileştirmeleri|hata-düzeltmeleri-ve-i̇yileştirmeler-14|9-ağustos-2026|hesaplama-kararlılığı-ve-performans-optimizasyonu|düzeltmeler-ve-i̇yileştirmeler-7|8-ağustos-2026|başarısız-kayıt-yönetimi-ve-kararlılık-i̇yileştirmesi|özellik-güncellemeleri-24|hata-düzeltmeleri-ve-i̇yileştirmeler-15|7-ağustos-2026|marka-özelleştirme-ve-performans-optimizasyonu|özellik-güncellemeleri-25|hata-düzeltmeleri-ve-i̇yileştirmeler-16|6-ağustos-2026|dağıtım-ai-ve-kararlılık-i̇yileştirmeleri|hata-düzeltmeleri-ve-i̇yileştirmeler-17|5-ağustos-2026|duyurular-arşivleme-ve-performans-yükseltmeleri|özellik-güncellemeleri-26|hata-düzeltmeleri-ve-i̇yileştirmeler-18|4-ağustos-2026|app-builder-artık-görsel-düzenlemeyi-destekliyor|1-sayfa-metnini-doğrudan-düzenleyin|2-bir-öğe-seçin-ve-ai’a-neyi-değiştireceğini-söyleyin" hidden />
+<span data-changelog-month="2026-08" data-changelog-anchors="31-ağustos-2026|release-2026-08-31-section-1|release-2026-08-31-section-2|release-2026-08-31-section-3|i̇branice-desteği-ve-çok-dilli-deneyim-optimizasyonu|özellik-güncellemeleri-16|hata-düzeltmeleri-ve-i̇yileştirmeler-7|29-ağustos-2026|release-2026-08-29-section-1|release-2026-08-29-section-2|release-2026-08-29-section-3|agent-kuyruğu-hesaplama-ve-kararlılık-optimizasyonları|özellik-güncellemeleri-17|hata-düzeltmeleri-ve-i̇yileştirmeler-8|28-ağustos-2026|release-2026-08-28-section-1|release-2026-08-28-section-2|release-2026-08-28-section-3|i̇çerik-oluşturma-tablo-i̇çe-aktarma-ve-optimizasyon|özellik-güncellemeleri-18|hata-düzeltmeleri-ve-i̇yileştirmeler-9|27-ağustos-2026|release-2026-08-27-section-1|release-2026-08-27-section-2|mobil-deneyim-hesaplama-ve-kararlılık-optimizasyonları|hata-düzeltmeleri-ve-i̇yileştirmeler-10|26-ağustos-2026|release-2026-08-26-section-1|release-2026-08-26-section-2|release-2026-08-26-section-3|aug-25-2026|özellik-güncellemeleri-19|düzeltmeler-ve-i̇yileştirmeler-5|25-ağustos-2026|release-2026-08-25-section-1|teable-artık-arapça-i̇talyanca-ve-i̇spanyolcayı-destekliyor|21-ağustos-2026|release-2026-08-21-section-1|release-2026-08-21-section-2|release-2026-08-21-section-3|çok-dillilik-performans-ve-kararlılık-yükseltmeleri|özellik-güncellemeleri-20|düzeltmeler-ve-optimizasyonlar|20-ağustos-2026|release-2026-08-20-section-1|release-2026-08-20-section-2|hesaplamalar-i̇lişkiler-ve-performans-optimizasyonu|hata-düzeltmeleri-ve-deneyim-i̇yileştirmeleri|19-ağustos-2026|release-2026-08-19-section-1|release-2026-08-19-section-2|release-2026-08-19-section-3|başlangıç-deneyimi-performans-ve-kararlılık-i̇yileştirmeleri|özellik-güncellemeleri-21|hata-düzeltmeleri-ve-i̇yileştirmeler-11|18-ağustos-2026|release-2026-08-18-section-1|release-2026-08-18-section-2|release-2026-08-18-section-3|app-builder’da-ai-özellikleri-oluşturun|1-ai’ı-doğrudan-uygulamanıza-ekleyin|2-ai-api-anahtarı-yapılandırması-gerekmez|17-ağustos-2026|release-2026-08-17-section-1|release-2026-08-17-section-2|release-2026-08-17-section-3|paylaşılan-skill’ler-ve-performans-yükseltmeleri|özellik-güncellemeleri-22|düzeltmeler-ve-i̇yileştirmeler-6|14-ağustos-2026|release-2026-08-14-section-1|release-2026-08-14-section-2|release-2026-08-14-section-3|çoklu-uygulama-oluşturma-toplu-i̇ndirmeler-ve-kararlılık-i̇yileştirmeleri|özellik-güncellemeleri-23|hata-düzeltmeleri-ve-optimizasyonlar|13-ağustos-2026|release-2026-08-13-section-1|release-2026-08-13-section-2|release-2026-08-13-section-3|geliştirilmiş-performans-gerçek-zamanlı-yanıt-hızı-ve-kararlılık|özellik-güncellemeleri-24|hata-düzeltmeleri-ve-i̇yileştirmeler-12|12-ağustos-2026|release-2026-08-12-section-1|release-2026-08-12-section-2|release-2026-08-12-section-3|marka-özelleştirme-ve-kararlılık-i̇yileştirmeleri|özellik-güncellemeleri-25|hata-düzeltmeleri-ve-i̇yileştirmeler-13|11-ağustos-2026|release-2026-08-11-section-1|release-2026-08-11-section-2|release-2026-08-11-section-3|release-2026-08-11-section-4|veri-arşivleme-duyurusu-sınırsız-satır-artık-mümkün|1-kayıtları-silmek-yerine-arşivleyin|2-arşivlenmiş-kayıtları-i̇stediğiniz-zaman-görüntüleyin|3-arşivlenmiş-kayıtlar-satır-sınırınıza-dâhil-edilmez|10-ağustos-2026|release-2026-08-10-section-1|release-2026-08-10-section-2|veritabanı-geçişi-ve-kararlılık-i̇yileştirmeleri|hata-düzeltmeleri-ve-i̇yileştirmeler-14|9-ağustos-2026|release-2026-08-09-section-1|release-2026-08-09-section-2|hesaplama-kararlılığı-ve-performans-optimizasyonu|düzeltmeler-ve-i̇yileştirmeler-7|8-ağustos-2026|release-2026-08-08-section-1|release-2026-08-08-section-2|release-2026-08-08-section-3|başarısız-kayıt-yönetimi-ve-kararlılık-i̇yileştirmesi|özellik-güncellemeleri-26|hata-düzeltmeleri-ve-i̇yileştirmeler-15|7-ağustos-2026|release-2026-08-07-section-1|release-2026-08-07-section-2|release-2026-08-07-section-3|marka-özelleştirme-ve-performans-optimizasyonu|özellik-güncellemeleri-27|hata-düzeltmeleri-ve-i̇yileştirmeler-16|6-ağustos-2026|release-2026-08-06-section-1|release-2026-08-06-section-2|dağıtım-ai-ve-kararlılık-i̇yileştirmeleri|hata-düzeltmeleri-ve-i̇yileştirmeler-17|5-ağustos-2026|release-2026-08-05-section-1|release-2026-08-05-section-2|release-2026-08-05-section-3|duyurular-arşivleme-ve-performans-yükseltmeleri|özellik-güncellemeleri-28|hata-düzeltmeleri-ve-i̇yileştirmeler-18|4-ağustos-2026|release-2026-08-04-section-1|release-2026-08-04-section-2|release-2026-08-04-section-3|app-builder-artık-görsel-düzenlemeyi-destekliyor|1-sayfa-metnini-doğrudan-düzenleyin|2-bir-öğe-seçin-ve-ai’a-neyi-değiştireceğini-söyleyin" hidden />
 
-<span data-changelog-month="2026-09" data-changelog-anchors="29-eylül-2026|yapay-zeka-görevleri-güvenlik-ve-kararlılık-güncellemeleri|özellik-güncellemeleri-5|düzeltmeler-ve-i̇yileştirmeler-3|24-eylül-2026|gpt-6-sol-ve-luna-artık-teable’da|23-eylül-2026|otomasyon-faturalandırma-ve-kararlılık-güncellemeleri|özellik-güncellemeleri-6|düzeltmeler-ve-i̇yileştirmeler-4|21-eylül-2026|1-500’den-fazla-uygulamayı-teable-ai’a-bağlayın|1-gmail’deki-müşteri-taleplerini-potansiyel-müşterilere-dönüştürün|2-attio-kişilerini-teable’a-aktarın|3-linkedin-gönderilerini-taslak-olarak-hazırlayın-yayınlayın-ve-takip-edin|20-eylül-2026|x-entegrasyonları-hesaplamalar-ve-performans-optimizasyonu|yeni-özellikler|düzeltmeler-ve-iyileştirmeler|18-eylül-2026|kesintisiz-çalışma-performans-ve-kararlılık-iyileştirmeleri|yeni-özellikler-2|düzeltmeler-ve-iyileştirmeler-2|17-eylül-2026|teable-ai-ile-800’den-fazla-web-sitesinden-veri-toplayın|1-youtube’da-güzellik-ve-cilt-bakımı-içerik-üreticilerini-bulun|2-google-maps’te-yerel-işletmeleri-bulun|3-amazon’daki-ürünleri-karşılaştırın|16-eylül-2026|görsel-üretimi-hesap-ve-kullanım-deneyimi-iyileştirmeleri|yeni-özellikler-3|düzeltmeler-ve-iyileştirmeler-3|15-eylül-2026|oturum-açma-otomasyon-ve-performans-optimizasyonu|yeni-özellikler-4|düzeltmeler-ve-iyileştirmeler-4|14-eylül-2026|sağdan-sola-kullanım-desteği-iyileştirildi|13-eylül-2026|yapay-zekâ-görüntüleme-performans-ve-deneyim-optimizasyonu|düzeltmeler-ve-iyileştirmeler-5|12-eylül-2026|otomasyon-görevleri-sohbet-ve-kararlılık-geliştirmeleri|özellik-güncellemeleri-7|hata-düzeltmeleri-ve-iyileştirmeler|11-eylül-2026|güvenlik-performans-ve-kararlılık-güncellemeleri|özellik-güncellemeleri-8|hata-düzeltmeleri-ve-iyileştirmeler-2|10-eylül-2026|scraper-kapsamının-genişletilmesi-ve-kararlılık-iyileştirmeleri|özellik-güncellemeleri-9|hata-düzeltmeleri-ve-iyileştirmeler-3|9-eylül-2026|url-tanıma-kimlik-bilgileri-ve-arama-optimizasyonu|özellik-güncellemeleri-10|düzeltmeler-ve-iyileştirmeler-6|8-eylül-2026|hesaplama-arama-ve-kararlılık-optimizasyonu|düzeltmeler-ve-iyileştirmeler-7|7-eylül-2026|gpt-6-artık-teable’da|5-eylül-2026|lookup-değerlerinde-yinelenenleri-kaldırma-ve-yapay-zekâ-ile-içe-aktarma-optimizasyonu|özellik-güncellemeleri-11|hata-düzeltmeleri-ve-iyileştirmeler-4|4-eylül-2026|yeni-fiyatlandırma-daha-fazla-ai-kredisi-yıllık-ödemede-%44-tasarruf|1-neler-değişti|2-koltuklar-ve-krediler-nasıl-çalışır|3-bu-değişikliği-neden-yapıyoruz|4-mevcut-müşteriler-aynı-fiyata-daha-fazlasını-alıyor|3-eylül-2026|otomasyon-ekler-ve-akıllı-i̇ş-birliği|özellik-güncellemeleri-12|hata-düzeltmeleri-ve-i̇yileştirmeler-5|2-eylül-2026|artifact-ve-kararlılık-yükseltmeleri|özellik-güncellemeleri-13|hata-düzeltmeleri-ve-i̇yileştirmeler-6|1-eylül-2026|artifact’larla-tanışın-veri-raporlarını-her-yerde-paylaşın|1-ai-ile-artifact-oluşturun|2-aynı-artifact’ı-geliştirmeyi-sürdürün|3-artifact’ları-her-yerde-paylaşın" hidden />
+<span data-changelog-month="2026-09" data-changelog-anchors="29-eylül-2026|release-2026-09-29-section-1|release-2026-09-29-section-2|release-2026-09-29-section-3|yapay-zeka-görevleri-güvenlik-ve-kararlılık-güncellemeleri|özellik-güncellemeleri-7|düzeltmeler-ve-i̇yileştirmeler-3|24-eylül-2026|release-2026-09-24-section-1|gpt-6-sol-ve-luna-artık-teable’da|23-eylül-2026|release-2026-09-23-section-1|release-2026-09-23-section-2|release-2026-09-23-section-3|otomasyon-faturalandırma-ve-kararlılık-güncellemeleri|özellik-güncellemeleri-8|düzeltmeler-ve-i̇yileştirmeler-4|21-eylül-2026|release-2026-09-21-section-1|release-2026-09-21-section-2|release-2026-09-21-section-3|release-2026-09-21-section-4|1-500’den-fazla-uygulamayı-teable-ai’a-bağlayın|1-gmail’deki-müşteri-taleplerini-potansiyel-müşterilere-dönüştürün|2-attio-kişilerini-teable’a-aktarın|3-linkedin-gönderilerini-taslak-olarak-hazırlayın-yayınlayın-ve-takip-edin|20-eylül-2026|release-2026-09-20-section-1|release-2026-09-20-section-2|release-2026-09-20-section-3|x-entegrasyonları-hesaplamalar-ve-performans-optimizasyonu|yeni-özellikler|düzeltmeler-ve-iyileştirmeler-3|18-eylül-2026|release-2026-09-18-section-1|release-2026-09-18-section-2|release-2026-09-18-section-3|kesintisiz-çalışma-performans-ve-kararlılık-iyileştirmeleri|yeni-özellikler-2|düzeltmeler-ve-iyileştirmeler-4|17-eylül-2026|release-2026-09-17-section-1|release-2026-09-17-section-2|release-2026-09-17-section-3|release-2026-09-17-section-4|teable-ai-ile-800’den-fazla-web-sitesinden-veri-toplayın|1-youtube’da-güzellik-ve-cilt-bakımı-içerik-üreticilerini-bulun|2-google-maps’te-yerel-işletmeleri-bulun|3-amazon’daki-ürünleri-karşılaştırın|16-eylül-2026|release-2026-09-16-section-1|release-2026-09-16-section-2|release-2026-09-16-section-3|görsel-üretimi-hesap-ve-kullanım-deneyimi-iyileştirmeleri|yeni-özellikler-3|düzeltmeler-ve-iyileştirmeler-5|15-eylül-2026|release-2026-09-15-section-1|release-2026-09-15-section-2|release-2026-09-15-section-3|oturum-açma-otomasyon-ve-performans-optimizasyonu|yeni-özellikler-4|düzeltmeler-ve-iyileştirmeler-6|14-eylül-2026|release-2026-09-14-section-1|sağdan-sola-kullanım-desteği-iyileştirildi|13-eylül-2026|release-2026-09-13-section-1|release-2026-09-13-section-2|yapay-zekâ-görüntüleme-performans-ve-deneyim-optimizasyonu|düzeltmeler-ve-iyileştirmeler-7|12-eylül-2026|release-2026-09-12-section-1|release-2026-09-12-section-2|release-2026-09-12-section-3|otomasyon-görevleri-sohbet-ve-kararlılık-geliştirmeleri|özellik-güncellemeleri-9|hata-düzeltmeleri-ve-iyileştirmeler|11-eylül-2026|release-2026-09-11-section-1|release-2026-09-11-section-2|release-2026-09-11-section-3|güvenlik-performans-ve-kararlılık-güncellemeleri|özellik-güncellemeleri-10|hata-düzeltmeleri-ve-iyileştirmeler-2|10-eylül-2026|release-2026-09-10-section-1|release-2026-09-10-section-2|release-2026-09-10-section-3|scraper-kapsamının-genişletilmesi-ve-kararlılık-iyileştirmeleri|özellik-güncellemeleri-11|hata-düzeltmeleri-ve-iyileştirmeler-3|9-eylül-2026|release-2026-09-09-section-1|release-2026-09-09-section-2|release-2026-09-09-section-3|url-tanıma-kimlik-bilgileri-ve-arama-optimizasyonu|özellik-güncellemeleri-12|düzeltmeler-ve-iyileştirmeler-8|8-eylül-2026|release-2026-09-08-section-1|release-2026-09-08-section-2|hesaplama-arama-ve-kararlılık-optimizasyonu|düzeltmeler-ve-iyileştirmeler-9|7-eylül-2026|release-2026-09-07-section-1|gpt-6-artık-teable’da|5-eylül-2026|release-2026-09-05-section-1|release-2026-09-05-section-2|release-2026-09-05-section-3|lookup-değerlerinde-yinelenenleri-kaldırma-ve-yapay-zekâ-ile-içe-aktarma-optimizasyonu|özellik-güncellemeleri-13|hata-düzeltmeleri-ve-iyileştirmeler-4|4-eylül-2026|release-2026-09-04-section-1|release-2026-09-04-section-2|release-2026-09-04-section-3|release-2026-09-04-section-4|release-2026-09-04-section-5|yeni-fiyatlandırma-daha-fazla-ai-kredisi-yıllık-ödemede-%44-tasarruf|1-neler-değişti|2-koltuklar-ve-krediler-nasıl-çalışır|3-bu-değişikliği-neden-yapıyoruz|4-mevcut-müşteriler-aynı-fiyata-daha-fazlasını-alıyor|3-eylül-2026|release-2026-09-03-section-1|release-2026-09-03-section-2|release-2026-09-03-section-3|otomasyon-ekler-ve-akıllı-i̇ş-birliği|özellik-güncellemeleri-14|hata-düzeltmeleri-ve-i̇yileştirmeler-5|2-eylül-2026|release-2026-09-02-section-1|release-2026-09-02-section-2|release-2026-09-02-section-3|artifact-ve-kararlılık-yükseltmeleri|özellik-güncellemeleri-15|hata-düzeltmeleri-ve-i̇yileştirmeler-6|1-eylül-2026|release-2026-09-01-section-1|release-2026-09-01-section-2|release-2026-09-01-section-3|release-2026-09-01-section-4|artifact’larla-tanışın-veri-raporlarını-her-yerde-paylaşın|1-ai-ile-artifact-oluşturun|2-aynı-artifact’ı-geliştirmeyi-sürdürün|3-artifact’ları-her-yerde-paylaşın" hidden />

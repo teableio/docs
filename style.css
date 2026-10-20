@@ -7,86 +7,9 @@
   object-fit: contain;
 }
 
-/* Changelog dates: Mintlify only shows the right-side table of contents (which lists
-   the dates) at width >= 1280px. Hide the left date column there to expand content;
-   below that, stack the date above each entry so it stays visible. The breakpoints
-   mirror Mintlify's `xl` range queries so fractional widths from zoom/OS scaling
-   always match exactly one rule. */
-@media (width >= 1280px) {
-  .update-container > div:first-child {
-    display: none !important;
-  }
-}
-
-@media (width < 1280px) {
-  .update-container {
-    flex-direction: column !important;
-  }
-
-  .update-container > div:first-child {
-    position: static !important;
-    width: auto !important;
-  }
-}
-
-/* Mintlify's scroll offset below lg ignores the announcement banner, so anchor jumps
-   (e.g. the banner's own changelog link) land with the date under the navbar. */
-@media (width < 1024px) {
-  html[data-banner-state="visible"] .update-container {
-    scroll-margin-top: calc(var(--scroll-mt) - 2rem + var(--banner-height, 2.5rem));
-  }
-}
-
-/* Changelog date picker (changelog-toc.js): stands in for the table of contents below 1280px.
-   The native <select> covers the pill so phones open their own picker. */
-#changelog-date-picker {
-  position: fixed;
-  left: 50%;
-  bottom: calc(16px + env(safe-area-inset-bottom));
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  transform: translateX(-50%);
-  border: 1px solid rgba(17, 17, 17, 0.18);
-  border-radius: 999px;
-  background: rgb(var(--background-light, 255 255 255));
-  box-shadow: 0 4px 16px rgba(17, 17, 17, 0.12);
-  color: #111111;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 20px;
-  white-space: nowrap;
-}
-
-#changelog-date-picker select {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
-  /* 16px keeps iOS Safari from zooming in when the picker opens */
-  font-size: 16px;
-}
-
-#changelog-date-picker:focus-within {
-  outline: 2px solid rgb(var(--primary));
-  outline-offset: 2px;
-}
-
-.dark #changelog-date-picker {
-  border-color: rgba(255, 255, 255, 0.25);
-  background: rgb(24, 24, 27);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
-  color: #f3f4f6;
-}
-
-@media (width >= 1280px) {
-  #changelog-date-picker {
-    display: none;
-  }
+/* Hide changelog left date column, expand content */
+.update-container > div:first-child {
+  display: none !important;
 }
 
 /* Hide sidebar collapse button */

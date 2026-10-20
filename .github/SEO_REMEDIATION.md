@@ -28,6 +28,8 @@ issues become additional numbered items. Production-only checks remain explicit.
 | 15 | Update Gmail setup instructions | Current Google account prerequisites and app-password steps in all locales; legacy hashes retained | Complete |
 | 16 | Correct archive AI guide headings | Two retained guides have one H1, retain old hashes and remain noindex | Complete |
 | 17 | Resolve Chinese Artifact FAQ ID collision | Section and accordion IDs are unique; old section hash and ARIA links remain valid | Complete |
+| 18 | Integrate current production releases before deployment | Retain October 18–20 announcements, current layout and exact latest published hash-to-entry mappings; keep test fixtures independent | Complete locally |
+| 19 | Preserve release dates in RSS | Every Update uses its label-derived RSS date; hosted feeds show historical publication dates | Pending |
 
 ## Validation boundaries and discoveries
 
@@ -176,3 +178,10 @@ each fix here before committing it.
 
 - The full rendered scan found one remaining duplicate content ID: the Chinese AI chat Artifact section and a sharing FAQ both rendered `artifact`. Gave the Accordion its own supported `artifact-sharing-faq` ID, retaining the existing section hash.
 - Local HTTP checks and independent subagent review passed: content IDs are unique, `#artifact` remains the H2, and the FAQ’s aria-controls/aria-labelledby refer to the matching panel/title. The final full-site HTML check passed all 1,869 pages.
+
+### 18 — Release integration with current production
+
+- Merged the four newer main commits, retaining the October 18, 19 and 20 announcements and the latest MCP banners in all locales. The current-year content remains 126 releases per locale; independent review verified text/media conservation.
+- Preserved main’s restored date layout and removed the retired floating date picker without removing historical routing or lazy video behavior. Maintenance tests now use controlled fixtures; publisher tests derive a future date from current content.
+- Captured the latest production mappings for all 1,386 current-year Updates and 3,959 heading IDs. Reassigned safe IDs and aliases by the correct release, rebuilt monthly routing manifests, and retained older aliases where unambiguous. Current production mappings take precedence where repeated automatic titles had already shifted between releases.
+- Source checks, 24 Python tests, 12 Node tests, Mintlify validation and link checks passed. Independent source review passed; after restarting the preview, main/English/Chinese/Arabic monthly samples match source and preserved hashes. Full published-ID and hosted checks continue as deployment gates.

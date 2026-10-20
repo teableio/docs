@@ -4,13 +4,147 @@ description: "Suivez les dernières versions de Teable, les nouvelles fonctionna
 rss: true
 ---
 
+<Update label="20 octobre 2026">
+<span id="2026-10-20-connectez-vos-outils-ia-à-teable-avec-mcp" />
+<span id="2026-10-20-comment-se-connecter" />
+
+<span id="connectez-vos-outils-ia-à-teable-avec-mcp" />
+
+## Connectez vos outils IA à Teable avec MCP {#release-2026-10-20-section-1}
+
+Teable dispose désormais d’un serveur MCP officiel. Connectez **Claude Code, Codex, Cursor** ou tout autre client MCP pour travailler avec vos données Teable par conversation. Demandez par exemple quelles fonctionnalités ont été livrées cette semaine dans votre dépôt et faites mettre à jour votre feuille de route dans Teable. Le client peut consulter et modifier des enregistrements, ainsi que créer des tables, des champs et des vues, dans le cadre de vos propres autorisations Teable.
+
+<video controls playsInline preload="auto" className="w-full aspect-video" poster="https://dxshyegpql0u3hra.public.blob.vercel-storage.com/38ab53314236be0c7e63a70c8736ab10.png" src="https://media-static.teable.ai/video/1571b575ae42e0a9.mp4" aria-label="Connectez vos outils IA à Teable avec MCP" />
+
+<span id="comment-se-connecter" />
+
+### Comment se connecter {#release-2026-10-20-section-2}
+
+Aucun jeton API n’est requis. Dans Claude Code, exécutez :
+
+```bash
+claude mcp add --transport http teable https://mcp.teable.ai/mcp
+```
+
+Exécutez ensuite `/mcp`, choisissez **teable → Authenticate** et autorisez l’accès dans votre navigateur.
+
+Dans Codex CLI, exécutez :
+
+```bash
+codex mcp add teable --url https://mcp.teable.ai/mcp
+```
+
+Exécutez ensuite `codex mcp login teable` et autorisez l’accès dans votre navigateur.
+
+Pour Cursor et les autres clients, ouvrez **Settings → MCP** dans Teable pour copier les étapes de configuration. Vous pouvez aussi y consulter les clients connectés et les supprimer à tout moment.
+
+</Update>
+
+<Update label="19 octobre 2026">
+<span id="2026-10-19-filtres-ia-et-expérience-globale-améliorés" />
+<span id="2026-10-19-mises-à-jour-des-fonctionnalités" />
+<span id="2026-10-19-correctifs-et-améliorations" />
+
+<span id="filtres-ia-et-expérience-globale-améliorés" />
+
+## Filtres, IA et expérience globale améliorés {#release-2026-10-19-section-1}
+
+<span id="mises-à-jour-des-fonctionnalités" />
+
+### Mises à jour des fonctionnalités {#release-2026-10-19-section-2}
+
+* Ajout de préréglages de dates : « Cette année », « L’année dernière » et « L’année prochaine » permettent de trouver rapidement les périodes recherchées.
+
+* Ajout de « Ajouter au chat » : les menus des détails d’un enregistrement peuvent l’ajouter au chat tout en conservant le contexte des tables liées et des vues filtrées.
+
+* Ajout des étapes d’activation des skills : le chat web affiche le nom, la description et les instructions dépliables de chaque skill ; les messages commençant par `/skill-name` activent correctement le skill correspondant.
+
+* Affichage des grands résultats dans des fichiers : les résultats volumineux du scraping web et des outils sont proposés dans des fichiers lisibles pour un accès complet.
+
+<span id="correctifs-et-améliorations" />
+
+### Correctifs et améliorations {#release-2026-10-19-section-3}
+
+* Retour plus clair des outils : les opérations échouées indiquent désormais leur état et leur message plus précisément.
+
+* Règles de notification des champs utilisateur améliorées : les champs créés par API n’envoient pas de notification sans `shouldNotify: true`.
+
+* Priorités des vues liste IA améliorées : toutes les valeurs numériques enregistrées sont affichées, y compris celles hors de « Haute », « Moyenne » et « Basse ».
+
+* Cohérence des champs dans App Builder améliorée : les dernières règles d’affichage s’appliquent aux nouveaux espaces, aux espaces conservés et aux espaces existants.
+
+* Gestion du texte sur une ligne améliorée : les espaces extérieurs sont supprimés, les retours et tabulations deviennent des espaces, et les valeurs collées réutilisent mieux les enregistrements liés.
+
+* Gestion du texte long améliorée : les espaces extérieurs sont supprimés, les retours et tabulations internes sont conservés et les valeurs uniquement composées d’espaces deviennent vides.
+
+* Visibilité des champs obligatoires dans les formulaires corrigée : les champs sans valeur par défaut restent visibles, tandis que les autres suivent leur configuration.
+
+* Interaction avec les liens texte améliorée : les URL s’ouvrent dès le premier clic sans sélectionner la cellule.
+
+* Interaction avec les évaluations et cases à cocher améliorée : le premier clic active le contrôle et un second clic sur la valeur actuelle l’efface.
+
+* Comportement des pourcentages unifié : saisissez `50`, la valeur est enregistrée comme `0,5` et affichée comme `50 %` dans les formulaires, fiches et grilles.
+
+* Transcription vocale restaurée : la saisie vocale prend en charge le nouveau modèle et migre automatiquement les anciennes configurations.
+
+</Update>
+
+<Update label="18 octobre 2026">
+<span id="2026-10-18-requêtes-structurées-collaboration-et-stabilité-améliorées" />
+<span id="2026-10-18-mises-à-jour-des-fonctionnalités" />
+<span id="2026-10-18-correctifs-et-améliorations" />
+
+<span id="requêtes-structurées-collaboration-et-stabilité-améliorées" />
+
+## Requêtes structurées, collaboration et stabilité améliorées {#release-2026-10-18-section-1}
+
+<span id="mises-à-jour-des-fonctionnalités-2" />
+
+### Mises à jour des fonctionnalités {#release-2026-10-18-section-2}
+
+* Ajout des requêtes structurées : champs, alias, filtres, tri, pagination et agrégations via un accès API et CLI unifié.
+
+* Ajout de la bibliothèque de requêtes : identifiants stables, versions, références épinglées ou récentes, partage, restauration et protection contre les conflits.
+
+* Permissions d’import CSV étendues : les éditeurs peuvent ajouter des données à une table existante, avec traçabilité de l’éditeur responsable.
+
+<span id="correctifs-et-améliorations-2" />
+
+### Correctifs et améliorations {#release-2026-10-18-section-3}
+
+* Correctifs de configuration des champs : les options, affichages, agrégations, formules, unicité et obligations sont appliqués et recalculés correctement.
+
+* Champs de dernière modification améliorés : suivi de tous les champs, suppression des références supprimées et conservation de l’historique.
+
+* Notifications des enregistrements copiés corrigées : les personnes assignées reçoivent les notifications après une copie.
+
+* Conversion en texte sur une ligne améliorée : les pièces jointes deviennent des noms de fichiers, les compteurs de clics sont supprimés et les noms contenant des virgules sont protégés.
+
+* Validation des agrégations conditionnelles renforcée : les champs sources hors de la table cible sont refusés.
+
+* Fiabilité de l’IA et des workflows améliorée : moins d’échecs avant le démarrage des automatisations, champs IA, actions IA, tâches récurrentes et génération média.
+
+* Filtrage des champs utilisateur amélioré : libellés et ordre en chinois simplifié mis à jour.
+
+* Permissions des enregistrements archivés restaurées : propriétaires et administrateurs de matrice peuvent les consulter, restaurer et supprimer définitivement.
+
+* Sélecteur de modèles du chat IA amélioré : défilement pris en charge et effort de raisonnement visible.
+
+* Limites de clics des boutons améliorées : seuls les entiers positifs sont acceptés, les mises à jour invalides ne remplacent pas les réglages existants.
+
+</Update>
+
 <Update label="15 octobre 2026">
 
-## Exécutez des tâches IA selon un planning {#exécutez-des-tâches-ia-selon-un-planning}
+<span id="exécutez-des-tâches-ia-selon-un-planning" />
+
+## Exécutez des tâches IA selon un planning {#release-2026-10-15-section-1}
 
 Ne demandez plus chaque jour à l’IA de refaire le même travail. Avec les **routines planifiées**, indiquez à Teable AI quoi faire et quand, puis activez la tâche pour qu’elle s’exécute selon le planning.
 
-### 1. Configurez une fois, puis laissez l’IA prendre le relais {#1-configurez-une-fois-puis-laissez-l’ia-prendre-le-relais}
+<span id="1-configurez-une-fois-puis-laissez-l’ia-prendre-le-relais" />
+
+### 1. Configurez une fois, puis laissez l’IA prendre le relais {#release-2026-10-15-section-2}
 
 Vérifiez les tâches en retard chaque matin ou résumez les ventes chaque vendredi. Transformez le travail récurrent en tâche planifiée au lieu de lancer une nouvelle demande à chaque fois.
 
@@ -18,7 +152,9 @@ Les tâches peuvent poursuivre la conversation précédente et utiliser les rés
 
 <video controls playsInline preload="none" className="w-full aspect-video" poster="https://dxshyegpql0u3hra.public.blob.vercel-storage.com/5151c79bd36f33d9ca6295fa0a736561.png" src="https://media-static.teable.ai/video/fc40d3213810bbe8.mp4" aria-label="Exécutez des tâches IA selon un planning" />
 
-### 2. Consultez les exécutions. Gérez les prochaines. {#2-consultez-les-exécutions-gérez-les-prochaines}
+<span id="2-consultez-les-exécutions-gérez-les-prochaines" />
+
+### 2. Consultez les exécutions. Gérez les prochaines. {#release-2026-10-15-section-3}
 
 Consultez l’**historique des exécutions** pour voir le statut et les résultats de chaque tâche. Modifiez les instructions ou le planning, lancez une tâche immédiatement ou suspendez les prochaines exécutions selon vos besoins.
 
@@ -26,9 +162,13 @@ Consultez l’**historique des exécutions** pour voir le statut et les résulta
 
 <Update label="14 octobre 2026">
 
-## Améliorations de l’IA, des formules et de la fiabilité des champs {#améliorations-de-l’ia-des-formules-et-de-la-fiabilité-des-champs}
+<span id="améliorations-de-l’ia-des-formules-et-de-la-fiabilité-des-champs" />
 
-### Corrections de bugs et améliorations {#corrections-de-bugs-et-améliorations}
+## Améliorations de l’IA, des formules et de la fiabilité des champs {#release-2026-10-14-section-1}
+
+<span id="corrections-de-bugs-et-améliorations" />
+
+### Corrections de bugs et améliorations {#release-2026-10-14-section-2}
 
 * **Chat AI amélioré et fiabilité de l'historique App Builder**: Les discussions apparaissent après le premier message réussi ; l'état non lu survit à la reconnexion.
 
@@ -64,13 +204,19 @@ Consultez l’**historique des exécutions** pour voir le statut et les résulta
 
 <Update label="13 octobre 2026">
 
-## Extraction des sources de données et mises à jour de stabilité {#extraction-des-sources-de-données-et-mises-à-jour-de-stabilité}
+<span id="extraction-des-sources-de-données-et-mises-à-jour-de-stabilité" />
 
-### Mises à jour des fonctionnalités {#mises-à-jour-des-fonctionnalités}
+## Extraction des sources de données et mises à jour de stabilité {#release-2026-10-13-section-1}
+
+<span id="mises-à-jour-des-fonctionnalités-3" />
+
+### Mises à jour des fonctionnalités {#release-2026-10-13-section-2}
 
 * **Ajout du répertoire des sources de données de scraping**: Découvrez, exécutez et surveillez les points de terminaison par plate-forme ou type de données sur l'agent, l'interface de ligne de commande et le Web.
 
-### Corrections de bugs et améliorations {#corrections-de-bugs-et-améliorations-2}
+<span id="corrections-de-bugs-et-améliorations-2" />
+
+### Corrections de bugs et améliorations {#release-2026-10-13-section-3}
 
 * **Accès à la base de données Base modifié**: Suppression des connexions en lecture seule au niveau Base et des informations d'identification PostgreSQL ; les requêtes SQL existantes ne sont pas affectées.
 
@@ -92,9 +238,13 @@ Consultez l’**historique des exécutions** pour voir le statut et les résulta
 
 <Update label="12 octobre 2026">
 
-## Optimisation de l'IA, des performances et de la stabilité {#optimisation-de-l’ia-des-performances-et-de-la-stabilité}
+<span id="optimisation-de-l’ia-des-performances-et-de-la-stabilité" />
 
-### Correctifs et améliorations {#correctifs-et-améliorations}
+## Optimisation de l'IA, des performances et de la stabilité {#release-2026-10-12-section-1}
+
+<span id="correctifs-et-améliorations-3" />
+
+### Correctifs et améliorations {#release-2026-10-12-section-2}
 
 * **Gestion améliorée des messages API**: Correction des messages API entrant de manière inattendue dans la file d'attente, garantissant ainsi le bon fonctionnement des conversations d'intégration des nouveaux utilisateurs.
 
@@ -122,13 +272,19 @@ Consultez l’**historique des exécutions** pour voir le statut et les résulta
 
 <Update label="11 octobre 2026">
 
-## Intégration multi-comptes et mises à jour de stabilité {#intégration-multi-comptes-et-mises-à-jour-de-stabilité}
+<span id="intégration-multi-comptes-et-mises-à-jour-de-stabilité" />
 
-### Mises à jour des fonctionnalités {#mises-à-jour-des-fonctionnalités-2}
+## Intégration multi-comptes et mises à jour de stabilité {#release-2026-10-11-section-1}
+
+<span id="mises-à-jour-des-fonctionnalités-4" />
+
+### Mises à jour des fonctionnalités {#release-2026-10-11-section-2}
 - **Connexions multi-comptes ajoutées**: Les applications peuvent connecter plusieurs comptes, afficher des étiquettes claires dans les flux de travail et utiliser de manière fiable le compte sélectionné.
 - **Ajout du changement de compte lors des importations**: Changez, connectez ou réautorisez les comptes dans les importations Google Sheets et Airtable, y compris le chat et le mobile.
 
-### Corrections de bugs et améliorations {#corrections-de-bugs-et-améliorations-3}
+<span id="corrections-de-bugs-et-améliorations-3" />
+
+### Corrections de bugs et améliorations {#release-2026-10-11-section-3}
 - **Fichiers App Builder améliorés**: Correction des erreurs de typage et de lint ; les identifiants OAuth sont réparés automatiquement à la synchronisation, et les connexions nouvellement activées bénéficient des correctifs associés.
 - **Étiquettes de modèle Smart AI clarifiées**: Le niveau par défaut affiche désormais un multiplicateur de crédit de 1,0 ×, correspondant aux autres niveaux.
 - **Sécurité de base renforcée**: Amélioration de l'authentification, des autorisations, du partage, des modèles, des plugins, des importations, des exportations, des pièces jointes et de la protection contre l'aperçu du contenu.
@@ -150,15 +306,21 @@ Consultez l’**historique des exécutions** pour voir le statut et les résulta
 
 <Update label="6 octobre 2026">
 
-## Exportation de données, commentaires de la communauté et mises à jour de stabilité {#exportation-de-données-commentaires-de-la-communauté-et-mises-à-jour-de-stabilité}
+<span id="exportation-de-données-commentaires-de-la-communauté-et-mises-à-jour-de-stabilité" />
 
-### Mises à jour des fonctionnalités {#mises-à-jour-des-fonctionnalités-3}
+## Exportation de données, commentaires de la communauté et mises à jour de stabilité {#release-2026-10-06-section-1}
+
+<span id="mises-à-jour-des-fonctionnalités-5" />
+
+### Mises à jour des fonctionnalités {#release-2026-10-06-section-2}
 
 * **Commentaires de la communauté ajoutés**: Web et mobile **Contacter l'assistance** ouvre désormais les formulaires Teable Community pour les demandes publiques ou privées et les rapports de problèmes.
 
 * **Ajout des exportations de données avant suppression**: Les utilisateurs et les administrateurs peuvent demander des exportations par courrier électronique des données CSV, des packages d'applications et des pièces jointes avant de supprimer des comptes ou des espaces supprimés.
 
-### Corrections de bugs et améliorations {#corrections-de-bugs-et-améliorations-4}
+<span id="corrections-de-bugs-et-améliorations-4" />
+
+### Corrections de bugs et améliorations {#release-2026-10-06-section-3}
 
 * **Amélioration de l’exhaustivité et de la fiabilité des exportations de données**: Les exportations de comptes incluent des espaces appartenant à la corbeille, des dossiers plus clairs, des notifications de pièces jointes manquantes et des tentatives automatiques en cas d'échec des téléchargements de packages d'applications.
 
@@ -180,9 +342,13 @@ Consultez l’**historique des exécutions** pour voir le statut et les résulta
 
 <Update label="1 octobre 2026">
 
-## Notifications OAuth, partage et mises à niveau de synchronisation {#notifications-oauth-partage-et-mises-à-niveau-de-synchronisation}
+<span id="notifications-oauth-partage-et-mises-à-niveau-de-synchronisation" />
 
-### Mises à jour des fonctionnalités {#mises-à-jour-des-fonctionnalités-4}
+## Notifications OAuth, partage et mises à niveau de synchronisation {#release-2026-10-01-section-1}
+
+<span id="mises-à-jour-des-fonctionnalités-6" />
+
+### Mises à jour des fonctionnalités {#release-2026-10-01-section-2}
 
 * **Ajout des notifications de l'application OAuth**: Les applications autorisées peuvent envoyer des notifications dans l'application. Les utilisateurs peuvent désactiver des applications individuelles ; la révocation de l'autorisation arrête les notifications.
 
@@ -192,7 +358,9 @@ Consultez l’**historique des exécutions** pour voir le statut et les résulta
 
 * **Réservation de quota pour la collecte de données**: Valide le solde, réserve l'utilisation estimée et libère le quota après des échecs. Intégrations de mise à jour, CLI et agent : `limit` → `limitPerInput`.
 
-### Correctifs et améliorations {#correctifs-et-améliorations-2}
+<span id="correctifs-et-améliorations-4" />
+
+### Correctifs et améliorations {#release-2026-10-01-section-3}
 
 * **Flux d'autorisation OAuth amélioré**: Affiche les progrès et se ferme après le succès ; les échecs ou les refus affichent les raisons et un bouton de fermeture.
 
@@ -218,20 +386,20 @@ Consultez l’**historique des exécutions** pour voir le statut et les résulta
 - [2025](/fr/changelog-2025)
 - [2024](/fr/changelog-2024)
 
-<span data-changelog-month="2026-01" data-changelog-anchors="23-janvier-2026|les-déclencheurs-webhook-d’automatisation-sont-disponibles|point-fort-1--configuration-en-quelques-secondes|point-fort-2--testez-vite-voyez-tout|point-fort-3--une-instruction-données-écrites|13-janvier-2026|ia-gratuite-et-invitations-gratuites-illimitées|l’ia-pour-tous-gratuitement|les-lecteurs-et-commentateurs-sont-désormais-gratuits|les-crédits-ia-évoluent-désormais-avec-le-nombre-de-sièges|7-janvier-2026|présentation-de-teable-app-builder-2-0|1-bouton-correction-auto|2-édition-de-code-en-direct|3-app-builder-vision|4-stabilité-et-fiabilité|5-expérience-de-création|6-performances|7-centre-de-modèles" hidden />
+<span data-changelog-month="2026-01" data-changelog-anchors="23-janvier-2026|release-2026-01-23-section-1|release-2026-01-23-section-2|release-2026-01-23-section-3|release-2026-01-23-section-4|les-déclencheurs-webhook-d’automatisation-sont-disponibles|point-fort-1--configuration-en-quelques-secondes|point-fort-2--testez-vite-voyez-tout|point-fort-3--une-instruction-données-écrites|13-janvier-2026|release-2026-01-13-section-1|release-2026-01-13-section-2|release-2026-01-13-section-3|release-2026-01-13-section-4|ia-gratuite-et-invitations-gratuites-illimitées|l’ia-pour-tous-gratuitement|les-lecteurs-et-commentateurs-sont-désormais-gratuits|les-crédits-ia-évoluent-désormais-avec-le-nombre-de-sièges|7-janvier-2026|release-2026-01-07-section-1|release-2026-01-07-section-2|release-2026-01-07-section-3|release-2026-01-07-section-4|release-2026-01-07-section-5|release-2026-01-07-section-6|release-2026-01-07-section-7|release-2026-01-07-section-8|présentation-de-teable-app-builder-2-0|1-bouton-correction-auto|2-édition-de-code-en-direct|3-app-builder-vision|4-stabilité-et-fiabilité|5-expérience-de-création|6-performances|7-centre-de-modèles" hidden />
 
-<span data-changelog-month="2026-02" data-changelog-anchors="7-février-2026|claude-opus-4-6-+-171-modèles-lancés|modèle-par-défaut-de-teable--claude-opus-4-6|champs-ia--mise-à-niveau-de-la-sélection-de-modèle" hidden />
+<span data-changelog-month="2026-02" data-changelog-anchors="7-février-2026|release-2026-02-07-section-1|release-2026-02-07-section-2|release-2026-02-07-section-3|claude-opus-4-6-+-171-modèles-lancés|modèle-par-défaut-de-teable--claude-opus-4-6|champs-ia--mise-à-niveau-de-la-sélection-de-modèle" hidden />
 
-<span data-changelog-month="2026-03" data-changelog-anchors="31-mars-2026|le-domaine-personnalisé-de-l’application-est-disponible|13-mars-2026|le-téléchargement-groupé-des-pièces-jointes-est-disponible|1-téléchargement-groupé-depuis-une-cellule|2-téléchargement-groupé-depuis-un-champ|3-téléchargement-groupé-avec-préfixe|4-téléchargement-groupé-dans-des-dossiers" hidden />
+<span data-changelog-month="2026-03" data-changelog-anchors="31-mars-2026|release-2026-03-31-section-1|le-domaine-personnalisé-de-l’application-est-disponible|13-mars-2026|release-2026-03-13-section-1|release-2026-03-13-section-2|release-2026-03-13-section-3|release-2026-03-13-section-4|release-2026-03-13-section-5|le-téléchargement-groupé-des-pièces-jointes-est-disponible|1-téléchargement-groupé-depuis-une-cellule|2-téléchargement-groupé-depuis-un-champ|3-téléchargement-groupé-avec-préfixe|4-téléchargement-groupé-dans-des-dossiers" hidden />
 
-<span data-changelog-month="2026-04" data-changelog-anchors="30-avril-2026|configuration-des-intégrations-et-optimisation-de-la-stabilité-de-l’ia|mises-à-jour-des-fonctionnalités-50|correctifs-et-améliorations-54|29-avril-2026|optimisation-de-la-stabilité-du-chat-ia-et-des-conseils-pour-exécuter-le-script|mises-à-jour-des-fonctionnalités-51|correctifs-de-bugs|28-avril-2026|nouveau-déclencheur--à-la-réception-d’un-e-mail-imap|1-déclencheur-de-réception-d’e-mail-imap|27-avril-2026|améliorations-du-chat-ia-et-prise-en-charge-de-l’aperçu-pdf|mises-à-jour-des-fonctionnalités-52|correctifs-de-bugs-2|23-avril-2026|modification-externe-sans-coût-supplémentaire|1-tables-partagées-modifiables|2-partager-des-tables-ou-des-vues-spécifiques|3-dupliquer-et-supprimer-des-tables|22-avril-2026|correctifs-de-stabilité-du-chat-ia-et-de-l’aperçu-pdf|fonctionnalités|correctifs-de-bugs-3|20-avril-2026|mises-à-jour-des-formules-de-la-recherche-et-de-la-stabilité|17-avril-2026|claude-opus-4-7-est-maintenant-dans-teable|15-avril-2026|le-chat-ia-comprend-désormais-vos-vues|1-ce-que-vous-voyez-est-ce-que-l’ia-reçoit|2-crud-précis-via-le-chat|3-sortie-améliorée-du-champ-ia|10-avril-2026|nouveau-teable-agent--super-intelligent-à-un-coût-bien-inférieur|nouveautés|notre-vision|prochainement|notes-importantes|8-avril-2026|prise-en-charge-de-markdown-dans-le-champ-texte-long|1-écrivez-en-markdown-voyez-le-rendu|2-collez-du-texte-mis-en-forme-obtenez-du-markdown|2-avril-2026|le-nouveau-moteur-app-builder-est-en-bêta|nouveautés-2|améliorations-de-l’expérience|dépréciations|prochainement-2|notes-importantes-2" hidden />
+<span data-changelog-month="2026-04" data-changelog-anchors="30-avril-2026|release-2026-04-30-section-1|release-2026-04-30-section-2|release-2026-04-30-section-3|configuration-des-intégrations-et-optimisation-de-la-stabilité-de-l’ia|mises-à-jour-des-fonctionnalités-52|correctifs-et-améliorations-56|29-avril-2026|release-2026-04-29-section-1|release-2026-04-29-section-2|release-2026-04-29-section-3|optimisation-de-la-stabilité-du-chat-ia-et-des-conseils-pour-exécuter-le-script|mises-à-jour-des-fonctionnalités-53|correctifs-de-bugs|28-avril-2026|release-2026-04-28-section-1|release-2026-04-28-section-2|nouveau-déclencheur--à-la-réception-d’un-e-mail-imap|1-déclencheur-de-réception-d’e-mail-imap|27-avril-2026|release-2026-04-27-section-1|release-2026-04-27-section-2|release-2026-04-27-section-3|améliorations-du-chat-ia-et-prise-en-charge-de-l’aperçu-pdf|mises-à-jour-des-fonctionnalités-54|correctifs-de-bugs-2|23-avril-2026|release-2026-04-23-section-1|release-2026-04-23-section-2|release-2026-04-23-section-3|release-2026-04-23-section-4|modification-externe-sans-coût-supplémentaire|1-tables-partagées-modifiables|2-partager-des-tables-ou-des-vues-spécifiques|3-dupliquer-et-supprimer-des-tables|22-avril-2026|release-2026-04-22-section-1|release-2026-04-22-section-2|release-2026-04-22-section-3|correctifs-de-stabilité-du-chat-ia-et-de-l’aperçu-pdf|fonctionnalités|correctifs-de-bugs-3|20-avril-2026|release-2026-04-20-section-1|mises-à-jour-des-formules-de-la-recherche-et-de-la-stabilité|17-avril-2026|release-2026-04-17-section-1|claude-opus-4-7-est-maintenant-dans-teable|15-avril-2026|release-2026-04-15-section-1|release-2026-04-15-section-2|release-2026-04-15-section-3|release-2026-04-15-section-4|le-chat-ia-comprend-désormais-vos-vues|1-ce-que-vous-voyez-est-ce-que-l’ia-reçoit|2-crud-précis-via-le-chat|3-sortie-améliorée-du-champ-ia|10-avril-2026|release-2026-04-10-section-1|release-2026-04-10-section-2|release-2026-04-10-section-3|release-2026-04-10-section-4|release-2026-04-10-section-5|nouveau-teable-agent--super-intelligent-à-un-coût-bien-inférieur|nouveautés|notre-vision|prochainement|notes-importantes|8-avril-2026|release-2026-04-08-section-1|release-2026-04-08-section-2|release-2026-04-08-section-3|prise-en-charge-de-markdown-dans-le-champ-texte-long|1-écrivez-en-markdown-voyez-le-rendu|2-collez-du-texte-mis-en-forme-obtenez-du-markdown|2-avril-2026|release-2026-04-02-section-1|release-2026-04-02-section-2|release-2026-04-02-section-3|release-2026-04-02-section-4|release-2026-04-02-section-5|release-2026-04-02-section-6|le-nouveau-moteur-app-builder-est-en-bêta|nouveautés-2|améliorations-de-l’expérience|dépréciations|prochainement-2|notes-importantes-2" hidden />
 
-<span data-changelog-month="2026-05" data-changelog-anchors="30-mai-2026|autorisations-de-partage-et-améliorations-de-stabilité|mises-à-jour-des-fonctionnalités-38|correctifs-et-améliorations-44|28-mai-2026|modification-partagée-sécurité-et-améliorations-ia|mises-à-jour-des-fonctionnalités-39|correctifs-et-améliorations-45|26-mai-2026|liens-autorisations-et-stabilité|mises-à-jour-des-fonctionnalités-40|correctifs-et-améliorations-46|25-mai-2026|optimisation-des-performances-de-calcul-et-de-recherche|mises-à-jour-des-fonctionnalités-41|correctifs-et-améliorations-47|22-mai-2026|mises-à-jour-de-l’automatisation-de-la-cli-et-de-la-stabilité|mises-à-jour-des-fonctionnalités-42|correctifs-et-améliorations-48|19-mai-2026|les-crédits-teable-multipliés-par-10|18-mai-2026|mises-à-jour-de-l’expérience-ia-et-de-la-stabilité|mises-à-jour-des-fonctionnalités-43|correctifs-et-améliorations-49|16-mai-2026|optimisation-de-la-voix-ia-et-de-markdown|mises-à-jour-des-fonctionnalités-44|correctifs-et-améliorations-50|15-mai-2026|optimisation-de-l’expérience-et-de-la-stabilité-du-chat-ia|mises-à-jour-des-fonctionnalités-45|correctifs-et-améliorations-51|14-mai-2026|@-n’importe-quel-nœud-dans-le-chat-ia|1-travaillez-avec-n’importe-quel-nœud-ou-plusieurs-nœuds-à-la-fois|2-trouvez-des-nœuds-pendant-votre-saisie|3-collez-une-url-teable-pour-travailler-entre-plusieurs-bases|13-mai-2026|optimisation-de-l’ia-des-automatisations-et-de-la-stabilité|mises-à-jour-des-fonctionnalités-46|corrections-de-bugs-et-améliorations-16|12-mai-2026|connexion-intégrée-pour-application-builder|1-activez-la-connexion-en-un-clic|2-contrôlez-qui-peut-accéder-à-votre-application|3-gérez-les-utilisateurs-connectés-avec-une-table-existante|11-mai-2026|amélioration-des-images-ia-et-optimisation-de-l’import|mises-à-jour-des-fonctionnalités-47|correctifs-et-améliorations-52|9-mai-2026|optimisation-des-paramètres-d’espace-et-de-la-stabilité|mises-à-jour-des-fonctionnalités-48|correctifs-et-améliorations-53|8-mai-2026|optimisation-d’application-builder-et-de-la-stabilité|mises-à-jour-des-fonctionnalités-49|corrections-de-bugs-et-améliorations-17|6-mai-2026|navigation-visuelle-pour-les-champs-de-lien|1-accédez-instantanément-à-la-table-liée|2-visualisez-clairement-le-chemin-du-lien" hidden />
+<span data-changelog-month="2026-05" data-changelog-anchors="30-mai-2026|release-2026-05-30-section-1|release-2026-05-30-section-2|release-2026-05-30-section-3|autorisations-de-partage-et-améliorations-de-stabilité|mises-à-jour-des-fonctionnalités-40|correctifs-et-améliorations-46|28-mai-2026|release-2026-05-28-section-1|release-2026-05-28-section-2|release-2026-05-28-section-3|modification-partagée-sécurité-et-améliorations-ia|mises-à-jour-des-fonctionnalités-41|correctifs-et-améliorations-47|26-mai-2026|release-2026-05-26-section-1|release-2026-05-26-section-2|release-2026-05-26-section-3|liens-autorisations-et-stabilité|mises-à-jour-des-fonctionnalités-42|correctifs-et-améliorations-48|25-mai-2026|release-2026-05-25-section-1|release-2026-05-25-section-2|release-2026-05-25-section-3|optimisation-des-performances-de-calcul-et-de-recherche|mises-à-jour-des-fonctionnalités-43|correctifs-et-améliorations-49|22-mai-2026|release-2026-05-22-section-1|release-2026-05-22-section-2|release-2026-05-22-section-3|mises-à-jour-de-l’automatisation-de-la-cli-et-de-la-stabilité|mises-à-jour-des-fonctionnalités-44|correctifs-et-améliorations-50|19-mai-2026|release-2026-05-19-section-1|les-crédits-teable-multipliés-par-10|18-mai-2026|release-2026-05-18-section-1|release-2026-05-18-section-2|release-2026-05-18-section-3|mises-à-jour-de-l’expérience-ia-et-de-la-stabilité|mises-à-jour-des-fonctionnalités-45|correctifs-et-améliorations-51|16-mai-2026|release-2026-05-16-section-1|release-2026-05-16-section-2|release-2026-05-16-section-3|optimisation-de-la-voix-ia-et-de-markdown|mises-à-jour-des-fonctionnalités-46|correctifs-et-améliorations-52|15-mai-2026|release-2026-05-15-section-1|release-2026-05-15-section-2|release-2026-05-15-section-3|optimisation-de-l’expérience-et-de-la-stabilité-du-chat-ia|mises-à-jour-des-fonctionnalités-47|correctifs-et-améliorations-53|14-mai-2026|release-2026-05-14-section-1|release-2026-05-14-section-2|release-2026-05-14-section-3|release-2026-05-14-section-4|@-n’importe-quel-nœud-dans-le-chat-ia|1-travaillez-avec-n’importe-quel-nœud-ou-plusieurs-nœuds-à-la-fois|2-trouvez-des-nœuds-pendant-votre-saisie|3-collez-une-url-teable-pour-travailler-entre-plusieurs-bases|13-mai-2026|release-2026-05-13-section-1|release-2026-05-13-section-2|release-2026-05-13-section-3|optimisation-de-l’ia-des-automatisations-et-de-la-stabilité|mises-à-jour-des-fonctionnalités-48|corrections-de-bugs-et-améliorations-16|12-mai-2026|release-2026-05-12-section-1|release-2026-05-12-section-2|release-2026-05-12-section-3|release-2026-05-12-section-4|connexion-intégrée-pour-application-builder|1-activez-la-connexion-en-un-clic|2-contrôlez-qui-peut-accéder-à-votre-application|3-gérez-les-utilisateurs-connectés-avec-une-table-existante|11-mai-2026|release-2026-05-11-section-1|release-2026-05-11-section-2|release-2026-05-11-section-3|amélioration-des-images-ia-et-optimisation-de-l’import|mises-à-jour-des-fonctionnalités-49|correctifs-et-améliorations-54|9-mai-2026|release-2026-05-09-section-1|release-2026-05-09-section-2|release-2026-05-09-section-3|optimisation-des-paramètres-d’espace-et-de-la-stabilité|mises-à-jour-des-fonctionnalités-50|correctifs-et-améliorations-55|8-mai-2026|release-2026-05-08-section-1|release-2026-05-08-section-2|release-2026-05-08-section-3|optimisation-d’application-builder-et-de-la-stabilité|mises-à-jour-des-fonctionnalités-51|corrections-de-bugs-et-améliorations-17|6-mai-2026|release-2026-05-06-section-1|release-2026-05-06-section-2|release-2026-05-06-section-3|navigation-visuelle-pour-les-champs-de-lien|1-accédez-instantanément-à-la-table-liée|2-visualisez-clairement-le-chemin-du-lien" hidden />
 
-<span data-changelog-month="2026-06" data-changelog-anchors="30-juin-2026|optimisation-du-calcul-de-la-récupération-et-de-l’ia|mises-à-jour-de-fonctionnalités-5|correctifs-et-améliorations-33|28-juin-2026|optimisation-de-la-corbeille-et-de-la-récupération-des-champs|correctifs-et-améliorations-34|27-juin-2026|optimisation-des-fonctionnalités-et-performances-des-tables|mises-à-jour-de-fonctionnalités-6|correctifs-et-améliorations-35|26-juin-2026|optimisation-de-la-création-ia-et-de-l’importation|mises-à-jour-de-fonctionnalités-7|correctifs-et-améliorations-36|25-juin-2026|améliorations-de-l’importation-ia-et-de-la-stabilité|mises-à-jour-de-fonctionnalités-8|correctifs-et-améliorations-37|24-juin-2026|agent-computer-suralimenté|17-juin-2026|résumé-de-sélection-dans-la-vue-grille|16-juin-2026|améliorations-de-l’importation-de-la-confidentialité-et-de-la-stabilité|mises-à-jour-de-fonctionnalités-9|correctifs-et-améliorations-38|15-juin-2026|optimisation-de-la-création-d’applications-et-de-la-stabilité|mises-à-jour-de-fonctionnalités-10|correctifs-et-améliorations-39|12-juin-2026|déploiement-d’applications-et-optimisation-de-la-stabilité|mises-à-jour-des-fonctionnalités-35|correctifs-et-améliorations-40|9-juin-2026|optimisation-de-l’importation-de-l’audit-et-des-performances|mises-à-jour-des-fonctionnalités-36|correctifs-et-améliorations-41|4-juin-2026|optimisation-de-la-lecture-ia-de-l’audit-et-de-la-publication|mises-à-jour-des-fonctionnalités-37|correctifs-et-améliorations-42|2-juin-2026|correctifs-d’importation-et-améliorations-de-stabilité|correctifs-et-améliorations-43" hidden />
+<span data-changelog-month="2026-06" data-changelog-anchors="30-juin-2026|release-2026-06-30-section-1|release-2026-06-30-section-2|release-2026-06-30-section-3|optimisation-du-calcul-de-la-récupération-et-de-l’ia|mises-à-jour-de-fonctionnalités-5|correctifs-et-améliorations-35|28-juin-2026|release-2026-06-28-section-1|release-2026-06-28-section-2|optimisation-de-la-corbeille-et-de-la-récupération-des-champs|correctifs-et-améliorations-36|27-juin-2026|release-2026-06-27-section-1|release-2026-06-27-section-2|release-2026-06-27-section-3|optimisation-des-fonctionnalités-et-performances-des-tables|mises-à-jour-de-fonctionnalités-6|correctifs-et-améliorations-37|26-juin-2026|release-2026-06-26-section-1|release-2026-06-26-section-2|release-2026-06-26-section-3|optimisation-de-la-création-ia-et-de-l’importation|mises-à-jour-de-fonctionnalités-7|correctifs-et-améliorations-38|25-juin-2026|release-2026-06-25-section-1|release-2026-06-25-section-2|release-2026-06-25-section-3|améliorations-de-l’importation-ia-et-de-la-stabilité|mises-à-jour-de-fonctionnalités-8|correctifs-et-améliorations-39|24-juin-2026|release-2026-06-24-section-1|agent-computer-suralimenté|17-juin-2026|release-2026-06-17-section-1|résumé-de-sélection-dans-la-vue-grille|16-juin-2026|release-2026-06-16-section-1|release-2026-06-16-section-2|release-2026-06-16-section-3|améliorations-de-l’importation-de-la-confidentialité-et-de-la-stabilité|mises-à-jour-de-fonctionnalités-9|correctifs-et-améliorations-40|15-juin-2026|release-2026-06-15-section-1|release-2026-06-15-section-2|release-2026-06-15-section-3|optimisation-de-la-création-d’applications-et-de-la-stabilité|mises-à-jour-de-fonctionnalités-10|correctifs-et-améliorations-41|12-juin-2026|release-2026-06-12-section-1|release-2026-06-12-section-2|release-2026-06-12-section-3|déploiement-d’applications-et-optimisation-de-la-stabilité|mises-à-jour-des-fonctionnalités-37|correctifs-et-améliorations-42|9-juin-2026|release-2026-06-09-section-1|release-2026-06-09-section-2|release-2026-06-09-section-3|optimisation-de-l’importation-de-l’audit-et-des-performances|mises-à-jour-des-fonctionnalités-38|correctifs-et-améliorations-43|4-juin-2026|release-2026-06-04-section-1|release-2026-06-04-section-2|release-2026-06-04-section-3|optimisation-de-la-lecture-ia-de-l’audit-et-de-la-publication|mises-à-jour-des-fonctionnalités-39|correctifs-et-améliorations-44|2-juin-2026|release-2026-06-02-section-1|release-2026-06-02-section-2|correctifs-d’importation-et-améliorations-de-stabilité|correctifs-et-améliorations-45" hidden />
 
-<span data-changelog-month="2026-07" data-changelog-anchors="31-juillet-2026|baisses-des-prix-de-gpt-automatiquement-répercutées-sur-les-utilisateurs-de-teable-|30-juillet-2026|gestion-des-autorisations-optimisation-des-performances-et-de-l’expérience|mises-à-jour-des-fonctionnalités-27|correctifs-et-améliorations-20|28-juillet-2026|compétence-teable-pour-les-agents-ia|invites-de-démarrage-simples|fichiers-locaux-→-teable|données-multiplateformes-→-teable|nettoyer-ou-organiser-les-données-teable|27-juillet-2026|améliorations-de-la-collaboration-de-l’audit-et-de-la-stabilité|correctifs-et-améliorations-21|26-juillet-2026|améliorations-de-la-synchronisation-de-la-navigation-et-de-la-stabilité|mises-à-jour-des-fonctionnalités-28|correctifs-et-améliorations-22|24-juillet-2026|notifications-d’invitation-performances-et-stabilité|mises-à-jour-des-fonctionnalités-29|correctifs-et-améliorations-23|23-juillet-2026|présentation-de-teable-3-0--le-tableur-ia-pour-les-entreprises|nouveautés-de-teable-3-0|-soutenez-notre-lancement-sur-product-hunt|22-juillet-2026|contexte-ia-liens-courts-et-optimisation-des-performances|mises-à-jour-des-fonctionnalités-30|correctifs-et-optimisations-2|21-juillet-2026|expérience-d’importation-airtable-améliorée|mises-à-jour-des-fonctionnalités-31|corrections-de-bugs-et-optimisations-2|20-juillet-2026|améliorations-des-performances-de-la-recherche-et-de-la-stabilité|corrections-de-bugs-et-améliorations-14|18-juillet-2026|champs-calculés-et-optimisation-de-la-stabilité|mises-à-jour-des-fonctionnalités-32|correctifs-et-améliorations-24|17-juillet-2026|optimisation-de-la-stabilité-et-des-performances|correctifs-et-améliorations-25|16-juillet-2026|optimisation-de-la-sécurité-et-de-la-stabilité|correctifs-et-améliorations-26|15-juillet-2026|mémoire-ia-et-téléchargements-de-fichiers|1-mémoriser-des-instructions-entre-les-conversations|2-télécharger-des-fichiers-générés-par-l’ia|14-juillet-2026|optimisation-de-l’ia-de-la-création-d’applications-et-des-performances|mises-à-jour-des-fonctionnalités-33|correctifs-et-améliorations-27|13-juillet-2026|optimisations-des-performances-de-copie-et-de-calcul|corrections-de-bugs-et-améliorations-15|12-juillet-2026|mises-à-jour-des-modèles-champs-et-de-la-stabilité|mises-à-jour-des-fonctionnalités-34|correctifs-et-améliorations-28|10-juillet-2026|gpt-5-6-est-désormais-disponible-dans-teable|9-juillet-2026|optimisation-de-l’historique-de-l’ia-et-de-la-stabilité|correctifs-et-améliorations-29|8-juillet-2026|les-skills-sont-désormais-disponibles|1-traiter-des-fichiers-avec-les-skills-intégrés|2-créer-vos-propres-skills|7-juillet-2026|optimisations-des-performances-de-l’ia-et-de-la-stabilité|correctifs-et-améliorations-30|6-juillet-2026|optimisation-de-l’ia-de-la-facturation-et-de-la-stabilité|mises-à-jour-de-fonctionnalités|correctifs-et-améliorations-31|3-juillet-2026|ia-autorisations-et-stabilité|mises-à-jour-de-fonctionnalités-2|correctifs-et-optimisations-3|2-juillet-2026|optimisation-de-l’ia-des-formules-et-des-flux-de-travail|mises-à-jour-de-fonctionnalités-3|correctifs-et-optimisations-4|1-juillet-2026|gestion-des-fichiers-et-optimisation-de-la-stabilité|mises-à-jour-de-fonctionnalités-4|correctifs-et-améliorations-32" hidden />
+<span data-changelog-month="2026-07" data-changelog-anchors="31-juillet-2026|release-2026-07-31-section-1|baisses-des-prix-de-gpt-automatiquement-répercutées-sur-les-utilisateurs-de-teable-|30-juillet-2026|release-2026-07-30-section-1|release-2026-07-30-section-2|release-2026-07-30-section-3|gestion-des-autorisations-optimisation-des-performances-et-de-l’expérience|mises-à-jour-des-fonctionnalités-29|correctifs-et-améliorations-22|28-juillet-2026|release-2026-07-28-section-1|release-2026-07-28-section-2|release-2026-07-28-section-3|release-2026-07-28-section-4|release-2026-07-28-section-5|compétence-teable-pour-les-agents-ia|invites-de-démarrage-simples|fichiers-locaux-→-teable|données-multiplateformes-→-teable|nettoyer-ou-organiser-les-données-teable|27-juillet-2026|release-2026-07-27-section-1|release-2026-07-27-section-2|améliorations-de-la-collaboration-de-l’audit-et-de-la-stabilité|correctifs-et-améliorations-23|26-juillet-2026|release-2026-07-26-section-1|release-2026-07-26-section-2|release-2026-07-26-section-3|améliorations-de-la-synchronisation-de-la-navigation-et-de-la-stabilité|mises-à-jour-des-fonctionnalités-30|correctifs-et-améliorations-24|24-juillet-2026|release-2026-07-24-section-1|release-2026-07-24-section-2|release-2026-07-24-section-3|notifications-d’invitation-performances-et-stabilité|mises-à-jour-des-fonctionnalités-31|correctifs-et-améliorations-25|23-juillet-2026|release-2026-07-23-section-1|release-2026-07-23-section-2|release-2026-07-23-section-3|présentation-de-teable-3-0--le-tableur-ia-pour-les-entreprises|nouveautés-de-teable-3-0|-soutenez-notre-lancement-sur-product-hunt|22-juillet-2026|release-2026-07-22-section-1|release-2026-07-22-section-2|release-2026-07-22-section-3|contexte-ia-liens-courts-et-optimisation-des-performances|mises-à-jour-des-fonctionnalités-32|correctifs-et-optimisations-2|21-juillet-2026|release-2026-07-21-section-1|release-2026-07-21-section-2|release-2026-07-21-section-3|expérience-d’importation-airtable-améliorée|mises-à-jour-des-fonctionnalités-33|corrections-de-bugs-et-optimisations-2|20-juillet-2026|release-2026-07-20-section-1|release-2026-07-20-section-2|améliorations-des-performances-de-la-recherche-et-de-la-stabilité|corrections-de-bugs-et-améliorations-14|18-juillet-2026|release-2026-07-18-section-1|release-2026-07-18-section-2|release-2026-07-18-section-3|champs-calculés-et-optimisation-de-la-stabilité|mises-à-jour-des-fonctionnalités-34|correctifs-et-améliorations-26|17-juillet-2026|release-2026-07-17-section-1|release-2026-07-17-section-2|optimisation-de-la-stabilité-et-des-performances|correctifs-et-améliorations-27|16-juillet-2026|release-2026-07-16-section-1|release-2026-07-16-section-2|optimisation-de-la-sécurité-et-de-la-stabilité|correctifs-et-améliorations-28|15-juillet-2026|release-2026-07-15-section-1|release-2026-07-15-section-2|release-2026-07-15-section-3|mémoire-ia-et-téléchargements-de-fichiers|1-mémoriser-des-instructions-entre-les-conversations|2-télécharger-des-fichiers-générés-par-l’ia|14-juillet-2026|release-2026-07-14-section-1|release-2026-07-14-section-2|release-2026-07-14-section-3|optimisation-de-l’ia-de-la-création-d’applications-et-des-performances|mises-à-jour-des-fonctionnalités-35|correctifs-et-améliorations-29|13-juillet-2026|release-2026-07-13-section-1|release-2026-07-13-section-2|optimisations-des-performances-de-copie-et-de-calcul|corrections-de-bugs-et-améliorations-15|12-juillet-2026|release-2026-07-12-section-1|release-2026-07-12-section-2|release-2026-07-12-section-3|mises-à-jour-des-modèles-champs-et-de-la-stabilité|mises-à-jour-des-fonctionnalités-36|correctifs-et-améliorations-30|10-juillet-2026|release-2026-07-10-section-1|gpt-5-6-est-désormais-disponible-dans-teable|9-juillet-2026|release-2026-07-09-section-1|release-2026-07-09-section-2|optimisation-de-l’historique-de-l’ia-et-de-la-stabilité|correctifs-et-améliorations-31|8-juillet-2026|release-2026-07-08-section-1|release-2026-07-08-section-2|release-2026-07-08-section-3|les-skills-sont-désormais-disponibles|1-traiter-des-fichiers-avec-les-skills-intégrés|2-créer-vos-propres-skills|7-juillet-2026|release-2026-07-07-section-1|release-2026-07-07-section-2|optimisations-des-performances-de-l’ia-et-de-la-stabilité|correctifs-et-améliorations-32|6-juillet-2026|release-2026-07-06-section-1|release-2026-07-06-section-2|release-2026-07-06-section-3|optimisation-de-l’ia-de-la-facturation-et-de-la-stabilité|mises-à-jour-de-fonctionnalités|correctifs-et-améliorations-33|3-juillet-2026|release-2026-07-03-section-1|release-2026-07-03-section-2|release-2026-07-03-section-3|ia-autorisations-et-stabilité|mises-à-jour-de-fonctionnalités-2|correctifs-et-optimisations-3|2-juillet-2026|release-2026-07-02-section-1|release-2026-07-02-section-2|release-2026-07-02-section-3|optimisation-de-l’ia-des-formules-et-des-flux-de-travail|mises-à-jour-de-fonctionnalités-3|correctifs-et-optimisations-4|1-juillet-2026|release-2026-07-01-section-1|release-2026-07-01-section-2|release-2026-07-01-section-3|gestion-des-fichiers-et-optimisation-de-la-stabilité|mises-à-jour-de-fonctionnalités-4|correctifs-et-améliorations-34" hidden />
 
-<span data-changelog-month="2026-08" data-changelog-anchors="31-août-2026|prise-en-charge-de-l’hébreu-et-optimisation-de-l’expérience-multilingue|mises-à-jour-des-fonctionnalités-14|correctifs-et-améliorations-10|29-août-2026|optimisations-de-la-file-d’attente-des-agents-du-calcul-et-de-la-stabilité|mises-à-jour-des-fonctionnalités-15|correctifs-et-améliorations-11|28-août-2026|création-de-contenu-importation-de-tables-et-optimisation|mises-à-jour-des-fonctionnalités-16|correctifs-et-améliorations-12|27-août-2026|optimisations-de-l’expérience-mobile-du-calcul-et-de-la-stabilité|correctifs-et-améliorations-13|26-août-2026|aug-25-2026|mises-à-jour-des-fonctionnalités-17|correctifs-et-améliorations-14|25-août-2026|teable-prend-désormais-en-charge-l’arabe-l’italien-et-l’espagnol|21-août-2026|mises-à-niveau-multilingues-de-performances-et-de-stabilité|mises-à-jour-des-fonctionnalités-18|correctifs-et-optimisations|20-août-2026|calculs-relations-et-optimisation-des-performances|corrections-de-bugs-et-améliorations-de-l’expérience|19-août-2026|améliorations-de-l’intégration-des-performances-et-de-la-stabilité|mises-à-jour-des-fonctionnalités-19|corrections-de-bugs-et-améliorations-9|18-août-2026|créez-des-fonctionnalités-ia-dans-app-builder|1-ajoutez-directement-l’ia-à-votre-application|2-aucune-configuration-de-clé-d’api-ia|17-août-2026|compétences-partagées-et-améliorations-des-performances|mises-à-jour-des-fonctionnalités-20|correctifs-et-améliorations-15|14-août-2026|génération-de-plusieurs-applications-téléchargements-groupés-et-améliorations-de-stabilité|mises-à-jour-des-fonctionnalités-21|corrections-de-bugs-et-optimisations|13-août-2026|performances-améliorées-réactivité-en-temps-réel-et-stabilité|mises-à-jour-des-fonctionnalités-22|corrections-de-bugs-et-améliorations-10|12-août-2026|personnalisation-de-la-marque-et-améliorations-de-stabilité|mises-à-jour-des-fonctionnalités-23|corrections-de-bugs-et-améliorations-11|11-août-2026|annonce-de-l’archivage-des-données--un-nombre-illimité-de-lignes-est-désormais-possible|1-archivez-les-enregistrements-au-lieu-de-les-supprimer|2-consultez-les-enregistrements-archivés-à-tout-moment|3-les-enregistrements-archivés-ne-comptent-pas-dans-votre-limite-de-lignes|10-août-2026|migration-de-base-et-améliorations-de-stabilité|corrections-de-bugs-et-améliorations-12|9-août-2026|stabilité-des-calculs-et-optimisation-des-performances|correctifs-et-améliorations-16|8-août-2026|gestion-des-enregistrements-d’échec-et-amélioration-de-la-stabilité|mises-à-jour-des-fonctionnalités-24|corrections-de-bugs-et-améliorations-13|7-août-2026|personnalisation-de-la-marque-et-optimisation-des-performances|mises-à-jour-des-fonctionnalités-25|correctifs-et-améliorations-17|6-août-2026|améliorations-du-déploiement-de-l’ia-et-de-la-stabilité|correctifs-et-améliorations-18|5-août-2026|annonces-archivage-et-améliorations-des-performances|mises-à-jour-des-fonctionnalités-26|correctifs-et-améliorations-19|4-août-2026|le-générateur-d’applications-prend-désormais-en-charge-la-modification-visuelle|1-modifier-directement-le-texte-de-la-page|2-sélectionner-un-élément-et-dire-à-l’ia-quoi-modifier" hidden />
+<span data-changelog-month="2026-08" data-changelog-anchors="31-août-2026|release-2026-08-31-section-1|release-2026-08-31-section-2|release-2026-08-31-section-3|prise-en-charge-de-l’hébreu-et-optimisation-de-l’expérience-multilingue|mises-à-jour-des-fonctionnalités-16|correctifs-et-améliorations-12|29-août-2026|release-2026-08-29-section-1|release-2026-08-29-section-2|release-2026-08-29-section-3|optimisations-de-la-file-d’attente-des-agents-du-calcul-et-de-la-stabilité|mises-à-jour-des-fonctionnalités-17|correctifs-et-améliorations-13|28-août-2026|release-2026-08-28-section-1|release-2026-08-28-section-2|release-2026-08-28-section-3|création-de-contenu-importation-de-tables-et-optimisation|mises-à-jour-des-fonctionnalités-18|correctifs-et-améliorations-14|27-août-2026|release-2026-08-27-section-1|release-2026-08-27-section-2|optimisations-de-l’expérience-mobile-du-calcul-et-de-la-stabilité|correctifs-et-améliorations-15|26-août-2026|release-2026-08-26-section-1|release-2026-08-26-section-2|release-2026-08-26-section-3|aug-25-2026|mises-à-jour-des-fonctionnalités-19|correctifs-et-améliorations-16|25-août-2026|release-2026-08-25-section-1|teable-prend-désormais-en-charge-l’arabe-l’italien-et-l’espagnol|21-août-2026|release-2026-08-21-section-1|release-2026-08-21-section-2|release-2026-08-21-section-3|mises-à-niveau-multilingues-de-performances-et-de-stabilité|mises-à-jour-des-fonctionnalités-20|correctifs-et-optimisations|20-août-2026|release-2026-08-20-section-1|release-2026-08-20-section-2|calculs-relations-et-optimisation-des-performances|corrections-de-bugs-et-améliorations-de-l’expérience|19-août-2026|release-2026-08-19-section-1|release-2026-08-19-section-2|release-2026-08-19-section-3|améliorations-de-l’intégration-des-performances-et-de-la-stabilité|mises-à-jour-des-fonctionnalités-21|corrections-de-bugs-et-améliorations-9|18-août-2026|release-2026-08-18-section-1|release-2026-08-18-section-2|release-2026-08-18-section-3|créez-des-fonctionnalités-ia-dans-app-builder|1-ajoutez-directement-l’ia-à-votre-application|2-aucune-configuration-de-clé-d’api-ia|17-août-2026|release-2026-08-17-section-1|release-2026-08-17-section-2|release-2026-08-17-section-3|compétences-partagées-et-améliorations-des-performances|mises-à-jour-des-fonctionnalités-22|correctifs-et-améliorations-17|14-août-2026|release-2026-08-14-section-1|release-2026-08-14-section-2|release-2026-08-14-section-3|génération-de-plusieurs-applications-téléchargements-groupés-et-améliorations-de-stabilité|mises-à-jour-des-fonctionnalités-23|corrections-de-bugs-et-optimisations|13-août-2026|release-2026-08-13-section-1|release-2026-08-13-section-2|release-2026-08-13-section-3|performances-améliorées-réactivité-en-temps-réel-et-stabilité|mises-à-jour-des-fonctionnalités-24|corrections-de-bugs-et-améliorations-10|12-août-2026|release-2026-08-12-section-1|release-2026-08-12-section-2|release-2026-08-12-section-3|personnalisation-de-la-marque-et-améliorations-de-stabilité|mises-à-jour-des-fonctionnalités-25|corrections-de-bugs-et-améliorations-11|11-août-2026|release-2026-08-11-section-1|release-2026-08-11-section-2|release-2026-08-11-section-3|release-2026-08-11-section-4|annonce-de-l’archivage-des-données--un-nombre-illimité-de-lignes-est-désormais-possible|1-archivez-les-enregistrements-au-lieu-de-les-supprimer|2-consultez-les-enregistrements-archivés-à-tout-moment|3-les-enregistrements-archivés-ne-comptent-pas-dans-votre-limite-de-lignes|10-août-2026|release-2026-08-10-section-1|release-2026-08-10-section-2|migration-de-base-et-améliorations-de-stabilité|corrections-de-bugs-et-améliorations-12|9-août-2026|release-2026-08-09-section-1|release-2026-08-09-section-2|stabilité-des-calculs-et-optimisation-des-performances|correctifs-et-améliorations-18|8-août-2026|release-2026-08-08-section-1|release-2026-08-08-section-2|release-2026-08-08-section-3|gestion-des-enregistrements-d’échec-et-amélioration-de-la-stabilité|mises-à-jour-des-fonctionnalités-26|corrections-de-bugs-et-améliorations-13|7-août-2026|release-2026-08-07-section-1|release-2026-08-07-section-2|release-2026-08-07-section-3|personnalisation-de-la-marque-et-optimisation-des-performances|mises-à-jour-des-fonctionnalités-27|correctifs-et-améliorations-19|6-août-2026|release-2026-08-06-section-1|release-2026-08-06-section-2|améliorations-du-déploiement-de-l’ia-et-de-la-stabilité|correctifs-et-améliorations-20|5-août-2026|release-2026-08-05-section-1|release-2026-08-05-section-2|release-2026-08-05-section-3|annonces-archivage-et-améliorations-des-performances|mises-à-jour-des-fonctionnalités-28|correctifs-et-améliorations-21|4-août-2026|release-2026-08-04-section-1|release-2026-08-04-section-2|release-2026-08-04-section-3|le-générateur-d’applications-prend-désormais-en-charge-la-modification-visuelle|1-modifier-directement-le-texte-de-la-page|2-sélectionner-un-élément-et-dire-à-l’ia-quoi-modifier" hidden />
 
-<span data-changelog-month="2026-09" data-changelog-anchors="29-septembre-2026|tâches-d’ia-mises-à-jour-de-sécurité-et-de-stabilité|mises-à-jour-des-fonctionnalités-5|correctifs-et-améliorations-3|24-septembre-2026|gpt-6-sol-et-luna-sont-désormais-dans-teable|23-septembre-2026|mises-à-jour-d’automatisation-de-facturation-et-de-stabilité|mises-à-jour-des-fonctionnalités-6|correctifs-et-améliorations-4|21-septembre-2026|connectez-plus-de-1-500-applications-à-teable-ai|1-transformez-les-demandes-reçues-sur-gmail-en-prospects|2-importez-vos-contacts-attio-dans-teable|3-rédigez-publiez-et-suivez-vos-publications-linkedin|20-septembre-2026|intégrations-x-calculs-et-optimisation-des-performances|nouvelles-fonctionnalités|corrections-et-améliorations|18-septembre-2026|améliorations-de-l’exécution-continue-des-performances-et-de-la-stabilité|nouvelles-fonctionnalités-2|corrections-et-améliorations-2|17-septembre-2026|collectez-des-données-sur-plus-de-800-sites-avec-teable-ai|1-trouvez-des-influenceurs-beauté-et-soins-de-la-peau-sur-youtube|2-trouvez-des-commerces-locaux-sur-google-maps|3-comparez-des-produits-sur-amazon|16-septembre-2026|améliorations-de-la-génération-d’images-des-comptes-et-de-l’expérience-utilisateur|nouvelles-fonctionnalités-3|corrections-et-améliorations-3|15-septembre-2026|optimisation-de-la-connexion-de-l’automatisation-et-des-performances|nouvelles-fonctionnalités-4|corrections-et-améliorations-4|14-septembre-2026|prise-en-charge-améliorée-de-l’écriture-de-droite-à-gauche|13-septembre-2026|optimisation-des-images-ia-des-performances-et-de-l’expérience-utilisateur|correctifs-et-améliorations-5|12-septembre-2026|améliorations-des-tâches-d’automatisation-du-chat-et-de-la-stabilité|mises-à-jour-des-fonctionnalités-7|corrections-de-bugs-et-améliorations-5|11-septembre-2026|mises-à-jour-de-sécurité-de-performances-et-de-stabilité|mises-à-jour-des-fonctionnalités-8|corrections-de-bugs-et-améliorations-6|10-septembre-2026|extension-du-scraper-et-améliorations-de-la-stabilité|mises-à-jour-des-fonctionnalités-9|corrections-de-bugs-et-améliorations-7|9-septembre-2026|optimisation-de-la-reconnaissance-des-url-des-identifiants-et-de-la-recherche|mises-à-jour-des-fonctionnalités-10|correctifs-et-améliorations-6|8-septembre-2026|optimisation-des-calculs-de-la-recherche-et-de-la-stabilité|correctifs-et-améliorations-7|7-septembre-2026|gpt-6-est-maintenant-dans-teable|5-septembre-2026|déduplication-des-valeurs-lookup-et-optimisation-de-l’importation-par-ia|mises-à-jour-des-fonctionnalités-11|corrections-de-bugs-et-améliorations-8|4-septembre-2026|nouvelle-tarification--plus-de-crédits-ia-économisez-44-%-à-l’année|1-ce-qui-a-changé|2-comment-fonctionnent-les-sièges-et-les-crédits|3-pourquoi-nous-apportons-ce-changement|4-les-clients-existants-obtiennent-davantage-pour-le-même-prix|3-septembre-2026|automatisation-pièces-jointes-et-collaboration-intelligente|mises-à-jour-des-fonctionnalités-12|correctifs-et-améliorations-8|2-septembre-2026|améliorations-d’artifact-et-de-stabilité|mises-à-jour-des-fonctionnalités-13|correctifs-et-améliorations-9|1-septembre-2026|présentation-des-artifacts--partagez-des-rapports-de-données-partout|1-créer-des-artifacts-avec-l’ia|2-continuer-à-affiner-le-même-artifact|3-partager-des-artifacts-partout" hidden />
+<span data-changelog-month="2026-09" data-changelog-anchors="29-septembre-2026|release-2026-09-29-section-1|release-2026-09-29-section-2|release-2026-09-29-section-3|tâches-d’ia-mises-à-jour-de-sécurité-et-de-stabilité|mises-à-jour-des-fonctionnalités-7|correctifs-et-améliorations-5|24-septembre-2026|release-2026-09-24-section-1|gpt-6-sol-et-luna-sont-désormais-dans-teable|23-septembre-2026|release-2026-09-23-section-1|release-2026-09-23-section-2|release-2026-09-23-section-3|mises-à-jour-d’automatisation-de-facturation-et-de-stabilité|mises-à-jour-des-fonctionnalités-8|correctifs-et-améliorations-6|21-septembre-2026|release-2026-09-21-section-1|release-2026-09-21-section-2|release-2026-09-21-section-3|release-2026-09-21-section-4|connectez-plus-de-1-500-applications-à-teable-ai|1-transformez-les-demandes-reçues-sur-gmail-en-prospects|2-importez-vos-contacts-attio-dans-teable|3-rédigez-publiez-et-suivez-vos-publications-linkedin|20-septembre-2026|release-2026-09-20-section-1|release-2026-09-20-section-2|release-2026-09-20-section-3|intégrations-x-calculs-et-optimisation-des-performances|nouvelles-fonctionnalités|corrections-et-améliorations|18-septembre-2026|release-2026-09-18-section-1|release-2026-09-18-section-2|release-2026-09-18-section-3|améliorations-de-l’exécution-continue-des-performances-et-de-la-stabilité|nouvelles-fonctionnalités-2|corrections-et-améliorations-2|17-septembre-2026|release-2026-09-17-section-1|release-2026-09-17-section-2|release-2026-09-17-section-3|release-2026-09-17-section-4|collectez-des-données-sur-plus-de-800-sites-avec-teable-ai|1-trouvez-des-influenceurs-beauté-et-soins-de-la-peau-sur-youtube|2-trouvez-des-commerces-locaux-sur-google-maps|3-comparez-des-produits-sur-amazon|16-septembre-2026|release-2026-09-16-section-1|release-2026-09-16-section-2|release-2026-09-16-section-3|améliorations-de-la-génération-d’images-des-comptes-et-de-l’expérience-utilisateur|nouvelles-fonctionnalités-3|corrections-et-améliorations-3|15-septembre-2026|release-2026-09-15-section-1|release-2026-09-15-section-2|release-2026-09-15-section-3|optimisation-de-la-connexion-de-l’automatisation-et-des-performances|nouvelles-fonctionnalités-4|corrections-et-améliorations-4|14-septembre-2026|release-2026-09-14-section-1|prise-en-charge-améliorée-de-l’écriture-de-droite-à-gauche|13-septembre-2026|release-2026-09-13-section-1|release-2026-09-13-section-2|optimisation-des-images-ia-des-performances-et-de-l’expérience-utilisateur|correctifs-et-améliorations-7|12-septembre-2026|release-2026-09-12-section-1|release-2026-09-12-section-2|release-2026-09-12-section-3|améliorations-des-tâches-d’automatisation-du-chat-et-de-la-stabilité|mises-à-jour-des-fonctionnalités-9|corrections-de-bugs-et-améliorations-5|11-septembre-2026|release-2026-09-11-section-1|release-2026-09-11-section-2|release-2026-09-11-section-3|mises-à-jour-de-sécurité-de-performances-et-de-stabilité|mises-à-jour-des-fonctionnalités-10|corrections-de-bugs-et-améliorations-6|10-septembre-2026|release-2026-09-10-section-1|release-2026-09-10-section-2|release-2026-09-10-section-3|extension-du-scraper-et-améliorations-de-la-stabilité|mises-à-jour-des-fonctionnalités-11|corrections-de-bugs-et-améliorations-7|9-septembre-2026|release-2026-09-09-section-1|release-2026-09-09-section-2|release-2026-09-09-section-3|optimisation-de-la-reconnaissance-des-url-des-identifiants-et-de-la-recherche|mises-à-jour-des-fonctionnalités-12|correctifs-et-améliorations-8|8-septembre-2026|release-2026-09-08-section-1|release-2026-09-08-section-2|optimisation-des-calculs-de-la-recherche-et-de-la-stabilité|correctifs-et-améliorations-9|7-septembre-2026|release-2026-09-07-section-1|gpt-6-est-maintenant-dans-teable|5-septembre-2026|release-2026-09-05-section-1|release-2026-09-05-section-2|release-2026-09-05-section-3|déduplication-des-valeurs-lookup-et-optimisation-de-l’importation-par-ia|mises-à-jour-des-fonctionnalités-13|corrections-de-bugs-et-améliorations-8|4-septembre-2026|release-2026-09-04-section-1|release-2026-09-04-section-2|release-2026-09-04-section-3|release-2026-09-04-section-4|release-2026-09-04-section-5|nouvelle-tarification--plus-de-crédits-ia-économisez-44-%-à-l’année|1-ce-qui-a-changé|2-comment-fonctionnent-les-sièges-et-les-crédits|3-pourquoi-nous-apportons-ce-changement|4-les-clients-existants-obtiennent-davantage-pour-le-même-prix|3-septembre-2026|release-2026-09-03-section-1|release-2026-09-03-section-2|release-2026-09-03-section-3|automatisation-pièces-jointes-et-collaboration-intelligente|mises-à-jour-des-fonctionnalités-14|correctifs-et-améliorations-10|2-septembre-2026|release-2026-09-02-section-1|release-2026-09-02-section-2|release-2026-09-02-section-3|améliorations-d’artifact-et-de-stabilité|mises-à-jour-des-fonctionnalités-15|correctifs-et-améliorations-11|1-septembre-2026|release-2026-09-01-section-1|release-2026-09-01-section-2|release-2026-09-01-section-3|release-2026-09-01-section-4|présentation-des-artifacts--partagez-des-rapports-de-données-partout|1-créer-des-artifacts-avec-l’ia|2-continuer-à-affiner-le-même-artifact|3-partager-des-artifacts-partout" hidden />

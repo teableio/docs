@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from datetime import date
 
-from changelog_maintenance import maintain, normalize, merge, entries, anchors
+from changelog_maintenance import maintain, normalize, merge, entries, anchors, BLOCK
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -34,6 +34,15 @@ class MaintenanceTests(unittest.TestCase):
             dest = root / source.relative_to(ROOT)
             dest.parent.mkdir(exist_ok=True)
             shutil.copyfile(source, dest)
+        # Controlled October fixtures must not depend on how many announcements
+        # have been published in the live repository since the tests were added.
+        for path in root.glob('*/changelog.mdx'):
+            source = path.read_text()
+            blocks = list(BLOCK.finditer(source))
+            controlled = '\n\n'.join(
+                f'<Update label="2026-10-{day}">\n## Fixture {day} {{#fixture-{day}}}\n</Update>'
+                for day in (15, 14, 13))
+            path.write_text(source[:blocks[0].start()] + controlled + source[blocks[-1].end():])
         return root
 
     def test_real_repository_is_idempotent_and_date_aliases_match_published_manifest(self):
@@ -60,7 +69,7 @@ class MaintenanceTests(unittest.TestCase):
             self.assertIn('## New month {#2026-11-01-new-month}', current)
             self.assertIn(f'/{locale}/changelog-2026-10', current)
             archived = (root / locale / 'changelog-2026-10.mdx').read_text()
-            self.assertEqual(len(entries(archived, locale)), 7)
+            self.assertEqual(len(entries(archived, locale)), 3)
             self.assertIn(copy['datePickerLabel'], archived)
         self.assertEqual(maintain(root), {})
 
@@ -81,7 +90,7 @@ class MaintenanceTests(unittest.TestCase):
         self.assertNotIn('dangerouslySetInnerHTML', revised)
         for identity in anchors(old):
             self.assertIn(identity, anchors(entries(revised, 'en')[0][1]))
-        self.assertEqual(len(entries(current.read_text(), 'en')), 7)
+        self.assertEqual(len(entries(current.read_text(), 'en')), 3)
         self.assertEqual(maintain(root), {})
 
     def test_ambiguous_same_day_republication_fails_without_overwriting_either_entry(self):

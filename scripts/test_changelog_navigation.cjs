@@ -58,43 +58,18 @@ test('SPA navigation replaces the stale path used for changelog styling', () => 
   assert.equal(result.attributes['data-current-path'], '/en/basic/ai/overview');
 });
 
-test('an existing date picker updates its accessible label on language navigation and is removed on other pages', () => {
-  let observerCallback;
-  let picker;
-  const labels = { en: 'Jump to date', zh: '跳转到日期' };
-  const select = { attrs: {}, setAttribute(k, v) { this.attrs[k] = v; }, appendChild() {}, addEventListener() {} };
-  const updates = ['one', 'two'].map((id) => ({ id, querySelector() { return { textContent: id }; } }));
-  const window = {
-    location: { pathname: '/en/changelog', hash: '' },
-    matchMedia() { return { matches: false }; },
-    addEventListener() {}, clearTimeout() {}, setTimeout(fn) { fn(); },
-  };
+test('changelog navigation preserves the upstream date layout without injecting a floating picker', () => {
+  let created = 0;
   const document = {
     documentElement: { setAttribute() {} },
-    getElementById(id) {
-      return id === 'changelog-labels' ? { getAttribute() { return labels[window.location.pathname.split('/')[1]]; } } : null;
-    },
-    querySelectorAll(selector) { return selector === '.update-container[id]' ? updates : []; },
-    createElement(tag) {
-      if (tag === 'option') return {};
-      picker = {
-        isConnected: false,
-        querySelector(selector) { return selector === 'select' ? select : { textContent: '' }; },
-        contains() { return false; }, remove() { this.isConnected = false; },
-      };
-      return picker;
-    },
-    body: { appendChild(node) { node.isConnected = true; } },
+    getElementById() { return null; },
+    querySelectorAll() { return []; },
+    createElement() { created++; throw new Error('unexpected floating date control'); },
   };
-  vm.runInNewContext(source, { document, window, MutationObserver: class {
-    constructor(callback) { observerCallback = callback; } observe() {}
-  } });
-  assert.equal(select.attrs['aria-label'], labels.en);
-  window.location.pathname = '/zh/changelog-2026-09';
-  observerCallback([{ target: {} }]);
-  assert.equal(select.attrs['aria-label'], labels.zh);
-  assert.ok(picker.isConnected);
-  window.location.pathname = '/zh/basic/ai/overview';
-  observerCallback([{ target: {} }]);
-  assert.equal(picker.isConnected, false);
+  const window = {
+    location: { pathname: '/zh/changelog-2026-09', hash: '' },
+    addEventListener() {}, clearTimeout() {}, setTimeout() {},
+  };
+  vm.runInNewContext(source, { document, window, MutationObserver: class { observe() {} } });
+  assert.equal(created, 0);
 });
