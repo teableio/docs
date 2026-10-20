@@ -3,6 +3,106 @@ title: "Änderungsprotokoll 2026"
 rss: true
 ---
 
+<Update label="20. Oktober 2026">
+
+# KI-Tools mit MCP mit Teable verbinden
+
+Teable verfügt jetzt über einen offiziellen MCP-Server. Verbinde **Claude Code, Codex, Cursor** oder einen anderen MCP-Client und arbeite per Chat mit deinen Teable-Daten. Du kannst zum Beispiel fragen, was diese Woche in deinem Repository veröffentlicht wurde, und deine Roadmap in Teable aktualisieren lassen. Der Client kann Datensätze abfragen und ändern sowie Tabellen, Felder und Ansichten erstellen, immer innerhalb deiner Teable-Berechtigungen.
+
+<video controls playsInline preload="auto" className="w-full aspect-video" poster="https://dxshyegpql0u3hra.public.blob.vercel-storage.com/38ab53314236be0c7e63a70c8736ab10.png" src="https://media-static.teable.ai/video/1571b575ae42e0a9.mp4" aria-label="KI-Tools mit MCP mit Teable verbinden" />
+
+<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({"@context":"https://schema.org","@type":"VideoObject","name":"KI-Tools mit MCP mit Teable verbinden","description":"Teable verfügt jetzt über einen offiziellen MCP-Server. Verbinde Claude Code, Codex, Cursor oder einen anderen MCP-Client und arbeite per Chat mit deinen Teable-Daten. Du kannst zum Beispiel fragen, was diese Woche in deinem Repository veröffentlicht wurde, und deine Roadmap in Teable aktualisieren lassen. Der Client kann Datensätze abfragen und ändern sowie Tabellen, Felder und Ansichten erstellen, immer innerhalb deiner Teable-Berechtigungen.","thumbnailUrl":"https://dxshyegpql0u3hra.public.blob.vercel-storage.com/38ab53314236be0c7e63a70c8736ab10.png","uploadDate":"2026-10-20T00:00:00+08:00","contentUrl":"https://media-static.teable.ai/video/1571b575ae42e0a9.mp4"}) }} />
+
+## So stellst du die Verbindung her
+
+Du brauchst kein API-Token. Führe in Claude Code Folgendes aus:
+
+```bash
+claude mcp add --transport http teable https://mcp.teable.ai/mcp
+```
+
+Führe anschließend `/mcp` aus, wähle **teable → Authenticate** und bestätige den Zugriff im Browser. Für Codex, Cursor und andere Clients findest du unter **Settings → MCP** in Teable kopierfertige Einrichtungsschritte. Dort kannst du auch verbundene Clients anzeigen und jederzeit entfernen.
+
+</Update>
+
+<Update label="19. Oktober 2026">
+
+# Verbesserte Filter, KI und Nutzererfahrung
+
+## Funktionsupdates
+
+* Neue Datumsfilter-Voreinstellungen: „Dieses Jahr“, „Letztes Jahr“ und „Nächstes Jahr“ helfen bei der schnellen Suche nach Zeiträumen.
+
+* „Zum Chat hinzufügen“ hinzugefügt: Menüs in der Datensatzansicht können Datensätze mit Kontext aus verknüpften Tabellen und gefilterten Ansichten in den Chat übernehmen.
+
+* Aktivierungsschritte für Skills hinzugefügt: Der Webchat zeigt Name, Beschreibung und erweiterbare Anweisungen; Nachrichten mit `/skill-name` aktivieren den jeweiligen Skill zuverlässig.
+
+* Große Ergebnisse als Dateien angezeigt: Umfangreiche Webscraping- und Tool-Ergebnisse werden als lesbare Dateien bereitgestellt.
+
+## Fehlerbehebungen und Verbesserungen
+
+* Klareres Feedback bei Tool-Ausführungen: Fehlgeschlagene Vorgänge zeigen verständlichere Statusmeldungen.
+
+* Benachrichtigungsregeln für Benutzerfelder verbessert: Per API erstellte Benutzerfelder benachrichtigen nur bei ausdrücklich gesetztem `shouldNotify: true`.
+
+* Prioritätsanzeige in KI-Listen verbessert: Alle gespeicherten numerischen Prioritäten werden angezeigt, auch Werte außerhalb von „Hoch“, „Mittel“ und „Niedrig“.
+
+* Feldkonsistenz im App Builder verbessert: Die neuesten Anzeigeregeln gelten einheitlich für neue, behaltene und bestehende Arbeitsbereiche.
+
+* Einzeiliger Text verbessert: Außenbereiche werden entfernt, Zeilenumbrüche und Tabulatoren zu Leerzeichen umgewandelt und eingefügte Werte verknüpfen Datensätze zuverlässiger.
+
+* Langtext verbessert: Außenbereiche werden entfernt, interne Zeilenumbrüche und Tabulatoren bleiben erhalten, reine Leerzeichen werden als leer gespeichert.
+
+* Sichtbarkeit erforderlicher Formularfelder korrigiert: Felder ohne Standardwert bleiben sichtbar, andere folgen ihrer Konfiguration.
+
+* Textlinks verbessert: URLs öffnen sich beim ersten Klick, ohne die Zelle auszuwählen.
+
+* Bewertungen und Kontrollkästchen verbessert: Der erste Klick setzt den Wert, ein weiterer Klick auf den aktuellen Wert löscht ihn.
+
+* Prozentverhalten vereinheitlicht: `50` wird als `0,5` gespeichert und als `50 %` angezeigt.
+
+* Sprachtranskription wiederhergestellt: Die Spracheingabe unterstützt das neue Transkriptionsmodell und migriert alte Konfigurationen automatisch.
+
+</Update>
+
+<Update label="18. Oktober 2026">
+
+# Strukturierte Abfragen, Zusammenarbeit und Stabilität verbessert
+
+## Funktionsupdates
+
+* Strukturierte Abfragen hinzugefügt: Feldauswahl, Aliase, Filter, Sortierung, Paginierung und Aggregationen über einen einheitlichen API- und CLI-Zugriff.
+
+* Abfragebibliothek hinzugefügt: stabile Abfrage-IDs, Versionierung, angeheftete oder aktuelle Referenzen, Freigaben, Wiederherstellung und Konfliktschutz.
+
+* CSV-Importberechtigungen erweitert: Editoren können CSV-Daten an bestehende Tabellen anhängen, wobei der verantwortliche Editor erfasst wird.
+
+## Fehlerbehebungen und Verbesserungen
+
+* Fehler bei Feldkonfigurationen behoben: Optionen, Anzeigen, Rollups, Formeln, Eindeutigkeit und Pflichtfelder werden korrekt angewendet und neu berechnet.
+
+* Felder für letzte Änderungen verbessert: alle Felder werden verfolgt, gelöschte Referenzen entfernt und der Verlauf bleibt erhalten.
+
+* Benachrichtigungen kopierter Datensätze korrigiert: zugewiesene Mitgliederfelder erhalten nach dem Kopieren Benachrichtigungen.
+
+* Umwandlung in einzeiligen Text verbessert: Anhänge werden zu Dateinamen, Klickzähler werden gelöscht und Benutzernamen mit Kommas werden geschützt.
+
+* Validierung bedingter Rollups verstärkt: Quellfelder außerhalb der Zieltabelle werden abgelehnt.
+
+* KI- und Workflow-Zuverlässigkeit verbessert: weniger Fehler vor dem Start von Automatisierungen, KI-Feldern, KI-Aktionen, wiederkehrenden Aufgaben und Mediengenerierung.
+
+* Filterung von Benutzerfeldern verbessert: vereinfachte chinesische Beschriftungen und Reihenfolge wurden aktualisiert.
+
+* Berechtigungen archivierter Datensätze wiederhergestellt: Besitzer und Matrixadministratoren können sie anzeigen, wiederherstellen und endgültig löschen.
+
+* Auswahl von KI-Chat-Modellen verbessert: Scrollen wird unterstützt und der Reasoning-Aufwand bleibt sichtbar.
+
+* Klicklimits von Buttons verbessert: Nur positive Ganzzahlen werden akzeptiert, ungültige Änderungen überschreiben bestehende Einstellungen nicht.
+
+</Update>
+
+
+
 <Update label="15. Oktober 2026">
 
 # KI-Aufgaben nach Zeitplan ausführen

@@ -3,6 +3,106 @@ title: "Journal des modifications 2026"
 rss: true
 ---
 
+<Update label="20 octobre 2026">
+
+# Connectez vos outils IA à Teable avec MCP
+
+Teable dispose désormais d’un serveur MCP officiel. Connectez **Claude Code, Codex, Cursor** ou tout autre client MCP pour travailler avec vos données Teable par conversation. Demandez par exemple quelles fonctionnalités ont été livrées cette semaine dans votre dépôt et faites mettre à jour votre feuille de route dans Teable. Le client peut consulter et modifier des enregistrements, ainsi que créer des tables, des champs et des vues, dans le cadre de vos propres autorisations Teable.
+
+<video controls playsInline preload="auto" className="w-full aspect-video" poster="https://dxshyegpql0u3hra.public.blob.vercel-storage.com/38ab53314236be0c7e63a70c8736ab10.png" src="https://media-static.teable.ai/video/1571b575ae42e0a9.mp4" aria-label="Connectez vos outils IA à Teable avec MCP" />
+
+<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({"@context":"https://schema.org","@type":"VideoObject","name":"Connectez vos outils IA à Teable avec MCP","description":"Teable dispose désormais d’un serveur MCP officiel. Connectez Claude Code, Codex, Cursor ou tout autre client MCP pour travailler avec vos données Teable par conversation. Demandez par exemple quelles fonctionnalités ont été livrées cette semaine dans votre dépôt et faites mettre à jour votre feuille de route dans Teable. Le client peut consulter et modifier des enregistrements, ainsi que créer des tables, des champs et des vues, dans le cadre de vos propres autorisations Teable.","thumbnailUrl":"https://dxshyegpql0u3hra.public.blob.vercel-storage.com/38ab53314236be0c7e63a70c8736ab10.png","uploadDate":"2026-10-20T00:00:00+08:00","contentUrl":"https://media-static.teable.ai/video/1571b575ae42e0a9.mp4"}) }} />
+
+## Comment se connecter
+
+Aucun jeton API n’est requis. Dans Claude Code, exécutez :
+
+```bash
+claude mcp add --transport http teable https://mcp.teable.ai/mcp
+```
+
+Exécutez ensuite `/mcp`, choisissez **teable → Authenticate** et autorisez l’accès dans votre navigateur. Pour Codex, Cursor et les autres clients, ouvrez **Settings → MCP** dans Teable pour copier les étapes de configuration. Vous pouvez aussi y consulter les clients connectés et les supprimer à tout moment.
+
+</Update>
+
+<Update label="19 octobre 2026">
+
+# Filtres, IA et expérience globale améliorés
+
+## Mises à jour des fonctionnalités
+
+* Ajout de préréglages de dates : « Cette année », « L’année dernière » et « L’année prochaine » permettent de trouver rapidement les périodes recherchées.
+
+* Ajout de « Ajouter au chat » : les menus des détails d’un enregistrement peuvent l’ajouter au chat tout en conservant le contexte des tables liées et des vues filtrées.
+
+* Ajout des étapes d’activation des skills : le chat web affiche le nom, la description et les instructions dépliables de chaque skill ; les messages commençant par `/skill-name` activent correctement le skill correspondant.
+
+* Affichage des grands résultats dans des fichiers : les résultats volumineux du scraping web et des outils sont proposés dans des fichiers lisibles pour un accès complet.
+
+## Correctifs et améliorations
+
+* Retour plus clair des outils : les opérations échouées indiquent désormais leur état et leur message plus précisément.
+
+* Règles de notification des champs utilisateur améliorées : les champs créés par API n’envoient pas de notification sans `shouldNotify: true`.
+
+* Priorités des vues liste IA améliorées : toutes les valeurs numériques enregistrées sont affichées, y compris celles hors de « Haute », « Moyenne » et « Basse ».
+
+* Cohérence des champs dans App Builder améliorée : les dernières règles d’affichage s’appliquent aux nouveaux espaces, aux espaces conservés et aux espaces existants.
+
+* Gestion du texte sur une ligne améliorée : les espaces extérieurs sont supprimés, les retours et tabulations deviennent des espaces, et les valeurs collées réutilisent mieux les enregistrements liés.
+
+* Gestion du texte long améliorée : les espaces extérieurs sont supprimés, les retours et tabulations internes sont conservés et les valeurs uniquement composées d’espaces deviennent vides.
+
+* Visibilité des champs obligatoires dans les formulaires corrigée : les champs sans valeur par défaut restent visibles, tandis que les autres suivent leur configuration.
+
+* Interaction avec les liens texte améliorée : les URL s’ouvrent dès le premier clic sans sélectionner la cellule.
+
+* Interaction avec les évaluations et cases à cocher améliorée : le premier clic active le contrôle et un second clic sur la valeur actuelle l’efface.
+
+* Comportement des pourcentages unifié : saisissez `50`, la valeur est enregistrée comme `0,5` et affichée comme `50 %` dans les formulaires, fiches et grilles.
+
+* Transcription vocale restaurée : la saisie vocale prend en charge le nouveau modèle et migre automatiquement les anciennes configurations.
+
+</Update>
+
+<Update label="18 octobre 2026">
+
+# Requêtes structurées, collaboration et stabilité améliorées
+
+## Mises à jour des fonctionnalités
+
+* Ajout des requêtes structurées : champs, alias, filtres, tri, pagination et agrégations via un accès API et CLI unifié.
+
+* Ajout de la bibliothèque de requêtes : identifiants stables, versions, références épinglées ou récentes, partage, restauration et protection contre les conflits.
+
+* Permissions d’import CSV étendues : les éditeurs peuvent ajouter des données à une table existante, avec traçabilité de l’éditeur responsable.
+
+## Correctifs et améliorations
+
+* Correctifs de configuration des champs : les options, affichages, agrégations, formules, unicité et obligations sont appliqués et recalculés correctement.
+
+* Champs de dernière modification améliorés : suivi de tous les champs, suppression des références supprimées et conservation de l’historique.
+
+* Notifications des enregistrements copiés corrigées : les personnes assignées reçoivent les notifications après une copie.
+
+* Conversion en texte sur une ligne améliorée : les pièces jointes deviennent des noms de fichiers, les compteurs de clics sont supprimés et les noms contenant des virgules sont protégés.
+
+* Validation des agrégations conditionnelles renforcée : les champs sources hors de la table cible sont refusés.
+
+* Fiabilité de l’IA et des workflows améliorée : moins d’échecs avant le démarrage des automatisations, champs IA, actions IA, tâches récurrentes et génération média.
+
+* Filtrage des champs utilisateur amélioré : libellés et ordre en chinois simplifié mis à jour.
+
+* Permissions des enregistrements archivés restaurées : propriétaires et administrateurs de matrice peuvent les consulter, restaurer et supprimer définitivement.
+
+* Sélecteur de modèles du chat IA amélioré : défilement pris en charge et effort de raisonnement visible.
+
+* Limites de clics des boutons améliorées : seuls les entiers positifs sont acceptés, les mises à jour invalides ne remplacent pas les réglages existants.
+
+</Update>
+
+
+
 <Update label="15 octobre 2026">
 
 # Exécutez des tâches IA selon un planning
