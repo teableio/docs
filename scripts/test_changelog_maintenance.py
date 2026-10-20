@@ -1,4 +1,5 @@
 import json
+import re
 from pathlib import Path
 import shutil
 import subprocess
@@ -7,7 +8,7 @@ import tempfile
 import unittest
 from datetime import date
 
-from changelog_maintenance import maintain, normalize, merge, entries, anchors, BLOCK
+from changelog_maintenance import maintain, normalize, merge, entries, anchors, BLOCK, rss_date, with_rss_date, normalize_page_rss, update_attributes, update_label
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -183,6 +184,112 @@ class MaintenanceTests(unittest.TestCase):
         result = subprocess.run([sys.executable, str(ROOT / 'scripts/changelog_maintenance.py'), '--root', str(root), '--write'], capture_output=True, text=True)
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(english.read_text(), source)
+
+    def test_rss_dates_are_release_dates_even_when_old_releases_are_republished(self):
+        root = self.fixture()
+        annual = root / 'en/changelog-2024.mdx'
+        released, old = entries(annual.read_text(), 'en')[-1]
+        current = root / 'en/changelog.mdx'
+        current.write_text(insert(current.read_text(), f'<Update label="{released.isoformat()}" rss={{{{ date: "2099-01-01", title: "Historical correction" }}}}>\n## Revised old release\n</Update>'))
+        apply(root, maintain(root))
+        corrected = next(block for day, block in entries(annual.read_text(), 'en') if day == released)
+        self.assertEqual(rss_date(corrected), released.isoformat())
+        self.assertIn('title: "Historical correction"', corrected)
+        self.assertNotIn('2099-01-01', corrected)
+        self.assertEqual(maintain(root), {})
+
+    def test_all_untouched_history_pages_get_dates_without_changing_content_or_anchors(self):
+        root = self.fixture()
+        before = {path.relative_to(root).as_posix(): path.read_text() for path in root.glob('*/changelog-*.mdx')}
+        # Simulate pre-remediation history; no historical incoming update exists.
+        for name, source in before.items():
+            source = re.sub(r' rss=\{\{ date: "\d{4}-\d{2}-\d{2}" \}\}', '', source)
+            (root / name).write_text(source)
+            before[name] = source
+        apply(root, maintain(root))
+        for name, old in before.items():
+            new = (root / name).read_text()
+            stripped = re.sub(r' rss=\{\{ date: "\d{4}-\d{2}-\d{2}" \}\}', '', new)
+            self.assertEqual(stripped, old, name)
+            for released, block in entries(new, name.split('/')[0]):
+                self.assertEqual(rss_date(block), released.isoformat(), name)
+        self.assertEqual(maintain(root), {})
+
+    def test_static_rss_fields_and_literal_greater_than_are_preserved(self):
+        released = date(2024, 7, 24)
+        source = '<Update label="2024-07-24" rss={{ /* keep */ title: "A > B", description: \'Use \\\'quotes\\\' and Unicode 中文\', date: "2099-01-01", extra: { enabled: true, names: ["x", null] } }}>\n## Body {#body}\n<video src="demo.mp4" />\n</Update>'
+        result = with_rss_date(source, released)
+        self.assertEqual(result, source.replace('date: "2099-01-01"', 'date: "2024-07-24"'))
+        self.assertEqual(rss_date(result), '2024-07-24')
+        self.assertEqual(anchors('---\ntitle: History\n---\n' + result), anchors(result))
+        self.assertEqual(with_rss_date(result, released), result)
+        missing = '<Update label="2024-07-24" rss={ /* brace { in comment */ { title: "Title" } }>'
+        self.assertIn('title: "Title"', with_rss_date(missing, released))
+        self.assertEqual(rss_date(with_rss_date(missing, released)), '2024-07-24')
+
+    def test_rss_normalization_does_not_modify_fenced_update_examples(self):
+        code = '````mdx\n```\n<Update label="2024-07-24" rss={{ date: makeDate() }}>\n## Literal example\n</Update>\n```\n````\n'
+        source = '<Update label="2026-10-20">\n## Live entry\n' + code + '</Update>'
+        result = normalize_page_rss(source, 'en')
+        self.assertIn(code, result)
+        self.assertEqual(result.count('rss={{ date: "2026-10-20" }}'), 1)
+        self.assertEqual(normalize_page_rss(result, 'en'), result)
+
+    def test_dynamic_rss_metadata_fails_explicitly_instead_of_losing_fields(self):
+        unsafe = ('rss={rssOptions}', 'rss={{ ...options }}', 'rss={{ title: makeTitle() }}',
+                  'rss={{ date: "2024-07-24", date: "2024-07-25" }}',
+                  'rss={{ [fieldName]: "value" }}', 'rss={{ title: `Hello ${name}` }}',
+                  'rss={{ title }}', 'rss={{ date: "2024-07-24" }} rss={{ title: "Duplicate" }}')
+        for attribute in unsafe:
+            with self.subTest(attribute=attribute):
+                block = f'<Update label="2024-07-24" {attribute}>\n## Body\n</Update>'
+                with self.assertRaises(ValueError):
+                    with_rss_date(block, date(2024, 7, 24))
+
+    def test_unsafe_historical_rss_prevents_every_write_mode_change(self):
+        root = self.fixture()
+        current = root / 'en/changelog.mdx'
+        current.write_text(insert(current.read_text(), '<Update label="2026-10-18">\n## New release\n</Update>'))
+        old = current.read_text()
+        annual = root / 'ar/changelog-2024.mdx'
+        source = annual.read_text()
+        source = re.sub(r' rss=\{\{ date: "\d{4}-\d{2}-\d{2}" \}\}', '', source, count=1)
+        source = source.replace('<Update ', '<Update rss={externalOptions} ', 1)
+        annual.write_text(source)
+        result = subprocess.run([sys.executable, str(ROOT / 'scripts/changelog_maintenance.py'), '--root', str(root), '--write'], capture_output=True, text=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('RSS', result.stderr)
+        self.assertEqual(current.read_text(), old)
+        self.assertEqual(annual.read_text(), source)
+
+
+
+    def test_maintain_handles_rss_before_label_and_greater_than_during_historical_replacement(self):
+        root = self.fixture()
+        annual = root / 'en/changelog-2024.mdx'
+        original = entries(annual.read_text(), 'en')
+        released, old = original[-1]
+        old_label = update_label(old)
+        # Existing history and incoming republication both put RSS before label.
+        old_header = '<Update rss={{ title: "Previous > title", date: "2024-07-24" }} label="' + old_label + '">'
+        _, header_end = update_attributes(old)
+        annual.write_text(annual.read_text().replace(old, old_header + old[header_end + 1:]))
+        custom = 'title: "A > B", description: "Keep > this description", date: "2099-01-01"'
+        incoming = '<Update rss={{ ' + custom + ' }} label="' + released.isoformat() + '">\n## Revised release {#revised-release}\n</Update>'
+        current = root / 'en/changelog.mdx'
+        current.write_text(insert(current.read_text(), incoming))
+        apply(root, maintain(root))
+        result = next(block for day, block in entries(annual.read_text(), 'en') if day == released)
+        self.assertEqual(update_label(result), old_label)
+        self.assertEqual(rss_date(result), released.isoformat())
+        expected_header = '<Update rss={{ ' + custom.replace('2099-01-01', released.isoformat()) + ' }} label="' + old_label + '">'
+        _, result_end = update_attributes(result)
+        self.assertEqual(result[:result_end + 1], expected_header)
+        for identity in anchors(old):
+            self.assertIn(identity, anchors(result))
+        self.assertIn('## Revised release {#revised-release}', result)
+        self.assertEqual(len(entries(annual.read_text(), 'en')), len(original))
+        self.assertEqual(maintain(root), {})
 
 
 if __name__ == '__main__':

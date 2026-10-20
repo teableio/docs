@@ -29,6 +29,84 @@ BLOCK = re.compile(r"^<Update\b[^>]*>.*?^</Update>[ \t]*", re.MULTILINE | re.DOT
 LABEL = re.compile(r"\blabel\s*=\s*([\"'])(.*?)\1", re.DOTALL)
 
 
+def jsx_value_end(source, start):
+    """Find a literal attribute/expression boundary without evaluating JavaScript."""
+    quote, depth, index = None, 0, start
+    while index < len(source):
+        char = source[index]
+        if quote:
+            if char == '\\':
+                index += 2
+                continue
+            if char == quote:
+                quote = None
+                if depth == 0:
+                    return index + 1
+        elif source.startswith('//', index):
+            end = source.find('\n', index + 2)
+            if end < 0:
+                raise ValueError('Unclosed Update attribute comment')
+            index = end
+            continue
+        elif source.startswith('/*', index):
+            end = source.find('*/', index + 2)
+            if end < 0:
+                raise ValueError('Unclosed Update attribute comment')
+            index = end + 2
+            continue
+        elif char in ('"', "'", '`'):
+            quote = char
+        elif char == '{':
+            depth += 1
+        elif char == '}':
+            depth -= 1
+            if depth == 0:
+                return index + 1
+        index += 1
+    raise ValueError('Unclosed Update attribute')
+
+
+def update_attributes(block):
+    if not block.startswith('<Update'):
+        raise ValueError('Expected Update component')
+    index, attributes = len('<Update'), {}
+    while True:
+        while index < len(block) and block[index].isspace():
+            index += 1
+        if block[index:index + 1] == '>':
+            return attributes, index
+        match = re.match(r'[A-Za-z_$][\w$:-]*', block[index:])
+        if not match:
+            raise ValueError('Unsupported Update attributes; spread props cannot guarantee RSS dates')
+        key = match[0]
+        index += match.end()
+        while index < len(block) and block[index].isspace():
+            index += 1
+        if block[index:index + 1] == '=':
+            index += 1
+            while index < len(block) and block[index].isspace():
+                index += 1
+            start = index
+            if block[index:index + 1] not in ('"', "'", '{'):
+                raise ValueError('Unsupported Update attribute value')
+            index = jsx_value_end(block, index)
+        else:
+            start = index
+        if key in attributes:
+            raise ValueError(f'Duplicate Update attribute {key!r}')
+        attributes[key] = (start, index)
+
+
+def update_label(block):
+    attributes, _ = update_attributes(block)
+    if 'label' not in attributes:
+        raise ValueError('Update has no label')
+    start, end = attributes['label']
+    match = LABEL.fullmatch('label=' + block[start:end])
+    if not match:
+        raise ValueError('Update requires a literal date label')
+    return match[2]
+
 def parse_date(label, locale):
     value = label.strip().lower()
     if re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
@@ -61,11 +139,7 @@ def sort_changelog(source, locale):
             raise ValueError("unexpected content between Update blocks")
     dated = []
     for block in blocks:
-        opening = block.group().split(">", 1)[0]
-        match = LABEL.search(opening)
-        if not match:
-            raise ValueError("Update has no literal date label")
-        dated.append((parse_date(match[2], locale), block.group()))
+        dated.append((parse_date(update_label(block.group()), locale), block.group()))
     # Python's stable sort preserves the editorial order of same-day updates.
     ordered = sorted(dated, key=lambda item: item[0], reverse=True)
     chunks = [source[:blocks[0].start()]]

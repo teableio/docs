@@ -7,11 +7,171 @@ import json
 from pathlib import Path
 import re
 import sys
-from changelog_order import BLOCK, LABEL, parse_date, sort_changelog
+from changelog_order import BLOCK, parse_date, sort_changelog, update_attributes, update_label
 
 SCRIPT = re.compile(r'<script\s+type="application/ld\+json"\s+dangerouslySetInnerHTML=\{\{[\s\S]*?\}\}\s*/>\s*\n?')
 HEADING = re.compile(r'^(#{1,6})\s+(.+?)(\r?\n)?$')
 EXPLICIT = re.compile(r'\s+\{#([^}]+)\}\s*$')
+
+
+class StaticRssObject:
+    """Read a static JS object while retaining the original field value ranges."""
+    def __init__(self, source):
+        self.source, self.pos = source, 0
+        self.fields = {}
+
+    def skip(self):
+        while True:
+            match = re.match(r'(?:\s+|//[^\n]*(?:\n|$)|/\*[\s\S]*?\*/)', self.source[self.pos:])
+            if not match:
+                return
+            self.pos += match.end()
+
+    def string(self):
+        start = self.pos
+        quote = self.source[self.pos]
+        self.pos += 1
+        while self.pos < len(self.source):
+            char = self.source[self.pos]
+            self.pos += 1
+            if char == '\\':
+                self.pos += 1
+            elif char == quote:
+                raw = self.source[start:self.pos]
+                # JSON and Python both understand the static string escapes used
+                # by RSS metadata. Unsupported JS escapes fail instead of rewriting.
+                import ast
+                try:
+                    return json.loads(raw) if quote == '"' else ast.literal_eval(raw)
+                except (ValueError, SyntaxError) as error:
+                    raise ValueError('Unsupported RSS string literal') from error
+        raise ValueError('Unterminated RSS string')
+
+    def value(self, top=False):
+        self.skip()
+        if self.pos >= len(self.source):
+            raise ValueError('Missing RSS value')
+        char = self.source[self.pos]
+        if char in ('"', "'"):
+            return self.string()
+        if char == '{':
+            self.pos += 1
+            values = {}
+            self.skip()
+            while self.pos < len(self.source) and self.source[self.pos] != '}':
+                if self.source[self.pos] in ('"', "'"):
+                    key = self.string()
+                else:
+                    match = re.match(r'[A-Za-z_$][\w$]*', self.source[self.pos:])
+                    if not match:
+                        raise ValueError('RSS requires static object keys; spreads and computed keys are unsupported')
+                    key = match[0]
+                    self.pos += match.end()
+                if key in values:
+                    raise ValueError(f'Duplicate RSS field {key!r}')
+                self.skip()
+                if self.source[self.pos:self.pos + 1] != ':':
+                    raise ValueError('RSS requires literal key/value fields')
+                self.pos += 1
+                self.skip()
+                start = self.pos
+                values[key] = self.value()
+                if top:
+                    self.fields[key] = (start, self.pos, values[key])
+                self.skip()
+                if self.source[self.pos:self.pos + 1] == ',':
+                    self.pos += 1
+                    self.skip()
+                elif self.source[self.pos:self.pos + 1] != '}':
+                    raise ValueError('RSS expressions must contain only static literals')
+            if self.source[self.pos:self.pos + 1] != '}':
+                raise ValueError('Unclosed RSS object')
+            self.pos += 1
+            return values
+        if char == '[':
+            self.pos += 1
+            values = []
+            self.skip()
+            while self.source[self.pos:self.pos + 1] != ']':
+                values.append(self.value())
+                self.skip()
+                if self.source[self.pos:self.pos + 1] == ',':
+                    self.pos += 1
+                    self.skip()
+                elif self.source[self.pos:self.pos + 1] != ']':
+                    raise ValueError('Invalid static RSS array')
+            self.pos += 1
+            return values
+        match = re.match(r'(true|false|null|-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?)\b', self.source[self.pos:])
+        if not match:
+            raise ValueError('RSS expressions must contain only static literals')
+        self.pos += match.end()
+        return json.loads(match[0])
+
+    def parse(self):
+        self.skip()
+        if self.source[self.pos:self.pos + 1] != '{':
+            raise ValueError('RSS must be a static object literal')
+        self.object_start = self.pos
+        self.value(top=True)
+        self.skip()
+        if self.pos != len(self.source):
+            raise ValueError('Unsupported expression after RSS object')
+        return self.fields
+
+
+def rss_date(block):
+    attributes, _ = update_attributes(block)
+    if 'rss' not in attributes:
+        return None
+    start, end = attributes['rss']
+    expression = block[start:end]
+    if not expression.startswith('{') or not expression.endswith('}'):
+        raise ValueError('RSS must be a static object expression')
+    fields = StaticRssObject(expression[1:-1]).parse()
+    return fields.get('date', (None, None, None))[2]
+
+
+def with_rss_date(block, released):
+    attributes, end = update_attributes(block)
+    value = json.dumps(released.isoformat())
+    if 'rss' not in attributes:
+        return block[:end] + ' rss={{ date: ' + value + ' }}' + block[end:]
+    start, stop = attributes['rss']
+    expression = block[start:stop]
+    if not expression.startswith('{') or not expression.endswith('}'):
+        raise ValueError('RSS must be a static object expression')
+    inner = expression[1:-1]
+    parser = StaticRssObject(inner)
+    fields = parser.parse()
+    if 'date' in fields:
+        left, right, _ = fields['date']
+        inner = inner[:left] + value + inner[right:]
+    else:
+        position = parser.object_start + 1
+        inner = inner[:position] + ' date: ' + value + (',' if fields else '') + inner[position:]
+    return block[:start] + '{' + inner + '}' + block[stop:]
+
+
+def normalize_page_rss(source, locale):
+    def transform(text):
+        def replace(match):
+            # Scan the opening tag instead of splitting at a '>' inside a title.
+            block = text[match.start():]
+            _, end = update_attributes(block)
+            return match.start(), match.start() + end + 1, with_rss_date(block[:end + 1], parse_date(update_label(block), locale))
+        replacements, cursor = [], 0
+        while True:
+            match = re.compile(r'^<Update\b', re.M).search(text, cursor)
+            if not match:
+                break
+            replacement = replace(match)
+            replacements.append(replacement)
+            cursor = replacement[1]
+        for start, end, replacement in reversed(replacements):
+            text = text[:start] + replacement + text[end:]
+        return text
+    return map_unfenced(source, transform)
 
 
 def date_slug(label):
@@ -22,7 +182,7 @@ def date_slug(label):
 
 def entries(source, locale):
     sort_changelog(source, locale)  # Validate dates, balanced blocks and gaps.
-    return [(parse_date(LABEL.search(m.group().split('>', 1)[0])[2], locale), m.group()) for m in BLOCK.finditer(source)]
+    return [(parse_date(update_label(m.group()), locale), m.group()) for m in BLOCK.finditer(source)]
 
 
 def fence_marker(line):
@@ -77,6 +237,7 @@ def named_ids(block):
 
 
 def normalize(block, released, assign_ids=False, reserved_ids=None):
+    block = with_rss_date(block, released)
     block = map_unfenced(block, lambda text: SCRIPT.sub('', text))
     lines = block.splitlines(keepends=True)
     headings = list(heading_indices(lines))
@@ -109,7 +270,10 @@ def normalize(block, released, assign_ids=False, reserved_ids=None):
 
 
 def anchors(block):
-    label = LABEL.search(block.split('>', 1)[0])[2]
+    first = re.search(r'^<Update\b', block, re.M)
+    if not first:
+        raise ValueError('Cannot collect changelog anchors without an Update')
+    label = update_label(block[first.start():])
     block = map_unfenced(block, lambda text: text, lambda line: '')
     result = [date_slug(label)]
     for value in re.findall(r'^#{1,6} .*?\{#([^}]+)\}\s*$', block, re.M):
@@ -120,12 +284,16 @@ def anchors(block):
 
 def replace_entry(old, new):
     # Keep the old label spelling, and therefore its published date ID.
-    old_label = LABEL.search(old.split('>', 1)[0])[2]
-    new = LABEL.sub(lambda m: 'label=' + m[1] + old_label + m[1], new, count=1)
+    old_label = update_label(old)
+    attrs, _ = update_attributes(new)
+    start, end = attrs['label']
+    quote = new[start]
+    new = new[:start] + quote + old_label + quote + new[end:]
     missing = [value for value in anchors(old)[1:] if value not in anchors(new)]
     if missing:
         insert = '\n' + '\n'.join('<span id="' + html.escape(value, quote=True) + '" />' for value in missing) + '\n'
-        position = new.index('>') + 1
+        _, tag_end = update_attributes(new)
+        position = tag_end + 1
         new = new[:position] + insert + new[position:]
     return new
 
@@ -236,6 +404,15 @@ def maintain(root):
     if history_changed:
         planned[manifest_path] = json.dumps(manifest, indent=2, ensure_ascii=False) + '\n'
         planned['docs.json'] = json.dumps(config, indent=2, ensure_ascii=False) + '\n'
+    # Every historical page needs explicit publication dates, including pages
+    # untouched by the current month's rollovers or historical republications.
+    for locale in resources:
+        for path in root.joinpath(locale).glob('changelog*.mdx'):
+            name = path.relative_to(root).as_posix()
+            try:
+                planned[name] = normalize_page_rss(planned.get(name, path.read_text()), locale)
+            except ValueError as error:
+                raise ValueError(f'{name}: {error}') from error
     # Validate every resulting MDX before mutating any files.
     for name, content in planned.items():
         if name.endswith('.mdx'):

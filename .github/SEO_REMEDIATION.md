@@ -29,7 +29,7 @@ issues become additional numbered items. Production-only checks remain explicit.
 | 16 | Correct archive AI guide headings | Two retained guides have one H1, retain old hashes and remain noindex | Complete |
 | 17 | Resolve Chinese Artifact FAQ ID collision | Section and accordion IDs are unique; old section hash and ARIA links remain valid | Complete |
 | 18 | Integrate current production releases before deployment | Retain October 18–20 announcements, current layout and exact latest published hash-to-entry mappings; keep test fixtures independent | Complete locally |
-| 19 | Preserve release dates in RSS | Every Update uses its label-derived RSS date; hosted feeds show historical publication dates | Pending |
+| 19 | Preserve release dates in RSS | Every Update uses its label-derived RSS date; hosted feeds show historical publication dates | Complete locally |
 | 20 | Run repair tests after source normalization | Automated raw releases can reach maintenance; normalized output is tested before any push | Complete locally |
 
 ## Validation boundaries and discoveries
@@ -192,3 +192,10 @@ each fix here before committing it.
 - An isolated reproduction showed that raw automated releases fail the repository-idempotence test before the repair could run. Running maintenance first makes the same complete test suite pass.
 - Moved repair-job tests after normalization and sorting, before staging/commit/push. Read-only check-job behavior, token permissions and the existing three-attempt retry model are unchanged.
 - Local preview checks remain HTTP 200 with one H1; the isolated raw-publisher reproduction and independent workflow review passed. Failure in normalization or tests still stops the job before publishing.
+
+### 19 — Explicit RSS release dates
+
+- Added label-derived `rss.date` to all 1,540 Updates across 132 changelog pages, following Mintlify’s supported Update metadata. Removing the new RSS attribute reproduces the preceding release’s MDX byte-for-byte.
+- Maintenance normalizes dates for existing historical pages and future automated entries; source checks reject date mismatches. Static custom RSS fields remain intact, code fences are protected, and unsafe expressions fail before any files are written.
+- Independent review caught opening-tag truncation when RSS fields precede the label and contain `>`. Shared safe attribute parsing now handles sorting, normalization and historical replacement; a full integration regression covers this case and preserves old labels/hashes.
+- Source checks, 31 Python tests and 12 Node tests passed; local main/month/year/Arabic pages render HTTP 200 with one H1 and no empty custom JSON-LD. Independent review passed. The hosted RSS pubDate comparison remains a release gate because local preview does not serve feeds.

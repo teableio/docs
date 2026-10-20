@@ -9,7 +9,7 @@ import re
 import sys
 
 import yaml
-from changelog_maintenance import anchors, entries, maintain, map_unfenced
+from changelog_maintenance import anchors, entries, maintain, map_unfenced, rss_date
 from changelog_order import sort_changelog
 
 
@@ -159,6 +159,9 @@ def check(root):
             if sort_changelog(source, locale) != source:
                 errors.append(f'{route}: releases are not newest first')
             dated = entries(source, locale)
+            for released, block in dated:
+                if rss_date(block) != released.isoformat():
+                    errors.append(f'{route}: RSS publication date must equal release date {released.isoformat()}')
             labels = [day for day, _ in dated]
             if len(labels) != len(set(labels)):
                 errors.append(f'{route}: duplicate release dates create duplicate HTML IDs')
