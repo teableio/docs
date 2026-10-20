@@ -30,6 +30,7 @@ issues become additional numbered items. Production-only checks remain explicit.
 | 17 | Resolve Chinese Artifact FAQ ID collision | Section and accordion IDs are unique; old section hash and ARIA links remain valid | Complete |
 | 18 | Integrate current production releases before deployment | Retain October 18–20 announcements, current layout and exact latest published hash-to-entry mappings; keep test fixtures independent | Complete locally |
 | 19 | Preserve release dates in RSS | Every Update uses its label-derived RSS date; hosted feeds show historical publication dates | Pending |
+| 20 | Run repair tests after source normalization | Automated raw releases can reach maintenance; normalized output is tested before any push | Complete locally |
 
 ## Validation boundaries and discoveries
 
@@ -185,3 +186,9 @@ each fix here before committing it.
 - Preserved main’s restored date layout and removed the retired floating date picker without removing historical routing or lazy video behavior. Maintenance tests now use controlled fixtures; publisher tests derive a future date from current content.
 - Captured the latest production mappings for all 1,386 current-year Updates and 3,959 heading IDs. Reassigned safe IDs and aliases by the correct release, rebuilt monthly routing manifests, and retained older aliases where unambiguous. Current production mappings take precedence where repeated automatic titles had already shifted between releases.
 - Source checks, 24 Python tests, 12 Node tests, Mintlify validation and link checks passed. Independent source review passed; after restarting the preview, main/English/Chinese/Arabic monthly samples match source and preserved hashes. Full published-ID and hosted checks continue as deployment gates.
+
+### 20 — Repair workflow test ordering
+
+- An isolated reproduction showed that raw automated releases fail the repository-idempotence test before the repair could run. Running maintenance first makes the same complete test suite pass.
+- Moved repair-job tests after normalization and sorting, before staging/commit/push. Read-only check-job behavior, token permissions and the existing three-attempt retry model are unchanged.
+- Local preview checks remain HTTP 200 with one H1; the isolated raw-publisher reproduction and independent workflow review passed. Failure in normalization or tests still stops the job before publishing.

@@ -43,8 +43,6 @@ jobs:
         with:
           python-version: '3.12'
       - run: python3 -m pip install -r scripts/requirements-seo.txt
-      - run: python3 -m unittest discover -s scripts -p 'test_*.py'
-      - run: node --test scripts/test_changelog_publisher_order.cjs
       - name: Maintain changelog history, structure and ordering
         run: |
           set -euo pipefail
@@ -58,6 +56,9 @@ jobs:
             python3 scripts/changelog_maintenance.py
             python3 scripts/changelog_order.py --write
             python3 scripts/changelog_order.py
+            # Test the normalized checkout before publishing any repair.
+            python3 -m unittest discover -s scripts -p 'test_*.py'
+            node --test scripts/test_changelog_publisher_order.cjs
             git add -- '*/changelog*.mdx' docs.json .github/changelog-history-anchors.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m 'fix: maintain changelog history and publishing structure'
