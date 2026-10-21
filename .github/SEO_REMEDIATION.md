@@ -19,7 +19,7 @@ issues become additional numbered items. Production-only checks remain explicit.
 | 06 | Bound changelog size and heading depth | Recent updates stay at existing URL; history is accessible; old hashes resolve; publisher/order checks pass | Complete locally |
 | 07 | Repair video structured data | No empty JSON-LD; video data is valid and matches visible media | Complete locally |
 | 08 | Add localized documentation homepages | Indexable hub for every locale with working Docs/API/Deployment/Changelog paths | Complete locally |
-| 09 | Configure docs analytics | Verified measurement ID, supported Mintlify integration, local preview avoids production collection | Waiting for dedicated stream ID |
+| 09 | Configure docs analytics | Verified measurement ID, native integration and route-pageview counts; local verification blocks collection | Complete locally; hosted verification pending |
 | 10 | Add release regression checks | CI validates links, metadata, navigation, archive policy and changelog structure | Complete locally |
 | 11 | Maintain changelog publishing conventions | New automated releases keep H2 headings, monthly bounds and history footer; backfill/republication remain safe | Complete locally |
 | 12 | Make Card destinations crawlable | Current documentation cards expose real anchors without losing existing navigation behavior | Complete locally |
@@ -174,6 +174,14 @@ each fix here before committing it.
 - Rechecked the repository and production HTML: the docs have no GA4 integration or Google measurement tag. The connected GA4 property `428837143`, filtered to exact hostname `help.teable.ai` over the last 90 days, returns no rows. This property currently provides no docs traffic data.
 - Existing shared stream `7563554072` has browser-history pageviews enabled while Mintlify also sends route pageviews. A dedicated docs stream ID is still needed to configure collection without changing shared-site behavior. The connected API cannot create or list Web streams; no GA4 Admin settings have been changed.
 - Item 09 remains open. Actual event receipt and route-pageview counts also require a deployed environment after configuration.
+
+### 09 — Dedicated GA4 integration
+
+- The user supplied the dedicated Measurement ID `G-LQ8H9TEDRD`. Added it through Mintlify's supported `integrations.ga4.measurementId` configuration.
+- The user confirmed stream `16172559977` (`teable help`, `https://help.teable.ai`). Mintlify build validation and the full source SEO checks passed. The prior shared stream is unchanged.
+- Exercised the native initial/route config sequence with the actual new Google tag, intercepting all collector requests: initial load, two navigations and one back operation produced exactly four pageviews with the correct URL/title/referrer sequence. Google's enabled duplicate-config suppression avoids double counting; browser-history measurement remains enabled. Disabling it would risk losing SPA views.
+- The CLI preview also loads the native GA integration; it is not equivalent to hosted preview links, which Mintlify documents as analytics-disabled. Local runtime verification intercepted Google requests before any collection. Verified the local title/H1 and exact measurement ID.
+- The connected GA4 property does not expose Admin settings for the new stream (read returned 400), so no Admin settings were changed. Hosted tag delivery and collector requests remain the deployment gate; GA4 report receipt must be reported separately from network delivery.
 
 ### 10 — SEO regression checks
 
