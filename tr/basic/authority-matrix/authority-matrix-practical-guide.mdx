@@ -10,7 +10,7 @@ Bu kılavuzda üç tablodan oluşan bir satış proje kullanılır: `Müşterile
 | --- | --- |
 | Satış Direktörü | Müşteri ve satış verilerini görüntüleme, ürünlere yorum yapma ve ürün fiyatlarını değiştirmeme. |
 | Satış Temsilcisi | Yalnızca kendi müşterilerini ve siparişlerini görüntüleyip güncelleme, yeni müşteriler oluşturma ve tamamlanmış siparişleri silmeme. |
-| Veri Giriş Görevlisi | Mevcut ürünleri, müşterileri veya siparişleri görmeden yeni ürünler ekleme. |
+| Veri Giriş Görevlisi | Yeni ürünler ekleme ve mevcut ürünleri değiştirmeden görüntüleme; müşterilere ve siparişlere erişmeme. |
 
 <Info>Rol izinlerini kullanmadan önce Yetki Matrisini etkinleştirin.</Info>
 
@@ -27,7 +27,7 @@ Bu kılavuzda üç tablodan oluşan bir satış proje kullanılır: `Müşterile
     Projede Yetki Matrisi sayfasını açın ve ana anahtarı etkinleştirin. Bu işlemi yapan kullanıcı yönetici olarak eklenir.
   </Step>
   <Step title="Özel roller ekleyin">
-    `Rol ekle`'ye tıklayın ve `Satış Direktörü`, `Satış Temsilcisi` ve `Veri Giriş Görevlisi` rollerini oluşturun.
+    `Rol Ekle`'ye tıklayın ve `Satış Direktörü`, `Satış Temsilcisi` ve `Veri Giriş Görevlisi` rollerini oluşturun.
   </Step>
 </Steps>
 
@@ -45,7 +45,7 @@ Satış Direktörünün geniş görünürlüğe ihtiyacı vardır; ancak ürün 
 | --- | --- |
 | Müşteriler | Tabloyu `Düzenleyebilir` olarak ayarlayın. Rolün müşteri verilerini görüntüleyebilmesi için kayıt ve alan izinlerini açık bırakın. |
 | Satış Siparişleri | Tabloyu `Düzenleyebilir` olarak ayarlayın. Rolün satış etkinliklerini inceleyebilmesi için kayıt ve alan izinlerini açık bırakın. |
-| Ürünler | Tabloyu `Düzenleyebilir` olarak ayarlayın, ardından kayıt izinlerinde yalnızca `Kaydı oku` ve `Kayda yorum yap` seçeneklerine izin verin. |
+| Ürünler | Tabloyu `Düzenleyebilir` olarak ayarlayın, ardından kayıt izinlerinin işlemlerinde yalnızca `Kayıt yorumla` seçeneğini işaretleyin. |
 
 <img
   src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-sales-director-permissions.png"
@@ -53,7 +53,7 @@ Satış Direktörünün geniş görünürlüğe ihtiyacı vardır; ancak ürün 
   className="docs-screenshot"
 />
 
-Rol listesinden `Kullanıcı ekle` veya `Kuruluştan ekle` ile üyeleri atayın, ardından rol anahtarının etkin olduğundan emin olun.
+Rol listesinden `Kullanıcı Ekle` veya `Organizasyondan ekle` ile üyeleri atayın, ardından rol anahtarının etkin olduğundan emin olun.
 
 <img
   src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-sales-director-members.png"
@@ -79,8 +79,8 @@ Satış Temsilcisi rolü, her temsilcinin yalnızca sahibi olduğu kayıtlarla �
 
 | İzin alanı | Ayar |
 | --- | --- |
-| Kayıt izinleri | Belirli koşullarla eşleşen kayıtları seçin. `Satış Temsilcisi` `şuna eşittir` `Ben (geçerli kullanıcı)` gibi bir filtre ekleyin. |
-| Kayıt işlemleri | `Kaydı oku`, `Kaydı güncelle` ve `Kayıt oluştur` seçeneklerine izin verin. Temsilcilerin müşteri kayıtlarını silmemesi gerekiyorsa `Kaydı sil` seçeneğini kapalı bırakın. |
+| Kayıt izinleri | `Görüntülenebilen kayıtlar` altında `Özel kayıtlar` seçeneğini belirleyin. `Satış Temsilcisi` `şudur` `Ben (mevcut kullanıcı)` gibi bir filtre ekleyin. |
+| Kayıt işlemleri | `Kayıt güncelle` ve `Kayıt oluştur` seçeneklerini işaretleyin. Temsilcilerin müşteri kayıtlarını silmemesi gerekiyorsa `Kayıt sil` seçeneğini işaretlemeyin. |
 
 <img
   src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-sales-rep-filter.png"
@@ -100,9 +100,9 @@ Satış Temsilcisi rolü, her temsilcinin yalnızca sahibi olduğu kayıtlarla �
 
 | İzin alanı | Ayar |
 | --- | --- |
-| Kayıt izinleri | `Satış Temsilcisi` `şuna eşittir` `Ben (geçerli kullanıcı)` gibi aynı sahipliğe dayalı filtreyi kullanın. |
-| Kayıt işlemleri | `Kaydı oku` ve `Kayıt oluştur` seçeneklerine izin verin. Tamamlanmış siparişlerin değişmeden kalması gerekiyorsa `Kaydı güncelle` ve `Kaydı sil` seçeneklerini kapalı bırakın. |
-| Alan izinleri | Bu alan için `Kaydı oku` seçeneğini kapatarak `Ödeme Yöntemi` gibi hassas alanları gizleyin. |
+| Kayıt izinleri | `Satış Temsilcisi` `şudur` `Ben (mevcut kullanıcı)` gibi aynı sahipliğe dayalı filtreyi kullanın. |
+| Kayıt işlemleri | `Kayıt oluştur` seçeneğini işaretleyin. Tamamlanmış siparişlerin değişmeden kalması gerekiyorsa `Kayıt güncelle` ve `Kayıt sil` seçeneklerini işaretlemeyin. |
+| Alan izinleri | Bu alan için `Kayıt oku` seçeneğini kapatarak `Ödeme Yöntemi` gibi hassas alanları gizleyin. |
 
 <img
   src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-sales-rep-order-permissions.png"
@@ -128,12 +128,12 @@ Artık her satış temsilcisi yalnızca sahip filtresiyle eşleşen müşteri ve
 
 ## Veri Giriş Görevlisini Yapılandırma
 
-Veri Giriş Görevlisinin yalnızca ürün eklemesi gerekir.
+Veri Giriş Görevlisinin yalnızca ürün eklemesi gerekir. `Düzenleyebilir` olarak ayarlanan bir tablodaki kayıtları rol her zaman görüntüleyebilir; kayıt izinleri yalnızca izin verilen işlemleri ve `Görüntülenebilen kayıtlar` kapsamını denetler. Bu nedenle görevli mevcut ürünleri görür, ancak yalnızca yeni ürün ekleyebilir.
 
 | Düğüm | Ayar |
 | --- | --- |
 | Ürünler | Tabloyu `Düzenleyebilir` olarak ayarlayın. Kayıt izinlerinde yalnızca `Kayıt oluştur` seçeneğine izin verin. |
-| Ürün alanları | Bağlı sipariş verilerinin gizli kalması gerekiyorsa `Siparişler` bağlantı alanı için `Kaydı oku` seçeneğini kapatın. |
+| Ürün alanları | Bağlı sipariş verilerinin gizli kalması gerekiyorsa `Siparişler` bağlantı alanı için `Kayıt oku` seçeneğini kapatın. |
 | Müşteriler ve Satış Siparişleri | Bu tabloları `Erişim yok` olarak tutun. |
 
 <img
@@ -150,7 +150,7 @@ Görevlileri role atayın ve rolü etkin tutun.
   className="docs-screenshot"
 />
 
-Yapılandırmadan sonra Veri Giriş Görevlisi yeni ürün kayıtları ekleyebilir, ancak mevcut ürün, müşteri veya sipariş verilerine göz atamaz.
+Yapılandırmadan sonra Veri Giriş Görevlisi yeni ürün kayıtları ekleyebilir ve mevcut ürünleri görüntüleyebilir, ancak bunları düzenleyemez veya silemez. Müşteri ve sipariş verileri gizli kalır.
 
 <img
   src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-data-entry-view.png"
@@ -168,11 +168,11 @@ Mevcut `Satış Temsilcisi` rolünü koruyun, ardından şirket genelindeki mü�
 
 ### Salt Okunur Rol Oluşturma
 
-`Rol ekle`'ye tıklayın ve `Genel Müşteri Görüntüleyicisi` gibi salt okunur bir rol oluşturun.
+`Rol Ekle`'ye tıklayın ve `Genel Müşteri Görüntüleyicisi` gibi salt okunur bir rol oluşturun.
 
 ### Müşteri Erişimini Yapılandırma
 
-`Müşteriler` tablosunu `Düzenleyebilir` olarak ayarlayın. Kayıt izinlerinde yalnızca `Kaydı oku` seçeneğine izin verin. `Kaydı güncelle`, `Kaydı sil` veya `Kayıt oluştur` seçeneklerini etkinleştirmeyin. Bu rolün tüm müşteri kayıtlarını görebilmesi için kayıt filtresini boş bırakın.
+`Müşteriler` tablosunu `Düzenleyebilir` olarak ayarlayın. Kayıt izinlerinde tüm işlemlerin işaretini kaldırın ve `Görüntülenebilen kayıtlar` altında `Tüm kayıtlar` seçeneğini belirleyin. Böylece bu rol tüm müşteri kayıtlarını görebilir, ancak değiştiremez.
 
 <img
   src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-global-customer-viewer-permissions.png"

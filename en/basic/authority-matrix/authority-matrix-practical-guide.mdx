@@ -12,7 +12,7 @@ without exposing the whole project.
 | --- | --- |
 | Sales Director | View customer and sales data, comment on products, and avoid changing product prices. |
 | Sales Rep | View and update only their own customers and orders, create new customers, and avoid deleting completed orders. |
-| Data Entry Clerk | Add new products without seeing existing products, customers, or orders. |
+| Data Entry Clerk | Add new products and view existing ones without changing them, with no access to customers or orders. |
 
 <Info>Turn on the Authority Matrix before relying on role permissions.</Info>
 
@@ -50,7 +50,7 @@ protected from accidental edits.
 | --- | --- |
 | Customers | Set the table to `Can edit`. Keep record and field permissions open so the role can view customer data. |
 | Sales Orders | Set the table to `Can edit`. Keep record and field permissions open so the role can review sales activity. |
-| Products | Set the table to `Can edit`, then allow only `Read record` and `Comment on record` in record permissions. |
+| Products | Set the table to `Can edit`, then select only `Comment on record` under the record permission operations. |
 
 <img
   src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-sales-director-permissions.png"
@@ -88,7 +88,7 @@ Set `Customers` to `Can edit`.
 | Permission area | Setting |
 | --- | --- |
 | Record permissions | Choose records that match specific conditions. Add a filter such as `Sales Rep` `is` `Me (current user)`. |
-| Record operations | Allow `Read record`, `Update record`, and `Create record`. Leave `Delete record` off if reps should not delete customer records. |
+| Record operations | Select `Update record` and `Create record`. Leave `Delete record` off if reps should not delete customer records. |
 
 <img
   src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-sales-rep-filter.png"
@@ -109,7 +109,7 @@ Set `Sales Orders` to `Can edit`.
 | Permission area | Setting |
 | --- | --- |
 | Record permissions | Use the same owner-based filter, such as `Sales Rep` `is` `Me (current user)`. |
-| Record operations | Allow `Read record` and `Create record`. Leave `Update record` and `Delete record` off if completed orders should stay unchanged. |
+| Record operations | Select `Create record`. Leave `Update record` and `Delete record` off if completed orders should stay unchanged. |
 | Field permissions | Hide sensitive fields such as `Payment Method` by turning off `Read record` for that field. |
 
 <img
@@ -137,7 +137,7 @@ owner filter.
 
 ## Configure Data Entry Clerk
 
-The Data Entry Clerk only needs to add products.
+The Data Entry Clerk only needs to add products. A role can always view records in a table set to `Can edit`; record permissions only control the allowed operations and the scope of `Records that can be viewed`. The clerk can therefore see existing products, but can only add new ones.
 
 | Node | Setting |
 | --- | --- |
@@ -159,8 +159,8 @@ Assign clerks to the role and keep the role enabled.
   className="docs-screenshot"
 />
 
-After setup, the Data Entry Clerk can add new product records but cannot browse
-existing product, customer, or order data.
+After setup, the Data Entry Clerk can add new product records and view existing
+products, but cannot edit or delete them. Customer and order data stays hidden.
 
 <img
   src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-data-entry-view.png"
@@ -186,9 +186,9 @@ Click `Add role` and create a read-only role, such as `Global Customer Viewer`.
 
 ### Configure Customer Access
 
-Set `Customers` to `Can edit`. In record permissions, allow only `Read record`.
-Do not enable `Update record`, `Delete record`, or `Create record`. Leave the
-record filter empty so this role can view all customer records.
+Set `Customers` to `Can edit`. In record permissions, clear every operation, and
+under `Records that can be viewed`, choose `All records` so this role can view
+all customer records without changing them.
 
 <img
   src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-global-customer-viewer-permissions.png"

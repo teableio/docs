@@ -12,7 +12,7 @@ sin exponer todo el Proyecto.
 | --- | --- |
 | Director de ventas | Ver los datos de clientes y ventas, comentar productos y evitar modificar sus precios. |
 | Representante de ventas | Ver y actualizar únicamente sus propios clientes y pedidos, crear clientes nuevos y evitar eliminar pedidos completados. |
-| Responsable de entrada de datos | Añadir productos nuevos sin ver los productos, clientes ni pedidos existentes. |
+| Responsable de entrada de datos | Añadir productos nuevos y ver los existentes sin modificarlos, sin acceso a clientes ni pedidos. |
 
 <Info>Activa la Matriz de Autoridad antes de depender de los permisos de los roles.</Info>
 
@@ -50,7 +50,7 @@ protegidos frente a cambios accidentales.
 | --- | --- |
 | Clientes | Establece la Tabla en `Puede editar`. Mantén abiertos los permisos de Registros y Campos para que el rol pueda consultar los datos de los clientes. |
 | Pedidos de ventas | Establece la Tabla en `Puede editar`. Mantén abiertos los permisos de Registros y Campos para que el rol pueda revisar la actividad de ventas. |
-| Productos | Establece la Tabla en `Puede editar` y permite únicamente `Leer Registro` y `Comentar Registro` en los permisos de Registros. |
+| Productos | Establece la Tabla en `Puede editar` y, en las operaciones de los permisos de Registros, marca únicamente `Comentario sobre el registro`. |
 
 <img
   src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-sales-director-permissions.png"
@@ -87,8 +87,8 @@ Establece `Clientes` en `Puede editar`.
 
 | Área de permisos | Ajuste |
 | --- | --- |
-| Permisos de Registro | Elige los Registros que cumplan condiciones concretas. Añade un filtro como `Representante de ventas` `es` `Yo (usuario actual)`. |
-| Operaciones de Registro | Permite `Leer Registro`, `Actualizar Registro` y `Crear Registro`. Deja `Eliminar Registro` desactivado si los representantes no deben eliminar Registros de clientes. |
+| Permisos de Registro | En `Registros que se pueden ver`, elige `Registros que cumplan condiciones específicas`. Añade un filtro como `Representante de ventas` `es` `Yo (usuario actual)`. |
+| Operaciones de Registro | Marca `Registro de actualización` y `Crear registro`. Deja `Eliminar registro` sin marcar si los representantes no deben eliminar Registros de clientes. |
 
 <img
   src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-sales-rep-filter.png"
@@ -109,8 +109,8 @@ Establece `Pedidos de ventas` en `Puede editar`.
 | Área de permisos | Ajuste |
 | --- | --- |
 | Permisos de Registro | Usa el mismo filtro basado en el propietario, como `Representante de ventas` `es` `Yo (usuario actual)`. |
-| Operaciones de Registro | Permite `Leer Registro` y `Crear Registro`. Deja `Actualizar Registro` y `Eliminar Registro` desactivados si los pedidos completados deben permanecer sin cambios. |
-| Permisos de Campo | Oculta los Campos confidenciales, como `Método de pago`, desactivando `Leer Registro` para ese Campo. |
+| Operaciones de Registro | Marca `Crear registro`. Deja `Registro de actualización` y `Eliminar registro` sin marcar si los pedidos completados deben permanecer sin cambios. |
+| Permisos de Campo | Oculta los Campos confidenciales, como `Método de pago`, desactivando `Récord de lectura` para ese Campo. |
 
 <img
   src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-sales-rep-order-permissions.png"
@@ -137,12 +137,12 @@ filtro de propietario.
 
 ## Configurar el rol Responsable de entrada de datos
 
-El Responsable de entrada de datos solo necesita añadir productos.
+El Responsable de entrada de datos solo necesita añadir productos. Un rol siempre puede ver los Registros de una Tabla establecida en `Puede editar`; los permisos de Registros solo controlan las operaciones permitidas y el alcance de `Registros que se pueden ver`. Por eso, el responsable ve los productos existentes, pero solo puede añadir productos nuevos.
 
 | Nodo | Ajuste |
 | --- | --- |
-| Productos | Establece la Tabla en `Puede editar`. En los permisos de Registros, permite únicamente `Crear Registro`. |
-| Campos de productos | Si los datos de pedidos enlazados deben permanecer ocultos, desactiva `Leer Registro` para el Campo enlazado `Pedidos`. |
+| Productos | Establece la Tabla en `Puede editar`. En los permisos de Registros, permite únicamente `Crear registro`. |
+| Campos de productos | Si los datos de pedidos enlazados deben permanecer ocultos, desactiva `Récord de lectura` para el Campo enlazado `Pedidos`. |
 | Clientes y Pedidos de ventas | Mantén estas Tablas como `Sin acceso`. |
 
 <img
@@ -159,8 +159,8 @@ Asigna responsables al rol y mantenlo habilitado.
   className="docs-screenshot"
 />
 
-Después de configurarlo, el Responsable de entrada de datos puede añadir Registros de productos nuevos, pero no puede explorar
-los datos existentes de productos, clientes ni pedidos.
+Después de configurarlo, el Responsable de entrada de datos puede añadir Registros de productos nuevos y ver los productos
+existentes, pero no puede modificarlos ni eliminarlos. Los datos de clientes y pedidos permanecen ocultos.
 
 <img
   src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-data-entry-view.png"
@@ -186,9 +186,9 @@ Haz clic en `Añadir rol` y crea un rol de solo lectura, como `Lector global de 
 
 ### Configurar el acceso a clientes
 
-Establece `Clientes` en `Puede editar`. En los permisos de Registros, permite únicamente `Leer Registro`.
-No habilites `Actualizar Registro`, `Eliminar Registro` ni `Crear Registro`. Deja vacío el
-filtro de Registros para que este rol pueda ver todos los Registros de clientes.
+Establece `Clientes` en `Puede editar`. En los permisos de Registros, desmarca todas las operaciones
+y, en `Registros que se pueden ver`, elige `Todos los registros` para que este rol pueda ver
+todos los Registros de clientes sin modificarlos.
 
 <img
   src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-global-customer-viewer-permissions.png"
