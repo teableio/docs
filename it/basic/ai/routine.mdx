@@ -28,39 +28,45 @@ Una routine è una risorsa del progetto e compare nella barra laterale sinistra 
   </Step>
 </Steps>
 
+<img
+  src="/images/docs/ai/2026-10-21-routine-editor.png"
+  alt="Routine editor with the prompt, model, chat, an On a schedule trigger set to Weekdays at 09:00, and Starting and Ending times; the top shows the next run time and the Activate button"
+  className="docs-screenshot"
+/>
+
 ## Impostazioni
 
 Oltre al prompt e all'attivatore, il modulo contiene queste impostazioni:
 
 | Impostazione | Descrizione |
 | --- | --- |
-| **Modello** | Il modello e il livello di intelligenza con cui gira questa routine. Lascia **Modello predefinito** per usare il modello di chat predefinito dello spazio |
+| **Modello** | Il modello e il livello di intelligenza con cui gira questa routine. Il pulsante mostra la scelta attuale, per esempio Smart Media. Una nuova routine parte dal modello e dal livello che hai scelto per ultimi nella chat IA, oppure dalle impostazioni predefinite se non ne hai scelto nessuno |
 | **Chat** | **Nuova chat a ogni esecuzione** mantiene le esecuzioni indipendenti tra loro; **Continua la chat dell'esecuzione precedente** porta avanti il contesto delle esecuzioni passate e si presta al lavoro che deve riferirsi al risultato precedente |
 | **Inizio** / **Fine (facoltativo)** | I limiti della pianificazione, usati solo da **In base a una pianificazione**. Senza orario di fine la routine prosegue a tempo indeterminato |
 
-Modello e livello di intelligenza vengono registrati al salvataggio, perciò la cronologia delle esecuzioni mostra su che cosa ha girato davvero ciascuna.
+Modello e livello di intelligenza vengono salvati con la configurazione, e ogni esecuzione usa quella scelta salvata. Cambiare modello in seguito nella chat IA non la modifica.
 
 ### Attivatore
 
 **In base a una pianificazione** esegue la routine negli orari che imposti, configurati più sotto in Pianificazione.
 
-**Su evento del connettore** la esegue una volta ogni volta che un'app di terze parti collegata segnala un evento, per esempio una nuova email o una nuova issue. Scegli l'app, l'evento, l'**Account** che lo riceve e i parametri richiesti dall'evento; la configurazione è la stessa dell'attivatore dell'automazione, descritto in [Alla ricezione di un evento del connettore](/it/basic/automation/trigger/external/connector-event). Una routine su questo attivatore non ha un orario di **Prossima esecuzione** e non usa né la pianificazione né i suoi limiti.
+**Su evento del connettore** la esegue una volta ogni volta che un'app di terze parti collegata segnala un evento, per esempio una nuova email o una nuova issue. Scegli l'app, l'evento, l'**Account** che lo riceve e i parametri richiesti dall'evento; la configurazione è la stessa dell'attivatore dell'automazione, descritto in [Alla ricezione di un evento del connettore](/it/basic/automation/trigger/external/connector-event). Una routine su questo attivatore non ha un orario di **Prossima esecuzione** e non usa né **Pianificazione** né **Inizio** / **Fine (facoltativo)**.
 
 Se la concessione dell'account viene revocata, se l'account collegato viene rimosso o se l'app interrompe la sottoscrizione, la routine segnala **Sottoscrizione disconnessa** e smette di ricevere eventi, e Teable avvisa il membro che l'ha aggiornata per ultimo. Ricollegando lo stesso account la sottoscrizione si ricostruisce da sola; per usarne un altro, selezionalo nell'attivatore e salva.
 
 ### Pianificazione
 
-La pianificazione serve solo a **In base a una pianificazione**. Scegli una frequenza tra i preset: **Ogni ora** a un minuto preciso, **Ogni giorno** e **Giorni feriali** a un orario preciso, **Ogni settimana** in un giorno della settimana e a un orario, **Ogni mese** in un giorno e a un orario.
+**Pianificazione** serve solo a **In base a una pianificazione**. Scegli una frequenza tra i preset: **Ogni ora** a un minuto preciso, **Ogni giorno** e **Giorni feriali** a un orario preciso, **Ogni settimana** in un giorno della settimana e a un orario, **Ogni mese** in un giorno e a un orario.
 
 Per qualcosa di più specifico scegli **Personalizzata (RRULE)** e scrivi una regola RFC 5545, per esempio `FREQ=DAILY;BYHOUR=9;BYMINUTE=0`. Una regola personalizzata ha questi limiti:
 
 - La frequenza deve essere `HOURLY`, `DAILY`, `WEEKLY`, `MONTHLY` o `YEARLY`, e tra due esecuzioni deve passare almeno 1 ora.
 - Puoi usare `INTERVAL`, `COUNT`, `BYDAY`, `BYMONTHDAY`, `BYMONTH`, più un `BYMINUTE` e un `BYHOUR`. `COUNT` arriva al massimo a 1000, e `COUNT` o `INTERVAL` richiedono un orario di **Inizio**.
-- Fuso orario e limiti provengono dal modulo, quindi `TZID`, `DTSTART`, `UNTIL` e `BYSECOND` vengono rifiutati.
+- Il fuso orario appartiene alla routine e i limiti provengono da **Inizio** e **Fine (facoltativo)**, quindi `TZID`, `DTSTART`, `UNTIL` e `BYSECOND` vengono rifiutati.
 
 Per una pianificazione che gira una sola volta, usa una regola personalizzata con `COUNT=1`.
 
-Una pianificazione viene valutata nel fuso orario di chi ha creato la routine e non segue chi la consulta. L'orario mostrato in **Prossima esecuzione** è già convertito nella tua ora locale.
+Una pianificazione viene valutata nel fuso orario della routine. Questo fuso viene preso da chi configura la routine per primo e non segue chi la modifica o la consulta in seguito. L'orario mostrato in **Prossima esecuzione** è già convertito nella tua ora locale.
 
 ## Bozze, aggiornamenti ed esecuzione immediata
 
@@ -74,11 +80,17 @@ Spegni l'interruttore per disattivarla: la routine smette di scattare e la crono
 
 ## Cronologia delle esecuzioni
 
-Apri la routine e passa a **Cronologia delle esecuzioni**. L'elenco si filtra per stato e intervallo di tempo, il che aiuta a individuare un guasto preciso; selezionando un'esecuzione vedi il suo **ID esecuzione**, il suo **Attivatore** e la chat completa di quell'esecuzione. L'**Attivatore** riporta **Pianificato**, **Evento** o **Manuale**, e un'esecuzione pianificata mostra anche l'orario **Pianificata** a cui corrispondeva.
+Apri la routine e passa a **Cronologia delle esecuzioni**. Fai clic su **Filtro** per restringere l'elenco per stato e intervallo di tempo, il che aiuta a individuare un guasto preciso. La **Panoramica** sotto l'elenco conta le esecuzioni per stato e mostra la **Durata media**; facendo clic su uno stato restringi l'elenco anche a quello. Selezionando un'esecuzione vedi il suo **ID esecuzione**, il suo **Attivatore** e la chat completa di quell'esecuzione. L'**Attivatore** riporta **Pianificato**, **Evento** o **Manuale**, e un'esecuzione pianificata mostra anche l'orario **Pianificata** a cui corrispondeva.
+
+<img
+  src="/images/docs/ai/2026-10-21-routine-run-history.png"
+  alt="Routine run history: the run list and overview on the left, and the selected run's Run ID, Trigger, Planned time, and conversation on the right"
+  className="docs-screenshot"
+/>
 
 Le esecuzioni sono riportate come **In coda**, **In esecuzione**, **Completata**, **Non riuscita** o **Annullata**. **Annullata** compare quando qualcuno ha interrotto quell'esecuzione, oppure quando la routine o il suo progetto sono stati eliminati.
 
-Un'esecuzione **Non riuscita** indica il motivo, e ogni motivo richiede una risposta diversa:
+Sia le esecuzioni andate in errore sia quelle saltate compaiono come **Non riuscita** nell'elenco. Apri l'esecuzione per vedere il motivo in cima ai dettagli; ogni motivo richiede una risposta diversa:
 
 | Messaggio | Significato | Che cosa fare |
 | --- | --- | --- |
@@ -86,8 +98,9 @@ Un'esecuzione **Non riuscita** indica il motivo, e ogni motivo richiede una risp
 | **Saltata: crediti insufficienti** | I crediti erano esauriti, l'esecuzione non è partita | Ricarica i crediti dello spazio |
 | **Saltata: l'esecuzione precedente era ancora in corso** | L'esecuzione precedente non era finita, quindi questa occorrenza è stata saltata | Abbassa la frequenza, oppure riduci quanto elabora una singola esecuzione |
 | **Saltata: tempo di attesa in coda scaduto** | L'esecuzione ha atteso troppo in coda ed è stata saltata | Un caso isolato non richiede nulla; se si ripete, c'è troppo pianificato nello stesso momento: scagliona le pianificazioni |
+| **Saltata: agente IA non disponibile** | L'ambiente di esecuzione dell'agente IA era in manutenzione o non è configurato, quindi l'esecuzione non è partita | Le esecuzioni riprendono al termine della manutenzione; se si ripete, contatta l'amministratore |
 
-La chat di un'esecuzione è in sola lettura. I membri che possono modificare la routine possono proseguirla in fondo per capire come è andata una determinata esecuzione.
+La chat di un'esecuzione è in sola lettura e mostra come è andata quell'esecuzione dall'inizio alla fine.
 
 La conversazione di ogni esecuzione compare anche nella cronologia delle chat, appartiene a chi ha aggiornato la routine per ultimo. Le conversazioni delle esecuzioni pianificate e manuali mantengono il nome della routine; quelle attivate da un evento vengono rinominate automaticamente in base al prompt e all'evento ricevuto, così da distinguere ogni evento nella cronologia. Eliminare la routine non cancella queste conversazioni: conservano il nome e diventano chat ordinarie.
 
@@ -99,7 +112,7 @@ Teable invia una notifica quando un'esecuzione non riesce o i crediti finiscono.
 
 Dopo 5 errori consecutivi la routine viene disattivata automaticamente e parte una notifica a sé. Riaccendi l'interruttore una volta risolto il problema; il conteggio riparte da zero dopo la prima esecuzione riuscita.
 
-Non ogni esecuzione senza esito conta in quel totale: quelle saltate perché la precedente era ancora in corso o perché è scaduta l'attesa in coda, insieme a quelle **Annullata**, non sono errori e non producono notifiche. La mancanza di crediti invece conta, quindi lasciare i crediti a zero porta prima o poi alla disattivazione.
+Non ogni esecuzione senza esito conta in quel totale: quelle saltate perché la precedente era ancora in corso, perché è scaduta l'attesa in coda o perché l'agente IA non era disponibile, insieme a quelle **Annullata**, non sono errori e non producono notifiche. La mancanza di crediti invece conta, quindi lasciare i crediti a zero porta prima o poi alla disattivazione.
 
 ## Domande frequenti
 

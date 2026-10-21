@@ -28,39 +28,45 @@ Rutin, proje içindeki bir kaynaktır ve sol kenar çubuğunda tablolar, uygulam
   </Step>
 </Steps>
 
+<img
+  src="/images/docs/ai/2026-10-21-routine-editor.png"
+  alt="Routine editor with the prompt, model, chat, an On a schedule trigger set to Weekdays at 09:00, and Starting and Ending times; the top shows the next run time and the Activate button"
+  className="docs-screenshot"
+/>
+
 ## Ayarlar
 
 Prompt ve tetikleyicinin dışında formda şu ayarlar bulunur:
 
 | Ayar | Açıklama |
 | --- | --- |
-| **Model** | Bu rutinin çalıştığı model ve zekâ düzeyi. **Varsayılan model** bırakıldığında alanın varsayılan sohbet modeli kullanılır |
+| **Model** | Bu rutinin çalıştığı model ve zekâ düzeyi. Düğme, geçerli seçimi gösterir; örneğin Smart Orta. Yeni bir rutin, AI sohbetinde en son seçtiğiniz model ve zekâ düzeyiyle başlar; hiç seçim yapmadıysanız varsayılan ayarlar kullanılır |
 | **Sohbet** | **Her çalıştırmada yeni sohbet**, çalıştırmaları birbirinden bağımsız tutar; **Önceki çalıştırmanın sohbetine devam et**, önceki çalıştırmaların bağlamını taşır ve son sonuca başvurması gereken işler için uygundur |
 | **Başlangıç** / **Bitiş (isteğe bağlı)** | Zamanlamanın sınırları; yalnızca **Zamanlamaya göre** için kullanılır. Bitiş zamanı verilmezse rutin süresiz çalışmaya devam eder |
 
-Model ve zekâ düzeyi kaydederken birlikte yazılır; bu sayede çalıştırma geçmişinde her çalıştırmanın gerçekte neyle çalıştığı görünür.
+Model ve zekâ düzeyi yapılandırmayla birlikte kaydedilir ve her çalıştırma bu kayıtlı seçimi kullanır. Daha sonra AI sohbetinde model değiştirmeniz bunu etkilemez.
 
 ### Tetikleyici
 
 **Zamanlamaya göre**, rutini belirlediğiniz saatlerde çalıştırır; ayarları aşağıdaki Zamanlama bölümündedir.
 
-**Bağlayıcı olayında**, bağlı bir üçüncü taraf uygulama bir olay bildirdiğinde rutini bir kez çalıştırır; örneğin yeni bir e-posta ya da yeni bir sorun kaydı. Uygulamayı, olayı, olayı alacak **Hesap** değerini ve olayın istediği parametreleri seçmeniz yeterlidir; yapılandırma, [Bağlayıcı olayı alındığında](/tr/basic/automation/trigger/external/connector-event) bölümünde anlatılan otomasyon tetikleyicisiyle aynıdır. Bu tetikleyicideki bir rutinin **Sonraki çalıştırma** saati olmaz; zamanlamayı ve sınırlarını da kullanmaz.
+**Bağlayıcı olayında**, bağlı bir üçüncü taraf uygulama bir olay bildirdiğinde rutini bir kez çalıştırır; örneğin yeni bir e-posta ya da yeni bir sorun kaydı. Uygulamayı, olayı, olayı alacak **Hesap** değerini ve olayın istediği parametreleri seçmeniz yeterlidir; yapılandırma, [Bağlayıcı olayı alındığında](/tr/basic/automation/trigger/external/connector-event) bölümünde anlatılan otomasyon tetikleyicisiyle aynıdır. Bu tetikleyicideki bir rutinin **Sonraki çalıştırma** saati olmaz; **Zamanlama**, **Başlangıç** ve **Bitiş (isteğe bağlı)** ayarlarını da kullanmaz.
 
 Hesap yetkisi geri alındığında, bağlı hesap kaldırıldığında ya da uygulama aboneliği durdurduğunda rutin **Abonelik kesildi** durumuna geçer ve olay almayı bırakır; Teable, rutini en son güncelleyen üyeye bildirim gönderir. Aynı hesabı yeniden bağladığınızda abonelik kendiliğinden kurulur; başka bir hesaba geçmek için tetikleyicide hesabı yeniden seçip kaydedin.
 
 ### Zamanlama
 
-Zamanlama yalnızca **Zamanlamaya göre** için kullanılır. Sıklığı hazır seçeneklerden belirleyin: dakikası verilen **Saatlik**, saati verilen **Günlük** ve **Hafta içi**, gün ve saati verilen **Haftalık**, ayın günü ve saati verilen **Aylık**.
+**Zamanlama** yalnızca **Zamanlamaya göre** için kullanılır. Sıklığı hazır seçeneklerden belirleyin: dakikası verilen **Saatlik**, saati verilen **Günlük** ve **Hafta içi**, gün ve saati verilen **Haftalık**, ayın günü ve saati verilen **Aylık**.
 
 Daha özel bir kurala ihtiyaç duyarsanız **Özel (RRULE)** seçeneğini seçip `FREQ=DAILY;BYHOUR=9;BYMINUTE=0` gibi bir RFC 5545 kuralı yazın. Özel kuralın sınırları şunlardır:
 
 - Sıklık `HOURLY`, `DAILY`, `WEEKLY`, `MONTHLY` veya `YEARLY` olmalı ve iki çalıştırma arasında en az 1 saat bulunmalıdır.
 - `INTERVAL`, `COUNT`, `BYDAY`, `BYMONTHDAY`, `BYMONTH` ile birer `BYMINUTE` ve `BYHOUR` kullanılabilir. `COUNT` en fazla 1000 olabilir; `COUNT` veya `INTERVAL` kullanıldığında **Başlangıç** zamanı gerekir.
-- Saat dilimi ve sınırlar formdan gelir; bu nedenle `TZID`, `DTSTART`, `UNTIL` ve `BYSECOND` kabul edilmez.
+- Saat dilimi rutine aittir, sınırlar ise **Başlangıç** ve **Bitiş (isteğe bağlı)** alanlarından gelir; bu nedenle `TZID`, `DTSTART`, `UNTIL` ve `BYSECOND` kabul edilmez.
 
 Yalnızca bir kez çalışacak zamanlamayı `COUNT=1` içeren özel bir kuralla yazın.
 
-Zamanlama, rutini oluşturan kişinin saat dilimine göre hesaplanır ve görüntüleyene göre değişmez. Arayüzde görünen **Sonraki çalıştırma** zamanı ise kendi yerel saatinize çevrilmiştir.
+Zamanlama, rutinin saat dilimine göre hesaplanır. Bu saat dilimi rutini ilk yapılandıran kişiden alınır ve sonradan düzenleyen ya da görüntüleyen kişiye göre değişmez. Arayüzde görünen **Sonraki çalıştırma** zamanı ise kendi yerel saatinize çevrilmiştir.
 
 ## Taslak, güncelleme ve hemen çalıştırma
 
@@ -74,11 +80,17 @@ Durdurmak için anahtarı kapatın. Rutin artık tetiklenmez, mevcut çalıştı
 
 ## Çalıştırma Geçmişi
 
-Rutini açıp **Çalıştırma Geçmişi** sekmesine geçin. Liste duruma ve tarih aralığına göre filtrelenebilir; bu, belirli bir hatayı bulmayı kolaylaştırır. Bir çalıştırmayı seçtiğinizde **Çalıştırma kimliği**, **Tetikleyici** ve o çalıştırmanın tüm sohbeti görünür. **Tetikleyici**; **Zamanlanmış**, **Olay** veya **Manuel** olur ve zamanlanmış bir çalıştırma ayrıca karşılık geldiği **Planlanan** saati gösterir.
+Rutini açıp **Çalıştırma Geçmişi** sekmesine geçin. **Filtre** düğmesine tıklayarak listeyi duruma ve tarih aralığına göre daraltabilirsiniz; bu, belirli bir hatayı bulmayı kolaylaştırır. Listenin altındaki **Genel bakış**, çalıştırmaları duruma göre sayar ve **Ort. çalışma süresi** değerini gösterir; bir duruma tıklamak da listeyi o duruma göre daraltır. Bir çalıştırmayı seçtiğinizde **Çalıştırma kimliği**, **Tetikleyici** ve o çalıştırmanın tüm sohbeti görünür. **Tetikleyici**; **Zamanlanmış**, **Olay** veya **Manuel** olur ve zamanlanmış bir çalıştırma ayrıca karşılık geldiği **Planlanan** saati gösterir.
+
+<img
+  src="/images/docs/ai/2026-10-21-routine-run-history.png"
+  alt="Routine run history: the run list and overview on the left, and the selected run's Run ID, Trigger, Planned time, and conversation on the right"
+  className="docs-screenshot"
+/>
 
 Çalıştırmalar **Sırada**, **Çalışıyor**, **Tamamlandı**, **Başarısız** veya **İptal** olarak bildirilir. **İptal**, çalıştırmayı birinin durdurduğu ya da rutinin veya projesinin silindiği durumlarda görünür.
 
-**Başarısız** bir çalıştırma nedenini bildirir ve her neden farklı bir karşılık gerektirir:
+Hata veren ve atlanan çalıştırmaların ikisi de listede **Başarısız** olarak görünür. Nedeni görmek için çalıştırmayı açın; neden, ayrıntıların üstünde yazar ve her neden farklı bir karşılık gerektirir:
 
 | Mesaj | Anlamı | Ne yapmalı |
 | --- | --- | --- |
@@ -86,8 +98,9 @@ Rutini açıp **Çalıştırma Geçmişi** sekmesine geçin. Liste duruma ve tar
 | **Atlandı: yeterli kredi yok** | Kredi tükendiği için çalıştırma hiç başlamadı | Alanın kredisini yükleyin |
 | **Atlandı: önceki çalıştırma hâlâ devam ediyordu** | Önceki çalıştırma bitmediği için bu sefer atlandı | Sıklığı düşürün ya da tek çalıştırmanın işlediği miktarı azaltın |
 | **Atlandı: sırada bekleme zaman aşımına uğradı** | Çalıştırma sırada fazla bekleyip atlandı | Tek seferlik durumlar için bir şey gerekmez; tekrarlıyorsa aynı ana çok iş yığılmıştır, zamanlamaları birbirinden ayırın |
+| **Atlandı: yapay zeka aracısı kullanılamıyor** | Yapay zeka aracısının çalışma ortamı bakımdaydı ya da yapılandırılmamış, bu yüzden çalıştırma hiç başlamadı | Bakım bitince çalıştırmalar yeniden başlar; sürerse yöneticinize başvurun |
 
-Bir çalıştırmanın sohbeti salt okunurdur. Rutini düzenleyebilen üyeler, belirli bir çalıştırmanın nasıl ilerlediğini incelemek için sohbetin sonundan devam edebilir.
+Bir çalıştırmanın sohbeti salt okunurdur ve o çalıştırmanın baştan sona nasıl ilerlediğini gösterir.
 
 Her çalıştırmanın konuşması sohbet geçmişinde de görünür; rutini en son güncelleyen kişiye aittir. Zamanlamayla ve elle başlatılan çalıştırmaların konuşmaları rutinin adını taşır; olayla tetiklenen çalıştırmalar ise prompt'a ve gelen olaya göre otomatik olarak yeniden adlandırılır, böylece geçmişte her olayı birbirinden ayırt edebilirsiniz. Rutini silmek bu konuşmaları silmez: adlarını korur ve sıradan sohbetlere dönüşürler.
 
@@ -99,7 +112,7 @@ Bir çalıştırma başarısız olduğunda veya kredi bittiğinde Teable bildiri
 
 Art arda 5 hatadan sonra rutin otomatik olarak durdurulur ve ayrı bir bildirim gider. Sorun giderildikten sonra anahtarı yeniden açın; sayaç, sonraki başarılı çalıştırmadan sonra sıfırlanır.
 
-Her başarısız çalıştırma bu sayıya girmez: önceki çalıştırma sürdüğü için ya da sırada bekleme süresi dolduğu için atlanan çalıştırmalar ve **İptal** edilenler hata sayılmaz, bildirim de üretmez. Kredi yetersizliği ise sayılır; bu yüzden kredi yüklenmediğinde rutin er geç durdurulur.
+Her başarısız çalıştırma bu sayıya girmez: önceki çalıştırma sürdüğü, sırada bekleme süresi dolduğu ya da yapay zeka aracısı kullanılamadığı için atlanan çalıştırmalar ve **İptal** edilenler hata sayılmaz, bildirim de üretmez. Kredi yetersizliği ise sayılır; bu yüzden kredi yüklenmediğinde rutin er geç durdurulur.
 
 ## Sık sorulan sorular
 

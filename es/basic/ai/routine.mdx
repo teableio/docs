@@ -28,39 +28,45 @@ Una rutina es un recurso dentro de un proyecto y aparece en la barra lateral izq
   </Step>
 </Steps>
 
+<img
+  src="/images/docs/ai/2026-10-21-routine-editor.png"
+  alt="Routine editor with the prompt, model, chat, an On a schedule trigger set to Weekdays at 09:00, and Starting and Ending times; the top shows the next run time and the Activate button"
+  className="docs-screenshot"
+/>
+
 ## Ajustes
 
 Además del prompt y el activador, el formulario incluye estos ajustes:
 
 | Ajuste | Descripción |
 | --- | --- |
-| **Modelo** | El modelo y el nivel de inteligencia con los que se ejecuta esta rutina. Deja **Modelo predeterminado** para usar el modelo de chat predeterminado del espacio |
+| **Modelo** | El modelo y el nivel de inteligencia con los que se ejecuta esta rutina. El botón muestra la elección actual, por ejemplo Smart Media. Una rutina nueva parte del modelo y el nivel que elegiste por última vez en el chat de IA, o de los valores predeterminados si no has elegido ninguno |
 | **Chat** | **Nuevo chat en cada ejecución** mantiene las ejecuciones independientes entre sí; **Continuar el chat de la ejecución anterior** arrastra el contexto de las ejecuciones previas, lo que encaja con el trabajo que necesita consultar el resultado anterior |
 | **Inicio** / **Fin (opcional)** | Los límites de la programación, solo para **Según programación**. Sin hora de fin, la rutina sigue ejecutándose de forma indefinida |
 
-El modelo y el nivel de inteligencia quedan registrados al guardar, por eso el historial de ejecuciones muestra con qué se ejecutó realmente cada una.
+El modelo y el nivel de inteligencia se guardan con la configuración, y cada ejecución usa esa elección guardada. Cambiar de modelo más tarde en el chat de IA no la modifica.
 
 ### Activador
 
 **Según programación** ejecuta la rutina en los horarios que definas, configurados más abajo en Programación.
 
-**Por evento de conector** la ejecuta una vez cada vez que una app de terceros conectada informa un evento, como un correo nuevo o una incidencia nueva. Elige la app, el evento, la **Cuenta** que lo recibe y los parámetros que pida el evento; se configura igual que el activador de la automatización, descrito en [Al recibir un evento de conector](/es/basic/automation/trigger/external/connector-event). Una rutina con este activador no tiene hora de **Próxima ejecución** y no usa la programación ni sus límites.
+**Por evento de conector** la ejecuta una vez cada vez que una app de terceros conectada informa un evento, como un correo nuevo o una incidencia nueva. Elige la app, el evento, la **Cuenta** que lo recibe y los parámetros que pida el evento; se configura igual que el activador de la automatización, descrito en [Al recibir un evento de conector](/es/basic/automation/trigger/external/connector-event). Una rutina con este activador no tiene hora de **Próxima ejecución** y no usa **Programación** ni **Inicio** / **Fin (opcional)**.
 
 Si se revoca la concesión de la cuenta, se elimina la cuenta conectada o la app detiene la suscripción, la rutina muestra **Suscripción desconectada** y deja de recibir eventos, y Teable avisa al miembro que la actualizó por última vez. Al volver a conectar la misma cuenta, la suscripción se reconstruye sola; para usar otra cuenta, selecciónala en el activador y guarda.
 
 ### Programación
 
-La programación solo se usa con **Según programación**. Elige una frecuencia entre los ajustes preestablecidos: **Cada hora** en un minuto concreto, **Cada día** y **Días laborables** a una hora concreta, **Cada semana** en un día de la semana y una hora, **Cada mes** en un día y una hora.
+**Programación** solo se usa con **Según programación**. Elige una frecuencia entre los ajustes preestablecidos: **Cada hora** en un minuto concreto, **Cada día** y **Días laborables** a una hora concreta, **Cada semana** en un día de la semana y una hora, **Cada mes** en un día y una hora.
 
 Para algo más específico, elige **Personalizada (RRULE)** y escribe una regla RFC 5545, como `FREQ=DAILY;BYHOUR=9;BYMINUTE=0`. Una regla personalizada tiene estos límites:
 
 - La frecuencia debe ser `HOURLY`, `DAILY`, `WEEKLY`, `MONTHLY` o `YEARLY`, y entre dos ejecuciones debe haber al menos 1 hora.
 - Puedes usar `INTERVAL`, `COUNT`, `BYDAY`, `BYMONTHDAY`, `BYMONTH`, más un `BYMINUTE` y un `BYHOUR`. `COUNT` llega como máximo a 1000, y `COUNT` o `INTERVAL` exigen una hora de **Inicio**.
-- La zona horaria y los límites vienen del formulario, así que `TZID`, `DTSTART`, `UNTIL` y `BYSECOND` se rechazan.
+- La zona horaria pertenece a la rutina y los límites vienen de **Inicio** y **Fin (opcional)**, así que `TZID`, `DTSTART`, `UNTIL` y `BYSECOND` se rechazan.
 
 Para una programación que se ejecute una sola vez, usa una regla personalizada con `COUNT=1`.
 
-Una programación se evalúa en la zona horaria de quien creó la rutina y no sigue a quien la consulta. La hora que aparece en **Próxima ejecución** ya está convertida a tu hora local.
+Una programación se evalúa en la zona horaria de la rutina. Esa zona horaria se toma de quien configura la rutina por primera vez y no sigue a quien la edita o la consulta después. La hora que aparece en **Próxima ejecución** ya está convertida a tu hora local.
 
 ## Borradores, actualizaciones y ejecución inmediata
 
@@ -74,11 +80,17 @@ Apaga el interruptor para desactivarla. La rutina deja de dispararse y el histor
 
 ## Historial de ejecuciones
 
-Abre la rutina y ve a **Historial de ejecuciones**. La lista se puede filtrar por estado e intervalo de tiempo, lo que ayuda a localizar un fallo concreto; al seleccionar una ejecución verás su **ID de ejecución**, su **Activador** y el chat completo de esa ejecución. El **Activador** indica **Programado**, **Evento** o **Manual**, y una ejecución programada muestra además la hora **Planificada** a la que correspondía.
+Abre la rutina y ve a **Historial de ejecuciones**. Haz clic en **Filtro** para acotar la lista por estado e intervalo de tiempo, lo que ayuda a localizar un fallo concreto. El **Resumen** bajo la lista cuenta las ejecuciones por estado y muestra la **Duración media**; al hacer clic en un estado, la lista también se acota a él. Al seleccionar una ejecución verás su **ID de ejecución**, su **Activador** y el chat completo de esa ejecución. El **Activador** indica **Programado**, **Evento** o **Manual**, y una ejecución programada muestra además la hora **Planificada** a la que correspondía.
+
+<img
+  src="/images/docs/ai/2026-10-21-routine-run-history.png"
+  alt="Routine run history: the run list and overview on the left, and the selected run's Run ID, Trigger, Planned time, and conversation on the right"
+  className="docs-screenshot"
+/>
 
 Las ejecuciones se informan como **En cola**, **En ejecución**, **Completada**, **Fallida** o **Cancelada**. **Cancelada** aparece cuando alguien interrumpió esa ejecución, o cuando se ha eliminado la rutina o su proyecto.
 
-Una ejecución **Fallida** indica su motivo, y cada motivo pide una respuesta distinta:
+Tanto las ejecuciones que dieron error como las omitidas aparecen como **Fallida** en la lista. Abre la ejecución para ver el motivo en la parte superior de sus detalles; cada motivo pide una respuesta distinta:
 
 | Mensaje | Significado | Qué hacer |
 | --- | --- | --- |
@@ -86,8 +98,9 @@ Una ejecución **Fallida** indica su motivo, y cada motivo pide una respuesta di
 | **Omitida: créditos insuficientes** | Se acabaron los créditos, así que la ejecución no llegó a empezar | Recarga los créditos del espacio |
 | **Omitida: la ejecución anterior seguía en curso** | La ejecución anterior no había terminado, así que se omitió esta ocurrencia | Baja la frecuencia o reduce cuánto procesa cada ejecución |
 | **Omitida: se agotó el tiempo de espera en la cola** | La ejecución esperó demasiado en la cola y se omitió | Si es puntual, no requiere nada; si se repite, hay demasiado programado a la vez, así que escalona las programaciones |
+| **Omitida: agente de IA no disponible** | El entorno de ejecución del agente de IA estaba en mantenimiento o no está configurado, así que la ejecución no llegó a empezar | Las ejecuciones se reanudan al terminar el mantenimiento; si se repite, contacta con tu administrador |
 
-El chat de una ejecución es de solo lectura. Los miembros que pueden editar la rutina pueden continuarlo al final para investigar cómo transcurrió una ejecución concreta.
+El chat de una ejecución es de solo lectura y muestra cómo transcurrió esa ejecución de principio a fin.
 
 La conversación de cada ejecución también aparece en el historial de chats, y pertenece a quien actualizó la rutina por última vez. Las conversaciones de las ejecuciones programadas y manuales conservan el nombre de la rutina; las de las ejecuciones activadas por eventos se renombran automáticamente según el prompt y el evento recibido, para que puedas distinguir cada evento en el historial. Eliminar la rutina no borra esas conversaciones: mantienen su nombre y pasan a ser chats normales.
 
@@ -99,7 +112,7 @@ Teable envía una notificación cuando una ejecución falla o se acaban los cré
 
 Tras 5 fallos consecutivos la rutina se desactiva automáticamente y se envía una notificación aparte. Vuelve a encender el interruptor una vez resuelto el problema; el recuento se reinicia tras la siguiente ejecución correcta.
 
-No toda ejecución sin éxito cuenta para ese total: las ejecuciones omitidas porque la anterior seguía en curso o porque agotaron la espera en la cola, junto con las **Canceladas**, no son fallos y no generan notificación. La falta de créditos sí cuenta, así que dejar los créditos sin recargar acaba desactivando la rutina.
+No toda ejecución sin éxito cuenta para ese total: las ejecuciones omitidas porque la anterior seguía en curso, porque agotaron la espera en la cola o porque el agente de IA no estaba disponible, junto con las **Canceladas**, no son fallos y no generan notificación. La falta de créditos sí cuenta, así que dejar los créditos sin recargar acaba desactivando la rutina.
 
 ## Preguntas frecuentes
 

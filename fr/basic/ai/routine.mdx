@@ -28,39 +28,45 @@ Une routine est une ressource du projet et figure dans la barre latérale gauche
   </Step>
 </Steps>
 
+<img
+  src="/images/docs/ai/2026-10-21-routine-editor.png"
+  alt="Routine editor with the prompt, model, chat, an On a schedule trigger set to Weekdays at 09:00, and Starting and Ending times; the top shows the next run time and the Activate button"
+  className="docs-screenshot"
+/>
+
 ## Réglages
 
 Outre le prompt et le déclencheur, le formulaire comporte ces réglages :
 
 | Réglage | Description |
 | --- | --- |
-| **Modèle** | Le modèle et le niveau d’intelligence sur lesquels tourne cette routine. Laissez **Modèle par défaut** pour utiliser le modèle de conversation par défaut de l’espace |
+| **Modèle** | Le modèle et le niveau d’intelligence sur lesquels tourne cette routine. Le bouton affiche le choix actuel, par exemple Smart Moyenne. Une nouvelle routine reprend le modèle et le niveau que vous avez choisis en dernier dans la conversation IA, ou les réglages par défaut si vous n’en avez choisi aucun |
 | **Conversation** | **Nouvelle conversation à chaque exécution** garde les exécutions indépendantes les unes des autres ; **Poursuivre la conversation de l’exécution précédente** reporte le contexte des exécutions passées, ce qui convient au travail qui doit s’appuyer sur le résultat précédent |
 | **Début** / **Fin (facultatif)** | Les bornes de la planification, utilisées uniquement par **Selon une planification**. Sans heure de fin, la routine continue indéfiniment |
 
-Le modèle et le niveau d’intelligence sont enregistrés au moment de la sauvegarde : l’historique d’exécution montre donc sur quoi chaque exécution a réellement tourné.
+Le modèle et le niveau d’intelligence sont enregistrés avec la configuration, et chaque exécution utilise ce choix enregistré. Changer de modèle plus tard dans la conversation IA ne le modifie pas.
 
 ### Déclencheur
 
 **Selon une planification** exécute la routine aux heures que vous définissez, réglées plus bas sous Planification.
 
-**Sur événement de connecteur** l’exécute une fois chaque fois qu’une application tierce connectée signale un événement, par exemple un nouvel e-mail ou un nouveau ticket. Choisissez l’application, l’événement, le **Compte** qui le reçoit et les paramètres demandés par l’événement ; la configuration est la même que pour le déclencheur d’automatisation, décrit dans [Lorsqu’un événement de connecteur est reçu](/fr/basic/automation/trigger/external/connector-event). Une routine sur ce déclencheur n’a pas d’heure de **Prochaine exécution** et n’utilise ni la planification ni ses bornes.
+**Sur événement de connecteur** l’exécute une fois chaque fois qu’une application tierce connectée signale un événement, par exemple un nouvel e-mail ou un nouveau ticket. Choisissez l’application, l’événement, le **Compte** qui le reçoit et les paramètres demandés par l’événement ; la configuration est la même que pour le déclencheur d’automatisation, décrit dans [Lorsqu’un événement de connecteur est reçu](/fr/basic/automation/trigger/external/connector-event). Une routine sur ce déclencheur n’a pas d’heure de **Prochaine exécution** et n’utilise ni **Planification** ni **Début** / **Fin (facultatif)**.
 
 Si l’autorisation du compte est révoquée, si le compte connecté est supprimé ou si l’application arrête l’abonnement, la routine affiche **Abonnement déconnecté** et cesse de recevoir des événements ; Teable prévient le membre qui l’a mise à jour en dernier. Reconnecter le même compte reconstruit l’abonnement tout seul ; pour en utiliser un autre, sélectionnez-le dans le déclencheur et enregistrez.
 
 ### Planification
 
-La planification ne sert qu’à **Selon une planification**. Choisissez une fréquence parmi les préréglages : **Toutes les heures** à une minute donnée, **Tous les jours** et **Jours ouvrés** à une heure donnée, **Toutes les semaines** un jour de semaine à une heure, **Tous les mois** un jour à une heure.
+**Planification** ne sert qu’à **Selon une planification**. Choisissez une fréquence parmi les préréglages : **Toutes les heures** à une minute donnée, **Tous les jours** et **Jours ouvrés** à une heure donnée, **Toutes les semaines** un jour de semaine à une heure, **Tous les mois** un jour à une heure.
 
 Pour quelque chose de plus précis, choisissez **Personnalisée (RRULE)** et écrivez une règle RFC 5545, par exemple `FREQ=DAILY;BYHOUR=9;BYMINUTE=0`. Une règle personnalisée est soumise à ces limites :
 
 - La fréquence doit valoir `HOURLY`, `DAILY`, `WEEKLY`, `MONTHLY` ou `YEARLY`, et deux exécutions doivent être espacées d’au moins 1 heure.
 - Vous pouvez utiliser `INTERVAL`, `COUNT`, `BYDAY`, `BYMONTHDAY`, `BYMONTH`, plus un `BYMINUTE` et un `BYHOUR`. `COUNT` plafonne à 1000, et `COUNT` ou `INTERVAL` exige une heure de **Début**.
-- Le fuseau horaire et les bornes proviennent du formulaire : `TZID`, `DTSTART`, `UNTIL` et `BYSECOND` sont donc rejetés.
+- Le fuseau horaire appartient à la routine et les bornes proviennent de **Début** et **Fin (facultatif)** : `TZID`, `DTSTART`, `UNTIL` et `BYSECOND` sont donc rejetés.
 
 Pour une planification qui ne s’exécute qu’une fois, utilisez une règle personnalisée avec `COUNT=1`.
 
-Une planification est évaluée dans le fuseau horaire de la personne qui a créé la routine et ne suit pas celui qui la consulte. L’heure affichée sous **Prochaine exécution** est déjà convertie dans votre heure locale.
+Une planification est évaluée dans le fuseau horaire de la routine. Ce fuseau est repris de la personne qui configure la routine en premier et ne suit pas ceux qui la modifient ou la consultent ensuite. L’heure affichée sous **Prochaine exécution** est déjà convertie dans votre heure locale.
 
 ## Brouillons, mises à jour et exécution immédiate
 
@@ -74,11 +80,17 @@ Coupez l’interrupteur pour la désactiver : la routine cesse de se déclencher
 
 ## Historique d’exécution
 
-Ouvrez la routine et passez à **Historique d’exécution**. La liste se filtre par statut et par période, ce qui aide à retrouver un échec précis ; en sélectionnant une exécution, vous voyez son **ID d’exécution**, son **Déclencheur** et la conversation complète de cette exécution. Le **Déclencheur** indique **Planifié**, **Événement** ou **Manuel**, et une exécution planifiée affiche en plus l’heure **Planifiée** à laquelle elle correspondait.
+Ouvrez la routine et passez à **Historique d’exécution**. Cliquez sur **Filtre** pour restreindre la liste par statut et par période, ce qui aide à retrouver un échec précis. L’**Aperçu** sous la liste compte les exécutions par statut et affiche la **Durée moy.** ; cliquer sur un statut restreint aussi la liste à celui-ci. En sélectionnant une exécution, vous voyez son **ID d’exécution**, son **Déclencheur** et la conversation complète de cette exécution. Le **Déclencheur** indique **Planifié**, **Événement** ou **Manuel**, et une exécution planifiée affiche en plus l’heure **Planifiée** à laquelle elle correspondait.
+
+<img
+  src="/images/docs/ai/2026-10-21-routine-run-history.png"
+  alt="Routine run history: the run list and overview on the left, and the selected run's Run ID, Trigger, Planned time, and conversation on the right"
+  className="docs-screenshot"
+/>
 
 Les exécutions sont signalées comme **En file d’attente**, **En cours**, **Terminée**, **Échec** ou **Annulée**. **Annulée** apparaît lorsque quelqu’un a interrompu cette exécution, ou lorsque la routine ou son projet a été supprimé.
 
-Une exécution en **Échec** indique son motif, et chaque motif appelle une réponse différente :
+Les exécutions en erreur comme les exécutions ignorées apparaissent en **Échec** dans la liste. Ouvrez l’exécution pour voir le motif en haut de ses détails ; chaque motif appelle une réponse différente :
 
 | Message | Signification | Que faire |
 | --- | --- | --- |
@@ -86,8 +98,9 @@ Une exécution en **Échec** indique son motif, et chaque motif appelle une rép
 | **Ignorée : crédits insuffisants** | Les crédits étaient épuisés, l’exécution n’a pas démarré | Rechargez les crédits de l’espace |
 | **Ignorée : l’exécution précédente était toujours en cours** | L’exécution précédente n’était pas terminée, cette occurrence a été ignorée | Réduisez la fréquence, ou allégez ce que traite une exécution |
 | **Ignorée : délai d’attente en file dépassé** | L’exécution a trop attendu dans la file et a été ignorée | Un cas isolé ne demande rien ; si cela se répète, trop de choses sont planifiées en même temps : échelonnez les planifications |
+| **Ignorée : agent IA indisponible** | L’environnement d’exécution de l’agent IA était en maintenance ou n’est pas configuré, l’exécution n’a pas démarré | Les exécutions reprennent à la fin de la maintenance ; si cela persiste, contactez votre administrateur |
 
-La conversation d’une exécution est en lecture seule. Les membres autorisés à modifier la routine peuvent la poursuivre à la fin pour comprendre comment une exécution donnée s’est déroulée.
+La conversation d’une exécution est en lecture seule et montre comment cette exécution s’est déroulée du début à la fin.
 
 La conversation de chaque exécution apparaît aussi dans l’historique des discussions ; elle appartient à la dernière personne ayant modifié la routine. Les exécutions planifiées et manuelles portent le nom de la routine ; celles déclenchées par un événement sont renommées automatiquement d’après le prompt et l’événement reçu, pour distinguer chaque événement dans l’historique. Supprimer la routine ne supprime pas ces conversations : elles gardent leur nom et deviennent des discussions ordinaires.
 
@@ -99,13 +112,13 @@ Teable envoie une notification lorsqu’une exécution échoue ou que les crédi
 
 Après 5 échecs consécutifs, la routine est désactivée automatiquement et une notification distincte est envoyée. Rallumez l’interrupteur une fois le problème réglé ; le compteur repart à zéro après la première exécution réussie.
 
-Toutes les exécutions sans succès ne comptent pas dans ce total : celles ignorées parce que la précédente était encore en cours ou parce que l’attente en file a expiré, ainsi que les exécutions **Annulée**, ne sont pas des échecs et ne produisent aucune notification. Un manque de crédits compte, en revanche : laisser les crédits à sec finit par désactiver la routine.
+Toutes les exécutions sans succès ne comptent pas dans ce total : celles ignorées parce que la précédente était encore en cours, parce que l’attente en file a expiré ou parce que l’agent IA était indisponible, ainsi que les exécutions **Annulée**, ne sont pas des échecs et ne produisent aucune notification. Un manque de crédits compte, en revanche : laisser les crédits à sec finit par désactiver la routine.
 
 ## FAQ
 
 <AccordionGroup>
   <Accordion title="Les routines consomment-elles des crédits ?">
-    Oui. Chaque exécution est une conversation d’IA, facturée sur les crédits de l’espace selon l’usage réel, et listée sous le type **Routine** dans le **Récapitulatif d’utilisation des crédits** de la page de facturation. Quand les crédits manquent, l’exécution est ignorée et une notification est envoyée ; des omissions répétées finissent par désactiver la routine.
+    Oui. Chaque exécution est une conversation d’IA, facturée sur les crédits de l’espace selon l’usage réel, et listée sous le type **Routine** dans **Usage des crédits** sur la page de facturation. Quand les crédits manquent, l’exécution est ignorée et une notification est envoyée ; des omissions répétées finissent par désactiver la routine.
   </Accordion>
 
   <Accordion title="Si je modifie le prompt, cela affecte-t-il l’exécution en cours ?">
