@@ -10,7 +10,7 @@ Teable, e-posta hizmetini yapılandırmak için iki yöntemi destekler:
 
 <CardGroup cols={2}>
   <a className="docs-card-link" href="#option-1-admin-panel-recommended">
-<Card title="Yönetici Paneli (Önerilen)" icon="sliders">
+<Card title="Sistem Yönetimi (Önerilen)" icon="sliders">
     Canlı test içeren görsel yapılandırma. Yeniden başlatma gerekmez.
   </Card>
 </a>
@@ -23,14 +23,14 @@ Teable, e-posta hizmetini yapılandırmak için iki yöntemi destekler:
 
 ---
 
-## 1. Seçenek: Yönetici Paneli (Önerilen) {#option-1-admin-panel-recommended}
+## 1. Seçenek: Sistem Yönetimi (Önerilen) {#option-1-admin-panel-recommended}
 
-E-postayı yapılandırmanın en kolay yolu Yönetici Panelini kullanmaktır:
+E-postayı yapılandırmanın en kolay yolu Sistem Yönetimi'ni kullanmaktır:
 
 1. Yönetici olarak oturum açın (ilk kaydolan kullanıcı)
-2. **Yönetici Paneli** → **Örnek ayarları** bölümüne gidin
-3. **E-posta** bölümünü bulun
-4. Gerektiği şekilde **Bildirim e-postası** ve **Otomasyon e-postası** seçeneklerini yapılandırın
+2. **Sistem Yönetimi** → **Örnek Ayarları** bölümüne gidin
+3. **E-posta Yapılandırması** bölümünü bulun
+4. Gerektiği şekilde **Bildirim E-postası** ve **Otomasyon E-postası** seçeneklerini yapılandırın: Satırın sağındaki düğmeye tıklayın, açılan pencerede SMTP bilgilerini girin ve kaydedin
 
 <img
   src="/images/selfhosted/email/2026-10-21-admin-settings-email-config.png"
@@ -39,30 +39,30 @@ E-postayı yapılandırmanın en kolay yolu Yönetici Panelini kullanmaktır:
 />
 
 <Tip>
-Yönetici Paneli yapılandırması **canlı testi** destekler; SMTP ayarlarınızın kaydetmeden önce çalıştığını doğrulayabilirsiniz.
+Yapılandırma penceresi canlı testi destekler: Kaydetmeden önce bir test e-posta adresi girip **Gönder** düğmesine tıklayarak SMTP ayarlarınızın çalıştığını doğrulayabilirsiniz.
 </Tip>
 
-- **Bildirim e-postası**: Kullanıcı doğrulama, parola sıfırlama, davetler, sistem bildirimleri ve benzer e-postalar için kullanılır. Giriş sayfasındaki **E-posta koduyla giriş yap** seçeneğini de bu ayar mümkün kılar.
-- **Otomasyon e-postası**: Otomasyondaki E-posta Gönder eylemlerinin varsayılan posta hizmeti olarak kullanılır. Tek bir E-posta Gönder eylemi kendi [özel SMTP sunucusunu](/tr/basic/automation/actions/communication/smtp-sender) da yapılandırabilir.
+- **Bildirim E-postası**: Kullanıcı doğrulama, parola sıfırlama, davetler, sistem bildirimleri ve benzer e-postalar için kullanılır. Giriş sayfasındaki **E-posta koduyla giriş yap** seçeneğini de bu ayar mümkün kılar.
+- **Otomasyon E-postası**: Otomasyondaki E-posta Gönder eylemlerinin varsayılan posta hizmeti olarak kullanılır. Tek bir E-posta Gönder eylemi kendi [özel SMTP sunucusunu](/tr/basic/automation/actions/communication/smtp-sender) da yapılandırabilir.
 
 ### Yapılandırma kaynakları ve öncelik
 
-Posta hizmetini önce **Yönetici Paneli → Örnek ayarları → E-posta** bölümünde yapılandırmanızı öneririz. Geçerli öncelik sırası şöyledir:
+Posta hizmetini önce **Sistem Yönetimi → Örnek Ayarları → E-posta Yapılandırması** bölümünde yapılandırmanızı öneririz. Geçerli öncelik sırası şöyledir:
 
 1. **E-posta Gönder eylemindeki özel posta sunucusu**: Yalnızca mevcut otomasyondaki ilgili E-posta Gönder eylemine uygulanır.
-2. **Yönetici Paneli → Örnek ayarları → E-posta → Otomasyon e-postası**: E-posta Gönder eyleminde kendi posta sunucusu yapılandırılmadığında otomasyon e-postaları tarafından kullanılır.
-3. **Yönetici Paneli → Örnek ayarları → E-posta → Bildirim e-postası**: Kullanıcı doğrulama, parola sıfırlama, davetler, sistem bildirimleri ve benzer e-postalar için kullanılır. Otomasyon e-postası yapılandırılmamışsa otomasyon e-postalarının yedeği olarak da kullanılır.
-4. **`BACKEND_MAIL_*` ortam değişkenleri**: Dağıtım düzeyindeki varsayılan posta yapılandırmasıdır. Yalnızca karşılık gelen posta kutusu Yönetici Panelinde yapılandırılmadığında yedek olarak kullanılır.
+2. **Sistem Yönetimi → Örnek Ayarları → E-posta Yapılandırması → Otomasyon E-postası**: E-posta Gönder eyleminde kendi posta sunucusu yapılandırılmadığında otomasyon e-postaları tarafından kullanılır.
+3. **Sistem Yönetimi → Örnek Ayarları → E-posta Yapılandırması → Bildirim E-postası**: Kullanıcı doğrulama, parola sıfırlama, davetler, sistem bildirimleri ve benzer e-postalar için kullanılır. Otomasyon E-postası yapılandırılmamışsa otomasyon e-postalarının yedeği olarak da kullanılır.
+4. **`BACKEND_MAIL_*` ortam değişkenleri**: Dağıtım düzeyindeki varsayılan posta yapılandırmasıdır. Yalnızca karşılık gelen posta kutusu Sistem Yönetimi'nde yapılandırılmadığında yedek olarak kullanılır.
 
 ### Yapılandırma Alanları
 
 | Alan | Açıklama | Örnek |
 |-------|-------------|---------|
 | Sunucu adresi | SMTP sunucu adresi | `smtp.gmail.com` |
-| Bağlantı noktası | SMTP bağlantı noktası | `465` (SSL) veya `587` (TLS) |
+| Port | SMTP bağlantı noktası | `465` (SSL) veya `587` (TLS) |
 | SSL/TLS | SSL/TLS kullanılıp kullanılmayacağı | `true` |
 | Kullanıcı adı | SMTP kimlik doğrulama kullanıcısı | `noreply@company.com` |
-| Parola | SMTP parolası veya uygulama parolası | `xxxxxxxxxxxxxx` |
+| Şifre | SMTP parolası veya uygulama parolası | `xxxxxxxxxxxxxx` |
 | Gönderen adresi | Kimden adresi | `noreply@company.com` |
 | Gönderen adı | Görünen ad | `Teable Notification` |
 
@@ -73,7 +73,7 @@ Posta hizmetini önce **Yönetici Paneli → Örnek ayarları → E-posta** böl
 Dosya tabanlı yapılandırmayı tercih ettiğiniz dağıtımlarda ortam değişkenlerini kullanın:
 
 <Note>
-Önce **Yönetici Paneli → Örnek ayarları → E-posta** bölümündeki Bildirim e-postası ve Otomasyon e-postasını yapılandırmanızı öneririz. Ortam değişkenleri temel olarak dağıtım düzeyindeki varsayılanlar ve yedek yapılandırma için kullanılır.
+Önce **Sistem Yönetimi → Örnek Ayarları → E-posta Yapılandırması** bölümündeki Bildirim E-postası ve Otomasyon E-postasını yapılandırmanızı öneririz. Ortam değişkenleri temel olarak dağıtım düzeyindeki varsayılanlar ve yedek yapılandırma için kullanılır.
 </Note>
 
 ```sh
@@ -151,4 +151,4 @@ BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # SendGrid API Anahtarınız
 ## İlgili Belgeler
 
 - [Ortam Değişkenleri Referansı](/tr/deploy/env)
-- [Yönetici Paneline Genel Bakış](/tr/basic/admin-panel/overview)
+- [Sistem Yönetimine Genel Bakış](/tr/basic/admin-panel/overview)

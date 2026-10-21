@@ -10,7 +10,7 @@ Teable prend en charge deux méthodes de configuration du service de messagerie 
 
 <CardGroup cols={2}>
   <a className="docs-card-link" href="#option-1-admin-panel-recommended">
-<Card title="Panneau d’administration (recommandé)" icon="sliders">
+<Card title="Administration système (recommandé)" icon="sliders">
     Configuration visuelle avec test en direct. Aucun redémarrage requis.
   </Card>
 </a>
@@ -23,14 +23,14 @@ Teable prend en charge deux méthodes de configuration du service de messagerie 
 
 ---
 
-## Option 1 : Panneau d’administration (recommandé) {#option-1-admin-panel-recommended}
+## Option 1 : Administration système (recommandé) {#option-1-admin-panel-recommended}
 
-La manière la plus simple de configurer la messagerie consiste à utiliser le panneau d’administration :
+La manière la plus simple de configurer la messagerie consiste à utiliser l’Administration système :
 
 1. Connectez-vous en tant qu’administrateur (le premier utilisateur enregistré)
-2. Accédez à **Panneau d’administration** → **Paramètres de l’instance**
-3. Recherchez la section **E-mail**
-4. Configurez **E-mail de notification** et **E-mail d’automatisation** selon vos besoins
+2. Accédez à **Administration système** → **Paramètres d'instance**
+3. Recherchez la section **Configuration Email**
+4. Configurez **Email de Notification** et **Email d'Automatisation** selon vos besoins : cliquez sur le bouton à droite de la ligne, saisissez les informations SMTP dans la boîte de dialogue, puis enregistrez
 
 <img
   src="/images/selfhosted/email/2026-10-21-admin-settings-email-config.png"
@@ -39,20 +39,20 @@ La manière la plus simple de configurer la messagerie consiste à utiliser le p
 />
 
 <Tip>
-La configuration du panneau d’administration prend en charge les **tests en direct** — vous pouvez vérifier le bon fonctionnement de vos paramètres SMTP avant de les enregistrer.
+La boîte de dialogue de configuration permet de tester en direct : avant d’enregistrer, saisissez une adresse e-mail de test et cliquez sur **Envoyer** pour vérifier le bon fonctionnement de vos paramètres SMTP.
 </Tip>
 
-- **E-mail de notification** : utilisé pour la vérification des utilisateurs, la réinitialisation du mot de passe, les invitations, les notifications système et les e-mails similaires. C’est aussi lui qui rend **Se connecter avec un code e-mail** disponible sur la page de connexion.
-- **E-mail d’automatisation** : utilisé comme service de messagerie par défaut pour les actions Envoyer un e-mail des automatisations. Une même action Envoyer un e-mail peut également configurer son propre [serveur SMTP personnalisé](/fr/basic/automation/actions/communication/smtp-sender).
+- **Email de Notification** : utilisé pour la vérification des utilisateurs, la réinitialisation du mot de passe, les invitations, les notifications système et les e-mails similaires. C’est aussi lui qui rend **Se connecter avec un code e-mail** disponible sur la page de connexion.
+- **Email d'Automatisation** : utilisé comme service de messagerie par défaut pour les actions Envoyer un e-mail des automatisations. Une même action Envoyer un e-mail peut également configurer son propre [serveur SMTP personnalisé](/fr/basic/automation/actions/communication/smtp-sender).
 
 ### Sources de configuration et priorité
 
-Nous vous recommandons de configurer d’abord le service de messagerie dans **Panneau d’administration → Paramètres de l’instance → E-mail**. La priorité effective est la suivante :
+Nous vous recommandons de configurer d’abord le service de messagerie dans **Administration système → Paramètres d'instance → Configuration Email**. La priorité effective est la suivante :
 
 1. **Serveur de messagerie personnalisé dans l’action Envoyer un e-mail** : s’applique uniquement à cette action Envoyer un e-mail spécifique dans l’automatisation actuelle.
-2. **Panneau d’administration → Paramètres de l’instance → E-mail → E-mail d’automatisation** : utilisé par les e-mails d’automatisation lorsque l’action Envoyer un e-mail ne configure pas son propre serveur de messagerie.
-3. **Panneau d’administration → Paramètres de l’instance → E-mail → E-mail de notification** : utilisé pour la vérification des utilisateurs, la réinitialisation du mot de passe, les invitations, les notifications système et les e-mails similaires. Il sert également de solution de secours pour les e-mails d’automatisation si l’e-mail d’automatisation n’est pas configuré.
-4. **Variables d’environnement `BACKEND_MAIL_*`** : configuration de messagerie par défaut au niveau du déploiement. Utilisées uniquement comme solution de secours lorsque la boîte aux lettres correspondante n’est pas configurée dans le panneau d’administration.
+2. **Administration système → Paramètres d'instance → Configuration Email → Email d'Automatisation** : utilisé par les e-mails d’automatisation lorsque l’action Envoyer un e-mail ne configure pas son propre serveur de messagerie.
+3. **Administration système → Paramètres d'instance → Configuration Email → Email de Notification** : utilisé pour la vérification des utilisateurs, la réinitialisation du mot de passe, les invitations, les notifications système et les e-mails similaires. Il sert également de solution de secours pour les e-mails d’automatisation si l’e-mail d’automatisation n’est pas configuré.
+4. **Variables d’environnement `BACKEND_MAIL_*`** : configuration de messagerie par défaut au niveau du déploiement. Utilisées uniquement comme solution de secours lorsque la boîte aux lettres correspondante n’est pas configurée dans l’Administration système.
 
 ### Champs de configuration
 
@@ -73,7 +73,7 @@ Nous vous recommandons de configurer d’abord le service de messagerie dans **P
 Pour les déploiements où vous préférez une configuration basée sur des fichiers, utilisez des variables d’environnement :
 
 <Note>
-Nous vous recommandons de configurer d’abord l’e-mail de notification et l’e-mail d’automatisation dans **Panneau d’administration → Paramètres de l’instance → E-mail**. Les variables d’environnement servent principalement de valeurs par défaut au niveau du déploiement et de configuration de secours.
+Nous vous recommandons de configurer d’abord **Email de Notification** et **Email d'Automatisation** dans **Administration système → Paramètres d'instance → Configuration Email**. Les variables d’environnement servent principalement de valeurs par défaut au niveau du déploiement et de configuration de secours.
 </Note>
 
 ```sh
@@ -151,4 +151,4 @@ BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # Your SendGrid API Key
 ## Documentation associée
 
 - [Référence des variables d’environnement](/fr/deploy/env)
-- [Présentation du panneau d’administration](/fr/basic/admin-panel/overview)
+- [Présentation de l’Administration système](/fr/basic/admin-panel/overview)

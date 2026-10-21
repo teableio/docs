@@ -29,8 +29,8 @@ Am einfachsten konfigurieren Sie E-Mail über die Systemverwaltung:
 
 1. Melden Sie sich als Administrator an (als erster registrierter Benutzer)
 2. Gehen Sie zu **Systemverwaltung** → **Instanzeinstellungen**
-3. Suchen Sie den Bereich **E-Mail**
-4. Konfigurieren Sie **Benachrichtigungs-E-Mail** und **Automatisierungs-E-Mail** nach Bedarf
+3. Suchen Sie den Bereich **E-Mail-Konfiguration**
+4. Konfigurieren Sie **Benachrichtigungs-E-Mail** und **Automatisierungs-E-Mail** nach Bedarf: Klicken Sie auf die Schaltfläche rechts in der Zeile, geben Sie im Dialog die SMTP-Daten ein und speichern Sie
 
 <img
   src="/images/selfhosted/email/2026-10-21-admin-settings-email-config.png"
@@ -39,7 +39,7 @@ Am einfachsten konfigurieren Sie E-Mail über die Systemverwaltung:
 />
 
 <Tip>
-Die Konfiguration in der Systemverwaltung unterstützt **Live-Tests** — Sie können prüfen, ob Ihre SMTP-Einstellungen funktionieren, bevor Sie sie speichern.
+Der Konfigurationsdialog unterstützt Live-Tests: Geben Sie vor dem Speichern eine Test-E-Mail-Adresse ein und klicken Sie auf **Senden**, um zu prüfen, ob Ihre SMTP-Einstellungen funktionieren.
 </Tip>
 
 - **Benachrichtigungs-E-Mail**: Wird für Benutzerverifizierung, das Zurücksetzen von Passwörtern, Einladungen, Systembenachrichtigungen und ähnliche E-Mails verwendet. Sie ist außerdem Voraussetzung dafür, dass auf der Anmeldeseite **Mit E-Mail-Code anmelden** angeboten wird.
@@ -47,11 +47,11 @@ Die Konfiguration in der Systemverwaltung unterstützt **Live-Tests** — Sie k�
 
 ### Konfigurationsquellen und Priorität
 
-Wir empfehlen, den E-Mail-Dienst zuerst unter **Systemverwaltung → Instanzeinstellungen → E-Mail** zu konfigurieren. Die wirksame Priorität ist:
+Wir empfehlen, den E-Mail-Dienst zuerst unter **Systemverwaltung → Instanzeinstellungen → E-Mail-Konfiguration** zu konfigurieren. Die wirksame Priorität ist:
 
 1. **Benutzerdefinierter E-Mail-Server innerhalb der Aktion zum Senden von E-Mails**: Gilt nur für diese spezifische Aktion zum Senden von E-Mails in der aktuellen Automatisierung.
-2. **Systemverwaltung → Instanzeinstellungen → E-Mail → Automatisierungs-E-Mail**: Wird für Automatisierungs-E-Mails verwendet, wenn die Aktion zum Senden von E-Mails keinen eigenen E-Mail-Server konfiguriert.
-3. **Systemverwaltung → Instanzeinstellungen → E-Mail → Benachrichtigungs-E-Mail**: Wird für Benutzerverifizierung, das Zurücksetzen von Passwörtern, Einladungen, Systembenachrichtigungen und ähnliche E-Mails verwendet. Sie dient auch als Fallback für Automatisierungs-E-Mails, wenn keine Automatisierungs-E-Mail konfiguriert ist.
+2. **Systemverwaltung → Instanzeinstellungen → E-Mail-Konfiguration → Automatisierungs-E-Mail**: Wird für Automatisierungs-E-Mails verwendet, wenn die Aktion zum Senden von E-Mails keinen eigenen E-Mail-Server konfiguriert.
+3. **Systemverwaltung → Instanzeinstellungen → E-Mail-Konfiguration → Benachrichtigungs-E-Mail**: Wird für Benutzerverifizierung, das Zurücksetzen von Passwörtern, Einladungen, Systembenachrichtigungen und ähnliche E-Mails verwendet. Sie dient auch als Fallback für Automatisierungs-E-Mails, wenn keine Automatisierungs-E-Mail konfiguriert ist.
 4. **`BACKEND_MAIL_*`-Umgebungsvariablen**: Standard-E-Mail-Konfiguration auf Bereitstellungsebene. Wird nur als Fallback verwendet, wenn das entsprechende Postfach nicht in der Systemverwaltung konfiguriert ist.
 
 ### Konfigurationsfelder
@@ -63,8 +63,8 @@ Wir empfehlen, den E-Mail-Dienst zuerst unter **Systemverwaltung → Instanzeins
 | SSL/TLS | Ob SSL/TLS verwendet werden soll | `true` |
 | Benutzername | SMTP-Authentifizierungsbenutzer | `noreply@company.com` |
 | Passwort | SMTP-Passwort oder App-Passwort | `xxxxxxxxxxxxxx` |
-| Absenderadresse | Absenderadresse | `noreply@company.com` |
-| Absendername | Anzeigename | `Teable-Benachrichtigung` |
+| Absender-Adresse | Absenderadresse | `noreply@company.com` |
+| Absender-Name | Anzeigename | `Teable-Benachrichtigung` |
 
 ---
 
@@ -73,7 +73,7 @@ Wir empfehlen, den E-Mail-Dienst zuerst unter **Systemverwaltung → Instanzeins
 Verwenden Sie Umgebungsvariablen für Bereitstellungen, bei denen Sie eine dateibasierte Konfiguration bevorzugen:
 
 <Note>
-Wir empfehlen, Benachrichtigungs-E-Mail und Automatisierungs-E-Mail zuerst unter **Systemverwaltung → Instanzeinstellungen → E-Mail** zu konfigurieren. Umgebungsvariablen werden hauptsächlich als Standardwerte auf Bereitstellungsebene und als Fallback-Konfiguration verwendet.
+Wir empfehlen, Benachrichtigungs-E-Mail und Automatisierungs-E-Mail zuerst unter **Systemverwaltung → Instanzeinstellungen → E-Mail-Konfiguration** zu konfigurieren. Umgebungsvariablen werden hauptsächlich als Standardwerte auf Bereitstellungsebene und als Fallback-Konfiguration verwendet.
 </Note>
 
 ```sh

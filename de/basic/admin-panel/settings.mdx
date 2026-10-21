@@ -5,9 +5,9 @@ description: "Verwalten Sie Schalter auf Instanzebene, E-Mail-Einstellungen und 
 
 <Tip>Verfügbar ab dem selbst gehosteten Business-Tarif</Tip>
 
-Pfad: Admin-Panel → Instanzeinstellungen
+Pfad: Systemverwaltung → Instanzeinstellungen
 
-Die Seite **Instanzeinstellungen** dient zur Verwaltung der zentralen Einstellungen der gesamten Instanz, einschließlich **Allgemeine Einstellungen**, **E-Mail** und der Systemprüfungen im Bereich **Ausstehende Konfiguration**.
+Die Seite **Instanzeinstellungen** dient zur Verwaltung der zentralen Einstellungen der gesamten Instanz, einschließlich **Allgemeine Einstellungen**, **E-Mail-Konfiguration** und der Systemprüfungen im Bereich **Ausstehende Konfiguration**.
 
 ## Überblick
 
@@ -15,21 +15,19 @@ Diese Seite behandelt hauptsächlich Grundlagen auf Instanzebene. Die wichtigste
 
 | Einstellungstyp | Beschreibung |
 |------|------|
-| **Allgemeine Einstellungen** | Umfasst **Erstellung neuer Konten zulassen**, **Gesperrte E-Mail-Domains**, **Versenden von Space-Einladungen zulassen**, **Allen das Erstellen neuer Spaces erlauben** und **E-Mail-Verifizierung aktivieren** |
-| **E-Mail** | Umfasst **Benachrichtigungs-E-Mail** und **Automatisierungs-E-Mail** für Passwortzurücksetzungen, E-Mail-Verifizierung, Benachrichtigungs-E-Mails und Einladungs-E-Mails |
-| **Systemlimits** | Zeigt die wirksamen Limits der Instanz für Tabellendaten, Felder, Ansichten und Text |
+| **Allgemeine Einstellungen** | Umfasst **Erstellen neuer Konten zulassen**, **Erlauben Sie das Versenden von Space-Einladungen**, **Jedem die Möglichkeit geben, neue Space anzulegen** und **Aktivieren der E-Mail-Überprüfung** |
+| **E-Mail-Konfiguration** | Umfasst **Benachrichtigungs-E-Mail** und **Automatisierungs-E-Mail** für Passwortzurücksetzungen, E-Mail-Verifizierung, Benachrichtigungs-E-Mails und Einladungs-E-Mails |
+| **Systemgrenzwerte** | Zeigt die wirksamen Limits der Instanz für Tabellendaten, Felder, Ansichten und Text |
 
-Um System-E-Mails zu aktivieren, schließen Sie die Einrichtung unter **E-Mail** ab.
-
-Verwenden Sie **Gesperrte E-Mail-Domains**, um die Registrierung von E-Mail-Adressen aus aufgeführten Domains zu verhindern. Teable lehnt diese Domains vor dem Versand von Bestätigungscodes für die Registrierung ab, und es werden keine Einladungs-E-Mails an oder von diesen Domains gesendet.
+Um System-E-Mails zu aktivieren, schließen Sie die Einrichtung unter **E-Mail-Konfiguration** ab.
 
 <Tip>
-Wenn E-Mail nicht vollständig konfiguriert ist, wird der Eintrag **E-Mail** im Bereich **Ausstehende Konfiguration** nicht grün.
+Solange unter **E-Mail-Konfiguration** keine **Benachrichtigungs-E-Mail** eingerichtet ist, wird der Eintrag **E-Mail** im Bereich **Ausstehende Konfiguration** nicht grün.
 </Tip>
 
-## Systemlimits
+## Systemgrenzwerte
 
-**Systemlimits** zeigt die aktuellen Limits auf Instanzebene für Tabellendaten und zugehörige Konfigurationen. Wenn Sie ein Limit anpassen müssen, verwenden Sie die auf dieser Seite angezeigte Umgebungsvariable.
+**Systemgrenzwerte** zeigt die aktuellen Limits auf Instanzebene für Tabellendaten und zugehörige Konfigurationen. Wenn Sie ein Limit anpassen müssen, verwenden Sie die auf dieser Seite angezeigte Umgebungsvariable.
 
 <img
   src="/images/docs/admin-panel/2026-10-21-admin-settings-system-limits.png"
@@ -51,13 +49,15 @@ Der Bereich **Ausstehende Konfiguration** rechts ist eine System-Checkliste. Er 
   className="docs-screenshot"
 />
 
-Zu den häufigen Prüfungen auf dieser Seite gehören:
+Die Checkliste gruppiert ihre Punkte wie folgt:
 
-| Element | Auswirkung |
-|------|------|
-| **Umgebungsvariable PUBLIC_ORIGIN** | Beeinflusst Funktionen, die auf einer externen Zugriffs-URL beruhen, etwa Anhänge und Importe |
-| **HTTPS aktivieren** | Beeinflusst Funktionen, die HTTPS benötigen, etwa Kopieren und Einfügen |
-| **E-Mail** | Beeinflusst Passwortzurücksetzungen, E-Mail-Verifizierung, Benachrichtigungen und ähnliche Funktionen |
+| Gruppe | Element | Auswirkung |
+|------|------|------|
+| **Grundlagen** | **PUBLIC_ORIGIN Umgebungsvariable** | Beeinflusst Funktionen, die auf einer externen Zugriffs-URL beruhen, etwa Anhänge und Importe |
+| **Grundlagen** | **HTTPS aktivieren** | Beeinflusst Funktionen, die HTTPS benötigen, etwa Kopieren und Einfügen |
+| **Grundlagen** | **E-Mail** | Beeinflusst Passwortzurücksetzungen, E-Mail-Verifizierung, Benachrichtigungen und ähnliche Funktionen |
+| **KI-Dienste** | **LLM API** | Beeinflusst KI-Funktionen wie AI Chat und KI-Felder. Wird in den [KI-Einstellungen](/de/basic/admin-panel/ai-setting) abgeschlossen |
+| **App Builder** | **App Builder: Deployment-Engine** | Beeinflusst das Veröffentlichen von Apps aus dem App Builder. Wird in den [KI-Einstellungen](/de/basic/admin-panel/ai-setting) abgeschlossen |
 
 Wenn diese Punkte nicht abgeschlossen sind, kann die Instanz weiterhin normal geöffnet werden, einige Funktionen können jedoch nicht verfügbar bleiben.
 
@@ -89,7 +89,7 @@ Wenn Sie eine neue selbst gehostete Bereitstellung vorbereiten oder zum ersten M
     Stellen Sie sicher, dass **SMTP** konfiguriert ist und E-Mails erfolgreich senden kann.
   </Step>
   <Step title="Mit KI-Einstellungen fortfahren">
-    Fahren Sie nach der Bestätigung der grundlegenden Punkte mit den [KI-Einstellungen](/de/basic/admin-panel/ai-setting) fort.
+    Schließen Sie nach der Bestätigung der grundlegenden Punkte **LLM API** und **App Builder: Deployment-Engine** in den [KI-Einstellungen](/de/basic/admin-panel/ai-setting) ab.
   </Step>
 </Steps>
 
@@ -105,7 +105,7 @@ Das bedeutet in der Regel, dass die Instanz erreichbar ist, aber eine oder mehre
 
 <Accordion title="E-Mail funktioniert manchmal, wird aber weiterhin nicht als abgeschlossen markiert">
 
-Prüfen Sie, ob die gespeicherten SMTP-Einstellungen vollständig sind, ob sie dem vorgesehenen Versandzweck entsprechen und ob Bestätigungs- oder Benachrichtigungs-E-Mails zuverlässig gesendet werden können.
+Der Eintrag **E-Mail** prüft nur, ob unter **E-Mail-Konfiguration** eine **Benachrichtigungs-E-Mail** gespeichert ist. Ist SMTP nur über Umgebungsvariablen oder nur als **Automatisierungs-E-Mail** konfiguriert, bleibt der Eintrag unvollständig.
 </Accordion>
 
 <Accordion title="Warum ist PUBLIC_ORIGIN wichtig?">
