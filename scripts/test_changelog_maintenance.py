@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from datetime import date
 
-from changelog_maintenance import maintain, normalize, merge, entries, anchors, BLOCK, rss_date, with_rss_date, normalize_page_rss, update_attributes, update_label
+from changelog_maintenance import maintain, normalize, merge, entries, anchors, BLOCK, rss_date, with_rss_date, normalize_page_rss, update_attributes, update_label, with_date_id, date_slug
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -24,6 +24,38 @@ def apply(root, changes):
 
 
 class MaintenanceTests(unittest.TestCase):
+    def test_rss_explicit_date_ids_preserve_unicode_in_every_locale(self):
+        expected = {
+            '2026年10月20日': '2026年10月20日',
+            '16 سبتمبر 2025': '16-سبتمبر-2025',
+            '21 März 2025': '21-märz-2025',
+            '5 février 2025': '5-février-2025',
+            '20 октября 2026': '20-октября-2026',
+            '20 Eylül 2026': '20-eylül-2026',
+            '16 вересня 2025': '16-вересня-2025',
+        }
+        for label, identity in expected.items():
+            block = f'<Update rss={{{{ title: "A > B" }}}} label="{label}">\n## Release\n</Update>'
+            result = with_date_id(block)
+            self.assertIn(f'id="{identity}"', result)
+            self.assertEqual(result.replace(' id="' + identity + '"', ''), block)
+            self.assertEqual(with_date_id(result), result)
+        with self.assertRaisesRegex(ValueError, 'published date anchor'):
+            with_date_id('<Update label="2026年10月20日" id="changed">')
+
+    def test_republication_keeps_localized_date_id_and_rss_together(self):
+        root = self.fixture()
+        archive = root / 'ja/changelog-2026-09.mdx'
+        released, old = entries(archive.read_text(), 'ja')[0]
+        current = root / 'ja/changelog.mdx'
+        current.write_text(insert(current.read_text(), f'<Update label="{released.isoformat()}">\n## Revised\n</Update>'))
+        apply(root, maintain(root))
+        _, revised = entries(archive.read_text(), 'ja')[0]
+        self.assertEqual(update_label(revised), update_label(old))
+        self.assertIn('id="' + date_slug(update_label(old)) + '"', revised)
+        self.assertEqual(rss_date(revised), released.isoformat())
+        self.assertEqual(maintain(root), {})
+
     def fixture(self):
         folder = tempfile.TemporaryDirectory()
         self.addCleanup(folder.cleanup)
@@ -282,7 +314,7 @@ class MaintenanceTests(unittest.TestCase):
         result = next(block for day, block in entries(annual.read_text(), 'en') if day == released)
         self.assertEqual(update_label(result), old_label)
         self.assertEqual(rss_date(result), released.isoformat())
-        expected_header = '<Update rss={{ ' + custom.replace('2099-01-01', released.isoformat()) + ' }} label="' + old_label + '">'
+        expected_header = '<Update rss={{ ' + custom.replace('2099-01-01', released.isoformat()) + ' }} label="' + old_label + '" id="' + date_slug(old_label) + '">'
         _, result_end = update_attributes(result)
         self.assertEqual(result[:result_end + 1], expected_header)
         for identity in anchors(old):

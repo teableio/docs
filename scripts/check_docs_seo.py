@@ -9,7 +9,7 @@ import re
 import sys
 
 import yaml
-from changelog_maintenance import anchors, entries, maintain, map_unfenced, rss_date
+from changelog_maintenance import anchors, entries, maintain, map_unfenced, rss_date, with_date_id
 from changelog_order import sort_changelog
 
 
@@ -162,6 +162,8 @@ def check(root):
             for released, block in dated:
                 if rss_date(block) != released.isoformat():
                     errors.append(f'{route}: RSS publication date must equal release date {released.isoformat()}')
+                if with_date_id(block) != block:
+                    errors.append(f'{route}: Update needs an explicit date ID to match its RSS links ({released.isoformat()})')
             labels = [day for day, _ in dated]
             if len(labels) != len(set(labels)):
                 errors.append(f'{route}: duplicate release dates create duplicate HTML IDs')
