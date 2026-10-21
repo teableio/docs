@@ -82,6 +82,12 @@ def retired_redirect_errors(config, locales):
     return errors
 
 
+def root_selector_errors(config):
+    if any(item.get('source') == '/' for item in config.get('redirects', [])):
+        return ['root selector must serve before language routing to preserve acquisition parameters']
+    return []
+
+
 def check(root):
     errors = []
     config = json.loads((root / 'docs.json').read_text())
@@ -102,6 +108,17 @@ def check(root):
         for title, count in titles.items():
             if title and count > 1:
                 errors.append(f'{locale}: duplicate title {title!r} ({count} pages)')
+    # Root-level selector pages need the same metadata and noindex policy checks.
+    for path in sorted(root.glob('*.mdx')):
+        route = path.stem
+        source = path.read_text()
+        try:
+            metadata, _ = frontmatter(source)
+            pages[route] = (metadata, source)
+            errors.extend(f'{route}: {message}' for message in page_errors(source))
+        except (ValueError, yaml.YAMLError) as error:
+            errors.append(f'{route}: {error}')
+    errors.extend(root_selector_errors(config))
     nav = list(navigation_pages(config['navigation']))
     for route in nav:
         if route not in pages:
