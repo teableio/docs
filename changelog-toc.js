@@ -6,13 +6,33 @@
   var lazyVideoObserver = null;
 
   function isChangelogPage() {
-    var currentPath = document.documentElement.getAttribute("data-current-path") || window.location.pathname;
-    return /\/changelog\/?$/.test(currentPath);
+    return /\/changelog(?:-\d{4}(?:-\d{2})?)?\/?$/.test(window.location.pathname);
   }
 
   function syncCurrentPath() {
-    if (isChangelogPage() && !document.documentElement.getAttribute("data-current-path")) {
-      document.documentElement.setAttribute("data-current-path", window.location.pathname);
+    document.documentElement.setAttribute("data-current-path", window.location.pathname);
+  }
+
+  function redirectHistoricalAnchor() {
+    if (!/\/changelog\/?$/.test(window.location.pathname) || !window.location.hash) {
+      return;
+    }
+    var anchor;
+    try {
+      anchor = decodeURIComponent(window.location.hash.slice(1));
+    } catch (_) {
+      return;
+    }
+    if (document.getElementById(anchor)) {
+      return;
+    }
+    var histories = document.querySelectorAll("[data-changelog-month][data-changelog-anchors]");
+    for (var index = 0; index < histories.length; index += 1) {
+      if (histories[index].getAttribute("data-changelog-anchors").split("|").indexOf(anchor) !== -1) {
+        var path = window.location.pathname.replace(/\/changelog\/?$/, "/changelog-" + histories[index].getAttribute("data-changelog-month"));
+        window.location.replace(path + window.location.search + "#" + encodeURIComponent(anchor));
+        return;
+      }
     }
   }
 
@@ -36,6 +56,7 @@
       return;
     }
 
+    redirectHistoricalAnchor();
     setupLazyVideos();
 
     var tocItems = Array.prototype.slice.call(document.querySelectorAll("#table-of-contents .toc-item"));

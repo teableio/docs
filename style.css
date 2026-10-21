@@ -22,42 +22,23 @@
   display: none !important;
 }
 
-/* Changelog: hide only page title text, keep RSS button visible */
-#header:has(+ #content[data-page-href$="/changelog"]) #page-title {
-  display: none !important;
+/* Native links keep Card destinations discoverable and the entire card clickable. */
+.docs-card-link {
+  display: block;
+  color: inherit !important;
+  text-decoration: none !important;
 }
 
-#header:has(+ #content[data-page-href$="/changelog"]) {
-  height: 0 !important;
-  margin: 0 !important;
-  min-height: 0 !important;
-  padding: 0 !important;
+.docs-card-link .card {
+  cursor: pointer;
 }
 
-#header:has(+ #content[data-page-href$="/changelog"]) > * {
-  margin: 0 !important;
+.docs-card-link:hover .card,
+.docs-card-link:focus-visible .card {
+  border-color: rgb(var(--primary)) !important;
 }
 
-#header:has(+ #content[data-page-href$="/changelog"]) #page-context-menu {
-  margin: 0 !important;
-  position: absolute !important;
-  right: 0 !important;
-  top: 0 !important;
-  z-index: 10;
-}
-
-#content[data-page-href$="/changelog"] {
-  margin-top: 0 !important;
-}
-
-#content[data-page-href$="/changelog"] > .update-container:first-of-type {
-  padding-top: 0 !important;
-}
-
-#content[data-page-href$="/changelog"] .update-container [data-component-part="update-content"] > h1:first-child {
-  margin-top: 0 !important;
-}
-
+/* Keep the page title visible as the changelog’s single primary heading. */
 /* Monochrome refinements with mode-specific tone */
 html:not(.dark) {
   --primary: 19 20 21;
@@ -110,16 +91,16 @@ html:not(.dark) {
 }
 
 /* Changelog: make the active right-side table of contents item visible */
-html[data-current-path$="/changelog"] #table-of-contents .toc-item[data-changelog-active="true"] > a,
-html[data-current-path$="/changelog"] #table-of-contents .toc-item[data-active] > a,
-html[data-current-path$="/changelog"] #table-of-contents .toc-item[data-active-deepest] > a {
+html[data-current-path*="/changelog"] #table-of-contents .toc-item[data-changelog-active="true"] > a,
+html[data-current-path*="/changelog"] #table-of-contents .toc-item[data-active] > a,
+html[data-current-path*="/changelog"] #table-of-contents .toc-item[data-active-deepest] > a {
   color: rgb(var(--primary)) !important;
   font-weight: 600;
 }
 
-html[data-current-path$="/changelog"] #table-of-contents .toc-item[data-changelog-active="true"]::before,
-html[data-current-path$="/changelog"] #table-of-contents .toc-item[data-active]::before,
-html[data-current-path$="/changelog"] #table-of-contents .toc-item[data-active-deepest]::before {
+html[data-current-path*="/changelog"] #table-of-contents .toc-item[data-changelog-active="true"]::before,
+html[data-current-path*="/changelog"] #table-of-contents .toc-item[data-active]::before,
+html[data-current-path*="/changelog"] #table-of-contents .toc-item[data-active-deepest]::before {
   content: "";
   position: absolute;
   left: -12px;
@@ -130,9 +111,9 @@ html[data-current-path$="/changelog"] #table-of-contents .toc-item[data-active-d
   background: rgb(var(--primary));
 }
 
-html.dark[data-current-path$="/changelog"] #table-of-contents .toc-item[data-changelog-active="true"] > a,
-html.dark[data-current-path$="/changelog"] #table-of-contents .toc-item[data-active] > a,
-html.dark[data-current-path$="/changelog"] #table-of-contents .toc-item[data-active-deepest] > a {
+html.dark[data-current-path*="/changelog"] #table-of-contents .toc-item[data-changelog-active="true"] > a,
+html.dark[data-current-path*="/changelog"] #table-of-contents .toc-item[data-active] > a,
+html.dark[data-current-path*="/changelog"] #table-of-contents .toc-item[data-active-deepest] > a {
   color: rgb(var(--primary)) !important;
 }
 
