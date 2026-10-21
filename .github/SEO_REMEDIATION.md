@@ -32,6 +32,7 @@ issues become additional numbered items. Production-only checks remain explicit.
 | 19 | Preserve release dates in RSS | Every Update uses its label-derived RSS date; hosted feeds show historical publication dates | Complete locally |
 | 20 | Run repair tests after source normalization | Automated raw releases can reach maintenance; normalized output is tested before any push | Complete locally |
 | 21 | Match RSS links to rendered date anchors | All 132 feeds resolve to the correct Update; published Unicode IDs remain unchanged; future releases retain explicit IDs | Complete locally |
+| 22 | Resync stale Turkish AI overview HTML | The original hosted URL renders its current source title and seven native Card links | Complete locally; hosted refresh pending |
 
 ## Validation boundaries and discoveries
 
@@ -213,3 +214,9 @@ each fix here before committing it.
 - Added source regression checks and localized-date/republication tests. All 33 Python and 12 Node tests, source SEO checks, Mintlify 4.2.1059 build validation and full link/anchor/redirect checks passed.
 - Independent subagent review exercised all 1,540 Updates through Mintlify's real AST, TOC and RSS pipelines: explicit RSS anchors match both rendered and original date IDs without changing existing routing. Local preview also preserves all 1,386 current-year date IDs and 3,959 heading IDs within their original Updates.
 - Local RSS routes are unavailable in Mintlify dev; generated RSS items were checked through the actual installed RSS processor. Hosted feed-to-HTML verification remains the release gate.
+
+### 22 — Stale Turkish AI overview HTML
+
+- The full 1,869-page hosted scan found one page whose HTML still returned the old title and non-native Card links. Six unrelated transport timeouts passed targeted rechecks. The Turkish overview's Markdown representation contains the current source, but its HTML stays a Cloudflare HIT even after item 21's deployment; request cache directives and User-Agent variations do not refresh it.
+- Updated only the page's existing resync comment to trigger a file rebuild. Body text and metadata remain byte-for-byte unchanged. Independent review and local HTTP checks passed: correct title, seven native links, zero role-only Card links and no visible synchronization comment.
+- This is a targeted rebuild attempt. Success requires verifying the unchanged production URL after deployment; local rendering alone does not prove hosted cache invalidation.
