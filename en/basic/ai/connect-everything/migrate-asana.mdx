@@ -1,0 +1,28 @@
+---
+title: "Migrate Asana"
+description: "Import Asana data into Teable, restore relationships, and rebuild the views and workflows your team needs."
+---
+
+Move your Asana data into Teable first, then rebuild the working interface around it. Use a small export for the first run and keep the source available until the new workflow is checked.
+
+## 1. Export the source data
+
+Open the Asana project, use the menu next to its title, then choose **Export/Print → CSV**. Export each project you need separately. Asana’s [official export guide](https://help.asana.com/s/article/project-importing-and-exporting) also describes JSON exports, but use CSV for this Teable table-import workflow.
+
+Keep any task IDs and parent-task references included in the export. Use one Tasks table with a project field or linked Projects table, and retain source assignee emails, due dates, statuses, and custom-field values where exported. Inventory comments, attachments, dependencies, recurring tasks, and rules separately; compare the actual export columns before deciding how each item will be recreated.
+
+## 2. Import and restore relationships
+
+1. Keep a stable ID column for every source table, plus the IDs used to reference other tables. Preserve these as text, including leading zeros.
+2. Follow the [CSV, Excel, and Google Sheets import guide](/en/basic/table/import) to create tables in one Teable project. For Excel files larger than 5MB, save them as CSV first. Review field types, dates, and select options in the import preview.
+3. After importing all related tables, create [Link fields](/en/basic/field/link) and match records using the source IDs. Map assignee emails to Teable users explicitly; importing an email does not invite that person.
+
+## 3. Rebuild the workflow
+
+Use [App Builder](/en/basic/ai/app-builder) to create the required lists, detail pages, and forms from the imported tables. Recreate formulas, permissions, and [automations](/en/basic/automation) in Teable and test them individually. The exported values provide data; the source app’s screens, expressions, access rules, and workflow definitions must be configured separately.
+
+## 4. Check before switching
+
+Compare record counts and a few linked records against the source. Check filtered exports, dates, attachment access, and each role’s read and update rights. Choose a cutover time, pause source edits, take a final export, and reconcile changes by source ID before inviting the team. A file import is a snapshot, not ongoing sync; repeated imports can create duplicates.
+
+For feature and deployment choices, read the [Teable vs Asana comparison](https://teable.ai/compare/asana-alternative).
