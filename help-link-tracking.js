@@ -74,8 +74,38 @@
     }
   }
 
+  function sourceContext() {
+    var location = window.location;
+    if (location.protocol !== "https:" ||
+        ["help.teable.ai", "help.teable.cn"].indexOf(location.hostname) === -1) {
+      return null;
+    }
+    var parts = publicSegments(location.pathname);
+    if (!parts || locales.indexOf(parts[0]) === -1) { return null; }
+    if (parts.length > 1 && ["basic", "deploy", "api-doc", "compare"].indexOf(parts[1]) === -1 &&
+        !(parts.length === 2 && /^changelog(?:-\d{4}(?:-\d{2})?)?$/.test(parts[1]))) {
+      return null;
+    }
+    return { path: location.pathname, host: location.hostname };
+  }
+
+  function addSourceMarkers(target, source) {
+    // Keep existing campaign parameters and their encoding exactly as supplied.
+    var original = target.search ? target.search.slice(1).split("&") : [];
+    var kept = original.filter(function (entry) {
+      try {
+        var name = decodeURIComponent(entry.split("=")[0].replace(/\+/g, " "));
+        return name !== "help_source" && name !== "help_host";
+      } catch (_) { return true; }
+    });
+    kept.push("help_source=" + encodeURIComponent(source.path));
+    kept.push("help_host=" + encodeURIComponent(source.host));
+    target.search = "?" + kept.join("&");
+  }
+
   function prepareLink(link) {
-    if (!trustedTarget(link)) {
+    var target = trustedTarget(link);
+    if (!target) {
       return;
     }
     var tokens = (link.getAttribute("rel") || "").split(/\s+/).filter(function (token) {
@@ -88,6 +118,41 @@
     if (link.getAttribute("rel") !== rel) {
       link.setAttribute("rel", rel);
     }
+    var source = sourceContext();
+    if (source) {
+      addSourceMarkers(target, source);
+      if (link.href !== target.href) { link.setAttribute("href", target.href); }
+    }
+  }
+
+  function trackClick(event) {
+    if ((event.type === "click" && event.button !== 0) ||
+        (event.type === "auxclick" && event.button !== 1)) { return; }
+    var link = event.target.closest && event.target.closest("a[href]");
+    if (!link) { return; }
+    var target = trustedTarget(link);
+    var source = sourceContext();
+    if (!target || !source) { return; }
+    prepareLink(link);
+    var locale = source.path.split("/")[1];
+    var parameters = {
+      send_to: "G-LQ8H9TEDRD",
+      source_path: source.path,
+      target_path: target.pathname,
+      source_domain: source.host,
+      link_category: linkCategory(target.pathname),
+      locale: locale,
+      page_location: "https://" + source.host + source.path
+    };
+    // Queue early clicks through the same gtag data layer, without configuring
+    // another tag or sending a page_view. Existing consent rules still apply.
+    function queueEvent() {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push(arguments);
+    }
+    (typeof window.gtag === "function" ? window.gtag : queueEvent)(
+      "event", "teable_help_link_click", parameters
+    );
   }
 
   function prepareTree(root) {
@@ -101,7 +166,18 @@
 
   // Mintlify inserts and updates links as users navigate between documents.
   prepareTree(document);
+  var observedPath = window.location.pathname;
+  function refreshForRoute() {
+    if (observedPath !== window.location.pathname) {
+      observedPath = window.location.pathname;
+      prepareTree(document);
+    }
+  }
+  document.addEventListener("click", trackClick, true);
+  document.addEventListener("auxclick", trackClick, true);
+  window.addEventListener("popstate", refreshForRoute);
   new MutationObserver(function (mutations) {
+    refreshForRoute();
     mutations.forEach(function (mutation) {
       if (mutation.type === "attributes") {
         prepareLink(mutation.target);
