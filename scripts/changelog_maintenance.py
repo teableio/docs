@@ -437,16 +437,9 @@ def maintain(root):
         matches = list(BLOCK.finditer(source))
         prefix = source[:matches[0].start()]
         prefix = re.sub(r'^title:.*$', 'title: ' + json.dumps(copy['currentTitle'].format(year=max(day for day, _ in original).year), ensure_ascii=False), prefix, count=1, flags=re.M)
+        prefix = re.sub(r'^sidebarTitle:.*\n?', '', prefix, count=1, flags=re.M)
         if older:
             tail, months = main_footer(root, locale, copy, manifest[locale], planned)
-            language = next(value for value in config['navigation']['languages'] if value['language'] == locale)
-            tab = next(value for value in language['tabs'] if f'{locale}/changelog' in value.get('pages', []))
-            tab['pages'] = [value for value in tab['pages'] if not (isinstance(value, dict) and value.get('pages') and all(re.fullmatch(re.escape(locale) + r'/changelog-\d{4}-\d{2}', item) for item in value['pages']))]
-            groups = defaultdict(list)
-            for month in months:
-                groups[month[:4]].append(f'{locale}/changelog-{month}')
-            for offset, (year, pages) in enumerate(sorted(groups.items(), reverse=True), 1):
-                tab['pages'].insert(offset, {'group': copy['historyLabel'] + ' ' + year, 'pages': pages})
             history_changed = True
         else:
             tail = source[matches[-1].end():]
@@ -482,6 +475,32 @@ def maintain(root):
             last = list(BLOCK.finditer(source))[-1]
             tail, _ = main_footer(root, locale, copy, manifest[locale], planned)
             planned[name] = source[:last.end()] + tail
+    # The shared reader enhances year links with the manifest's monthly archives.
+    for language in config['navigation']['languages']:
+        locale = language['language']
+        if locale not in resources:
+            continue
+        current = f'{locale}/changelog'
+        for tab in language.get('tabs', []):
+            pages = tab.get('pages', [])
+            if not any(item == current or isinstance(item, dict) and (item.get('root') == current or current in item.get('pages', [])) for item in pages):
+                continue
+            newest = max(day for day, _ in entries(planned[current + '.mdx'], locale))
+            groups = defaultdict(list)
+            groups[str(newest.year)] = []
+            for month in sorted(manifest.get(locale, {}), reverse=True):
+                groups[month[:4]].append(f'{locale}/changelog-{month}')
+            annual = [item for item in pages if isinstance(item, str) and re.fullmatch(re.escape(current) + r'-\d{4}', item)]
+            year_groups = []
+            for year, month_pages in sorted(groups.items(), reverse=True):
+                if month_pages:
+                    year_groups.append({
+                        'group': resources[locale]['historyLabel'] + ' ' + year,
+                        'hidden': True,
+                        'pages': month_pages,
+                    })
+            tab['pages'] = [current] + year_groups + annual
+    planned['docs.json'] = json.dumps(config, indent=2, ensure_ascii=False) + '\n'
     if history_changed:
         planned[manifest_path] = json.dumps(manifest, indent=2, ensure_ascii=False) + '\n'
         planned['docs.json'] = json.dumps(config, indent=2, ensure_ascii=False) + '\n'
