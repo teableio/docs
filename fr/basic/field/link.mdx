@@ -19,36 +19,42 @@ Le Champ Lien relie deux Tables. Il permet de sélectionner dans la Table actuel
 
 <Steps>
   <Step title="Choisir le type de Champ">
-    Dans la Table actuelle, cliquez sur Ajouter un Champ et choisissez **Lien**.
+    Dans la Table actuelle, cliquez sur Ajouter un Champ et choisissez **Lien vers un autre enregistrement**.
   </Step>
   <Step title="Choisir la Table cible">
     Dans la boîte de dialogue de configuration, choisissez la Table à laquelle établir un lien, par exemple en reliant la Table des commandes à celle des clients.
   </Step>
   <Step title="Choisir le mode de liaison">
-    Choisissez un lien unidirectionnel ou bidirectionnel selon vos besoins.
+    Activez **Créer un champ de lien réciproque dans la table de lien** pour un lien bidirectionnel, ou désactivez-le pour un lien unidirectionnel.
   </Step>
   <Step title="Configurer les règles de relation">
-    Utilisez **Autoriser la sélection multiple** et **Autoriser les valeurs en double** pour configurer des relations un-à-un, un-à-plusieurs, plusieurs-à-un ou plusieurs-à-plusieurs.
+    Utilisez **Autoriser la sélection multiple** et **Permet la sélection des enregistrements plus d'une fois** pour configurer des relations un-à-un, un-à-plusieurs, plusieurs-à-un ou plusieurs-à-plusieurs.
   </Step>
 </Steps>
+
+<img
+  src="/images/docs/base/2026-10-21-field-link-config.png"
+  alt="Link field settings with the linked table, two-way link, and relationship options"
+  className="docs-screenshot"
+/>
 
 ## Liens unidirectionnels et bidirectionnels
 
 | Mode | Description | Utilité |
 | --- | --- | --- |
 | Lien bidirectionnel | Activé par défaut. Lorsque vous créez un Champ Lien, Teable crée un Champ Lien correspondant dans la Table cible et maintient les deux côtés synchronisés | Relations qui doivent être consultées depuis les deux Tables, comme celles entre commandes et clients ou entre projets et tâches |
-| Lien unidirectionnel | Lorsque l’option bidirectionnelle est désactivée, seule la Table actuelle affiche les Enregistrements liés. Aucun Champ inverse n’est créé dans la Table cible | Cas où vous souhaitez uniquement référencer une autre Table sans modifier la structure de la Table cible |
+| Lien unidirectionnel | Lorsque **Créer un champ de lien réciproque dans la table de lien** est désactivé, seule la Table actuelle affiche les Enregistrements liés. Aucun Champ inverse n’est créé dans la Table cible | Cas où vous souhaitez uniquement référencer une autre Table sans modifier la structure de la Table cible |
 
 ## Types de relations
 
-Utilisez conjointement **Autoriser la sélection multiple** et **Autoriser les valeurs en double** pour définir quatre types de relations courants :
+Utilisez conjointement **Autoriser la sélection multiple** et **Permet la sélection des enregistrements plus d'une fois** pour définir quatre types de relations courants :
 
 | Relation | Exemple métier | Configuration |
 | :--- | :--- | :--- |
-| **Un-à-un (1:1)** | **Employé - Profil**<br />Un employé possède un profil et un profil appartient à un employé | ☐ Autoriser la sélection multiple<br />☐ Autoriser les valeurs en double<br />*(les deux options sont désactivées)* |
-| **Un-à-plusieurs (1:N)** | **Département - Employé**<br />Un département compte plusieurs employés, mais chaque employé appartient à un seul département | ☑ Autoriser la sélection multiple<br />☐ Autoriser les valeurs en double<br />*(seule la sélection multiple est autorisée)* |
-| **Plusieurs-à-un (N:1)** | **Tâche - Projet**<br />Plusieurs tâches appartiennent à un projet, mais chaque tâche n’appartient qu’à un seul projet | ☐ Autoriser la sélection multiple<br />☑ Autoriser les valeurs en double<br />*(seules les valeurs en double sont autorisées)* |
-| **Plusieurs-à-plusieurs (N:N)** | **Étudiant - Cours**<br />Un étudiant peut suivre plusieurs cours et un cours peut accueillir plusieurs étudiants | ☑ Autoriser la sélection multiple<br />☑ Autoriser les valeurs en double<br />*(les deux options sont activées)* |
+| **Un-à-un (1:1)** | **Employé - Profil**<br />Un employé possède un profil et un profil appartient à un employé | ☐ Autoriser la sélection multiple<br />☐ Permet la sélection des enregistrements plus d'une fois<br />*(les deux options sont désactivées)* |
+| **Un-à-plusieurs (1:N)** | **Département - Employé**<br />Un département compte plusieurs employés, mais chaque employé appartient à un seul département | ☑ Autoriser la sélection multiple<br />☐ Permet la sélection des enregistrements plus d'une fois<br />*(seule la sélection multiple est autorisée)* |
+| **Plusieurs-à-un (N:1)** | **Tâche - Projet**<br />Plusieurs tâches appartiennent à un projet, mais chaque tâche n’appartient qu’à un seul projet | ☐ Autoriser la sélection multiple<br />☑ Permet la sélection des enregistrements plus d'une fois<br />*(seule la seconde option est activée)* |
+| **Plusieurs-à-plusieurs (N:N)** | **Étudiant - Cours**<br />Un étudiant peut suivre plusieurs cours et un cours peut accueillir plusieurs étudiants | ☑ Autoriser la sélection multiple<br />☑ Permet la sélection des enregistrements plus d'une fois<br />*(les deux options sont activées)* |
 
 ## Utilisations courantes
 
