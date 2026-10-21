@@ -138,3 +138,36 @@ test('sidebar selection follows reading forward and backward without scrolling t
   assert.equal(october.attributes['aria-current'], 'location');
   assert.equal(september.attributes['aria-current'], undefined);
 });
+
+test('hosted navigation labels stop being headings without replacing their interactive children', () => {
+  const button = { text: 'On this page', clickHandler: () => true };
+  const labels = [
+    { attributes: [], children: [{text: 'Documentation Index'}] },
+    { attributes: [{name: 'id', value: 'toc-label'}, {name: 'class', value: 'm-0 font-normal'}], children: [button] },
+  ].map(node => ({ ...node,
+    get firstChild() { return this.children[0]; },
+    replaceWith(replacement) { this.replacement = replacement; },
+  }));
+  const document = {
+    documentElement: { setAttribute() {} },
+    querySelectorAll(selector) { return selector.startsWith('[data-agent-docs-index]') ? labels.filter(x => !x.replacement) : []; },
+    createElement(tag) { return { tag, attributes: {}, children: [],
+      setAttribute(k,v) { this.attributes[k] = v; },
+      appendChild(child) {
+        const owner = labels.find(x => x.children.includes(child));
+        owner.children.splice(owner.children.indexOf(child), 1);
+        this.children.push(child);
+      },
+    }; },
+  };
+  const window = {addEventListener() {}};
+  const exposed = source.replace('  collectPairs();\n})();', '  window.normalize = normalizeNavigationHeadings;\n})();');
+  vm.runInNewContext(exposed, {document, window, MutationObserver: class {observe() {}}});
+  window.normalize();
+  window.normalize();
+  assert.equal(labels[0].replacement.tag, 'div');
+  assert.equal(labels[1].replacement.attributes.id, 'toc-label');
+  assert.equal(labels[1].replacement.attributes.class, 'm-0 font-normal');
+  assert.equal(labels[1].replacement.children[0], button);
+  assert.equal(button.clickHandler(), true);
+});

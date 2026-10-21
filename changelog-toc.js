@@ -48,6 +48,21 @@
     activeId = null;
   }
 
+  function normalizeNavigationHeadings() {
+    // Hosted Mintlify adds navigation headings that older local previews omit.
+    document.querySelectorAll('[data-agent-docs-index] h2, #table-of-contents h2, #navigation-items h5').forEach(function (heading) {
+      var label = document.createElement("div");
+      Array.from(heading.attributes).forEach(function (attribute) {
+        if (attribute.name !== "role" && attribute.name !== "aria-level") {
+          label.setAttribute(attribute.name, attribute.value);
+        }
+      });
+      // Move the button itself so its click handler and aria-labelledby survive.
+      while (heading.firstChild) label.appendChild(heading.firstChild);
+      heading.replaceWith(label);
+    });
+  }
+
   function setupHeadingLinks() {
     var nativeLink = document.querySelectorAll('#content .group a.group\\/link')[0];
     if (!nativeLink) return;
@@ -410,6 +425,7 @@
     }
 
     redirectHistoricalAnchor();
+    normalizeNavigationHeadings();
     setupLazyVideos();
     setupHeadingLinks();
     setupMonthReader();
