@@ -70,7 +70,7 @@ graph LR
 
 L’application Teable communique avec le plan d’exécution par **une seule connexion** : le service d’infrastructure (`TEABLE_INFRA_API_URL` / `TEABLE_INFRA_API_KEY`). Tout ce qui se trouve derrière est interne. Deux types de charges de travail assurent le véritable fonctionnement — et ce sont eux qui consomment les ressources de votre machine :
 
-- **Bacs à sable.** Chaque session de chat IA ou d’App Builder reçoit son propre conteneur isolé, démarré au début de la session et supprimé à sa fin. Il s’agit de la charge principale de la plateforme, et elle arrive par pics : dimensionnez votre machine selon le **nombre maximal de sessions d’IA simultanées**, et non selon le nombre d’utilisateurs (les limites de ressources par bac à sable peuvent être définies dans le panneau d’administration).
+- **Bacs à sable.** Chaque session de chat IA ou d’App Builder reçoit son propre conteneur isolé, démarré au début de la session et supprimé à sa fin. Il s’agit de la charge principale de la plateforme, et elle arrive par pics : dimensionnez votre machine selon le **nombre maximal de sessions d’IA simultanées**, et non selon le nombre d’utilisateurs (les limites de ressources par bac à sable peuvent être définies dans l’Administration système).
 - **Applications déployées.** Chaque application publiée par un utilisateur s’exécute dans son propre conteneur durable, accessible à `*.app.<domain>`. Les bacs à sable apparaissent et disparaissent ; les applications déployées s’accumulent et continuent de s’exécuter.
 
 Les autres services jouent un rôle de support : les builds s’effectuent dans le bac à sable de la session, le registre Git et le stockage d’objets conservent ce qu’il produit (code source et artefacts de build), et la passerelle achemine chaque requête du navigateur vers le bon bac à sable ou la bonne application.
@@ -124,4 +124,4 @@ Sujets connexes, tous maintenus dans le dépôt de déploiement :
 - **Dimensionnement, versions et miroirs** : [VERSIONS.md](https://github.com/teableio/teable-deployment/blob/main/VERSIONS.md) · [images/README.md](https://github.com/teableio/teable-deployment/blob/main/images/README.md)
 - **En cas d’échec** : exécutez d’abord le script doctor, puis consultez [TROUBLESHOOTING.md](https://github.com/teableio/teable-deployment/blob/main/TROUBLESHOOTING.md)
 
-Après le déploiement, connectez l’application Teable au plan d’exécution avec `TEABLE_INFRA_API_URL` / `TEABLE_INFRA_API_KEY` (les guides de déploiement expliquent cette procédure), puis définissez les limites de ressources dans [Panneau d’administration → Agent de bac à sable](/fr/basic/admin-panel/sandbox-agent).
+Après le déploiement, connectez l’application Teable au plan d’exécution avec `TEABLE_INFRA_API_URL` / `TEABLE_INFRA_API_KEY` (les guides de déploiement expliquent cette procédure), puis définissez les limites de ressources dans [Administration système → Agent de bac à sable](/fr/basic/admin-panel/sandbox-agent).
