@@ -160,6 +160,13 @@ class MaintenanceTests(unittest.TestCase):
             archived = (root / locale / 'changelog-2026-10.mdx').read_text()
             self.assertEqual(len(entries(archived, locale)), 3)
             self.assertIn(copy['datePickerLabel'], archived)
+            config = json.loads(root.joinpath('docs.json').read_text())
+            language = next(item for item in config['navigation']['languages'] if item['language'] == locale)
+            tab = next(item for item in language['tabs'] if f'{locale}/changelog' in item.get('pages', []))
+            group = next(item for item in tab['pages'] if isinstance(item, dict)
+                         and f'{locale}/changelog-2026-10' in item.get('pages', []))
+            self.assertIs(group['hidden'], True)
+            self.assertEqual(tab['pages'][0], f'{locale}/changelog')
         self.assertEqual(maintain(root), {})
 
     def test_historical_republication_updates_once_and_preserves_old_heading_hashes(self):
