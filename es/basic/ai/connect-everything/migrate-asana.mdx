@@ -1,0 +1,29 @@
+---
+title: "Migrar datos de Asana"
+description: "Exporta un proyecto de Asana a CSV, importa sus tareas en Teable y configura relaciones, vistas y procesos antes del cambio."
+sidebarTitle: "Migrar desde Asana"
+---
+
+Primero traslada los datos de Asana a Teable y después recrea la interfaz de trabajo. Empieza con una exportación pequeña y conserva el origen hasta comprobar el nuevo proceso.
+
+## 1. Exportar los datos de origen
+
+Abre el proyecto de Asana y el menú junto al título; elige **Export/Print → CSV**. Exporta cada proyecto por separado. La [guía oficial](https://help.asana.com/s/article/project-importing-and-exporting) también describe JSON, pero este proceso de importación de tablas Teable utiliza CSV.
+
+Conserva los identificadores de tareas y las referencias a tareas superiores incluidos en la exportación. Crea una tabla de tareas con un campo de proyecto o una tabla de proyectos relacionada; conserva los correos, fechas, estados y valores personalizados exportados. Inventaría aparte comentarios, adjuntos, dependencias, tareas recurrentes y reglas; revisa las columnas reales antes de decidir cómo recrearlos.
+
+## 2. Importar y restaurar relaciones
+
+1. Conserva una columna de identificador estable en cada tabla y los identificadores que apuntan a otras tablas. Guárdalos como texto, incluidos los ceros iniciales.
+2. Sigue la [guía de importación de CSV, Excel y Google Sheets](/es/basic/table/import) para crear tablas en un mismo proyecto Teable. Si el Excel supera 5 MB, guárdalo antes como CSV. Revisa tipos de campo, fechas y opciones en la vista previa.
+3. Después de importar las tablas relacionadas, crea [campos de relación](/es/basic/field/link) y enlaza registros mediante los identificadores de origen. Asocia explícitamente los correos de responsables con usuarios Teable; importar un correo no invita a esa persona.
+
+## 3. Recrear el proceso
+
+Usa [App Builder](/es/basic/ai/app-builder) para crear las listas, páginas de detalle y formularios necesarios. Configura de nuevo fórmulas, permisos y [automatizaciones](/es/basic/automation) en Teable y pruébalos por separado. La exportación aporta valores; las pantallas, expresiones, reglas de acceso y definiciones de procesos de la aplicación original se configuran aparte.
+
+## 4. Comprobar antes del cambio
+
+Compara el número de registros y algunas relaciones con el origen. Revisa filtros de exportación, fechas, acceso a adjuntos y permisos de lectura y edición por rol. Fija una hora de cambio, pausa la edición en origen, realiza una exportación final y concilia los cambios por identificador antes de invitar al equipo. La importación de archivos es una instantánea sin sincronización continua; repetirla puede crear duplicados.
+
+Para elegir funciones y despliegue, consulta la [comparación entre Teable y Asana](https://teable.ai/es/compare/asana-alternative).

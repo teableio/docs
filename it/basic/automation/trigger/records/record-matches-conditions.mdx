@@ -1,6 +1,7 @@
 ---
-title: "Quando un Record soddisfa le condizioni"
+title: "Avviare un’automazione quando un record soddisfa le condizioni"
 description: "Attiva un workflow quando un Record inizia a soddisfare condizioni specifiche"
+sidebarTitle: "Quando un Record soddisfa le condizioni"
 ---
 
 {/* mintlify-resync: 2026-05-14 */}
@@ -51,12 +52,12 @@ Descrivi l'obiettivo una sola volta e il workflow è pronto, senza alcuna config
 
 Usa **Quando viene aggiornato un Record** quando devi reagire a qualsiasi modifica. Usa **Quando un Record soddisfa le condizioni** quando ti interessa soltanto il raggiungimento di uno stato specifico.
 
-<Note>Se vuoi eseguire un'azione ogni volta che un Record viene modificato, usa il trigger [Quando viene aggiornato un Record](/it/basic/automation/trigger/records/record-updated). Se vuoi eseguire un'azione una sola volta, quando un Record raggiunge per la prima volta una condizione specifica, usa questo trigger.</Note>
+<Note>Se vuoi eseguire un'azione ogni volta che un Record viene modificato, usa il trigger [Quando viene aggiornato un Record](/it/basic/automation/trigger/records/record-updated). Questo trigger si attiva ogni volta che un Record passa dal non soddisfare al soddisfare il filtro. Le modifiche mentre continua a soddisfarlo non causano altre esecuzioni. Se smette di soddisfarlo e in seguito lo soddisfa di nuovo, può attivarsi nuovamente.</Note>
 
 ## Quando utilizzarlo
 
-- **Inviare un avviso quando un ordine diventa scaduto.** Imposta il filtro su `Data di scadenza` precedente a oggi e `Stato` diverso da `Spedito`. L'Automazione si attiva una volta quando l'ordine soddisfa per la prima volta le condizioni.
-- **Inoltrare un ticket di assistenza quando la priorità diventa urgente.** Filtro: `Priorità` uguale a `Urgente`. Si attiva soltanto la prima volta che un ticket diventa urgente, non per le modifiche successive.
+- **Inviare un avviso quando un ordine diventa scaduto.** Imposta il filtro su `Data di scadenza` precedente a oggi e `Stato` diverso da `Spedito`. L'Automazione si attiva quando l'ordine passa dal non soddisfare al soddisfare il filtro.
+- **Inoltrare un ticket di assistenza quando la priorità diventa urgente.** Filtro: `Priorità` uguale a `Urgente`. Si attiva quando un ticket diventa urgente; le modifiche mentre resta urgente non la attivano di nuovo.
 - **Avvisare un responsabile quando una trattativa supera una soglia di ricavi.** Filtro: `Valore trattativa` maggiore di `50000`. Si attiva una volta quando la trattativa supera tale limite.
 - **Contrassegnare i Record che diventano incompleti.** Filtro: `Campo obbligatorio` è vuoto. Si attiva quando un Record precedentemente completo perde il proprio valore.
 - **Attivare i passaggi di onboarding quando lo stato di un contatto passa ad "Attivo".** Filtro: `Stato` uguale ad `Attivo`. Viene eseguito una sola volta per ogni attivazione.

@@ -1,5 +1,7 @@
 # Teable Help
 
+新增或改写页面前，请阅读 [Help 页面 SEO 与统计规范](.github/SEO_AND_ANALYTICS.md)，包含标题、描述、多语言、内链、埋点及发布验收要求。
+
 ### Development
 
 Install the [Mintlify CLI](https://www.npmjs.com/package/mintlify) to preview the documentation changes locally. To install, use the following command

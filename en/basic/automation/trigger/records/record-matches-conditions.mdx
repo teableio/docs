@@ -1,6 +1,7 @@
 ---
-title: "When record matches conditions"
-description: "Trigger a workflow when a record starts matching specific conditions"
+title: "Record Matches Conditions trigger: detect state changes"
+description: "Start a workflow when a new or updated record begins to match a filter. Configure conditions and compare this trigger with watching all record updates."
+sidebarTitle: "When record matches conditions"
 ---
 
 {/* mintlify-resync: 2026-05-14 */}
@@ -51,12 +52,12 @@ These two triggers are easy to confuse. Here is the key difference:
 
 Use **When Record Updated** when you need to react to any change. Use **When Record Matches Conditions** when you only care about a specific state being reached.
 
-<Note>If you want to run an action every time a record is edited, use the [When record updated](/en/basic/automation/trigger/records/record-updated) trigger. If you only want to run an action once when a record first reaches a specific condition, use this trigger.</Note>
+<Note>If you want to run an action every time a record is edited, use the [When record updated](/en/basic/automation/trigger/records/record-updated) trigger. Use this trigger each time a record changes from not matching to matching the filter. Edits while it still matches do not trigger another run. If it stops matching and later matches again, it can trigger again.</Note>
 
 ## When to use
 
-- **Alert when an order becomes overdue.** Set the filter to `Due Date` is before today and `Status` is not `Shipped`. The automation fires once when the order first matches.
-- **Escalate a support ticket when priority changes to urgent.** Filter: `Priority` equals `Urgent`. Only fires when a ticket first becomes urgent, not on subsequent edits.
+- **Alert when an order becomes overdue.** Set the filter to `Due Date` is before today and `Status` is not `Shipped`. The automation fires when the order changes from not matching to matching the filter.
+- **Escalate a support ticket when priority changes to urgent.** Filter: `Priority` equals `Urgent`. Fires when a ticket becomes urgent; further edits while it remains urgent do not trigger it again.
 - **Notify a manager when a deal exceeds a revenue threshold.** Filter: `Deal Value` is greater than `50000`. Fires once when the deal crosses that line.
 - **Flag records that become incomplete.** Filter: `Required Field` is empty. Fires when a previously complete record loses its value.
 - **Trigger onboarding steps when a contact's status changes to "Active".** Filter: `Status` equals `Active`. Only runs once per activation.

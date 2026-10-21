@@ -51,12 +51,12 @@ Diese beiden Auslöser werden leicht verwechselt. Dies ist der entscheidende Unt
 
 Verwenden Sie **Wenn Datensatz aktualisiert wird**, wenn Sie auf jede Änderung reagieren müssen. Verwenden Sie **Wenn Datensatz Bedingungen erfüllt**, wenn für Sie nur das Erreichen eines bestimmten Zustands relevant ist.
 
-<Note>Wenn Sie bei jeder Bearbeitung eines Datensatzes eine Aktion ausführen möchten, verwenden Sie den Auslöser [Wenn Datensatz aktualisiert wird](/de/basic/automation/trigger/records/record-updated). Wenn Sie eine Aktion nur einmal ausführen möchten, sobald ein Datensatz erstmals eine bestimmte Bedingung erfüllt, verwenden Sie diesen Auslöser.</Note>
+<Note>Wenn Sie bei jeder Bearbeitung eines Datensatzes eine Aktion ausführen möchten, verwenden Sie den Auslöser [Wenn Datensatz aktualisiert wird](/de/basic/automation/trigger/records/record-updated). Dieser Auslöser wird bei jedem Wechsel von „Filter nicht erfüllt“ zu „Filter erfüllt“ ausgeführt. Bearbeitungen, bei denen der Datensatz den Filter weiterhin erfüllt, lösen keinen weiteren Lauf aus. Erfüllt er den Filter zwischenzeitlich nicht mehr und später erneut, kann der Auslöser wieder ausgeführt werden.</Note>
 
 ## Anwendungsfälle
 
-- **Benachrichtigen, wenn eine Bestellung überfällig wird.** Legen Sie den Filter auf `Fälligkeitsdatum` liegt vor heute und `Status` ist nicht `Versendet` fest. Die Automatisierung wird einmal ausgeführt, wenn die Bestellung die Bedingungen erstmals erfüllt.
-- **Support-Ticket eskalieren, wenn die Priorität zu dringend wechselt.** Filter: `Priorität` ist gleich `Dringend`. Wird nur ausgeführt, wenn ein Ticket erstmals dringend wird, nicht bei nachfolgenden Bearbeitungen.
+- **Benachrichtigen, wenn eine Bestellung überfällig wird.** Legen Sie den Filter auf `Fälligkeitsdatum` liegt vor heute und `Status` ist nicht `Versendet` fest. Die Automatisierung wird ausgeführt, wenn die Bestellung von „Filter nicht erfüllt“ zu „Filter erfüllt“ wechselt.
+- **Support-Ticket eskalieren, wenn die Priorität zu dringend wechselt.** Filter: `Priorität` ist gleich `Dringend`. Wird ausgeführt, wenn ein Ticket dringend wird; weitere Bearbeitungen lösen keinen Lauf aus, solange es dringend bleibt.
 - **Führungskraft benachrichtigen, wenn ein Abschluss einen Umsatzgrenzwert überschreitet.** Filter: `Abschlusswert` ist größer als `50000`. Wird einmal ausgeführt, wenn der Abschluss diese Grenze überschreitet.
 - **Unvollständig gewordene Datensätze kennzeichnen.** Filter: `Pflichtfeld` ist leer. Wird ausgeführt, wenn ein zuvor vollständiger Datensatz seinen Wert verliert.
 - **Onboarding-Schritte auslösen, wenn sich der Status eines Kontakts zu „Aktiv“ ändert.** Filter: `Status` ist gleich `Aktiv`. Wird nur einmal pro Aktivierung ausgeführt.

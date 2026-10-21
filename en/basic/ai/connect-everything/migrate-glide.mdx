@@ -1,0 +1,29 @@
+---
+title: "Migrate Glide data to Teable"
+description: "Export Glide data as CSV or use its source spreadsheet. Import tables into Teable, rebuild relationships and app screens, then test before switching."
+sidebarTitle: "Migrate Glide"
+---
+
+Move your Glide data into Teable first, then rebuild the working interface around it. Use a small export for the first run and keep the source available until the new workflow is checked.
+
+## 1. Export the source data
+
+For a Glide Classic app using Glide Tables, open the Data Editor, right-click a table, choose **Export**, select its columns, and save the CSV. Repeat for each table. See the [official Glide Tables export steps](https://www.glideapps.com/docs/essentials/data-sources/glide-tables). If the app uses Google Sheets or Excel, obtain the underlying spreadsheet from its owner and import that source instead.
+
+Glide omits empty columns and columns that represent relations or queries; simple computed results can be exported as values. Save missing field definitions and relationship keys separately, using Glide’s [export coverage explanation](https://help.glideapps.com/en/articles/9404170-why-is-data-missing-from-my-data-export). Keep required files accessible in approved storage; a URL in a CSV does not copy the file.
+
+## 2. Import and restore relationships
+
+1. Keep a stable ID column for every source table, plus the IDs used to reference other tables. Preserve these as text, including leading zeros.
+2. Follow the [CSV, Excel, and Google Sheets import guide](/en/basic/table/import) to create tables in one Teable project. For Excel files larger than 5MB, save them as CSV first. Review field types, dates, and select options in the import preview.
+3. After importing all related tables, create [Link fields](/en/basic/field/link) and match records using the source IDs. Map assignee emails to Teable users explicitly; importing an email does not invite that person.
+
+## 3. Rebuild the workflow
+
+Use [App Builder](/en/basic/ai/app-builder) to create the required lists, detail pages, and forms from the imported tables. Recreate formulas, permissions, and [automations](/en/basic/automation) in Teable and test them individually. The exported values provide data; the source app’s screens, expressions, access rules, and workflow definitions must be configured separately.
+
+## 4. Check before switching
+
+Compare record counts and a few linked records against the source. Check filtered exports, dates, attachment access, and each role’s read and update rights. Choose a cutover time, pause source edits, take a final export, and reconcile changes by source ID before inviting the team. A file import is a snapshot, not ongoing sync; repeated imports can create duplicates.
+
+For feature and deployment choices, read the [Teable vs Glide comparison](https://teable.ai/compare/glide-alternative).

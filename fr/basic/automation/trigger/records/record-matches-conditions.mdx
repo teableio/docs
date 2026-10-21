@@ -51,12 +51,12 @@ Ces deux déclencheurs peuvent facilement être confondus. Voici leur principale
 
 Utilisez **Lorsqu’un enregistrement est mis à jour** lorsque vous devez réagir à n’importe quel changement. Utilisez **Lorsqu’un enregistrement remplit les conditions** lorsque seul le passage à un état précis vous intéresse.
 
-<Note>Si vous souhaitez exécuter une action chaque fois qu’un enregistrement est modifié, utilisez le déclencheur [Lorsqu’un enregistrement est mis à jour](/fr/basic/automation/trigger/records/record-updated). Si vous souhaitez exécuter une action une seule fois lorsqu’un enregistrement remplit pour la première fois une condition précise, utilisez ce déclencheur.</Note>
+<Note>Si vous souhaitez exécuter une action chaque fois qu’un enregistrement est modifié, utilisez le déclencheur [Lorsqu’un enregistrement est mis à jour](/fr/basic/automation/trigger/records/record-updated). Ce déclencheur s’exécute à chaque passage de « ne remplit pas les conditions » à « remplit les conditions » du filtre. Les modifications effectuées tant que les conditions restent remplies ne le relancent pas. Si l’enregistrement cesse de les remplir puis les remplit à nouveau, le déclencheur peut s’exécuter de nouveau.</Note>
 
 ## Cas d’utilisation
 
-- **Envoyer une alerte lorsqu’une commande arrive en retard.** Définissez le filtre sur `Date d’échéance` antérieure à aujourd’hui et `Statut` différent de `Expédié`. L’automatisation s’exécute une seule fois lorsque la commande remplit ces conditions pour la première fois.
-- **Transmettre un ticket d’assistance au niveau supérieur lorsque sa priorité devient urgente.** Filtre : `Priorité` est égal à `Urgent`. Le flux s’exécute uniquement lorsqu’un ticket devient urgent pour la première fois, et non lors des modifications ultérieures.
+- **Envoyer une alerte lorsqu’une commande arrive en retard.** Définissez le filtre sur `Date d’échéance` antérieure à aujourd’hui et `Statut` différent de `Expédié`. L’automatisation s’exécute lorsque la commande passe de « ne remplit pas les conditions » à « remplit les conditions » du filtre.
+- **Transmettre un ticket d’assistance au niveau supérieur lorsque sa priorité devient urgente.** Filtre : `Priorité` est égal à `Urgent`. Le flux s’exécute lorsqu’un ticket devient urgent ; les modifications effectuées tant qu’il reste urgent ne le relancent pas.
 - **Informer un responsable lorsqu’une transaction dépasse un seuil de chiffre d’affaires.** Filtre : `Valeur de la transaction` est supérieure à `50000`. Le flux s’exécute une seule fois lorsque la transaction franchit ce seuil.
 - **Signaler les enregistrements qui deviennent incomplets.** Filtre : `Champ obligatoire` est vide. Le flux s’exécute lorsqu’un enregistrement auparavant complet perd sa valeur.
 - **Déclencher les étapes d’intégration lorsque le statut d’un contact devient « Actif ».** Filtre : `Statut` est égal à `Actif`. Le flux ne s’exécute qu’une fois par activation.

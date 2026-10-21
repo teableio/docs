@@ -1,0 +1,29 @@
+---
+title: "Migrar datos de AppSheet"
+description: "Importa los datos de origen o una exportación CSV de AppSheet en Teable y recrea las relaciones, las vistas y los procesos de la aplicación."
+sidebarTitle: "Migrar desde AppSheet"
+---
+
+Primero traslada los datos de AppSheet a Teable y después recrea la interfaz de trabajo. Empieza con una exportación pequeña y conserva el origen hasta comprobar el nuevo proceso.
+
+## 1. Exportar los datos de origen
+
+Identifica en el editor AppSheet el origen de cada tabla. Si es Google Sheets o Excel, consigue acceso a la hoja e importa directamente sus datos. Consulta la [guía de fuentes de AppSheet](https://support.google.com/appsheet/answer/10106309?hl=en).
+
+Para exportar una vista, el creador puede añadir una acción en **Actions → Create a new action**, seleccionar la tabla y establecer **Do this** en **App: export this view to a CSV file**. Guarda, inicia sesión en la aplicación desde un navegador, abre la vista y ejecuta la acción. Requiere una aplicación con inicio de sesión y no funciona en aplicaciones públicas. Los filtros y segmentos pueden limitar filas o columnas exportadas; compara el archivo con los datos previstos. Consulta la [guía oficial de exportación CSV](https://support.google.com/appsheet/answer/11579391?hl=en).
+
+## 2. Importar y restaurar relaciones
+
+1. Conserva una columna de identificador estable en cada tabla y los identificadores que apuntan a otras tablas. Guárdalos como texto, incluidos los ceros iniciales.
+2. Sigue la [guía de importación de CSV, Excel y Google Sheets](/es/basic/table/import) para crear tablas en un mismo proyecto Teable. Si el Excel supera 5 MB, guárdalo antes como CSV. Revisa tipos de campo, fechas y opciones en la vista previa.
+3. Después de importar las tablas relacionadas, crea [campos de relación](/es/basic/field/link) y enlaza registros mediante los identificadores de origen. Asocia explícitamente los correos de responsables con usuarios Teable; importar un correo no invita a esa persona.
+
+## 3. Recrear el proceso
+
+Usa [App Builder](/es/basic/ai/app-builder) para crear las listas, páginas de detalle y formularios necesarios. Configura de nuevo fórmulas, permisos y [automatizaciones](/es/basic/automation) en Teable y pruébalos por separado. La exportación aporta valores; las pantallas, expresiones, reglas de acceso y definiciones de procesos de la aplicación original se configuran aparte.
+
+## 4. Comprobar antes del cambio
+
+Compara el número de registros y algunas relaciones con el origen. Revisa filtros de exportación, fechas, acceso a adjuntos y permisos de lectura y edición por rol. Fija una hora de cambio, pausa la edición en origen, realiza una exportación final y concilia los cambios por identificador antes de invitar al equipo. La importación de archivos es una instantánea sin sincronización continua; repetirla puede crear duplicados.
+
+Para elegir funciones y despliegue, consulta la [comparación entre Teable y AppSheet (en inglés)](https://teable.ai/compare/appsheet-alternative).

@@ -1,0 +1,29 @@
+---
+title: "Migrate AppSheet data to Teable"
+description: "Export an AppSheet view as CSV or use its source spreadsheet. Import the data into Teable, rebuild relationships and app workflows, then verify the result."
+sidebarTitle: "Migrate AppSheet"
+---
+
+Move your AppSheet data into Teable first, then rebuild the working interface around it. Use a small export for the first run and keep the source available until the new workflow is checked.
+
+## 1. Export the source data
+
+In the AppSheet editor, identify each table’s data source. If it is Google Sheets or Excel, get access to that spreadsheet and import the source data directly. AppSheet documents these sources in its [data source guide](https://support.google.com/appsheet/answer/10106309?hl=en).
+
+For data available through an app view, the creator can add an action under **Actions → Create a new action**, choose the table, and set **Do this** to **App: export this view to a CSV file**. Save it, then sign in to the app in a browser, open that view, and use the export action. This requires a sign-in app and does not work in public apps. View filters and slices can limit exported rows or columns; compare the output with the expected dataset. See the [official CSV export guide](https://support.google.com/appsheet/answer/11579391?hl=en).
+
+## 2. Import and restore relationships
+
+1. Keep a stable ID column for every source table, plus the IDs used to reference other tables. Preserve these as text, including leading zeros.
+2. Follow the [CSV, Excel, and Google Sheets import guide](/en/basic/table/import) to create tables in one Teable project. For Excel files larger than 5MB, save them as CSV first. Review field types, dates, and select options in the import preview.
+3. After importing all related tables, create [Link fields](/en/basic/field/link) and match records using the source IDs. Map assignee emails to Teable users explicitly; importing an email does not invite that person.
+
+## 3. Rebuild the workflow
+
+Use [App Builder](/en/basic/ai/app-builder) to create the required lists, detail pages, and forms from the imported tables. Recreate formulas, permissions, and [automations](/en/basic/automation) in Teable and test them individually. The exported values provide data; the source app’s screens, expressions, access rules, and workflow definitions must be configured separately.
+
+## 4. Check before switching
+
+Compare record counts and a few linked records against the source. Check filtered exports, dates, attachment access, and each role’s read and update rights. Choose a cutover time, pause source edits, take a final export, and reconcile changes by source ID before inviting the team. A file import is a snapshot, not ongoing sync; repeated imports can create duplicates.
+
+For feature and deployment choices, read the [Teable vs AppSheet comparison](https://teable.ai/compare/appsheet-alternative).

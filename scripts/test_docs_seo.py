@@ -1,7 +1,7 @@
 """Guard the SEO failure modes found in the documentation audit."""
 import unittest
 
-from check_docs_seo import page_errors as source_errors, retired_redirect_errors, indexability_errors
+from check_docs_seo import page_errors as source_errors, retired_redirect_errors, indexability_errors, root_selector_errors
 from check_rendered_seo import page_errors as rendered_errors
 
 SOURCE = '''---
@@ -45,6 +45,11 @@ class SourceChecks(unittest.TestCase):
         config['redirects'][0]['permanent'] = True
         config['redirects'][0]['destination'] = '/en'
         self.assertTrue(retired_redirect_errors(config, ['en']))
+
+    def test_root_cannot_redirect_before_query_preserving_selector(self):
+        self.assertEqual(root_selector_errors({'redirects': []}), [])
+        self.assertTrue(root_selector_errors({'redirects': [{'source': '/', 'destination': '/en/locale-router'}]}))
+        self.assertEqual(root_selector_errors({'redirects': [{'source': '/old', 'destination': '/new'}]}), [])
 
     def test_indexability_is_independent_of_edited_frontmatter(self):
         pages = {'en/index': ({'noindex': True}, '')}

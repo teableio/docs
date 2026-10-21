@@ -4,10 +4,10 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const source = fs.readFileSync(path.join(__dirname, '..', 'language-route.js'), 'utf8');
-function route({ cookie = '', languages = ['en'], pathname = '/en/locale-router' } = {}) {
+function route({ cookie = '', languages = ['en'], pathname = '/en/locale-router', search = '?ref=docs', hash = '#guides' } = {}) {
   const destinations = [];
   const window = {
-    location: { pathname, search: '?ref=docs', hash: '#guides', replace(value) { destinations.push(value); } },
+    location: { pathname, search, hash, replace(value) { destinations.push(value); } },
     addEventListener() {}, setInterval() {},
   };
   vm.runInNewContext(source, {
@@ -26,4 +26,16 @@ test('saved language wins, unsupported or malformed preferences fall back, and c
   assert.deepEqual(route({ cookie: 'TEABLE_DOCS_LOCALE=%E0%A4%A', languages: ['fr'] }), ['/fr?ref=docs#guides']);
   assert.deepEqual(route({ languages: ['pt-BR'] }), ['/en?ref=docs#guides']);
   assert.deepEqual(route({ pathname: '/zh/basic/base' }), []);
+});
+
+test('root selector preserves acquisition parameters, click IDs, encoding, and fragments', () => {
+  const search = '?utm_source=newsletter&utm_medium=email&utm_campaign=help%20launch&gclid=opaque%2Bclick&tag=a&tag=b';
+  for (const pathname of ['/', '/index', '/index/', '/en/locale-router/']) {
+    assert.deepEqual(route({ pathname, search, hash: '#getting-started', languages: ['zh-CN'] }),
+      [`/zh${search}#getting-started`]);
+    assert.deepEqual(route({ pathname, search, hash: '', cookie: 'TEABLE_DOCS_LOCALE=ja', languages: ['zh-CN'] }),
+      [`/ja${search}`]);
+  }
+  assert.deepEqual(route({ pathname: '/', search: '', hash: '', languages: ['pt-BR', 'fr-FR'] }), ['/fr']);
+  assert.deepEqual(route({ pathname: '/zh', search }), []);
 });

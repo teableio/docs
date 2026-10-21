@@ -143,7 +143,7 @@ def main():
     hashes = required_hashes(args.root)
     routes = selected_pages(args.root, args.all)
     def verify(route):
-        url_route = route[:-len('/index')] if route.endswith('/index') else route
+        url_route = '' if route == 'index' else route[:-len('/index')] if route.endswith('/index') else route
         url = args.base_url.rstrip('/') + '/' + urllib.parse.quote(url_route, safe='/')
         try:
             request = urllib.request.Request(url, headers={'Accept-Encoding': 'gzip', 'User-Agent': 'Teable-Docs-SEO-Check/1.0'})
