@@ -12,7 +12,7 @@ sidebarTitle: "权限矩阵指南"
 | --- | --- |
 | 销售总监 | 查看客户和销售数据，可以评论产品，但避免修改产品价格。|
 | 销售代表 | 只查看和更新自己负责的客户和订单，可以新建客户，但不能删除已成交订单。|
-| 数据录入员 | 只添加新产品，不能查看已有产品、客户或订单。|
+| 数据录入员 | 添加新产品，可以查看但不能修改已有产品，不能查看客户和订单。|
 
 <Info>需要先启用权限矩阵，角色权限才会生效。</Info>
 
@@ -47,7 +47,7 @@ sidebarTitle: "权限矩阵指南"
 | --- | --- |
 | 客户信息 | 将表格设置为 `可编辑`。保留记录和字段权限，让该角色可以查看客户数据。|
 | 销售订单 | 将表格设置为 `可编辑`。保留记录和字段权限，让该角色可以查看销售情况。|
-| 产品信息 | 将表格设置为 `可编辑`，然后在记录权限中只允许 `查看记录` 和 `对记录进行评论`。|
+| 产品信息 | 将表格设置为 `可编辑`，然后在记录权限的操作中只勾选 `对记录进行评论`。|
 
 <img
   src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-sales-director-permissions-zh.png"
@@ -66,7 +66,7 @@ sidebarTitle: "权限矩阵指南"
 配置完成后，销售总监可以查看客户和订单数据，也可以评论产品，但不能修改产品记录。
 
 <img
-  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-director-view-zh.webp"
+  src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-sales-director-view-zh.png"
   alt="销售总监权限配置后的视角"
   className="docs-screenshot"
 />
@@ -81,11 +81,11 @@ sidebarTitle: "权限矩阵指南"
 
 | 权限区域 | 设置 |
 | --- | --- |
-| 记录权限 | 选择符合特定条件的记录，添加类似 `负责销售` `等于` `当前用户` 的筛选条件。|
-| 记录操作 | 允许 `查看记录`、`更新记录` 和 `创建记录`。如果不希望销售删除客户资料，不要开启 `删除记录`。|
+| 记录权限 | 选择符合特定条件的记录，添加类似 `负责销售` `是` `我（当前用户）` 的筛选条件。|
+| 记录操作 | 勾选 `更新记录` 和 `创建记录`。如果不希望销售删除客户资料，不要勾选 `删除记录`。|
 
 <img
-  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-filter-zh.webp"
+  src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-sales-rep-filter-zh.png"
   alt="为销售代表配置按负责人筛选的记录权限"
   className="docs-screenshot"
 />
@@ -102,8 +102,8 @@ sidebarTitle: "权限矩阵指南"
 
 | 权限区域 | 设置 |
 | --- | --- |
-| 记录权限 | 使用同样的负责人筛选，例如 `销售代表` `等于` `当前用户`。|
-| 记录操作 | 允许 `查看记录` 和 `创建记录`。如果已成交订单不能被改动，不要开启 `更新记录` 和 `删除记录`。|
+| 记录权限 | 使用同样的负责人筛选，例如 `销售代表` `是` `我（当前用户）`。|
+| 记录操作 | 勾选 `创建记录`。如果已成交订单不能被改动，不要勾选 `更新记录` 和 `删除记录`。|
 | 字段权限 | 对 `支付方式` 等敏感字段关闭 `查看记录`，避免销售代表看到不该看的字段值。|
 
 <img
@@ -123,14 +123,14 @@ sidebarTitle: "权限矩阵指南"
 每位销售代表现在只能看到符合负责人筛选条件的客户和订单。
 
 <img
-  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-view-zh.webp"
+  src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-sales-rep-view-zh.png"
   alt="销售代表视角预览"
   className="docs-screenshot"
 />
 
 ## 配置数据录入员
 
-数据录入员只需要添加产品。
+数据录入员只需要添加产品。表格设为 `可编辑` 后，角色始终可以查看其中的记录，记录权限只控制可执行的操作和 `可查看的记录` 的范围。因此录入员能看到已有产品，但只能新增，不能修改或删除。
 
 | 节点 | 设置 |
 | --- | --- |
@@ -152,10 +152,10 @@ sidebarTitle: "权限矩阵指南"
   className="docs-screenshot"
 />
 
-配置完成后，数据录入员可以添加新的产品记录，但不能浏览已有产品、客户或订单数据。
+配置完成后，数据录入员可以添加新的产品记录，也能查看已有产品，但不能修改或删除；客户和订单数据对其不可见。
 
 <img
-  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-data-entry-view-zh.webp"
+  src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-data-entry-view-zh.png"
   alt="数据录入员视角预览"
   className="docs-screenshot"
 />
@@ -174,7 +174,7 @@ sidebarTitle: "权限矩阵指南"
 
 ### 配置客户表访问
 
-将 `客户信息` 设置为 `可编辑`。在记录权限中只允许 `查看记录`，不要开启 `更新记录`、`删除记录` 或 `创建记录`。记录筛选条件保持为空，让这个角色可以查看全部客户记录。
+将 `客户信息` 设置为 `可编辑`。在记录权限中取消勾选全部操作，并在 `可查看的记录` 中选择 `所有记录`，让这个角色可以查看全部客户记录，但不能修改。
 
 <img
   src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-global-customer-viewer-permissions-zh.png"
@@ -195,7 +195,7 @@ sidebarTitle: "权限矩阵指南"
 当同一个用户同时拥有 `销售代表` 和 `全局客户观察员` 两个角色时，Teable 会合并权限。这个用户可以查看所有客户记录，但只能更新 `销售代表` 角色允许的、自己负责的记录。
 
 <img
-  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-global-customer-viewer-result-zh.webp"
+  src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-global-customer-viewer-result-zh.png"
   alt="拥有观察员权限的销售代表视角"
   className="docs-screenshot"
 />

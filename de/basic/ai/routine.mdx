@@ -29,6 +29,12 @@ Eine Routine ist eine Ressource innerhalb eines Projekts und steht in der linken
   </Step>
 </Steps>
 
+<img
+  src="/images/docs/ai/2026-10-21-routine-editor.png"
+  alt="Routine editor with the prompt, model, chat, an On a schedule trigger set to Weekdays at 09:00, and Starting and Ending times; the top shows the next run time and the Activate button"
+  className="docs-screenshot"
+/>
+
 Beispiele zum Einsatz dieser Funktion finden Sie hier: [Beispiele für geplante KI-Aufgaben](https://teable.ai/de/blog/run-ai-tasks-on-a-schedule).
 
 ## Einstellungen
@@ -37,33 +43,33 @@ Neben Prompt und Auslöser enthält das Formular diese Einstellungen:
 
 | Einstellung | Beschreibung |
 | --- | --- |
-| **Modell** | Modell und Denkstufe dieser Routine. Bei **Standardmodell** gilt das Standard-Chatmodell des Space |
+| **Modell** | Modell und Denkstufe dieser Routine. Die Schaltfläche zeigt die aktuelle Auswahl, etwa Smart Mittel. Eine neue Routine übernimmt Modell und Denkstufe, die Sie zuletzt im KI-Chat gewählt haben, sonst die Standardeinstellungen |
 | **Chat** | **Neuer Chat für jeden Lauf** hält die Läufe voneinander unabhängig; **Chat des vorherigen Laufs fortsetzen** trägt den Kontext früherer Läufe weiter und eignet sich für Aufgaben, die auf das letzte Ergebnis Bezug nehmen |
 | **Beginn** / **Ende (optional)** | Die Grenzen des Zeitplans, nur für **Nach Zeitplan**. Ohne Endzeit läuft die Routine unbegrenzt weiter |
 
-Modell und Denkstufe werden beim Speichern mit festgehalten, deshalb zeigt der Ausführungsverlauf, womit ein Lauf tatsächlich gelaufen ist.
+Modell und Denkstufe werden mit der Konfiguration gespeichert, und jeder Lauf verwendet diese gespeicherte Auswahl. Ein späterer Modellwechsel im KI-Chat ändert daran nichts.
 
 ### Auslöser
 
 **Nach Zeitplan** führt die Routine zu den Zeiten aus, die Sie festlegen; die Einstellungen dazu stehen unten unter Zeitplan.
 
-**Bei Connector-Ereignis** führt sie einmal aus, sobald eine verbundene Drittanbieter-App ein Ereignis meldet, etwa eine neue E-Mail oder ein neues Issue. Wählen Sie die App, das Ereignis, das **Konto**, das es empfängt, und die Parameter, die das Ereignis verlangt; konfiguriert wird das genau wie der Auslöser der Automatisierung, beschrieben unter [Wenn ein Connector-Ereignis eingeht](/de/basic/automation/trigger/external/connector-event). Eine Routine mit diesem Auslöser hat keine **Nächste Ausführung** und nutzt weder den Zeitplan noch dessen Grenzen.
+**Bei Connector-Ereignis** führt sie einmal aus, sobald eine verbundene Drittanbieter-App ein Ereignis meldet, etwa eine neue E-Mail oder ein neues Issue. Wählen Sie die App, das Ereignis, das **Konto**, das es empfängt, und die Parameter, die das Ereignis verlangt; konfiguriert wird das genau wie der Auslöser der Automatisierung, beschrieben unter [Wenn ein Connector-Ereignis eingeht](/de/basic/automation/trigger/external/connector-event). Eine Routine mit diesem Auslöser hat keine **Nächste Ausführung** und nutzt weder **Zeitplan** noch **Beginn** / **Ende (optional)**.
 
 Wird die Freigabe des Kontos entzogen, das verbundene Konto entfernt oder das Abonnement von der App gestoppt, meldet die Routine **Abonnement getrennt** und empfängt keine Ereignisse mehr; Teable benachrichtigt das Mitglied, das sie zuletzt aktualisiert hat. Verbinden Sie dasselbe Konto erneut, baut sich das Abonnement von selbst wieder auf; für ein anderes Konto wählen Sie es im Auslöser aus und speichern.
 
 ### Zeitplan
 
-Der Zeitplan gilt nur für **Nach Zeitplan**. Wählen Sie eine Frequenz aus den Vorlagen: **Stündlich** zu einer bestimmten Minute, **Täglich** und **Werktags** zu einer bestimmten Uhrzeit, **Wöchentlich** an einem Wochentag mit Uhrzeit, **Monatlich** an einem Tag mit Uhrzeit.
+**Zeitplan** gilt nur für **Nach Zeitplan**. Wählen Sie eine Frequenz aus den Vorlagen: **Stündlich** zu einer bestimmten Minute, **Täglich** und **Werktags** zu einer bestimmten Uhrzeit, **Wöchentlich** an einem Wochentag mit Uhrzeit, **Monatlich** an einem Tag mit Uhrzeit.
 
 Für alles Genauere wählen Sie **Benutzerdefiniert (RRULE)** und schreiben eine RFC-5545-Regel, etwa `FREQ=DAILY;BYHOUR=9;BYMINUTE=0`. Für eigene Regeln gelten diese Grenzen:
 
 - Die Frequenz muss `HOURLY`, `DAILY`, `WEEKLY`, `MONTHLY` oder `YEARLY` sein, und zwischen zwei Läufen muss mindestens 1 Stunde liegen.
 - Erlaubt sind `INTERVAL`, `COUNT`, `BYDAY`, `BYMONTHDAY`, `BYMONTH` sowie je ein `BYMINUTE` und `BYHOUR`. `COUNT` reicht bis 1000, und `COUNT` oder `INTERVAL` setzt einen **Beginn** voraus.
-- Zeitzone und Grenzen kommen aus dem Formular, deshalb werden `TZID`, `DTSTART`, `UNTIL` und `BYSECOND` abgelehnt.
+- Die Zeitzone gehört zur Routine, die Grenzen kommen aus **Beginn** und **Ende (optional)**, deshalb werden `TZID`, `DTSTART`, `UNTIL` und `BYSECOND` abgelehnt.
 
 Einen Zeitplan, der nur einmal läuft, schreiben Sie als eigene Regel mit `COUNT=1`.
 
-Ein Zeitplan wird in der Zeitzone der Person ausgewertet, die die Routine angelegt hat, und richtet sich nicht nach der betrachtenden Person. Die angezeigte Zeit unter **Nächster Lauf** ist bereits in Ihre lokale Zeit umgerechnet.
+Ein Zeitplan wird in der Zeitzone der Routine ausgewertet. Diese Zeitzone stammt von der Person, die die Routine zuerst konfiguriert, und richtet sich nicht nach späteren Bearbeitenden oder Betrachtenden. Die angezeigte Zeit unter **Nächste Ausführung** ist bereits in Ihre lokale Zeit umgerechnet.
 
 ## Entwurf, Aktualisierung und sofortige Ausführung
 
@@ -77,11 +83,17 @@ Zum Deaktivieren schalten Sie den Schalter aus. Die Routine löst dann nicht meh
 
 ## Ausführungsverlauf
 
-Öffnen Sie die Routine und wechseln Sie zu **Ausführungsverlauf**. Die Liste lässt sich nach Status und Zeitraum filtern, was das Auffinden eines bestimmten Fehlschlags erleichtert; zu einem ausgewählten Lauf sehen Sie die **Lauf-ID**, den **Auslöser** und den vollständigen Chat dieses Laufs. Der **Auslöser** steht auf **Geplant**, **Ereignis** oder **Manuell**; ein geplanter Lauf zeigt zusätzlich unter **Geplant** den Termin an, den er bedient hat.
+Öffnen Sie die Routine und wechseln Sie zu **Ausführungsverlauf**. Mit **Filter** grenzen Sie die Liste nach Status und Zeitraum ein, was das Auffinden eines bestimmten Fehlschlags erleichtert. Die **Übersicht** unter der Liste zählt die Läufe je Status und zeigt die **Durchschn. Laufzeit**; ein Klick auf einen Status grenzt die Liste ebenfalls darauf ein. Zu einem ausgewählten Lauf sehen Sie die **Lauf-ID**, den **Auslöser** und den vollständigen Chat dieses Laufs. Der **Auslöser** steht auf **Geplant**, **Ereignis** oder **Manuell**; ein geplanter Lauf zeigt zusätzlich unter **Geplant** den Termin an, den er bedient hat.
+
+<img
+  src="/images/docs/ai/2026-10-21-routine-run-history.png"
+  alt="Routine run history: the run list and overview on the left, and the selected run's Run ID, Trigger, Planned time, and conversation on the right"
+  className="docs-screenshot"
+/>
 
 Läufe werden als **In der Warteschlange**, **Läuft**, **Abgeschlossen**, **Fehlgeschlagen** oder **Abgebrochen** ausgewiesen. **Abgebrochen** erscheint, wenn jemand den Lauf unterbrochen hat oder wenn die Routine oder ihr Projekt gelöscht wurde.
 
-Ein Lauf mit **Fehlgeschlagen** nennt seinen Grund, und jeder Grund verlangt eine andere Reaktion:
+Fehlerhafte und übersprungene Läufe erscheinen in der Liste beide als **Fehlgeschlagen**. Öffnen Sie den Lauf, um oben in den Details den Grund zu sehen; jeder Grund verlangt eine andere Reaktion:
 
 | Meldung | Bedeutung | Was zu tun ist |
 | --- | --- | --- |
@@ -89,8 +101,9 @@ Ein Lauf mit **Fehlgeschlagen** nennt seinen Grund, und jeder Grund verlangt ein
 | **Übersprungen: nicht genügend Guthaben** | Das Guthaben war aufgebraucht, der Lauf hat nicht begonnen | Guthaben des Space aufstocken |
 | **Übersprungen: die vorherige Ausführung lief noch** | Der vorherige Lauf war nicht fertig, dieser Termin wurde übersprungen | Frequenz senken oder das Arbeitspensum eines Laufs verkleinern |
 | **Übersprungen: Zeitüberschreitung beim Warten in der Warteschlange** | Der Lauf hat zu lange in der Warteschlange gewartet und wurde übersprungen | Einzelfälle brauchen keine Reaktion; tritt es wiederholt auf, ist zu viel gleichzeitig geplant, verteilen Sie die Zeitpläne |
+| **Übersprungen: KI-Agent nicht verfügbar** | Die Laufzeitumgebung des KI-Agenten war in Wartung oder ist nicht eingerichtet, der Lauf hat nicht begonnen | Nach Ende der Wartung laufen die Routinen wieder; tritt es weiter auf, wenden Sie sich an Ihre Administration |
 
-Der Chat eines Laufs ist schreibgeschützt. Mitglieder, die die Routine bearbeiten dürfen, können am Ende weiterfragen, um nachzuvollziehen, wie ein bestimmter Lauf vorgegangen ist.
+Der Chat eines Laufs ist schreibgeschützt und zeigt, wie dieser Lauf von Anfang bis Ende vorgegangen ist.
 
 Die Unterhaltung jeder Ausführung erscheint auch im Chatverlauf. Sie gehört der Person, die die Routine zuletzt geändert hat. Unterhaltungen aus geplanten und manuellen Läufen tragen den Namen der Routine; Läufe, die durch ein Ereignis ausgelöst werden, erhalten anhand des Prompts und des empfangenen Ereignisses automatisch einen eigenen Namen, damit sich die einzelnen Ereignisse im Verlauf unterscheiden lassen. Wird die Routine gelöscht, bleiben diese Unterhaltungen erhalten: Sie behalten ihren Namen und werden zu gewöhnlichen Chats.
 
@@ -102,13 +115,13 @@ Teable benachrichtigt, wenn ein Lauf fehlschlägt oder das Guthaben nicht reicht
 
 Nach 5 Fehlschlägen in Folge wird die Routine automatisch deaktiviert, dazu geht eine eigene Benachrichtigung raus. Schalten Sie den Schalter wieder ein, sobald das Problem behoben ist; der Zähler wird nach dem nächsten erfolgreichen Lauf zurückgesetzt.
 
-Nicht jeder erfolglose Lauf zählt dabei mit: Läufe, die übersprungen wurden, weil der vorherige noch lief oder weil die Wartezeit in der Warteschlange abgelaufen ist, sowie **Abgebrochen**-Läufe gelten nicht als Fehlschlag und lösen keine Benachrichtigung aus. Fehlendes Guthaben zählt mit, deshalb führt dauerhaft nicht aufgestocktes Guthaben zur Deaktivierung.
+Nicht jeder erfolglose Lauf zählt dabei mit: Läufe, die übersprungen wurden, weil der vorherige noch lief, weil die Wartezeit in der Warteschlange abgelaufen ist oder weil der KI-Agent nicht verfügbar war, sowie **Abgebrochen**-Läufe gelten nicht als Fehlschlag und lösen keine Benachrichtigung aus. Fehlendes Guthaben zählt mit, deshalb führt dauerhaft nicht aufgestocktes Guthaben zur Deaktivierung.
 
 ## Häufige Fragen
 
 <AccordionGroup>
   <Accordion title="Verbrauchen Routinen Guthaben?">
-    Ja. Jeder Lauf ist ein KI-Chat und wird nach tatsächlichem Verbrauch dem Guthaben des Space belastet; auf der Abrechnungsseite steht er in der **Guthabenübersicht** unter dem Typ **Routine**. Reicht das Guthaben nicht, wird der Lauf übersprungen und eine Benachrichtigung verschickt; wiederholtes Überspringen führt zur Deaktivierung.
+    Ja. Jeder Lauf ist ein KI-Chat und wird nach tatsächlichem Verbrauch dem Guthaben des Space belastet; auf der Abrechnungsseite steht er in der **Kreditnutzungsübersicht** unter dem Typ **Routine**. Reicht das Guthaben nicht, wird der Lauf übersprungen und eine Benachrichtigung verschickt; wiederholtes Überspringen führt zur Deaktivierung.
   </Accordion>
 
   <Accordion title="Wirkt sich eine Prompt-Änderung auf den gerade laufenden Lauf aus?">

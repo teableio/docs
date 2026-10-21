@@ -8,7 +8,7 @@ description: "Configura AI Chat, Campi IA, Automazione IA e App Builder per un'i
 
 Percorso: Amministrazione di sistema → Impostazioni IA
 
-La pagina **Impostazioni IA** consente di configurare **AI Chat**, **Campi IA**, **Automazione IA** e **App Builder**. Il pannello **Configurazione in sospeso** a destra mostra quali elementi obbligatori sono ancora mancanti.
+La pagina **Impostazioni IA** consente di configurare **AI Chat**, **Campi IA**, **Automazione IA** e **App Builder**. Il pannello **Configurazione in attesa** a destra mostra quali elementi obbligatori sono ancora mancanti.
 
 ## Prima di iniziare
 
@@ -23,30 +23,31 @@ Prima di aprire la pagina Impostazioni IA, assicurati che siano pronti gli eleme
 
 ## Procedura di configurazione
 
-Inizia dal runtime di AI Chat, dalla distribuzione delle app e dalla configurazione dei modelli:
+La procedura guidata nella parte superiore della pagina prevede tre passaggi per collegare e scegliere i modelli:
 
 <Steps>
-  <Step title="Configura il runtime di AI Chat e la distribuzione delle app">
-    Scegli un'[opzione di distribuzione](/it/deploy/choose) e completa la distribuzione, quindi fai clic su **Esegui test** e **Verifica connessione**.
-  </Step>
-  <Step title="Configura l'API LLM">
+  <Step title="Configura l’API LLM">
     Configura la connessione al modello e completa il test iniziale.
   </Step>
   <Step title="Configura i modelli consigliati">
     Scegli i modelli consigliati per i Campi IA e l'Automazione IA.
   </Step>
-  <Step title="Imposta i livelli del modello di chat">
+  <Step title="Imposta il modello di chat">
     Scegli un modello per ciascuno dei quattro livelli del modello di chat.
   </Step>
 </Steps>
 
-### Configurare il runtime
-
-Fai clic su **Esegui test** per verificare il runtime di AI Chat.
+AI Chat e App Builder richiedono anche un runtime e la distribuzione delle app, che non fanno parte della procedura guidata. Scegli prima un'[opzione di distribuzione](/it/deploy/choose) e completa la distribuzione, quindi configura il runtime e App Builder come descritto di seguito.
 
 ### Configurare l'API LLM
 
-In **API LLM**, aggiungi un provider di modelli e testane i modelli. Se utilizzi la tua chiave (BYOK), scegli **Compatibile con OpenAI** o **Anthropic** come tipo di provider.
+Nel passaggio **Configura l’API LLM**, fai clic su **Aggiungi fornitore LLM** per aggiungere un provider di modelli, quindi testane i modelli. Se utilizzi la tua chiave (BYOK), scegli **Compatibile con OpenAI** o **Anthropic** come tipo di provider.
+
+<img
+  src="/images/docs/admin-panel/2026-10-21-admin-ai-llm-api-step.png"
+  alt="Il passaggio Configura LLM API con un provider personalizzato aggiunto"
+  className="docs-screenshot"
+/>
 
 La finestra di contesto e l'output massimo per risposta vengono ricavati automaticamente dal **Catalogo dei modelli**; non c'è nulla da compilare. Per verificare i valori ricavati per un modello, apri **Catalogo dei modelli**, scegli un **Ambito** in **Ispeziona modello** e seleziona il modello; **Dettaglio dei parametri** elenca il contesto, l'output massimo e l'origine di ciascun valore.
 
@@ -56,9 +57,9 @@ Quando il catalogo non contiene una voce corrispondente (per esempio un modello 
 
 Scegli i modelli consigliati che gli utenti possono selezionare nei **Campi IA** e nell'**Automazione IA**.
 
-### Impostare i livelli del modello di chat
+### Impostare il modello di chat
 
-In **Livelli del modello di chat** scegli un modello per **Ultra**, **Smart**, **Standard** e **Lite**; i modelli disponibili sono quelli collegati al passaggio 2. Gli utenti scelgono per livello nel menu dei modelli di **AI Chat** nella barra laterale e vedono il nome del livello anziché quello del modello, quindi puoi sostituire in qualsiasi momento il modello dietro un livello senza conseguenze per chi lo ha già selezionato.
+In **Livelli del modello di chat** scegli un modello per **Ultra**, **Smart**, **Standard** e **Lite**; i modelli disponibili sono i modelli consigliati del passaggio 2, **Configura i modelli consigliati**. Gli utenti scelgono per livello nel menu dei modelli di **AI Chat** nella barra laterale e vedono il nome del livello anziché quello del modello, quindi puoi sostituire in qualsiasi momento il modello dietro un livello senza conseguenze per chi lo ha già selezionato.
 
 | Livello | Descrizione |
 |------|------|
@@ -72,17 +73,21 @@ A destra di ogni livello si trovano altri due controlli:
 - **Imposta come predefinito**: il livello con cui gli utenti aprono il menu dei modelli. Un **Ultra** senza modello non può essere predefinito.
 - **Abilitato**: disattivandolo, il livello non viene più offerto agli utenti. Il livello predefinito non può essere disattivato.
 
+### Configurare il runtime
+
+Il runtime si configura nella scheda **Runtime della chat IA**, sotto la procedura guidata. Al termine della distribuzione, fai clic su **Esegui il test** per verificare il runtime di AI Chat.
+
 ### Abilitare le funzionalità IA
 
-In **Funzionalità IA**, abilita **Campo IA** e **AI Chat** secondo necessità. Configura il runtime prima di utilizzare **AI Chat**.
+In **Capacità IA**, abilita **Campo IA** e **AI Chat** secondo necessità. Configura il runtime prima di utilizzare **AI Chat**.
 
 ### Configurare App Builder
 
-In **Motore di distribuzione**, scegli come distribuire le app:
+In **Motore di deploy**, scegli come distribuire le app:
 
 | Motore di distribuzione | Requisiti di configurazione |
 |------|------|
-| **Vercel** | Inserisci un token di accesso Vercel, fai clic su **Verifica connessione** e usa **Verifica accesso pubblico** per confermare che Vercel possa raggiungere l'istanza Teable e l'archiviazione di oggetti. |
+| **Vercel** | Inserisci un token di accesso Vercel, fai clic su **Prova connessione** e usa **Prova l'accesso pubblico** per confermare che Vercel possa raggiungere l'istanza Teable e l'archiviazione di oggetti. |
 | **Teable Infra** | Utilizza il runtime del container Teable Infra configurato. Qui non sono richieste credenziali aggiuntive né verifiche dell'accesso pubblico. |
 
 Quando necessario, puoi aggiungere queste impostazioni facoltative di App Builder:
@@ -107,7 +112,7 @@ Per utilizzare l'input vocale in AI Chat, abilita la funzionalità e inserisci u
 
 ### Verificare la configurazione
 
-Al termine della configurazione, verifica innanzitutto che tutti gli elementi obbligatori nel pannello **Configurazione in sospeso** siano verdi. Quindi testa singolarmente **AI Chat**, **Campi IA**, **Automazione IA** e **App Builder**.
+Al termine della configurazione, verifica innanzitutto che tutti gli elementi obbligatori nel pannello **Configurazione in attesa** siano verdi. Quindi testa singolarmente **AI Chat**, **Campi IA**, **Automazione IA** e **App Builder**.
 
 ## Domande frequenti
 

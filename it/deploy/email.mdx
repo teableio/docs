@@ -28,24 +28,30 @@ Teable supporta due modi per configurare il servizio email:
 Il modo più semplice per configurare l'email è tramite l'Amministrazione di sistema:
 
 1. Accedi come amministratore (il primo utente registrato)
-2. Vai ad **Amministrazione di sistema** → **Impostazioni istanza**
-3. Trova la sezione **Email**
-4. Configura **Email di notifica** ed **Email di Automazione** secondo necessità
+2. Vai ad **Amministrazione di sistema** → **Impostazioni dell'istanza**
+3. Trova la sezione **Configurazione Email**
+4. Configura **Email di Notifica** ed **Email di Automazione** secondo necessità: fai clic sul pulsante a destra della riga, inserisci i dati SMTP nella finestra di dialogo e salva
+
+<img
+  src="/images/selfhosted/email/2026-10-21-admin-settings-email-config.png"
+  alt="Configurazione email nelle impostazioni dell'istanza, con email di notifica e di automazione"
+  className="docs-screenshot"
+/>
 
 <Tip>
-La configurazione nell'Amministrazione di sistema supporta i **test in tempo reale**, così puoi verificare che le impostazioni SMTP funzionino prima di salvarle.
+La finestra di configurazione supporta i test in tempo reale: prima di salvare, inserisci un indirizzo email di test e fai clic su **Invia** per verificare che le impostazioni SMTP funzionino.
 </Tip>
 
-- **Email di notifica**: utilizzata per la verifica degli utenti, la reimpostazione della password, gli inviti, le notifiche di sistema e altre email simili. È anche ciò che rende disponibile **Accedi con codice via email** nella pagina di accesso.
+- **Email di Notifica**: utilizzata per la verifica degli utenti, la reimpostazione della password, gli inviti, le notifiche di sistema e altre email simili. È anche ciò che rende disponibile **Accedi con codice via email** nella pagina di accesso.
 - **Email di Automazione**: utilizzata come servizio di posta predefinito per le azioni Invia email delle Automazioni. Ogni singola azione Invia email può anche configurare un proprio [server SMTP personalizzato](/it/basic/automation/actions/communication/smtp-sender).
 
 ### Origini della configurazione e priorità
 
-Consigliamo di configurare prima il servizio di posta in **Amministrazione di sistema → Impostazioni istanza → Email**. L'ordine di priorità effettivo è il seguente:
+Consigliamo di configurare prima il servizio di posta in **Amministrazione di sistema → Impostazioni dell'istanza → Configurazione Email**. L'ordine di priorità effettivo è il seguente:
 
 1. **Server di posta personalizzato nell'azione Invia email**: si applica soltanto a quella specifica azione Invia email nell'Automazione corrente.
-2. **Amministrazione di sistema → Impostazioni istanza → Email → Email di Automazione**: utilizzata per le email delle Automazioni quando l'azione Invia email non configura un proprio server di posta.
-3. **Amministrazione di sistema → Impostazioni istanza → Email → Email di notifica**: utilizzata per la verifica degli utenti, la reimpostazione della password, gli inviti, le notifiche di sistema e altre email simili. Viene utilizzata anche come ripiego per le email delle Automazioni se Email di Automazione non è configurata.
+2. **Amministrazione di sistema → Impostazioni dell'istanza → Configurazione Email → Email di Automazione**: utilizzata per le email delle Automazioni quando l'azione Invia email non configura un proprio server di posta.
+3. **Amministrazione di sistema → Impostazioni dell'istanza → Configurazione Email → Email di Notifica**: utilizzata per la verifica degli utenti, la reimpostazione della password, gli inviti, le notifiche di sistema e altre email simili. Viene utilizzata anche come ripiego per le email delle Automazioni se Email di Automazione non è configurata.
 4. **Variabili d'ambiente `BACKEND_MAIL_*`**: configurazione di posta predefinita a livello di deployment. Viene utilizzata come ripiego soltanto quando la casella corrispondente non è configurata nell'Amministrazione di sistema.
 
 ### Campi di configurazione
@@ -67,7 +73,7 @@ Consigliamo di configurare prima il servizio di posta in **Amministrazione di si
 Per i deployment in cui preferisci una configurazione basata su file, utilizza le variabili d'ambiente:
 
 <Note>
-Consigliamo di configurare prima Email di notifica ed Email di Automazione in **Amministrazione di sistema → Impostazioni istanza → Email**. Le variabili d'ambiente vengono utilizzate principalmente come valori predefiniti e configurazione di ripiego a livello di deployment.
+Consigliamo di configurare prima Email di Notifica ed Email di Automazione in **Amministrazione di sistema → Impostazioni dell'istanza → Configurazione Email**. Le variabili d'ambiente vengono utilizzate principalmente come valori predefiniti e configurazione di ripiego a livello di deployment.
 </Note>
 
 ```sh

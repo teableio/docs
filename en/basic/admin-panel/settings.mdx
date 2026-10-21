@@ -6,9 +6,9 @@ sidebarTitle: "Instance Settings"
 
 <Tip>Available for self-hosted Business plan and above</Tip>
 
-Path: Admin Panel → Instance Settings
+Path: System Admin → Instance settings
 
-The **Instance Settings** page is used to manage the core settings of the whole instance, including **General Settings**, **Email**, and the system checks shown in the **Pending configuration** panel.
+The **Instance settings** page is used to manage the core settings of the whole instance, including **General settings**, **Email config**, and the system checks shown in the **Pending configuration** panel.
 
 ## Overview
 
@@ -16,21 +16,25 @@ This page mainly covers instance-level basics. The main settings are grouped as 
 
 | Setting type | Description |
 |------|------|
-| **General Settings** | Includes **Allow creating new accounts**, **Banned email domains**, **Allow sending space invitations**, **Allow everyone to create new spaces**, and **Enable email verification** |
-| **Email** | Includes **Notification Email** and **Automation Email** for password reset, email verification, notification emails, and invitation emails |
+| **General settings** | Includes **Allow creating new accounts**, **Allow sending space invitations**, **Allow everyone to create new spaces**, and **Enable email verification** |
+| **Email config** | Includes **Notify email** and **Automation email** for password reset, email verification, notification emails, and invitation emails |
 | **System limits** | Shows the effective table data, field, view, and text limits for the instance |
 
-To enable system emails, complete the setup in **Email**.
-
-Use **Banned email domains** to prevent email addresses from listed domains from signing up. Teable rejects those domains before sending signup verification codes, and no invitation emails involving those domains are sent.
+To enable system emails, complete the setup in **Email config**.
 
 <Tip>
-If email is not fully configured, the **Email** item in the **Pending configuration** panel will not turn green.
+If **Notify email** is not configured in **Email config**, the **Email** item in the **Pending configuration** panel will not turn green.
 </Tip>
 
 ## System limits
 
 **System limits** shows the current instance-level limits for table data and related configuration. If you need to adjust a limit, use the environment variable shown on that page.
+
+<img
+  src="/images/docs/admin-panel/2026-10-21-admin-settings-system-limits.png"
+  alt="System limits in Instance settings, showing table schema rules with effective values, defaults, and configuration sources"
+  className="docs-screenshot"
+/>
 
 <Note>
 After changing an environment variable, restart the service for the new value to take effect.
@@ -40,19 +44,27 @@ After changing an environment variable, restart the service for the new value to
 
 The **Pending configuration** panel on the right is a system checklist. It shows which important settings are still missing for the instance.
 
-Common checks on this page include:
+<img
+  src="/images/docs/admin-panel/2026-10-21-admin-settings-pending-configuration.png"
+  alt="Instance settings page with General settings on the left and the Pending configuration checklist on the right"
+  className="docs-screenshot"
+/>
 
-| Item | Impact |
-|------|------|
-| **PUBLIC_ORIGIN environment variable** | Affects features that rely on an external access URL, such as attachments and imports |
-| **Enable HTTPS** | Affects capabilities that rely on HTTPS, such as copy and paste |
-| **Email** | Affects password reset, email verification, notifications, and similar features |
+The checklist groups its items as follows:
+
+| Group | Item | Impact |
+|------|------|------|
+| **Basics** | **PUBLIC_ORIGIN environment variable** | Affects features that rely on an external access URL, such as attachments and imports |
+| **Basics** | **Enable https** | Affects capabilities that rely on HTTPS, such as copy and paste |
+| **Basics** | **Email** | Affects password reset, email verification, notifications, and similar features |
+| **AI Services** | **LLM API** | Affects AI features such as AI Chat and AI fields. Complete it in [AI Settings](/en/basic/admin-panel/ai-setting) |
+| **App Builder** | **App Builder: Deployment engine** | Affects publishing apps built with App Builder. Complete it in [AI Settings](/en/basic/admin-panel/ai-setting) |
 
 If these items are not completed, the instance may still open normally, but some features can remain unavailable.
 
 ## Relationship to AI Settings
 
-**Instance Settings** shows part of the system-level checks, but it is not where you configure **AI models**, the **AI Chat runtime**, or **App Builder**.
+**Instance settings** shows part of the system-level checks, but it is not where you configure **AI models**, the **AI Chat runtime**, or **App Builder**.
 
 Go here for those settings:
 
@@ -60,7 +72,7 @@ Go here for those settings:
 
 You can think of the split like this:
 
-- **Instance Settings**: Covers the core capabilities of the instance itself
+- **Instance settings**: Covers the core capabilities of the instance itself
 - **AI Settings**: Covers AI Chat, AI fields, AI automation, and App Builder
 
 ## Check order
@@ -78,7 +90,7 @@ If you are preparing a new self-hosted deployment or going live for the first ti
     Make sure **SMTP** is configured and can send emails successfully.
   </Step>
   <Step title="Continue with AI Settings">
-    After the basic items are confirmed, continue with [AI Settings](/en/basic/admin-panel/ai-setting).
+    After the basic items are confirmed, complete **LLM API** and **App Builder: Deployment engine** in [AI Settings](/en/basic/admin-panel/ai-setting).
   </Step>
 </Steps>
 
@@ -94,7 +106,7 @@ This usually means the instance is reachable, but one or more important runtime 
 
 <Accordion title="Email works sometimes, but Email is still not marked complete">
 
-Check whether the saved SMTP settings are complete, whether they match the intended sending purpose, and whether verification or notification emails can be sent reliably.
+The **Email** item only checks whether **Notify email** is saved in **Email config**. If SMTP is configured only through environment variables, or only **Automation email** is configured, the item stays incomplete.
 </Accordion>
 
 <Accordion title="Why is PUBLIC_ORIGIN important?">

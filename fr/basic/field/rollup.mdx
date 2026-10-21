@@ -23,15 +23,21 @@ Les Champs Agrégation calculent des statistiques à partir de plusieurs Enregis
     Avant de créer un Champ Agrégation, créez un Champ **Lien**.
   </Step>
   <Step title="Choisir le type de Champ">
-    Cliquez sur `+` dans l’en-tête de la Table pour ajouter un Champ, puis choisissez **Agrégation**.
+    Cliquez sur `+` dans l’en-tête de la Table pour ajouter un Champ, puis choisissez **Résumé**.
   </Step>
   <Step title="Choisir le Champ Lien et le Champ cible">
     Choisissez le Champ Lien qui fournit la source des données, puis le Champ cible sur lequel effectuer le calcul.
   </Step>
   <Step title="Choisir la fonction d’agrégation">
-    Choisissez une fonction selon le type du Champ cible, comme la somme, le nombre, la moyenne, le maximum ou le minimum.
+    Dans **Rollup**, choisissez une fonction selon le type du Champ cible, comme la somme, le nombre, la moyenne, le maximum ou le minimum.
   </Step>
 </Steps>
+
+<img
+  src="/images/docs/base/2026-10-21-field-rollup-config.png"
+  alt="Rollup field settings with the link field, target field, SUM function, and formatting"
+  className="docs-screenshot"
+/>
 
 ## Mise en forme et affichage
 
@@ -44,7 +50,7 @@ Consultez [Mise en forme](/fr/basic/field/common/formatter) et [Affichage intera
 
 ## Utilisations courantes
 
-- **Totaux de commandes d’une librairie** : dans une Table `Commandes`, utilisez le Champ Lien `Livres sélectionnés` pour agréger le Champ `Prix` de la Table `Livres`. Choisissez **SUM** pour calculer le total de la commande.
+- **Totaux de commandes d’une librairie** : dans une Table `Commandes`, utilisez le Champ Lien `Livres sélectionnés` pour agréger le Champ `Prix` de la Table `Livres`. Choisissez **SOMME** pour calculer le total de la commande.
 - **Statistiques des tâches d’un projet** : dans une Table `Projets`, comptez les tâches liées ou calculez leur taux d’achèvement.
 - **Dépenses totales des clients** : dans une Table `Clients`, agrégez les montants des commandes associées pour connaître les dépenses totales de chaque client.
 
@@ -52,22 +58,23 @@ Consultez [Mise en forme](/fr/basic/field/common/formatter) et [Affichage intera
 
 | Nom de la formule | Explication |
 | --- | --- |
-| COUNTALL | Compte toutes les valeurs, y compris les valeurs textuelles et les valeurs vides |
-| COUNTA | Compte les valeurs non vides |
-| COUNT | Compte les éléments numériques |
-| SUM | Calcule la somme de toutes les valeurs numériques |
+| COMPTERTOUS | Compte toutes les valeurs, y compris les valeurs textuelles et les valeurs vides |
+| COMPTERA | Compte les valeurs non vides |
+| COMPTER | Compte les éléments numériques |
+| SOMME | Calcule la somme de toutes les valeurs numériques |
+| MOYENNE | Calcule la moyenne de toutes les valeurs numériques |
 | MAX | Renvoie la plus grande valeur numérique |
 | MIN | Renvoie la plus petite valeur numérique |
-| AND | Renvoie vrai si toutes les valeurs sont vraies |
-| OR | Renvoie vrai si au moins une valeur est vraie |
+| ET | Renvoie vrai si toutes les valeurs sont vraies |
+| OU | Renvoie vrai si au moins une valeur est vraie |
 | XOR | Renvoie vrai si un nombre impair de valeurs sont vraies |
-| ARRAY_JOIN | Réunit toutes les valeurs d’un tableau dans une chaîne |
-| ARRAY_UNIQUE | Supprime les doublons et renvoie un tableau de valeurs uniques |
-| ARRAY_COMPACT | Supprime les valeurs vides et renvoie un nouveau tableau |
-| CONCATENATE | Réunit plusieurs valeurs dans une chaîne |
+| ARRAYJOIN | Réunit toutes les valeurs d’un tableau dans une chaîne |
+| ARRAYUNIQUE | Supprime les doublons et renvoie un tableau de valeurs uniques |
+| ARRAYCOMPACT | Supprime les valeurs vides et renvoie un nouveau tableau |
+| CONCATÉNER | Réunit plusieurs valeurs dans une chaîne |
 
 ## Remarques
 
 - **Mises à jour dynamiques** : les Champs Agrégation effectuent leurs calculs en temps réel. Si les données sources ou les relations de liaison changent, le résultat de l’agrégation est actualisé.
-- **Limites liées aux types de données** : certaines fonctions ne fonctionnent qu’avec des types de Champ précis. Par exemple, **SUM** fonctionne uniquement avec les Champs Nombre. Si vous choisissez un Champ Texte, Teable ne propose pas la somme comme option.
+- **Limites liées aux types de données** : certaines fonctions ne fonctionnent qu’avec des types de Champ précis. Par exemple, **SOMME** fonctionne uniquement avec les Champs Nombre. Si vous choisissez un Champ Texte, Teable ne propose pas la somme comme option.
 - **Performances** : un grand nombre de Champs Agrégation peut nuire aux performances, en particulier s’ils concernent de nombreux Enregistrements. Planifiez soigneusement les relations de liaison et vérifiez régulièrement les paramètres d’agrégation.

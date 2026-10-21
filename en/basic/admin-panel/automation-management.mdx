@@ -1,26 +1,32 @@
 ---
 title: "Monitor automation runs across an instance"
-description: "View active workflows, run counts and success rates in the Admin Panel. Filter automations and inspect run history to locate failures."
-sidebarTitle: "Automation management"
+description: "View active workflows, run counts and success rates in System Admin. Filter automations and inspect run history to locate failures."
+sidebarTitle: "Workflow monitoring"
 ---
 
 {/* mintlify-resync: 2026-05-14 */}
 <Tip>Available for self-hosted Business plan and above</Tip>
 
-Path: Admin Panel → Automation management
+Path: System Admin → Workflow monitoring
 
-**Automation management** is used to view automation run status across the instance.
+**Workflow monitoring** shows automation run status across the instance.
 
 ## Summary Metrics
 
 The top of the page shows the overall status for the selected time range:
+
+<img
+  src="/images/docs/admin-panel/2026-10-21-admin-automation-overview.png"
+  alt="Workflow monitoring summary cards with the run status distribution and health overview charts"
+  className="docs-screenshot"
+/>
 
 | Metric | Description |
 |------|------|
 | **Active workflows** | Number of automations that are currently active |
 | **Total runs** | Total runs in the selected time range |
 | **Success rate** | Percentage of successful runs among all runs |
-| **Failed runs** | Number of failed runs in the selected time range |
+| **Failed runs** | Number of failed runs in the selected time range, captioned **Requires attention** |
 | **Health overview** | Automation health grouped by healthy, warning, and critical states |
 | **Run status distribution** | Run distribution by successful, failed, running, pending, and canceled states |
 
@@ -33,19 +39,25 @@ The main page supports filters:
 
 ## Automation List
 
-The list shows a run summary for each automation:
+Each automation in the list shows its project, health status (**Healthy**, **Warning**, or **Critical**), and **Last run** time, along with a run summary:
 
-- Last run
-- Total runs
-- Average duration
-- Current health status
-- Whether attention is required
+<img
+  src="/images/docs/admin-panel/2026-10-21-admin-automation-list.png"
+  alt="Workflow list with run stats, health status, and the actions menu"
+  className="docs-screenshot"
+/>
+
+- **Total runs**
+- **Success rate**
+- **Failed runs**: the share of runs that failed
+- **Average duration**
+- Counts of successful, failed, running, and pending runs
 
 If an automation is inactive, the list shows **Inactive**.
 
 ## Run History
 
-Open an automation to view **Run history**:
+Click an automation's name, or choose **Run history** from its actions menu, to see its runs:
 
 | Field | Description |
 |------|------|
@@ -58,7 +70,7 @@ Run history can be filtered by successful, failed, running, pending, or canceled
 
 ## Actions
 
-From the automation list, you can:
+From an automation's actions menu, you can:
 
 - **Deactivate**: Stop the automation from being triggered.
-- **Mark for deletion**: Mark the automation for deletion.
+- **Mark for delete**: Mark the automation for deletion.

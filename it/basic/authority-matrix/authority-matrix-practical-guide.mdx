@@ -13,7 +13,7 @@ senza esporre l'intero Progetto.
 | --- | --- |
 | Direttore vendite | Visualizzare i dati di clienti e vendite, commentare i prodotti ed evitare di modificare i prezzi dei prodotti. |
 | Rappresentante commerciale | Visualizzare e aggiornare soltanto i propri clienti e ordini, creare nuovi clienti ed evitare di eliminare gli ordini completati. |
-| Addetto all'inserimento dati | Aggiungere nuovi prodotti senza visualizzare prodotti, clienti od ordini esistenti. |
+| Addetto all'inserimento dati | Aggiungere nuovi prodotti e visualizzare quelli esistenti senza modificarli, senza accesso a clienti od ordini. |
 
 <Info>Abilita la Matrice di autorità prima di fare affidamento sulle autorizzazioni dei ruoli.</Info>
 
@@ -31,8 +31,8 @@ senza esporre l'intero Progetto.
     che la abilita viene aggiunto come amministratore.
   </Step>
   <Step title="Aggiungi ruoli personalizzati">
-    Fai clic su `Aggiungi ruolo` e crea `Direttore vendite`, `Rappresentante vendite` e `Data Entry
-    Clerk`.
+    Fai clic su `Aggiungi ruolo` e crea `Direttore vendite`, `Rappresentante vendite` e `Addetto
+    all'inserimento dati`.
   </Step>
 </Steps>
 
@@ -51,7 +51,7 @@ protetti da modifiche accidentali.
 | --- | --- |
 | Clienti | Imposta la Tabella su `Può modificare`. Mantieni aperte le autorizzazioni di Record e Campi affinché il ruolo possa visualizzare i dati dei clienti. |
 | Ordini di vendita | Imposta la Tabella su `Può modificare`. Mantieni aperte le autorizzazioni di Record e Campi affinché il ruolo possa esaminare l'attività di vendita. |
-| Prodotti | Imposta la Tabella su `Può modificare`, quindi consenti soltanto `Leggi record` e `Commenta record` nelle autorizzazioni dei Record. |
+| Prodotti | Imposta la Tabella su `Può modificare`, quindi, tra le operazioni delle autorizzazioni dei Record, seleziona soltanto `Commenta record`. |
 
 <img
   src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-sales-director-permissions.png"
@@ -72,7 +72,7 @@ Dopo la configurazione, un Direttore vendite può esaminare i dati di clienti e 
 prodotti ed evitare di modificare i relativi Record.
 
 <img
-  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-director-view-en.webp"
+  src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-sales-director-view.png"
   alt="Vista del Direttore vendite dopo la configurazione delle autorizzazioni"
   className="docs-screenshot"
 />
@@ -88,11 +88,11 @@ Imposta `Clienti` su `Può modificare`.
 
 | Area di autorizzazione | Impostazione |
 | --- | --- |
-| Autorizzazioni dei Record | Scegli i Record che soddisfano condizioni specifiche. Aggiungi un filtro come `Rappresentante vendite` `è` `Io (utente corrente)`. |
-| Operazioni sui Record | Consenti `Leggi record`, `Aggiorna record` e `Crea record`. Lascia disattivato `Elimina record` se i rappresentanti non devono eliminare i Record dei clienti. |
+| Autorizzazioni dei Record | In `Record visualizzabili`, scegli `Record che soddisfano condizioni specifiche`. Aggiungi un filtro come `Rappresentante vendite` `è` `Io (utente corrente)`. |
+| Operazioni sui Record | Seleziona `Aggiorna record` e `Crea record`. Lascia deselezionato `Elimina record` se i rappresentanti non devono eliminare i Record dei clienti. |
 
 <img
-  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-filter-en.webp"
+  src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-sales-rep-filter.png"
   alt="Configurazione di un filtro dei Record basato sul proprietario per il Rappresentante commerciale"
   className="docs-screenshot"
 />
@@ -110,7 +110,7 @@ Imposta `Ordini di vendita` su `Può modificare`.
 | Area di autorizzazione | Impostazione |
 | --- | --- |
 | Autorizzazioni dei Record | Usa lo stesso filtro basato sul proprietario, ad esempio `Rappresentante vendite` `è` `Io (utente corrente)`. |
-| Operazioni sui Record | Consenti `Leggi record` e `Crea record`. Lascia disattivati `Aggiorna record` e `Elimina record` se gli ordini completati devono rimanere invariati. |
+| Operazioni sui Record | Seleziona `Crea record`. Lascia deselezionati `Aggiorna record` e `Elimina record` se gli ordini completati devono rimanere invariati. |
 | Autorizzazioni dei Campi | Nascondi i Campi sensibili come `Metodo di pagamento` disattivando `Leggi record` per tale Campo. |
 
 <img
@@ -131,14 +131,14 @@ Ogni rappresentante commerciale ora vede soltanto i Record dei clienti e degli o
 filtro del proprietario.
 
 <img
-  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-sales-rep-view-en.webp"
+  src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-sales-rep-view.png"
   alt="Anteprima della Vista del Rappresentante commerciale"
   className="docs-screenshot"
 />
 
 ## Configurare l'Addetto all'inserimento dati
 
-L'Addetto all'inserimento dati deve soltanto aggiungere prodotti.
+L'Addetto all'inserimento dati deve soltanto aggiungere prodotti. Un ruolo può sempre visualizzare i Record di una Tabella impostata su `Può modificare`; le autorizzazioni dei Record controllano soltanto le operazioni consentite e l'ambito dei `Record visualizzabili`. L'addetto vede quindi i prodotti esistenti, ma può soltanto aggiungerne di nuovi.
 
 | Nodo | Impostazione |
 | --- | --- |
@@ -160,11 +160,11 @@ Assegna gli addetti al ruolo e mantienilo abilitato.
   className="docs-screenshot"
 />
 
-Dopo la configurazione, l'Addetto all'inserimento dati può aggiungere nuovi Record di prodotto, ma non può esplorare
-i dati esistenti di prodotti, clienti od ordini.
+Dopo la configurazione, l'Addetto all'inserimento dati può aggiungere nuovi Record di prodotto e visualizzare i prodotti
+esistenti, ma non può modificarli né eliminarli. I dati di clienti e ordini restano nascosti.
 
 <img
-  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-data-entry-view-en.webp"
+  src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-data-entry-view.png"
   alt="Anteprima della Vista dell'Addetto all'inserimento dati"
   className="docs-screenshot"
 />
@@ -187,9 +187,9 @@ Fai clic su `Aggiungi ruolo` e crea un ruolo di sola lettura, ad esempio `Visual
 
 ### Configurare l'accesso ai clienti
 
-Imposta `Clienti` su `Può modificare`. Nelle autorizzazioni dei Record, consenti soltanto `Leggi record`.
-Non abilitare `Aggiorna record`, `Elimina record` o `Crea record`. Lascia vuoto il
-filtro dei Record affinché questo ruolo possa visualizzare tutti i Record dei clienti.
+Imposta `Clienti` su `Può modificare`. Nelle autorizzazioni dei Record, deseleziona tutte le operazioni
+e in `Record visualizzabili` scegli `Tutti i record`, affinché questo ruolo possa visualizzare tutti i Record dei clienti
+senza modificarli.
 
 <img
   src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-global-customer-viewer-permissions.png"
@@ -213,7 +213,7 @@ le autorizzazioni. L'utente può visualizzare tutti i Record dei clienti, ma pu�
 quelli consentiti dal ruolo `Rappresentante vendite` basato sul proprietario.
 
 <img
-  src="/images/docs/authority-matrix/2026-05-27-authority-matrix-practical-guide-global-customer-viewer-result-en.webp"
+  src="/images/docs/authority-matrix/2026-10-21-authority-matrix-guide-global-customer-viewer-result.png"
   alt="Vista del Rappresentante commerciale con le autorizzazioni del Visualizzatore globale dei clienti"
   className="docs-screenshot"
 />

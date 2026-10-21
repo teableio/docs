@@ -5,9 +5,9 @@ description: "Gestiona el registro, las invitaciones y los correos de tu instanc
 
 <Tip>Disponible para el plan Business autoalojado y los planes superiores</Tip>
 
-Ruta: Administración del sistema → Ajustes de la instancia
+Ruta: Administración del sistema → Configuración de instancia
 
-La página **Ajustes de la instancia** permite administrar los ajustes principales de toda la instancia, incluidos los **Ajustes generales**, el **Correo electrónico** y las comprobaciones del sistema que aparecen en el panel **Configuración pendiente**.
+La página **Configuración de instancia** permite administrar los ajustes principales de toda la instancia, incluidos **Configuración general**, **Configuración de Correo** y las comprobaciones del sistema que aparecen en el panel **Configuración pendiente**.
 
 ## Descripción general
 
@@ -15,21 +15,25 @@ Esta página abarca principalmente los aspectos básicos de la instancia. Los aj
 
 | Tipo de ajuste | Descripción |
 |------|------|
-| **Ajustes generales** | Incluye **Permitir la creación de cuentas nuevas**, **Dominios de correo electrónico bloqueados**, **Permitir el envío de invitaciones a Espacios**, **Permitir que todos creen Espacios nuevos** y **Habilitar la verificación del correo electrónico** |
-| **Correo electrónico** | Incluye **Correo electrónico de notificaciones** y **Correo electrónico de automatizaciones** para restablecer contraseñas, verificar direcciones de correo electrónico y enviar notificaciones e invitaciones por correo electrónico |
+| **Configuración general** | Incluye **Permitir crear nuevas cuentas**, **Permitir envío de invitaciones de espacio**, **Permitir que todos creen nuevos espacios** y **Habilitar la verificación de correo electrónico** |
+| **Configuración de Correo** | Incluye **Correo de Notificación** y **Correo de Automatización** para restablecer contraseñas, verificar direcciones de correo electrónico y enviar notificaciones e invitaciones por correo electrónico |
 | **Límites del sistema** | Muestra los límites efectivos de datos de Tablas, Campos, Vistas y texto de la instancia |
 
-Para habilitar los correos electrónicos del sistema, completa la configuración de **Correo electrónico**.
-
-Usa **Dominios de correo electrónico bloqueados** para impedir que se registren direcciones de correo electrónico de los dominios indicados. Teable rechaza esos dominios antes de enviar códigos de verificación de registro y no envía correos electrónicos de invitación relacionados con ellos.
+Para habilitar los correos electrónicos del sistema, completa la configuración en **Configuración de Correo**.
 
 <Tip>
-Si el correo electrónico no está completamente configurado, el elemento **Correo electrónico** del panel **Configuración pendiente** no se mostrará en verde.
+Si no se configura **Correo de Notificación** en **Configuración de Correo**, el elemento **Correo electrónico** del panel **Configuración pendiente** no se mostrará en verde.
 </Tip>
 
 ## Límites del sistema
 
 **Límites del sistema** muestra los límites actuales de la instancia para los datos de las Tablas y la configuración relacionada. Si necesitas ajustar un límite, usa la variable de entorno que aparece en esa página.
+
+<img
+  src="/images/docs/admin-panel/2026-10-21-admin-settings-system-limits.png"
+  alt="Límites del sistema en la configuración de la instancia, con valores efectivos, predeterminados y orígenes de configuración de las reglas de esquema de tabla"
+  className="docs-screenshot"
+/>
 
 <Note>
 Después de cambiar una variable de entorno, reinicia el servicio para que el nuevo valor surta efecto.
@@ -39,19 +43,27 @@ Después de cambiar una variable de entorno, reinicia el servicio para que el nu
 
 El panel **Configuración pendiente** de la derecha es una lista de comprobación del sistema. Muestra qué ajustes importantes aún faltan en la instancia.
 
-Entre las comprobaciones habituales de esta página se incluyen:
+<img
+  src="/images/docs/admin-panel/2026-10-21-admin-settings-pending-configuration.png"
+  alt="Página de configuración de la instancia con la configuración general a la izquierda y la lista de configuración pendiente a la derecha"
+  className="docs-screenshot"
+/>
 
-| Elemento | Impacto |
-|------|------|
-| **Variable de entorno PUBLIC_ORIGIN** | Afecta a las funciones que dependen de una URL de acceso externo, como los archivos adjuntos y las importaciones |
-| **Habilitar HTTPS** | Afecta a las funciones que dependen de HTTPS, como copiar y pegar |
-| **Correo electrónico** | Afecta al restablecimiento de contraseñas, la verificación del correo electrónico, las notificaciones y funciones similares |
+La lista agrupa sus elementos de la siguiente manera:
+
+| Grupo | Elemento | Impacto |
+|------|------|------|
+| **Aspectos básicos** | **Variable de entorno PUBLIC_ORIGIN** | Afecta a las funciones que dependen de una URL de acceso externo, como los archivos adjuntos y las importaciones |
+| **Aspectos básicos** | **Habilitar HTTPS** | Afecta a las funciones que dependen de HTTPS, como copiar y pegar |
+| **Aspectos básicos** | **Correo electrónico** | Afecta al restablecimiento de contraseñas, la verificación del correo electrónico, las notificaciones y funciones similares |
+| **Servicios de IA** | **LLM API** | Afecta a las funciones de IA, como el Chat de IA y los Campos de IA. Se completa en [Ajustes de IA](/es/basic/admin-panel/ai-setting) |
+| **App Builder** | **App Builder: Motor de despliegue** | Afecta a la publicación de apps creadas con App Builder. Se completa en [Ajustes de IA](/es/basic/admin-panel/ai-setting) |
 
 Aunque estos elementos no se hayan completado, es posible que la instancia se abra con normalidad, pero algunas funciones podrían seguir sin estar disponibles.
 
 ## Relación con los Ajustes de IA
 
-**Ajustes de la instancia** muestra parte de las comprobaciones del sistema, pero no es la página donde se configuran los **modelos de IA**, el **entorno de ejecución del Chat de IA** ni **App Builder**.
+**Configuración de instancia** muestra parte de las comprobaciones del sistema, pero no es la página donde se configuran los **modelos de IA**, el **entorno de ejecución del Chat de IA** ni **App Builder**.
 
 Para configurar estos elementos, ve a:
 
@@ -59,7 +71,7 @@ Para configurar estos elementos, ve a:
 
 La separación se puede entender así:
 
-- **Ajustes de la instancia**: Abarca las funciones principales de la propia instancia
+- **Configuración de instancia**: Abarca las funciones principales de la propia instancia
 - **Ajustes de IA**: Abarca el Chat de IA, los Campos de IA, las automatizaciones de IA y App Builder
 
 ## Orden de comprobación
@@ -77,7 +89,7 @@ Si estás preparando una implementación autoalojada nueva o vas a ponerla en pr
     Asegúrate de que **SMTP** esté configurado y pueda enviar correos electrónicos correctamente.
   </Step>
   <Step title="Continuar con los Ajustes de IA">
-    Después de confirmar los elementos básicos, continúa con [Ajustes de IA](/es/basic/admin-panel/ai-setting).
+    Después de confirmar los elementos básicos, completa **LLM API** y **App Builder: Motor de despliegue** en [Ajustes de IA](/es/basic/admin-panel/ai-setting).
   </Step>
 </Steps>
 
@@ -93,7 +105,7 @@ Esto suele significar que la instancia está accesible, pero aún faltan uno o v
 
 <Accordion title="El correo electrónico funciona a veces, pero aún no aparece como completado">
 
-Comprueba si los ajustes de SMTP guardados están completos, si corresponden a la finalidad de envío prevista y si los correos electrónicos de verificación o notificación se pueden enviar de forma fiable.
+El elemento **Correo electrónico** solo comprueba si se ha guardado **Correo de Notificación** en **Configuración de Correo**. Si SMTP solo está configurado mediante variables de entorno, o solo está configurado **Correo de Automatización**, el elemento seguirá sin completarse.
 </Accordion>
 
 <Accordion title="¿Por qué es importante PUBLIC_ORIGIN?">

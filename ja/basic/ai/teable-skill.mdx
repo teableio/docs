@@ -47,10 +47,10 @@ Claude Code、Cursor、CodexなどのMCPクライアントは、Skillをイン�
 
 <Steps>
   <Step title="MCP設定を開く">
-    左下のアバターをクリックし、**設定** → **MCP**を開きます。ページには、サーバーURLとクライアントごとの設定手順が表示されます。
+    左下のアバターをクリックし、**設定** → **MCP**を開きます。**クライアントにサーバーを追加**には、**Claude Code**、**Codex**、**Cursor**、**その他**のクライアント別タブがあり、各タブにそのクライアント用のコマンドまたは設定が表示されます。**サーバー URL**は**その他**タブに表示されます。
   </Step>
   <Step title="クライアントにサーバーを追加する">
-    使用するクライアントを選び、ページに表示されたコマンドまたは設定をコピーします。Claude Codeの場合は、ターミナルで次のコマンドを実行します。
+    使用するクライアントを選び、ページに表示されたコマンドまたは設定をコピーします。Claude Codeの場合、ページのコマンドにはサーバーURLがすでに含まれています。コピーしてターミナルで実行します。
 
     ```bash
     claude mcp add --transport http teable <サーバーURL>
@@ -61,8 +61,14 @@ Claude Code、Cursor、CodexなどのMCPクライアントは、Skillをイン�
   </Step>
 </Steps>
 
-認可したクライアントは**MCP**ページの**接続済みのクライアント**に表示され、初回接続日時と最終使用日時を確認できます。クライアントを使わなくなった場合は、そのクライアントをクリックして**削除**を選択すると、アクセスを取り消せます。
+認可したクライアントは**MCP**ページ上部の**接続済みのクライアント**に表示されます。クライアントをクリックするとダイアログが開き、**初回接続**と**最終使用**を確認できます。クライアントを使わなくなった場合は、同じダイアログで**削除**をクリックすると、アクセスを取り消せます。
 
-CI、スクリプト、ブラウザーのない環境では、**個人アクセストークン**を展開し、代わりに[パーソナルアクセストークン](/ja/api-doc/token)で接続します。すべてのリソースとすべてのスコープを含むトークンを作成し、`Authorization`ヘッダーで送信してください。ページには、クライアントごとの設定方法が表示されます。
+CI、スクリプト、ブラウザーのない環境では、**個人アクセストークン**を展開し、代わりに[パーソナルアクセストークン](/ja/api-doc/token)で接続します。すべてのリソースとすべてのスコープを含むトークンを作成し、`Authorization`ヘッダーで送信してください。表示されるコマンドまたは設定は、選択中のクライアントタブに合わせて切り替わります。
+
+<img
+  src="/images/docs/ai/2026-10-21-mcp-settings.png"
+  alt="MCP settings page with connected clients, the Claude Code setup command, and the collapsed Personal access tokens section"
+  className="docs-screenshot"
+/>
 
 この機能の活用例は、[Claude Code、Codex、CursorのMCP接続例](https://teable.ai/ja/blog/connect-ai-tools-to-teable-with-mcp)をご覧ください。

@@ -29,24 +29,30 @@ Teable admite dos formas de configurar el servicio de correo electrónico:
 La forma más sencilla de configurar el correo electrónico es mediante Administración del sistema:
 
 1. Inicia sesión como administrador (el primer usuario registrado)
-2. Ve a **Administración del sistema** → **Ajustes de la instancia**
-3. Busca la sección **Correo electrónico**
-4. Configura **Correo de notificaciones** y **Correo de Automatizaciones** según tus necesidades
+2. Ve a **Administración del sistema** → **Configuración de instancia**
+3. Busca la sección **Configuración de Correo**
+4. Configura **Correo de Notificación** y **Correo de Automatización** según tus necesidades: haz clic en el botón situado a la derecha de la fila, introduce los datos SMTP en el cuadro de diálogo y guárdalos
+
+<img
+  src="/images/selfhosted/email/2026-10-21-admin-settings-email-config.png"
+  alt="Configuración de correo en la configuración de la instancia, con correo de notificaciones y de automatización"
+  className="docs-screenshot"
+/>
 
 <Tip>
-La configuración de Administración del sistema admite **pruebas en directo**, por lo que puedes comprobar que los ajustes de SMTP funcionan antes de guardarlos.
+El cuadro de configuración admite pruebas en directo: antes de guardar, introduce un correo de prueba y haz clic en **Enviar** para comprobar que los ajustes de SMTP funcionan.
 </Tip>
 
-- **Correo de notificaciones**: se utiliza para verificar usuarios, restablecer contraseñas, enviar invitaciones y notificaciones del sistema y otros correos similares. También es lo que habilita **Iniciar sesión con código por correo** en la página de inicio de sesión.
-- **Correo de Automatizaciones**: se utiliza como servicio de correo predeterminado para las acciones Enviar correo electrónico de las Automatizaciones. Cada acción Enviar correo electrónico también puede configurar su propio [servidor SMTP personalizado](/es/basic/automation/actions/communication/smtp-sender).
+- **Correo de Notificación**: se utiliza para verificar usuarios, restablecer contraseñas, enviar invitaciones y notificaciones del sistema y otros correos similares. También es lo que habilita **Iniciar sesión con código por correo** en la página de inicio de sesión.
+- **Correo de Automatización**: se utiliza como servicio de correo predeterminado para las acciones Enviar correo electrónico de las Automatizaciones. Cada acción Enviar correo electrónico también puede configurar su propio [servidor SMTP personalizado](/es/basic/automation/actions/communication/smtp-sender).
 
 ### Fuentes de configuración y prioridad
 
-Recomendamos configurar primero el servicio de correo en **Administración del sistema → Ajustes de la instancia → Correo electrónico**. El orden de prioridad efectivo es:
+Recomendamos configurar primero el servicio de correo en **Administración del sistema → Configuración de instancia → Configuración de Correo**. El orden de prioridad efectivo es:
 
 1. **Servidor de correo personalizado dentro de la acción Enviar correo electrónico**: solo se aplica a esa acción concreta de la Automatización actual.
-2. **Administración del sistema → Ajustes de la instancia → Correo electrónico → Correo de Automatizaciones**: se utiliza para los correos de las Automatizaciones cuando la acción Enviar correo electrónico no configura su propio servidor.
-3. **Administración del sistema → Ajustes de la instancia → Correo electrónico → Correo de notificaciones**: se utiliza para verificar usuarios, restablecer contraseñas, enviar invitaciones y notificaciones del sistema y otros correos similares. También se utiliza como alternativa para los correos de Automatizaciones si no se ha configurado el Correo de Automatizaciones.
+2. **Administración del sistema → Configuración de instancia → Configuración de Correo → Correo de Automatización**: se utiliza para los correos de las Automatizaciones cuando la acción Enviar correo electrónico no configura su propio servidor.
+3. **Administración del sistema → Configuración de instancia → Configuración de Correo → Correo de Notificación**: se utiliza para verificar usuarios, restablecer contraseñas, enviar invitaciones y notificaciones del sistema y otros correos similares. También se utiliza como alternativa para los correos de Automatizaciones si no se ha configurado el Correo de Automatización.
 4. **Variables de entorno `BACKEND_MAIL_*`**: configuración de correo predeterminada a nivel de despliegue. Solo se utiliza como alternativa cuando el buzón correspondiente no está configurado en Administración del sistema.
 
 ### Campos de configuración
@@ -68,7 +74,7 @@ Recomendamos configurar primero el servicio de correo en **Administración del s
 En los despliegues donde prefieras una configuración basada en archivos, utiliza variables de entorno:
 
 <Note>
-Recomendamos configurar primero Correo de notificaciones y Correo de Automatizaciones en **Administración del sistema → Ajustes de la instancia → Correo electrónico**. Las variables de entorno se utilizan principalmente como valores predeterminados a nivel de despliegue y como configuración alternativa.
+Recomendamos configurar primero Correo de Notificación y Correo de Automatización en **Administración del sistema → Configuración de instancia → Configuración de Correo**. Las variables de entorno se utilizan principalmente como valores predeterminados a nivel de despliegue y como configuración alternativa.
 </Note>
 
 ```sh

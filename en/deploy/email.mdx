@@ -1,6 +1,6 @@
 ---
 title: "Configure SMTP for self-hosted email delivery"
-description: "Set up notification and automation email through the Admin Panel or environment variables. Configure SMTP, test delivery and check configuration priority."
+description: "Set up notification and automation email in System Admin or environment variables. Configure SMTP, test delivery and check configuration priority."
 sidebarTitle: "Configure Email Service"
 ---
 
@@ -11,7 +11,7 @@ Teable supports two ways to configure email service:
 
 <CardGroup cols={2}>
   <a className="docs-card-link" href="#option-1-admin-panel-recommended">
-<Card title="Admin Panel (Recommended)" icon="sliders">
+<Card title="System Admin (Recommended)" icon="sliders">
     Visual configuration with live testing. No restart required.
   </Card>
 </a>
@@ -24,17 +24,23 @@ Teable supports two ways to configure email service:
 
 ---
 
-## Option 1: Admin Panel (Recommended) {#option-1-admin-panel-recommended}
+## Option 1: System Admin (Recommended) {#option-1-admin-panel-recommended}
 
-The easiest way to configure email is through the Admin Panel:
+The easiest way to configure email is through System Admin:
 
 1. Log in as an administrator (the first registered user)
-2. Go to **Admin Panel** → **Instance settings**
-3. Find the **Email** section
-4. Configure **Notify email** and **Automation email** as needed
+2. Go to **System Admin** → **Instance settings**
+3. Find the **Email config** section
+4. Configure **Notify email** and **Automation email** as needed: click the button on the right of the row, enter the SMTP details in the dialog, and save
+
+<img
+  src="/images/selfhosted/email/2026-10-21-admin-settings-email-config.png"
+  alt="Email config in Instance settings, with Notify email and Automation email"
+  className="docs-screenshot"
+/>
 
 <Tip>
-The Admin Panel configuration supports **live testing** — you can verify your SMTP settings work before saving.
+The configuration dialog supports live testing: before saving, enter a test email address and click **Send** to check that your SMTP settings work.
 </Tip>
 
 - **Notify email**: Used for user verification, password reset, invitations, system notifications, and similar emails. It is also what makes **Sign in with email code** available on the login page.
@@ -42,12 +48,12 @@ The Admin Panel configuration supports **live testing** — you can verify your 
 
 ### Configuration sources and priority
 
-We recommend configuring mail service in **Admin Panel → Instance settings → Email** first. The effective priority is:
+We recommend configuring mail service in **System Admin → Instance settings → Email config** first. The effective priority is:
 
 1. **Custom mail server inside the Send Email action**: Applies only to that specific Send Email action in the current automation.
-2. **Admin Panel → Instance settings → Email → Automation email**: Used by automation emails when the Send Email action does not configure its own mail server.
-3. **Admin Panel → Instance settings → Email → Notify email**: Used for user verification, password reset, invitations, system notifications, and similar emails. It is also used as the fallback for automation emails if Automation email is not configured.
-4. **`BACKEND_MAIL_*` environment variables**: Deployment-level default mail configuration. Used only as a fallback when the corresponding mailbox is not configured in the Admin Panel.
+2. **System Admin → Instance settings → Email config → Automation email**: Used by automation emails when the Send Email action does not configure its own mail server.
+3. **System Admin → Instance settings → Email config → Notify email**: Used for user verification, password reset, invitations, system notifications, and similar emails. It is also used as the fallback for automation emails if Automation email is not configured.
+4. **`BACKEND_MAIL_*` environment variables**: Deployment-level default mail configuration. Used only as a fallback when the corresponding mailbox is not configured in System Admin.
 
 ### Configuration Fields
 
@@ -58,7 +64,7 @@ We recommend configuring mail service in **Admin Panel → Instance settings →
 | SSL/TLS | Whether to use SSL/TLS | `true` |
 | Username | SMTP authentication user | `noreply@company.com` |
 | Password | SMTP password or app password | `xxxxxxxxxxxxxx` |
-| Sender address | From address | `noreply@company.com` |
+| Sender | From address | `noreply@company.com` |
 | Sender name | Display name | `Teable Notification` |
 
 ---
@@ -68,7 +74,7 @@ We recommend configuring mail service in **Admin Panel → Instance settings →
 For deployments where you prefer file-based configuration, use environment variables:
 
 <Note>
-We recommend configuring Notify email and Automation email in **Admin Panel → Instance settings → Email** first. Environment variables are mainly used as deployment-level defaults and fallback configuration.
+We recommend configuring Notify email and Automation email in **System Admin → Instance settings → Email config** first. Environment variables are mainly used as deployment-level defaults and fallback configuration.
 </Note>
 
 ```sh
@@ -146,4 +152,4 @@ BACKEND_MAIL_AUTH_PASS=xxxxxxxxxxxxxx  # Your SendGrid API Key
 ## Related Documentation
 
 - [Environment Variables Reference](/en/deploy/env)
-- [Admin Panel Overview](/en/basic/admin-panel/overview)
+- [System Admin Overview](/en/basic/admin-panel/overview)

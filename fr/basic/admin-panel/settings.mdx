@@ -5,9 +5,9 @@ description: "Gérez les inscriptions, les invitations et les e-mails de votre i
 
 <Tip>Disponible à partir du plan Business auto-hébergé</Tip>
 
-Chemin : Administration système → Paramètres de l’instance
+Chemin : Administration système → Paramètres d'instance
 
-La page **Paramètres de l’instance** permet de gérer les paramètres principaux de toute l’instance, notamment les **Paramètres généraux**, les **E-mails** et les vérifications système affichées dans le panneau **Configuration en attente**.
+La page **Paramètres d'instance** permet de gérer les paramètres principaux de toute l’instance, notamment les **Paramètres généraux**, la **Configuration Email** et les vérifications système affichées dans le panneau **Configuration en attente**.
 
 ## Vue d’ensemble
 
@@ -15,21 +15,25 @@ Cette page couvre principalement les éléments de base au niveau de l’instanc
 
 | Type de paramètre | Description |
 |------|------|
-| **Paramètres généraux** | Inclut **Autoriser la création de nouveaux comptes**, **Domaines d’e-mail interdits**, **Autoriser l’envoi d’invitations à un Espace**, **Autoriser tout le monde à créer de nouveaux Espaces** et **Activer la vérification de l’e-mail** |
-| **E-mail** | Inclut **E-mail de notification** et **E-mail d’Automatisation** pour la réinitialisation du mot de passe, la vérification de l’e-mail, les e-mails de notification et les e-mails d’invitation |
+| **Paramètres généraux** | Inclut **Autoriser la création de nouveaux comptes**, **Autoriser l'envoi d'invitations à des espaces**, **Autoriser tout le monde à créer de nouveaux espaces** et **Activer la vérification par email** |
+| **Configuration Email** | Inclut **Email de Notification** et **Email d'Automatisation** pour la réinitialisation du mot de passe, la vérification de l’e-mail, les e-mails de notification et les e-mails d’invitation |
 | **Limites système** | Affiche les limites effectives de l’instance pour les données de Table, les Champs, les Vues et le texte |
 
-Pour activer les e-mails système, effectuez la configuration dans **E-mail**.
-
-Utilisez **Domaines d’e-mail interdits** pour empêcher les adresses e-mail des domaines répertoriés de s’inscrire. Teable rejette ces domaines avant l’envoi des codes de vérification d’inscription, et aucun e-mail d’invitation impliquant ces domaines n’est envoyé.
+Pour activer les e-mails système, effectuez la configuration dans **Configuration Email**.
 
 <Tip>
-Si l’e-mail n’est pas entièrement configuré, l’élément **E-mail** du panneau **Configuration en attente** ne deviendra pas vert.
+Tant que **Email de Notification** n’est pas configuré dans **Configuration Email**, l’élément **Email** du panneau **Configuration en attente** ne deviendra pas vert.
 </Tip>
 
 ## Limites système
 
 **Limites système** affiche les limites actuelles au niveau de l’instance pour les données de Table et la configuration associée. Si vous devez ajuster une limite, utilisez la variable d’environnement affichée sur cette page.
+
+<img
+  src="/images/docs/admin-panel/2026-10-21-admin-settings-system-limits.png"
+  alt="Limites système dans les paramètres de l’instance, avec les valeurs effectives, les valeurs par défaut et les sources de configuration des règles de schéma de table"
+  className="docs-screenshot"
+/>
 
 <Note>
 Après avoir modifié une variable d’environnement, redémarrez le service pour que la nouvelle valeur prenne effet.
@@ -39,19 +43,27 @@ Après avoir modifié une variable d’environnement, redémarrez le service pou
 
 Le panneau **Configuration en attente** à droite est une liste de contrôle système. Il indique quels paramètres importants manquent encore pour l’instance.
 
-Les vérifications courantes sur cette page comprennent :
+<img
+  src="/images/docs/admin-panel/2026-10-21-admin-settings-pending-configuration.png"
+  alt="Page des paramètres de l’instance avec les paramètres généraux à gauche et la liste de configuration en attente à droite"
+  className="docs-screenshot"
+/>
 
-| Élément | Impact |
-|------|------|
-| **Variable d’environnement PUBLIC_ORIGIN** | Affecte les fonctionnalités qui dépendent d’une URL d’accès externe, telles que les pièces jointes et les importations |
-| **Activer HTTPS** | Affecte les capacités qui dépendent de HTTPS, telles que le copier-coller |
-| **E-mail** | Affecte la réinitialisation du mot de passe, la vérification de l’e-mail, les notifications et les fonctionnalités similaires |
+La liste regroupe ses éléments comme suit :
+
+| Groupe | Élément | Impact |
+|------|------|------|
+| **Bases** | **Variable d'environnement PUBLIC_ORIGIN** | Affecte les fonctionnalités qui dépendent d’une URL d’accès externe, telles que les pièces jointes et les importations |
+| **Bases** | **Activer HTTPS** | Affecte les capacités qui dépendent de HTTPS, telles que le copier-coller |
+| **Bases** | **Email** | Affecte la réinitialisation du mot de passe, la vérification de l’e-mail, les notifications et les fonctionnalités similaires |
+| **Services IA** | **LLM API** | Affecte les fonctionnalités IA telles que le Chat IA et les Champs IA. À configurer dans les [Paramètres IA](/fr/basic/admin-panel/ai-setting) |
+| **Générateur d’applications** | **Générateur d’applications : moteur de déploiement** | Affecte la publication des applications créées avec le Générateur d’applications. À configurer dans les [Paramètres IA](/fr/basic/admin-panel/ai-setting) |
 
 Si ces éléments ne sont pas terminés, l’instance peut toujours s’ouvrir normalement, mais certaines fonctionnalités peuvent rester indisponibles.
 
 ## Lien avec les paramètres IA
 
-**Paramètres de l’instance** affiche une partie des vérifications au niveau système, mais ce n’est pas l’endroit où vous configurez les **modèles IA**, l’environnement d’exécution du **Chat IA** ou le **Générateur d’Applications**.
+**Paramètres d'instance** affiche une partie des vérifications au niveau système, mais ce n’est pas l’endroit où vous configurez les **modèles IA**, l’environnement d’exécution du **Chat IA** ou le **Générateur d’Applications**.
 
 Accédez ici à ces paramètres :
 
@@ -59,7 +71,7 @@ Accédez ici à ces paramètres :
 
 Vous pouvez comprendre la répartition ainsi :
 
-- **Paramètres de l’instance** : couvre les capacités fondamentales de l’instance elle-même
+- **Paramètres d'instance** : couvre les capacités fondamentales de l’instance elle-même
 - **Paramètres IA** : couvre le Chat IA, les Champs IA, l’Automatisation IA et le Générateur d’Applications
 
 ## Ordre de vérification
@@ -77,7 +89,7 @@ Si vous préparez un nouveau déploiement auto-hébergé ou une première mise e
     Assurez-vous que **SMTP** est configuré et peut envoyer des e-mails correctement.
   </Step>
   <Step title="Continuer avec les paramètres IA">
-    Une fois les éléments de base confirmés, poursuivez avec les [Paramètres IA](/fr/basic/admin-panel/ai-setting).
+    Une fois les éléments de base confirmés, configurez **LLM API** et **Générateur d’applications : moteur de déploiement** dans les [Paramètres IA](/fr/basic/admin-panel/ai-setting).
   </Step>
 </Steps>
 
@@ -91,9 +103,9 @@ Cela facilite l’activation successive des éléments de **Configuration en att
 Cela signifie généralement que l’instance est accessible, mais qu’une ou plusieurs exigences importantes d’exécution sont encore absentes. Suivez les indications du panneau de droite et complétez-les une par une au lieu de vous fier uniquement à l’ouverture de la page.
 </Accordion>
 
-<Accordion title="L’e-mail fonctionne parfois, mais E-mail n’est toujours pas marqué comme terminé">
+<Accordion title="L’e-mail fonctionne parfois, mais Email n’est toujours pas marqué comme terminé">
 
-Vérifiez que les paramètres SMTP enregistrés sont complets, qu’ils correspondent à l’usage d’envoi prévu et que les e-mails de vérification ou de notification peuvent être envoyés de manière fiable.
+L’élément **Email** vérifie uniquement si **Email de Notification** est enregistré dans **Configuration Email**. Si SMTP est configuré uniquement par variables d’environnement, ou si seul **Email d'Automatisation** est configuré, l’élément reste incomplet.
 </Accordion>
 
 <Accordion title="Pourquoi PUBLIC_ORIGIN est-il important ?">

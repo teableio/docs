@@ -7,7 +7,7 @@ description: "Gestisci registrazione, inviti ed email dell’istanza self-hosted
 
 Percorso: Amministrazione di sistema → Impostazioni dell'istanza
 
-La pagina **Impostazioni dell'istanza** consente di gestire le impostazioni principali dell'intera istanza, incluse **Impostazioni generali**, **Email** e le verifiche di sistema mostrate nel pannello **Configurazione in sospeso**.
+La pagina **Impostazioni dell'istanza** consente di gestire le impostazioni principali dell'intera istanza, incluse **Impostazioni generali**, **Configurazione Email** e le verifiche di sistema mostrate nel pannello **Configurazione in attesa**.
 
 ## Panoramica
 
@@ -15,37 +15,49 @@ Questa pagina riguarda principalmente gli elementi di base a livello di istanza.
 
 | Tipo di impostazione | Descrizione |
 |------|------|
-| **Impostazioni generali** | Include **Consenti la creazione di nuovi account**, **Domini email vietati**, **Consenti l'invio di inviti agli Spazi**, **Consenti a tutti di creare nuovi Spazi** e **Abilita verifica email** |
-| **Email** | Include **Email di notifica** ed **Email delle Automazioni** per reimpostazione della password, verifica email, email di notifica ed email di invito |
+| **Impostazioni generali** | Include **Consenti la creazione di nuovi account**, **Consenti l'invio di inviti per lo spazio**, **Consenti a tutti di creare nuovi spazi** e **Abilita la verifica email** |
+| **Configurazione Email** | Include **Email di Notifica** ed **Email di Automazione** per reimpostazione della password, verifica email, email di notifica ed email di invito |
 | **Limiti di sistema** | Mostra i limiti effettivi dell'istanza per dati delle Tabelle, Campi, Viste e testo |
 
-Per abilitare le email di sistema, completa la configurazione in **Email**.
-
-Usa **Domini email vietati** per impedire la registrazione di indirizzi email appartenenti ai domini elencati. Teable rifiuta tali domini prima di inviare i codici di verifica della registrazione e non invia email di invito che li coinvolgono.
+Per abilitare le email di sistema, completa la configurazione in **Configurazione Email**.
 
 <Tip>
-Se l'email non è configurata completamente, l'elemento **Email** nel pannello **Configurazione in sospeso** non diventerà verde.
+Finché **Email di Notifica** non è configurata in **Configurazione Email**, l'elemento **Email** nel pannello **Configurazione in attesa** non diventerà verde.
 </Tip>
 
 ## Limiti di sistema
 
 **Limiti di sistema** mostra i limiti correnti a livello di istanza per i dati delle Tabelle e la relativa configurazione. Se devi modificare un limite, usa la variabile di ambiente indicata in quella pagina.
 
+<img
+  src="/images/docs/admin-panel/2026-10-21-admin-settings-system-limits.png"
+  alt="Limiti di sistema nelle impostazioni dell'istanza, con valori effettivi, predefiniti e origini di configurazione delle regole dello schema delle tabelle"
+  className="docs-screenshot"
+/>
+
 <Note>
 Dopo aver modificato una variabile di ambiente, riavvia il servizio affinché il nuovo valore abbia effetto.
 </Note>
 
-## Configurazione in sospeso
+## Configurazione in attesa
 
-Il pannello **Configurazione in sospeso** a destra è un elenco di controllo del sistema. Mostra quali impostazioni importanti mancano ancora per l'istanza.
+Il pannello **Configurazione in attesa** a destra è un elenco di controllo del sistema. Mostra quali impostazioni importanti mancano ancora per l'istanza.
 
-Le verifiche comuni in questa pagina includono:
+<img
+  src="/images/docs/admin-panel/2026-10-21-admin-settings-pending-configuration.png"
+  alt="Pagina delle impostazioni dell'istanza con le impostazioni generali a sinistra e l'elenco delle configurazioni in sospeso a destra"
+  className="docs-screenshot"
+/>
 
-| Elemento | Impatto |
-|------|------|
-| **Variabile di ambiente PUBLIC_ORIGIN** | Influisce sulle funzionalità che dipendono da un URL di accesso esterno, come allegati e importazioni |
-| **Abilita HTTPS** | Influisce sulle funzionalità che dipendono da HTTPS, come copia e incolla |
-| **Email** | Influisce su reimpostazione della password, verifica email, notifiche e funzionalità analoghe |
+L'elenco raggruppa i propri elementi come segue:
+
+| Gruppo | Elemento | Impatto |
+|------|------|------|
+| **Nozioni di base** | **Variabile d'ambiente PUBLIC_ORIGIN** | Influisce sulle funzionalità che dipendono da un URL di accesso esterno, come allegati e importazioni |
+| **Nozioni di base** | **Abilita HTTPS** | Influisce sulle funzionalità che dipendono da HTTPS, come copia e incolla |
+| **Nozioni di base** | **Email** | Influisce su reimpostazione della password, verifica email, notifiche e funzionalità analoghe |
+| **Servizi IA** | **LLM API** | Influisce sulle funzionalità IA come AI Chat e Campi IA. Si completa in [Impostazioni IA](/it/basic/admin-panel/ai-setting) |
+| **App Builder** | **App Builder: motore di distribuzione** | Influisce sulla pubblicazione delle app create con App Builder. Si completa in [Impostazioni IA](/it/basic/admin-panel/ai-setting) |
 
 Se questi elementi non vengono completati, l'istanza può comunque aprirsi normalmente, ma alcune funzionalità potrebbero rimanere non disponibili.
 
@@ -77,11 +89,11 @@ Se stai preparando una nuova distribuzione Self-hosted o la stai rendendo operat
     Assicurati che **SMTP** sia configurato e possa inviare correttamente le email.
   </Step>
   <Step title="Continua con Impostazioni IA">
-    Dopo aver verificato gli elementi di base, continua con [Impostazioni IA](/it/basic/admin-panel/ai-setting).
+    Dopo aver verificato gli elementi di base, completa **LLM API** e **App Builder: motore di distribuzione** in [Impostazioni IA](/it/basic/admin-panel/ai-setting).
   </Step>
 </Steps>
 
-Ciò semplifica l'attivazione in sequenza degli elementi di **Configurazione in sospeso** e agevola la risoluzione dei problemi.
+Ciò semplifica l'attivazione in sequenza degli elementi di **Configurazione in attesa** e agevola la risoluzione dei problemi.
 
 ## Domande frequenti
 
@@ -93,7 +105,7 @@ In genere, ciò significa che l'istanza è raggiungibile, ma mancano ancora uno 
 
 <Accordion title="L'email a volte funziona, ma non è ancora contrassegnata come completata">
 
-Controlla che le impostazioni SMTP salvate siano complete, che corrispondano allo scopo di invio previsto e che le email di verifica o notifica possano essere inviate in modo affidabile.
+L'elemento **Email** verifica solo se **Email di Notifica** è salvata in **Configurazione Email**. Se SMTP è configurato solo tramite variabili d'ambiente, oppure è configurata solo **Email di Automazione**, l'elemento resta incompleto.
 </Accordion>
 
 <Accordion title="Perché PUBLIC_ORIGIN è importante?">
