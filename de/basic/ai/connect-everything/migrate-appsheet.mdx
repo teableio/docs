@@ -1,0 +1,28 @@
+---
+title: "Von AppSheet migrieren"
+description: "Importieren Sie Daten aus AppSheet in Teable, stellen Sie Beziehungen wieder her und erstellen Sie passende Ansichten und Abläufe."
+---
+
+Übertragen Sie zuerst die Daten aus AppSheet und erstellen Sie danach die Arbeitsoberfläche in Teable. Beginnen Sie mit einem kleinen Export und behalten Sie das Quellsystem bis zur Prüfung des neuen Ablaufs bei.
+
+## 1. Quelldaten exportieren
+
+Ermitteln Sie im AppSheet-Editor die Datenquelle jeder Tabelle. Bei Google Sheets oder Excel besorgen Sie sich Zugriff auf die Datei und importieren die Quelldaten direkt. Siehe die [AppSheet-Datenquellenanleitung](https://support.google.com/appsheet/answer/10106309?hl=en).
+
+Für eine App-Ansicht kann der Ersteller unter **Actions → Create a new action** eine Aktion anlegen, die Tabelle auswählen und **Do this** auf **App: export this view to a CSV file** setzen. Speichern Sie, melden Sie sich im Browser bei der App an, öffnen Sie die Ansicht und führen Sie die Aktion aus. Dies erfordert eine App mit Anmeldung und funktioniert nicht in öffentlichen Apps. Filter und Slices können exportierte Zeilen oder Spalten einschränken; vergleichen Sie die Datei mit den erwarteten Daten. Siehe [offizielle CSV-Anleitung](https://support.google.com/appsheet/answer/11579391?hl=en).
+
+## 2. Importieren und Beziehungen herstellen
+
+1. Bewahren Sie pro Quelltabelle eine stabile ID-Spalte sowie IDs für Verweise auf andere Tabellen auf. Speichern Sie sie als Text, einschließlich führender Nullen.
+2. Erstellen Sie anhand der [Anleitung für CSV-, Excel- und Google-Sheets-Importe](/de/basic/table/import) die Tabellen in einem Teable-Projekt. Speichern Sie Excel-Dateien über 5 MB zunächst als CSV. Prüfen Sie Feldtypen, Datumswerte und Auswahloptionen in der Vorschau.
+3. Erstellen Sie nach dem Import aller Tabellen [Verknüpfungsfelder](/de/basic/field/link) und ordnen Sie Datensätze über die Quell-IDs zu. Ordnen Sie E-Mail-Adressen ausdrücklich Teable-Benutzern zu; ein E-Mail-Import versendet keine Einladung.
+
+## 3. Arbeitsablauf neu aufbauen
+
+Erstellen Sie mit [App Builder](/de/basic/ai/app-builder) die benötigten Listen, Detailseiten und Formulare. Richten Sie Formeln, Berechtigungen und [Automatisierungen](/de/basic/automation) in Teable neu ein und testen Sie sie einzeln. Der Export liefert Werte; Oberflächen, Ausdrücke, Zugriffsregeln und Ablaufdefinitionen der Quellanwendung werden separat eingerichtet.
+
+## 4. Vor dem Wechsel prüfen
+
+Vergleichen Sie Datensatzanzahl und einige Verknüpfungen mit der Quelle. Prüfen Sie Exportfilter, Datumswerte, Anhänge sowie Lese- und Schreibrechte jeder Rolle. Legen Sie den Wechselzeitpunkt fest, pausieren Sie Änderungen an der Quelle, exportieren Sie ein letztes Mal und gleichen Sie Änderungen über Quell-IDs ab, bevor Sie das Team einladen. Ein Dateiimport ist eine Momentaufnahme ohne laufende Synchronisierung; erneute Importe können Duplikate erzeugen.
+
+Zu Funktionen und Bereitstellung lesen Sie den [Vergleich von Teable und AppSheet (auf Englisch)](https://teable.ai/compare/appsheet-alternative).
