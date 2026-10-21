@@ -1,0 +1,28 @@
+---
+title: "Von Glide migrieren"
+description: "Importieren Sie Daten aus Glide in Teable, stellen Sie Beziehungen wieder her und erstellen Sie passende Ansichten und Abläufe."
+---
+
+Übertragen Sie zuerst die Daten aus Glide und erstellen Sie danach die Arbeitsoberfläche in Teable. Beginnen Sie mit einem kleinen Export und behalten Sie das Quellsystem bis zur Prüfung des neuen Ablaufs bei.
+
+## 1. Quelldaten exportieren
+
+Öffnen Sie für eine Glide-Classic-App mit Glide Tables den Data Editor, klicken Sie mit der rechten Maustaste auf die Tabelle, wählen Sie **Export**, markieren Sie die Spalten und speichern Sie die CSV-Datei. Wiederholen Sie dies je Tabelle; siehe [offizielle Exportanleitung](https://www.glideapps.com/docs/essentials/data-sources/glide-tables). Bei Google Sheets oder Excel lassen Sie sich die Quelldatei vom Eigentümer bereitstellen und importieren diese direkt.
+
+Glide lässt leere Spalten sowie Relations- und Abfragespalten aus; einfache berechnete Ergebnisse lassen sich als Werte exportieren. Dokumentieren Sie fehlende Felddefinitionen und Beziehungsschlüssel anhand der [Exportgrenzen](https://help.glideapps.com/en/articles/9404170-why-is-data-missing-from-my-data-export) separat. Bewahren Sie benötigte Dateien in freigegebenem Speicher auf; eine URL in einer CSV kopiert die Datei nicht.
+
+## 2. Importieren und Beziehungen herstellen
+
+1. Bewahren Sie pro Quelltabelle eine stabile ID-Spalte sowie IDs für Verweise auf andere Tabellen auf. Speichern Sie sie als Text, einschließlich führender Nullen.
+2. Erstellen Sie anhand der [Anleitung für CSV-, Excel- und Google-Sheets-Importe](/de/basic/table/import) die Tabellen in einem Teable-Projekt. Speichern Sie Excel-Dateien über 5 MB zunächst als CSV. Prüfen Sie Feldtypen, Datumswerte und Auswahloptionen in der Vorschau.
+3. Erstellen Sie nach dem Import aller Tabellen [Verknüpfungsfelder](/de/basic/field/link) und ordnen Sie Datensätze über die Quell-IDs zu. Ordnen Sie E-Mail-Adressen ausdrücklich Teable-Benutzern zu; ein E-Mail-Import versendet keine Einladung.
+
+## 3. Arbeitsablauf neu aufbauen
+
+Erstellen Sie mit [App Builder](/de/basic/ai/app-builder) die benötigten Listen, Detailseiten und Formulare. Richten Sie Formeln, Berechtigungen und [Automatisierungen](/de/basic/automation) in Teable neu ein und testen Sie sie einzeln. Der Export liefert Werte; Oberflächen, Ausdrücke, Zugriffsregeln und Ablaufdefinitionen der Quellanwendung werden separat eingerichtet.
+
+## 4. Vor dem Wechsel prüfen
+
+Vergleichen Sie Datensatzanzahl und einige Verknüpfungen mit der Quelle. Prüfen Sie Exportfilter, Datumswerte, Anhänge sowie Lese- und Schreibrechte jeder Rolle. Legen Sie den Wechselzeitpunkt fest, pausieren Sie Änderungen an der Quelle, exportieren Sie ein letztes Mal und gleichen Sie Änderungen über Quell-IDs ab, bevor Sie das Team einladen. Ein Dateiimport ist eine Momentaufnahme ohne laufende Synchronisierung; erneute Importe können Duplikate erzeugen.
+
+Zu Funktionen und Bereitstellung lesen Sie den [Vergleich von Teable und Glide (auf Englisch)](https://teable.ai/compare/glide-alternative).

@@ -1,0 +1,28 @@
+---
+title: "迁移 Glide"
+description: "将 Glide 数据导入 Teable，恢复关联，并重建团队需要的视图和工作流。"
+---
+
+先把 Glide 数据导入 Teable，再围绕数据重建工作界面。首次使用少量数据试跑，在新流程检查完成前保留源系统。
+
+## 1. 导出源数据
+
+使用 Glide Tables 的 Glide Classic 应用：打开 Data Editor，右键点击表名，选择 **Export**，勾选需要的列并保存 CSV；逐表重复操作。参照 [Glide 官方导出步骤](https://www.glideapps.com/docs/essentials/data-sources/glide-tables)。若应用使用 Google Sheets 或 Excel，向表格所有者取得底层电子表格，再导入该源表。
+
+Glide 导出会省略空列，以及关联和查询类列；简单计算结果可导出为值。参照[导出范围说明](https://help.glideapps.com/en/articles/9404170-why-is-data-missing-from-my-data-export)，另外记录缺失字段定义及关联用的编号。所需文件应保留在组织批准的存储中；CSV 中的网址不会自动复制文件。
+
+## 2. 导入并恢复关联
+
+1. 为每张源表保留稳定的编号列，以及引用其他表的编号。将这些编号按文本保存，保留前导零。
+2. 按照 [CSV、Excel 与 Google Sheets 导入指南](/zh/basic/table/import)，在同一个 Teable 项目中创建表。Excel 文件超过 5MB 时先另存为 CSV；在导入预览中检查字段类型、日期和选项。
+3. 导入所有相关表后，创建[关联字段](/zh/basic/field/link)，根据源编号匹配记录。将负责人邮箱逐一映射到 Teable 用户；导入邮箱不会邀请该用户。
+
+## 3. 重建工作流
+
+用[应用构建器](/zh/basic/ai/app-builder)基于已导入的表创建列表、详情页和表单。在 Teable 中重新配置公式、权限和[自动化](/zh/basic/automation)，分别进行测试。导出值提供数据，源应用的界面、表达式、访问规则和工作流定义需要单独配置。
+
+## 4. 切换前检查
+
+对比源数据的记录数，抽查关联记录，检查导出筛选、日期、附件访问和各角色的读写权限。确定切换时间，暂停源系统编辑，完成最后一次导出，并按源编号核对变更后再邀请团队使用。文件导入是数据快照，不会持续同步；重复导入可能生成重复记录。
+
+选择功能与部署方式时，可阅读 [Teable 与 Glide 对比](https://teable.ai/zh/compare/glide-alternative)。
