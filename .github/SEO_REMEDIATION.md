@@ -33,6 +33,7 @@ issues become additional numbered items. Production-only checks remain explicit.
 | 20 | Run repair tests after source normalization | Automated raw releases can reach maintenance; normalized output is tested before any push | Complete locally |
 | 21 | Match RSS links to rendered date anchors | All 132 feeds resolve to the correct Update; published Unicode IDs remain unchanged; future releases retain explicit IDs | Complete locally |
 | 22 | Resync stale Turkish AI overview HTML | The original hosted URL renders its current source title and seven native Card links | Complete locally; hosted refresh pending |
+| 23 | Support hosted RSS slug fallback | All actual feed fragments resolve to the correct release, including the hosted generator that ignores Update IDs | Complete locally |
 
 ## Validation boundaries and discoveries
 
@@ -220,3 +221,11 @@ each fix here before committing it.
 - The full 1,869-page hosted scan found one page whose HTML still returned the old title and non-native Card links. Six unrelated transport timeouts passed targeted rechecks. The Turkish overview's Markdown representation contains the current source, but its HTML stays a Cloudflare HIT even after item 21's deployment; request cache directives and User-Agent variations do not refresh it.
 - Updated only the page's existing resync comment to trigger a file rebuild. Body text and metadata remain byte-for-byte unchanged. Independent review and local HTTP checks passed: correct title, seven native links, zero role-only Card links and no visible synchronization comment.
 - This is a targeted rebuild attempt. Success requires verifying the unchanged production URL after deployment; local rendering alone does not prove hosted cache invalidation.
+
+### 23 — Hosted RSS fallback compatibility
+
+- Item 21's full hosted recheck found that the production generator still ignores explicit Update IDs, despite the installed CLI processor honoring them. Fresh Cloudflare/Vercel MISS responses show the same 536 broken links; this is a hosted/local behavior difference, not stale RSS cache. Dates, text and all existing IDs remain correct.
+- Added the hosted generator's ASCII date aliases inside 658 Updates, including entries outside the latest-15 feed window. All original Unicode IDs remain in place. Future publication, backfills and new history pages gain aliases during final normalization; monthly aliases also enter the main-page history routing manifest and footer.
+- Date-word data comes from slugify 2.2.0 for the existing supported date vocabulary, including exact lower/title/upper case. Unknown case, characters or words fail before writes instead of guessing. Conflicting cross-Update aliases also fail safely.
+- Independent review compared all 1,540 labels and 410 word mappings with the actual generator: zero differences. All prior anchors and manifest entries remain; excluding only the inserted aliases reproduces every Update byte-for-byte. All 38 Python tests passed, covering future releases, historical replacement, new-month routing, fenced examples and atomic failure.
+- All 132 local pages passed against the 1,265 actual links from the original hosted feeds: correct Update/date, 1,540 old date IDs and 12,867 old content IDs retained in order, exactly 658 new aliases, unchanged visible Update text, one H1 and no duplicate IDs. Twelve Node tests, source checks, Mintlify validation and full link checks also passed. Actual hosted feed-to-HTML verification remains the release gate.

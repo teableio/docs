@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from datetime import date
 
-from changelog_maintenance import maintain, normalize, merge, entries, anchors, BLOCK, rss_date, with_rss_date, normalize_page_rss, update_attributes, update_label, with_date_id, date_slug
+from changelog_maintenance import maintain, normalize, merge, entries, anchors, BLOCK, rss_date, with_rss_date, normalize_page_rss, update_attributes, update_label, with_date_id, date_slug, rss_date_slug
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -24,6 +24,62 @@ def apply(root, changes):
 
 
 class MaintenanceTests(unittest.TestCase):
+    def test_hosted_rss_date_vocabulary_matches_real_generator_case_and_separators(self):
+        cases = {'2026年10月20日': '2026-10-20', '16 سبتمبر 2025': '16-sbtmbr-2025',
+                 '21. März 2025': '21-maerz-2025', '1 MÄRZ 2027': '1-m-ae-rz-2027',
+                 '1 EYLÜL 2027': '1-eyl-ue-l-2027', '5 février 2025': '5-fevrier-2025',
+                 '20 октября 2026 г.': '20-oktyabrya-2026-g', '16 вересня 2025': '16-veresnya-2025',
+                 '01 de enero de 2027': '01-de-enero-de-2027', '2026-10-20': '2026-10-20'}
+        for label, expected in cases.items():
+            self.assertEqual(rss_date_slug(label), expected, label)
+        for label in ('1 MäRz 2027', '1 Foo 2027', '２０２７-01-01'):
+            with self.assertRaisesRegex(ValueError, 'Unsupported RSS date'):
+                rss_date_slug(label)
+
+    def test_rss_alias_normalization_preserves_fences_and_existing_heading_aliases(self):
+        example = '```mdx\n<Update label="1 MäRz 2027">\n</Update>\n```\n'
+        source = '<Update label="2026年10月20日">\n' + example + '\n## Existing {#2026-10-20}\n</Update>'
+        normalized = normalize_page_rss(source, 'ja')
+        self.assertIn(example, normalized)
+        self.assertNotIn('<span id="2026-10-20"', normalized)
+        self.assertEqual(normalize_page_rss(normalized, 'ja'), normalized)
+
+    def test_localized_new_month_creates_aliases_and_routes_for_new_history_file(self):
+        root = self.fixture()
+        path = root / 'ja/changelog.mdx'
+        source = path.read_text()
+        for day in (15, 14, 13):
+            source = source.replace(f'label="2026-10-{day}"', f'label="2026年10月{day}日"')
+        path.write_text(insert(source, '<Update label="2026年11月1日">\n## November\n</Update>'))
+        apply(root, maintain(root))
+        history = root / 'ja/changelog-2026-10.mdx'
+        manifest = json.loads((root / '.github/changelog-history-anchors.json').read_text())
+        for day in (15, 14, 13):
+            identity = f'2026-10-{day}'
+            self.assertIn(f'<span id="{identity}" />', history.read_text())
+            self.assertIn(identity, manifest['ja']['2026-10'])
+            self.assertIn(identity, path.read_text())
+        self.assertIn('<span id="2026-11-1" />', path.read_text())
+        self.assertEqual(maintain(root), {})
+
+    def test_unknown_rss_date_case_fails_atomically(self):
+        root = self.fixture()
+        path = root / 'de/changelog.mdx'
+        path.write_text(insert(path.read_text(), '<Update label="1 MäRz 2027">\n## Future\n</Update>'))
+        before = {p.relative_to(root): p.read_bytes() for p in root.rglob('*') if p.is_file()}
+        with self.assertRaisesRegex(ValueError, 'Unsupported RSS date word/case'):
+            maintain(root)
+        self.assertEqual(before, {p.relative_to(root): p.read_bytes() for p in root.rglob('*') if p.is_file()})
+
+    def test_alias_owned_by_different_update_fails_before_writes(self):
+        root = self.fixture()
+        path = root / 'ja/changelog.mdx'
+        source = path.read_text().replace('label="2026-10-15"', 'label="2026年10月15日"')
+        source = source.replace('## Fixture 14', '<span id="2026-10-15" />\n## Fixture 14')
+        path.write_text(source)
+        with self.assertRaisesRegex(ValueError, 'RSS alias belongs to another Update'):
+            maintain(root)
+
     def test_rss_explicit_date_ids_preserve_unicode_in_every_locale(self):
         expected = {
             '2026年10月20日': '2026年10月20日',

@@ -12,6 +12,7 @@ from changelog_order import BLOCK, parse_date, sort_changelog, update_attributes
 SCRIPT = re.compile(r'<script\s+type="application/ld\+json"\s+dangerouslySetInnerHTML=\{\{[\s\S]*?\}\}\s*/>\s*\n?')
 HEADING = re.compile(r'^(#{1,6})\s+(.+?)(\r?\n)?$')
 EXPLICIT = re.compile(r'\s+\{#([^}]+)\}\s*$')
+RSS_WORDS = json.loads(Path(__file__).with_name('changelog_rss_words.json').read_text())['words']
 
 
 class StaticRssObject:
@@ -154,13 +155,25 @@ def with_rss_date(block, released):
 
 
 def normalize_page_rss(source, locale):
+    existing_ids = set()
+    def collect(text):
+        existing_ids.update(html.unescape(value) for value in re.findall(r'<span\b[^>]*\bid="([^"]+)"', text))
+        existing_ids.update(value.replace('&', '') for value in re.findall(r'^#{1,6} .*?\{#([^}]+)\}\s*$', text, re.M))
+        return text
+    map_unfenced(source, collect)
     def transform(text):
         def replace(match):
             # Scan the opening tag instead of splitting at a '>' inside a title.
             block = text[match.start():]
             _, end = update_attributes(block)
             opening = with_rss_date(block[:end + 1], parse_date(update_label(block), locale))
-            return match.start(), match.start() + end + 1, with_date_id(opening)
+            opening = with_date_id(opening)
+            label = update_label(block)
+            alias = rss_date_slug(label)
+            if alias != date_slug(label) and alias not in existing_ids:
+                opening += '\n<span id="' + html.escape(alias, quote=True) + '" />'
+                existing_ids.add(alias)
+            return match.start(), match.start() + end + 1, opening
         replacements, cursor = [], 0
         while True:
             match = re.compile(r'^<Update\b', re.M).search(text, cursor)
@@ -179,6 +192,22 @@ def date_slug(label):
     # Date labels contain letters, digits and separators; unlike prose headings,
     # they have no Markdown or ampersands. Preserve non-Latin letters.
     return re.sub(r'\s+', '-', re.sub(r'[^\w\s-]', '', label.lower())).strip('-')
+
+
+def rss_date_slug(label):
+    """Match hosted slugify@2.2.0 for the supported date-label vocabulary."""
+    label = label.strip()
+    if re.fullmatch(r'[0-9]{4}年[0-9]{1,2}月[0-9]{1,2}日', label):
+        return re.sub(r'[^0-9]+', '-', label).strip('-')
+    def word(match):
+        value = match[0]
+        if value not in RSS_WORDS:
+            raise ValueError('Unsupported RSS date word/case: ' + value)
+        return RSS_WORDS[value]
+    result = re.sub(r'[^\W\d_]+', word, label)
+    if re.search(r'[^a-z0-9\s.,-]', result):
+        raise ValueError('Unsupported RSS date characters: ' + label)
+    return re.sub(r'[^a-z0-9]+', '-', result).strip('-')
 
 
 def with_date_id(block):
@@ -422,22 +451,54 @@ def maintain(root):
         else:
             tail = source[matches[-1].end():]
         planned[name] = prefix + '\n\n'.join(block for _, block in sorted(recent, key=lambda value: value[0], reverse=True)) + tail
-    if history_changed:
-        planned[manifest_path] = json.dumps(manifest, indent=2, ensure_ascii=False) + '\n'
-        planned['docs.json'] = json.dumps(config, indent=2, ensure_ascii=False) + '\n'
     # Every historical page needs explicit publication dates, including pages
     # untouched by the current month's rollovers or historical republications.
     for locale in resources:
-        for path in root.joinpath(locale).glob('changelog*.mdx'):
-            name = path.relative_to(root).as_posix()
+        names = {path.relative_to(root).as_posix() for path in root.joinpath(locale).glob('changelog*.mdx')}
+        names.update(name for name in planned if re.fullmatch(re.escape(locale) + r'/changelog(?:-\d{4}(?:-\d{2})?)?\.mdx', name))
+        for name in sorted(names):
             try:
-                planned[name] = normalize_page_rss(planned.get(name, path.read_text()), locale)
+                source = planned[name] if name in planned else root.joinpath(name).read_text()
+                planned[name] = normalize_page_rss(source, locale)
             except ValueError as error:
                 raise ValueError(f'{name}: {error}') from error
+    # New feed aliases must also route older main-page links to their month.
+    for locale, copy in resources.items():
+        changed = False
+        names = {path.relative_to(root).as_posix() for path in root.joinpath(locale).glob('changelog-????-??.mdx')}
+        names.update(name for name in planned if re.fullmatch(re.escape(locale) + r'/changelog-\d{4}-\d{2}\.mdx', name))
+        for name in sorted(names):
+            known = manifest.setdefault(locale, {}).setdefault(name[-11:-4], [])
+            source = planned[name] if name in planned else root.joinpath(name).read_text()
+            for _, block in entries(source, locale):
+                for identity in anchors(block):
+                    if identity not in known:
+                        known.append(identity)
+                        changed = True
+        if changed:
+            history_changed = True
+            name = f'{locale}/changelog.mdx'
+            source = planned[name]
+            last = list(BLOCK.finditer(source))[-1]
+            tail, _ = main_footer(root, locale, copy, manifest[locale], planned)
+            planned[name] = source[:last.end()] + tail
+    if history_changed:
+        planned[manifest_path] = json.dumps(manifest, indent=2, ensure_ascii=False) + '\n'
+        planned['docs.json'] = json.dumps(config, indent=2, ensure_ascii=False) + '\n'
     # Validate every resulting MDX before mutating any files.
     for name, content in planned.items():
         if name.endswith('.mdx'):
             sort_changelog(content, name.split('/')[0])
+            seen = set()
+            for _, block in entries(content, name.split('/')[0]):
+                identities = anchors(block)
+                alias = rss_date_slug(update_label(block))
+                if alias not in identities:
+                    raise ValueError(f'{name}: RSS alias belongs to another Update: {alias}')
+                overlap = seen.intersection(identities)
+                if overlap:
+                    raise ValueError(f'{name}: IDs shared by different Updates: {sorted(overlap)}')
+                seen.update(identities)
     return {name: content for name, content in planned.items() if not root.joinpath(name).exists() or root.joinpath(name).read_text() != content}
 
 
