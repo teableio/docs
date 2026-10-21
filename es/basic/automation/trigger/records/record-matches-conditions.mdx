@@ -51,12 +51,12 @@ Es fácil confundir estos dos disparadores. Esta es la diferencia principal:
 
 Usa **Cuando se actualiza un Registro** si necesitas reaccionar a cualquier cambio. Usa **Cuando un Registro cumple las condiciones** si solo te interesa que se alcance un estado concreto.
 
-<Note>Si quieres ejecutar una acción cada vez que se modifica un Registro, usa el disparador [Cuando se actualiza un Registro](/es/basic/automation/trigger/records/record-updated). Si solo quieres ejecutar una acción una vez, cuando un Registro cumpla por primera vez una condición específica, usa este disparador.</Note>
+<Note>Si quieres ejecutar una acción cada vez que se modifica un Registro, usa el disparador [Cuando se actualiza un Registro](/es/basic/automation/trigger/records/record-updated). Este disparador se activa cada vez que un Registro pasa de no cumplir a cumplir el filtro. Las modificaciones mientras siga cumpliéndolo no provocan otra ejecución. Si deja de cumplirlo y más adelante vuelve a cumplirlo, puede activarse de nuevo.</Note>
 
 ## Cuándo usarlo
 
-- **Avisar cuando venza un pedido.** Establece el filtro en `Fecha de vencimiento` es anterior a hoy y `Estado` no es `Enviado`. La Automatización se activa una vez cuando el pedido cumple las condiciones por primera vez.
-- **Escalar un ticket de soporte cuando la prioridad cambie a urgente.** Filtro: `Prioridad` es igual a `Urgente`. Solo se activa cuando un ticket pasa a ser urgente por primera vez, no con las modificaciones posteriores.
+- **Avisar cuando venza un pedido.** Establece el filtro en `Fecha de vencimiento` es anterior a hoy y `Estado` no es `Enviado`. La Automatización se activa cuando el pedido pasa de no cumplir a cumplir el filtro.
+- **Escalar un ticket de soporte cuando la prioridad cambie a urgente.** Filtro: `Prioridad` es igual a `Urgente`. Se activa cuando un ticket pasa a ser urgente; las modificaciones mientras siga urgente no vuelven a activarlo.
 - **Notificar a un responsable cuando una operación supere un umbral de ingresos.** Filtro: `Valor de la operación` es mayor que `50000`. Se activa una vez cuando la operación supera ese límite.
 - **Marcar los Registros que queden incompletos.** Filtro: `Campo obligatorio` está vacío. Se activa cuando un Registro que antes estaba completo pierde su valor.
 - **Activar pasos de incorporación cuando el estado de un contacto cambie a «Activo».** Filtro: `Estado` es igual a `Activo`. Solo se ejecuta una vez por activación.

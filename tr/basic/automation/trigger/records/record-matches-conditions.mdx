@@ -52,12 +52,12 @@ Bu iki tetikleyici kolayca karıştırılabilir. Temel fark şöyledir:
 
 Herhangi bir değişikliğe tepki vermeniz gerektiğinde **Kayıt Güncellendiğinde** tetikleyicisini kullanın. Yalnızca belirli bir duruma ulaşıldığında işlem yapmak istiyorsanız **Kayıt Koşullarla Eşleştiğinde** tetikleyicisini kullanın.
 
-<Note>Bir kayıt her düzenlendiğinde eylem çalıştırmak istiyorsanız [Kayıt güncellendiğinde](/tr/basic/automation/trigger/records/record-updated) tetikleyicisini kullanın. Bir kayıt belirli bir koşula ilk kez ulaştığında yalnızca bir kez eylem çalıştırmak istiyorsanız bu tetikleyiciyi kullanın.</Note>
+<Note>Bir kayıt her düzenlendiğinde eylem çalıştırmak istiyorsanız [Kayıt güncellendiğinde](/tr/basic/automation/trigger/records/record-updated) tetikleyicisini kullanın. Bu tetikleyici, kayıt filtreyle eşleşmeyen durumdan eşleşen duruma her geçtiğinde çalışır. Kayıt eşleşmeye devam ederken yapılan düzenlemeler yeniden çalıştırmaz. Kayıt eşleşmeyi bırakıp daha sonra yeniden eşleşirse tetikleyici tekrar çalışabilir.</Note>
 
 ## Ne zaman kullanılır?
 
-- **Bir sipariş geciktiğinde uyarı verin.** Filtreyi `Son Tarih` bugünden öncedir ve `Durum`, `Sevk Edildi` değerine eşit değildir olarak ayarlayın. Otomasyon, sipariş ilk kez eşleştiğinde bir kez çalışır.
-- **Önceliği acil olarak değişen destek talebini üst birime aktarın.** Filtre: `Öncelik`, `Acil` değerine eşittir. Bir talep ilk kez acil olduğunda çalışır; sonraki düzenlemelerde çalışmaz.
+- **Bir sipariş geciktiğinde uyarı verin.** Filtreyi `Son Tarih` bugünden öncedir ve `Durum`, `Sevk Edildi` değerine eşit değildir olarak ayarlayın. Otomasyon, sipariş filtreyle eşleşmeyen durumdan eşleşen duruma geçtiğinde çalışır.
+- **Önceliği acil olarak değişen destek talebini üst birime aktarın.** Filtre: `Öncelik`, `Acil` değerine eşittir. Bir talep acil olduğunda çalışır; acil kalmaya devam ederken yapılan düzenlemelerde yeniden çalışmaz.
 - **Bir anlaşma gelir eşiğini aştığında yöneticiye bildirin.** Filtre: `Anlaşma Değeri`, `50000` değerinden büyüktür. Anlaşma bu sınırı geçtiğinde bir kez çalışır.
 - **Eksik duruma gelen kayıtları işaretleyin.** Filtre: `Zorunlu Alan` boştur. Daha önce eksiksiz olan bir kayıt değerini kaybettiğinde çalışır.
 - **Bir kişinin durumu "Etkin" olduğunda katılım adımlarını tetikleyin.** Filtre: `Durum`, `Etkin` değerine eşittir. Her etkinleştirmede yalnızca bir kez çalışır.
