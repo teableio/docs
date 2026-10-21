@@ -6,7 +6,7 @@ description: "Konfigurieren Sie AI Chat, KI-Felder, KI-Automatisierung und App B
 {/* mintlify-resync: 2026-05-14 */}
 <Tip>Verfügbar ab dem selbst gehosteten Business-Tarif</Tip>
 
-Pfad: Admin-Panel → KI-Einstellungen
+Pfad: Systemverwaltung → KI-Einstellungen
 
 Die Seite **KI-Einstellungen** dient zur Konfiguration von **AI Chat**, **KI-Feldern**, **KI-Automatisierung** und **App Builder**. Der Bereich **Ausstehende Konfiguration** rechts zeigt, welche erforderlichen Punkte noch fehlen.
 
@@ -23,30 +23,25 @@ Bevor Sie die Seite KI-Einstellungen öffnen, stellen Sie sicher, dass die folge
 
 ## Einrichtungsschritte
 
-Beginnen Sie mit der AI Chat-Laufzeit, der App-Bereitstellung und der Modelleinrichtung:
+Der Einrichtungsassistent oben auf der Seite führt in drei Schritten durch Modellanbindung und Modellauswahl:
 
 <Steps>
-  <Step title="AI Chat-Laufzeit und App-Bereitstellung konfigurieren">
-    Wählen Sie eine [Bereitstellungsoption](/de/deploy/choose) und schließen Sie die Bereitstellung ab. Klicken Sie anschließend auf **Test ausführen** und **Verbindung testen**.
-  </Step>
-  <Step title="LLM API konfigurieren">
+  <Step title="LLM-API konfigurieren">
     Richten Sie Ihre Modellverbindung ein und schließen Sie den ersten Test ab.
   </Step>
   <Step title="Empfohlene Modelle konfigurieren">
     Wählen Sie die empfohlenen Modelle für KI-Felder und KI-Automatisierung.
   </Step>
-  <Step title="Chat-Modellstufen festlegen">
+  <Step title="Chatmodell festlegen">
     Wählen Sie für jede der vier Chat-Modellstufen ein Modell.
   </Step>
 </Steps>
 
-### Laufzeit konfigurieren
-
-Klicken Sie auf **Test ausführen**, um die AI Chat-Laufzeit zu überprüfen.
+AI Chat und App Builder benötigen außerdem eine Laufzeitumgebung und eine App-Bereitstellung, die nicht Teil des Assistenten sind. Wählen Sie zuerst eine [Bereitstellungsoption](/de/deploy/choose) und schließen Sie die Bereitstellung ab. Konfigurieren Sie anschließend die Laufzeit und den App Builder wie unten beschrieben.
 
 ### LLM API konfigurieren
 
-Fügen Sie unter **LLM API** einen Modellanbieter hinzu und testen Sie dessen Modelle. Wenn Sie Ihren eigenen Schlüssel (BYOK) verwenden, wählen Sie **OpenAI Compatible** oder **Anthropic** als Anbietertyp.
+Klicken Sie im Schritt **LLM-API konfigurieren** auf **LLM-Anbieter hinzufügen**, um einen Modellanbieter hinzuzufügen, und testen Sie dessen Modelle. Wenn Sie Ihren eigenen Schlüssel (BYOK) verwenden, wählen Sie **OpenAI Compatible** oder **Anthropic** als Anbietertyp.
 
 <img
   src="/images/docs/admin-panel/2026-10-21-admin-ai-llm-api-step.png"
@@ -62,9 +57,9 @@ Enthält der Katalog keinen passenden Eintrag (etwa bei einem neu veröffentlich
 
 Wählen Sie die empfohlenen Modelle aus, die Nutzer in **KI-Feldern** und **KI-Automatisierung** auswählen können.
 
-### Chat-Modellstufen festlegen
+### Chatmodell festlegen
 
-Wählen Sie unter **Chat-Modellstufen** je ein Modell für **Ultra**, **Smart**, **Standard** und **Lite**; zur Auswahl stehen die in Schritt 2 angebundenen Modelle. Nutzer wählen im Modellmenü von **AI Chat** in der Seitenleiste nach Stufe und sehen den Stufennamen statt des Modellnamens. Sie können das Modell hinter einer Stufe daher jederzeit austauschen, ohne dass sich für bereits getroffene Auswahlen etwas ändert.
+Wählen Sie unter **Chat-Modellstufen** je ein Modell für **Ultra**, **Smart**, **Standard** und **Lite**; zur Auswahl stehen die empfohlenen Modelle aus Schritt 2, **Empfohlene Modelle konfigurieren**. Nutzer wählen im Modellmenü von **AI Chat** in der Seitenleiste nach Stufe und sehen den Stufennamen statt des Modellnamens. Sie können das Modell hinter einer Stufe daher jederzeit austauschen, ohne dass sich für bereits getroffene Auswahlen etwas ändert.
 
 | Stufe | Beschreibung |
 |------|------|
@@ -78,17 +73,21 @@ Rechts neben jeder Stufe stehen zwei weitere Bedienelemente:
 - **Als Standard festlegen**: die Stufe, die Nutzer beim Öffnen des Modellmenüs vorfinden. Ein **Ultra** ohne Modell kann nicht als Standard festgelegt werden.
 - **Aktiviert**: Ausgeschaltet wird die Stufe Nutzern nicht mehr angeboten. Die Standardstufe lässt sich nicht ausschalten.
 
+### Laufzeit konfigurieren
+
+Die Laufzeit wird in der Karte **KI-Chat-Laufzeitumgebung** unterhalb des Assistenten konfiguriert. Klicken Sie nach Abschluss der Bereitstellung auf **Run test**, um die AI Chat-Laufzeit zu überprüfen.
+
 ### KI-Funktionen aktivieren
 
-Aktivieren Sie unter **KI-Funktionen** nach Bedarf **KI-Feld** und **AI Chat**. Konfigurieren Sie die Laufzeit, bevor Sie **AI Chat** verwenden.
+Aktivieren Sie unter **KI-Fähigkeiten** nach Bedarf **KI-Feld** und **AI Chat**. Konfigurieren Sie die Laufzeit, bevor Sie **AI Chat** verwenden.
 
 ### App Builder konfigurieren
 
-Wählen Sie unter **Deployment-Engine**, wie Apps bereitgestellt werden:
+Wählen Sie unter **Vercel Deploy**, wie Apps bereitgestellt werden:
 
 | Deployment-Engine | Einrichtungsanforderungen |
 |------|------|
-| **Vercel** | Geben Sie ein Vercel-Zugriffstoken ein, klicken Sie auf **Verbindung testen** und verwenden Sie **Öffentlichen Zugriff testen**, um zu bestätigen, dass Vercel Ihre Teable-Instanz und den Objektspeicher erreichen kann. |
+| **Vercel** | Geben Sie ein Vercel-Zugriffstoken ein, klicken Sie auf **Test Connection** und verwenden Sie **Öffentlichen Zugriff testen**, um zu bestätigen, dass Vercel Ihre Teable-Instanz und den Objektspeicher erreichen kann. |
 | **Teable Infra** | Verwendet die konfigurierte Teable-Infra-Containerlaufzeit. Hier sind keine zusätzlichen Anmeldedaten oder Tests des öffentlichen Zugriffs erforderlich. |
 
 Bei Bedarf können Sie diese optionalen App-Builder-Einstellungen hinzufügen:
