@@ -31,8 +31,14 @@ issues become additional numbered items. Production-only checks remain explicit.
 | 18 | Integrate current production releases before deployment | Retain October 18–20 announcements, current layout and exact latest published hash-to-entry mappings; keep test fixtures independent | Complete locally |
 | 19 | Preserve release dates in RSS | Every Update uses its label-derived RSS date; hosted feeds show historical publication dates | Complete locally |
 | 20 | Run repair tests after source normalization | Automated raw releases can reach maintenance; normalized output is tested before any push | Complete locally |
+| 21 | Match RSS links to rendered date anchors | All 132 feeds resolve to the correct Update; published Unicode IDs remain unchanged; future releases retain explicit IDs | Complete locally |
 
 ## Validation boundaries and discoveries
+
+- Production verification on October 21 found Mintlify's RSS fallback transliterates
+  date labels while HTML preserves Unicode. Across 132 feeds, 536 of 1,265 current
+  feed links on 60 pages did not resolve to a rendered ID. Item 21 fixes the shared
+  cause with explicit Update IDs, preserving all existing published date anchors.
 
 - This is a Mintlify content repository without `package.json`; the generic Node
   preflight's `package_json_missing` result does not prevent Mintlify preview.
@@ -199,3 +205,11 @@ each fix here before committing it.
 - Maintenance normalizes dates for existing historical pages and future automated entries; source checks reject date mismatches. Static custom RSS fields remain intact, code fences are protected, and unsafe expressions fail before any files are written.
 - Independent review caught opening-tag truncation when RSS fields precede the label and contain `>`. Shared safe attribute parsing now handles sorting, normalization and historical replacement; a full integration regression covers this case and preserves old labels/hashes.
 - Source checks, 31 Python tests and 12 Node tests passed; local main/month/year/Arabic pages render HTTP 200 with one H1 and no empty custom JSON-LD. Independent review passed. The hosted RSS pubDate comparison remains a release gate because local preview does not serve feeds.
+
+### 21 — RSS fragment and HTML date ID consistency
+
+- Hosted checks found 536 broken RSS fragments across 60 pages in seven languages. All 132 feeds otherwise retained valid XML, content and true release dates. Mintlify's implicit RSS slug transliterates labels while rendered date IDs preserve Unicode.
+- Added explicit IDs equal to the existing published date IDs on all 1,540 Updates. Removing only these new attributes reproduces all 132 MDX files byte-for-byte. Maintenance applies the convention to future updates and retains the original localized date ID during historical republication; conflicting IDs fail safely.
+- Added source regression checks and localized-date/republication tests. All 33 Python and 12 Node tests, source SEO checks, Mintlify 4.2.1059 build validation and full link/anchor/redirect checks passed.
+- Independent subagent review exercised all 1,540 Updates through Mintlify's real AST, TOC and RSS pipelines: explicit RSS anchors match both rendered and original date IDs without changing existing routing. Local preview also preserves all 1,386 current-year date IDs and 3,959 heading IDs within their original Updates.
+- Local RSS routes are unavailable in Mintlify dev; generated RSS items were checked through the actual installed RSS processor. Hosted feed-to-HTML verification remains the release gate.

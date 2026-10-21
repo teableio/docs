@@ -159,7 +159,8 @@ def normalize_page_rss(source, locale):
             # Scan the opening tag instead of splitting at a '>' inside a title.
             block = text[match.start():]
             _, end = update_attributes(block)
-            return match.start(), match.start() + end + 1, with_rss_date(block[:end + 1], parse_date(update_label(block), locale))
+            opening = with_rss_date(block[:end + 1], parse_date(update_label(block), locale))
+            return match.start(), match.start() + end + 1, with_date_id(opening)
         replacements, cursor = [], 0
         while True:
             match = re.compile(r'^<Update\b', re.M).search(text, cursor)
@@ -178,6 +179,20 @@ def date_slug(label):
     # Date labels contain letters, digits and separators; unlike prose headings,
     # they have no Markdown or ampersands. Preserve non-Latin letters.
     return re.sub(r'\s+', '-', re.sub(r'[^\w\s-]', '', label.lower())).strip('-')
+
+
+def with_date_id(block):
+    # Mintlify's implicit HTML date ID preserves Unicode, while its RSS fallback
+    # transliterates the label. An explicit ID makes both pipelines use the same
+    # existing HTML anchor without changing already published date links.
+    attributes, end = update_attributes(block)
+    identity = date_slug(update_label(block))
+    if 'id' in attributes:
+        start, stop = attributes['id']
+        if block[start:stop] not in (json.dumps(identity, ensure_ascii=False), "'" + identity + "'"):
+            raise ValueError('Update id must preserve its published date anchor: ' + identity)
+        return block
+    return block[:end] + ' id=' + json.dumps(identity, ensure_ascii=False) + block[end:]
 
 
 def entries(source, locale):
@@ -237,7 +252,7 @@ def named_ids(block):
 
 
 def normalize(block, released, assign_ids=False, reserved_ids=None):
-    block = with_rss_date(block, released)
+    block = with_date_id(with_rss_date(block, released))
     block = map_unfenced(block, lambda text: SCRIPT.sub('', text))
     lines = block.splitlines(keepends=True)
     headings = list(heading_indices(lines))
@@ -289,6 +304,12 @@ def replace_entry(old, new):
     start, end = attrs['label']
     quote = new[start]
     new = new[:start] + quote + old_label + quote + new[end:]
+    # Incoming publisher IDs were derived from its new label spelling. A
+    # republication must keep the archived entry's label and date ID together.
+    attrs, _ = update_attributes(new)
+    if 'id' in attrs:
+        start, end = attrs['id']
+        new = new[:start] + json.dumps(date_slug(old_label), ensure_ascii=False) + new[end:]
     missing = [value for value in anchors(old)[1:] if value not in anchors(new)]
     if missing:
         insert = '\n' + '\n'.join('<span id="' + html.escape(value, quote=True) + '" />' for value in missing) + '\n'
