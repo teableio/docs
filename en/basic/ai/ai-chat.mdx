@@ -1,6 +1,6 @@
 ---
 title: "AI Chat: analyze data and work with your tables"
-description: "Ask questions about your tables, generate charts and update data with AI Chat. Add context with @ references and files, then review changes before running them."
+description: "Analyze table data, create or change tables and automations, and generate charts, reports, and images with AI Chat. Add context with @ references, selected data, or uploaded files, and share the report pages it builds."
 sidebarTitle: "AI Chat"
 ---
 
@@ -9,38 +9,33 @@ sidebarTitle: "AI Chat"
 
 AI Chat helps analyze the current table, explain record content, generate charts and reports, and create or update tables, views, apps, and automations.
 
-AI prioritizes the current page. To reference other tables, views, apps, automations, or folders, type `@` in the input box and select the related node.
-
 ## How to Open
 
-Open a table or view, then click the <img src="/images/docs/ai/cuppy-icon.svg" alt="Cuppy" className="docs-inline-icon" /> in the top right corner to open AI Chat. You can also type a question in the [command palette](/en/basic/base#command-palette) and choose **Ask Cuppy** to send it straight to AI; images and files pasted into the command palette go into the AI Chat input box. Describe the question or task in the input box. If the task will modify data or create nodes, ask AI to list the plan first, then confirm before execution.
+Open a table or view, then click the <img src="/images/docs/ai/cuppy-icon.svg" alt="Cuppy" className="docs-inline-icon" /> in the top right corner to open AI Chat. You can also type a question in the [command palette](/en/basic/base#command-palette) and choose **Ask Cuppy** to send it straight to AI; images and files pasted into the command palette go into the AI Chat input box.
 
 ## What AI Can Reference
 
 AI prioritizes information from the current page:
 
 - **Current table and view**: The current table, current view, and the filtered or sorted results in that view.
-- **Selected rows, columns, and cells**: If rows, columns, a single cell, or a cell range are selected in Grid view, AI uses that selection as key context.
-- **Uploaded files**: Add PDFs, Excel files, Word documents, images, and other files to the conversation.
-- **More nodes with `@`**: Type `@` in the input box to add tables, views, apps, automations, or folders from the tree.
-
-Files can also be pasted or dropped directly into the input box. They appear as attachment chips first, then become available to AI after the message is sent.
-
-When you paste a long block of plain text, Teable converts it to a Markdown attachment so the message input stays easy to read. You can preview text and Markdown attachments from their attachment chips.
+- **Selected data**: Rows, columns, a single cell, or a cell range selected in Grid view become key context for AI. To pin specific data to the chat, choose **Add to Chat** from the context menu of a Grid view selection, by right-clicking a card or event in Gallery, Kanban, and Calendar views, or from the **...** menu of an expanded record. The data appears as a chip in the input box. Click the chip to preview the records it contains.
+- **Uploaded files**: Paste or drop PDFs, Excel files, Word documents, images, and other files into the input box. They appear as attachment chips first, then become available to AI after the message is sent. A long block of pasted plain text becomes a Markdown attachment, which you can preview from its chip.
+- **More nodes with `@`**: Type `@` in the input box to add tables, views, apps, automations, or folders from the current project's tree.
+- **Other projects**: Name the project in your request, for example "compare this table with the orders table in the Sales project", and AI looks it up among the projects you have access to and works there. Anything you do not point elsewhere happens in the current project.
 
 ## Input Controls
 
 - **Voice input**: Click the microphone button in the input box and allow microphone access to start recording. While recording, choose **Finish voice input** or **Discard voice input**. After you choose finish, Teable transcribes the recording into the input box.
-- **Model**: Use the model menu to choose the model tier for the conversation. The menu lists **Ultra**, **Smart**, **Standard**, and **Lite** from the most capable down, each showing the model behind it. Use a lower tier for simple queries, cleanup, or rewriting, and a higher tier for complex planning, cross-table analysis, and app building. In Cloud, the menu also marks each tier with its credit multiplier against the default tier, for example **1.0×** for the default tier and **2.5×** for a higher one. A tier that consumes no platform credit shows no multiplier. Switching tiers during a conversation asks you to confirm once; the conversation is kept, and the new model takes over from your next message. The selected tier and **Intelligence** level are saved with the conversation and apply again when you reopen it; if the selected tier is no longer offered, the conversation continues on the default tier.
+- **Model**: Use the model menu to choose the model tier for the conversation. The menu lists **Ultra**, **Smart**, **Standard**, and **Lite** from the most capable down, each showing the model behind it. In Cloud, the menu also marks each tier with its credit multiplier against the default tier, for example **1.0×** for the default tier and **2.5×** for a higher one. A tier that consumes no platform credit shows no multiplier. Switching tiers during a conversation asks you to confirm once; the conversation is kept, and the new model takes over from your next message. The selected tier and **Intelligence** level are saved with the conversation and apply again when you reopen it; if the selected tier is no longer offered, the conversation continues on the default tier.
 - **Intelligence**: Choose the **Intelligence** level separately in the model menu. It controls thinking depth; higher levels produce more thorough reasoning.
-- **My secrets**: Open **+** → **More** → **My secrets** to store API keys or other credentials in **Settings** → **Integrations**. The values are yours, AI Chat can read them as environment variables at runtime, and you can grant them to individual apps and automations. See [Credentials and Integrations](/en/basic/credential).
+- **My secrets**: Open **+** → **More** → **My secrets** to store API keys or other credentials in **Settings** → **Integrations**. The values are yours, AI Chat can read them as environment variables at runtime, and you can grant them to individual apps and automations, so the plaintext never has to go into your prompt. See [Credentials and Integrations](/en/basic/credential).
 - **Authorization cards**: When AI needs a third-party account or a secret, it pins a card to the conversation and waits for you before the turn goes on. When Cuppy needs the account to do the task itself, click **Connect** to run an OAuth flow; when an app or automation needs the credential at run time, choose **Connect my account** or grant a credential you already have. Click **Skip** to withhold it; AI continues with the parts it can complete without it. See [Credentials and Integrations](/en/basic/credential).
-- **Scraper**: Open the **+** menu and choose **Scraper**. Platforms are grouped under headings such as **Social**, **E-commerce**, **Business intelligence**, and **Search & web**, and the search box at the top finds a platform or data type. Point to a platform to open its data types, such as **Profiles**, **Posts**, **Videos**, or **Comments**; entries without types, such as **Companies** or **People**, are picked with a single click. Teable prefills the instruction in the chat input, and you fill in a link, keyword, or name after **What to scrape**. **Any web page** takes a pasted link directly. The AI picks a suitable source among several, and each scrape shows in the chat as a **Scrape data** row with the source and the credits it used.
+- **Scraper**: Open the **+** menu, choose **Scraper**, then pick a platform and the data type to scrape, such as **Posts** or **Comments**, or choose **Any web page** to paste a link directly. Teable prefills the instruction in the chat input, and you fill in a link, keyword, or name after **What to scrape**. Each scrape shows in the chat as a **Scrape data** row with the source and the credits it used. For a platform the menu does not list, describe in plain language which site and what content you want.
 
   For examples of this feature in use, read [website data collection examples](https://teable.ai/blog/collect-data-from-800-websites-with-teable-ai).
 
   For practical use cases, see [finding and managing influencers](https://teable.ai/find-influencers).
-- **Skills**: Open the **+** menu and choose **Skills** to import, enable, disable, or try skills in the current chat. When you import one, choose who can use it: **Personal** keeps it to yourself, **Project** gives it to collaborators in this project, and **Space** gives it to everyone in this space. Type `/` in the input box to choose an enabled skill. To connect or migrate an external system, see [Connect & Migrate Everything](/en/basic/ai/connect-everything).
+- **Skills**: Open the **+** menu and choose **Skills** to import, enable, disable, or try skills in the current chat. When you import one, choose who can use it: **Personal** keeps it to yourself, **Project** gives it to collaborators in this project, and **Space** gives it to everyone in this space. Type `/` in the input box to choose an enabled skill. When AI Chat presents a `.skill` file, use **Install** on the file card to add it. To connect or migrate an external system, see [Connect & Migrate Everything](/en/basic/ai/connect-everything).
 - **Context usage**: The ring next to the input box shows how much of the model's context window the conversation currently uses. Click it for the percentage and token counts. When the context fills up, Teable compacts the conversation; start a new chat if you want a clean context instead.
 - **Manage files**: Open **+** → **More** → **Manage files** to view files in the current chat sandbox. You can preview supported files, download files, or delete files and folders you no longer need. A conversation must exist before its files can be managed.
 - **Message queue**: Sending another message while AI is working does not interrupt it. The message waits in a queue above the input box and goes out when the current run ends. Queued items keep the same table, view, attachment, and selection chips as the chat input; **Remove** drops one, **...** → **Edit message** puts it back in the input box, and a text-only item also offers **Steer** to hand its text to the running turn instead of waiting. If the turn is parked on a card waiting for you (an authorization card, a question from AI), a text-only message does not queue: the card closes and is recorded as **Skipped**, and your message goes straight to that turn as its next instruction, so you do not have to deal with the card first. A message with attachments still goes to the queue.
@@ -65,36 +60,16 @@ Archiving takes a chat out of the history list without deleting anything. Open y
 
 ## Common Uses
 
-<CardGroup cols={2}>
-  <Card title="Create tables and automations" icon="sitemap">
-    Plan a business database, create tables, views, apps, automations, or update existing records.
-  </Card>
-  <Card title="Analyze data" icon="chart-line">
-    Summarize data in the current table or view, or analyze across multiple related nodes.
-  </Card>
-  <Card title="Charts and reports" icon="chart-pie">
-    Turn queried data into a chart, report, or small interactive page you can reopen and share.
-  </Card>
-  <Card title="Read files" icon="file-lines">
-    Answer questions using PDFs, Excel files, Word documents, images, and other attachments.
-  </Card>
-</CardGroup>
-
 ### Create Tables and Automations
 
-AI Chat can help create, update, and organize data, not only answer questions. For a new business workflow, discuss the data structure first, then ask AI to create the tables, views, apps, and automations.
+AI can create or change tables, views, fields, records, and automations, for example:
 
-Suitable prompts include:
-
-- Help me plan a customer follow-up system. What tables and fields do I need?
-- Based on the plan above, create these tables, views, and fields.
 - Add priority, assignee, due date, and status fields to the task table, then create common views.
 - Change the selected records to Completed.
 - Create a new table from this Excel file and check whether the field types are appropriate.
-- Create a CRM app from this customer table, with customer list, customer detail, and follow-up record pages.
 - When a new order is created, notify the owner and include the order number, customer name, and amount.
 
-For a complete business database, start by asking AI to plan the table structure. After reviewing the plan, continue with table, view, app, and automation creation.
+For a complete business database, plan first, then create:
 
 <Steps>
   <Step title="Plan first">
@@ -120,15 +95,7 @@ Ask questions about data in the current table, for example:
 - Find the customers with the highest sales in the past 30 days.
 - Analyze unusual records in this view.
 
-If the question involves multiple tables, use `@` to add the related tables or views to the conversation.
-
-You can also add specific data to the chat:
-
-- In Grid view, select rows, columns, a single cell, or a cell range, then choose **Add to Chat** from the context menu.
-- In Gallery, Kanban, and Calendar views, right-click a card or event and choose **Add to Chat**.
-- In an expanded record, choose **Add to Chat** from the **...** menu.
-
-The data appears as a chip in the input box. Click the chip to preview the records it contains.
+If the question involves multiple tables, use `@` to add the related tables or views to the conversation, or use **Add to Chat** for specific records.
 
 ### Create Charts and Reports
 
@@ -138,7 +105,7 @@ Ask AI to turn queried data into a chart, a written report, or a small interacti
 - Turn this query result into a pie chart.
 - Create a summary report from these records.
 
-AI builds these as **artifacts**: they appear as a card in the conversation, open in their own viewer, and stay available after the conversation ends. See [Artifacts](#artifacts) for what you can do with one.
+AI saves these as **artifacts**. See [Artifacts](#artifacts) for what you can do with one.
 
 <Info>
 An artifact holds the data AI put into it when it was created, so it does not refresh on its own. For a page that keeps reading live table data, or that collects input and stores state, create an app with [App Builder](/en/basic/ai/app-builder).
@@ -166,25 +133,11 @@ After uploading files, AI can answer questions using both file content and table
 - Read this Excel file and identify the fields that should be imported.
 - Generate a product description from this image.
 
-Files uploaded to the conversation and files generated during the conversation are saved in the current chat sandbox. Use **Manage files** to inspect them later.
-
-When a reply presents several files at once, use **Download all** below the file cards to save them as one zip.
+When a reply presents several files at once, use **Download all** below the file cards to download them together.
 
 ### Memory
 
-Memory stores information you explicitly ask Cuppy to remember. Memory is scoped by user and Project: each user in each Project has an independent memory context, and memory saved in another Project will not automatically appear in the current one.
-
-- Save memory in the current Project
-
-Say what Cuppy should remember in the conversation:
-
-```text
-Please remember xxx.
-```
-
-- Reuse memory from another Project
-
-Ask Cuppy to read another Project and save the relevant parts into the current Project:
+Memory stores information you explicitly ask Cuppy to remember, for example by saying "Please remember xxx" in the conversation. Memory is scoped by user and Project, so memory saved in another Project will not automatically appear in the current one. To reuse it, ask Cuppy to read that Project's memory and save it into the current Project:
 
 ```text
 Cuppy, please read the memory for Project ID bsexxxxxxxxxxxx and save the relevant memory into this current Project.
@@ -202,7 +155,7 @@ AI Chat can keep a single conversation environment available for about 24 hours,
     For work with multiple stages, ask Cuppy to write results back to Teable, export them, or generate a downloadable file at key checkpoints. Saved work remains available even if the conversation environment is released later.
   </Step>
   <Step title="Know when the environment is released">
-    A single conversation environment has an approximate maximum lifetime of 24 hours. After foreground execution ends, an idle environment is released after about 30 minutes. Temporary files and unsaved intermediate results are not preserved if the environment restarts.
+    After foreground execution ends, an idle environment is released after about 30 minutes. Temporary files and unsaved intermediate results are not preserved if the environment restarts.
   </Step>
 </Steps>
 
@@ -264,26 +217,13 @@ For examples of this feature in use, read [shareable AI report examples](https:/
 - **State the goal first**: In the first message, describe what to do, the relevant conditions, and the expected output. For example, analyze weekly sales trends over the past 3 months, grouped by region, and return a trend table with a short conclusion.
 - **Use field names**: For example, sort by `Created Time`, so AI can identify the target column.
 - **Provide several examples**: For fixed-format output, provide 3-5 input -> expected output examples.
-- **Use `@` to select nodes**: When AI needs to reference tables, views, apps, automations, or folders, type `@` and select them directly.
 - **Confirm before execution**: For tasks that modify data, create tables, create apps, or enable automations, ask AI to describe the changes before running them.
 - **Choose the tier by task**: A lower tier costs less credit on simple queries, cleanup, and rewriting; move up a tier for complex planning, cross-table analysis, and app building.
-- **Adjust the Intelligence level**: **Intelligence** controls thinking depth; higher levels produce more thorough reasoning.
 - **Start a new chat when the topic changes**: A new chat is recommended when the topic changes, the conversation becomes too long, or context usage should be reduced.
 
 ## FAQ
 
 <AccordionGroup>
-  <Accordion title="How do I let AI Chat reference another table, view, app, or automation?">
-    Type `@` in the input box and select the node you want AI Chat to reference. For Grid view selections, you can also select rows, columns, a single cell, or a cell range, then use **Add to Chat** from the context menu.
-  </Accordion>
-
-  <Accordion title="Can AI Chat work in another project?">
-    Yes. AI is not limited to the project the chat belongs to; it can look up the other projects you have access to and work in them. Name the project in your request, for example "compare this table with the orders table in the Sales project". `@` only lists nodes in the current project, and anything you do not point elsewhere still happens in the chat's own project.
-  </Accordion>
-
-  <Accordion title="Are the charts and reports AI creates saved?">
-    Yes. They are saved as artifacts, with version history and an optional share link, and you can reopen them from **+** → **More** → **Manage artifacts**. An artifact keeps the data it was built with and does not refresh on its own. For a page that reads live table data, create an app with [App Builder](/en/basic/ai/app-builder).
-  </Accordion>
   <Accordion title="Can my teammates open an artifact I created?">
     Not by default. Only you can open your own artifacts. Turn on **Enable sharing** in the viewer and send the link, choosing **Space members** if the artifact should stay inside the space.
   </Accordion>
@@ -300,14 +240,6 @@ For examples of this feature in use, read [shareable AI report examples](https:/
     An image counts against credits only once it is saved; images that fail or are cancelled cost nothing. In **Credit usage summary** on the billing page, these charges appear under the type **AI image generation**. When the space has its own models (BYOK), generating with them is not blocked by exhausted credits.
   </Accordion>
 
-  <Accordion title="Does memory carry across Projects?">
-    No. Memory is scoped by user and Project. If you want to reuse memory from another Project, ask Cuppy to read that Project's memory and save the relevant parts into the current Project.
-  </Accordion>
-
-  <Accordion title="Can AI Chat keep working in the background after I leave?">
-    Do not use AI Chat as a background task runner. Keep working in the visible conversation, and ask Cuppy to write results back to Teable, export results, or generate a downloadable file.
-  </Accordion>
-
   <Accordion title="Why does Teable say Cuppy is busy in another conversation?">
     Each user can run up to 3 Agents at the same time, including AI Chat and App Builder. If you see `Agent is busy in another conversation. Please wait.`, another task is still running. Wait for Cuppy to finish the previous task before continuing.
   </Accordion>
@@ -317,9 +249,7 @@ For examples of this feature in use, read [shareable AI report examples](https:/
   </Accordion>
 
   <Accordion title="What happens if I send another message while AI is working?">
-    It joins the send queue above the input box rather than interrupting the run, and Teable sends the whole queue as one message when the run ends. The queue lives on the server, so it survives a refresh and looks the same in every tab or device where that conversation is open.
-
-    While an item waits you can **Remove** it or use **Edit message** to bring it back into the input box. A text-only item can also be steered: **Steer** hands it to the running turn right away, and it then appears in the conversation labelled **Steered conversation**.
+    It joins the send queue rather than interrupting the run, and Teable sends the whole queue as one message when the run ends. The queue lives on the server, so it survives a refresh and looks the same in every tab or device where that conversation is open. A message handed to the running turn with **Steer** appears in the conversation labelled **Steered conversation**.
 
     A conversation holds up to 30 queued messages. Past that, the message is not queued and Teable replies `The send queue is full. Wait for Cuppy to catch up.`
   </Accordion>
@@ -328,8 +258,8 @@ For examples of this feature in use, read [shareable AI report examples](https:/
     Stopping a run also holds the queue, so nothing you queued is sent by a stop you meant for the current answer. The queue header then reads `Queue paused because you interrupted`. Click **Resume** to release it, or just send your next message: starting a new run releases the queue as well.
   </Accordion>
 
-  <Accordion title="How do I use Skills in AI Chat?">
-    Open the **+** menu and choose **Skills** to import or manage skills, or type `/` in the input box to choose an enabled skill. Choose who can use the skill when you import it: personal for your own chats, project when collaborators in the same project need it, and space when everyone in the space does. Users who can manage the project can add project skills, and space owners and creators can add space skills. If AI Chat presents a `.skill` file, use **Install** on the file card to add it.
+  <Accordion title="Who can add project skills and space skills?">
+    Users who can manage the project can add project skills, and space owners and creators can add space skills.
   </Accordion>
 
   <Accordion title="Which skill applies when two of them share a name?">
@@ -339,19 +269,13 @@ For examples of this feature in use, read [shareable AI report examples](https:/
   <Accordion title="Which files stay in Manage files?">
     **Manage files** holds two folders: `uploads` for the files you added, and `outputs` for the files produced in the conversation. Both use their own storage, so they survive the sandbox being released or rebuilt and you can come back later to preview, download, or delete them.
 
-    Anything Cuppy writes outside those two folders is temporary, such as intermediate results from a script. It does not appear in **Manage files** and is gone after the sandbox restarts. For results you need to keep, ask Cuppy to write them into `outputs` or back into Teable, or download them while the conversation is open, using **Download all** when a reply produced several files.
+    Anything Cuppy writes outside those two folders is temporary, such as intermediate results from a script. It does not appear in **Manage files** and is gone after the sandbox restarts. For results you need to keep, ask Cuppy to write them into `outputs` or back into Teable, or download them while the conversation is open.
   </Accordion>
 
   <Accordion title="What happens when I copy a message with chips?">
     When you copy a user message, tables, views, apps, automations, folders, selections, and attachments are kept as marker text. When you paste the text back into AI Chat, Teable restores the markers it can recognize as chips.
   </Accordion>
 
-  <Accordion title="Where should I put API keys for AI Chat?">
-    Use **+** → **More** → **My secrets** in the chat input. AI Chat can use those values during the conversation without putting the plaintext in your prompt.
-  </Accordion>
-  <Accordion title="What if the platform I need is not in the Scraper menu?">
-    The menu holds the common platforms. Just describe in plain language which site and what content you want, and the AI will find a matching data source.
-  </Accordion>
   <Accordion title="How much data does one scrape return, and what does it cost?">
     For lists such as search results, posts, and comments, the AI fetches a small number of results by default; state a number in your request if you need more. Each scrape uses credits at the source's actual price. Before it runs, Teable holds the most the scrape could cost, and the scrape cannot run if the space does not have enough credits. A scrape whose maximum cost exceeds 150 credits is refused; ask for fewer results or split it into several scrapes.
   </Accordion>
