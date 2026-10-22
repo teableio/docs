@@ -1,6 +1,6 @@
 ---
-title: "Rutinas de IA: ejecutar prompts automáticamente"
-description: "Programa tareas de IA o ejecútalas cuando una aplicación conectada envíe un evento, por ejemplo para preparar informes o clasificar correos, y revisa los resultados en el historial."
+title: "Rutinas de IA: tareas programadas o activadas por eventos"
+description: "Haz que la IA complete automáticamente la tarea que describas, según una programación o cuando una app de terceros envíe un evento. Indica el objetivo y el activador, activa la rutina y revisa en su historial el chat de cada ejecución y el motivo de los fallos."
 sidebarTitle: "Rutina"
 ---
 
@@ -8,11 +8,11 @@ sidebarTitle: "Rutina"
 
 <Note>Disponible en todos los planes de Cloud; la versión autoalojada requiere el plan Business o uno superior.</Note>
 
-Una rutina entrega un prompt a Cuppy, el asistente de IA de Teable, y lo repite, ya sea según una programación o cada vez que una app de terceros conectada informa un evento. Eso encaja con el trabajo que nadie debería lanzar a mano: un informe diario, una limpieza periódica de registros caducados, archivar un correo en cuanto llega. Cada ejecución es un chat de IA completo, así que una rutina puede hacer todo lo que hace el chat de IA, incluido leer y escribir tablas, invocar habilidades y generar archivos.
+Una rutina entrega un objetivo a Cuppy, el asistente de IA de Teable, para que lo lleve a cabo de forma repetida, ya sea según una programación o cada vez que una app de terceros conectada informa un evento. Eso encaja con el trabajo que nadie debería lanzar a mano: un informe diario, una limpieza periódica de registros caducados, archivar un correo en cuanto llega. Cada ejecución es un chat de IA completo, así que una rutina puede hacer todo lo que hace el chat de IA, incluido leer y escribir tablas, invocar habilidades y generar archivos.
 
 Una rutina es un recurso dentro de un proyecto y aparece en la barra lateral izquierda junto a las tablas, las aplicaciones y las automatizaciones.
 
-<Info>Una automatización ejecuta los pasos que configuraste de antemano, mientras que una rutina ejecuta un prompt que el agente interpreta por su cuenta. Ambas pueden dispararse según una programación y ambas pueden dispararse con un evento de una app de terceros conectada. Usa una automatización cuando necesites pasos fijos y un resultado previsible; usa una rutina cuando quieras que el agente decida cada vez qué hacer con los datos actuales.</Info>
+<Info>Una automatización ejecuta los pasos que configuraste de antemano, mientras que una rutina persigue un objetivo que el agente interpreta por su cuenta. Ambas pueden dispararse según una programación y ambas pueden dispararse con un evento de una app de terceros conectada. Usa una automatización cuando necesites pasos fijos y un resultado previsible; usa una rutina cuando quieras que el agente decida cada vez qué hacer con los datos actuales.</Info>
 
 ## Crear una rutina
 
@@ -20,44 +20,37 @@ Una rutina es un recurso dentro de un proyecto y aparece en la barra lateral izq
   <Step title="Crear">
     En la barra lateral izquierda, haz clic en **+** y elige **Nueva rutina**.
   </Step>
-  <Step title="Escribir el prompt">
-    Describe en **Prompt** lo que debe hacer cada ejecución. El prompt es la instrucción completa de una ejecución, así que indica de dónde salen los datos, cómo procesarlos y dónde va el resultado. Por ejemplo: «Resume los registros añadidos ayer a la tabla Tareas, agrúpalos por responsable y escribe el resumen en la tabla Informe diario».
+  <Step title="Escribir el objetivo">
+    Una rutina nueva se abre directamente en la página **Editar la rutina**. Describe en **Objetivo de la rutina** lo que debe hacer cada ejecución. El objetivo es la instrucción completa de una ejecución, así que indica de dónde salen los datos, cómo procesarlos y dónde va el resultado. Por ejemplo: «Resume los registros añadidos ayer a la tabla Tareas, agrúpalos por responsable y escribe el resumen en la tabla Informe diario».
   </Step>
   <Step title="Elegir el activador">
     En **Activador**, elige **Según programación** o **Por evento de conector** y rellena los ajustes que pide cada opción.
   </Step>
   <Step title="Activar">
-    Haz clic en **Activar**. La configuración debe estar guardada: **Según programación** necesita alguna ocurrencia futura y **Por evento de conector** necesita una cuenta utilizable.
+    Haz clic en **Activar** en el aviso de la parte superior de la página, o enciende el interruptor a la izquierda del nombre. La configuración se guarda automáticamente, pero debe estar completa antes de activarla: **Según programación** necesita alguna ocurrencia futura y **Por evento de conector** necesita una cuenta utilizable.
   </Step>
 </Steps>
-
-<img
-  src="/images/docs/ai/2026-10-21-routine-editor.png"
-  alt="Routine editor with the prompt, model, chat, an On a schedule trigger set to Weekdays at 09:00, and Starting and Ending times; the top shows the next run time and the Activate button"
-  className="docs-screenshot"
-/>
 
 Para ver ejemplos de esta función, consulta [ejemplos de tareas de IA programadas](https://teable.ai/es/blog/run-ai-tasks-on-a-schedule).
 
 ## Ajustes
 
-Además del prompt y el activador, el formulario incluye estos ajustes:
+Además del objetivo y el activador, la página **Editar la rutina** incluye estos ajustes:
 
 | Ajuste | Descripción |
 | --- | --- |
 | **Modelo** | El modelo y el nivel de inteligencia con los que se ejecuta esta rutina. El botón muestra la elección actual, por ejemplo Smart Media. Una rutina nueva parte del modelo y el nivel que elegiste por última vez en el chat de IA, o de los valores predeterminados si no has elegido ninguno |
 | **Chat** | **Nuevo chat en cada ejecución** mantiene las ejecuciones independientes entre sí; **Continuar el chat de la ejecución anterior** arrastra el contexto de las ejecuciones previas, lo que encaja con el trabajo que necesita consultar el resultado anterior |
-| **Inicio** / **Fin (opcional)** | Los límites de la programación, solo para **Según programación**. Sin hora de fin, la rutina sigue ejecutándose de forma indefinida |
 
-El modelo y el nivel de inteligencia se guardan con la configuración, y cada ejecución usa esa elección guardada. Cambiar de modelo más tarde en el chat de IA no la modifica.
+El modelo y el nivel de inteligencia se guardan con la configuración, y cada ejecución usa esa elección guardada. Cambiar de modelo más tarde en el chat de IA no la modifica. Si el modelo guardado deja de estar disponible, la ejecución usa el modelo predeterminado.
 
 ### Activador
 
 **Según programación** ejecuta la rutina en los horarios que definas, configurados más abajo en Programación.
 
-**Por evento de conector** la ejecuta una vez cada vez que una app de terceros conectada informa un evento, como un correo nuevo o una incidencia nueva. Elige la app, el evento, la **Cuenta** que lo recibe y los parámetros que pida el evento; se configura igual que el activador de la automatización, descrito en [Al recibir un evento de conector](/es/basic/automation/trigger/external/connector-event). Una rutina con este activador no tiene hora de **Próxima ejecución** y no usa **Programación** ni **Inicio** / **Fin (opcional)**.
+**Por evento de conector** la ejecuta una vez cada vez que una app de terceros conectada informa un evento, como un correo nuevo o una incidencia nueva. Elige la app, el evento, la **Cuenta** que lo recibe y los parámetros que pida el evento; se configura igual que el activador de la automatización, descrito en [Al recibir un evento de conector](/es/basic/automation/trigger/external/connector-event). Una rutina con este activador no tiene hora de **Próxima ejecución** y no usa **Programación**.
 
-Si se revoca la concesión de la cuenta, se elimina la cuenta conectada o la app detiene la suscripción, la rutina muestra **Suscripción desconectada** y deja de recibir eventos, y Teable avisa al miembro que la actualizó por última vez. Al volver a conectar la misma cuenta, la suscripción se reconstruye sola; para usar otra cuenta, selecciónala en el activador y guarda.
+Si se revoca la concesión de la cuenta, se elimina la cuenta conectada o la app detiene la suscripción, la rutina muestra **Suscripción desconectada** y deja de recibir eventos, y Teable avisa al responsable de la rutina. Al volver a conectar la misma cuenta, la suscripción se reconstruye sola; para usar otra cuenta, selecciónala en el activador y guarda.
 
 ### Programación
 
@@ -66,8 +59,8 @@ Si se revoca la concesión de la cuenta, se elimina la cuenta conectada o la app
 Para algo más específico, elige **Personalizada (RRULE)** y escribe una regla RFC 5545, como `FREQ=DAILY;BYHOUR=9;BYMINUTE=0`. Una regla personalizada tiene estos límites:
 
 - La frecuencia debe ser `HOURLY`, `DAILY`, `WEEKLY`, `MONTHLY` o `YEARLY`, y entre dos ejecuciones debe haber al menos 1 hora.
-- Puedes usar `INTERVAL`, `COUNT`, `BYDAY`, `BYMONTHDAY`, `BYMONTH`, más un `BYMINUTE` y un `BYHOUR`. `COUNT` llega como máximo a 1000, y `COUNT` o `INTERVAL` exigen una hora de **Inicio**.
-- La zona horaria pertenece a la rutina y los límites vienen de **Inicio** y **Fin (opcional)**, así que `TZID`, `DTSTART`, `UNTIL` y `BYSECOND` se rechazan.
+- Puedes usar `INTERVAL`, `COUNT`, `BYDAY`, `BYMONTHDAY`, `BYMONTH`, más un `BYMINUTE` y un `BYHOUR`. `COUNT` llega como máximo a 1000.
+- La zona horaria y la hora de inicio las determina la rutina, así que `TZID`, `DTSTART`, `UNTIL` y `BYSECOND` se rechazan.
 
 Para una programación que se ejecute una sola vez, usa una regla personalizada con `COUNT=1`.
 
@@ -75,49 +68,61 @@ Una programación se evalúa en la zona horaria de la rutina. Esa zona horaria s
 
 ## Borradores, actualizaciones y ejecución inmediata
 
-Una rutina nueva es un borrador y no se ejecuta por su cuenta hasta que la activas. Cuando editas una rutina activa, el cambio también se guarda como borrador mientras la versión en curso sigue con la configuración anterior: haz clic en **Actualizar** para aplicarlo o en **Descartar los cambios** para desecharlo.
-
-**Ejecutar ahora** lanza una ejecución sin esperar al activador, algo útil para comprobar un prompt. Una rutina no se puede volver a lanzar a mano hasta que termine su ejecución anterior.
-
-En una rutina por evento de conector que todavía no está activa, **Ejecutar ahora** muestra **Esperando un evento**: dispara ese evento en la app y Teable usará el que reciba para una única ejecución, que luego aparece en el historial. Haz clic en **Dejar de esperar** para cortar la espera. Una rutina activa ya recibe sus eventos, así que no lo necesita ni lo admite.
-
-Apaga el interruptor para desactivarla. La rutina deja de dispararse y el historial de ejecuciones existente se conserva.
-
-## Historial de ejecuciones
-
-Abre la rutina y ve a **Historial de ejecuciones**. Haz clic en **Filtro** para acotar la lista por estado e intervalo de tiempo, lo que ayuda a localizar un fallo concreto. El **Resumen** bajo la lista cuenta las ejecuciones por estado y muestra la **Duración media**; al hacer clic en un estado, la lista también se acota a él. Al seleccionar una ejecución verás su **ID de ejecución**, su **Activador** y el chat completo de esa ejecución. El **Activador** indica **Programado**, **Evento** o **Manual**, y una ejecución programada muestra además la hora **Planificada** a la que correspondía.
+Una rutina nueva es un borrador y no se ejecuta por su cuenta hasta que la activas. Para cambiar la configuración, haz clic en **Editar** en **Detalles de la rutina**, en la página de la rutina, y se abrirá la página **Editar la rutina**. Cuando editas una rutina activa, los cambios se guardan automáticamente como borrador mientras la versión en curso sigue con la configuración anterior. Un aviso en la parte superior de la página indica que hay cambios sin publicar: haz clic en **Actualizar** para aplicarlos o en **Descartar los cambios** para desecharlos.
 
 <img
-  src="/images/docs/ai/2026-10-21-routine-run-history.png"
-  alt="Routine run history: the run list and overview on the left, and the selected run's Run ID, Trigger, Planned time, and conversation on the right"
+  src="/images/docs/ai/2026-10-22-routine-editor.png"
+  alt="Página Editar la rutina de una rutina activa: arriba, un aviso de cambios sin publicar con los botones Descartar los cambios y Actualizar; debajo, el objetivo, el modelo, el chat y un activador Según programación configurado para los días laborables a las 09:00"
   className="docs-screenshot"
 />
 
-Las ejecuciones se informan como **En cola**, **En ejecución**, **Completada**, **Fallida** o **Cancelada**. **Cancelada** aparece cuando alguien interrumpió esa ejecución, o cuando se ha eliminado la rutina o su proyecto.
+**Ejecutar ahora** lanza una ejecución sin esperar al activador, algo útil para comprobar el objetivo. Una rutina no se puede volver a lanzar a mano hasta que termine su ejecución anterior.
 
-Tanto las ejecuciones que dieron error como las omitidas aparecen como **Fallida** en la lista. Abre la ejecución para ver el motivo en la parte superior de sus detalles; cada motivo pide una respuesta distinta:
+En una rutina por evento de conector que todavía no está activa, **Ejecutar ahora** muestra **Esperando un evento**: dispara ese evento en la app y Teable usará el que reciba para una única ejecución, que luego aparece en el historial de la rutina. Haz clic en **Dejar de esperar** para cortar la espera. Una rutina activa ya recibe sus eventos, así que no lo necesita ni lo admite.
+
+Apaga el interruptor para desactivarla. La rutina deja de dispararse y su historial se conserva.
+
+## Historial de la rutina
+
+Al abrir una rutina, la página muestra a un lado los **Detalles de la rutina**, que resumen el objetivo, el activador, la próxima ejecución, el modelo y el modo de chat, y al otro el **Historial de la rutina**, que lista cada ejecución por orden cronológico con el nombre de su conversación como título.
+
+<img
+  src="/images/docs/ai/2026-10-22-routine-page.png"
+  alt="Página de una rutina: a la izquierda, el historial de la rutina lista la conversación de cada ejecución; a la derecha, los detalles de la rutina muestran el objetivo, el activador, la próxima ejecución, el modelo y el modo de chat"
+  className="docs-screenshot"
+/>
+
+Haz clic en una ejecución para abrir su conversación completa en el área de chat. Los miembros que pueden editar la rutina pueden continuar la conversación; el resto solo puede verla. Las ejecuciones cuya conversación se eliminó muestran **Esta conversación se eliminó**.
+
+Tanto las ejecuciones que dieron error como las omitidas aparecen marcadas como fallidas en la lista. Pasa el cursor sobre la ejecución para ver el motivo; cada motivo pide una respuesta distinta:
 
 | Mensaje | Significado | Qué hacer |
 | --- | --- | --- |
-| **La ejecución falló** | La ejecución empezó pero se topó con un error | Abre el chat de esa ejecución y deduce en el punto del fallo si la causa es el prompt o los datos |
+| **La ejecución falló** | La ejecución empezó pero se topó con un error | Abre el chat de esa ejecución y deduce en el punto del fallo si la causa es el objetivo o los datos |
 | **Omitida: créditos insuficientes** | Se acabaron los créditos, así que la ejecución no llegó a empezar | Recarga los créditos del espacio |
 | **Omitida: la ejecución anterior seguía en curso** | La ejecución anterior no había terminado, así que se omitió esta ocurrencia | Baja la frecuencia o reduce cuánto procesa cada ejecución |
 | **Omitida: se agotó el tiempo de espera en la cola** | La ejecución esperó demasiado en la cola y se omitió | Si es puntual, no requiere nada; si se repite, hay demasiado programado a la vez, así que escalona las programaciones |
 | **Omitida: agente de IA no disponible** | El entorno de ejecución del agente de IA estaba en mantenimiento o no está configurado, así que la ejecución no llegó a empezar | Las ejecuciones se reanudan al terminar el mantenimiento; si se repite, contacta con tu administrador |
 
-El chat de una ejecución es de solo lectura y muestra cómo transcurrió esa ejecución de principio a fin.
+La conversación de cada ejecución también aparece en el historial de chats, y pertenece al responsable de la rutina. Las conversaciones de las ejecuciones programadas y manuales conservan el nombre de la rutina; las de las ejecuciones activadas por eventos se renombran automáticamente según el objetivo y el evento recibido, para que puedas distinguir cada evento en el historial. Eliminar la rutina no borra esas conversaciones: mantienen su nombre y pasan a ser chats normales.
 
-La conversación de cada ejecución también aparece en el historial de chats, y pertenece a quien actualizó la rutina por última vez. Las conversaciones de las ejecuciones programadas y manuales conservan el nombre de la rutina; las de las ejecuciones activadas por eventos se renombran automáticamente según el prompt y el evento recibido, para que puedas distinguir cada evento en el historial. Eliminar la rutina no borra esas conversaciones: mantienen su nombre y pasan a ser chats normales.
+<Info>El propietario y el creador de un proyecto pueden crear, editar y eliminar rutinas; el resto de colaboradores tiene acceso de lectura. Todos los colaboradores pueden ver el historial de la rutina y la conversación de cada ejecución. Con la **Matriz de Autoridad** activada, los miembros solo ven el historial de las rutinas a las que tienen acceso.</Info>
 
-<Info>El propietario y el creador de un proyecto pueden crear, editar y eliminar rutinas; el resto de colaboradores tiene acceso de lectura. Todos los colaboradores pueden ver el historial de ejecuciones y la conversación de cada ejecución. Con la **Matriz de Autoridad** activada, los miembros solo ven el historial de ejecuciones de las rutinas a las que tienen acceso.</Info>
+## Responsable
+
+Una rutina se ejecuta en nombre de su responsable: la conversación de cada ejecución le pertenece, y los avisos de fallo y de desconexión se le envían a él. El campo **Última actualización por** de la parte superior de la página muestra a ese responsable.
+
+Al crear la rutina, el responsable es quien la creó; después, pasa a serlo el último miembro que la activó o que publicó cambios con **Actualizar**. Guardar un borrador, cambiar el nombre o desactivar la rutina no cambia el responsable.
+
+Si el responsable ya no puede editar la rutina, por ejemplo porque su cuenta se desactivó, se le quitó del proyecto o del espacio, o perdió el permiso de edición, la rutina pasa automáticamente al miembro que lleva más tiempo como propietario del proyecto (o de su espacio) y sigue ejecutándose.
 
 ## Avisos de fallo y desactivación automática
 
-Teable envía una notificación cuando una ejecución falla o se acaban los créditos. Va al miembro que actualizó la rutina por última vez, indicado bajo **Las notificaciones se enviarán a** en la parte superior del historial de ejecuciones. Las notificaciones de fallo no se envían en cada ocasión, para que una racha larga de fallos no inunde a quien las recibe.
+Cuando una ejecución falla o se acaban los créditos, Teable avisa al responsable de la rutina, indicado bajo **Las notificaciones se enviarán a** en la parte superior del historial de la rutina. Las notificaciones de fallo no se envían en cada ocasión, para que una racha larga de fallos no inunde a quien las recibe.
 
 Tras 5 fallos consecutivos la rutina se desactiva automáticamente y se envía una notificación aparte. Vuelve a encender el interruptor una vez resuelto el problema; el recuento se reinicia tras la siguiente ejecución correcta.
 
-No toda ejecución sin éxito cuenta para ese total: las ejecuciones omitidas porque la anterior seguía en curso, porque agotaron la espera en la cola o porque el agente de IA no estaba disponible, junto con las **Canceladas**, no son fallos y no generan notificación. La falta de créditos sí cuenta, así que dejar los créditos sin recargar acaba desactivando la rutina.
+No toda ejecución sin éxito cuenta para ese total: las ejecuciones omitidas porque la anterior seguía en curso, porque agotaron la espera en la cola o porque el agente de IA no estaba disponible, junto con las canceladas (porque alguien interrumpió la ejecución o porque se eliminó la rutina o su proyecto), no son fallos y no generan notificación. La falta de créditos sí cuenta, así que dejar los créditos sin recargar acaba desactivando la rutina.
 
 ## Preguntas frecuentes
 
@@ -126,7 +131,7 @@ No toda ejecución sin éxito cuenta para ese total: las ejecuciones omitidas po
     Sí. Cada ejecución es un chat de IA y se carga a los créditos del espacio según el uso real; aparece bajo el tipo **Rutina** en el **Resumen de uso de créditos** de la página de facturación. Cuando se acaban los créditos la ejecución se omite y se envía una notificación, y las omisiones repetidas acaban desactivando la rutina.
   </Accordion>
 
-  <Accordion title="Si edito el prompt, ¿afecta a la ejecución en curso?">
+  <Accordion title="Si edito el objetivo, ¿afecta a la ejecución en curso?">
     No. El cambio se guarda como borrador y solo llega a la versión activa cuando haces clic en **Actualizar**. Una ejecución ya en marcha conserva la configuración con la que empezó.
   </Accordion>
 
