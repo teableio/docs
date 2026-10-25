@@ -8,6 +8,7 @@
   var locales = ["en", "zh", "ru", "de", "fr", "es", "it", "ja", "tr", "uk", "ar"];
   // Keep this public product catalog in sync with the website arrival validator.
   var productRoutes = [
+  "custom-inventory-management",
   "employee-database",
   "products",
   "csv-compare",

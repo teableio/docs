@@ -44,7 +44,7 @@ function runtime(links = [], href = 'https://help.teable.ai/zh/basic/ai/overview
 
 test('trusted public official links retain security and other rel tokens', () => {
   for (const host of ['teable.ai', 'www.teable.ai', 'teable.cn', 'www.teable.cn']) {
-    for (const segment of ['ai-app-builder', 'zh/compare/airtable', 'blog/example', 'customers/example']) {
+    for (const segment of ['ai-app-builder', 'custom-inventory-management', 'zh/custom-inventory-management', 'zh/compare/airtable', 'blog/example', 'customers/example']) {
       const link = anchor(`https://${host}/${segment}?utm_source=existing#section`, 'nofollow NoReferrer sponsored');
       runtime([link]);
       assert.equal(link.getAttribute('rel'), 'nofollow sponsored noopener');
