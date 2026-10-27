@@ -1,6 +1,6 @@
 ---
 title: "API：レコードを作成"
-description: "Teable API でレコードを作成し、フィールド値、デフォルト値、レコードの位置を指定します。"
+description: "Teable API でレコードの値や位置を指定して作成したり、一意のフィールドで既存レコードを照合して更新、スキップ、エラーを選択したりできます。"
 ---
 
 {/* mintlify-resync: 2026-05-14 */}
@@ -242,3 +242,88 @@ POST /api/table/\{tableId\}/record
   print(response.json())
   ```
 </CodeGroup>
+
+## 一意のフィールドでレコードを作成または更新する {#upsert-by-unique-field}
+
+外部データを同期するときは、注文番号や顧客番号などの一意の値で照合できます。事前にレコード ID を取得する必要はありません。
+
+```text
+POST /api/table/{tableId}/record/upsert
+```
+
+<Info>このエンドポイントは v2 エンジンを使用するテーブルが対象で、共有ビューからは呼び出せません。`error` にはレコード作成権限が必要です。`ignore` と `update` には作成権限と更新権限の両方が必要です。</Info>
+
+### リクエスト本文
+
+| パラメーター | 説明 |
+| --- | --- |
+| `matchField` | 必須。照合に使用するフィールド ID。一意性制約が有効になっている必要があります。指定できるのは 1 フィールドのみで、複合キーには対応していません。 |
+| `onConflict` | 必須。既存レコードと一致した場合の処理。次の表を参照してください。 |
+| `records` | 必須。1 件以上のレコードを指定します。各レコードは `fields` に値を指定し、照合フィールドの空でない値を含める必要があります。同一リクエスト内で照合値を重複させることはできません。 |
+| `fieldKeyType` | 任意。`fields` のキーの種類。レコード作成 API と同じです。`matchField` には常にフィールド ID を指定します。 |
+| `typecast` | 任意。フィールド値の型の自動変換を試みるかどうか。レコード作成 API と同じです。 |
+
+一致しないレコードは新規作成されます。一致する既存レコードは `onConflict` に従って処理されます。
+
+| 値 | 処理 |
+| --- | --- |
+| `error` | 照合値が 1 つでも既に存在する場合、リクエスト全体が失敗します。 |
+| `ignore` | 既存レコードを保持し、その入力をスキップします。 |
+| `update` | 指定されたフィールドだけを更新し、省略されたフィールドは元の値を保持します。 |
+
+例えば `fldOrderNumber` が一意性制約を持つ注文番号フィールドの場合、次のリクエストは注文を新規作成するか、既存の注文のステータスを更新します。
+
+```json
+{
+  "fieldKeyType": "id",
+  "matchField": "fldOrderNumber",
+  "onConflict": "update",
+  "records": [
+    {
+      "fields": {
+        "fldOrderNumber": "ORDER-001",
+        "fldStatus": "支払済み"
+      }
+    }
+  ]
+}
+```
+
+### レスポンス
+
+成功レスポンスの `results` は入力順で、`index` は 0 から始まります。`summary` はリクエスト件数と各結果の件数を集計します。
+
+| `status` | 意味 |
+| --- | --- |
+| `created` | 新しいレコードが作成されました。 |
+| `updated` | 既存レコードが更新されました。 |
+| `unchanged` | 既存の値が一致しているか、更新対象のフィールドがありません。 |
+| `skipped` | `ignore` モードで既存レコードをスキップしました。 |
+
+呼び出し元がそのレコードを読み取れる場合にのみ、結果に `recordId` と `record` が含まれます。フィールドの内容には読み取り権限が引き続き適用されます。
+
+```json
+{
+  "results": [
+    {
+      "index": 0,
+      "status": "updated",
+      "recordId": "recExample",
+      "record": {
+        "id": "recExample",
+        "fields": {
+          "fldOrderNumber": "ORDER-001",
+          "fldStatus": "支払済み"
+        }
+      }
+    }
+  ],
+  "summary": {
+    "requested": 1,
+    "created": 0,
+    "updated": 1,
+    "unchanged": 0,
+    "skipped": 0
+  }
+}
+```

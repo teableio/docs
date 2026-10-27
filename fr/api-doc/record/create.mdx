@@ -1,6 +1,6 @@
 ---
 title: "API: Créer des Enregistrements"
-description: "Créez des enregistrements avec l’API Teable, en définissant les valeurs des champs, les valeurs par défaut et leur position."
+description: "Créez des enregistrements avec l’API Teable, définissez leurs valeurs et positions, ou recherchez une correspondance par un champ unique pour mettre à jour, ignorer ou refuser les conflits."
 ---
 
 {/* mintlify-resync: 2026-05-14 */}
@@ -243,3 +243,87 @@ POST /api/table/\{tableId\}/record
   ```
 </CodeGroup>
 
+## Créer ou mettre à jour des enregistrements par un champ unique {#upsert-by-unique-field}
+
+Pour synchroniser des données externes, recherchez les enregistrements par une valeur unique, comme un numéro de commande ou de client, sans récupérer leurs identifiants au préalable.
+
+```text
+POST /api/table/{tableId}/record/upsert
+```
+
+<Info>Ce point de terminaison nécessite une table utilisant le moteur v2 et ne peut pas être appelé depuis une vue partagée. Le mode `error` nécessite le droit de créer des enregistrements ; `ignore` et `update` nécessitent les droits de création et de mise à jour.</Info>
+
+### Corps de la requête
+
+| Paramètre | Description |
+| --- | --- |
+| `matchField` | Obligatoire. Identifiant du champ de correspondance, sur lequel une contrainte d’unicité doit être activée. Un seul champ est accepté, sans clé composite. |
+| `onConflict` | Obligatoire. Traitement d’une correspondance existante ; voir le tableau ci-dessous. |
+| `records` | Obligatoire. Au moins un enregistrement. Chaque enregistrement fournit ses valeurs dans `fields` et doit contenir une valeur de correspondance non vide. Ces valeurs ne peuvent pas se répéter dans une même requête. |
+| `fieldKeyType` | Facultatif. Type des clés dans `fields`, comme pour la création d’enregistrements. `matchField` contient toujours un identifiant de champ. |
+| `typecast` | Facultatif. Indique s’il faut tenter de convertir automatiquement le type des valeurs, comme pour la création d’enregistrements. |
+
+Les enregistrements sans correspondance sont créés. En cas de correspondance, `onConflict` détermine le traitement :
+
+| Valeur | Comportement |
+| --- | --- |
+| `error` | La requête entière échoue si une valeur de correspondance existe déjà. |
+| `ignore` | Conserver l’enregistrement existant et ignorer l’enregistrement fourni. |
+| `update` | Mettre à jour uniquement les champs fournis ; les autres conservent leur valeur. |
+
+Par exemple, si `fldOrderNumber` est un champ de numéro de commande soumis à une contrainte d’unicité, cette requête crée une commande ou met à jour le statut d’une commande existante :
+
+```json
+{
+  "fieldKeyType": "id",
+  "matchField": "fldOrderNumber",
+  "onConflict": "update",
+  "records": [
+    {
+      "fields": {
+        "fldOrderNumber": "ORDER-001",
+        "fldStatus": "Payée"
+      }
+    }
+  ]
+}
+```
+
+### Réponse
+
+Dans une réponse réussie, `results` suit l’ordre d’entrée et `index` commence à 0. `summary` compte les enregistrements demandés et chaque type de résultat.
+
+| `status` | Signification |
+| --- | --- |
+| `created` | Un enregistrement a été créé. |
+| `updated` | Un enregistrement existant a été mis à jour. |
+| `unchanged` | Les valeurs existantes correspondent déjà ou aucun champ ne nécessite de mise à jour. |
+| `skipped` | Un enregistrement existant a été ignoré en mode `ignore`. |
+
+Les résultats contiennent `recordId` et `record` uniquement si l’appelant peut lire cet enregistrement. Le contenu des champs reste soumis aux droits de lecture.
+
+```json
+{
+  "results": [
+    {
+      "index": 0,
+      "status": "updated",
+      "recordId": "recExample",
+      "record": {
+        "id": "recExample",
+        "fields": {
+          "fldOrderNumber": "ORDER-001",
+          "fldStatus": "Payée"
+        }
+      }
+    }
+  ],
+  "summary": {
+    "requested": 1,
+    "created": 0,
+    "updated": 1,
+    "unchanged": 0,
+    "skipped": 0
+  }
+}
+```

@@ -1,6 +1,6 @@
 ---
 title: "API: Datensätze erstellen"
-description: "Erstellen Sie Datensätze über die Teable-API mit Feldwerten, Standardwerten und Datensatzpositionen."
+description: "Erstellen Sie Datensätze über die Teable-API, legen Sie Feldwerte und Positionen fest oder gleichen Sie bestehende Datensätze anhand eines eindeutigen Felds ab, um sie zu aktualisieren, zu überspringen oder Konflikte abzulehnen."
 ---
 
 {/* mintlify-resync: 2026-05-14 */}
@@ -242,3 +242,88 @@ POST /api/table/\{tableId\}/record
   print(response.json())
   ```
 </CodeGroup>
+
+## Datensätze anhand eines eindeutigen Felds erstellen oder aktualisieren {#upsert-by-unique-field}
+
+Beim Synchronisieren externer Daten können Sie Datensätze anhand eindeutiger Werte wie Bestellnummern oder Kundennummern abgleichen, ohne zuvor Datensatz-IDs abzurufen.
+
+```text
+POST /api/table/{tableId}/record/upsert
+```
+
+<Info>Dieser Endpunkt setzt eine Tabelle mit der v2-Engine voraus und ist nicht über geteilte Ansichten verfügbar. `error` erfordert die Berechtigung zum Erstellen von Datensätzen; `ignore` und `update` erfordern Berechtigungen zum Erstellen und Aktualisieren.</Info>
+
+### Anfragekörper
+
+| Parameter | Beschreibung |
+| --- | --- |
+| `matchField` | Erforderlich. ID des Abgleichfelds, für das eine Eindeutigkeitsbeschränkung aktiviert sein muss. Es wird nur ein Feld unterstützt, keine zusammengesetzten Schlüssel. |
+| `onConflict` | Erforderlich. Verhalten bei einem vorhandenen Treffer; siehe folgende Tabelle. |
+| `records` | Erforderlich. Mindestens ein Datensatz. Jeder Datensatz enthält seine Werte in `fields` und einen nicht leeren Abgleichwert. Abgleichwerte dürfen sich innerhalb einer Anfrage nicht wiederholen. |
+| `fieldKeyType` | Optional. Schlüsseltyp in `fields`, wie beim Endpunkt zum Erstellen von Datensätzen. Für `matchField` wird immer die Feld-ID verwendet. |
+| `typecast` | Optional. Ob Feldwerte automatisch in den passenden Typ umgewandelt werden sollen, wie beim Endpunkt zum Erstellen von Datensätzen. |
+
+Datensätze ohne Treffer werden erstellt. Bei vorhandenen Treffern entscheidet `onConflict`:
+
+| Wert | Verhalten |
+| --- | --- |
+| `error` | Die gesamte Anfrage schlägt fehl, wenn bereits einer der Abgleichwerte vorhanden ist. |
+| `ignore` | Den vorhandenen Datensatz beibehalten und den Eingabedatensatz überspringen. |
+| `update` | Nur übergebene Felder aktualisieren; ausgelassene Felder behalten ihren Wert. |
+
+Wenn `fldOrderNumber` ein Bestellnummernfeld mit Eindeutigkeitsbeschränkung ist, erstellt diese Anfrage eine neue Bestellung oder aktualisiert den Status einer vorhandenen:
+
+```json
+{
+  "fieldKeyType": "id",
+  "matchField": "fldOrderNumber",
+  "onConflict": "update",
+  "records": [
+    {
+      "fields": {
+        "fldOrderNumber": "ORDER-001",
+        "fldStatus": "Bezahlt"
+      }
+    }
+  ]
+}
+```
+
+### Antwort
+
+Bei Erfolg entspricht die Reihenfolge von `results` der Eingabe; `index` beginnt bei 0. `summary` zählt die angefragten Datensätze und die einzelnen Ergebnisse.
+
+| `status` | Bedeutung |
+| --- | --- |
+| `created` | Ein neuer Datensatz wurde erstellt. |
+| `updated` | Ein vorhandener Datensatz wurde aktualisiert. |
+| `unchanged` | Die vorhandenen Werte stimmen bereits überein oder es gibt keine zu aktualisierenden Felder. |
+| `skipped` | Ein vorhandener Datensatz wurde im Modus `ignore` übersprungen. |
+
+`recordId` und `record` werden nur zurückgegeben, wenn der Aufrufer den Datensatz lesen darf. Für die Feldinhalte gelten weiterhin die Leseberechtigungen.
+
+```json
+{
+  "results": [
+    {
+      "index": 0,
+      "status": "updated",
+      "recordId": "recExample",
+      "record": {
+        "id": "recExample",
+        "fields": {
+          "fldOrderNumber": "ORDER-001",
+          "fldStatus": "Bezahlt"
+        }
+      }
+    }
+  ],
+  "summary": {
+    "requested": 1,
+    "created": 0,
+    "updated": 1,
+    "unchanged": 0,
+    "skipped": 0
+  }
+}
+```

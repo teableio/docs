@@ -1,6 +1,6 @@
 ---
 title: "API: Kayıt Oluşturma"
-description: "Teable API ile alan değerlerini, varsayılan değerleri ve kayıt konumunu belirterek kayıt oluşturun."
+description: "Teable API ile kayıt oluşturun, alan değerlerini ve konumlarını ayarlayın veya benzersiz bir alanla mevcut kayıtları eşleştirip güncelleyin, atlayın ya da çakışmaları reddedin."
 ---
 
 {/* mintlify-resync: 2026-05-14 */}
@@ -242,3 +242,88 @@ POST /api/table/\{tableId\}/record
   print(response.json())
   ```
 </CodeGroup>
+
+## Benzersiz bir alanla kayıt oluşturma veya güncelleme {#upsert-by-unique-field}
+
+Harici verileri eşitlerken kayıt ID’lerini önceden sorgulamadan sipariş numarası veya müşteri kodu gibi benzersiz bir değerle kayıtları eşleştirebilirsiniz.
+
+```text
+POST /api/table/{tableId}/record/upsert
+```
+
+<Info>Bu uç nokta v2 motorunu kullanan tablolar içindir ve paylaşılan görünümler üzerinden çağrılamaz. `error` modu kayıt oluşturma izni gerektirir; `ignore` ve `update` hem oluşturma hem de güncelleme izni gerektirir.</Info>
+
+### İstek gövdesi
+
+| Parametre | Açıklama |
+| --- | --- |
+| `matchField` | Zorunlu. Eşleştirme alanının ID’si; bu alanda benzersizlik kısıtı etkin olmalıdır. Yalnızca tek alan desteklenir, bileşik anahtarlar desteklenmez. |
+| `onConflict` | Zorunlu. Mevcut bir eşleşme bulunduğunda yapılacak işlem; aşağıdaki tabloya bakın. |
+| `records` | Zorunlu. En az bir kayıt. Her kayıt değerlerini `fields` içinde sağlar ve boş olmayan bir eşleştirme değeri içermelidir. Aynı istekte eşleştirme değerleri tekrarlanamaz. |
+| `fieldKeyType` | İsteğe bağlı. Kayıt oluşturma uç noktasındaki gibi, `fields` içindeki anahtar türü. `matchField` için her zaman alan ID’si kullanın. |
+| `typecast` | İsteğe bağlı. Kayıt oluşturma uç noktasındaki gibi, alan değerlerinin türlerinin otomatik dönüştürülmeye çalışılıp çalışılmayacağı. |
+
+Eşleşmeyen kayıtlar oluşturulur. Mevcut eşleşmeler için `onConflict` uygulanır:
+
+| Değer | İşlem |
+| --- | --- |
+| `error` | Herhangi bir eşleştirme değeri zaten varsa isteğin tamamı başarısız olur. |
+| `ignore` | Mevcut kaydı korur ve bu giriş kaydını atlar. |
+| `update` | Yalnızca sağlanan alanları günceller; diğer alanlar değerlerini korur. |
+
+Örneğin `fldOrderNumber` benzersizlik kısıtı olan bir sipariş numarası alanıysa bu istek yeni sipariş oluşturur veya mevcut siparişin durumunu günceller:
+
+```json
+{
+  "fieldKeyType": "id",
+  "matchField": "fldOrderNumber",
+  "onConflict": "update",
+  "records": [
+    {
+      "fields": {
+        "fldOrderNumber": "ORDER-001",
+        "fldStatus": "Ödendi"
+      }
+    }
+  ]
+}
+```
+
+### Yanıt
+
+Başarılı yanıtta `results` giriş sırasını izler ve `index` 0’dan başlar. `summary`, istenen kayıtları ve her sonuç türünü sayar.
+
+| `status` | Anlamı |
+| --- | --- |
+| `created` | Yeni kayıt oluşturuldu. |
+| `updated` | Mevcut kayıt güncellendi. |
+| `unchanged` | Mevcut değerler zaten eşleşiyor veya güncellenecek alan yok. |
+| `skipped` | Mevcut kayıt `ignore` modunda atlandı. |
+
+Sonuçlar yalnızca çağrıyı yapan bu kaydı okuyabiliyorsa `recordId` ve `record` içerir. Alan içerikleri okuma izinlerine tabi olmaya devam eder.
+
+```json
+{
+  "results": [
+    {
+      "index": 0,
+      "status": "updated",
+      "recordId": "recExample",
+      "record": {
+        "id": "recExample",
+        "fields": {
+          "fldOrderNumber": "ORDER-001",
+          "fldStatus": "Ödendi"
+        }
+      }
+    }
+  ],
+  "summary": {
+    "requested": 1,
+    "created": 0,
+    "updated": 1,
+    "unchanged": 0,
+    "skipped": 0
+  }
+}
+```

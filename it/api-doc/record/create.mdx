@@ -1,6 +1,6 @@
 ---
 title: "API: Creare Record"
-description: "Crea record con l’API Teable, specificando valori dei campi, valori predefiniti e posizione dei record."
+description: "Crea record con l’API Teable, imposta valori e posizioni oppure cerca corrispondenze tramite un campo univoco per aggiornare, ignorare o rifiutare i conflitti."
 ---
 
 {/* mintlify-resync: 2026-05-14 */}
@@ -242,3 +242,88 @@ POST /api/table/\{tableId\}/record
   print(response.json())
   ```
 </CodeGroup>
+
+## Creare o aggiornare record tramite un campo univoco {#upsert-by-unique-field}
+
+Quando sincronizzi dati esterni, puoi trovare i record tramite un valore univoco, come un numero d’ordine o un codice cliente, senza cercare prima gli ID dei record.
+
+```text
+POST /api/table/{tableId}/record/upsert
+```
+
+<Info>Questo endpoint richiede una tabella con il motore v2 e non è disponibile tramite viste condivise. La modalità `error` richiede il permesso di creare record; `ignore` e `update` richiedono i permessi di creazione e aggiornamento.</Info>
+
+### Corpo della richiesta
+
+| Parametro | Descrizione |
+| --- | --- |
+| `matchField` | Obbligatorio. ID del campo di corrispondenza, per il quale deve essere attivo un vincolo di univocità. È supportato un solo campo, senza chiavi composite. |
+| `onConflict` | Obbligatorio. Come gestire una corrispondenza esistente; vedi la tabella seguente. |
+| `records` | Obbligatorio. Almeno un record. Ogni record fornisce i valori in `fields` e deve includere un valore di corrispondenza non vuoto. I valori di corrispondenza non possono ripetersi nella stessa richiesta. |
+| `fieldKeyType` | Facoltativo. Tipo di chiave in `fields`, come nell’endpoint di creazione. `matchField` contiene sempre un ID di campo. |
+| `typecast` | Facoltativo. Indica se tentare la conversione automatica dei tipi dei valori, come nell’endpoint di creazione. |
+
+I record senza corrispondenza vengono creati. In caso di corrispondenza, si applica `onConflict`:
+
+| Valore | Comportamento |
+| --- | --- |
+| `error` | L’intera richiesta fallisce se uno dei valori di corrispondenza esiste già. |
+| `ignore` | Conserva il record esistente e ignora quel record in ingresso. |
+| `update` | Aggiorna solo i campi forniti; gli altri mantengono il loro valore. |
+
+Ad esempio, se `fldOrderNumber` è un campo numero d’ordine con un vincolo di univocità, questa richiesta crea un ordine o aggiorna lo stato di uno esistente:
+
+```json
+{
+  "fieldKeyType": "id",
+  "matchField": "fldOrderNumber",
+  "onConflict": "update",
+  "records": [
+    {
+      "fields": {
+        "fldOrderNumber": "ORDER-001",
+        "fldStatus": "Pagato"
+      }
+    }
+  ]
+}
+```
+
+### Risposta
+
+In una risposta riuscita, `results` segue l’ordine di ingresso e `index` parte da 0. `summary` conta i record richiesti e ciascun tipo di risultato.
+
+| `status` | Significato |
+| --- | --- |
+| `created` | È stato creato un nuovo record. |
+| `updated` | È stato aggiornato un record esistente. |
+| `unchanged` | I valori esistenti corrispondono già o non ci sono campi da aggiornare. |
+| `skipped` | Un record esistente è stato ignorato in modalità `ignore`. |
+
+I risultati includono `recordId` e `record` solo se il chiamante può leggere il record. Il contenuto dei campi resta soggetto ai permessi di lettura.
+
+```json
+{
+  "results": [
+    {
+      "index": 0,
+      "status": "updated",
+      "recordId": "recExample",
+      "record": {
+        "id": "recExample",
+        "fields": {
+          "fldOrderNumber": "ORDER-001",
+          "fldStatus": "Pagato"
+        }
+      }
+    }
+  ],
+  "summary": {
+    "requested": 1,
+    "created": 0,
+    "updated": 1,
+    "unchanged": 0,
+    "skipped": 0
+  }
+}
+```

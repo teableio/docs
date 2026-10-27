@@ -1,6 +1,6 @@
 ---
 title: "API: Create Records"
-description: "Create records with the Teable API, including field values, default values, and record positioning."
+description: "Create records with the Teable API, set field values and positions, or match existing records by a unique field and update, skip, or reject conflicts."
 ---
 
 {/* mintlify-resync: 2026-05-14 */}
@@ -242,3 +242,88 @@ POST /api/table/\{tableId\}/record
   print(response.json())
   ```
 </CodeGroup>
+
+## Create or update records by a unique field {#upsert-by-unique-field}
+
+When syncing external data, match records by a unique value such as an order number or customer ID without first looking up record IDs.
+
+```text
+POST /api/table/{tableId}/record/upsert
+```
+
+<Info>This endpoint requires a table using the v2 engine and is unavailable through shared views. The `error` mode requires permission to create records; `ignore` and `update` require permission to both create and update records.</Info>
+
+### Request body
+
+| Parameter | Description |
+| --- | --- |
+| `matchField` | Required. The ID of the matching field, which must have a unique constraint enabled. Only one field is supported; composite keys are not supported. |
+| `onConflict` | Required. How to handle an existing match; see the table below. |
+| `records` | Required. At least one record. Each record supplies values in `fields` and must include a non-empty matching value. Matching values cannot repeat within the request. |
+| `fieldKeyType` | Optional. The key type used in `fields`, as in the create-records endpoint. Always use a field ID for `matchField`. |
+| `typecast` | Optional. Whether to attempt to convert field value types, as in the create-records endpoint. |
+
+Records without a match are created. Existing matches are handled according to `onConflict`:
+
+| Value | Behavior |
+| --- | --- |
+| `error` | The entire request fails if any matching value already exists. |
+| `ignore` | Keep the existing record and skip that input record. |
+| `update` | Update only the supplied fields; omitted fields retain their values. |
+
+For example, if `fldOrderNumber` is an order-number field with a unique constraint, this request creates a new order or updates the status of an existing order:
+
+```json
+{
+  "fieldKeyType": "id",
+  "matchField": "fldOrderNumber",
+  "onConflict": "update",
+  "records": [
+    {
+      "fields": {
+        "fldOrderNumber": "ORDER-001",
+        "fldStatus": "Paid"
+      }
+    }
+  ]
+}
+```
+
+### Response
+
+In a successful response, `results` follows the input order and `index` starts at 0. The `summary` object counts requested records and each outcome.
+
+| `status` | Meaning |
+| --- | --- |
+| `created` | A new record was created. |
+| `updated` | An existing record was updated. |
+| `unchanged` | The existing values already match, or there are no fields to update. |
+| `skipped` | An existing record was skipped in `ignore` mode. |
+
+Results include `recordId` and `record` only when the caller can read that record. Field contents remain subject to read permissions.
+
+```json
+{
+  "results": [
+    {
+      "index": 0,
+      "status": "updated",
+      "recordId": "recExample",
+      "record": {
+        "id": "recExample",
+        "fields": {
+          "fldOrderNumber": "ORDER-001",
+          "fldStatus": "Paid"
+        }
+      }
+    }
+  ],
+  "summary": {
+    "requested": 1,
+    "created": 0,
+    "updated": 1,
+    "unchanged": 0,
+    "skipped": 0
+  }
+}
+```
