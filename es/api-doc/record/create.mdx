@@ -1,6 +1,6 @@
 ---
 title: "API: Crear Registros"
-description: "Crea registros con la API de Teable, incluidos valores de campos, valores predeterminados y posición de los registros."
+description: "Crea registros con la API de Teable, configura valores y posiciones o busca coincidencias por un campo único para actualizar, omitir o rechazar conflictos."
 ---
 
 {/* mintlify-resync: 2026-05-14 */}
@@ -242,3 +242,88 @@ POST /api/table/\{tableId\}/record
   print(response.json())
   ```
 </CodeGroup>
+
+## Crear o actualizar registros por un campo único {#upsert-by-unique-field}
+
+Al sincronizar datos externos, puedes buscar registros por un valor único, como un número de pedido o de cliente, sin consultar primero sus ID.
+
+```text
+POST /api/table/{tableId}/record/upsert
+```
+
+<Info>Este endpoint requiere una tabla con el motor v2 y no admite llamadas desde vistas compartidas. El modo `error` requiere permiso para crear registros; `ignore` y `update` requieren permisos para crear y actualizar registros.</Info>
+
+### Cuerpo de la solicitud
+
+| Parámetro | Descripción |
+| --- | --- |
+| `matchField` | Obligatorio. ID del campo de coincidencia, que debe tener activada una restricción de unicidad. Solo se admite un campo, sin claves compuestas. |
+| `onConflict` | Obligatorio. Qué hacer si ya existe una coincidencia; consulta la tabla siguiente. |
+| `records` | Obligatorio. Al menos un registro. Cada registro proporciona sus valores en `fields` y debe incluir un valor de coincidencia no vacío. Estos valores no pueden repetirse dentro de una solicitud. |
+| `fieldKeyType` | Opcional. Tipo de clave en `fields`, igual que en el endpoint de creación. `matchField` siempre debe contener un ID de campo. |
+| `typecast` | Opcional. Indica si se intenta convertir automáticamente el tipo de los valores, igual que en el endpoint de creación. |
+
+Los registros sin coincidencia se crean. Si existe una coincidencia, se aplica `onConflict`:
+
+| Valor | Comportamiento |
+| --- | --- |
+| `error` | Falla toda la solicitud si ya existe cualquiera de los valores de coincidencia. |
+| `ignore` | Conserva el registro existente y omite ese registro de entrada. |
+| `update` | Actualiza solo los campos proporcionados; los demás conservan su valor. |
+
+Por ejemplo, si `fldOrderNumber` es un campo de número de pedido con restricción de unicidad, esta solicitud crea un pedido o actualiza el estado de uno existente:
+
+```json
+{
+  "fieldKeyType": "id",
+  "matchField": "fldOrderNumber",
+  "onConflict": "update",
+  "records": [
+    {
+      "fields": {
+        "fldOrderNumber": "ORDER-001",
+        "fldStatus": "Pagado"
+      }
+    }
+  ]
+}
+```
+
+### Respuesta
+
+En una respuesta correcta, `results` mantiene el orden de entrada e `index` comienza en 0. `summary` cuenta los registros solicitados y cada tipo de resultado.
+
+| `status` | Significado |
+| --- | --- |
+| `created` | Se ha creado un registro. |
+| `updated` | Se ha actualizado un registro existente. |
+| `unchanged` | Los valores existentes ya coinciden o no hay campos que actualizar. |
+| `skipped` | Se ha omitido un registro existente en modo `ignore`. |
+
+Los resultados incluyen `recordId` y `record` solo si quien llama puede leer el registro. El contenido de los campos sigue sujeto a los permisos de lectura.
+
+```json
+{
+  "results": [
+    {
+      "index": 0,
+      "status": "updated",
+      "recordId": "recExample",
+      "record": {
+        "id": "recExample",
+        "fields": {
+          "fldOrderNumber": "ORDER-001",
+          "fldStatus": "Pagado"
+        }
+      }
+    }
+  ],
+  "summary": {
+    "requested": 1,
+    "created": 0,
+    "updated": 1,
+    "unchanged": 0,
+    "skipped": 0
+  }
+}
+```

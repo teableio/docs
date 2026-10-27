@@ -1,6 +1,6 @@
 ---
 title: "API：创建记录"
-description: "通过 Teable API 创建记录，配置字段值、默认值和记录位置。"
+description: "通过 Teable API 创建记录、配置字段值和位置，或按唯一字段匹配已有记录并选择更新、跳过或报错。"
 ---
 
 {/* mintlify-resync: 2026-05-14 */}
@@ -242,3 +242,88 @@ POST /api/table/\{tableId}/record
   print(response.json())
   ```
 </CodeGroup>
+
+## 按唯一字段创建或更新记录
+
+同步外部数据时，可以按订单号、客户编号等唯一值匹配记录，无需先查询记录 ID。
+
+```text
+POST /api/table/{tableId}/record/upsert
+```
+
+<Info>此接口适用于使用 v2 引擎的表，不支持通过分享视图调用。`error` 模式需要创建记录权限；`ignore` 和 `update` 模式同时需要创建、更新记录权限。</Info>
+
+### 请求体
+
+| 参数 | 说明 |
+| --- | --- |
+| `matchField` | 必填。用于匹配的字段 ID，该字段必须已启用唯一值约束。只支持一个字段，不支持组合键。|
+| `onConflict` | 必填。匹配到已有记录时的处理方式，见下表。|
+| `records` | 必填。至少包含一条记录，每条记录使用 `fields` 提供字段值，并包含匹配字段的非空值。同一请求中的匹配值不能重复。|
+| `fieldKeyType` | 可选。`fields` 中字段键的类型，与创建记录接口一致；`matchField` 始终填写字段 ID。|
+| `typecast` | 可选。是否尝试自动转换字段值类型，与创建记录接口一致。|
+
+未匹配到的记录会创建；匹配到已有记录时，按 `onConflict` 处理：
+
+| 值 | 处理方式 |
+| --- | --- |
+| `error` | 任意匹配值已存在时，整个请求失败。|
+| `ignore` | 保留已有记录，跳过该条输入。|
+| `update` | 只更新输入中提供的字段，未提供的字段保持原值。|
+
+例如，`fldOrderNumber` 是已启用唯一值约束的订单号字段，以下请求会创建新订单，或更新已有订单的状态：
+
+```json
+{
+  "fieldKeyType": "id",
+  "matchField": "fldOrderNumber",
+  "onConflict": "update",
+  "records": [
+    {
+      "fields": {
+        "fldOrderNumber": "ORDER-001",
+        "fldStatus": "已付款"
+      }
+    }
+  ]
+}
+```
+
+### 响应
+
+成功响应中的 `results` 与输入记录顺序一致，`index` 从 0 开始；`summary` 汇总请求条数及各类结果数量。
+
+| `status` | 含义 |
+| --- | --- |
+| `created` | 已创建新记录。|
+| `updated` | 已更新已有记录。|
+| `unchanged` | 已有记录与提供的值一致，或没有字段需要更新。|
+| `skipped` | `ignore` 模式下跳过了已有记录。|
+
+只有调用者有权读取该条记录时，结果才包含 `recordId` 和 `record`；字段内容仍受读取权限限制。
+
+```json
+{
+  "results": [
+    {
+      "index": 0,
+      "status": "updated",
+      "recordId": "recExample",
+      "record": {
+        "id": "recExample",
+        "fields": {
+          "fldOrderNumber": "ORDER-001",
+          "fldStatus": "已付款"
+        }
+      }
+    }
+  ],
+  "summary": {
+    "requested": 1,
+    "created": 0,
+    "updated": 1,
+    "unchanged": 0,
+    "skipped": 0
+  }
+}
+```

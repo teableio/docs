@@ -1,6 +1,6 @@
 ---
 title: "Tabellensuche und Indizes verwalten"
-description: "Suchabdeckung und Indizes tabellenweise prüfen, Suche konfigurieren, Indizes erstellen und Ergebnisse verfolgen."
+description: "Untersuchen Sie langsame Abfragen, konfigurieren Sie Suche und Indizes und bewerten Sie die Berechnungsauswirkungen von Datensatz- oder Feldänderungen im Tabellenbetrieb der Systemverwaltung."
 sidebarTitle: "Tabellenabfrage-Operationen"
 ---
 
@@ -8,13 +8,13 @@ sidebarTitle: "Tabellenabfrage-Operationen"
 
 <Tip>Verfügbar ab dem selbst gehosteten Business-Tarif</Tip>
 
-Pfad: Systemverwaltung → Tabellenabfrage-Operationen
+Pfad: Systemverwaltung → Tabellenbetrieb → Suche & Indizes
 
-Verwenden Sie **Tabellensuche und Indizes**, wenn Ansichten, Filter, Beziehungen oder Suchen in einer großen Tabelle langsam werden. Teable beobachtet die Abfragelast im Hintergrund und fasst jede Tabelle zusammen: wie sie derzeit durchsucht wird, welche Felder abgedeckt sind, welche physischen Indizes vorhanden sind und wie viele langsame Abfragen zuletzt beobachtet wurden. Instanzadministratoren konfigurieren hier die Suchabdeckung, erstellen Indizes und verfolgen die Ergebnisse.
+Verwenden Sie **Suche & Indizes**, wenn Ansichten, Filter, Beziehungen oder Suchen in einer großen Tabelle langsam werden. Teable beobachtet die Abfragelast im Hintergrund und fasst jede Tabelle zusammen: wie sie derzeit durchsucht wird, welche Felder abgedeckt sind, welche physischen Indizes vorhanden sind und wie viele langsame Abfragen zuletzt beobachtet wurden. Instanzadministratoren konfigurieren hier die Suchabdeckung, erstellen Indizes und verfolgen die Ergebnisse.
 
-<Info>Die Seite stellt nur Aufgaben ein und ändert die Datenbank nie direkt. Jede Änderung läuft asynchron im Hintergrund, prüfen Sie das Ergebnis daher unter **Aufgaben / Verlauf**.</Info>
+<Info>Suchkonfigurationen und Indexänderungen werden als Hintergrundaufgaben asynchron ausgeführt. Prüfen Sie nach dem Absenden das Ergebnis unter **Verlauf**.</Info>
 
-<Info>Tabellenabfrage-Operationen sind standardmäßig deaktiviert. Setzen Sie im Backend `V2_TABLE_QUERY_OPS_ENABLED` auf `true` und starten Sie neu, dann beginnt die Seite mit der Beobachtung.</Info>
+<Info>Die Abfragebeobachtung ist standardmäßig deaktiviert. Setzen Sie im Backend `V2_TABLE_QUERY_OPS_ENABLED` auf `true` und starten Sie es neu, um Beobachtungen zu erfassen.</Info>
 
 ## Die passende Tabelle finden
 
@@ -22,10 +22,10 @@ Die Seite öffnet sich mit der Tabellenliste. Die Statusschaltflächen oben trag
 
 | Status | Bedeutung |
 | --- | --- |
-| **Alle Tabellen** | Alle beobachteten Tabellen. |
-| **Aufmerksamkeit nötig** | Tabellen mit langsamen Abfragen, Zeitüberschreitungen, offenen Empfehlungen oder fehlgeschlagenen Aufgaben. Beginnen Sie hier. |
+| **Alle Tabellen** | Alle nicht gelöschten Tabellen der Instanz, einschließlich Tabellen ohne bisherige Abfragebeobachtungen. |
+| **Aufmerksamkeit nötig** | Tabellen mit langsamen Abfragen, Zeitüberschreitungen oder offenen Empfehlungen sowie mit konfigurierter Suche, die nicht aktiv ist oder nicht alle geeigneten Felder abdeckt. Beginnen Sie hier. |
 | **Indizierte Suche** | Tabellen, deren Indexmetadaten veröffentlicht und nutzbar sind und deren Laufzeitschalter an ist, deren Suche also wirklich über den Index läuft. |
-| **Konfigurierte Suche** | Tabellen mit gespeicherter Suchkonfiguration oder vorhandenen Indexmetadaten, auch noch nicht veröffentlichte. |
+| **Konfiguriert, nicht aktiv** | Die Zahl zählt konfigurierte Tabellen, deren Suche noch vollständig scannt. Ein Klick zeigt alle Tabellen mit Suchkonfiguration, damit Sie Konfiguration und tatsächliche Nutzung vergleichen können. |
 | **Nicht konfiguriert** | Tabellen ohne Suchabdeckung. |
 | **Nicht verfügbar** | Tabellen, die derzeit keine indizierte Suche nutzen können. Die Zeile nennt den Grund. |
 
@@ -33,7 +33,7 @@ Das Suchfeld akzeptiert Namen oder IDs von Tabellen, Projekten und Spaces. Sorti
 
 Jede Zeile nennt geschätzte Zeilenzahl und Größe der Tabelle, Anfragen und langsame Abfragen im Fenster, die aktuelle Suchmethode samt Feldabdeckung, die Anzahl der Filter-/Sortierindizes sowie offene Empfehlungen und aktive Aufgaben. Ein Klick auf den Tabellennamen öffnet die Detailansicht.
 
-Neben den Statusschaltflächen erklärt **Über Indexzustände**, wie diese Zahlen gezählt werden.
+Mit **Tabelle auswählen** oben wechseln Sie direkt die Tabelle. Beim Wechsel zu **Komplexität** oder **Schema-Integrität** bleibt die Auswahl erhalten; **Berechnete Updates** zeigt die Warteschlange der gesamten Instanz.
 
 ## Indexzustand lesen
 
@@ -42,8 +42,8 @@ Tabellenliste und Detailansicht zeigen neben der Suchmethode den Indexzustand de
 | Zustand | Bedeutung | Nächster Schritt |
 | --- | --- | --- |
 | **Nicht konfiguriert** | Keine gespeicherte Suchkonfiguration und keine Indexmetadaten. | Wählen Sie **Suche konfigurieren**, wenn die Tabelle indizierte Suche braucht. |
-| **Konfiguriert · Veröffentlichung ausstehend** | Die Konfiguration ist gespeichert, der Index noch nicht veröffentlicht. | Prüfen Sie unter **Aufgaben / Verlauf**, ob noch eine Aufgabe läuft. |
-| **Veröffentlicht · bereit** | Die Indexmetadaten sind veröffentlicht und nutzbar. | Nichts zu tun. |
+| **Veröffentlichung ausstehend** | Die Konfiguration ist gespeichert, der Index noch nicht veröffentlicht. | Prüfen Sie unter **Verlauf**, ob noch eine Aufgabe läuft. |
+| **Bereit** | Die Indexmetadaten sind veröffentlicht und nutzbar. | Prüfen Sie die tatsächliche Suchmethode und den Laufzeitschalter, um festzustellen, ob der Index aktiv ist. |
 | **Metadaten unbrauchbar** | Die Indexmetadaten sind defekt und können die Suche nicht bedienen. | Führen Sie **Auswahl aktualisieren / neu aufbauen** erneut aus. |
 
 Unter dem Zustand können zwei Zeilen erscheinen: **Konfiguriert: pg_bigm / pg_trgm** bedeutet, dass der gespeicherte Anbieter von der aktuell verwendeten Suchmethode abweicht, und **Laufzeitschalter für indizierte Suche: aus** bedeutet, dass der Index bereit ist, die Laufzeit aber aus ist und die Suche weiterhin `ILIKE` verwendet.
@@ -54,7 +54,7 @@ Meldet ein Hinweis oben auf der Seite Tabellen, deren konfigurierter Suchindex n
 
 ## Suchabdeckung konfigurieren
 
-Der Tab **Suchabdeckung** zeigt die aktuelle Suchmethode der Tabelle, die Anzahl der abgedeckten Felder und die **Aktive Abdeckung** jedes Felds. **Nicht abgedeckte Felder anzeigen** beschränkt die Liste auf die noch nicht einbezogenen Felder; Felder mit der Kennzeichnung **Nicht geeignet** können nicht zu einem Substring-Suchindex beitragen.
+Der Tab **Suche** zeigt die aktuelle Suchmethode der Tabelle, die Anzahl der abgedeckten Felder und die **Aktive Abdeckung** jedes Felds. **Nicht abgedeckte Felder anzeigen** beschränkt die Liste auf die noch nicht einbezogenen Felder; Felder mit der Kennzeichnung **Nicht geeignet** können nicht zu einem Substring-Suchindex beitragen.
 
 <Info>Aktive Abdeckung setzt veröffentlichte, nutzbare Indexmetadaten und einen eingeschalteten Laufzeitschalter voraus; eine gespeicherte Konfiguration allein zählt nicht. Die Abdeckung wird ausdrücklich festgelegt, später hinzugefügte Felder kommen also nicht automatisch hinzu, konfigurieren Sie die Tabelle erneut, um sie aufzunehmen.</Info>
 
@@ -70,11 +70,11 @@ Wählen Sie **Suche konfigurieren** bei einer noch nicht konfigurierten Tabelle 
 
 <Warning>Beim Erstellen oder Neuaufbauen der Suchabdeckung entstehen eine Suchspalte und ein GIN-Index. Dabei kann die gesamte Tabelle neu geschrieben werden, es werden Sperren gehalten, und die indizierte Suche ist kurzzeitig unterbrochen. Planen Sie den Vorgang in ein Wartungsfenster.</Warning>
 
-Der Dialog liefert eine Aufgabenbestätigung, kein Ergebnis. Schließen Sie ihn und verfolgen Sie die Aufgabe unter **Aufgaben / Verlauf**. Wird dieselbe Änderung erneut eingereicht, kommt die bestehende Aufgabe zurück.
+Der Dialog liefert eine Aufgabenbestätigung, kein Ergebnis. Schließen Sie ihn und verfolgen Sie die Aufgabe unter **Verlauf**. Wird dieselbe Änderung erneut eingereicht, kommt die bestehende Aufgabe zurück.
 
 ## Filter- und Sortierindizes verwalten
 
-Der Tab **Filter- / Sortierindizes** listet die physischen Indizes auf, die Filterbedingungen und Sortierungen dieser Tabelle bedienen, jeweils mit Gültigkeit, Angabe zur Verwaltung durch Teable, Größe und Definition. Sie werden getrennt von den Substring-Suchindizes verwaltet.
+Die Registerkarte **Indizes** zeigt Filter-/Sortier- und Systemindizes mit Gültigkeit, Verwaltungsstatus, Größe und Definition. Indizes für Teilzeichensuchen finden Sie separat unter **Suche**.
 
 Darunter enthalten die **Ausstehenden Aktionen** die Indexempfehlungen des Systems und geben an, ob Nachweise aus dem Ausführungsplan dafür vorliegen. **Indexerstellung prüfen** zeigt den vorgeschlagenen Index, die ausführende Datenbank und die Nachweise; nach Ihrer Bestätigung führt Teable `CREATE INDEX CONCURRENTLY` asynchron aus. Für große Tabellen und Tabellen unbekannter Größe ist auch hier die Bestätigung des Wartungsfensters nötig.
 
@@ -82,13 +82,13 @@ Darunter enthalten die **Ausstehenden Aktionen** die Indexempfehlungen des Syste
 
 ## Einzelne Abfragen diagnostizieren
 
-Wenn eine Tabelle als langsam gemeldet wird und keine Empfehlung dazu vorliegt, öffnen Sie den Tab **Abfragediagnose** und wählen **Abfragen analysieren**. Die Analyse liest nur gespeicherte Abfrageformen und vorhandene Nachweise aus dem Ausführungsplan und erstellt nichts.
+Wenn eine Tabelle als langsam gemeldet wird und keine Empfehlung dazu vorliegt, öffnen Sie den Tab **Diagnose** und wählen **Abfragen analysieren**. Die Analyse liest nur gespeicherte Abfrageformen und vorhandene Nachweise aus dem Ausführungsplan und erstellt nichts.
 
 Das Ergebnis lautet **Durch Ausführungsplan gestützte Indexchancen gefunden**, **Keine durch die vorliegenden Pläne bestätigte Indexchance** oder **Unzureichende Nachweise**. Unzureichende Nachweise bedeuten nicht, dass ein sequenzieller Scan stattgefunden hat: Eine langsame Beobachtung allein belegt nicht, dass der Zugriffspfad die Ursache ist. Darunter steht jede betroffene Abfrage mit der Angabe, ob sie aus echtem Verkehr oder einer gespeicherten Ansichtskonfiguration stammt, sowie die geschätzten Plankosten vor und nach dem vorgeschlagenen Index (Plankosten, keine Millisekunden).
 
 ## Ergebnisse verfolgen
 
-Der Tab **Aufgaben / Verlauf** besteht aus drei Teilen:
+Der Tab **Verlauf** besteht aus drei Teilen:
 
 - **Aufgaben**: Hintergrundaufgaben dieser Tabelle mit Status, Anzahl der Versuche, Aufgabentyp und Fehlergrund. War eine Aufgabe nach einem Fehlschlag am Ende erfolgreich, ist der Fehler als früherer Versuch gekennzeichnet.
 - **Verlauf der Suchkonfiguration**: Anbieter, Status und Feldliste jeder früheren Abdeckungskonfiguration.
@@ -97,3 +97,13 @@ Der Tab **Aufgaben / Verlauf** besteht aus drei Teilen:
 Der Verlauf lädt nur die neuesten Einträge. Gibt es mehr, nennt eine Zeile über der Liste die Gesamtzahl.
 
 <Info>Solange für eine Tabelle eine Aufgabe eingereiht ist oder läuft, bleiben die Schaltflächen zum Konfigurieren der Suche und zum Erstellen von Indizes deaktiviert. Warten Sie das Ende der Aufgabe ab.</Info>
+
+## Auswirkungen einer Änderung bewerten
+
+Datensatzänderungen können über verknüpfte Datensätze weitere Berechnungen in Formeln, Lookups und Rollups auslösen. Öffnen Sie **Komplexität** und wählen Sie eine Tabelle, um die Auswirkungen einer Stapeländerung, Feldkonvertierung oder Feldlöschung abzuschätzen. In den Such- und Indexdetails können Sie auch **Komplexität bewerten** wählen.
+
+Die **Auswirkungsmatrix** schätzt Aktualisierungen, Feldlöschungen und Feldkonvertierungen je Feld sowie das Erstellen und Löschen von Datensätzen separat. Der Punkt links zeigt den typischen Fall, die Füllung den ungünstigsten Fall. Ein Klick öffnet geschätzte Zeilenzahlen, Ausbreitungspfade, Grenzen und Empfehlungen. Prüfen Sie Änderungen mit **Hoch** oder **Kritisch** zuerst, um Stapelgrößen oder Berechnungsabhängigkeiten anzupassen.
+
+Legen Sie unter **Schätzungseinstellungen** mit **Datensätze pro Änderung** fest, wie viele Datensätze Sie auf einmal übermitteln möchten; ein leeres Feld steht für einen Datensatz. **Katalogstatistiken verwenden** ist standardmäßig aktiviert und liest Tabellengrößen und Verknüpfungszahlen aus der Datenbank, um die Schätzung zu verbessern.
+
+<Info>Die Bewertung liest nur Struktur und Statistiken. Sie ändert keine Datensätze oder Felder und sagt keine Laufzeit voraus. Bei **Nicht geschätzt** oder der Qualität **Teilweise** oder **Abgeschnitten** prüfen Sie zuerst die Grenzen und ergänzen Sie fehlende Informationen. Eine fehlende Schätzung bedeutet nicht, dass kein Risiko besteht.</Info>

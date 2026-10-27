@@ -8,25 +8,17 @@ sidebarTitle: "Boîte d’envoi calculée"
 
 <Tip>Disponible avec le forfait Business auto-hébergé et les forfaits supérieurs</Tip>
 
-Chemin : Administration système → Boîte d’envoi calculée
+Chemin : Administration système → Opérations sur les tables → Mises à jour calculées
 
-Utilisez **Boîte d’envoi calculée** lorsque les valeurs de champ de formule, de recherche ou d’autres champs calculés cessent de se mettre à jour ou prennent beaucoup plus de temps que prévu. La page affiche l’état de santé global des tâches, les tâches qui transitent par la file d’attente, celles qui peuvent nécessiter une récupération et tous les Espaces dont les tâches calculées sont actuellement suspendues.
+Ouvrez **Mises à jour calculées** lorsque les formules, recherches ou autres valeurs calculées cessent de se mettre à jour ou deviennent lentes. Commencez par **Vue d’ensemble** pour vérifier l’accumulation dans l’instance, puis suivez les envois dans **File BullMQ**. Utilisez **Anomalies** pour reprendre les calculs échoués et **Pauses** pour suspendre ou reprendre un espace.
 
 ## Lire l’état de santé
 
-L’état à côté du titre de la page indique si les tâches calculées nécessitent votre attention :
-
-| État | Signification |
-| --- | --- |
-| **Sain** | Les tâches calculées s’exécutent normalement. |
-| **Dégradé** | Teable a détecté des échecs, des tâches expirées ou un arriéré croissant. |
-| **Critique** | BullMQ n’est pas disponible ou aucun worker n’est disponible pour traiter les tâches. |
-
-Lorsque l’état nécessite votre attention, la page en indique la raison.
+**Vue d’ensemble** résume les tâches en attente, en cours, suspendues et en file de rejet. Si **Nécessite attention** apparaît, lisez d’abord la raison. Rétablissez l’environnement d’exécution si la file est indisponible ou sans worker ; cherchez les tâches expirées ou accumulées dans la file et les anomalies.
 
 ## Rechercher une tâche dans la file d’attente
 
-La **file d’attente BullMQ en direct** répertorie les tâches que Teable conserve encore afin que vous puissiez suivre une tâche calculée ou rechercher les tâches lentes.
+La **File BullMQ** répertorie les tâches que Teable conserve encore afin que vous puissiez suivre une tâche calculée ou rechercher les tâches lentes.
 
 Chaque ligne correspond par défaut à une tâche et celle-ci change d’état sur place à mesure que Teable la relance. Passez à **Livraisons** lorsque vous avez besoin de l’historique complet des tentatives d’une tâche ou souhaitez rechercher des exécutions lentes.
 
@@ -57,11 +49,13 @@ Lorsqu’une valeur calculée semble incorrecte ou est arrivée tardivement, ouv
 
 <Info>Le registre de traçabilité n’enregistre que les tâches créées après le déploiement de cette fonctionnalité et conserve 7 jours d’historique. Une tâche plus ancienne affiche les informations de sa file d’attente sans graphique de propagation. Une tâche initiale que le worker n’a pas encore planifiée n’affiche que ses champs déclencheurs. Lorsqu’une modification n’a produit aucune écriture calculée en aval, le graphique l’indique : aucun élément ne dépendait de ces champs via une formule, une recherche, un rollup ou un titre de lien.</Info>
 
+Les arêtes distinguent aussi la portée : **via link** suit les enregistrements liés, **conditional** sélectionne les cibles selon une condition, **whole table** concerne tous les enregistrements de la table cible et **depends** représente les dépendances des définitions de champs. En cas de lenteur, examinez d’abord les recalculs complets et les longs chemins entre tables.
+
 ## Gérer les tâches anormales
 
 <Info>Le nombre **Échouée** et **Maintenance des anomalies** indiquent différents types de problèmes ; leurs nombres peuvent donc différer.</Info>
 
-**Maintenance des anomalies** regroupe les anomalies par groupes de problèmes, un par Projet, table source et erreur, ce qui permet d’identifier facilement une cause racine unique. Examinez la raison de l’échec et corrigez le problème sous-jacent avant toute récupération. Développez un groupe pour consulter les détails de son erreur et les tâches qu’il couvre ; ces lignes sont destinées à l’inspection et la récupération s’exécute toujours sur le groupe dans son ensemble.
+Ouvrez **Anomalies** pour gérer ces groupes de problèmes. **Maintenance des anomalies** regroupe les anomalies par groupes de problèmes, un par Projet, table source et erreur, ce qui permet d’identifier facilement une cause racine unique. Examinez la raison de l’échec et corrigez le problème sous-jacent avant toute récupération. Développez un groupe pour consulter les détails de son erreur et les tâches qu’il couvre ; ces lignes sont destinées à l’inspection et la récupération s’exécute toujours sur le groupe dans son ensemble.
 
 Les actions proposées par un groupe dépendent de son type :
 
@@ -81,7 +75,7 @@ La récupération n’est pas non plus disponible lorsque les données elles-mê
 
 ## Suspendre les tâches calculées d’un Espace
 
-Lorsque les tâches calculées d’un Espace aggravent un incident, suspendez cet Espace dans **Suspensions des tâches calculées** plutôt que d’arrêter toute l’instance.
+Lorsque les tâches calculées d’un Espace aggravent un incident, suspendez cet Espace dans **Pauses** plutôt que d’arrêter toute l’instance.
 
 <Steps>
   <Step title="Ouvrir la boîte de dialogue de suspension">Cliquez sur **Suspendre un Espace**.</Step>
@@ -109,4 +103,3 @@ La section de la file d’attente comporte deux contrôles de concurrence. Chacu
 Augmentez les plafonds de prise en charge lorsqu’un Projet très sollicité constitue le goulot d’étranglement, et la concurrence par processus lorsque de nombreux Projets sont mis en file d’attente simultanément.
 
 <Warning>Une concurrence plus élevée accroît la charge sur votre base de données. Les Espaces qui stockent leurs données dans un [locataire de base de données](/fr/basic/admin-panel/database-tenant) conservent les valeurs par défaut de l’environnement pour les plafonds de prise en charge, car leurs pools de connexions sont dimensionnés pour ces valeurs.</Warning>
-

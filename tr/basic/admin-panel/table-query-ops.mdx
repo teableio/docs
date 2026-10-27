@@ -1,6 +1,6 @@
 ---
 title: "Tablo aramasını ve dizinleri yönetme"
-description: "Arama kapsamını ve dizinleri Tablo bazında inceleyin, aramayı yapılandırın, dizin oluşturun ve sonuçları izleyin."
+description: "Tablo işlemlerinde yavaş sorguları tanılayın, arama ve dizinleri yapılandırın, kayıt veya alan değişikliklerinin hesaplamalara etkisini değerlendirin."
 sidebarTitle: "Tablo Sorgusu İşlemleri"
 ---
 
@@ -8,13 +8,13 @@ sidebarTitle: "Tablo Sorgusu İşlemleri"
 
 <Tip>Kendi sunucunuzda barındırılan Business ve üzeri planlarda kullanılabilir</Tip>
 
-Yol: Sistem Yönetimi → Tablo Sorgusu İşlemleri
+Yol: Sistem Yönetimi → Tablo işlemleri → Arama ve dizinler
 
-Büyük bir Tablodaki Görünümler, filtreler, ilişkiler veya aramalar yavaşladığında **Tablo araması ve dizinleri** bölümünü kullanın. Teable sorgu iş yükünü arka planda izler ve her Tabloyu özetler: şu anda nasıl arandığı, hangi Alanların kapsandığı, hangi fiziksel dizinlerin bulunduğu ve son dönemde kaç yavaş sorgu görüldüğü. Örnek yöneticileri arama kapsamını burada yapılandırır, dizin oluşturur ve sonuçları izler.
+Büyük bir Tablodaki Görünümler, filtreler, ilişkiler veya aramalar yavaşladığında **Arama ve dizinler** bölümünü kullanın. Teable sorgu iş yükünü arka planda izler ve her Tabloyu özetler: şu anda nasıl arandığı, hangi Alanların kapsandığı, hangi fiziksel dizinlerin bulunduğu ve son dönemde kaç yavaş sorgu görüldüğü. Örnek yöneticileri arama kapsamını burada yapılandırır, dizin oluşturur ve sonuçları izler.
 
-<Info>Sayfa yalnızca görev kuyruğa alır; veritabanını hiçbir zaman doğrudan değiştirmez. Her değişiklik arka planda eşzamansız çalışır, bu yüzden sonucu **Görevler / geçmiş** bölümünden doğrulayın.</Info>
+<Info>Arama yapılandırması ve dizin değişiklikleri arka planda eş zamansız görevler olarak çalışır. Gönderdikten sonra sonucu **Geçmiş** bölümünde doğrulayın.</Info>
 
-<Info>Tablo Sorgusu İşlemleri varsayılan olarak kapalıdır. Arka uçta `V2_TABLE_QUERY_OPS_ENABLED` değerini `true` yapıp yeniden başlattığınızda sayfa gözlem toplamaya başlar.</Info>
+<Info>Sorgu gözlemi varsayılan olarak kapalıdır. Gözlem toplamaya başlamak için arka uçta `V2_TABLE_QUERY_OPS_ENABLED` değerini `true` yapıp yeniden başlatın.</Info>
 
 ## Üzerinde çalışılacak Tabloyu bulma
 
@@ -22,10 +22,10 @@ Sayfa Tablo listesiyle açılır. Üstteki durum düğmeleri kendi sayılarını
 
 | Durum | Anlamı |
 | --- | --- |
-| **Tüm tablolar** | Gözlemlenen bütün Tablolar. |
-| **Dikkat gerektiriyor** | Yavaş sorgusu, zaman aşımı, bekleyen önerisi veya başarısız görevi olan Tablolar. Buradan başlayın. |
+| **Tüm tablolar** | Henüz sorgu gözlemi bulunmayanlar dahil, örnekteki silinmemiş tüm tablolar. |
+| **Dikkat gerektiriyor** | Yavaş sorguları, zaman aşımları veya bekleyen önerileri olan; ya da yapılandırılmış araması hizmet vermeyen veya tüm uyumlu alanları kapsamayan tablolar. Buradan başlayın. |
 | **Dizinli arama** | Dizin meta verileri yayımlanmış ve kullanılabilir olan, çalışma zamanı anahtarı da açık olan Tablolar; arama gerçekten dizin üzerinden çalışır. |
-| **Yapılandırılmış arama** | Kaydedilmiş arama yapılandırması veya dizin meta verisi bulunan Tablolar; henüz yayımlanmamış olanlar dahil. |
+| **Yapılandırıldı, hizmet vermiyor** | Sayı, araması yapılandırılmış ancak hâlâ tam taramaya dönen tabloları gösterir. Tıklayınca arama yapılandırılmış tüm tablolar listelenir; yapılandırmayı gerçek kullanım ile karşılaştırabilirsiniz. |
 | **Yapılandırılmamış** | Henüz arama kapsamı olmayan Tablolar. |
 | **Kullanılamıyor** | Şu anda dizinli aramayı kullanamayan Tablolar. Satırda nedeni yazar. |
 
@@ -33,7 +33,7 @@ Arama kutusu Tablo, Proje ve Alan adlarını veya kimliklerini kabul eder. Sıra
 
 Her satırda Tablonun tahmini satır sayısı ve boyutu, pencere içindeki istekler ve yavaş sorgular, geçerli arama yöntemi ve Alan kapsamı, filtre/sıralama dizinlerinin sayısı, bekleyen öneriler ile etkin görevlerin sayısı yer alır. Ayrıntı için Tablo adına tıklayın.
 
-Durum düğmelerinin yanındaki **Dizin durumları hakkında**, bu sayıların nasıl hesaplandığını açıklar.
+Tablo değiştirmek için üstteki **Tablo seçin** seçeneğini kullanın. **Karmaşıklık** veya **Şema bütünlüğü** bölümüne geçerken seçim korunur; **Hesaplanan güncellemeler** tüm örneğin kuyruğunu gösterir.
 
 ## Dizin durumunu okuma
 
@@ -42,8 +42,8 @@ Tablo listesi ve Tablo ayrıntısı, arama yönteminin yanında Tablonun dizin d
 | Durum | Anlamı | Sonraki adım |
 | --- | --- | --- |
 | **Yapılandırılmamış** | Kaydedilmiş arama yapılandırması da dizin meta verisi de yok. | Tablo dizinli aramaya ihtiyaç duyuyorsa **Aramayı yapılandır** seçeneğini kullanın. |
-| **Yapılandırıldı · yayım bekleniyor** | Yapılandırma kaydedildi, dizin henüz yayımlanmadı. | **Görevler / geçmiş** bölümünde çalışan bir görev olup olmadığına bakın. |
-| **Yayımlandı · hazır** | Dizin meta verileri yayımlandı ve kullanılabilir. | Yapılacak bir şey yok. |
+| **Yayımlanmayı bekliyor** | Yapılandırma kaydedildi, dizin henüz yayımlanmadı. | **Geçmiş** bölümünde çalışan bir görev olup olmadığına bakın. |
+| **Hazır** | Dizin meta verileri yayımlandı ve kullanılabilir. | Dizinin kullanıldığını doğrulamak için gerçek arama yöntemini ve çalışma zamanı anahtarını kontrol edin. |
 | **Meta veri kullanılamıyor** | Dizin meta verileri bozuk ve aramaya hizmet edemiyor. | **Seçimi güncelle / yeniden oluştur** işlemini yeniden çalıştırın. |
 
 Durumun altında iki satır görünebilir. **Yapılandırıldı: pg_bigm / pg_trgm**, kaydedilen sağlayıcının kullanılan arama yönteminden farklı olduğunu; **Dizinli arama çalışma zamanı anahtarı: kapalı** ise dizin hazır olsa da çalışma zamanının kapalı olduğunu ve aramanın hâlâ `ILIKE` ile yürüdüğünü gösterir.
@@ -54,7 +54,7 @@ Sayfanın üstündeki bir bildirim, yapılandırılmış arama dizini devrede ol
 
 ## Arama kapsamını yapılandırma
 
-**Arama kapsamı** sekmesi Tablonun geçerli arama yöntemini, kapsanan Alan sayısını ve her Alanın **Etkin kapsamını** gösterir. **Kapsanmayan alanları göster**, listeyi henüz dahil edilmemiş Alanlara indirger; **Uygun değil** olarak işaretlenen Alanlar alt dize arama dizinine katkı veremez.
+**Arama** sekmesi Tablonun geçerli arama yöntemini, kapsanan Alan sayısını ve her Alanın **Etkin kapsamını** gösterir. **Kapsanmayan alanları göster**, listeyi henüz dahil edilmemiş Alanlara indirger; **Uygun değil** olarak işaretlenen Alanlar alt dize arama dizinine katkı veremez.
 
 <Info>Etkin kapsam için dizin meta verilerinin yayımlanmış ve kullanılabilir olması, çalışma zamanı anahtarının da açık olması gerekir; yalnızca yapılandırmayı kaydetmek kapsama sayılmaz. Kapsam açıkça belirlendiğinden sonradan eklediğiniz Alanlar otomatik olarak dahil edilmez; bunları katmak için Tabloyu yeniden yapılandırın.</Info>
 
@@ -70,11 +70,11 @@ Hiç yapılandırılmamış bir Tabloda **Aramayı yapılandır**, yapılandır�
 
 <Warning>Arama kapsamını oluşturmak veya yeniden oluşturmak bir arama sütunu ile GIN dizini üretir. Tablonun tamamını yeniden yazabilir, kilit tutabilir ve çalışırken dizinli arama kısa süre kesilir. Bunu bir bakım penceresine planlayın.</Warning>
 
-İletişim kutusunun döndürdüğü şey görev makbuzudur, sonuç değil. Kutuyu kapatın ve görevi **Görevler / geçmiş** bölümünden izleyin. Aynı değişikliği yeniden gönderdiğinizde var olan görev döner.
+İletişim kutusunun döndürdüğü şey görev makbuzudur, sonuç değil. Kutuyu kapatın ve görevi **Geçmiş** bölümünden izleyin. Aynı değişikliği yeniden gönderdiğinizde var olan görev döner.
 
 ## Filtre ve sıralama dizinlerini yönetme
 
-**Filtre / sıralama dizinleri** sekmesi, bu Tablodaki filtre koşullarına ve sıralamalara hizmet eden fiziksel dizinleri geçerlilik, Teable tarafından yönetilip yönetilmediği, boyut ve tanım bilgileriyle listeler. Bunlar alt dize arama dizinlerinden ayrı yönetilir.
+**Dizinler** sekmesi filtre/sıralama ve sistem dizinlerini geçerlilik, yönetim durumu, boyut ve tanımlarıyla listeler. Alt dize arama dizinleri **Arama** sekmesinde ayrı gösterilir.
 
 Altındaki **Bekleyen işlemler**, sistemin dizin önerilerini tutar ve her birinin plan kanıtıyla desteklenip desteklenmediğini belirtir. **Dizin oluşturmayı incele**, önerilen dizini, çalıştırılacağı veritabanını ve kanıtları gösterir; onayınızın ardından Teable `CREATE INDEX CONCURRENTLY` komutunu eşzamansız çalıştırır. Büyük ve boyutu bilinmeyen Tablolarda burada da bakım penceresi onayı gerekir.
 
@@ -82,13 +82,13 @@ Altındaki **Bekleyen işlemler**, sistemin dizin önerilerini tutar ve her biri
 
 ## Belirli sorguları tanılama
 
-Bir Tablo yavaş olarak bildirildiğinde ve bunu karşılayan bir öneri yoksa **Sorgu tanılama** sekmesini açıp **Sorguları analiz et** seçeneğini kullanın. Analiz yalnızca kayıtlı sorgu biçimlerini ve mevcut plan kanıtlarını okur; hiçbir şey oluşturmaz.
+Bir Tablo yavaş olarak bildirildiğinde ve bunu karşılayan bir öneri yoksa **Tanılama** sekmesini açıp **Sorguları analiz et** seçeneğini kullanın. Analiz yalnızca kayıtlı sorgu biçimlerini ve mevcut plan kanıtlarını okur; hiçbir şey oluşturmaz.
 
 Sonuç şunlardan biridir: **Planla desteklenen dizin fırsatları bulundu**, **Mevcut planlar bir dizin fırsatını doğrulamıyor** veya **Yetersiz kanıt**. Yetersiz kanıt, sıralı tarama yapıldığı anlamına gelmez; tek başına yavaş bir gözlem, erişim yolunun sorumlu olduğunu göstermez. Altta, etkilenen her sorgu gerçek trafikten mi yoksa kayıtlı bir Görünüm yapılandırmasından mı geldiğiyle ve önerilen dizin öncesi ile sonrası tahmini plan maliyetiyle (milisaniye değil, plan maliyeti) listelenir.
 
 ## Sonuçları izleme
 
-**Görevler / geçmiş** sekmesi üç bölümden oluşur:
+**Geçmiş** sekmesi üç bölümden oluşur:
 
 - **Görevler**: bu Tablonun arka plan görevleri; durum, deneme sayısı, görev türü ve hata nedeniyle birlikte. Bir görev başarısızlıktan sonra sonunda başarılı olduysa hata, önceki deneme olarak işaretlenir.
 - **Arama yapılandırması geçmişi**: geçmiş kapsam yapılandırmalarının sağlayıcısı, durumu ve Alan listesi.
@@ -97,3 +97,13 @@ Sonuç şunlardan biridir: **Planla desteklenen dizin fırsatları bulundu**, **
 Geçmiş yalnızca en yeni kayıtları yükler. Daha fazlası varsa listenin üstündeki satır toplam sayıyı verir.
 
 <Info>Bir Tabloda kuyruğa alınmış veya çalışan bir görev varken, aramayı yapılandırma ve dizin oluşturma düğmeleri devre dışı kalır. Görevin bitmesini bekleyin.</Info>
+
+## Değişiklik etkisini değerlendirme
+
+Kayıt güncellemeleri, bağlantılı kayıtlar üzerinden formül, arama ve özetlerde ek hesaplamaları tetikleyebilir. Toplu yazma, alan dönüştürme veya silme işleminin çok sayıda veriyi etkileyip etkilemeyeceğini değerlendirmek için **Karmaşıklık** bölümünü açıp tablo seçin ya da arama ve dizin ayrıntılarında **Karmaşıklığı değerlendir** seçeneğine tıklayın.
+
+**Etki matrisi**, her alan için güncelleme, silme ve dönüştürme işlemlerini; kayıt oluşturma ve silmeyi de ayrıca tahmin eder. Soldaki nokta tipik durumu, dolgu en kötü durumu gösterir. Etkilenen satırları, yayılım yollarını, sınırları ve önerileri görmek için hücreye tıklayın. Toplu işlem boyutunu azaltma veya hesaplama bağımlılıklarını değiştirme kararını vermek için önce **Yüksek** veya **Kritik** değişiklikleri inceleyin.
+
+**Tahmin ayarları** bölümünde **Değişiklik başına kayıt** değerini tek seferde göndereceğiniz kayıt sayısına ayarlayın; boş bırakılırsa bir kayıt tahmin edilir. **Katalog istatistiklerini kullan** varsayılan olarak açıktır ve tahmini iyileştirmek için tablo boyutları ile bağlantı sayılarını veritabanından okur.
+
+<Info>Değerlendirme yalnızca yapı ve istatistikleri okur. Kayıtları veya alanları değiştirmez, gerçek süreyi tahmin etmez. Sonuç **Tahmin edilmedi** veya kalite **Kısmi** ya da **Kesilmiş** ise karar vermeden önce sınırları okuyup eksik bilgileri tamamlayın. Tahmin bulunmaması risk bulunmadığı anlamına gelmez.</Info>

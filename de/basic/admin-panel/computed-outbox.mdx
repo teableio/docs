@@ -8,25 +8,17 @@ sidebarTitle: "Berechnete Outbox"
 
 <Tip>Verfügbar für selbstgehostete Business-Tarife und höher</Tip>
 
-Pfad: Systemverwaltung → Berechnete Outbox
+Pfad: Systemverwaltung → Tabellenbetrieb → Berechnete Updates
 
-Verwenden Sie **Berechnete Outbox**, wenn Formel-, Lookup- oder andere berechnete Feldwerte nicht mehr aktualisiert werden oder deutlich länger als erwartet benötigen. Die Seite zeigt den allgemeinen Zustand der Aufgaben, die Aufträge in der Warteschlange, Aufgaben, die möglicherweise wiederhergestellt werden müssen, sowie jeden Space, dessen berechnete Aufgaben derzeit pausiert sind.
+Öffnen Sie **Berechnete Updates**, wenn Formel-, Lookup- oder andere berechnete Werte nicht mehr oder nur langsam aktualisiert werden. Prüfen Sie zunächst unter **Übersicht** den Rückstau der Instanz und verfolgen Sie Zustellungen unter **BullMQ-Warteschlange**. Verwenden Sie **Anomalien** zur Wiederherstellung fehlgeschlagener Berechnungen und **Pausen** zum Pausieren oder Fortsetzen eines Spaces.
 
 ## Den Zustandsstatus lesen
 
-Der Status neben dem Seitentitel zeigt, ob berechnete Aufgaben Aufmerksamkeit benötigen:
-
-| Status | Bedeutung |
-| --- | --- |
-| **Gesund** | Berechnete Aufgaben werden normal ausgeführt. |
-| **Beeinträchtigt** | Teable hat Fehler, Aufgaben mit Zeitüberschreitung oder einen wachsenden Rückstau gefunden. |
-| **Kritisch** | BullMQ ist nicht verfügbar oder es ist kein Worker zur Verarbeitung von Aufgaben verfügbar. |
-
-Wenn der Status Aufmerksamkeit benötigt, führt die Seite den Grund auf.
+**Übersicht** fasst wartende und laufende Aufgaben, pausierten Rückstau und Dead Letters zusammen. Bei **Benötigt Aufmerksamkeit** lesen Sie zuerst den Grund. Stellen Sie bei nicht verfügbarer Warteschlange oder fehlendem Worker die Laufzeitumgebung wieder her; suchen Sie Aufgaben mit Zeitüberschreitungen oder Rückstau in Warteschlange und Anomalien.
 
 ## Eine Aufgabe in der Warteschlange finden
 
-**Live-BullMQ-Warteschlange** listet die Aufträge auf, die Teable weiterhin speichert, damit Sie eine berechnete Aufgabe verfolgen oder nach langsamen Aufgaben suchen können.
+**BullMQ-Warteschlange** listet die Aufträge auf, die Teable weiterhin speichert, damit Sie eine berechnete Aufgabe verfolgen oder nach langsamen Aufgaben suchen können.
 
 Standardmäßig ist jede Zeile eine Aufgabe, die beim erneuten Versuch durch Teable an Ort und Stelle verschiedene Zustände durchläuft. Wechseln Sie zu **Zustellungen**, wenn Sie den vollständigen Versuchsverlauf einer Aufgabe benötigen oder nach langsamen Ausführungen suchen möchten.
 
@@ -57,11 +49,13 @@ Wenn ein berechneter Wert falsch aussieht oder verspätet eingetroffen ist, öff
 
 <Info>Das Herkunfts-Ledger zeichnet nur Aufgaben auf, die nach Veröffentlichung dieser Funktion erstellt wurden, und bewahrt 7 Tage Verlauf auf. Eine ältere Aufgabe zeigt ihre Warteschlangenfakten ohne Ausbreitungsdiagramm. Eine Seed-Aufgabe, die der Worker noch nicht geplant hat, zeigt nur ihre Auslöserfelder. Wenn eine Änderung keine nachgelagerten berechneten Schreibvorgänge erzeugt hat, wird dies im Diagramm angegeben: Nichts hing über eine Formel, ein Lookup, ein Rollup oder einen Verknüpfungstitel von diesen Feldern ab.</Info>
 
+Die Kanten zeigen auch den Wirkungsbereich: **via link** folgt verknüpften Datensätzen, **conditional** wählt Zieldatensätze nach Bedingungen, **whole table** betrifft alle Datensätze der Zieltabelle und **depends** zeigt Abhängigkeiten der Felddefinitionen. Prüfen Sie bei langsamen Aktualisierungen zuerst vollständige Neuberechnungen und lange tabellenübergreifende Pfade.
+
 ## Anomale Aufgaben behandeln
 
 <Info>Die Anzahl **Fehlgeschlagen** und die **Anomaliewartung** zeigen unterschiedliche Arten von Problemen, daher können ihre Zahlen voneinander abweichen.</Info>
 
-**Anomaliewartung** sammelt Anomalien in Problemgruppen, jeweils eine pro Projekt, Quelltabelle und Fehler, damit eine einzelne Grundursache leicht zu erkennen ist. Prüfen Sie den Fehlergrund und beheben Sie das zugrunde liegende Problem, bevor Sie etwas wiederherstellen. Erweitern Sie eine Gruppe, um ihre Fehlerdetails und die enthaltenen Aufgaben zu lesen; diese Zeilen dienen der Prüfung, und die Wiederherstellung wird immer für die gesamte Gruppe durchgeführt.
+Öffnen Sie **Anomalien**, um diese Problemgruppen zu bearbeiten. **Anomaliewartung** sammelt Anomalien in Problemgruppen, jeweils eine pro Projekt, Quelltabelle und Fehler, damit eine einzelne Grundursache leicht zu erkennen ist. Prüfen Sie den Fehlergrund und beheben Sie das zugrunde liegende Problem, bevor Sie etwas wiederherstellen. Erweitern Sie eine Gruppe, um ihre Fehlerdetails und die enthaltenen Aufgaben zu lesen; diese Zeilen dienen der Prüfung, und die Wiederherstellung wird immer für die gesamte Gruppe durchgeführt.
 
 Die verfügbaren Aktionen einer Gruppe hängen von ihrem Typ ab:
 
@@ -81,7 +75,7 @@ Eine Wiederherstellung ist auch nicht verfügbar, wenn die Daten selbst den Fehl
 
 ## Berechnete Aufgaben für einen Space pausieren
 
-Wenn die berechneten Aufgaben eines Space einen Vorfall verschlimmern, pausieren Sie diesen Space unter **Pausen berechneter Aufgaben**, statt die gesamte Instanz anzuhalten.
+Wenn die berechneten Aufgaben eines Space einen Vorfall verschlimmern, pausieren Sie diesen Space unter **Pausen**, statt die gesamte Instanz anzuhalten.
 
 <Steps>
   <Step title="Pausendialog öffnen">Klicken Sie auf **Einen Space pausieren**.</Step>
@@ -109,4 +103,3 @@ Der Warteschlangenabschnitt verfügt über zwei Steuerelemente für Gleichzeitig
 Erhöhen Sie die Beanspruchungslimits, wenn ein ausgelastetes Projekt den Engpass bildet, und die Gleichzeitigkeit pro Prozess, wenn viele Projekte gleichzeitig in die Warteschlange eingereiht sind.
 
 <Warning>Höhere Gleichzeitigkeit belastet Ihre Datenbank stärker. Spaces, die ihre Daten in einem [Datenbank-Mandanten](/de/basic/admin-panel/database-tenant) speichern, behalten die Umgebungsstandardwerte für die Beanspruchungslimits bei, da ihre Verbindungspools auf diese Werte ausgelegt sind.</Warning>
-
