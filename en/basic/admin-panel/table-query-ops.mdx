@@ -1,6 +1,6 @@
 ---
 title: "Table search and indexes: diagnose slow queries"
-description: "Inspect search coverage and physical indexes for each table. Configure search, queue index changes and review slow queries and task results in System Admin."
+description: "Diagnose slow queries, configure search and indexes, and assess the calculation impact of record or field changes in System Admin's table operations."
 sidebarTitle: "Table Query Ops"
 ---
 
@@ -8,13 +8,13 @@ sidebarTitle: "Table Query Ops"
 
 <Tip>Available for self-hosted Business plan and above</Tip>
 
-Path: System Admin → Table Query Ops
+Path: System Admin → Table operations → Search & indexes
 
-Use **Table search and indexes** when views, filters, relations, or searches on a large table become slow. Teable watches the query workload in the background and summarizes each table: how it is searched today, which fields are covered, which physical indexes exist, and how many slow queries it saw recently. Instance administrators configure search coverage, create indexes, and follow the results here.
+Use **Search & indexes** when views, filters, relations, or searches on a large table become slow. Teable watches the query workload in the background and summarizes each table: how it is searched today, which fields are covered, which physical indexes exist, and how many slow queries it saw recently. Instance administrators configure search coverage, create indexes, and follow the results here.
 
-<Info>The page only queues tasks; it never changes the database directly. Every change runs asynchronously in the background, so confirm the outcome under **Tasks / history**.</Info>
+<Info>Search configuration and index changes run asynchronously as background tasks. Confirm the outcome under **History** after submitting.</Info>
 
-<Info>Table Query Ops is off by default. Set `V2_TABLE_QUERY_OPS_ENABLED` to `true` on the backend and restart, and the page starts collecting observations.</Info>
+<Info>Query observation is off by default. Set `V2_TABLE_QUERY_OPS_ENABLED` to `true` on the backend and restart to start collecting observations.</Info>
 
 ## Find the table to work on
 
@@ -22,10 +22,10 @@ The page opens on the table list. The state buttons across the top carry their o
 
 | State | Meaning |
 | --- | --- |
-| **All tables** | Every observed table. |
-| **Needs attention** | Tables with slow queries, timeouts, pending recommendations, or failed tasks. Start here. |
+| **All tables** | All undeleted tables in the instance, including tables without query observations yet. |
+| **Needs attention** | Tables with slow queries, timeouts or pending recommendations, or configured search that is not serving or does not cover all compatible fields. Start here. |
 | **Indexed search** | Tables whose index metadata is published and usable and whose runtime switch is on, so search really runs on the index. |
-| **Configured search** | Tables with a saved search configuration or existing index metadata, including those not yet published. |
+| **Configured, not serving** | The count is for configured tables still falling back to a full scan. Clicking lists all tables with search configured, so you can compare configuration with serving status. |
 | **Unconfigured** | Tables with no search coverage yet. |
 | **Unavailable** | Tables that cannot use indexed search right now. The row states why. |
 
@@ -33,7 +33,7 @@ The search box accepts table, Project, and Space names or IDs. Sorting is either
 
 Each row gives the table's estimated rows and size, the requests and slow queries within the window, the current search method and field coverage, the number of filter/sort indexes, and the counts of pending recommendations and active tasks. Click a table name to open its detail.
 
-**About index states**, next to the state buttons, explains how these counts are measured.
+Use **Choose a table** at the top to switch tables directly. The selected table stays selected when you switch to **Complexity** or **Schema integrity**; **Computed updates** shows the queue for the whole instance.
 
 ## Read the index state
 
@@ -42,8 +42,8 @@ The table list and the table detail both show an index state next to the search 
 | State | Meaning | What to do next |
 | --- | --- | --- |
 | **Not configured** | No saved search configuration and no index metadata. | Choose **Configure search** if the table needs indexed search. |
-| **Configured · pending publication** | The configuration is saved; the index is not published yet. | Check **Tasks / history** for a task still running. |
-| **Published · ready** | The index metadata is published and usable. | Nothing to do. |
+| **Pending publication** | The configuration is saved; the index is not published yet. | Check **History** for a task still running. |
+| **Ready** | The index metadata is published and usable. | Check the actual search method and runtime switch to confirm the index is serving. |
 | **Unusable metadata** | The index metadata is broken and cannot serve search. | Run **Update selection / rebuild** again. |
 
 Two lines can appear below the state. **Configured: pg_bigm / pg_trgm** means the saved provider differs from the search method in use, and **Indexed-search runtime switch: off** means the index is ready but the runtime is off, so search still runs `ILIKE`.
@@ -54,7 +54,7 @@ When a notice at the top of the page reports tables whose configured search inde
 
 ## Configure search coverage
 
-The **Search coverage** tab shows the table's current search method, how many fields are covered, and the **Serving coverage** of each field. **Show uncovered fields** narrows the list to the fields not yet included; fields marked **Not eligible** cannot contribute to a substring search index.
+The **Search** tab shows the table's current search method, how many fields are covered, and the **Serving coverage** of each field. **Show uncovered fields** narrows the list to the fields not yet included; fields marked **Not eligible** cannot contribute to a substring search index.
 
 <Info>Serving coverage requires published, usable index metadata and the runtime switch on; a saved configuration alone does not count. Coverage is explicit, so fields you add later are not included automatically; configure the table again to bring them in.</Info>
 
@@ -70,25 +70,25 @@ Choose **Configure search** on a table that has never been configured, or **Upda
 
 <Warning>Creating or rebuilding search coverage generates a search column and a GIN index. It can rewrite the whole table and hold locks, and indexed search is briefly interrupted while it runs. Schedule it inside a maintenance window.</Warning>
 
-What the dialog returns is a task receipt, not a result. Close it and follow the task under **Tasks / history**. Submitting the same change again returns the existing task.
+What the dialog returns is a task receipt, not a result. Close it and follow the task under **History**. Submitting the same change again returns the existing task.
 
 ## Manage filter and sort indexes
 
-The **Filter / sort indexes** tab lists the physical indexes that serve filter predicates and ordering on this table, each with its validity, whether Teable manages it, its size, and its definition. These are managed separately from substring search indexes.
+The **Indexes** tab lists filter/sort and system indexes, with their validity, management status, size and definition. Substring search indexes are listed separately under **Search**.
 
-**Pending actions** below holds the system's index recommendations and says whether plan evidence backs each one. **Review index creation** shows the proposed index, the database it runs against, and the evidence; after you confirm, Teable runs `CREATE INDEX CONCURRENTLY` asynchronously. Large tables and tables of unknown size need the maintenance-window acknowledgement here too.
+**Pending actions** holds the system's index recommendations and says whether plan evidence backs each one. **Review index creation** shows the proposed index, the database it runs against, and the evidence; after you confirm, Teable runs `CREATE INDEX CONCURRENTLY` asynchronously. Large tables and tables of unknown size need the maintenance-window acknowledgement here too.
 
 <Info>This page does not delete indexes. Unmanaged and system indexes may protect constraints or serve other workloads, so they are left alone.</Info>
 
 ## Diagnose specific queries
 
-When someone reports a slow table and no recommendation covers it, open the **Query diagnosis** tab and choose **Analyze queries**. The analysis only reads saved query shapes and available plan evidence; it creates nothing.
+When someone reports a slow table and no recommendation covers it, open the **Diagnosis** tab and choose **Analyze queries**. The analysis only reads saved query shapes and available plan evidence; it creates nothing.
 
 The conclusion is one of **Plan-backed index opportunities found**, **No index opportunity confirmed by the available plans**, or **Insufficient evidence**. Insufficient evidence does not mean a sequential scan happened: a slow observation alone does not establish that the access path is at fault. Below it, each affected query is listed with whether it came from real traffic or a saved view configuration, and the estimated plan cost before and after the proposed index (plan cost, not milliseconds).
 
 ## Follow the results
 
-The **Tasks / history** tab holds three parts:
+The **History** tab holds three parts:
 
 - **Tasks**: background tasks for this table, with status, attempt count, task kind, and failure reason. When a task eventually succeeded after failing, the error is labelled as a prior attempt.
 - **Search configuration history**: the provider, status, and field list of each past coverage configuration.
@@ -97,3 +97,13 @@ The **Tasks / history** tab holds three parts:
 History loads only the most recent entries; when there are more, a line above the list gives the total.
 
 <Info>While a table has a queued or running task, the buttons for configuring search and creating indexes stay disabled. Wait for the task to finish.</Info>
+
+## Assess change impact
+
+Updating records can trigger further calculations in formulas, lookups and rollups through linked records. To assess whether a batch write, field conversion or field deletion could affect a large amount of data, open **Complexity** and select a table, or click **Assess complexity** in its search and index details.
+
+The **Impact matrix** estimates updates, field deletions and conversions for each field, plus record creation and deletion separately. The dot on the left shows the typical case; the fill shows the worst case. Click a cell for affected row estimates, propagation paths, limitations and recommendations. Review **High** or **Critical** changes first to decide whether to reduce batch sizes or adjust calculation dependencies.
+
+In **Estimate settings**, set **Records per change** to the number you plan to submit at once; leaving it empty estimates one record. **Use catalog statistics** is on by default and reads table sizes and link counts from the database to improve the estimate.
+
+<Info>Assessment reads structure and statistics only. It performs no record or field changes and does not predict elapsed time. If a result is **Not estimated** or its quality is **Partial** or **Truncated**, read the limitations and fill the information gaps before deciding. A missing estimate does not mean there is no risk.</Info>

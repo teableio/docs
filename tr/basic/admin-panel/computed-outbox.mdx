@@ -8,25 +8,17 @@ sidebarTitle: "Hesaplama Giden Kutusu"
 
 <Tip>Kendi sunucunuzda barındırılan Business ve üzeri planlarda kullanılabilir</Tip>
 
-Yol: Sistem Yönetimi → Hesaplama Giden Kutusu
+Yol: Sistem Yönetimi → Tablo işlemleri → Hesaplanan güncellemeler
 
-Formül, arama veya hesaplanan diğer Alan değerleri güncellenmeyi durdurduğunda ya da beklenenden çok daha uzun sürdüğünde **Hesaplama Giden Kutusunu** kullanın. Bu sayfa genel görev durumunu, kuyrukta ilerleyen işleri, kurtarılması gerekebilecek görevleri ve hesaplama görevleri o anda duraklatılmış Alanları gösterir.
+Formül, arama veya diğer hesaplanan değerler güncellenmiyorsa ya da yavaşsa **Hesaplanan güncellemeler** bölümünü açın. Önce **Genel bakış** ile örnekteki birikimi kontrol edin, ardından **BullMQ kuyruğu** bölümünde teslimatları izleyin. Başarısız hesaplamaları kurtarmak için **Anormallikler**, bir alanı duraklatmak veya sürdürmek için **Duraklatmalar** kullanılır.
 
 ## Sistem Durumunu Okuma
 
-Sayfa başlığının yanındaki durum, hesaplama görevlerinin müdahale gerektirip gerektirmediğini gösterir:
-
-| Durum | Anlamı |
-| --- | --- |
-| **Sağlıklı** | Hesaplama görevleri normal şekilde çalışıyor. |
-| **Performansı Düşük** | Teable hatalar, zaman aşımına uğramış görevler veya büyüyen bir birikim tespit etti. |
-| **Kritik** | BullMQ kullanılamıyor veya görevleri işleyecek bir worker yok. |
-
-Durum müdahale gerektirdiğinde sayfada nedeni listelenir.
+**Genel bakış**; bekleyen, işlenen, duraklatılmış ve ölü mektup görevlerini özetler. **Dikkat gerekiyor** görünürse önce nedeni okuyun. Kuyruk kullanılamıyorsa veya worker yoksa çalışma ortamını düzeltin; zaman aşımına uğrayan ya da biriken görevleri kuyruk ve anormallik sayfalarında bulun.
 
 ## Kuyrukta Bir Görev Bulma
 
-**Canlı BullMQ kuyruğu**, Teable'ın hâlâ sakladığı işleri listeler; böylece tek bir hesaplama görevini takip edebilir veya yavaş görevleri arayabilirsiniz.
+**BullMQ kuyruğu**, Teable'ın hâlâ sakladığı işleri listeler; böylece tek bir hesaplama görevini takip edebilir veya yavaş görevleri arayabilirsiniz.
 
 Varsayılan olarak her satır bir görevi temsil eder ve Teable görevi yeniden denerken satır mevcut konumunda farklı durumlara geçer. Bir görevin tüm deneme geçmişine ihtiyaç duyduğunuzda veya yavaş çalışmaları aramak istediğinizde **Teslimatlar** görünümüne geçin.
 
@@ -57,11 +49,13 @@ Hesaplanan bir değer yanlış göründüğünde veya geç ulaştığında arkas
 
 <Info>Köken kayıt defteri yalnızca bu özellik kullanıma sunulduktan sonra oluşturulan görevleri kaydeder ve 7 günlük geçmişi saklar. Daha eski bir görev, yayılım grafiği olmadan kuyruk bilgilerini gösterir. Worker'ın henüz planlamadığı bir başlangıç görevi yalnızca tetikleyici Alanlarını gösterir. Bir değişiklik aşağı akışta hesaplanan herhangi bir yazma üretmediyse grafik bunu belirtir: Bu Alanlara bir formül, arama, özet veya bağlantı başlığı üzerinden hiçbir şey bağlı değildir.</Info>
 
+Grafik kenarları etki kapsamını da ayırır: **via link** bağlantılı kayıtları izler, **conditional** hedefleri koşulla seçer, **whole table** hedef tablonun tüm kayıtlarını kapsar ve **depends** alan tanımı bağımlılıklarını gösterir. Yavaş güncellemelerde önce tam tablo yeniden hesaplamasını ve uzun tablolar arası yolları inceleyin.
+
 ## Anormal Görevleri Yönetme
 
 <Info>**Başarısız** sayısı ve **Anomali yönetimi** farklı sorun türlerini gösterdiğinden sayıları farklı olabilir.</Info>
 
-**Anomali yönetimi**, tek bir temel nedenin kolayca fark edilebilmesi için anomalileri her Proje, kaynak Tablo ve hata için bir tane olacak şekilde sorun gruplarında toplar. Herhangi bir şeyi kurtarmadan önce hata nedenini inceleyip temel sorunu giderin. Hata ayrıntılarını ve kapsadığı görevleri okumak için bir grubu genişletin; bu satırlar inceleme amaçlıdır ve kurtarma her zaman grubun tamamında çalışır.
+Bu sorun gruplarını yönetmek için **Anormallikler** bölümünü açın. **Anomali yönetimi**, tek bir temel nedenin kolayca fark edilebilmesi için anomalileri her Proje, kaynak Tablo ve hata için bir tane olacak şekilde sorun gruplarında toplar. Herhangi bir şeyi kurtarmadan önce hata nedenini inceleyip temel sorunu giderin. Hata ayrıntılarını ve kapsadığı görevleri okumak için bir grubu genişletin; bu satırlar inceleme amaçlıdır ve kurtarma her zaman grubun tamamında çalışır.
 
 Bir grubun sunduğu eylemler türüne bağlıdır:
 
@@ -81,7 +75,7 @@ Bir boyut sınırını aşan veya Alan kısıtlamasını ihlal eden bir değer g
 
 ## Bir Alanın Hesaplama Görevlerini Duraklatma
 
-Bir Alanın hesaplama görevleri olayı daha da kötüleştiriyorsa tüm örneği durdurmak yerine **Hesaplama görevi duraklatmaları** bölümünden ilgili Alanı duraklatın.
+Bir Alanın hesaplama görevleri olayı daha da kötüleştiriyorsa tüm örneği durdurmak yerine **Duraklatmalar** bölümünden ilgili Alanı duraklatın.
 
 <Steps>
   <Step title="Duraklatma iletişim kutusunu açın">**Bir Alanı duraklat**'a tıklayın.</Step>

@@ -1,18 +1,18 @@
 ---
 title: "Configurer la recherche et les index des Tables"
-description: "Examinez la couverture de recherche et les index Table par Table, configurez la recherche, créez des index et suivez les résultats."
+description: "Diagnostiquez les requêtes lentes, configurez la recherche et les index, et évaluez les calculs déclenchés par les modifications de champs ou d’enregistrements dans les opérations sur les tables."
 sidebarTitle: "Opérations de requêtes de Table"
 ---
 
 <Tip>Disponible à partir du plan Business auto-hébergé</Tip>
 
-Chemin : Administration système → Opérations de requêtes de Table
+Chemin : Administration système → Opérations sur les tables → Recherche et index
 
-Utilisez **Recherche et index de Table** lorsque les Vues, filtres, relations ou recherches sur une grande Table deviennent lents. Teable surveille la charge des requêtes en arrière-plan et résume chaque Table : comment elle est recherchée aujourd’hui, quels Champs sont couverts, quels index physiques existent et combien de requêtes lentes ont été observées récemment. Les administrateurs de l’instance configurent ici la couverture de recherche, créent des index et suivent les résultats.
+Utilisez **Recherche et index** lorsque les Vues, filtres, relations ou recherches sur une grande Table deviennent lents. Teable surveille la charge des requêtes en arrière-plan et résume chaque Table : comment elle est recherchée aujourd’hui, quels Champs sont couverts, quels index physiques existent et combien de requêtes lentes ont été observées récemment. Les administrateurs de l’instance configurent ici la couverture de recherche, créent des index et suivent les résultats.
 
-<Info>La page met uniquement des tâches en file d’attente, elle ne modifie jamais la base de données directement. Chaque changement s’exécute de façon asynchrone en arrière-plan : vérifiez le résultat sous **Tâches / historique**.</Info>
+<Info>Les modifications de recherche et d’index s’exécutent en arrière-plan, de manière asynchrone. Vérifiez leur résultat dans **Historique** après l’envoi.</Info>
 
-<Info>Les opérations de requêtes de Table sont désactivées par défaut. Définissez `V2_TABLE_QUERY_OPS_ENABLED` sur `true` côté backend, puis redémarrez : la page commence alors à collecter des observations.</Info>
+<Info>L’observation des requêtes est désactivée par défaut. Définissez `V2_TABLE_QUERY_OPS_ENABLED` sur `true` dans le backend et redémarrez-le pour commencer la collecte.</Info>
 
 ## Trouver la Table à traiter
 
@@ -20,10 +20,10 @@ La page s’ouvre sur la liste des Tables. Les boutons d’état en haut portent
 
 | État | Signification |
 | --- | --- |
-| **Toutes les Tables** | Toutes les Tables observées. |
-| **Nécessite une attention** | Tables présentant des requêtes lentes, des délais dépassés, des recommandations en attente ou des tâches en échec. Commencez ici. |
+| **Toutes les Tables** | Toutes les tables non supprimées de l’instance, y compris celles sans observation de requête. |
+| **Nécessite une attention** | Les tables avec des requêtes lentes, des délais dépassés ou des recommandations en attente, ou dont la recherche configurée reste inactive ou ne couvre pas tous les champs compatibles. Commencez ici. |
 | **Recherche indexée** | Tables dont les métadonnées d’index sont publiées et exploitables et dont le commutateur d’exécution est activé : la recherche passe réellement par l’index. |
-| **Recherche configurée** | Tables dotées d’une configuration de recherche enregistrée ou de métadonnées d’index, y compris celles qui ne sont pas encore publiées. |
+| **Configuré, non actif** | Le nombre indique les tables configurées qui utilisent encore un parcours complet. Un clic affiche toutes les tables avec une recherche configurée pour comparer configuration et utilisation effective. |
 | **Non configurée** | Tables sans couverture de recherche. |
 | **Indisponible** | Tables qui ne peuvent pas utiliser la recherche indexée pour l’instant. La ligne en indique la raison. |
 
@@ -31,7 +31,7 @@ Le champ de recherche accepte les noms ou identifiants de Table, de Projet et d�
 
 Chaque ligne donne le nombre de lignes et la taille estimés de la Table, les requêtes et requêtes lentes de la fenêtre, la méthode de recherche actuelle et la couverture des Champs, le nombre d’index de filtre/tri, ainsi que les recommandations en attente et les tâches actives. Cliquez sur le nom d’une Table pour ouvrir son détail.
 
-À côté des boutons d’état, **À propos des états d’index** explique comment ces compteurs sont calculés.
+Utilisez **Choisir une table** en haut de la page pour changer de table. La sélection est conservée dans **Complexité** et **Intégrité du schéma** ; **Mises à jour calculées** affiche la file de toute l’instance.
 
 ## Lire l’état de l’index
 
@@ -40,8 +40,8 @@ La liste des Tables et le détail affichent l’état de l’index à côté de 
 | État | Signification | Étape suivante |
 | --- | --- | --- |
 | **Non configuré** | Aucune configuration de recherche enregistrée ni métadonnées d’index. | Choisissez **Configurer la recherche** si la Table a besoin de la recherche indexée. |
-| **Configuré · publication en attente** | La configuration est enregistrée, l’index n’est pas encore publié. | Vérifiez dans **Tâches / historique** si une tâche est encore en cours. |
-| **Publié · prêt** | Les métadonnées d’index sont publiées et exploitables. | Rien à faire. |
+| **Publication en attente** | La configuration est enregistrée, l’index n’est pas encore publié. | Vérifiez dans **Historique** si une tâche est encore en cours. |
+| **Prêt** | Les métadonnées d’index sont publiées et exploitables. | Vérifiez la méthode de recherche effective et le commutateur d’exécution pour confirmer que l’index est utilisé. |
 | **Métadonnées inexploitables** | Les métadonnées d’index sont défectueuses et ne peuvent pas servir la recherche. | Relancez **Mettre à jour la sélection / reconstruire**. |
 
 Deux lignes peuvent apparaître sous l’état. **Configuré : pg_bigm / pg_trgm** signale que le fournisseur enregistré diffère de la méthode de recherche utilisée, et **Commutateur d’exécution de la recherche indexée : désactivé** signale que l’index est prêt mais que l’exécution est coupée, la recherche restant en `ILIKE`.
@@ -52,7 +52,7 @@ Lorsqu’une notification en haut de la page signale des Tables dont l’index d
 
 ## Configurer la couverture de recherche
 
-L’onglet **Couverture de recherche** indique la méthode de recherche actuelle de la Table, le nombre de Champs couverts et la **Couverture effective** de chaque Champ. **Afficher les champs non couverts** restreint la liste aux Champs pas encore inclus ; les Champs marqués **Non éligible** ne peuvent pas alimenter un index de recherche par sous-chaîne.
+L’onglet **Recherche** indique la méthode de recherche actuelle de la Table, le nombre de Champs couverts et la **Couverture effective** de chaque Champ. **Afficher les champs non couverts** restreint la liste aux Champs pas encore inclus ; les Champs marqués **Non éligible** ne peuvent pas alimenter un index de recherche par sous-chaîne.
 
 <Info>La couverture effective suppose des métadonnées d’index publiées et exploitables ainsi qu’un commutateur d’exécution activé ; une configuration enregistrée seule ne compte pas. La couverture est explicite : les Champs ajoutés ensuite ne sont pas inclus automatiquement, reconfigurez la Table pour les intégrer.</Info>
 
@@ -68,11 +68,11 @@ Choisissez **Configurer la recherche** sur une Table jamais configurée, ou **Me
 
 <Warning>Créer ou reconstruire la couverture de recherche génère une colonne de recherche et un index GIN. L’opération peut réécrire toute la Table, poser des verrous et interrompre brièvement la recherche indexée. Planifiez-la pendant une fenêtre de maintenance.</Warning>
 
-La boîte de dialogue renvoie un accusé de réception de tâche, pas un résultat. Fermez-la et suivez la tâche sous **Tâches / historique**. Soumettre à nouveau la même modification renvoie la tâche existante.
+La boîte de dialogue renvoie un accusé de réception de tâche, pas un résultat. Fermez-la et suivez la tâche sous **Historique**. Soumettre à nouveau la même modification renvoie la tâche existante.
 
 ## Gérer les index de filtre et de tri
 
-L’onglet **Index de filtre / tri** répertorie les index physiques qui servent les conditions de filtre et les tris de cette Table, chacun avec sa validité, l’indication de gestion par Teable, sa taille et sa définition. Ils sont gérés séparément des index de recherche par sous-chaîne.
+L’onglet **Index** répertorie les index de filtrage/tri et les index système avec leur validité, leur gestion, leur taille et leur définition. Les index de recherche de sous-chaînes figurent séparément dans **Recherche**.
 
 En dessous, les **Actions en attente** regroupent les recommandations d’index du système et précisent si des éléments de plan les étayent. **Examiner la création d’index** montre l’index proposé, la base de données d’exécution et les éléments probants ; après votre confirmation, Teable exécute `CREATE INDEX CONCURRENTLY` de façon asynchrone. Les grandes Tables et celles de taille inconnue exigent ici aussi la confirmation de la fenêtre de maintenance.
 
@@ -80,13 +80,13 @@ En dessous, les **Actions en attente** regroupent les recommandations d’index 
 
 ## Diagnostiquer des requêtes précises
 
-Lorsqu’une Table est signalée comme lente sans recommandation associée, ouvrez l’onglet **Diagnostic des requêtes** et choisissez **Analyser les requêtes**. L’analyse lit uniquement les formes de requêtes enregistrées et les éléments de plan disponibles ; elle ne crée rien.
+Lorsqu’une Table est signalée comme lente sans recommandation associée, ouvrez l’onglet **Diagnostic** et choisissez **Analyser les requêtes**. L’analyse lit uniquement les formes de requêtes enregistrées et les éléments de plan disponibles ; elle ne crée rien.
 
 La conclusion est **Opportunités d’index étayées par un plan trouvées**, **Aucune opportunité d’index confirmée par les plans disponibles** ou **Éléments insuffisants**. Des éléments insuffisants ne signifient pas qu’un balayage séquentiel a eu lieu : une observation lente ne prouve pas à elle seule que le chemin d’accès est en cause. En dessous figure chaque requête concernée, avec l’origine (trafic réel ou configuration de Vue enregistrée) et le coût de plan estimé avant et après l’index proposé (coût de plan, pas des millisecondes).
 
 ## Suivre les résultats
 
-L’onglet **Tâches / historique** comporte trois parties :
+L’onglet **Historique** comporte trois parties :
 
 - **Tâches** : les tâches d’arrière-plan de cette Table, avec statut, nombre de tentatives, type de tâche et cause de l’échec. Lorsqu’une tâche a fini par réussir après un échec, l’erreur est signalée comme une tentative antérieure.
 - **Historique de configuration de recherche** : le fournisseur, le statut et la liste des Champs de chaque configuration de couverture passée.
@@ -95,3 +95,13 @@ L’onglet **Tâches / historique** comporte trois parties :
 L’historique ne charge que les entrées les plus récentes. S’il y en a davantage, une ligne au-dessus de la liste en donne le total.
 
 <Info>Tant qu’une tâche est en file d’attente ou en cours sur une Table, les boutons de configuration de la recherche et de création d’index restent désactivés. Attendez la fin de la tâche.</Info>
+
+## Évaluer l’impact des modifications {#assess-change-impact}
+
+La mise à jour d’enregistrements peut déclencher d’autres calculs de formules, de recherches et d’agrégations via les enregistrements liés. Pour évaluer l’effet d’une écriture par lots, d’une conversion ou d’une suppression de champ sur les données, ouvrez **Complexité** et choisissez une table, ou cliquez sur **Évaluer la complexité** dans ses détails de recherche et d’index.
+
+La **Matrice d'impact** estime les mises à jour, suppressions et conversions pour chaque champ, ainsi que la création et la suppression d’enregistrements séparément. Le point à gauche indique le cas typique ; le remplissage, le pire cas. Cliquez sur une cellule pour consulter les lignes touchées, les chemins de propagation, les limites et les recommandations. Examinez d’abord les changements **Élevé** ou **Critique** pour décider de réduire les lots ou d’ajuster les dépendances de calcul.
+
+Dans **Paramètres d'estimation**, réglez **Enregistrements par modification** sur le nombre à envoyer en une fois ; un champ vide correspond à un enregistrement. **Utiliser les statistiques du catalogue** est activé par défaut et lit les tailles des tables et le nombre de liens pour affiner l’estimation.
+
+<Info>L’évaluation lit uniquement la structure et les statistiques. Elle ne modifie aucun champ ni enregistrement et ne prédit pas la durée réelle. Si le résultat est **Non estimé**, ou la qualité **Partielle** ou **Tronquée**, consultez les limites et complétez les informations avant de décider. Une estimation absente ne signifie pas une absence de risque.</Info>

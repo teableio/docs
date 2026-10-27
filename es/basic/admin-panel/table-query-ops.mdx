@@ -1,18 +1,18 @@
 ---
 title: "Configurar búsquedas e índices de Tablas"
-description: "Revisa la cobertura de búsqueda y los índices Tabla por Tabla, configura la búsqueda, crea índices y sigue los resultados."
+description: "Diagnostica consultas lentas, configura búsquedas e índices y evalúa el impacto de los cambios en registros o campos en las operaciones de tablas de la administración del sistema."
 sidebarTitle: "Operaciones de consulta de Tablas"
 ---
 
 <Tip>Disponible para el plan Business autoalojado y los planes superiores</Tip>
 
-Ruta: Administración del sistema → Operaciones de consulta de Tablas
+Ruta: Administración del sistema → Operaciones de tablas → Búsqueda e índices
 
-Usa **Búsqueda e índices de Tablas** cuando las Vistas, los filtros, las relaciones o las búsquedas de una Tabla grande se vuelvan lentos. Teable observa la carga de consultas en segundo plano y resume cada Tabla: cómo se busca actualmente, qué Campos están cubiertos, qué índices físicos existen y cuántas consultas lentas se registraron hace poco. Los administradores de la instancia configuran aquí la cobertura de búsqueda, crean índices y siguen los resultados.
+Usa **Búsqueda e índices** cuando las Vistas, los filtros, las relaciones o las búsquedas de una Tabla grande se vuelvan lentos. Teable observa la carga de consultas en segundo plano y resume cada Tabla: cómo se busca actualmente, qué Campos están cubiertos, qué índices físicos existen y cuántas consultas lentas se registraron hace poco. Los administradores de la instancia configuran aquí la cobertura de búsqueda, crean índices y siguen los resultados.
 
-<Info>La página solo pone tareas en cola; nunca cambia la base de datos directamente. Cada cambio se ejecuta de forma asíncrona en segundo plano, así que confirma el resultado en **Tareas / historial**.</Info>
+<Info>Los cambios de configuración de búsqueda e índices se ejecutan de forma asíncrona en segundo plano. Después de enviarlos, confirma el resultado en **Historial**.</Info>
 
-<Info>Las operaciones de consulta de Tablas están desactivadas de forma predeterminada. Define `V2_TABLE_QUERY_OPS_ENABLED` como `true` en el backend y reinicia: la página empezará a acumular observaciones.</Info>
+<Info>La observación de consultas está desactivada de forma predeterminada. Establece `V2_TABLE_QUERY_OPS_ENABLED` en `true` en el backend y reinícialo para empezar a recopilar observaciones.</Info>
 
 ## Encontrar la Tabla que necesita atención
 
@@ -20,10 +20,10 @@ La página se abre con la lista de Tablas. Los botones de estado de la parte sup
 
 | Estado | Significado |
 | --- | --- |
-| **Todas las Tablas** | Todas las Tablas observadas. |
-| **Requiere atención** | Tablas con consultas lentas, tiempos de espera agotados, recomendaciones pendientes o tareas fallidas. Empieza por aquí. |
+| **Todas las Tablas** | Todas las tablas de la instancia que no se hayan eliminado, incluidas las que aún no tienen observaciones de consultas. |
+| **Requiere atención** | Tablas con consultas lentas, tiempos de espera agotados o recomendaciones pendientes, o con búsquedas configuradas que no se usan o no cubren todos los campos compatibles. Empieza aquí. |
 | **Búsqueda indexada** | Tablas cuyos metadatos de índice están publicados y utilizables y cuyo interruptor de ejecución está activado, de modo que la búsqueda usa realmente el índice. |
-| **Búsqueda configurada** | Tablas con una configuración de búsqueda guardada o con metadatos de índice, incluidas las que aún no se han publicado. |
+| **Configurada, sin servir** | El recuento corresponde a tablas configuradas que aún recurren a un escaneo completo. Al hacer clic se muestran todas las tablas con búsqueda configurada para comparar la configuración con su uso efectivo. |
 | **Sin configurar** | Tablas sin cobertura de búsqueda. |
 | **No disponible** | Tablas que ahora mismo no pueden usar la búsqueda indexada. La fila indica el motivo. |
 
@@ -31,7 +31,7 @@ El cuadro de búsqueda admite nombres o identificadores de Tabla, Proyecto y Esp
 
 Cada fila muestra las filas y el tamaño estimados de la Tabla, las solicitudes y las consultas lentas de la ventana, el método de búsqueda actual y la cobertura de Campos, el número de índices de filtro/orden, y los recuentos de recomendaciones pendientes y tareas activas. Haz clic en el nombre de una Tabla para abrir su detalle.
 
-Junto a los botones de estado, **Acerca de los estados del índice** explica cómo se calculan estos recuentos.
+Usa **Elegir una tabla** en la parte superior para cambiar de tabla. La selección se mantiene al pasar a **Complejidad** o **Integridad del esquema**; **Actualizaciones calculadas** muestra la cola de toda la instancia.
 
 ## Leer el estado del índice
 
@@ -40,8 +40,8 @@ La lista de Tablas y el detalle muestran el estado del índice junto al método 
 | Estado | Significado | Qué hacer |
 | --- | --- | --- |
 | **Sin configurar** | No hay configuración de búsqueda guardada ni metadatos de índice. | Elige **Configurar búsqueda** si la Tabla necesita búsqueda indexada. |
-| **Configurado · pendiente de publicación** | La configuración está guardada; el índice aún no se ha publicado. | Comprueba en **Tareas / historial** si queda alguna tarea en curso. |
-| **Publicado · listo** | Los metadatos del índice están publicados y son utilizables. | No hay nada que hacer. |
+| **Publicación pendiente** | La configuración está guardada; el índice aún no se ha publicado. | Comprueba en **Historial** si queda alguna tarea en curso. |
+| **Listo** | Los metadatos del índice están publicados y son utilizables. | Comprueba el método de búsqueda real y el interruptor de ejecución para confirmar que el índice se utiliza. |
 | **Metadatos inutilizables** | Los metadatos del índice están dañados y no pueden atender la búsqueda. | Vuelve a ejecutar **Actualizar selección / reconstruir**. |
 
 Bajo el estado pueden aparecer dos líneas. **Configurado: pg_bigm / pg_trgm** indica que el proveedor guardado no coincide con el método de búsqueda en uso, y **Interruptor de ejecución de la búsqueda indexada: desactivado** indica que el índice está listo pero la ejecución está apagada, así que la búsqueda sigue usando `ILIKE`.
@@ -52,7 +52,7 @@ Cuando un aviso en la parte superior de la página informa de Tablas cuyo índic
 
 ## Configurar la cobertura de búsqueda
 
-La pestaña **Cobertura de búsqueda** muestra el método de búsqueda actual de la Tabla, cuántos Campos están cubiertos y la **Cobertura efectiva** de cada Campo. **Mostrar campos no cubiertos** limita la lista a los Campos aún no incluidos; los Campos marcados como **No apto** no pueden formar parte de un índice de búsqueda por subcadena.
+La pestaña **Búsqueda** muestra el método de búsqueda actual de la Tabla, cuántos Campos están cubiertos y la **Cobertura efectiva** de cada Campo. **Mostrar campos no cubiertos** limita la lista a los Campos aún no incluidos; los Campos marcados como **No apto** no pueden formar parte de un índice de búsqueda por subcadena.
 
 <Info>La cobertura efectiva exige metadatos de índice publicados y utilizables y el interruptor de ejecución activado; una configuración guardada por sí sola no cuenta. La cobertura es explícita, así que los Campos que añadas después no se incluyen de forma automática: vuelve a configurar la Tabla para incorporarlos.</Info>
 
@@ -68,11 +68,11 @@ Elige **Configurar búsqueda** en una Tabla que nunca se haya configurado, o **A
 
 <Warning>Crear o reconstruir la cobertura de búsqueda genera una columna de búsqueda y un índice GIN. Puede reescribir toda la Tabla y mantener bloqueos, y la búsqueda indexada se interrumpe brevemente mientras se ejecuta. Prográmalo dentro de una ventana de mantenimiento.</Warning>
 
-Lo que devuelve el cuadro de diálogo es un acuse de recibo de la tarea, no un resultado. Ciérralo y sigue la tarea en **Tareas / historial**. Si vuelves a enviar el mismo cambio, se devuelve la tarea existente.
+Lo que devuelve el cuadro de diálogo es un acuse de recibo de la tarea, no un resultado. Ciérralo y sigue la tarea en **Historial**. Si vuelves a enviar el mismo cambio, se devuelve la tarea existente.
 
 ## Gestionar los índices de filtro y orden
 
-La pestaña **Índices de filtro / orden** enumera los índices físicos que sirven a las condiciones de filtro y a la ordenación de esta Tabla, cada uno con su validez, si lo gestiona Teable, su tamaño y su definición. Se gestionan por separado de los índices de búsqueda por subcadena.
+La pestaña **Índices** enumera los índices de filtrado/ordenación y del sistema, con su validez, gestión, tamaño y definición. Los índices de búsqueda de subcadenas aparecen por separado en **Búsqueda**.
 
 Debajo, **Acciones pendientes** reúne las recomendaciones de índice del sistema e indica si hay pruebas del plan que las respalden. **Revisar creación de índice** muestra el índice propuesto, la base de datos en la que se ejecuta y las pruebas; tras tu confirmación, Teable ejecuta `CREATE INDEX CONCURRENTLY` de forma asíncrona. Las Tablas grandes y las de tamaño desconocido también requieren aquí la confirmación de la ventana de mantenimiento.
 
@@ -80,13 +80,13 @@ Debajo, **Acciones pendientes** reúne las recomendaciones de índice del sistem
 
 ## Diagnosticar consultas concretas
 
-Cuando alguien informa de una Tabla lenta y ninguna recomendación la cubre, abre la pestaña **Diagnóstico de consultas** y elige **Analizar consultas**. El análisis solo lee las formas de consulta guardadas y las pruebas de plan disponibles; no crea nada.
+Cuando alguien informa de una Tabla lenta y ninguna recomendación la cubre, abre la pestaña **Diagnóstico** y elige **Analizar consultas**. El análisis solo lee las formas de consulta guardadas y las pruebas de plan disponibles; no crea nada.
 
 La conclusión es **Se encontraron oportunidades de índice respaldadas por el plan**, **Ningún plan disponible confirma una oportunidad de índice** o **Pruebas insuficientes**. Que las pruebas sean insuficientes no significa que se produjera un escaneo secuencial: una observación lenta por sí sola no demuestra que la ruta de acceso sea la causa. Debajo se enumera cada consulta afectada, si procede del tráfico real o de una configuración de Vista guardada, y el coste de plan estimado antes y después del índice propuesto (coste de plan, no milisegundos).
 
 ## Seguir los resultados
 
-La pestaña **Tareas / historial** tiene tres partes:
+La pestaña **Historial** tiene tres partes:
 
 - **Tareas**: las tareas en segundo plano de esta Tabla, con estado, número de intentos, tipo de tarea y motivo del fallo. Si una tarea acabó completándose tras fallar, el error se marca como intento anterior.
 - **Historial de configuración de búsqueda**: el proveedor, el estado y la lista de Campos de cada configuración de cobertura anterior.
@@ -95,3 +95,13 @@ La pestaña **Tareas / historial** tiene tres partes:
 El historial solo carga las entradas más recientes. Si hay más, una línea sobre la lista indica el total.
 
 <Info>Mientras una Tabla tenga una tarea en cola o en ejecución, los botones para configurar la búsqueda y crear índices permanecen deshabilitados. Espera a que termine la tarea.</Info>
+
+## Evaluar el impacto de los cambios
+
+Actualizar registros puede activar más cálculos en fórmulas, búsquedas y acumulaciones a través de registros vinculados. Para evaluar si una escritura por lotes, conversión o eliminación de campos afectará a muchos datos, abre **Complejidad** y elige una tabla, o pulsa **Evaluar complejidad** en sus detalles de búsqueda e índices.
+
+La **Matriz de impacto** estima las actualizaciones, eliminaciones y conversiones de cada campo, además de la creación y eliminación de registros por separado. El punto de la izquierda representa el caso típico y el relleno, el peor caso. Pulsa una celda para consultar filas afectadas, rutas de propagación, limitaciones y recomendaciones. Revisa primero los cambios **Alto** o **Crítico** para decidir si reducir los lotes o ajustar las dependencias de cálculo.
+
+En **Ajustes de estimación**, establece **Registros por cambio** en la cantidad que enviarás cada vez; si lo dejas vacío, se estima un registro. **Usar estadísticas del catálogo** está activado de forma predeterminada y lee el tamaño de las tablas y el número de vínculos para mejorar la estimación.
+
+<Info>La evaluación solo lee estructuras y estadísticas. No modifica registros ni campos ni predice el tiempo de ejecución. Si aparece **No estimado**, o la calidad es **Parcial** o **Truncada**, revisa las limitaciones y completa la información antes de decidir. La ausencia de una estimación no implica ausencia de riesgo.</Info>

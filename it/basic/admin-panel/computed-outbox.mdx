@@ -6,25 +6,17 @@ sidebarTitle: "Outbox dei calcoli"
 
 <Tip>Disponibile per il piano Business Self-hosted e versioni successive</Tip>
 
-Percorso: Amministrazione di sistema → Outbox dei calcoli
+Percorso: Amministrazione di sistema → Operazioni sulle tabelle → Aggiornamenti calcolati
 
-Usa **Outbox dei calcoli** quando i valori delle formule, dei lookup o di altri Campi calcolati smettono di aggiornarsi oppure impiegano molto più tempo del previsto. La pagina mostra lo stato complessivo delle attività, i processi in transito nella coda, le attività che potrebbero richiedere un ripristino e gli eventuali Spazi le cui attività di calcolo sono attualmente in pausa.
+Apri **Aggiornamenti calcolati** quando formule, lookup o altri valori calcolati smettono di aggiornarsi o diventano lenti. Inizia da **Panoramica** per verificare l’arretrato dell’istanza, poi segui le consegne in **Coda BullMQ**. Usa **Anomalie** per recuperare i calcoli falliti e **Pause** per sospendere o riprendere uno spazio.
 
 ## Consultare lo stato di integrità
 
-Lo stato accanto al titolo della pagina indica se le attività di calcolo richiedono attenzione:
-
-| Stato | Significato |
-| --- | --- |
-| **Integro** | Le attività di calcolo funzionano normalmente. |
-| **Degradato** | Teable ha rilevato errori, attività scadute o un arretrato in crescita. |
-| **Critico** | BullMQ non è disponibile oppure nessun worker è disponibile per elaborare le attività. |
-
-Quando lo stato richiede attenzione, la pagina ne elenca il motivo.
+**Panoramica** riepiloga attività in attesa, in corso, arretrato sospeso e dead letter. Se compare **Richiede attenzione**, leggi prima il motivo. Ripristina l’ambiente di esecuzione se la coda non è disponibile o manca un worker; individua le attività scadute o accumulate nella coda e nelle anomalie.
 
 ## Trovare un'attività nella coda
 
-La **Coda BullMQ in tempo reale** elenca i processi ancora conservati da Teable, così puoi seguire una singola attività di calcolo o cercare quelle lente.
+La **Coda BullMQ** elenca i processi ancora conservati da Teable, così puoi seguire una singola attività di calcolo o cercare quelle lente.
 
 Per impostazione predefinita, ogni riga rappresenta un'attività e cambia stato nella stessa posizione mentre Teable ripete i tentativi. Passa a **Consegne** quando ti serve la cronologia completa dei tentativi di un'attività o vuoi individuare esecuzioni lente.
 
@@ -55,11 +47,13 @@ Quando un valore calcolato appare errato o arriva in ritardo, apri **Discendenza
 
 <Info>Il registro della discendenza registra soltanto le attività create dopo il rilascio di questa funzionalità e conserva 7 giorni di cronologia. Un'attività più vecchia mostra i dati della coda senza un grafico di propagazione. Un'attività iniziale non ancora pianificata dal worker mostra soltanto i Campi di attivazione. Quando una modifica non ha prodotto scritture calcolate a valle, il grafico lo segnala: nessun elemento dipendeva da quei Campi tramite formula, lookup, rollup o titolo del collegamento.</Info>
 
+Gli archi distinguono anche l’ambito: **via link** segue i record collegati, **conditional** seleziona le destinazioni in base a condizioni, **whole table** coinvolge tutti i record della tabella di destinazione e **depends** rappresenta le dipendenze nelle definizioni dei campi. In caso di lentezza, controlla prima i ricalcoli completi e i percorsi lunghi tra tabelle.
+
 ## Gestire le attività anomale
 
 <Info>Il conteggio **Non riuscite** e la **Manutenzione anomalie** mostrano tipi di problemi differenti, pertanto i numeri possono non coincidere.</Info>
 
-**Manutenzione anomalie** raccoglie le anomalie in gruppi di problemi, uno per Progetto, Tabella di origine ed errore, rendendo semplice individuare un'unica causa principale. Esamina il motivo dell'errore e correggi il problema sottostante prima di eseguire qualsiasi ripristino. Espandi un gruppo per leggerne i dettagli dell'errore e le attività incluse; tali righe servono all'ispezione e il ripristino viene sempre eseguito sull'intero gruppo.
+Apri **Anomalie** per gestire questi gruppi di problemi. **Manutenzione anomalie** raccoglie le anomalie in gruppi di problemi, uno per Progetto, Tabella di origine ed errore, rendendo semplice individuare un'unica causa principale. Esamina il motivo dell'errore e correggi il problema sottostante prima di eseguire qualsiasi ripristino. Espandi un gruppo per leggerne i dettagli dell'errore e le attività incluse; tali righe servono all'ispezione e il ripristino viene sempre eseguito sull'intero gruppo.
 
 Le azioni offerte da un gruppo dipendono dal relativo tipo:
 
@@ -79,7 +73,7 @@ Il ripristino non è disponibile nemmeno quando l'errore è causato dai dati ste
 
 ## Mettere in pausa le attività di calcolo per uno Spazio
 
-Quando le attività di calcolo di uno Spazio aggravano un incidente, metti in pausa tale Spazio in **Pause delle attività di calcolo** anziché arrestare l'intera istanza.
+Quando le attività di calcolo di uno Spazio aggravano un incidente, metti in pausa tale Spazio in **Pause** anziché arrestare l'intera istanza.
 
 <Steps>
   <Step title="Apri la finestra di dialogo di pausa">Fai clic su **Metti in pausa uno Spazio**.</Step>

@@ -6,25 +6,17 @@ sidebarTitle: "Bandeja de salida de cálculos"
 
 <Tip>Disponible para el plan Business autoalojado y los planes superiores</Tip>
 
-Ruta: Administración del sistema → Bandeja de salida de cálculos
+Ruta: Administración del sistema → Operaciones de tablas → Actualizaciones calculadas
 
-Usa la **Bandeja de salida de cálculos** cuando los valores de fórmulas, búsquedas u otros Campos calculados dejen de actualizarse o tarden mucho más de lo esperado. La página muestra el estado general de las tareas, los trabajos que recorren la cola, las tareas que podrían necesitar recuperación y cualquier Espacio cuyas tareas calculadas estén en pausa.
+Abre **Actualizaciones calculadas** si los valores de fórmulas, búsquedas u otros campos calculados dejan de actualizarse o tardan demasiado. Empieza en **Resumen** para revisar el trabajo acumulado de la instancia y sigue los envíos en **Cola BullMQ**. Usa **Anomalías** para recuperar cálculos fallidos y **Pausas** para pausar o reanudar un espacio.
 
 ## Consultar el estado general
 
-El estado situado junto al título de la página indica si las tareas calculadas requieren atención:
-
-| Estado | Significado |
-| --- | --- |
-| **Correcto** | Las tareas calculadas se ejecutan con normalidad. |
-| **Degradado** | Teable ha detectado fallos, tareas cuyo tiempo de espera se ha agotado o una acumulación creciente. |
-| **Crítico** | BullMQ no está disponible o no hay ningún proceso de trabajo disponible para procesar las tareas. |
-
-Cuando el estado requiere atención, la página muestra el motivo.
+**Resumen** resume las tareas en espera y en curso, el trabajo pausado y los mensajes no procesables. Si aparece **Requiere atención**, lee primero el motivo. Restaura el entorno de ejecución si la cola no está disponible o no hay un worker; localiza las tareas con tiempos agotados o acumuladas en la cola y en anomalías.
 
 ## Encontrar una tarea en la cola
 
-La **Cola de BullMQ en directo** enumera los trabajos que Teable aún conserva, para que puedas seguir una tarea calculada o buscar las que avanzan con lentitud.
+La **Cola BullMQ** enumera los trabajos que Teable aún conserva, para que puedas seguir una tarea calculada o buscar las que avanzan con lentitud.
 
 De forma predeterminada, cada fila corresponde a una tarea y cambia de estado en la misma posición a medida que Teable vuelve a intentarla. Cambia a **Entregas** cuando necesites consultar el historial completo de intentos de una tarea o buscar ejecuciones lentas.
 
@@ -55,11 +47,13 @@ Cuando un valor calculado parezca incorrecto o llegue con retraso, abre **Linaje
 
 <Info>El libro mayor de linaje solo registra las tareas creadas desde la publicación de esta función y conserva un historial de 7 días. Las tareas anteriores muestran los datos de su cola sin un gráfico de propagación. Una tarea inicial que el proceso de trabajo aún no haya planificado muestra únicamente sus Campos desencadenantes. Cuando un cambio no produce escrituras calculadas posteriores, el gráfico lo indica: nada dependía de esos Campos mediante una fórmula, una búsqueda, una acumulación o el título de un enlace.</Info>
 
+Las aristas también indican el alcance: **via link** sigue los registros vinculados, **conditional** selecciona destinos por condición, **whole table** abarca todos los registros de la tabla de destino y **depends** representa dependencias de las definiciones de campos. Si las actualizaciones son lentas, revisa primero los recálculos completos y las rutas largas entre tablas.
+
 ## Gestionar tareas anómalas
 
 <Info>El recuento de **Fallidas** y el **Mantenimiento de anomalías** muestran tipos de problemas diferentes, por lo que sus cifras pueden no coincidir.</Info>
 
-**Mantenimiento de anomalías** agrupa las anomalías por problema, una por cada Proyecto, Tabla de origen y error, para facilitar la detección de una única causa raíz. Revisa el motivo del fallo y corrige el problema subyacente antes de recuperar nada. Expande un grupo para consultar los detalles del error y las tareas que abarca; esas filas sirven para examinarlas, pero la recuperación siempre se ejecuta sobre el grupo completo.
+Abre **Anomalías** para gestionar estos grupos de problemas. **Mantenimiento de anomalías** agrupa las anomalías por problema, una por cada Proyecto, Tabla de origen y error, para facilitar la detección de una única causa raíz. Revisa el motivo del fallo y corrige el problema subyacente antes de recuperar nada. Expande un grupo para consultar los detalles del error y las tareas que abarca; esas filas sirven para examinarlas, pero la recuperación siempre se ejecuta sobre el grupo completo.
 
 Las acciones disponibles para un grupo dependen de su tipo:
 
@@ -79,7 +73,7 @@ La recuperación tampoco está disponible cuando los propios datos causaron el f
 
 ## Pausar las tareas calculadas de un Espacio
 
-Cuando las tareas calculadas de un Espacio empeoren un incidente, pausa ese Espacio en **Pausas de tareas calculadas** en lugar de detener toda la instancia.
+Cuando las tareas calculadas de un Espacio empeoren un incidente, pausa ese Espacio en **Pausas** en lugar de detener toda la instancia.
 
 <Steps>
   <Step title="Abrir el cuadro de diálogo de pausa">Haz clic en **Pausar un Espacio**.</Step>

@@ -1,18 +1,18 @@
 ---
 title: "Gestire ricerca e indici delle tabelle"
-description: "Esamina copertura di ricerca e indici Tabella per Tabella, configura la ricerca, crea indici e segui i risultati."
+description: "Diagnostica le query lente, configura ricerca e indici e valuta l’impatto dei cambiamenti a record o campi sui calcoli nelle operazioni sulle tabelle."
 sidebarTitle: "Operazioni sulle query delle Tabelle"
 ---
 
 <Tip>Disponibile per il piano Business Self-hosted e versioni successive</Tip>
 
-Percorso: Amministrazione di sistema → Operazioni sulle query delle Tabelle
+Percorso: Amministrazione di sistema → Operazioni sulle tabelle → Ricerca e indici
 
-Usa **Ricerca e indici delle Tabelle** quando Viste, filtri, relazioni o ricerche in una Tabella di grandi dimensioni diventano lenti. Teable osserva il carico delle query in background e riepiloga ogni Tabella: come viene cercata oggi, quali Campi sono coperti, quali indici fisici esistono e quante query lente sono state rilevate di recente. Gli amministratori dell'istanza configurano qui la copertura di ricerca, creano indici e seguono i risultati.
+Usa **Ricerca e indici** quando Viste, filtri, relazioni o ricerche in una Tabella di grandi dimensioni diventano lenti. Teable osserva il carico delle query in background e riepiloga ogni Tabella: come viene cercata oggi, quali Campi sono coperti, quali indici fisici esistono e quante query lente sono state rilevate di recente. Gli amministratori dell'istanza configurano qui la copertura di ricerca, creano indici e seguono i risultati.
 
-<Info>La pagina si limita ad accodare attività e non modifica mai il database in modo diretto. Ogni modifica viene eseguita in background in modo asincrono, quindi verifica l'esito in **Attività / cronologia**.</Info>
+<Info>Le modifiche alla ricerca e agli indici vengono eseguite in modo asincrono in background. Dopo l’invio, verifica l’esito in **Cronologia**.</Info>
 
-<Info>Le operazioni sulle query delle Tabelle sono disattivate per impostazione predefinita. Imposta `V2_TABLE_QUERY_OPS_ENABLED` su `true` nel backend e riavvia: la pagina inizierà a raccogliere osservazioni.</Info>
+<Info>L’osservazione delle query è disattivata per impostazione predefinita. Imposta `V2_TABLE_QUERY_OPS_ENABLED` su `true` nel backend e riavvialo per avviare la raccolta.</Info>
 
 ## Individuare la Tabella su cui intervenire
 
@@ -20,10 +20,10 @@ La pagina si apre sull'elenco delle Tabelle. I pulsanti di stato in alto riporta
 
 | Stato | Significato |
 | --- | --- |
-| **Tutte le Tabelle** | Tutte le Tabelle osservate. |
-| **Richiede attenzione** | Tabelle con query lente, timeout, suggerimenti in sospeso o attività non riuscite. Parti da qui. |
+| **Tutte le Tabelle** | Tutte le tabelle non eliminate dell’istanza, comprese quelle senza osservazioni delle query. |
+| **Richiede attenzione** | Tabelle con query lente, timeout o suggerimenti in sospeso, oppure con ricerca configurata ma non attiva o che non copre tutti i campi compatibili. Inizia da qui. |
 | **Ricerca indicizzata** | Tabelle con metadati dell'indice pubblicati e utilizzabili e interruttore di runtime attivo: la ricerca passa davvero dall'indice. |
-| **Ricerca configurata** | Tabelle con una configurazione di ricerca salvata o con metadati dell'indice, comprese quelle non ancora pubblicate. |
+| **Configurato, non in uso** | Il conteggio indica le tabelle configurate che usano ancora una scansione completa. Facendo clic vengono mostrate tutte le tabelle con ricerca configurata, per confrontare configurazione e utilizzo effettivo. |
 | **Non configurata** | Tabelle senza copertura di ricerca. |
 | **Non disponibile** | Tabelle che al momento non possono usare la ricerca indicizzata. La riga ne indica il motivo. |
 
@@ -31,7 +31,7 @@ Il campo di ricerca accetta nomi o ID di Tabella, Progetto e Spazio. L'ordinamen
 
 Ogni riga riporta righe e dimensioni stimate della Tabella, richieste e query lente della finestra, metodo di ricerca corrente e copertura dei Campi, numero di indici di filtro/ordinamento, oltre ai suggerimenti in sospeso e alle attività attive. Fai clic sul nome di una Tabella per aprirne il dettaglio.
 
-Accanto ai pulsanti di stato, **Informazioni sugli stati dell'indice** spiega come vengono conteggiati questi numeri.
+Usa **Scegli una tabella** in alto per cambiare tabella. La selezione viene mantenuta passando a **Complessità** o **Integrità dello schema**; **Aggiornamenti calcolati** mostra la coda dell’intera istanza.
 
 ## Leggere lo stato dell'indice
 
@@ -40,8 +40,8 @@ L'elenco delle Tabelle e il dettaglio mostrano lo stato dell'indice accanto al m
 | Stato | Significato | Cosa fare |
 | --- | --- | --- |
 | **Non configurato** | Nessuna configurazione di ricerca salvata né metadati dell'indice. | Scegli **Configura ricerca** se la Tabella ha bisogno della ricerca indicizzata. |
-| **Configurato · pubblicazione in attesa** | La configurazione è salvata, l'indice non è ancora pubblicato. | Controlla in **Attività / cronologia** se c'è ancora un'attività in corso. |
-| **Pubblicato · pronto** | I metadati dell'indice sono pubblicati e utilizzabili. | Nulla da fare. |
+| **Pubblicazione in attesa** | La configurazione è salvata, l'indice non è ancora pubblicato. | Controlla in **Cronologia** se c'è ancora un'attività in corso. |
+| **Pronto** | I metadati dell'indice sono pubblicati e utilizzabili. | Controlla il metodo di ricerca effettivo e l’interruttore di runtime per confermare che l’indice sia in uso. |
 | **Metadati inutilizzabili** | I metadati dell'indice sono danneggiati e non possono servire la ricerca. | Esegui di nuovo **Aggiorna selezione / ricostruisci**. |
 
 Sotto lo stato possono comparire due righe. **Configurato: pg_bigm / pg_trgm** indica che il provider salvato è diverso dal metodo di ricerca in uso, mentre **Interruttore di runtime della ricerca indicizzata: disattivato** indica che l'indice è pronto ma il runtime è spento e la ricerca resta su `ILIKE`.
@@ -52,7 +52,7 @@ Quando un avviso in cima alla pagina segnala Tabelle con un indice di ricerca co
 
 ## Configurare la copertura di ricerca
 
-La scheda **Copertura di ricerca** mostra il metodo di ricerca corrente della Tabella, quanti Campi sono coperti e la **Copertura attiva** di ciascun Campo. **Mostra campi non coperti** limita l'elenco ai Campi non ancora inclusi; i Campi contrassegnati come **Non idoneo** non possono contribuire a un indice di ricerca per sottostringa.
+La scheda **Ricerca** mostra il metodo di ricerca corrente della Tabella, quanti Campi sono coperti e la **Copertura attiva** di ciascun Campo. **Mostra campi non coperti** limita l'elenco ai Campi non ancora inclusi; i Campi contrassegnati come **Non idoneo** non possono contribuire a un indice di ricerca per sottostringa.
 
 <Info>La copertura attiva richiede metadati dell'indice pubblicati e utilizzabili e l'interruttore di runtime attivo: la sola configurazione salvata non conta. La copertura è esplicita, quindi i Campi aggiunti in seguito non vengono inclusi automaticamente: riconfigura la Tabella per integrarli.</Info>
 
@@ -68,11 +68,11 @@ Scegli **Configura ricerca** su una Tabella mai configurata oppure **Aggiorna se
 
 <Warning>La creazione o la ricostruzione della copertura di ricerca genera una colonna di ricerca e un indice GIN. L'operazione può riscrivere l'intera Tabella e mantenere lock, e la ricerca indicizzata si interrompe brevemente durante l'esecuzione. Pianificala in una finestra di manutenzione.</Warning>
 
-Quello che la finestra restituisce è una ricevuta dell'attività, non un risultato. Chiudila e segui l'attività in **Attività / cronologia**. Inviando di nuovo la stessa modifica viene restituita l'attività già esistente.
+Quello che la finestra restituisce è una ricevuta dell'attività, non un risultato. Chiudila e segui l'attività in **Cronologia**. Inviando di nuovo la stessa modifica viene restituita l'attività già esistente.
 
 ## Gestire gli indici di filtro e ordinamento
 
-La scheda **Indici di filtro / ordinamento** elenca gli indici fisici che servono le condizioni di filtro e gli ordinamenti di questa Tabella, ciascuno con validità, indicazione se è gestito da Teable, dimensione e definizione. Sono gestiti separatamente dagli indici di ricerca per sottostringa.
+La scheda **Indici** elenca gli indici di filtro/ordinamento e di sistema, con validità, gestione, dimensioni e definizione. Gli indici per sottostringhe sono elencati separatamente in **Ricerca**.
 
 Sotto, le **Azioni in sospeso** raccolgono i suggerimenti di indice del sistema e indicano se sono supportati da prove del piano. **Esamina la creazione dell'indice** mostra l'indice proposto, il database su cui viene eseguito e le prove; dopo la conferma, Teable esegue `CREATE INDEX CONCURRENTLY` in modo asincrono. Anche qui le Tabelle grandi o di dimensioni sconosciute richiedono la conferma della finestra di manutenzione.
 
@@ -80,13 +80,13 @@ Sotto, le **Azioni in sospeso** raccolgono i suggerimenti di indice del sistema 
 
 ## Diagnosticare query specifiche
 
-Quando una Tabella viene segnalata come lenta e nessun suggerimento la riguarda, apri la scheda **Diagnosi delle query** e scegli **Analizza query**. L'analisi legge soltanto le forme di query salvate e le prove del piano disponibili, e non crea nulla.
+Quando una Tabella viene segnalata come lenta e nessun suggerimento la riguarda, apri la scheda **Diagnosi** e scegli **Analizza query**. L'analisi legge soltanto le forme di query salvate e le prove del piano disponibili, e non crea nulla.
 
 La conclusione è **Trovate opportunità di indice supportate dal piano**, **Nessuna opportunità di indice confermata dai piani disponibili** oppure **Prove insufficienti**. Prove insufficienti non significano che si sia verificata una scansione sequenziale: una singola osservazione lenta non dimostra che il percorso di accesso sia la causa. Sotto viene elencata ogni query interessata, con l'indicazione se proviene dal traffico reale o da una configurazione di Vista salvata, e il costo di piano stimato prima e dopo l'indice proposto (costo di piano, non millisecondi).
 
 ## Seguire i risultati
 
-La scheda **Attività / cronologia** ha tre parti:
+La scheda **Cronologia** ha tre parti:
 
 - **Attività**: le attività in background di questa Tabella, con stato, numero di tentativi, tipo di attività e motivo dell'errore. Se un'attività è poi riuscita dopo un errore, l'errore è contrassegnato come tentativo precedente.
 - **Cronologia della configurazione di ricerca**: provider, stato ed elenco dei Campi di ogni configurazione di copertura precedente.
@@ -95,3 +95,13 @@ La scheda **Attività / cronologia** ha tre parti:
 La cronologia carica soltanto le voci più recenti. Se ce ne sono altre, una riga sopra l'elenco ne indica il totale.
 
 <Info>Finché una Tabella ha un'attività accodata o in esecuzione, i pulsanti per configurare la ricerca e creare indici restano disabilitati. Attendi la fine dell'attività.</Info>
+
+## Valutare l’impatto delle modifiche {#assess-change-impact}
+
+L’aggiornamento dei record può attivare altri calcoli di formule, lookup e rollup attraverso i record collegati. Per capire se una scrittura in batch, conversione o eliminazione di campi può coinvolgere molti dati, apri **Complessità** e scegli una tabella, oppure fai clic su **Valuta complessità** nei dettagli di ricerca e indici.
+
+La **Matrice di impatto** stima aggiornamenti, eliminazioni e conversioni per ciascun campo, oltre alla creazione e all’eliminazione dei record separatamente. Il punto a sinistra indica il caso tipico e il riempimento il caso peggiore. Fai clic su una cella per vedere righe coinvolte, percorsi di propagazione, limiti e suggerimenti. Esamina prima le modifiche **Alto** o **Critico** per decidere se ridurre i batch o adattare le dipendenze di calcolo.
+
+In **Impostazioni della stima**, imposta **Record per modifica** sul numero da inviare ogni volta; lasciando vuoto, viene stimato un record. **Usa le statistiche del catalogo** è attivo per impostazione predefinita e legge dimensioni delle tabelle e numero di collegamenti per migliorare la stima.
+
+<Info>La valutazione legge solo struttura e statistiche. Non modifica record o campi e non prevede la durata effettiva. Se compare **Non stimato**, o la qualità è **Parziale** o **Troncata**, leggi i limiti e completa le informazioni prima di decidere. L’assenza di una stima non implica assenza di rischio.</Info>
