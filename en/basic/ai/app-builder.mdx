@@ -130,7 +130,9 @@ Rotate the token when:
 - A member who copied the env variables or downloaded code with a `.env` no longer works on the project.
 - The app's code was handed to someone together with its `.env`.
 
-In the chat panel, open **+** → **More** → **Credentials & config**, click **Rotate** on the **Teable access token** row, and confirm. Rotating requires edit access to the app.
+In the chat panel, open **+** → **More** → **Credentials & config**, click **Rotate** on the **Teable access token** row, and confirm. Rotating requires edit access to the app, and the confirmation lists what the rotation affects.
+
+When the app has AI access on, **Also rotate the AI access key** is selected in the confirmation by default: both are replaced together, and the preview and the published app update only once. A `.env` holds both values, so if you suspect it leaked, rotate both.
 
 | Item | After rotation |
 | --- | --- |
@@ -158,7 +160,7 @@ You can tell App Builder what you want, such as: "Add an AI reply assistant for 
 After App Builder adds the AI feature, the app preview uses the new version. The published app uses it only after you republish.
 </Info>
 
-Teable injects the AI access key too. After you click **Rotate key** on the **AI access** row in **Credentials & config**, the old key stops working at once, and the published app redeploys in the background with the new key; its AI calls fail until that finishes. If the app has unpublished changes, it is not redeployed automatically; if AI calls still fail after a few minutes, republish the app.
+Teable injects the AI access key too. After you click **Rotate key** on the **AI access** row in **Credentials & config** and confirm, the old key stops working at once. The preview restarts with the new key when you close the window, and the published app redeploys in the background; its AI calls fail until that finishes. Rotating only the AI key doesn't sign visitors out. If the app has unpublished changes, it is not redeployed automatically; if AI calls still fail after a few minutes, republish the app. To replace the Teable access token as well, rotate the token with **Also rotate the AI access key** selected so everything updates once.
 
 ## Sync Code with GitHub
 
@@ -356,7 +358,7 @@ For prompt patterns, build tips, rollback advice, and common troubleshooting, se
   </Accordion>
 
   <Accordion title="What should I do if an app's access token leaks?">
-    In the chat panel, open **+** → **More** → **Credentials & config** and click **Rotate** on the **Teable access token** row. The old token stops working at once, and the preview and the published app switch to the new one automatically; the published app's requests fail while it redeploys, usually for a few minutes. See [Teable Access Token](#teable-access-token).
+    In the chat panel, open **+** → **More** → **Credentials & config** and click **Rotate** on the **Teable access token** row; if the app has AI access, keep **Also rotate the AI access key** selected. The old token stops working at once, and the preview and the published app switch to the new one automatically. While the published app redeploys, usually for a few minutes, it can't read or write data, and if the app has login turned on, visitors must sign in again. See [Teable Access Token](#teable-access-token).
   </Accordion>
 
   <Accordion title="When do login settings apply to the live app?">
