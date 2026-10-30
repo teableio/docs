@@ -25,15 +25,23 @@ Per gli utenti che non conoscono i Progetti, è possibile considerarli come cart
 
 ### Creare un Progetto da un modello
 
-Il centro modelli raccoglie Progetti utilizzabili così come sono. Aprilo da **Modello** nella barra laterale dello Spazio oppure scegli **Da modello** quando crei un Progetto. Nel dettaglio del modello fai clic su **Usa questo modello** e scegli lo Spazio di destinazione: Teable crea un nuovo Progetto a partire dal modello.
+Il centro modelli raccoglie Progetti utilizzabili così come sono. Aprilo da **Modello** nella barra laterale dello Spazio oppure scegli **Da modello** quando crei un Progetto. Nel dettaglio del modello fai clic su **Install**, scegli **New project** (un nuovo Progetto con il nome del modello) o **Add to an existing project** (in un Progetto che puoi modificare), quindi fai clic di nuovo su **Install**. Se installi da un link di condivisione, scegli prima lo Spazio. Ogni modello finisce in una propria cartella del Progetto; se includere dati di esempio lo decide chi ha pubblicato il modello.
 
-Alcuni modelli sono soluzioni: le loro automazioni hanno bisogno di piattaforme esterne collegate per continuare a raccogliere dati, e il dettaglio del modello elenca quali. In questi casi Teable crea il Progetto senza dati di esempio e apre prima una schermata di configurazione:
+Se le automazioni del modello devono collegarsi a piattaforme esterne, il dettaglio del modello le elenca. Dopo l'installazione, Teable apre la chat del Progetto e sopra la casella di input mostra la scheda **Connect accounts to get the template running**:
 
-1. La schermata elenca, piattaforma per piattaforma, gli account da collegare. Se servono più account della stessa piattaforma (per esempio due canali YouTube), ognuno occupa una riga e si collega separatamente. Se in **Impostazioni** → **Integrazioni** hai collegato un solo account per una piattaforma, viene associato all'apertura della schermata; se ne hai collegati più di uno, fai clic su **Autorizza il mio** e scegli quale usare. Per una piattaforma non ancora collegata, **Collega account** avvia un flusso OAuth.
+1. Collega gli account piattaforma per piattaforma. Se servono più account della stessa piattaforma (per esempio due canali YouTube), ognuno occupa una riga e si collega separatamente. Se in **Impostazioni** → **Integrazioni** hai collegato un solo account per una piattaforma, viene associato automaticamente; se ne hai collegati più di uno, fai clic su **Autorizza il mio** e scegli quale usare. Per una piattaforma non ancora collegata, **Collega account** avvia un flusso OAuth.
 2. Le voci che richiedono una chiave API sono elencate sotto **Chiavi da inserire**. Con **Inserisci** ne crei una oppure scegli un secret già salvato.
-3. Fai clic su **Avvia**. Ogni workflow e ogni [Routine](/it/basic/ai/routine) con credenziali complete viene attivato. Quelli pianificati eseguono subito il primo giro, visibile nella cronologia delle esecuzioni; quelli avviati da un evento di un'app di terze parti attendono il primo evento. Poi entri nel Progetto.
+3. Fai clic su **Avvia**. Ogni workflow e ogni [Routine](/it/basic/ai/routine) con credenziali complete viene attivato. Quelli pianificati eseguono subito il primo giro, visibile nella cronologia delle esecuzioni; quelli avviati da un evento di un'app di terze parti attendono il primo evento.
 
-Le integrazioni saltate qui non vanno perse. Finché nel Progetto ne resta una non collegata, la pagina mostra **N integrazioni non sono collegate**: con **Collega** puoi completarla in qualsiasi momento. Vedi [Credenziali e integrazioni](/it/basic/credential).
+Con **Later** puoi chiudere la scheda per il momento. Finché nel Progetto resta un'integrazione non collegata, la pagina mostra **N integrazioni non sono collegate**: con **Collega** puoi completarla in qualsiasi momento. Vedi [Credenziali e integrazioni](/it/basic/credential).
+
+### Gestire i modelli installati
+
+Nella barra laterale dello Spazio fai clic su **...** accanto al Progetto e scegli **Installed templates** per vedere lo stato di ogni modello del Progetto (**Needs setup**, **Running**, **Needs attention**, **Off**), attivarne o disattivarne le automazioni o fare clic su **Uninstall**. La disinstallazione disattiva ed elimina le automazioni e le routine del modello, sposta nel cestino le Tabelle, le app e gli altri elementi che ha aggiunto ed elimina la cartella quando resta vuota.
+
+### Pubblicare nel centro modelli
+
+Fai clic sul nome del Progetto in alto a sinistra, oppure su **...** accanto al Progetto nella barra laterale dello Spazio, e scegli **Pubblica nel centro modelli**. Inserisci nome, descrizione dettagliata e copertina, scegli cosa includere e se aggiungere dati di esempio, quindi fai clic su **Submit for review**. Durante la revisione puoi fare clic su **Withdraw**; una volta approvato, il modello viene pubblicato, mentre se viene respinto la notifica riporta la nota del revisore. Le modifiche successive al Progetto vanno inviate di nuovo e, finché non vengono approvate, chi installa il modello riceve la versione attuale. Un modello pubblicato si può ritirare con **Annulla pubblicazione**; le copie già installate non vengono toccate.
 
 ### Rinominare o eliminare un Progetto {#rinominare-o-eliminare-una-base}
 
@@ -179,7 +187,7 @@ I Progetti possono essere condivisi tramite link pubblici. L'ambito di condivisi
 4. Copia il link di condivisione o il codice QR
 
 <img
-  src="/images/docs/base/2026-10-21-base-header-menu-share.png"
+  src="/images/docs/base/2026-10-30-base-header-menu-share.png"
   alt="Apertura della condivisione del Progetto"
   className="docs-screenshot"
 />
@@ -191,11 +199,11 @@ Gli ambiti di condivisione includono:
 | **Condividi l'intero Progetto** | Condivide tutti gli elementi del Progetto corrente. Le nuove Tabelle e cartelle aggiunte successivamente vengono incluse automaticamente. |
 | **Condividi l'elemento selezionato** | Condivide l'elemento attualmente selezionato. Quando viene condivisa una cartella, sono inclusi i relativi elementi figli. |
 
-Nelle impostazioni di condivisione puoi configurare le autorizzazioni del link, **Consenti a chi visualizza di copiare i dati**, l'accesso tramite password, rigenerare il link, eliminare il link di condivisione oppure copiare la configurazione di incorporamento. Quando attivi l'accesso tramite password, Teable genera automaticamente una password casuale: fai clic su **Copia link e password** per inviarli insieme a chi visita. Per i dettagli, vedi [Protezione dei link di condivisione](/it/basic/security#protezione-dei-link-di-condivisione).
+Nelle impostazioni di condivisione puoi configurare le autorizzazioni del link, rigenerare il link o eliminare il link di condivisione. Espandendo **Avanzate** puoi impostare **Consenti ai lettori di copiare i dati**, **Proteggi con password** e **Configurazione incorporamento**. Quando attivi l'accesso tramite password, Teable genera automaticamente una password casuale: fai clic su **Copia link e password** per inviarli insieme a chi visita. Per i dettagli, vedi [Protezione dei link di condivisione](/it/basic/security#protezione-dei-link-di-condivisione).
 
 <img
-  src="/images/docs/base/2026-10-21-base-share-dialog.png"
-  alt="Impostazioni di condivisione del Progetto"
+  src="/images/docs/base/2026-10-30-base-share-dialog.png"
+  alt="Impostazioni di condivisione del Progetto con le opzioni avanzate compresse"
   className="docs-screenshot"
 />
 

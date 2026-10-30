@@ -25,15 +25,23 @@ Pour les utilisateurs qui ne connaissent pas les Projets, vous pouvez les consid
 
 ### Créer un Projet à partir d’un modèle
 
-Le centre de modèles rassemble des Projets utilisables tels quels. Ouvrez-le depuis **Modèle** dans la barre latérale de l’Espace, ou choisissez **À partir d'un modèle** au moment de créer un Projet. Dans le détail du modèle, cliquez sur **Utiliser ce modèle** et choisissez l’Espace de destination : Teable crée un nouveau Projet à partir du modèle.
+Le centre de modèles rassemble des Projets utilisables tels quels. Ouvrez-le depuis **Modèle** dans la barre latérale de l’Espace, ou choisissez **À partir d'un modèle** au moment de créer un Projet. Dans le détail du modèle, cliquez sur **Install**, choisissez **New project** (un nouveau Projet portant le nom du modèle) ou **Add to an existing project** (un Projet que vous pouvez modifier), puis cliquez à nouveau sur **Install**. Si vous installez depuis un lien de partage, choisissez d’abord l’Espace. Chaque modèle est placé dans son propre dossier du Projet ; c’est l’auteur du modèle qui décide s’il inclut des données d’exemple.
 
-Certains modèles sont des solutions : leurs automatisations ont besoin de plateformes externes connectées pour continuer à récupérer des données, et le détail du modèle indique lesquelles. Teable crée alors le Projet sans données d’exemple et ouvre d’abord un écran de configuration :
+Si les automatisations d’un modèle doivent se connecter à des plateformes externes, le détail du modèle les indique. Après l’installation, Teable ouvre la conversation du Projet et affiche au-dessus du champ de saisie la carte **Connect accounts to get the template running** :
 
-1. L’écran liste, plateforme par plateforme, les comptes à connecter. Lorsqu’une plateforme demande plusieurs comptes (par exemple deux chaînes YouTube), chaque compte occupe sa propre ligne et se lie séparément. Si vous n’avez connecté qu’un seul compte de cette plateforme dans **Paramètres** → **Intégrations**, il est lié automatiquement à l’ouverture de l’écran ; si vous en avez connecté plusieurs, cliquez sur **Autoriser le mien** pour choisir celui à utiliser. Pour ceux qui ne sont pas encore connectés, **Connecter un compte** lance un parcours OAuth.
+1. Connectez les comptes plateforme par plateforme. Lorsqu’une plateforme demande plusieurs comptes (par exemple deux chaînes YouTube), chaque compte occupe sa propre ligne et se lie séparément. Si vous n’avez connecté qu’un seul compte de cette plateforme dans **Paramètres** → **Intégrations**, il est lié automatiquement ; si vous en avez connecté plusieurs, cliquez sur **Autoriser le mien** pour choisir celui à utiliser. Pour ceux qui ne sont pas encore connectés, **Connecter un compte** lance un parcours OAuth.
 2. Les entrées qui demandent une clé d’API figurent sous **Clés à saisir**. **Saisir** en crée une, ou reprenez un secret déjà enregistré.
-3. Cliquez sur **Démarrer**. Les workflows et les [routines](/fr/basic/ai/routine) dont les identifiants sont complets sont activés. Ceux qui tournent sur planification effectuent aussitôt un premier passage, visible dans l’historique d’exécution ; ceux que déclenchent les événements d’une application tierce attendent le premier événement. Vous arrivez ensuite dans le Projet.
+3. Cliquez sur **Démarrer**. Les workflows et les [routines](/fr/basic/ai/routine) dont les identifiants sont complets sont activés. Ceux qui tournent sur planification effectuent aussitôt un premier passage, visible dans l’historique d’exécution ; ceux que déclenchent les événements d’une application tierce attendent le premier événement.
 
-Les intégrations passées ici ne sont pas perdues. Tant qu’il en reste une non connectée dans le Projet, la page affiche **N intégrations ne sont pas connectées** ; **Connecter** permet de la compléter à tout moment. Voir [Identifiants et intégrations](/fr/basic/credential).
+Cliquez sur **Later** pour replier la carte en attendant. Tant qu’il reste une intégration non connectée dans le Projet, la page affiche **N intégrations ne sont pas connectées** ; **Connecter** permet de la compléter à tout moment. Voir [Identifiants et intégrations](/fr/basic/credential).
+
+### Gérer les modèles installés
+
+Dans la barre latérale de l’Espace, cliquez sur **...** à côté du Projet et choisissez **Installed templates** pour voir l’état de chaque modèle du Projet (**Needs setup**, **Running**, **Needs attention**, **Off**), activer ou désactiver ses automatisations, ou cliquer sur **Uninstall**. La désinstallation désactive et supprime ses automatisations et ses routines ; les tables, applications et autres éléments qu’il a apportés sont placés dans la corbeille, et son dossier est supprimé une fois vide.
+
+### Publier dans le centre de modèles
+
+Cliquez sur le nom du Projet en haut à gauche, ou sur **...** à côté du Projet dans la barre latérale de l’Espace, puis choisissez **Publier dans le centre de modèles**. Renseignez le nom, la description détaillée et la couverture, choisissez le contenu inclus et s’il faut inclure des données d’exemple, puis cliquez sur **Submit for review**. Pendant l’examen, vous pouvez cliquer sur **Withdraw** pour retirer la soumission. Une fois validé, le modèle est publié ; s’il est refusé, la notification contient la note de l’examinateur. Toute modification ultérieure du Projet doit être soumise à nouveau ; tant qu’elle n’est pas validée, les autres utilisateurs continuent d’installer la version actuelle. Un modèle publié peut être retiré avec **Dépublier** ; les copies déjà installées ne sont pas affectées.
 
 ### Renommer/supprimer un Projet {#renommersupprimer-une-base}
 
@@ -179,7 +187,7 @@ Les Projets peuvent être partagés via des liens publics. La portée du partage
 4. Copiez le lien de partage ou le code QR
 
 <img
-  src="/images/docs/base/2026-10-21-base-header-menu-share.png"
+  src="/images/docs/base/2026-10-30-base-header-menu-share.png"
   alt="Ouvrir le partage de Projet"
   className="docs-screenshot"
 />
@@ -191,11 +199,11 @@ Les portées de partage incluent :
 | **Partager tout le Projet** | Partage tous les éléments du Projet actuel. Les nouvelles Tables et dossiers ajoutés ultérieurement sont automatiquement inclus. |
 | **Partager l’élément sélectionné** | Partage l’élément actuellement sélectionné. Lorsqu’un dossier est partagé, ses éléments enfants sont inclus. |
 
-Dans les paramètres de partage, vous pouvez configurer les autorisations du lien, **Autoriser les utilisateurs à copier les données**, l’accès par mot de passe, régénérer le lien, supprimer le lien de partage ou copier la configuration d’intégration. Lorsque vous activez l’accès par mot de passe, Teable génère automatiquement un mot de passe aléatoire ; cliquez sur **Copier le lien et le mot de passe** pour les envoyer ensemble aux visiteurs. Voir [Protection des liens de partage](/fr/basic/security#protection-des-liens-de-partage).
+Dans les paramètres de partage, vous pouvez configurer les autorisations du lien, régénérer le lien ou supprimer le lien de partage. En dépliant **Avancé**, vous pouvez régler **Autoriser les lecteurs à copier les données**, **Protéger par mot de passe** et **Configuration d'intégration**. Lorsque vous activez l’accès par mot de passe, Teable génère automatiquement un mot de passe aléatoire ; cliquez sur **Copier le lien et le mot de passe** pour les envoyer ensemble aux visiteurs. Voir [Protection des liens de partage](/fr/basic/security#protection-des-liens-de-partage).
 
 <img
-  src="/images/docs/base/2026-10-21-base-share-dialog.png"
-  alt="Paramètres de partage du Projet"
+  src="/images/docs/base/2026-10-30-base-share-dialog.png"
+  alt="Paramètres de partage du Projet, section Avancé repliée par défaut"
   className="docs-screenshot"
 />
 
