@@ -1,6 +1,6 @@
 ---
 title: "Vorlagenverwaltung"
-description: "Erstellen und verwalten Sie Projektvorlagen in der Systemverwaltung, bearbeiten Sie deren Angaben und wählen Sie verfügbare offizielle Vorlagen aus."
+description: "Prüfen Sie Projekte, die Mitglieder im Vorlagenzentrum einreichen, pflegen Sie Name, Titelbild, Beschreibung und Branche der Vorlagen, steuern Sie die Veröffentlichung und nutzen Sie offizielle Vorlagen als Ausgangspunkt."
 ---
 
 {/* mintlify-resync: 2026-10-22 */}
@@ -9,11 +9,11 @@ description: "Erstellen und verwalten Sie Projektvorlagen in der Systemverwaltun
 
 ### Vorlagenverwaltung
 
-Vorlagen entstehen durch das Veröffentlichen von Projekten: Sobald ein Projekt im Vorlagenzentrum veröffentlicht wird, erscheint die Vorlage in der Vorlagenverwaltung und im Vorlagencenter Ihrer Organisation. Hier können Administratoren Vorlageninformationen anpassen, die Veröffentlichung steuern und die Reihenfolge ändern.
+Vorlagen entstehen aus eingereichten Projekten: Mitglieder reichen ein Projekt über **Im Vorlagenzentrum veröffentlichen** zur Prüfung ein. Erst wenn ein Administrator die Einreichung unter **Template review** freigibt, wird die Vorlage veröffentlicht und im Vorlagencenter angezeigt. Hier können Administratoren Vorlageninformationen anpassen, die Veröffentlichung steuern und die Reihenfolge ändern.
 
 <img
-  src="/images/docs/admin-panel/2026-10-21-admin-template-list.png"
-  alt="Vorlagenverwaltung mit den Spalten Integrationen, Lösung und Veröffentlicht sowie dem Menü zum Anheften und Löschen"
+  src="/images/docs/admin-panel/2026-10-30-admin-template-list.png"
+  alt="Vorlagenverwaltung mit den Spalten Branche und Hervorgehoben sowie dem Menü zum Anheften und Löschen"
   className="docs-screenshot"
 />
 
@@ -22,10 +22,11 @@ Vorlagen entstehen durch das Veröffentlichen von Projekten: Sobald ein Projekt 
 * **Umschlag**: Das Titelbild für die Vorlagenkarte
 * **Name** und **Beschreibung**: Der Titel und die Kurzbeschreibung, die im Vorlagencenter angezeigt werden
 * **Markdown-Beschreibung**: Detaillierte Beschreibung mit Markdown-Formatierung
-* **Kategorie**: Gruppieren Sie Vorlagen nach Geschäftsszenarien (z. B. Personalwesen, Vertrieb, Entwicklung). Über das Einstellungssymbol neben der Spaltenüberschrift verwalten Sie die Kategorien
+* **Kategorie**: Gruppiert Vorlagen nach Branche und Teilbranche oder nach Team. Über das Einstellungssymbol neben der Spaltenüberschrift öffnen Sie **Kategorien verwalten** und legen dort Branchen, Teilbranchen und Teams an
+* **URL slug**: Die Kennung in der Adresse der öffentlichen Vorlagenseite. Erlaubt sind nur Kleinbuchstaben, Ziffern und Bindestriche
 * **Hervorgehoben**: Hebt die Vorlage im Vorlagencenter hervor. Erst verfügbar, wenn die Vorlage veröffentlicht ist
-* **Solution**: Ist die Vorlage so markiert, öffnet ihre Verwendung zuerst die Integrationseinrichtung, statt das Projekt direkt zu kopieren. Die Spalte **Integrations** zeigt die Plattformen, die sie anbindet
-* **Snapshot-Zeit**: Wann der Vorlageninhalt zuletzt veröffentlicht oder aktualisiert wurde
+* **Integrations**: Die Plattformen, mit denen sich die Automatisierungen der Vorlage verbinden müssen. Nach der Installation werden Benutzer durch diese Verbindungen geführt
+* **Snapshot-Zeit**: Wann der Vorlageninhalt zuletzt bei der Prüfung freigegeben wurde
 * **Erstellt von**: Der Benutzer, der die Vorlage veröffentlicht hat
 * **Nutzung/Besuche**: Wie oft die Vorlage verwendet und besucht wurde
 
@@ -36,7 +37,16 @@ Vorlagen entstehen durch das Veröffentlichen von Projekten: Sobald ein Projekt 
 * **Oben anheften**: Verschiebt die Vorlage an den Anfang der Liste. Sie können Vorlagen auch über den Ziehgriff am Zeilenanfang neu anordnen
 * **Löschen**: Die Vorlage entfernen
 
-Um den Inhalt einer Vorlage zu aktualisieren, öffnen Sie im Quellprojekt erneut **Im Vorlagenzentrum veröffentlichen** und klicken Sie auf **Aktualisieren**.
+Um den Inhalt einer Vorlage zu aktualisieren, öffnen Sie im Quellprojekt erneut **Im Vorlagenzentrum veröffentlichen** und klicken Sie auf **Submit v\{Version\} for review**. Bis zur Freigabe installieren andere weiterhin die aktuelle Version.
+
+### Vorlagen prüfen
+
+Unter **Systemverwaltung** > **Template review** sehen Sie in der **Review queue** die offenen Einreichungen mit Autor, Einreichungszeit und den Ergebnissen der automatischen Prüfungen. Diese Prüfungen sind nur Hinweise und verhindern keine Freigabe: **Connections** meldet Integrationen, die in dieser Bereitstellung nicht verbunden werden können; **Privacy** meldet, dass die Vorlage Datensätze enthält, die Sie auf personenbezogene Daten prüfen sollten; **Run estimate** meldet, dass die monatlichen Ausführungen das kostenlose Kontingent überschreiten könnten; **Trial run** meldet, dass die Automatisierungen kein Konto benötigen, und Sie sollten prüfen, ob sie auch ohne verbundenes Konto laufen. Mit **View** öffnen Sie die Details der Einreichung und eine Vorschau der Kopie und wählen die Branche der Vorlage.
+
+* **Approve**: Veröffentlicht wird die Kopie zum Zeitpunkt der Einreichung. Bei einer bereits veröffentlichten Vorlage erhöht jede freigegebene Aktualisierung die Versionsnummer um eins. Spätere Änderungen des Autors müssen erneut eingereicht werden
+* **Reject**: Der Autor erhält Ihre Notiz und kann die Vorlage nach Änderungen erneut einreichen
+
+Bei beiden Aktionen können Sie eine Notiz hinzufügen, und der Autor wird jeweils über das Ergebnis benachrichtigt.
 
 ### Offizielle Vorlagen verwenden
 
@@ -45,5 +55,5 @@ Selbst gehostete Benutzer können Vorlagen aus der offiziellen Teable Cloud impo
 1. **Herunterladen**: Laden Sie die Teable-Projektexportdatei (`.tea`) aus dem [offiziellen Vorlagencenter](https://teable.ai/templates) herunter
 2. **Importieren**: Importieren Sie die `.tea`-Datei als neues Projekt in Ihren Space
 3. **Veröffentlichungsdialog öffnen**: Klicken Sie im importierten Projekt oben links auf den Projektnamen und wählen Sie **Im Vorlagenzentrum veröffentlichen**
-4. **Details eingeben**: Geben Sie Titel und Beschreibung ein, wählen Sie die zu veröffentlichenden Knoten und ob Daten einbezogen werden, und laden Sie bei Bedarf ein Titelbild hoch
-5. **Veröffentlichen**: Klicken Sie auf **Veröffentlichen**. Die Vorlage wird automatisch veröffentlicht und erscheint unter **Systemverwaltung** > **Vorlagenverwaltung**
+4. **Details eingeben**: Geben Sie Namen und ausführliche Beschreibung ein, wählen Sie bei Bedarf die enthaltenen Inhalte und ob Beispieldaten einbezogen werden, und laden Sie ein Titelbild hoch
+5. **Einreichen und freigeben**: Klicken Sie auf **Submit for review** und anschließend unter **Systemverwaltung** > **Template review** auf **Approve**. Die Vorlage wird sofort veröffentlicht und erscheint unter **Systemverwaltung** > **Vorlagenverwaltung**

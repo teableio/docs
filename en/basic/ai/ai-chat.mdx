@@ -19,9 +19,15 @@ You can also type a question in the [command palette](/en/basic/base#command-pal
 
 ### View resources beside the chat
 
-Click the folder button, **Show resources**, beside the project name to browse the project tree, your artifacts, and **Outputs from this chat** to the right of the conversation. Click a table, app, automation, or artifact to open it in a resource-panel tab. Click **+** (**New tab**) at the top of the panel to return to the resource list and open more resources.
+Click the folder button, **Show resources**, beside the project name to open the resource panel to the right of the conversation. The resource list has three searchable tabs:
 
-For more room, **Maximize** the resource panel, then choose **Restore size** to return to the side-by-side layout. Closing a tab only closes its display; it does not delete the resource.
+- **Resources**: Shows **Recently opened**, **Starred**, and **All resources**. You can arrange all resources **By type** or **By folder**.
+- **Artifacts**: Your artifacts in this project.
+- **Outputs**: **Outputs from the current chat**, newest first.
+
+Click a table, app, automation, or artifact to open it in a resource-panel tab. Click **+** (**New tab**) at the top of the panel to return to the resource list and open more resources. To keep a resource handy, choose **Star** from its **...** menu in the project tree so it shows under **Starred**; choose **Unstar** when you no longer need it there.
+
+With a table or another resource open, click **Show folder** to see the project tree alongside it; with an artifact open, click **Show artifact list** to see the project's other artifacts alongside it. For more room, click **Hide chat** to tuck the conversation into a corner, then click **Show chat** to return to the side-by-side layout. Closing a tab only closes its display; it does not delete the resource. Closing the last tab also collapses the resource panel.
 
 ## What AI Can Reference
 
@@ -161,7 +167,7 @@ AI Chat can keep a single conversation environment available for about 24 hours,
 
 <Steps>
   <Step title="Follow progress in the current conversation">
-    If the interface shows `Thinking` or continues to return progress updates, the task is still running. If it shows `Completed`, the current run has finished.
+    If an indicator such as **Thinking** or **Working** is still pulsing, or progress updates keep coming in, the task is still running. When a reply finishes, its intermediate steps fold under **Worked for \{time\}** and only the final answer stays visible; click it to expand the steps. A reply you stopped partway shows **You stopped after \{time\}**.
   </Step>
   <Step title="Save results at useful checkpoints">
     For work with multiple stages, ask Cuppy to write results back to Teable, export them, or generate a downloadable file at key checkpoints. Saved work remains available even if the conversation environment is released later.
@@ -170,6 +176,8 @@ AI Chat can keep a single conversation environment available for about 24 hours,
     After foreground execution ends, an idle environment is released after about 30 minutes. Temporary files and unsaved intermediate results are not preserved if the environment restarts.
   </Step>
 </Steps>
+
+If you haven't looked at a finished reply 30 minutes after it ends, Teable emails you to say whether the task completed, couldn't finish, or was interrupted because AI credits ran out, with a link back to the conversation. To stop these emails, turn off **Activity in your space** in **Settings** → **Preferences** → **Notifications**; the same switch also controls other notification emails.
 
 For long-running or repeatable work, use the feature that matches the workflow:
 
@@ -220,13 +228,15 @@ Artifacts are private to the person who created them, so use a share link to let
 
 ### Find Artifacts Later
 
-Open your avatar at the bottom left → **Settings** → **Manage artifacts** to browse your artifacts by project or search by name. Items marked **Shared** have sharing enabled. Use an item's **...** menu to **Share**, **Download**, or **Delete** it.
+Open your avatar at the bottom left → **Settings** → **Manage artifacts**. Under **Mine**, browse the artifacts you created by project or search by name. Items marked **Shared** have sharing enabled. Use an item's **...** menu to **Share**, **Download**, **Open in new page**, or **Delete** it.
+
+Artifacts that others shared and you opened while signed in are listed under **Shared with me**, with who shared them and when you last opened them; click one to reopen it in a new tab. If the share is turned off, expires, or is deleted, or its link is reset, the entry drops off the list.
 
 Click an item to open the viewer, inspect its content and version history, or adjust sharing. You can also open the list from a chat through **+** → **More** → **Manage artifacts**.
 
 <img
-  src="/images/docs/ai/2026-10-27-artifact-manager.png"
-  alt="Manage artifacts in Settings, grouped by project with shared items marked"
+  src="/images/docs/ai/2026-10-30-artifact-manager.png"
+  alt="Manage artifacts in Settings, with the Mine tab listing artifacts by project and shared items marked"
   className="docs-screenshot"
 />
 
@@ -287,9 +297,9 @@ For examples of this feature in use, read [shareable AI report examples](https:/
   </Accordion>
 
   <Accordion title="Which files stay in Manage files?">
-    **Manage files** holds two folders: `uploads` for the files you added, and `outputs` for the files produced in the conversation. Both use their own storage, so they survive the sandbox being released or rebuilt and you can come back later to preview, download, or delete them.
+    **Manage files** lets you browse two folders: `uploads` for the files you added, and `outputs` for the files produced in the conversation. Both use their own storage, so they survive the sandbox being released or rebuilt and you can come back later to preview, download, or delete them. The root also lists `config` and `home`, which hold tool configuration and state. The agent manages them, so you can't open, download, or delete them here, but they still count toward storage usage.
 
-    Anything Cuppy writes outside those two folders is temporary, such as intermediate results from a script. It does not appear in **Manage files** and is gone after the sandbox restarts. For results you need to keep, ask Cuppy to write them into `outputs` or back into Teable, or download them while the conversation is open.
+    Anything Cuppy writes outside those four folders is temporary, such as intermediate results from a script. It does not appear in **Manage files** and is gone after the sandbox restarts. For results you need to keep, ask Cuppy to write them into `outputs` or back into Teable, or download them while the conversation is open.
   </Accordion>
 
   <Accordion title="What happens when I copy a message with chips?">

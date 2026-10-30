@@ -1,6 +1,6 @@
 ---
 title: "Amministrazione modelli"
-description: "Gestisci i modelli di flusso di lavoro per la tua organizzazione, consentendo agli utenti di iniziare rapidamente con Progetti preconfigurate."
+description: "Revisiona i Progetti che i membri inviano al centro modelli, configura nome, copertina, descrizione e settore dei modelli della tua organizzazione, gestiscine la pubblicazione e parti dai modelli ufficiali."
 ---
 
 {/* mintlify-resync: 2026-10-22 */}
@@ -9,11 +9,11 @@ description: "Gestisci i modelli di flusso di lavoro per la tua organizzazione, 
 
 ### Gestione dei modelli
 
-I modelli nascono dalla pubblicazione dei Progetti: quando un Progetto viene pubblicato nel centro modelli, il modello compare nell'elenco di Gestione modelli e nel centro modelli della tua organizzazione. Qui gli amministratori possono modificare le informazioni dei modelli, controllarne la pubblicazione e cambiarne l'ordine.
+I modelli nascono dagli invii dei Progetti: un membro invia il Progetto in revisione da **Pubblica nel centro modelli** e il modello viene pubblicato nel centro modelli solo dopo che un amministratore lo approva in **Template review**. Qui gli amministratori possono modificare le informazioni dei modelli, controllarne la pubblicazione e cambiarne l'ordine.
 
 <img
-  src="/images/docs/admin-panel/2026-10-21-admin-template-list.png"
-  alt="Elenco di gestione dei modelli con le colonne Integrazioni, Soluzione e Pubblicato e il menu Fissa in alto ed Elimina"
+  src="/images/docs/admin-panel/2026-10-30-admin-template-list.png"
+  alt="Elenco di gestione dei modelli con le colonne Categoria e In evidenza e il menu Fissa in alto ed Elimina"
   className="docs-screenshot"
 />
 
@@ -22,10 +22,11 @@ I modelli nascono dalla pubblicazione dei Progetti: quando un Progetto viene pub
 * **Copertina**: immagine di copertina della scheda del modello
 * **Nome** e **Descrizione**: titolo e breve descrizione mostrati nel centro modelli
 * **Descrizione markdown**: descrizione dettagliata con supporto per la formattazione Markdown
-* **Categoria**: raggruppa i modelli per scenari aziendali (ad esempio Risorse umane, Vendite, Ingegneria). Fai clic sull'icona delle impostazioni accanto all'intestazione della colonna per gestire le categorie
+* **Categoria**: raggruppa i modelli per settore e sottosettore, oppure per team. Fai clic sull'icona delle impostazioni accanto all'intestazione della colonna per aprire **Gestisci categorie**, dove puoi creare settori, sottosettori e team
+* **URL slug**: l'identificativo nell'URL della pagina pubblica del modello. Può contenere solo lettere minuscole, numeri e trattini
 * **In evidenza**: mette in evidenza il modello nel centro modelli. Disponibile solo dopo la pubblicazione del modello
-* **Solution**: se contrassegnato, l'uso di questo modello apre prima la configurazione delle integrazioni invece di copiare subito il Progetto. La colonna **Integrations** elenca le piattaforme a cui si collega
-* **Ora snapshot**: quando il contenuto del modello è stato pubblicato o aggiornato l'ultima volta
+* **Integrations**: le piattaforme a cui devono collegarsi le automazioni del modello. Dopo l'installazione, l'utente viene guidato a collegarle
+* **Ora snapshot**: quando il contenuto del modello è stato approvato l'ultima volta
 * **Creato da**: utente che ha pubblicato il modello
 * **Utilizzo/Visite**: quante volte il modello è stato usato e visitato
 
@@ -36,7 +37,16 @@ I modelli nascono dalla pubblicazione dei Progetti: quando un Progetto viene pub
 * **Fissa in alto**: sposta il modello in cima all'elenco. Puoi anche trascinare la maniglia all'inizio della riga per riordinare i modelli
 * **Elimina**: rimuove il modello
 
-Per aggiornare il contenuto di un modello, apri di nuovo **Pubblica nel centro modelli** nel Progetto di origine e fai clic su **Aggiorna**.
+Per aggiornare il contenuto di un modello, apri di nuovo **Pubblica nel centro modelli** nel Progetto di origine e fai clic su **Submit v\{versione\} for review**. Finché l'aggiornamento non viene approvato, chi installa il modello riceve la versione attuale.
+
+### Revisionare i modelli
+
+In **Amministrazione di sistema** > **Template review**, la scheda **Review queue** elenca gli invii in attesa con autore, data di invio e risultati dei controlli automatici. I controlli sono solo avvisi e non bloccano la revisione: **Connections** segnala integrazioni che questa installazione non può collegare; **Privacy** segnala che il modello include Record, da controllare per escludere dati personali; **Run estimate** segnala che le esecuzioni mensili potrebbero superare la quota gratuita; **Trial run** segnala che le automazioni non richiedono alcun account, quindi verifica che funzionino senza collegarne uno. Fai clic su **View** per aprire i dettagli dell'invio, vedere un'anteprima della copia e scegliere il settore del modello.
+
+* **Approve**: viene pubblicata la copia inviata dall'autore; per un modello già pubblicato, ogni aggiornamento approvato ne incrementa il numero di versione. Le modifiche successive dell'autore vanno inviate di nuovo
+* **Reject**: l'autore riceve la tua nota e, dopo le modifiche, può inviare di nuovo il modello
+
+Per entrambe le azioni puoi aggiungere una nota e l'autore riceve una notifica dell'esito.
 
 ### Utilizzare i modelli ufficiali
 
@@ -45,5 +55,5 @@ Gli utenti Self-hosted possono importare modelli dal Teable Cloud ufficiale:
 1. **Scarica**: ottieni il file di esportazione di un Progetto Teable (`.tea`) dal [Centro modelli ufficiale](https://teable.ai/templates)
 2. **Importa**: importa il file `.tea` come nuovo Progetto nel tuo Spazio
 3. **Apri la finestra di pubblicazione**: nel Progetto importato, fai clic sul nome del Progetto in alto a sinistra e seleziona **Pubblica nel centro modelli**
-4. **Inserisci i dettagli**: inserisci titolo e descrizione, scegli i nodi da pubblicare e se includere i dati, e carica una copertina se necessario
-5. **Pubblica**: fai clic su **Pubblica**. Il modello viene pubblicato automaticamente e compare in **Amministrazione di sistema** > **Gestione modelli**
+4. **Inserisci i dettagli**: inserisci nome e descrizione dettagliata, scegli cosa includere e se aggiungere dati di esempio, e carica una copertina se necessario
+5. **Invia e approva**: fai clic su **Submit for review**, quindi in **Amministrazione di sistema** > **Template review** fai clic su **Approve**. Il modello viene pubblicato subito e compare in **Amministrazione di sistema** > **Gestione modelli**

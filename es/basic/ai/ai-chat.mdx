@@ -19,9 +19,15 @@ También puedes escribir una pregunta en la [paleta de comandos](/es/basic/base#
 
 ### Ver recursos junto al chat
 
-Haz clic en el botón de carpeta **Show resources**, junto al nombre del proyecto, para explorar a la derecha del chat el árbol del proyecto, tus artefactos y **Outputs from this chat**. Haz clic en una tabla, app, automatización o artefacto para abrirlo en una pestaña del panel de recursos. El botón **+** (**New tab**) de la parte superior vuelve a la lista para abrir más recursos.
+Haz clic en el botón de carpeta **Show resources**, junto al nombre del proyecto, para abrir el panel de recursos a la derecha del chat. La lista de recursos tiene tres pestañas, todas con búsqueda:
 
-Usa **Maximizar** para ampliar el panel de recursos y **Restaurar tamaño** para volver a la vista en paralelo. Cerrar una pestaña solo cierra su visualización, sin eliminar el recurso.
+- **Resources**: Muestra **Recently opened**, **Favoritos** y **All resources**. **All resources** se puede ordenar **By type** o **By folder**.
+- **Artifacts**: Tus artefactos en este proyecto.
+- **Resultados**: **Outputs from the current chat**, con los más recientes primero.
+
+Haz clic en una tabla, app, automatización o artefacto para abrirlo en una pestaña del panel de recursos. El botón **+** (**New tab**) de la parte superior vuelve a la lista para abrir más recursos. Para tener a mano un recurso que usas a menudo, elige **Añadir a favoritos** en el menú **...** del elemento en el árbol del proyecto; a partir de entonces aparece en **Favoritos**. Cuando ya no lo necesites, elige **Quitar de favoritos**.
+
+Con una tabla u otro recurso abierto, **Mostrar carpeta** muestra al lado el árbol del proyecto; con un artefacto abierto, **Mostrar lista de artifacts** muestra al lado los demás artefactos del proyecto. Si necesitas más espacio, haz clic en **Ocultar chat**: el chat se pliega en una esquina y **Mostrar chat** vuelve a la vista en paralelo. Cerrar una pestaña solo cierra su visualización, sin eliminar el recurso; al cerrar la última pestaña, el panel de recursos se pliega.
 
 ## Información que puede consultar la IA
 
@@ -161,7 +167,7 @@ El Chat de IA puede mantener disponible el entorno de una conversación durante 
 
 <Steps>
   <Step title="Seguir el progreso en la conversación actual">
-    Si la interfaz muestra `Thinking` o sigue ofreciendo actualizaciones de progreso, la tarea todavía está en ejecución. Si muestra `Completed`, la ejecución actual ha terminado.
+    Si indicaciones como **Pensando** o **Trabajando** siguen parpadeando, o siguen llegando actualizaciones de progreso, la tarea todavía está en ejecución. Cuando termina la respuesta, los pasos intermedios se pliegan bajo **Worked for \{duración\}** y solo queda visible la respuesta final; haz clic para desplegarlos. Una respuesta que detuviste a mitad se muestra como **You stopped after \{duración\}**.
   </Step>
   <Step title="Guardar los resultados en puntos de control útiles">
     En trabajos de varias fases, pide a Cuppy que escriba los resultados en Teable, los exporte o genere un archivo descargable en los puntos de control principales. El trabajo guardado sigue disponible aunque el entorno de la conversación se libere más adelante.
@@ -170,6 +176,8 @@ El Chat de IA puede mantener disponible el entorno de una conversación durante 
     Cuando termina la ejecución en primer plano, los entornos inactivos se liberan después de unos 30 minutos. Los archivos temporales y los resultados intermedios sin guardar no se conservan si el entorno se reinicia.
   </Step>
 </Steps>
+
+Si no has revisado una respuesta 30 minutos después de que termine, Teable te envía un correo que indica si la tarea se completó, no pudo completarse o se interrumpió por falta de créditos de IA, con un enlace para volver a la conversación. Si no quieres recibir estos correos, desactiva **Actividad en tu espacio** en **Configuración** → **Mis Ajustes** → **Notificaciones**; este interruptor también controla los demás correos de notificación.
 
 Para trabajos de larga duración o repetibles, usa la función que corresponda al flujo de trabajo:
 
@@ -220,13 +228,15 @@ Los artefactos son privados para la persona que los creó, por lo que debes usar
 
 ### Encontrar artefactos más adelante
 
-Abre tu avatar de la esquina inferior izquierda → **Configuración** → **Gestionar artifacts** para explorar tus artefactos por proyecto o buscarlos por nombre. Los elementos marcados como **Compartido** tienen activado un enlace de uso compartido. En el menú **...** de cada elemento puedes elegir **Compartir**, **Descargar** o **Eliminar**.
+Abre tu avatar de la esquina inferior izquierda → **Configuración** → **Gestionar artifacts** y, en **Míos**, explora tus artefactos por proyecto o búscalos por nombre. Los elementos marcados como **Compartido** tienen activado un enlace de uso compartido. En el menú **...** de cada elemento puedes elegir **Compartir**, **Descargar**, **Abrir en nueva página** o **Eliminar**.
+
+Los artefactos que otras personas han compartido y que abriste con la sesión iniciada aparecen en **Compartidos conmigo**, con quién los compartió y la fecha en que los abriste por última vez; haz clic en uno para volver a abrirlo en una pestaña nueva. Si se desactiva, caduca o se elimina el uso compartido, o se restablece su enlace, el elemento desaparece de la lista.
 
 Haz clic en un elemento para abrir el visor, consultar su contenido e historial de versiones o ajustar el uso compartido. También puedes abrir la lista desde un chat mediante **+** → **Más** → **Gestionar artifacts**.
 
 <img
-  src="/images/docs/ai/2026-10-27-artifact-manager.png"
-  alt="Gestión de artefactos en Configuración, agrupados por proyecto con los elementos compartidos señalados"
+  src="/images/docs/ai/2026-10-30-artifact-manager.png"
+  alt="Gestión de artefactos en Configuración, pestaña Míos, agrupados por proyecto con los elementos compartidos señalados"
   className="docs-screenshot"
 />
 
@@ -287,9 +297,9 @@ Para ver ejemplos de esta función, consulta [ejemplos de informes de IA compart
   </Accordion>
 
   <Accordion title="¿Qué archivos permanecen en Administrar archivos?">
-    **Administrar archivos** contiene dos carpetas: `uploads` para los archivos que has añadido y `outputs` para los archivos generados en la conversación. Cada una usa su propio almacenamiento, por lo que sobreviven cuando el entorno aislado se libera o reconstruye y puedes volver más adelante para obtener una vista previa, descargarlos o eliminarlos.
+    **Administrar archivos** permite explorar dos carpetas: `uploads` para los archivos que has añadido y `outputs` para los archivos generados en la conversación. Cada una usa su propio almacenamiento, por lo que sobreviven cuando el entorno aislado se libera o reconstruye y puedes volver más adelante para obtener una vista previa, descargarlos o eliminarlos. En la carpeta raíz también aparecen `config` y `home`, que guardan la configuración y el estado de las herramientas. Los gestiona el agente, así que no puedes abrirlos, descargarlos ni eliminarlos desde aquí, pero también cuentan para el almacenamiento usado.
 
-    Todo lo que Cuppy escribe fuera de esas dos carpetas es temporal, como los resultados intermedios de un script. No aparece en **Administrar archivos** y desaparece cuando se reinicia el entorno aislado. Para conservar los resultados, pide a Cuppy que los escriba en `outputs` o en Teable, o descárgalos mientras la conversación esté abierta.
+    Todo lo que Cuppy escribe fuera de esas cuatro carpetas es temporal, como los resultados intermedios de un script. No aparece en **Administrar archivos** y desaparece cuando se reinicia el entorno aislado. Para conservar los resultados, pide a Cuppy que los escriba en `outputs` o en Teable, o descárgalos mientras la conversación esté abierta.
   </Accordion>
 
   <Accordion title="¿Qué ocurre cuando copio un mensaje con etiquetas?">

@@ -1,6 +1,6 @@
 ---
 title: "Admin templates: create and manage project templates"
-description: "Configure project template names, covers, descriptions and categories for your organization. Manage template availability and use official templates as a starting point."
+description: "Review projects members submit to the template center, set template names, covers, descriptions, and industries for your organization, manage listing status, and start from official templates."
 sidebarTitle: "Template Admin"
 ---
 
@@ -10,11 +10,11 @@ sidebarTitle: "Template Admin"
 
 ### Template Management
 
-Templates come from published projects. When a project is published to the template center, the template appears in the Template admin list and in your organization's template center. Here, admins can adjust template details, control whether templates are listed, and change their order.
+Templates come from project submissions. A member submits a project for review with **Publish to Template Center**, and once an admin approves it in **Template review**, the template is listed and appears in the template center. Here, admins can adjust template details, control whether templates are listed, and change their order.
 
 <img
-  src="/images/docs/admin-panel/2026-10-21-admin-template-list.png"
-  alt="Template admin list showing the Integrations, Solution, and Published columns with the Pin top and Delete menu"
+  src="/images/docs/admin-panel/2026-10-30-admin-template-list.png"
+  alt="Template admin list showing the Industry and Featured columns with the Pin top and Delete menu"
   className="docs-screenshot"
 />
 
@@ -23,10 +23,11 @@ Templates come from published projects. When a project is published to the templ
 * **Cover**: The cover image for the template card
 * **Name** and **Description**: The title and short description displayed in the template center
 * **Markdown description**: Detailed description supporting Markdown formatting
-* **Category**: Group templates by business scenarios (e.g., HR, Sales, Engineering). Click the settings icon next to the column header to manage categories
+* **Industry**: Group templates by industry and sub-industry, or by team. Click the settings icon next to the column header to open **Manage industries and teams**, where you can add industries, sub-industries, and teams
+* **URL slug**: The identifier in the template's public page URL. Use only lowercase letters, digits, and hyphens
 * **Featured**: Feature the template in the template center. Available only after the template is published
-* **Solution**: When marked, using this template opens the integration setup first instead of copying the project straight away. The **Integrations** column lists the platforms it connects to
-* **Snapshot Time**: When the template content was last published or updated
+* **Integrations**: The platforms the template's automations need to connect to. After installing, users are guided through connecting them
+* **Snapshot Time**: When the template content was last approved
 * **Created by**: The user who published the template
 * **Usage/Visit**: How many times the template has been used and visited
 
@@ -37,7 +38,16 @@ Templates come from published projects. When a project is published to the templ
 * **Pin top**: Move the template to the top of the list. You can also drag the handle at the start of a row to reorder templates
 * **Delete**: Remove the template
 
-To update a template's content, open **Publish to template center** again in the source project and click **Update**.
+To update a template's content, open **Publish to Template Center** again in the source project and click **Submit v\{version\} for review**. Until the new version is approved, anyone who installs the template still gets the current version.
+
+### Review Templates
+
+Open **System Admin** > **Template review** and use the **Review queue** to see pending submissions with their author, submission time, and automatic check results. The checks are reminders only and do not block a decision: **Connections** flags integrations the template uses that this deployment cannot connect to; **Privacy** flags that the template includes records, so make sure they hold no personal data; **Run estimate** flags that monthly runs may exceed the free plan; **Trial run** flags that the automations need no account, so confirm they run without one. Click **View** to open the submission details, preview the frozen copy, and choose an industry for the template.
+
+* **Approve**: What goes live is the copy frozen when the author submitted. Each approved update to a listed template raises its version by one. Later edits by the author need a new submission
+* **Reject**: The author gets your note and can submit again after making changes
+
+You can add a note with either decision, and the author is notified of the result.
 
 ### Using Official Templates
 
@@ -45,6 +55,6 @@ Self-hosted users can import templates from the official Teable Cloud:
 
 1. **Download**: Get the Teable project export file (`.tea`) from the [Official Template Center](https://teable.ai/templates)
 2. **Import**: Import the `.tea` file as a new project in your space
-3. **Open the publish dialog**: In the imported project, click the project name in the top-left corner and select **Publish to template center**
-4. **Fill in details**: Enter a title and description, choose the nodes to publish and whether to include data, and upload a cover if needed
-5. **Publish**: Click **Publish**. The template is listed automatically and appears in **System Admin** > **Template admin**
+3. **Open the publish dialog**: In the imported project, click the project name in the top-left corner and select **Publish to Template Center**
+4. **Fill in details**: Enter a name and description, choose what it includes and whether to include sample records, and upload a cover if needed
+5. **Submit and approve**: Click **Submit for review**, then click **Approve** in **System Admin** > **Template review**. The template is listed right away and appears in **System Admin** > **Template admin**

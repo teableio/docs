@@ -1,6 +1,6 @@
 ---
 title: "Administration des modèles"
-description: "Créez et gérez des modèles de Projet dans l’Administration système, modifiez leurs informations et choisissez les modèles officiels à proposer."
+description: "Examinez les Projets que les membres soumettent au centre de modèles, configurez le nom, la couverture, la description et le secteur des modèles, gérez leur publication et partez des modèles officiels pour créer les vôtres."
 ---
 
 {/* mintlify-resync: 2026-10-22 */}
@@ -9,11 +9,11 @@ description: "Créez et gérez des modèles de Projet dans l’Administration sy
 
 ### Gestion des modèles
 
-Les modèles proviennent de la publication de Projets : lorsqu’un Projet est publié dans le centre de modèles, le modèle apparaît dans la liste d’administration des modèles et dans le centre de modèles de votre organisation. Les administrateurs peuvent y ajuster les informations des modèles, contrôler leur publication et modifier leur ordre.
+Les modèles proviennent de Projets soumis : un membre soumet son Projet à l’examen via **Publier dans le centre de modèles**, et le modèle n’est publié dans le centre de modèles qu’après validation par un administrateur dans **Template review**. Les administrateurs peuvent y ajuster les informations des modèles, contrôler leur publication et modifier leur ordre.
 
 <img
-  src="/images/docs/admin-panel/2026-10-21-admin-template-list.png"
-  alt="Liste d’administration des modèles avec les colonnes Intégrations, Solution et Publié, et le menu Épingler en haut et Supprimer"
+  src="/images/docs/admin-panel/2026-10-30-admin-template-list.png"
+  alt="Liste d’administration des modèles avec les colonnes Secteur et En vedette, et le menu Épingler en haut et Supprimer"
   className="docs-screenshot"
 />
 
@@ -22,10 +22,11 @@ Les modèles proviennent de la publication de Projets : lorsqu’un Projet est p
 * **Couverture** : l’image de couverture de la carte du modèle
 * **Nom** et **Description** : le titre et la brève description affichés dans le centre de modèles
 * **Description Markdown** : description détaillée prenant en charge la mise en forme Markdown
-* **Catégorie** : regroupe les modèles par scénario métier (par exemple RH, Ventes, Ingénierie). Cliquez sur l’icône des paramètres à côté de l’en-tête de colonne pour gérer les catégories
+* **Catégorie** : regroupe les modèles par secteur et sous-secteur, ou par équipe. Cliquez sur l’icône des paramètres à côté de l’en-tête de colonne pour ouvrir **Gérer les catégories**, où vous pouvez créer des secteurs, des sous-secteurs et des équipes
+* **URL slug** : l’identifiant utilisé dans l’adresse de la page publique du modèle. Seuls les lettres minuscules, les chiffres et les traits d’union sont autorisés
 * **En vedette** : met le modèle en avant dans le centre de modèles. Disponible uniquement une fois le modèle publié
-* **Solution** : lorsqu’il est marqué ainsi, l’utilisation de ce modèle ouvre d’abord la configuration des intégrations au lieu de copier directement le Projet. La colonne **Integrations** indique les plateformes auxquelles il se connecte
-* **Heure de l'instantané** : date de la dernière publication ou mise à jour du contenu du modèle
+* **Integrations** : les plateformes auxquelles les automatisations du modèle doivent se connecter. Après l’installation, l’utilisateur est guidé pour établir ces connexions
+* **Heure de l'instantané** : date à laquelle le contenu du modèle a été validé pour la dernière fois lors de l’examen
 * **Créé par** : l’utilisateur qui a publié le modèle
 * **Utilisation/Visites** : le nombre d’utilisations et de visites du modèle
 
@@ -36,7 +37,16 @@ Les modèles proviennent de la publication de Projets : lorsqu’un Projet est p
 * **Épingler en haut** : place le modèle en tête de liste. Vous pouvez aussi faire glisser la poignée en début de ligne pour réorganiser les modèles
 * **Supprimer** : supprime le modèle
 
-Pour mettre à jour le contenu d’un modèle, ouvrez à nouveau **Publier dans le centre de modèles** dans le Projet source, puis cliquez sur **Mettre à jour**.
+Pour mettre à jour le contenu d’un modèle, ouvrez à nouveau **Publier dans le centre de modèles** dans le Projet source, puis cliquez sur **Submit v\{version\} for review**. Tant que la nouvelle version n’est pas validée, les autres utilisateurs continuent d’installer la version actuelle.
+
+### Examiner les modèles
+
+Dans **Administration système** > **Template review**, la **Review queue** liste les soumissions en attente avec leur auteur, leur date de soumission et le résultat des vérifications automatiques. Ces vérifications sont de simples avertissements et ne bloquent pas la validation : **Connections** signale des intégrations impossibles à connecter sur ce déploiement ; **Privacy** signale que le modèle contient des enregistrements, à vérifier pour s’assurer qu’ils ne comportent pas de données personnelles ; **Run estimate** signale que le volume d’exécutions mensuel risque de dépasser le quota gratuit ; **Trial run** signale que les automatisations n’exigent aucun compte, et qu’il faut vérifier qu’elles fonctionnent sans compte connecté. Cliquez sur **View** pour ouvrir le détail de la soumission, prévisualiser la copie et choisir le secteur du modèle.
+
+* **Approve** : c’est la copie figée au moment de la soumission qui est publiée. Pour un modèle déjà publié, chaque mise à jour validée incrémente le numéro de version. Les modifications ultérieures de l’auteur doivent être soumises à nouveau
+* **Reject** : l’auteur reçoit votre note et peut soumettre à nouveau après modification
+
+Les deux actions acceptent une note, et l’auteur est notifié du résultat dans les deux cas.
 
 ### Utiliser les modèles officiels
 
@@ -45,5 +55,5 @@ Les utilisateurs auto-hébergés peuvent importer des modèles depuis Teable Clo
 1. **Télécharger** : récupérez le fichier d’export de Projet Teable (`.tea`) dans le [Centre de modèles officiel](https://teable.ai/templates)
 2. **Importer** : importez le fichier `.tea` en tant que nouveau Projet dans votre Espace
 3. **Ouvrir la fenêtre de publication** : dans le Projet importé, cliquez sur le nom du Projet en haut à gauche, puis sélectionnez **Publier dans le centre de modèles**
-4. **Renseigner les informations** : saisissez le titre et la description, choisissez les nœuds à publier et s’il faut inclure les données, puis ajoutez une couverture si besoin
-5. **Publier** : cliquez sur **Publier**. Le modèle est publié automatiquement et apparaît dans **Administration système** > **Administration des modèles**
+4. **Renseigner les informations** : saisissez le nom et la description détaillée, choisissez au besoin le contenu inclus et s’il faut inclure des données d’exemple, puis ajoutez une couverture
+5. **Soumettre et valider** : cliquez sur **Submit for review**, puis sur **Approve** dans **Administration système** > **Template review**. Le modèle est aussitôt publié et apparaît dans **Administration système** > **Administration des modèles**
