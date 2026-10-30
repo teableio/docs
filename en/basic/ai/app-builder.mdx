@@ -77,7 +77,7 @@ You can download the entire app as a ZIP archive at any time:
 2. Click the **`...`** menu in the tab bar.
 3. Select **Download code**, then click **Download code** again in the dialog to save a ZIP archive that includes all source files.
 
-By default the ZIP leaves out the app's live credentials. Its root holds a `.env.example` that lists the platform-injected runtime variables with the Teable access token and the AI access key left blank, and a `.gitignore` that keeps `.env` files out of Git.
+By default the ZIP leaves out the app's live credentials. Its root holds a `.env.example` that lists the [platform-injected runtime variables](#teable-access-token) (the ones Teable adds to every app automatically) with the Teable access token and the AI access key left blank, and a `.gitignore` that keeps `.env` files out of Git.
 
 To run the code locally right away, select **Include .env with live credentials** in the dialog. The ZIP then holds the real `.env` instead: the platform-injected runtime variables, including the Teable access token and, when AI access is on, the AI access key. Credentials granted to the app are not part of it.
 
@@ -122,27 +122,27 @@ An app's environment variables come from two sources:
 - **Platform-injected variables**: Teable provides them to every app, including the Teable access token (`TEABLE_APP_TOKEN`), the API endpoint, and the app and project IDs. With **AI access** on, the AI access endpoint and key are added.
 - **Credentials granted to the app**: the secrets and connections you grant in **Credentials & config**, described above.
 
-The Teable access token is the credential the app uses to read and write data, and it can access the whole project the app belongs to. It is used in the app preview environment and the published app. It never goes into the Git repository, and downloaded code leaves it out by default. Each app has its own token, and deleting an app revokes its token.
+The Teable access token is the credential the app uses to read and write data, and it can access the whole project the app belongs to. It is used in the app preview environment and the published app. Teable never commits it to the app's repository, and downloaded code leaves it out by default. Normally each app has its own token, and deleting an app revokes its token.
 
 Rotate the token when:
 
-- It may have leaked, for example a `.env` was committed to a repository or pasted into an issue.
+- It may have leaked, for example a `.env` was committed to a repository, or pasted into a GitHub issue, a forum post or a chat.
 - A member who copied the env variables or downloaded code with a `.env` no longer works on the project.
 - The app's code was handed to someone together with its `.env`.
 
 In the chat panel, open **+** → **More** → **Credentials & config**, click **Rotate** on the **Teable access token** row, and confirm. Rotating requires edit access to the app.
 
-| What | After rotation |
+| Item | After rotation |
 | --- | --- |
 | Old token | Stops working at once |
 | Running preview | Switches to the new token without a restart |
-| Published app | Redeploys in the background with the new token, without creating a new version. Its requests fail until the redeploy finishes, usually within a few minutes |
+| Published app | Teable redeploys it in the background with the new token; nothing new appears in Version History. Until the redeploy finishes, usually within a few minutes, the app can't read or write project data. If the app has unpublished changes, it is not redeployed automatically (that would publish them) and you need to republish it |
 | Signed-in app users | If the app uses [App Login](#app-login), visitors must sign in again |
-| Local `.env` and downloaded code | The old token in them no longer works; copy the env variables or download the code again |
+| Local `.env` and downloaded code | The old token in them no longer works; copy the env variables again, or download the code with **Include .env with live credentials** selected |
 
-In projects copied a while ago, several apps may share one token. Rotating one of them also rotates every other app in the project that still shares it, each to its own new token, and a notice tells you how many were rotated.
+Some apps from older project copies share one token. Rotating one of them also rotates every other app in the project that still shares it, each to its own new token, and a notice tells you how many were rotated.
 
-If you see **Access token rotated, but the published app could not be updated automatically. Republish it.**, or the published app still can't read data after a few minutes, republish the app so it picks up the new token.
+Teable's automatic redeploy only switches the token and never publishes changes you haven't published; republishing is you publishing the current version from the publish panel. If you see **Access token rotated, but the published app could not be updated automatically. Republish it.** or **Access token rotated. The published app has unpublished changes, so it was not updated automatically; it can't read data until you republish.**, or this app (or an app rotated with it) still can't read data after a few minutes, republish that app so it picks up the new token. If the preview can't read data, reload the preview.
 
 #### Manage App Files
 
@@ -158,7 +158,7 @@ You can tell App Builder what you want, such as: "Add an AI reply assistant for 
 After App Builder adds the AI feature, the app preview uses the new version. The published app uses it only after you republish.
 </Info>
 
-Teable injects the AI access key too. After you click **Rotate key** on the **AI access** row in **Credentials & config**, the old key stops working at once, and the published app redeploys in the background with the new key; you don't need to republish it.
+Teable injects the AI access key too. After you click **Rotate key** on the **AI access** row in **Credentials & config**, the old key stops working at once, and the published app redeploys in the background with the new key; its AI calls fail until that finishes. If the app has unpublished changes, it is not redeployed automatically; if AI calls still fail after a few minutes, republish the app.
 
 ## Sync Code with GitHub
 
@@ -207,7 +207,7 @@ Teable never force-pushes your branch. When the histories diverge, it parks the 
 
 ### Environment Variables and Local Development
 
-The repository holds source only. Teable never pushes a file whose name starts with `.env`: not at the project root, not in a subfolder, and not in the commit history. Environment values come from the credentials granted to the app, live in **Credentials & config**, and never enter git. The repository's `.gitignore` already lists `.env*`, so a local clone will not commit one by accident.
+The repository holds source only. Teable never pushes a file whose name starts with `.env`: not at the project root, not in a subfolder, and not in the commit history. Environment values come from the platform-injected variables and the credentials granted to the app (see [Teable Access Token](#teable-access-token)); Teable manages them, and they never enter Git. The repository's `.gitignore` already lists `.env*`, so a local clone will not commit one by accident.
 
 To run the app on your own machine:
 
@@ -217,7 +217,7 @@ To run the app on your own machine:
   <Step title="Start the app">Run `pnpm dev`.</Step>
 </Steps>
 
-The copied content holds only the variables the platform injects: the API endpoint, the access token, and the AI access variables. The button notes **Only platform-injected runtime variables — granted credentials are not included**. Credentials granted to the app never leave Teable; add any you need for local debugging to the `.env` yourself.
+The copied content holds only the variables the platform injects: the API endpoint, the access token, and the AI access variables. In **Credentials & config**, the button also notes **Only platform-injected runtime variables — granted credentials are not included**. Neither the copied variables nor downloaded code include credentials granted to the app; add any you need for local debugging to the `.env` yourself.
 
 <Warning>
 The `TEABLE_APP_TOKEN` line in that file grants access to the app's data, which is why only members with edit access to the app can copy it. Never commit the file, and never paste it into an issue or a pull request. If it may have leaked, [rotate the Teable access token](#teable-access-token).
