@@ -14,10 +14,11 @@ permissions:
 
 jobs:
   submit:
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && github.event.deployment.creator.login == 'mintlify[bot]' && github.event.deployment.environment == 'staging')
+    if: (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') || (github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && github.event.deployment.creator.login == 'mintlify[bot]' && github.event.deployment.environment == 'staging' && github.event.deployment_status.environment_url == 'https://help.teable.ai')
     concurrency:
       group: indexnow-production
       cancel-in-progress: false
+      queue: max
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:

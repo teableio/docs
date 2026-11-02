@@ -15,8 +15,7 @@ return 200 without redirects and match the key before any submission.
 Body/metadata/media/schema fingerprints are compared with the last successfully
 accepted manifest. Public documentation paths containing `admin`, `api-reference`
 or `settings` are preserved; real root-level application paths, noindex pages,
-foreign canonicals and tracking URLs are excluded. The first run initializes
-the sitemap baseline; future runs submit changes. Every batch is at most 10,000
+foreign canonicals and tracking URLs are excluded. The initial run seeds the canonical sitemap once; future runs submit changes. Every batch is at most 10,000
 URLs, and transient errors retry with bounded backoff.
 
 The first run submits the canonical sitemap once and saves the accepted baseline;
