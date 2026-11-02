@@ -1,6 +1,6 @@
 # Teable Help
 
-新增或改写页面前，请阅读 [Help 页面 SEO 与统计规范](.github/SEO_AND_ANALYTICS.md)，包含标题、描述、多语言、内链、埋点及发布验收要求。
+Before adding or rewriting a page, read the [Help page SEO and analytics guide](.github/SEO_AND_ANALYTICS.md), which covers titles, descriptions, locales, internal links, tracking, and release checks.
 
 ### Development
 
