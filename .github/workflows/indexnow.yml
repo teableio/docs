@@ -1,0 +1,63 @@
+name: IndexNow
+
+on:
+  deployment_status:
+  check_run:
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  deployments: read
+  checks: read
+
+jobs:
+  submit:
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && github.event.deployment.creator.login == 'mintlify[bot]' && github.event.deployment.environment == 'staging')
+    concurrency:
+      group: indexnow-production
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      # Use trusted default-branch code; the guard verifies the deployed SHA.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify production deployment event
+        id: guard
+        run: node scripts/indexnow.mjs guard
+      - name: IndexNow regression checks
+        if: steps.guard.outputs.ready == 'true'
+        run: node --test scripts/indexnow.test.mjs
+      - name: Read last accepted state
+        if: steps.guard.outputs.ready == 'true'
+        run: |
+          mkdir -p .indexnow-state/baseline
+          artifact_id=$(gh api "/repos/$GITHUB_REPOSITORY/actions/artifacts?name=indexnow-production-state&per_page=100" \
+            --jq '[.artifacts[] | select(.expired == false)] | sort_by(.created_at) | last | .id // empty')
+          if [ -n "$artifact_id" ]; then
+            gh api "/repos/$GITHUB_REPOSITORY/actions/artifacts/$artifact_id/zip" > /tmp/indexnow-baseline.zip
+            unzip -q /tmp/indexnow-baseline.zip -d .indexnow-state/baseline
+          fi
+      - name: Submit public content changes
+        if: steps.guard.outputs.ready == 'true'
+        env:
+          INDEXNOW_REVISION: ${{ steps.guard.outputs.revision }}
+        run: node scripts/indexnow.mjs submit
+      - name: Save accepted state and receipt
+        if: steps.guard.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: indexnow-production-state
+          path: .indexnow-state/accepted/*.json
+          include-hidden-files: true
+          if-no-files-found: error
+          overwrite: true
+          retention-days: 90
