@@ -8,7 +8,8 @@ do not submit. Manual recovery also requires a successful production deployment
 for the same main revision.
 
 The ownership file is a root-level YAML scalar whose entire UTF-8 contents are
-the key. YAML is a supported Mintlify static file type on all plans; the exact
+the key. The conventional `.txt` path redirects to this YAML resource;
+submissions explicitly use the direct YAML URL. YAML is a supported Mintlify static file type on all plans; the exact
 same-host keyLocation is explicitly sent to IndexNow. The published file must
 return 200 without redirects and match the key before any submission.
 
