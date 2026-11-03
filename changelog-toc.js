@@ -318,6 +318,28 @@
     state.observer.observe(state.sentinel);
   }
 
+  function restoreArchiveEmbeds(root) {
+    // Mintlify's server HTML contains only an iframe placeholder. Imported
+    // archives are not hydrated by React, so retain embed metadata in the MDX.
+    root.querySelectorAll("[data-changelog-youtube]").forEach(function (container) {
+      if (container.querySelector("iframe")) return;
+      var src = container.getAttribute("data-changelog-youtube");
+      if (!/^https:\/\/www\.youtube\.com\/embed\/[A-Za-z0-9_-]{11}$/.test(src)) return;
+      var frame = document.createElement("iframe");
+      frame.setAttribute("src", src);
+      frame.setAttribute("title", container.getAttribute("data-changelog-video-title"));
+      frame.className = "w-full aspect-video";
+      frame.style.width = "100%";
+      frame.style.aspectRatio = "16 / 9";
+      frame.setAttribute("frameborder", "0");
+      frame.setAttribute("loading", "lazy");
+      frame.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share");
+      frame.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
+      frame.setAttribute("allowfullscreen", "");
+      container.replaceChildren(frame);
+    });
+  }
+
   function loadMonth(state, entry) {
     if (state.loaded.has(entry.month)) return Promise.resolve();
     if (state.pending.has(entry.month)) return state.pending.get(entry.month);
@@ -332,6 +354,7 @@
       updates.forEach(function (update) {
         var clone = document.importNode(update, true);
         clone.querySelectorAll("script").forEach(function (script) { script.remove(); });
+        restoreArchiveEmbeds(clone);
         clone.querySelectorAll("video[src]").forEach(function (video) {
           video.setAttribute("data-src", video.getAttribute("src"));
           video.removeAttribute("src");
