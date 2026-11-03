@@ -125,6 +125,8 @@ class MaintenanceTests(unittest.TestCase):
             shutil.copyfile(source, dest)
         # Controlled October fixtures must not depend on how many announcements
         # have been published in the live repository since the tests were added.
+        for path in root.glob('*/changelog-2026-10.mdx'):
+            path.unlink()
         for path in root.glob('*/changelog.mdx'):
             source = path.read_text()
             blocks = list(BLOCK.finditer(source))
