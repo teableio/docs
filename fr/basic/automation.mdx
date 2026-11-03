@@ -49,6 +49,16 @@ Les actions de script lisent ce nom dans une variable d’environnement telle qu
 
 Les identifiants eux-mêmes se trouvent dans **Paramètres** → **Intégrations**, voir [Identifiants et intégrations](/fr/basic/credential).
 
+### Workflows provenant de projets partagés ou de modèles
+
+Lorsque vous enregistrez une copie d’un projet partagé ou installez un modèle, les mots de passe SMTP et IMAP saisis directement dans ses workflows sont effacés. Les en-têtes HTTP courants, comme `Content-Type`, sont conservés ; les valeurs saisies directement dans les autres en-têtes sont effacées. Ajoutez vos propres identifiants et vérifiez les en-têtes HTTP avant d’activer le workflow. Pour les configurations qui font référence à des secrets ou à des connexions, associez vos propres identifiants.
+
+Si le workflow authentifie son Webhook avec un Bearer Token, la copie génère un nouveau jeton. Copiez l’URL du Webhook et le jeton depuis le panneau du déclencheur de la copie, puis mettez à jour le système externe.
+
+### Consulter les paramètres sensibles d’un workflow
+
+Avec un droit de consultation, mais sans droit de modification, les jetons Webhook, les mots de passe de messagerie saisis directement et les valeurs saisies directement dans les en-têtes HTTP non courants sont masqués.
+
 ## Historique des exécutions
 
 Ouvrez un workflow → **Historique des exécutions**. Le panneau d’historique répertorie chaque exécution avec son état, sa durée et les détails des étapes. Cliquez sur une exécution pour examiner les entrées/sorties de chaque étape.

@@ -49,6 +49,16 @@ Skriptaktionen lesen diesen Namen aus einer Umgebungsvariablen wie `process.env.
 
 Die Zugangsdaten selbst liegen unter **Einstellungen** → **Integrationen**, siehe [Zugangsdaten und Integrationen](/de/basic/credential).
 
+### Workflows aus geteilten Projekten oder Vorlagen
+
+Wenn Sie eine Kopie eines geteilten Projekts speichern oder eine Vorlage installieren, werden direkt eingegebene SMTP- und IMAP-Passwörter aus den Workflows entfernt. Übliche HTTP-Header wie `Content-Type` bleiben erhalten; direkt eingegebene Werte anderer Header werden gelöscht. Ergänzen Sie vor dem Aktivieren eigene Zugangsdaten und prüfen Sie die HTTP-Header. Verweise auf Secrets oder Verbindungen müssen Sie mit Ihren eigenen Zugangsdaten verknüpfen.
+
+Wenn der Workflow seinen Webhook mit einem Bearer-Token authentifiziert, erhält die Kopie ein neues Token. Kopieren Sie Webhook-URL und Token aus dem Trigger-Bereich der Kopie und aktualisieren Sie das externe System.
+
+### Vertrauliche Workflow-Einstellungen anzeigen
+
+Mit Lese-, aber ohne Bearbeitungsberechtigung werden Webhook-Token, direkt eingegebene E-Mail-Passwörter und direkt eingegebene Werte nicht üblicher HTTP-Header maskiert.
+
 ## Ausführungshistorie
 
 Öffnen Sie einen Workflow → **Ausführungshistorie**. Der Verlaufsbereich listet jede Ausführung mit Status, benötigter Zeit und Schrittdetails auf. Klicken Sie auf eine Ausführung, um die Ein- und Ausgabe pro Schritt zu prüfen.

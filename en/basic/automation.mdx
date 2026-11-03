@@ -50,6 +50,16 @@ Script actions read that name from an environment variable such as `process.env.
 
 Credentials themselves live in **Settings** → **Integrations**. See [Credentials and Integrations](/en/basic/credential).
 
+### Workflows from shared projects or templates
+
+When you save a copy of a shared project or install a template, directly entered SMTP and IMAP passwords are cleared from its workflows. Common HTTP headers such as `Content-Type` are preserved; directly entered values in other headers are cleared. Add your own credentials and check the HTTP headers before enabling the workflow. For configurations that reference secrets or connections, bind your own credentials.
+
+If the workflow authenticates its webhook with a Bearer Token, the copy generates a new token. Copy the Webhook URL and token from the copied workflow’s trigger panel and update the external system.
+
+### Viewing sensitive workflow settings
+
+With view permission but no edit permission, Webhook tokens, directly entered email passwords, and directly entered values in other HTTP headers are masked.
+
 ## Run history
 
 Open a workflow → **Run history**. The history panel lists each run with its status, time spent, and step details. Click a run to inspect per-step input/output.
