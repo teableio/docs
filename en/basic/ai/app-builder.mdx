@@ -113,7 +113,7 @@ Keep API keys, credentials, and configuration out of your source. An app uses **
 
 After you add a grant, remove one, or replace a credential value, the app preview environment uses the new value. The published app uses it only after you republish.
 
-Copying an app does not copy its credentials: the panel keeps **Not bound yet** placeholders, and **Bind mine** supplies your own. Copying or exporting a project, or using a template, doesn't carry the `.env` in the app's code either, and each copied app gets its own Teable access token. See [Credentials and Integrations](/en/basic/credential) for managing credentials and checking where they are used.
+Copying an app does not copy its credentials: the panel keeps **Not bound yet** placeholders, and **Bind mine** supplies your own. Copying or exporting a project, or using a template, doesn't carry the `.env` in the app's code either, and each copied app gets its own Teable access token. See [Credentials and Integrations](/en/basic/credential) for managing credentials and checking where they are used, and [Duplicate a Project to Another Space](/en/basic/base#duplicate-a-base-to-another-space) for how tables, records and the rest of a project are copied.
 
 #### Teable Access Token
 
@@ -122,7 +122,9 @@ An app's environment variables come from two sources:
 - **Platform-injected variables**: Teable provides them to every app, including the Teable access token (`TEABLE_APP_TOKEN`), the API endpoint, and the app and project IDs. With **AI access** on, the AI access endpoint and key are added.
 - **Credentials granted to the app**: the secrets and connections you grant in **Credentials & config**, described above.
 
-The Teable access token is the credential the app uses to read and write data, and it can access the whole project the app belongs to. It is used in the app preview environment and the published app. Teable never commits it to the app's repository, and downloaded code leaves it out by default. Normally each app has its own token, and deleting an app revokes its token.
+Personal access tokens (**Settings** → **Developer tools** → **Personal access tokens**) are never injected into an app, and app code doesn't need one; they are for calling Teable from outside the app. See [Credentials for External Services and MCP](#credentials-for-external-services-and-mcp).
+
+The Teable access token is the credential the app uses to read and write data. It can access the whole project the app belongs to; it can't be limited to some tables or fields, and it can't reach other projects. It is used in the app preview environment and the published app. Teable never commits it to the app's repository, and downloaded code leaves it out by default. Normally each app has its own token; see [When the Token Changes or Stops Working](#when-the-token-changes-or-stops-working).
 
 Rotate the token when:
 
@@ -145,6 +147,43 @@ When the app has AI access on, the confirmation lets you choose what to rotate: 
 Some apps from older project copies share one token. Rotating one of them also rotates every other app in the project that still shares it, each to its own new token, and a notice tells you how many were rotated.
 
 Teable's automatic redeploy only switches the token and never publishes changes you haven't published; republishing is you publishing the current version from the publish panel. If you see **Access token rotated, but the published app could not be updated automatically. Republish it.** or **Access token rotated. The published app has unpublished changes, so it was not updated automatically; it can't read data until you republish.**, or this app (or an app rotated with it) still can't read data after a few minutes, republish that app so it picks up the new token. If the preview can't read data, reload the preview.
+
+#### When the Token Changes or Stops Working
+
+| Action | Teable access token |
+| --- | --- |
+| Create an app | A new token is issued |
+| Copy an app, copy or import a project, use a template | Each copy gets its own new token; the original app's token is unchanged |
+| [Move the app to another project](/en/basic/base#move-resources-to-another-project) | Replaced with a new token, and the old one stops working at once. The preview switches to the new token and the published app is redeployed in the background, as after a rotation |
+| Publish, republish, roll back a version | Unchanged |
+| Unpublish | Unchanged; the token keeps working and the preview keeps using it |
+| Download code, copy the env variables | Unchanged; you get the same token every time until it is rotated |
+| Rotate | Replaced with a new token, and the old one stops working at once (see above) |
+| Delete the app | Stops working at once. If the app is restored from the trash, the same token works again |
+| On self-hosted instances, an admin re-mints tokens in System Admin after changing the JWT secret | Replaced with a new token, and the old one stops working |
+
+A token is issued with a 10-year lifetime and works until it is rotated or the app is deleted; it doesn't expire on its own. If you suspect a leak, rotate it. If you restore an app from the trash and its token may have leaked, rotate it after restoring.
+
+#### Audit Records
+
+These actions are recorded in the audit log:
+
+- **Rotate app access token**: a rotation from the **Platform credentials** card.
+- **Copy app env variables**: copying the env variables, which include the access token.
+- **Export app code**: downloading the code; the record shows whether the `.env` was included.
+
+When an app writes project data with its access token, the audit log shows **App Robot** as the operator. Per-token usage history and alerts aren't available, and reads aren't recorded.
+
+On self-hosted instances (Business plan and above), instance administrators view the log under **System Admin** → **Audit log**. Logs are kept for one month and can be filtered by user, space, project and operation type. See [Audit log](/en/basic/admin-panel/audit-log).
+
+{/* TODO(T8077): confirm where cloud users view the audit log, whether App Robot can be picked in the user filter, and whether the audit log can be exported. */}
+
+#### Credentials for External Services and MCP
+
+The Teable access token is only for the app itself. Don't use it in services outside the app; it can't be used to connect MCP either.
+
+- **External services calling the Teable API** (for example serverless functions, scripts or CI): use a [personal access token](/en/api-doc/token). Add only the projects or spaces and the scopes it needs, and set an expiry date. A personal access token acts as the user who created it.
+- **MCP clients**: connect with OAuth (recommended). The client acts as you, and you can remove it at any time under **Settings** → **Developer tools** → **MCP**. Where there's no browser, use a personal access token instead, again with only the projects and scopes it needs. See [Connect Through MCP](/en/basic/ai/teable-skill#connect-through-mcp).
 
 #### Manage App Files
 
