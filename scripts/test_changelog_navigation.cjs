@@ -74,23 +74,84 @@ test('changelog navigation preserves the upstream date layout without injecting 
   assert.equal(created, 0);
 });
 
-function readerHarness() {
+function readerHarness(overrides = {}) {
   const document = {
     documentElement: { setAttribute() {} },
     getElementById() { return null; },
     querySelectorAll() { return []; },
+    ...overrides,
   };
   const window = {
     location: { pathname: '/en/basic', hash: '' },
     addEventListener() {}, clearTimeout() {}, setTimeout() {},
   };
   const exposed = source.replace('  collectPairs();\n})();', `
-    window.reader = { pageMonth, nextMonth, updateReadingMonth,
+    window.reader = { pageMonth, nextMonth, updateReadingMonth, restoreArchiveEmbeds,
       setState(state) { monthReader = state; } };
   })();`);
   vm.runInNewContext(exposed, { document, window, MutationObserver: class { observe() {} } });
   return window.reader;
 }
+
+test('imported Mintlify placeholders become playable, localized, lazy YouTube embeds', () => {
+  const frames = [];
+  const reader = readerHarness({ createElement(tag) {
+    const frame = { tag, attributes: {}, style: {}, setAttribute(k, v) { this.attributes[k] = v; } };
+    frames.push(frame);
+    return frame;
+  } });
+  const sources = [
+    ['https://www.youtube.com/embed/3SpdKgGTQFg', 'Teable 正式上架 App Store 和 Google Play'],
+    ['https://www.youtube.com/embed/rI9w7p17ukQ', 'Introducing Teable 3.0'],
+  ];
+  const containers = sources.map(([src, title]) => ({
+    children: [{ tag: 'div', placeholder: true }],
+    querySelector() { return this.children.find(child => child.tag === 'iframe'); },
+    getAttribute(key) { return key === 'data-changelog-youtube' ? src : title; },
+    replaceChildren(child) { this.children = [child]; },
+  }));
+  const root = { querySelectorAll() { return containers; } };
+  reader.restoreArchiveEmbeds(root);
+  assert.equal(frames.length, 2);
+  for (let i = 0; i < frames.length; i++) {
+    assert.deepEqual(containers[i].children, [frames[i]]);
+    assert.equal(frames[i].attributes.src, sources[i][0]);
+    assert.equal(frames[i].attributes.title, sources[i][1]);
+    assert.equal(frames[i].attributes.loading, 'lazy');
+    assert.equal(frames[i].attributes.referrerpolicy, 'strict-origin-when-cross-origin');
+    assert.equal(frames[i].attributes.allowfullscreen, '');
+    assert.equal(frames[i].style.aspectRatio, '16 / 9');
+  }
+  reader.restoreArchiveEmbeds(root);
+  assert.equal(frames.length, 2, 'existing players must not be replaced or restarted');
+});
+
+test('archive embeds reject non-YouTube or malformed sources', () => {
+  const reader = readerHarness({ createElement() { throw Error('unexpected iframe'); } });
+  for (const src of ['javascript:alert(1)', 'https://example.com/embed/3SpdKgGTQFg',
+    'https://www.youtube.com.evil.test/embed/3SpdKgGTQFg', 'https://www.youtube.com/embed/', null]) {
+    reader.restoreArchiveEmbeds({ querySelectorAll() { return [{
+      querySelector() { return null; }, getAttribute() { return src; },
+    }]; } });
+  }
+});
+
+test('every changelog YouTube iframe retains matching archive metadata in all locales', () => {
+  let count = 0;
+  for (const locale of Object.keys(manifest)) {
+    for (const name of fs.readdirSync(path.join(root, locale)).filter(name => /^changelog.*\.mdx$/.test(name))) {
+      const content = fs.readFileSync(path.join(root, locale, name), 'utf8');
+      for (const match of content.matchAll(/<iframe\b[\s\S]*?\/>/g)) {
+        const src = match[0].match(/src="([^"]+)"/)[1];
+        if (!src.startsWith('https://www.youtube.com/embed/')) continue;
+        const title = match[0].match(/title="([^"]+)"/)[1];
+        assert.ok(content.slice(0, match.index).endsWith(`<div data-changelog-youtube="${src}" data-changelog-video-title="${title}">\n`), `${locale}/${name} needs archive embed metadata`);
+        count++;
+      }
+    }
+  }
+  assert.ok(count >= 22, 'existing videos in all 11 locales remain covered');
+});
 
 test('month detection skips legacy title aliases and accepts localized dated headings', () => {
   const reader = readerHarness();

@@ -142,6 +142,13 @@ Run `node --test scripts/test_changelog_navigation.cjs` and the publisher tests
 when changing history navigation. RSS generation and hosted permanent redirects
 need a deployed preview; the local CLI does not serve RSS feeds.
 
+Wrap YouTube iframes in a `<div data-changelog-youtube="https://www.youtube.com/embed/VIDEO_ID"
+data-changelog-video-title="Localized video title">` with the same URL and title
+as the iframe. Mintlify's server HTML only contains a placeholder for the player;
+the month reader uses these attributes to restore it when importing an archive.
+Keep the iframe inside the wrapper for normal direct-page rendering. The
+navigation tests check this metadata in every language's changelog.
+
 For this large multilingual repository, a reliable local preview command is:
 
 ```bash
