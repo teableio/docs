@@ -75,9 +75,15 @@ Sınırsız özelleştirme için koda doğrudan erişebilirsiniz.
 Uygulamanın tamamını istediğiniz zaman ZIP arşivi olarak indirebilirsiniz:
 1. Düzenleyicide **Kod** sekmesine geçin.
 2. Sekme çubuğundaki **`...`** menüsüne tıklayın.
-3. Tüm kaynak dosyalarını içeren bir ZIP arşivi kaydetmek için **Kodu indir**'i seçin.
+3. **Kodu indir**'i seçin, ardından tüm kaynak dosyalarını içeren bir ZIP arşivi kaydetmek için iletişim kutusunda yeniden **Kodu indir**'e tıklayın.
 
-Arşivin kökünde bir `.env` dosyası bulunur ve içinde yalnızca platformun eklediği çalışma zamanı değişkenleri, erişim token'ı dahil, yer alır; uygulamaya verilen kimlik bilgileri bu dosyada değildir. ZIP dosyasını paylaşmadan önce içeriği inceleyin.
+ZIP varsayılan olarak uygulamanın geçerli kimlik bilgilerini içermez. Arşivin kökünde, [platformun eklediği çalışma zamanı değişkenlerini](#teable-access-token) (Teable'ın her uygulamaya otomatik olarak eklediği değişkenler) Teable erişim token'ı ile AI erişim anahtarının değerleri boş bırakılmış şekilde listeleyen bir `.env.example` dosyası ve `.env` dosyalarını Git dışında tutan bir `.gitignore` dosyası bulunur.
+
+Kodu hemen yerelde çalıştırmak için iletişim kutusunda **Geçerli kimlik bilgilerini içeren .env dosyasını dahil et** seçeneğini işaretleyin. Bu durumda ZIP bunun yerine gerçek `.env` dosyasını içerir: Teable erişim token'ı ve AI erişimi açıksa AI erişim anahtarı dahil olmak üzere platformun eklediği çalışma zamanı değişkenleri. Uygulamaya verilen kimlik bilgileri bu dosyada yer almaz.
+
+<Warning>
+Bu `.env` dosyasına sahip olan herkes, uygulamanın ait olduğu Projedeki tüm verileri okuyup değiştirebilir. Dosyayı bir depoya commit etmeyin veya paylaşmayın; sızmış olabileceğini düşünüyorsanız [Teable erişim token'ını değiştirin](#teable-access-token).
+</Warning>
 
 #### Kodu İçe Aktarma
 Bir ZIP dosyasını içe aktararak uygulamanın kodunu güncelleyebilirsiniz:
@@ -107,7 +113,74 @@ API anahtarlarını, kimlik bilgilerini ve yapılandırma değerlerini kaynak ko
 
 Bir yetki ekledikten, kaldırdıktan veya bir kimlik bilgisinin değerini değiştirdikten sonra uygulamanın önizleme ortamı yeni değeri kullanır. Yayımlanmış uygulama ise ancak yeniden yayımladığınızda kullanır.
 
-Bir uygulamayı kopyalamak kimlik bilgilerini kopyalamaz: panelde **Henüz bağlanmadı** yer tutucuları kalır, **Benimkini bağla** ile kendi kimlik bilginizi verirsiniz. Kimlik bilgilerinin yönetimi ve nerede kullanıldıkları için bkz. [Kimlik Bilgileri ve Entegrasyonlar](/tr/basic/credential).
+Bir uygulamayı kopyalamak kimlik bilgilerini kopyalamaz: panelde **Henüz bağlanmadı** yer tutucuları kalır, **Benimkini bağla** ile kendi kimlik bilginizi verirsiniz. Bir Projeyi kopyalamak veya dışa aktarmak ya da bir şablon kullanmak da uygulama kodundaki `.env` dosyasını taşımaz ve kopyalanan her uygulama kendi Teable erişim token'ını alır. Kimlik bilgilerinin yönetimi ve nerede kullanıldıkları için bkz. [Kimlik Bilgileri ve Entegrasyonlar](/tr/basic/credential); Tabloların, Kayıtların ve Projenin geri kalanının nasıl kopyalandığı için bkz. [Projeyi Başka Bir Alana Çoğaltma](/tr/basic/base#duplicate-a-base-to-another-space).
+
+#### Teable Erişim Token'ı {#teable-access-token}
+
+Bir uygulamanın ortam değişkenleri iki kaynaktan gelir:
+
+- **Platformun eklediği değişkenler**: Teable bunları her uygulamaya sağlar; Teable erişim token'ı (`TEABLE_APP_TOKEN`), API uç noktası ve uygulama ile Proje kimlikleri bunlara dahildir. **Yapay zekâ erişimi** açıkken AI erişimi uç noktası ve anahtarı da eklenir.
+- **Uygulamaya verilen kimlik bilgileri**: **Kimlik bilgileri ve yapılandırma** bölümünde verdiğiniz, yukarıda açıklanan gizli anahtarlar ve bağlantılar.
+
+Kişisel erişim token'ları (**Ayarlar** → **Geliştirici araçları** → **Kişisel erişim tokenleri**) hiçbir zaman uygulamaya eklenmez ve uygulama kodunun bunlara ihtiyacı yoktur; bu token'lar Teable'ı uygulamanın dışından çağırmak içindir. Bkz. [Dış Servisler ve MCP İçin Kimlik Bilgileri](#credentials-for-external-services-and-mcp).
+
+Teable erişim token'ı, uygulamanın verileri okuyup yazmak için kullandığı kimlik bilgisidir. Uygulamanın ait olduğu Projenin tamamına erişebilir; yalnızca bazı Tablolarla veya Alanlarla sınırlandırılamaz ve başka Projelere erişemez. Uygulamanın önizleme ortamında ve yayımlanmış uygulamada kullanılır. Teable bu token'ı uygulamanın deposuna hiçbir zaman commit etmez ve indirilen kod varsayılan olarak onu içermez. Normalde her uygulamanın kendi token'ı vardır; bkz. [Token'ın Değiştiği veya Geçersiz Olduğu Durumlar](#when-the-token-changes-or-stops-working).
+
+Şu durumlarda token'ı değiştirin:
+
+- Token sızmış olabilir; örneğin bir `.env` dosyası bir depoya commit edildi ya da bir GitHub issue'suna, bir forum gönderisine veya bir sohbete yapıştırıldı.
+- Ortam değişkenlerini kopyalamış veya kodu `.env` dosyasıyla birlikte indirmiş bir üye artık Projede çalışmıyor.
+- Uygulamanın kodu `.env` dosyasıyla birlikte başka birine verildi.
+
+Sohbet panelinde **+** → **Daha Fazla** → **Kimlik bilgileri ve yapılandırma** yolunu açın ve **Platform kimlik bilgileri** kartının sağ üst köşesindeki **Değiştir**'e tıklayın. Teable erişim token'ı ve AI erişim anahtarı burada değiştirilir; bunun için uygulamayı düzenleme erişiminizin olması gerekir.
+
+Uygulamada AI erişimi açıksa onay penceresinde neyi değiştireceğinizi seçebilirsiniz: **Teable erişim belirteci**, **Yapay zekâ erişim anahtarı** veya varsayılan seçim olan ikisi birden. Bir `.env` dosyası iki değeri de içerdiğinden dosyanın sızdığından şüpheleniyorsanız ikisini birden değiştirin. Birini de değiştirseniz ikisini de değiştirseniz önizleme ve yayımlanmış uygulama yalnızca bir kez güncellenir. Onay penceresi, seçtiğiniz öğelerin etkilerini listeler.
+
+| Öğe | Değiştirdikten sonra |
+| --- | --- |
+| Eski token | Hemen çalışmayı durdurur |
+| Çalışan önizleme | Yeniden başlatılmadan yeni token'a geçer |
+| Yayımlanmış uygulama | Teable uygulamayı arka planda yeni token'la yeniden dağıtır; Sürüm geçmişinde yeni bir kayıt görünmez. Yeniden dağıtım tamamlanana kadar (genellikle birkaç dakika) uygulama Proje verilerini okuyamaz ve yazamaz. Uygulamada yayımlanmamış değişiklikler varsa otomatik olarak yeniden dağıtılmaz (bu, söz konusu değişiklikleri yayımlamak anlamına gelirdi) ve uygulamayı yeniden yayımlamanız gerekir |
+| Oturum açmış uygulama kullanıcıları | Uygulama [Uygulama Girişi](#uygulama-girişi) kullanıyorsa ziyaretçilerin yeniden oturum açması gerekir |
+| Yerel `.env` ve indirilen kod | İçlerindeki eski token artık çalışmaz; ortam değişkenlerini yeniden kopyalayın veya kodu **Geçerli kimlik bilgilerini içeren .env dosyasını dahil et** seçiliyken indirin |
+
+Eski Proje kopyalarından gelen bazı uygulamalar tek bir token'ı paylaşır. Bunlardan birinin token'ını değiştirdiğinizde Projede bu token'ı hâlâ paylaşan diğer tüm uygulamaların token'ı da değiştirilir; her biri kendi yeni token'ını alır ve bir bildirim kaç uygulamanın değiştirildiğini söyler.
+
+Teable'ın otomatik yeniden dağıtımı yalnızca token'ı değiştirir ve yayımlamadığınız değişiklikleri hiçbir zaman yayımlamaz; yeniden yayımlama ise mevcut sürümü yayımlama menüsünden sizin yayımlamanızdır. **Kimlik bilgileri değiştirildi, ancak yayımlanmış uygulama otomatik olarak güncellenemedi. Yeniden yayımlayın.** veya **Kimlik bilgileri değiştirildi. Yayımlanmış uygulamada yayımlanmamış değişiklikler olduğu için otomatik olarak güncellenmedi; yeniden yayımladığınızda yeni değerleri kullanır.** mesajını görürseniz ya da bu uygulama (veya token'ı onunla birlikte değiştirilen bir uygulama) birkaç dakika sonra hâlâ veri okuyamıyorsa, yeni token'ı alması için o uygulamayı yeniden yayımlayın. Önizleme veri okuyamıyorsa önizlemeyi yeniden yükleyin.
+
+#### Token'ın Değiştiği veya Geçersiz Olduğu Durumlar {#when-the-token-changes-or-stops-working}
+
+| İşlem | Teable erişim token'ı |
+| --- | --- |
+| Uygulama oluşturma | Yeni bir token verilir |
+| Uygulamayı kopyalama, Projeyi kopyalama veya içe aktarma, şablon kullanma | Her kopya kendi yeni token'ını alır; özgün uygulamanın token'ı değişmez |
+| [Uygulamayı başka bir Projeye taşıma](/tr/basic/base#kaynakları-başka-bir-projeye-taşıma) | Yerine yeni bir token gelir ve eski token hemen çalışmayı durdurur. Token değiştirildiğinde olduğu gibi önizleme yeni token'a geçer ve yayımlanmış uygulama arka planda yeniden dağıtılır |
+| Yayımlama, yeniden yayımlama, önceki bir sürüme geri alma | Değişmez |
+| Yayından kaldırma | Değişmez; token çalışmaya devam eder ve önizleme onu kullanmayı sürdürür |
+| Kodu indirme, ortam değişkenlerini kopyalama | Değişmez; token değiştirilene kadar her seferinde aynı token'ı alırsınız |
+| Token'ı değiştirme | Yerine yeni bir token gelir ve eski token hemen çalışmayı durdurur (yukarıya bakın) |
+| Uygulamayı silme | Hemen çalışmayı durdurur. Uygulama çöp kutusundan geri yüklenirse aynı token yeniden çalışır |
+
+Token 10 yıllık bir geçerlilik süresiyle verilir ve değiştirilene veya uygulama silinene kadar çalışır; süresi kendiliğinden dolmaz. Sızıntıdan şüpheleniyorsanız token'ı değiştirin. Bir uygulamayı çöp kutusundan geri yüklüyorsanız ve token'ı sızmış olabilirse geri yükledikten sonra token'ı değiştirin.
+
+#### Denetim Kayıtları {#audit-records}
+
+Aşağıdaki işlemler denetim günlüğüne kaydedilir:
+
+- **Uygulama erişim belirtecini değiştir** ve **Uygulama yapay zekâ anahtarını yenile**: **Platform kimlik bilgileri** kartından yapılan bir değiştirme işlemi, değiştirilen her kimlik bilgisi için bir girdi kaydeder.
+- **Uygulama ortam değişkenlerini kopyala**: erişim token'ını içeren ortam değişkenlerinin kopyalanması.
+- **Uygulama kodunu dışa aktar**: kodun indirilmesi; kayıt, `.env` dosyasının dahil edilip edilmediğini gösterir.
+
+Bir uygulama erişim token'ıyla Proje verilerine yazdığında denetim günlüğü operatör olarak **App Robot**'u gösterir. Token bazında kullanım geçmişi ve uyarılar sunulmaz; okuma işlemleri de kaydedilmez.
+
+Kendi sunucunuzda barındırılan örneklerde (Business ve üzeri planlar) örnek yöneticileri günlüğü **Sistem Yönetimi** → **Denetim günlüğü** altında görüntüler. Günlükler bir ay saklanır ve kullanıcıya, Alana, Projeye ve işlem türüne göre filtrelenebilir; yukarıdaki girdiler **Uygulamalar** altında yer alır. Bkz. [Denetim günlüğü](/tr/basic/admin-panel/audit-log).
+
+#### Dış Servisler ve MCP İçin Kimlik Bilgileri {#credentials-for-external-services-and-mcp}
+
+Teable erişim token'ı yalnızca uygulamanın kendisi içindir. Bu token'ı uygulamanın dışındaki servislerde kullanmayın; MCP bağlantısı için de kullanılamaz.
+
+- **Teable API'sini çağıran dış servisler** (örneğin sunucusuz işlevler, betikler veya CI): bir [kişisel erişim token'ı](/tr/api-doc/token) kullanın. Yalnızca ihtiyaç duyduğu Projeleri veya Alanları ve izin kapsamlarını ekleyin ve bir son kullanma tarihi belirleyin. Kişisel erişim token'ı, onu oluşturan kullanıcı olarak işlem yapar.
+- **MCP istemcileri**: OAuth ile bağlanın (önerilir). İstemci sizin adınıza işlem yapar ve onu istediğiniz zaman **Ayarlar** → **Geliştirici araçları** → **MCP** altından kaldırabilirsiniz. Tarayıcı olmayan ortamlarda bunun yerine kişisel erişim token'ı kullanın ve yine yalnızca ihtiyaç duyulan Projeleri ve izin kapsamlarını verin. Bkz. [MCP ile Bağlanma](/tr/basic/ai/teable-skill#mcp-ile-bağlanma).
 
 #### Uygulama Dosyalarını Yönetme
 
@@ -122,6 +195,8 @@ App Builder'a "Destek talepleri için bir AI yanıt asistanı ekle" veya "Her fo
 <Info>
 App Builder AI özelliğini ekledikten sonra uygulama önizlemesi yeni sürümü kullanır. Yayımlanan uygulama ise bu sürümü ancak yeniden yayımladıktan sonra kullanır.
 </Info>
+
+AI erişim anahtarını da Teable ekler ve **Platform kimlik bilgileri** kartı bu anahtarı erişim token'ının yanında gösterir. Anahtarı yenilemek için karttaki **Değiştir**'e tıklayıp yalnızca **Yapay zekâ erişim anahtarı** seçeneğini işaretleyin: eski anahtar hemen çalışmayı durdurur, çalışan önizleme yeni anahtara geçer ve yayımlanmış uygulama arka planda yeniden dağıtılır; bu işlem bitene kadar uygulamanın AI çağrıları başarısız olur. Yalnızca AI erişim anahtarını değiştirmek ziyaretçilerin oturumunu kapatmaz. Uygulamada yayımlanmamış değişiklikler varsa uygulama otomatik olarak yeniden dağıtılmaz; birkaç dakika sonra AI çağrıları hâlâ başarısız oluyorsa uygulamayı yeniden yayımlayın.
 
 ## Kodu GitHub ile Eşitleme
 
@@ -170,23 +245,23 @@ Teable, dalınıza hiçbir zaman zorla gönderim yapmaz. Geçmişler ayrıştı�
 
 ### Ortam Değişkenleri ve Yerel Geliştirme
 
-Depo yalnızca kaynak kodu barındırır. Teable, adı `.env` ile başlayan hiçbir dosyayı göndermez: proje kökünde, alt klasörlerde veya commit geçmişinde. Ortam değerleri uygulamaya verilen kimlik bilgilerinden gelir, **Kimlik bilgileri ve yapılandırma** bölümünde tutulur ve git'e hiçbir zaman girmez. Deponun `.gitignore` dosyasında `.env*` zaten yer aldığından yerel bir klon bu dosyalardan birini yanlışlıkla commit etmez.
+Depo yalnızca kaynak kodu barındırır. Teable, adı `.env` ile başlayan hiçbir dosyayı göndermez: proje kökünde, alt klasörlerde veya commit geçmişinde. Ortam değerleri platformun eklediği değişkenlerden ve uygulamaya verilen kimlik bilgilerinden gelir (bkz. [Teable Erişim Token'ı](#teable-access-token)); bunları Teable yönetir ve Git'e hiçbir zaman girmezler. Deponun `.gitignore` dosyasında `.env*` zaten yer aldığından yerel bir klon bu dosyalardan birini yanlışlıkla commit etmez.
 
 Uygulamayı kendi bilgisayarınızda çalıştırmak için:
 
 <Steps>
   <Step title="Klonlayın ve yükleyin">Depoyu klonlayıp `pnpm install` komutunu çalıştırın.</Step>
-  <Step title="Değişkenleri kopyalayın">GitHub panelinde **Yerel env değişkenlerini kopyala**'ya tıklayın, ardından pano içeriğini proje kökündeki bir `.env` dosyasına yapıştırın.</Step>
+  <Step title="Değişkenleri kopyalayın">GitHub panelinde veya **Kimlik bilgileri ve yapılandırma** bölümünde **Ortam değişkenlerini panoya kopyala**'ya tıklayın, ardından pano içeriğini proje kökündeki bir `.env` dosyasına yapıştırın.</Step>
   <Step title="Uygulamayı başlatın">`pnpm dev` komutunu çalıştırın.</Step>
 </Steps>
 
-Kopyalanan içerik yalnızca platformun eklediği çalışma zamanı değişkenlerinden oluşur: API uç noktası, erişim token'ı ve AI erişimi değişkenleri. Düğmenin altında da **Yalnızca platform tarafından eklenen çalışma zamanı değişkenleri — verilen kimlik bilgileri dahil değildir** yazar. Uygulamaya verilen kimlik bilgileri Teable'dan çıkmaz; yerel çalıştırma bunlara ihtiyaç duyuyorsa ilgili değerleri `.env` dosyasına kendiniz ekleyin.
+Kopyalanan içerik yalnızca platformun eklediği çalışma zamanı değişkenlerinden oluşur: API uç noktası, erişim token'ı ve AI erişimi değişkenleri. **Kimlik bilgileri ve yapılandırma** bölümünde düğmenin yanında ayrıca **Yalnızca platform tarafından eklenen çalışma zamanı değişkenleri — verilen kimlik bilgileri dahil değildir** notu yer alır. Ne kopyalanan değişkenler ne de indirilen kod uygulamaya verilen kimlik bilgilerini içerir; yerel hata ayıklama için ihtiyaç duyduklarınızı `.env` dosyasına kendiniz ekleyin.
 
 <Warning>
-Bu dosyadaki `TEABLE_APP_TOKEN` satırı uygulamanın verilerine erişim sağlar; bu nedenle yalnızca uygulamayı düzenleme erişimi olan üyeler bu satırı kopyalayabilir. Dosyayı asla commit etmeyin ve bir issue'ya veya pull request'e hiçbir zaman yapıştırmayın.
+Bu dosyadaki `TEABLE_APP_TOKEN` satırı uygulamanın verilerine erişim sağlar; bu nedenle yalnızca uygulamayı düzenleme erişimi olan üyeler bu satırı kopyalayabilir. Dosyayı asla commit etmeyin ve bir issue'ya veya pull request'e hiçbir zaman yapıştırmayın. Sızmış olabileceğini düşünüyorsanız [Teable erişim token'ını değiştirin](#teable-access-token).
 </Warning>
 
-Uygulamanın canlıda kullandığı bir kimlik bilgisini eklemek veya değiştirmek için Teable'daki **Kimlik bilgileri ve yapılandırma** bölümünü kullanın; yerel dosyayı düzenlemenin veya GitHub'a `.env` commit etmenin bir etkisi olmaz. Erişim token'ının yeniden üretilmesi gibi bir platform değişkeni değiştiğinde, yerel `.env` dosyanızı yenilemek için değişkenleri tekrar kopyalayın.
+Uygulamanın canlıda kullandığı bir kimlik bilgisini eklemek veya değiştirmek için Teable'daki **Kimlik bilgileri ve yapılandırma** bölümünü kullanın; yerel dosyayı düzenlemenin veya GitHub'a `.env` commit etmenin bir etkisi olmaz. Teable erişim token'ının veya AI erişim anahtarının değiştirilmesi gibi bir platform değişkeni değiştiğinde, yerel `.env` dosyanızı yenilemek için değişkenleri tekrar kopyalayın.
 
 ### Deponun Bağlantısını Kaldırma
 
@@ -316,6 +391,10 @@ Bir uygulamayı silmek için üstbilgideki **Ayarlar** (dişli simgesi) düğmes
 
   <Accordion title="Uygulama kodunu nasıl indirir veya içe aktarırım?">
     Düzenleyicide **Kod** sekmesine geçip sekme çubuğundaki **`...`** menüsüne tıklayın, ardından **Kodu indir** veya **Kodu içe aktar** seçeneğini belirleyin. İçe aktarılan ZIP dosyaları en fazla 20 MB olabilir ve mevcut projenin yerini alır; bu nedenle korumak istediğiniz tüm kaynak dosyalarını dahil edin. İçe aktarılan proje kök dizinde `package.json` içermelidir. Kök `.env` dosyasındaki özel değişkenler sizin gizli anahtarlarınız olarak kaydedilir ve aynı adlarla uygulamaya verilir.
+  </Accordion>
+
+  <Accordion title="Bir uygulamanın erişim token'ı sızarsa ne yapmalıyım?">
+    Sohbet panelinde **+** → **Daha Fazla** → **Kimlik bilgileri ve yapılandırma** yolunu açın ve **Platform kimlik bilgileri** kartındaki **Değiştir**'e tıklayın; uygulamada AI erişimi açıksa iki kimlik bilgisini de seçili bırakın. Eski token hemen çalışmayı durdurur; önizleme ve yayımlanmış uygulama otomatik olarak yeni token'a geçer. Yayımlanmış uygulama yeniden dağıtılırken (genellikle birkaç dakika) veri okuyamaz ve yazamaz; uygulamada giriş açıksa ziyaretçilerin yeniden oturum açması gerekir. Bkz. [Teable Erişim Token'ı](#teable-access-token).
   </Accordion>
 
   <Accordion title="Giriş ayarları canlı uygulamaya ne zaman uygulanır?">
