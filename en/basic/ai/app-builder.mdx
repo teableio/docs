@@ -146,7 +146,7 @@ When the app has AI access on, the confirmation lets you choose what to rotate: 
 
 Some apps from older project copies share one token. Rotating one of them also rotates every other app in the project that still shares it, each to its own new token, and a notice tells you how many were rotated.
 
-Teable's automatic redeploy only switches the token and never publishes changes you haven't published; republishing is you publishing the current version from the publish panel. If you see **Access token rotated, but the published app could not be updated automatically. Republish it.** or **Access token rotated. The published app has unpublished changes, so it was not updated automatically; it can't read data until you republish.**, or this app (or an app rotated with it) still can't read data after a few minutes, republish that app so it picks up the new token. If the preview can't read data, reload the preview.
+Teable's automatic redeploy only switches the token and never publishes changes you haven't published; republishing is you publishing the current version from the publish panel. If you see **Credentials rotated, but the published app couldn't be updated automatically. Republish it.** or **Credentials rotated. The published app has unpublished changes, so it wasn't updated automatically; it picks up the new values when you republish.**, or this app (or an app rotated with it) still can't read data after a few minutes, republish that app so it picks up the new token. If the preview can't read data, reload the preview.
 
 #### When the Token Changes or Stops Working
 
@@ -160,7 +160,6 @@ Teable's automatic redeploy only switches the token and never publishes changes 
 | Download code, copy the env variables | Unchanged; you get the same token every time until it is rotated |
 | Rotate | Replaced with a new token, and the old one stops working at once (see above) |
 | Delete the app | Stops working at once. If the app is restored from the trash, the same token works again |
-| On self-hosted instances, an admin re-mints tokens in System Admin after changing the JWT secret | Replaced with a new token, and the old one stops working |
 
 A token is issued with a 10-year lifetime and works until it is rotated or the app is deleted; it doesn't expire on its own. If you suspect a leak, rotate it. If you restore an app from the trash and its token may have leaked, rotate it after restoring.
 
@@ -175,8 +174,6 @@ These actions are recorded in the audit log:
 When an app writes project data with its access token, the audit log shows **App Robot** as the operator. Per-token usage history and alerts aren't available, and reads aren't recorded.
 
 On self-hosted instances (Business plan and above), instance administrators view the log under **System Admin** → **Audit log**. Logs are kept for one month and can be filtered by user, space, project and operation type. See [Audit log](/en/basic/admin-panel/audit-log).
-
-{/* TODO(T8077): confirm where cloud users view the audit log, whether App Robot can be picked in the user filter, and whether the audit log can be exported. */}
 
 #### Credentials for External Services and MCP
 
