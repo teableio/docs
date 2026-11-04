@@ -1,0 +1,162 @@
+---
+title: "Custom domains for published apps on self-hosted Teable"
+description: "Give an app built with App Builder a friendlier address under your Teable domain, or serve it on a separate domain such as crm.example.org with Docker or Kubernetes."
+sidebarTitle: "App Domains"
+---
+
+Every app you publish with App Builder gets its own address under your
+deployment's domain:
+
+```text
+https://<name>.app.<your-domain>      e.g. https://crm.app.teable.example.com
+```
+
+That address is already on your own domain. There are two ways to change it:
+
+| You want | Who does it | Go to |
+|---|---|---|
+| A readable name, e.g. `crm.app.teable.example.com` instead of a random ID | Anyone who can edit the app, in the app editor | [Rename the access link](#rename-the-access-link) |
+| A completely separate domain, e.g. `crm.example.org` | Your server administrator, once per domain | [Serve an app on a separate domain](#serve-an-app-on-a-separate-domain) |
+
+## Rename the access link
+
+It takes effect immediately, with no DNS or certificate changes.
+
+1. Open the app in the app editor and click **Publish**.
+2. Next to **Access link**, click the edit icon.
+3. Type the new name (lowercase letters, numbers and hyphens, starting and
+   ending with a letter or number), then click **Confirm**.
+
+<img
+  src="/images/selfhosted/app-domains/2026-11-04-app-domains-rename-access-link.png"
+  alt="Publish panel of a published app: the edit icon next to the access link, then the name field with Cancel and Confirm"
+  className="docs-screenshot"
+/>
+
+The app is now available at `https://<new-name>.app.<your-domain>`. If you
+had renamed it before, the previous name stops working, so update any links
+you have shared.
+
+## Serve an app on a separate domain
+
+Use this when an app must live outside your Teable domain, for example a
+customer portal at `portal.example.org`. Visitors keep seeing your domain in
+the address bar; nothing is redirected.
+
+<img
+  src="/images/selfhosted/app-domains/2026-11-04-app-domains-request-flow.png"
+  alt="Request flow: the visitor opens portal.example.org, DNS points it at your Teable server, and the server routes it to the app published at portal.app.teable.example.com"
+  className="docs-screenshot"
+/>
+
+You need:
+
+- The app's current access link, e.g. `portal.app.teable.example.com`.
+- Access to the DNS settings of the separate domain.
+- Access to the server (Docker) or the Helm values (Kubernetes) of your
+  deployment.
+
+### Step 1: Point the domain at your deployment
+
+Add one DNS record for the separate domain:
+
+| Domain | Record |
+|---|---|
+| A subdomain, e.g. `portal.example.org` | `CNAME` → the app's access link, e.g. `portal.app.teable.example.com` |
+| A root domain, e.g. `example.org` | `A` → your server's (or ingress load balancer's) public IP. Most DNS providers do not allow `CNAME` on a root domain. |
+
+Check it before moving on: `dig +short portal.example.org` should return your
+access link or your server's IP.
+
+### Step 2: Map the domain to the app
+
+<Tabs>
+<Tab title="Docker">
+Add the mapping to `.env` in your deployment directory. Separate several
+mappings with commas, without spaces:
+
+```bash .env
+APP_CUSTOM_DOMAINS=portal.example.org=portal.app.teable.example.com
+```
+
+Apply it:
+
+```bash
+./apply.sh server --with-app    # leave out --with-app if you run the runtime plane only
+docker compose up -d
+```
+
+**Certificates** are handled for you:
+
+- If your own certificate (`TLS_CERT_FILE`) already covers the domain, it is
+  used.
+- Otherwise a Let's Encrypt certificate is requested and renewed
+  automatically. This needs the domain to resolve to the server and ports
+  80 and 443 to be reachable from the internet.
+
+On an intranet with no inbound internet access, add the domain to the
+certificate you provide in `TLS_CERT_FILE` instead.
+</Tab>
+<Tab title="Kubernetes">
+Add the mapping to your Helm values:
+
+```yaml values.yaml
+appRuntime:
+  customDomains:
+    - host: portal.example.org
+      target: portal.app.teable.example.com
+```
+
+Apply it:
+
+```bash
+helm upgrade <release> <chart> -n <namespace> -f values.yaml
+```
+
+**Certificates**: by default the chart asks cert-manager for a Let's Encrypt
+certificate over HTTP-01, which needs the domain to resolve to your ingress
+controller's public address. On a private network, create a TLS secret for
+the domain in the namespace you installed the chart into, and reference it:
+
+```yaml values.yaml
+appRuntime:
+  customDomains:
+    - host: portal.example.org
+      target: portal.app.teable.example.com
+      tlsSecretName: portal-example-org-tls
+```
+
+If TLS ends at a load balancer in front of the cluster, add the domain's
+certificate there instead.
+</Tab>
+</Tabs>
+
+### Step 3: Check it
+
+Open `https://portal.example.org`. The app loads and the address bar stays on
+`portal.example.org`. From a terminal:
+
+```bash
+curl -sI https://portal.example.org    # expect 200, with no redirect to the access link
+```
+
+The app's original access link keeps working. Apps that require sign-in
+bring visitors back to this domain after they sign in; when several domains
+point to the same app, they return to the first one listed.
+
+### Changing or removing a domain
+
+- **To move a domain to another app**, map it to the other app's access link
+  and apply again.
+- **After renaming or unpublishing the app**, update or remove its mapping
+  right away: the freed access link can be taken by another app.
+- **To remove a domain**, delete its mapping and apply again, then remove the
+  DNS record.
+
+## Troubleshooting
+
+| Symptom | Likely cause |
+|---|---|
+| `app_runtime_host_not_bound` error | The mapped access link does not match the app's current one (for example after a rename), or the app is not published. |
+| Blank page or certificate warning | The domain is not in the mapping or the configuration was not applied; DNS does not point at your deployment yet; port 80 is blocked, so Let's Encrypt cannot verify the domain; or your own certificate does not include the domain. |
+| The browser cannot find the domain | The DNS record is missing or has not propagated. Check it with `dig +short <domain>`. |

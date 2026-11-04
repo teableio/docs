@@ -1,0 +1,139 @@
+---
+title: "Dominios personalizados para aplicaciones publicadas en Teable autoalojado"
+description: "Da a una aplicación creada con App Builder una dirección más fácil de recordar en tu dominio de Teable, o haz que esté disponible en un dominio independiente como crm.example.org con Docker o Kubernetes."
+sidebarTitle: "Dominios de aplicaciones"
+---
+
+Cada aplicación que publicas con App Builder obtiene su propia dirección en el dominio de tu despliegue:
+
+```text
+https://<nombre>.app.<tu-dominio>      p. ej. https://crm.app.teable.example.com
+```
+
+Esa dirección ya está en tu propio dominio. Hay dos formas de cambiarla:
+
+| Quieres | Quién lo hace | Ir a |
+|---|---|---|
+| Un nombre legible, p. ej. `crm.app.teable.example.com` en lugar de un ID aleatorio | Cualquier persona que pueda editar la aplicación, en el editor de aplicaciones | [Cambiar el nombre del enlace de acceso](#cambiar-el-nombre-del-enlace-de-acceso) |
+| Un dominio completamente independiente, p. ej. `crm.example.org` | El administrador de tu servidor, una vez por dominio | [Usar un dominio independiente para una aplicación](#usar-un-dominio-independiente-para-una-aplicación) |
+
+## Cambiar el nombre del enlace de acceso
+
+El cambio se aplica de inmediato, sin modificar el DNS ni los certificados.
+
+1. Abre la aplicación en el editor de aplicaciones y haz clic en **Publicar**.
+2. Junto a **Enlace de acceso**, haz clic en el icono de edición.
+3. Escribe el nuevo nombre (letras minúsculas, números y guiones; debe empezar y terminar por una letra o un número) y haz clic en **Confirmar**.
+
+<img
+  src="/images/selfhosted/app-domains/2026-11-04-app-domains-rename-access-link.png"
+  alt="Panel de publicación de una aplicación publicada: el icono de edición junto al enlace de acceso y, después, el campo del nombre con Cancelar y Confirmar"
+  className="docs-screenshot"
+/>
+
+Ahora la aplicación está disponible en `https://<nuevo-nombre>.app.<tu-dominio>`. Si ya le habías cambiado el nombre antes, el nombre anterior deja de funcionar, así que actualiza los enlaces que hayas compartido.
+
+## Usar un dominio independiente para una aplicación
+
+Usa esta opción cuando una aplicación deba estar fuera de tu dominio de Teable, por ejemplo, un portal de clientes en `portal.example.org`. Los visitantes siguen viendo tu dominio en la barra de direcciones; no se produce ninguna redirección.
+
+<img
+  src="/images/selfhosted/app-domains/2026-11-04-app-domains-request-flow.png"
+  alt="Flujo de una solicitud: el visitante abre portal.example.org, el DNS dirige el dominio a tu servidor de Teable y el servidor envía la solicitud a la aplicación publicada en portal.app.teable.example.com"
+  className="docs-screenshot"
+/>
+
+Necesitas:
+
+- El enlace de acceso actual de la aplicación, p. ej. `portal.app.teable.example.com`.
+- Acceso a la configuración DNS del dominio independiente.
+- Acceso al servidor (Docker) o a los valores de Helm (Kubernetes) de tu despliegue.
+
+### Paso 1: apuntar el dominio a tu despliegue
+
+Añade un registro DNS para el dominio independiente:
+
+| Dominio | Registro |
+|---|---|
+| Un subdominio, p. ej. `portal.example.org` | `CNAME` → el enlace de acceso de la aplicación, p. ej. `portal.app.teable.example.com` |
+| Un dominio raíz, p. ej. `example.org` | `A` → la IP pública de tu servidor (o del balanceador de carga del Ingress). La mayoría de los proveedores de DNS no permiten un `CNAME` en un dominio raíz. |
+
+Compruébalo antes de continuar: `dig +short portal.example.org` debe devolver tu enlace de acceso o la IP de tu servidor.
+
+### Paso 2: asignar el dominio a la aplicación
+
+<Tabs>
+<Tab title="Docker">
+Añade la asignación al archivo `.env` de tu directorio de despliegue. Separa varias asignaciones con comas, sin espacios:
+
+```bash .env
+APP_CUSTOM_DOMAINS=portal.example.org=portal.app.teable.example.com
+```
+
+Aplica la configuración:
+
+```bash
+./apply.sh server --with-app    # omite --with-app si solo ejecutas el plano de ejecución
+docker compose up -d
+```
+
+Los **certificados** se gestionan automáticamente:
+
+- Si tu propio certificado (`TLS_CERT_FILE`) ya cubre el dominio, se usa ese certificado.
+- Si no, se solicita y se renueva automáticamente un certificado de Let's Encrypt. Para ello, el dominio debe apuntar al servidor y los puertos 80 y 443 deben ser accesibles desde internet.
+
+En una intranet sin acceso entrante desde internet, añade en su lugar el dominio al certificado que proporcionas en `TLS_CERT_FILE`.
+</Tab>
+<Tab title="Kubernetes">
+Añade la asignación a tus valores de Helm:
+
+```yaml values.yaml
+appRuntime:
+  customDomains:
+    - host: portal.example.org
+      target: portal.app.teable.example.com
+```
+
+Aplica la configuración:
+
+```bash
+helm upgrade <release> <chart> -n <namespace> -f values.yaml
+```
+
+**Certificados**: de forma predeterminada, el chart solicita a cert-manager un certificado de Let's Encrypt mediante HTTP-01, lo que requiere que el dominio apunte a la dirección pública de tu controlador de Ingress. En una red privada, crea un Secret de TLS para el dominio en el namespace donde instalaste el chart y haz referencia a él:
+
+```yaml values.yaml
+appRuntime:
+  customDomains:
+    - host: portal.example.org
+      target: portal.app.teable.example.com
+      tlsSecretName: portal-example-org-tls
+```
+
+Si TLS termina en un balanceador de carga situado delante del clúster, añade en su lugar el certificado del dominio a ese balanceador.
+</Tab>
+</Tabs>
+
+### Paso 3: verificar
+
+Abre `https://portal.example.org`. La aplicación se carga y la barra de direcciones sigue mostrando `portal.example.org`. Desde una terminal:
+
+```bash
+curl -sI https://portal.example.org    # se espera 200, sin redirección al enlace de acceso
+```
+
+El enlace de acceso original de la aplicación sigue funcionando. En las aplicaciones que requieren iniciar sesión, los visitantes vuelven a este dominio después de iniciar sesión; si varios dominios apuntan a la misma aplicación, vuelven al primero de la lista.
+
+### Cambiar o eliminar un dominio
+
+- **Para mover un dominio a otra aplicación**, asígnalo al enlace de acceso de esa otra aplicación y vuelve a aplicar la configuración.
+- **Después de cambiar el nombre de la aplicación o retirar su publicación**, actualiza o elimina su asignación de inmediato: otra aplicación puede ocupar el enlace de acceso liberado.
+- **Para eliminar un dominio**, borra su asignación, vuelve a aplicar la configuración y, después, elimina el registro DNS.
+
+## Solución de problemas
+
+| Síntoma | Causa probable |
+|---|---|
+| Error `app_runtime_host_not_bound` | El enlace de acceso asignado no coincide con el actual de la aplicación (por ejemplo, después de cambiarle el nombre) o la aplicación no está publicada. |
+| Página en blanco o advertencia de certificado | El dominio no está en la asignación o no se aplicó la configuración; el DNS todavía no apunta a tu despliegue; el puerto 80 está bloqueado, por lo que Let's Encrypt no puede verificar el dominio; o tu propio certificado no incluye el dominio. |
+| El navegador no encuentra el dominio | Falta el registro DNS o todavía no se ha propagado. Compruébalo con `dig +short <dominio>`. |

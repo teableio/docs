@@ -1,0 +1,139 @@
+---
+title: "Kendi sunucunuzdaki Teable'da yayınlanan uygulamalar için özel alan adları"
+description: "App Builder ile oluşturduğunuz bir uygulamaya Teable alan adınız altında daha kolay hatırlanan bir adres verin veya uygulamayı Docker ya da Kubernetes ile crm.example.org gibi ayrı bir alan adında sunun."
+sidebarTitle: "Uygulama Alan Adları"
+---
+
+App Builder ile yayınladığınız her uygulama, dağıtımınızın alan adı altında kendi adresini alır:
+
+```text
+https://<name>.app.<your-domain>      örneğin https://crm.app.teable.example.com
+```
+
+Bu adres zaten kendi alan adınızdadır. Adresi değiştirmenin iki yolu vardır:
+
+| İstediğiniz | Kim yapar | Bölüm |
+|---|---|---|
+| Okunabilir bir ad; örneğin rastgele bir kimlik yerine `crm.app.teable.example.com` | Uygulamayı düzenleyebilen herkes, uygulama düzenleyicisinde | [Erişim bağlantısını yeniden adlandırma](#erişim-bağlantısını-yeniden-adlandırma) |
+| Tamamen ayrı bir alan adı; örneğin `crm.example.org` | Sunucu yöneticiniz, her alan adı için bir kez | [Uygulamayı ayrı bir alan adında sunma](#uygulamayı-ayrı-bir-alan-adında-sunma) |
+
+## Erişim bağlantısını yeniden adlandırma
+
+Değişiklik hemen geçerli olur; DNS veya sertifika değişikliği gerekmez.
+
+1. Uygulamayı uygulama düzenleyicisinde açın ve **Yayınla** düğmesine tıklayın.
+2. **Erişim bağlantısı** alanının yanındaki düzenleme simgesine tıklayın.
+3. Yeni adı yazın (Türkçe karakter içermeyen küçük harfler, rakamlar ve kısa çizgiler; ad bir harf veya rakamla başlayıp bitmelidir), ardından **Onayla** düğmesine tıklayın.
+
+<img
+  src="/images/selfhosted/app-domains/2026-11-04-app-domains-rename-access-link.png"
+  alt="Yayınlanmış bir uygulamanın yayınlama paneli: erişim bağlantısının yanındaki düzenleme simgesi, ardından iptal ve onay düğmeleri bulunan ad giriş alanı"
+  className="docs-screenshot"
+/>
+
+Uygulamaya artık `https://<new-name>.app.<your-domain>` adresinden erişilebilir. Uygulamayı daha önce yeniden adlandırdıysanız önceki ad çalışmayı durdurur; bu nedenle paylaştığınız bağlantıları güncelleyin.
+
+## Uygulamayı ayrı bir alan adında sunma
+
+Bir uygulamanın Teable alan adınızın dışında yer alması gerektiğinde bu yöntemi kullanın; örneğin `portal.example.org` adresindeki bir müşteri portalı. Ziyaretçiler adres çubuğunda her zaman sizin alan adınızı görür; hiçbir yönlendirme yapılmaz.
+
+<img
+  src="/images/selfhosted/app-domains/2026-11-04-app-domains-request-flow.png"
+  alt="İstek akışı: ziyaretçi portal.example.org adresini açar, DNS bu adresi Teable sunucunuza yönlendirir ve sunucu isteği portal.app.teable.example.com adresinde yayınlanan uygulamaya iletir"
+  className="docs-screenshot"
+/>
+
+Gerekenler:
+
+- Uygulamanın geçerli erişim bağlantısı; örneğin `portal.app.teable.example.com`.
+- Ayrı alan adının DNS ayarlarına erişim.
+- Dağıtımınızın sunucusuna (Docker) veya Helm values dosyasına (Kubernetes) erişim.
+
+### 1. Adım: Alan adını dağıtımınıza yönlendirin
+
+Ayrı alan adı için bir DNS kaydı ekleyin:
+
+| Alan adı | Kayıt |
+|---|---|
+| Alt alan adı; örneğin `portal.example.org` | `CNAME` → uygulamanın erişim bağlantısı; örneğin `portal.app.teable.example.com` |
+| Kök alan adı; örneğin `example.org` | `A` → sunucunuzun (veya Ingress yük dengeleyicisinin) genel IP adresi. Çoğu DNS sağlayıcısı kök alan adında `CNAME` kaydına izin vermez. |
+
+Devam etmeden önce kontrol edin: `dig +short portal.example.org` komutu erişim bağlantınızı veya sunucunuzun IP adresini döndürmelidir.
+
+### 2. Adım: Alan adını uygulamayla eşleyin
+
+<Tabs>
+<Tab title="Docker">
+Eşlemeyi dağıtım dizininizdeki `.env` dosyasına ekleyin. Birden fazla eşlemeyi boşluk bırakmadan virgülle ayırın:
+
+```bash .env
+APP_CUSTOM_DOMAINS=portal.example.org=portal.app.teable.example.com
+```
+
+Değişikliği uygulayın:
+
+```bash
+./apply.sh server --with-app    # yalnızca çalışma zamanı düzlemini çalıştırıyorsanız --with-app seçeneğini çıkarın
+docker compose up -d
+```
+
+**Sertifikalar** sizin yerinize yönetilir:
+
+- Kendi sertifikanız (`TLS_CERT_FILE`) alan adını zaten kapsıyorsa bu sertifika kullanılır.
+- Kapsamıyorsa bir Let's Encrypt sertifikası otomatik olarak alınır ve yenilenir. Bunun için alan adının sunucuya çözümlenmesi ve 80 ile 443 numaralı bağlantı noktalarına internetten erişilebilmesi gerekir.
+
+İnternetten gelen erişime kapalı bir iç ağda bunun yerine alan adını `TLS_CERT_FILE` ile sağladığınız sertifikaya ekleyin.
+</Tab>
+<Tab title="Kubernetes">
+Eşlemeyi Helm values dosyanıza ekleyin:
+
+```yaml values.yaml
+appRuntime:
+  customDomains:
+    - host: portal.example.org
+      target: portal.app.teable.example.com
+```
+
+Değişikliği uygulayın:
+
+```bash
+helm upgrade <release> <chart> -n <namespace> -f values.yaml
+```
+
+**Sertifikalar**: Chart varsayılan olarak cert-manager'dan HTTP-01 yöntemiyle bir Let's Encrypt sertifikası ister; bunun için alan adının Ingress denetleyicinizin genel adresine çözümlenmesi gerekir. Özel bir ağda, chart'ı kurduğunuz namespace'te alan adı için bir TLS secret'ı oluşturun ve ona başvurun:
+
+```yaml values.yaml
+appRuntime:
+  customDomains:
+    - host: portal.example.org
+      target: portal.app.teable.example.com
+      tlsSecretName: portal-example-org-tls
+```
+
+TLS, kümenin önündeki bir yük dengeleyicide sonlandırılıyorsa alan adının sertifikasını bunun yerine oraya ekleyin.
+</Tab>
+</Tabs>
+
+### 3. Adım: Kontrol edin
+
+`https://portal.example.org` adresini açın. Uygulama yüklenir ve adres çubuğunda `portal.example.org` kalır. Terminalden kontrol etmek için:
+
+```bash
+curl -sI https://portal.example.org    # 200 beklenir; erişim bağlantısına yönlendirme olmamalı
+```
+
+Uygulamanın özgün erişim bağlantısı çalışmaya devam eder. Oturum açma gerektiren uygulamalar, ziyaretçileri oturum açtıktan sonra bu alan adına geri getirir; birden fazla alan adı aynı uygulamayı gösteriyorsa ziyaretçiler listedeki ilk alan adına döner.
+
+### Alan adını değiştirme veya kaldırma
+
+- **Bir alan adını başka bir uygulamaya taşımak için** alan adını diğer uygulamanın erişim bağlantısıyla eşleyin ve değişikliği yeniden uygulayın.
+- **Uygulamayı yeniden adlandırdıktan veya yayından kaldırdıktan sonra** eşlemesini hemen güncelleyin ya da kaldırın: boşa çıkan erişim bağlantısını başka bir uygulama alabilir.
+- **Bir alan adını kaldırmak için** eşlemesini silip değişikliği yeniden uygulayın, ardından DNS kaydını kaldırın.
+
+## Sorun giderme
+
+| Belirti | Olası neden |
+|---|---|
+| `app_runtime_host_not_bound` hatası | Eşlenen erişim bağlantısı uygulamanın geçerli bağlantısıyla eşleşmiyor (örneğin yeniden adlandırmadan sonra) veya uygulama yayınlanmamış. |
+| Boş sayfa veya sertifika uyarısı | Alan adı eşlemede yok ya da yapılandırma uygulanmadı; DNS henüz dağıtımınızı göstermiyor; 80 numaralı bağlantı noktası engellendiği için Let's Encrypt alan adını doğrulayamıyor; veya kendi sertifikanız alan adını içermiyor. |
+| Tarayıcı alan adını bulamıyor | DNS kaydı eksik veya henüz yayılmadı. `dig +short <domain>` ile kontrol edin. |
