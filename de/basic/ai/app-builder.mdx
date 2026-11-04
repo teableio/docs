@@ -75,9 +75,15 @@ Für unbegrenzte Anpassungsmöglichkeiten haben Sie direkten Zugriff auf den Cod
 Sie können die gesamte App jederzeit als ZIP-Archiv herunterladen:
 1. Wechseln Sie im Editor zum Tab **Code**.
 2. Klicken Sie in der Tab-Leiste auf das Menü **`...`**.
-3. Wählen Sie **Code herunterladen**, um ein ZIP-Archiv zu speichern, das alle Quelldateien enthält.
+3. Wählen Sie **Code herunterladen** und klicken Sie im Dialog erneut auf **Code herunterladen**, um ein ZIP-Archiv zu speichern, das alle Quelldateien enthält.
 
-Das Archiv enthält im Stammverzeichnis eine `.env`-Datei mit den von der Plattform injizierten Laufzeitvariablen, einschließlich des Zugriffstokens; die der App freigegebenen Zugangsdaten stehen nicht darin. Prüfen Sie den Inhalt, bevor Sie die ZIP-Datei weitergeben.
+Standardmäßig enthält das ZIP keine gültigen Zugangsdaten der App. In seinem Stammverzeichnis liegen eine `.env.example` und eine `.gitignore`. Die `.env.example` listet die [von der Plattform injizierten Laufzeitvariablen](#teable-access-token) auf (die Variablen, die Teable jeder App automatisch hinzufügt); die Werte für Teable-Zugriffstoken und KI-Zugriffsschlüssel bleiben darin leer. Die `.gitignore` schließt `.env`-Dateien von Git aus.
+
+Um den Code sofort lokal auszuführen, wählen Sie im Dialog **.env mit gültigen Zugangsdaten einschließen**. Das ZIP enthält dann stattdessen die echte `.env`: die von der Plattform injizierten Laufzeitvariablen, einschließlich des Teable-Zugriffstokens und, bei aktiviertem KI-Zugriff, des KI-Zugriffsschlüssels. Die der App freigegebenen Zugangsdaten stehen nicht darin.
+
+<Warning>
+Wer diese `.env` besitzt, kann alle Daten in dem Projekt lesen und ändern, zu dem die App gehört. Committen Sie sie nicht in ein Repository und geben Sie sie nicht weiter; könnte sie kompromittiert sein, [rotieren Sie das Teable-Zugriffstoken](#teable-access-token).
+</Warning>
 
 #### Code importieren
 Sie können den Code der App durch Importieren einer ZIP-Datei aktualisieren:
@@ -107,7 +113,74 @@ Schreiben Sie API-Schlüssel, Anmeldedaten und Konfigurationswerte nicht in den 
 
 Nachdem Sie eine Freigabe hinzugefügt oder entfernt oder einen Wert ersetzt haben, verwendet die Vorschauumgebung der App den neuen Wert. Die veröffentlichte App verwendet ihn erst nach einer erneuten Veröffentlichung.
 
-Beim Kopieren einer App werden ihre Zugangsdaten nicht mitkopiert: Im Bereich bleiben Platzhalter mit **Noch nicht gebunden**, und **Meins binden** hinterlegt Ihre eigenen. Zur Verwaltung von Zugangsdaten und zur Frage, wo sie verwendet werden, siehe [Zugangsdaten und Integrationen](/de/basic/credential).
+Beim Kopieren einer App werden ihre Zugangsdaten nicht mitkopiert: Im Bereich bleiben Platzhalter mit **Noch nicht gebunden**, und **Meins binden** hinterlegt Ihre eigenen. Auch beim Kopieren oder Exportieren eines Projekts und beim Verwenden einer Vorlage wird die `.env` im Code der App nicht übernommen, und jede kopierte App erhält ihr eigenes Teable-Zugriffstoken. Zur Verwaltung von Zugangsdaten und zur Frage, wo sie verwendet werden, siehe [Zugangsdaten und Integrationen](/de/basic/credential); wie Tabellen, Datensätze und die übrigen Inhalte eines Projekts kopiert werden, beschreibt [Ein Projekt in einen anderen Space duplizieren](/de/basic/base#duplicate-a-base-to-another-space).
+
+#### Teable-Zugriffstoken {#teable-access-token}
+
+Die Umgebungsvariablen einer App stammen aus zwei Quellen:
+
+- **Von der Plattform injizierte Variablen**: Teable stellt sie jeder App bereit, darunter das Teable-Zugriffstoken (`TEABLE_APP_TOKEN`), den API-Endpunkt sowie die IDs von App und Projekt. Bei aktiviertem **KI-Zugriff** kommen Endpunkt und Schlüssel für den KI-Zugriff hinzu.
+- **Für die App freigegebene Zugangsdaten**: die Secrets und Verbindungen, die Sie unter **Zugangsdaten & Konfiguration** freigeben, wie oben beschrieben.
+
+Persönliche Zugriffstoken (**Einstellungen** → **Entwicklertools** → **Persönliche Zugangstoken**) werden nie in eine App injiziert, und App-Code benötigt keines; sie dienen dazu, Teable von außerhalb der App aufzurufen. Siehe [Zugangsdaten für externe Dienste und MCP](#credentials-for-external-services-and-mcp).
+
+Mit dem Teable-Zugriffstoken liest und schreibt die App Daten. Es hat Zugriff auf das gesamte Projekt, zu dem die App gehört; es lässt sich nicht auf einzelne Tabellen oder Felder beschränken und hat keinen Zugriff auf andere Projekte. Verwendet wird es in der Vorschauumgebung der App und in der veröffentlichten App. Teable committet es nie in das Repository der App, und heruntergeladener Code enthält es standardmäßig nicht. In der Regel hat jede App ihr eigenes Token; siehe [Wann sich das Token ändert oder ungültig wird](#when-the-token-changes-or-stops-working).
+
+Rotieren Sie das Token in diesen Fällen:
+
+- Es könnte kompromittiert sein, etwa weil eine `.env` in ein Repository committet oder in ein GitHub-Issue, einen Forenbeitrag oder einen Chat eingefügt wurde.
+- Ein Mitglied, das die Umgebungsvariablen kopiert oder Code mit `.env` heruntergeladen hat, arbeitet nicht mehr an dem Projekt.
+- Der Code der App wurde zusammen mit seiner `.env` an jemanden weitergegeben.
+
+Öffnen Sie im Chat-Bereich **+** → **Mehr** → **Zugangsdaten & Konfiguration** und klicken Sie oben rechts auf der Karte **Plattform-Anmeldedaten** auf **Rotieren**. Hier werden sowohl das Teable-Zugriffstoken als auch der KI-Zugriffsschlüssel rotiert; dafür benötigen Sie Bearbeitungszugriff auf die App.
+
+Ist für die App der KI-Zugriff aktiviert, wählen Sie in der Bestätigung aus, was rotiert wird: **Teable-Zugriffstoken**, **KI-Zugriffsschlüssel** oder, wie voreingestellt, beides. Eine `.env` enthält beide Werte; vermuten Sie, dass sie kompromittiert ist, rotieren Sie daher beide. Ob Sie einen oder beide Werte rotieren: Vorschau und veröffentlichte App werden nur einmal aktualisiert. Die Bestätigung listet die Auswirkungen Ihrer Auswahl auf.
+
+| Element | Nach der Rotation |
+| --- | --- |
+| Altes Token | Ist sofort ungültig |
+| Laufende Vorschau | Wechselt ohne Neustart zum neuen Token |
+| Veröffentlichte App | Teable stellt sie im Hintergrund mit dem neuen Token neu bereit; im Versionsverlauf erscheint dabei kein neuer Eintrag. Bis die Neubereitstellung abgeschlossen ist, in der Regel innerhalb weniger Minuten, kann die App keine Projektdaten lesen oder schreiben. Hat die App unveröffentlichte Änderungen, wird sie nicht automatisch neu bereitgestellt (das würde diese Änderungen veröffentlichen), und Sie müssen sie erneut veröffentlichen |
+| Angemeldete App-Nutzer | Verwendet die App die [App-Anmeldung](#app-anmeldung), müssen sich Besucher erneut anmelden |
+| Lokale `.env` und heruntergeladener Code | Das alte Token darin funktioniert nicht mehr; kopieren Sie die Umgebungsvariablen erneut oder laden Sie den Code mit aktivierter Option **.env mit gültigen Zugangsdaten einschließen** herunter |
+
+Einige Apps aus älteren Projektkopien teilen sich ein Token. Wenn Sie eine dieser Apps rotieren, werden auch alle anderen Apps im Projekt rotiert, die dieses Token noch teilen, und zwar jeweils auf ein eigenes neues Token; ein Hinweis zeigt an, wie viele Apps rotiert wurden.
+
+Die automatische Neubereitstellung durch Teable wechselt nur das Token und veröffentlicht nie Änderungen, die Sie noch nicht veröffentlicht haben; erneut veröffentlichen bedeutet, dass Sie selbst die aktuelle Version im Veröffentlichungsmenü veröffentlichen. Wenn **Anmeldedaten rotiert, aber die veröffentlichte App konnte nicht automatisch aktualisiert werden. Bitte erneut veröffentlichen.** oder **Anmeldedaten rotiert. Die veröffentlichte App hat unveröffentlichte Änderungen und wurde daher nicht automatisch aktualisiert; die neuen Werte gelten nach erneutem Veröffentlichen.** angezeigt wird oder wenn diese App (oder eine mit ihr rotierte App) nach einigen Minuten noch immer keine Daten lesen kann, veröffentlichen Sie die betreffende App erneut, damit sie das neue Token übernimmt. Kann die Vorschau keine Daten lesen, laden Sie die Vorschau neu.
+
+#### Wann sich das Token ändert oder ungültig wird {#when-the-token-changes-or-stops-working}
+
+| Aktion | Teable-Zugriffstoken |
+| --- | --- |
+| App erstellen | Ein neues Token wird ausgestellt |
+| App kopieren, Projekt kopieren oder importieren, Vorlage verwenden | Jede Kopie erhält ein eigenes neues Token; das Token der ursprünglichen App bleibt unverändert |
+| [App in ein anderes Projekt verschieben](/de/basic/base#ressourcen-in-ein-anderes-projekt-verschieben) | Wird durch ein neues Token ersetzt, und das alte ist sofort ungültig. Die Vorschau wechselt zum neuen Token, und die veröffentlichte App wird wie nach einer Rotation im Hintergrund neu bereitgestellt |
+| Veröffentlichen, erneut veröffentlichen, Rollback auf eine Version | Unverändert |
+| Veröffentlichung aufheben | Unverändert; das Token bleibt gültig, und die Vorschau verwendet es weiter |
+| Code herunterladen, Umgebungsvariablen kopieren | Unverändert; bis zur nächsten Rotation erhalten Sie jedes Mal dasselbe Token |
+| Rotieren | Wird durch ein neues Token ersetzt, und das alte ist sofort ungültig (siehe oben) |
+| App löschen | Sofort ungültig. Wird die App aus dem Papierkorb wiederhergestellt, funktioniert dasselbe Token wieder |
+
+Ein Token wird mit einer Laufzeit von 10 Jahren ausgestellt und bleibt gültig, bis es rotiert oder die App gelöscht wird; von selbst läuft es nicht ab. Wenn Sie ein Leck vermuten, rotieren Sie es. Stellen Sie eine App aus dem Papierkorb wieder her, deren Token kompromittiert sein könnte, rotieren Sie es nach der Wiederherstellung.
+
+#### Audit-Einträge {#audit-records}
+
+Diese Aktionen werden im Audit-Log erfasst:
+
+- **Zugriffstoken der App rotieren** und **KI-Schlüssel der App rotieren**: Eine Rotation über die Karte **Plattform-Anmeldedaten** erzeugt für jeden rotierten Wert einen eigenen Eintrag.
+- **App-Umgebungsvariablen kopieren**: das Kopieren der Umgebungsvariablen, die das Zugriffstoken enthalten.
+- **App-Code exportieren**: das Herunterladen des Codes; der Eintrag zeigt, ob die `.env` enthalten war.
+
+Schreibt eine App mit ihrem Zugriffstoken Projektdaten, zeigt das Audit-Log **App Robot** als Operator an. Einen Nutzungsverlauf und Warnungen pro Token gibt es nicht, und Lesezugriffe werden nicht erfasst.
+
+In selbst gehosteten Instanzen (Business-Plan und höher) sehen Instanzadministratoren das Log unter **Systemverwaltung** → **Audit-Log** ein. Logs werden einen Monat aufbewahrt und lassen sich nach Benutzer, Space, Projekt und Operationstyp filtern; die oben genannten Einträge stehen unter **Apps**. Siehe [Audit-Log](/de/basic/admin-panel/audit-log).
+
+#### Zugangsdaten für externe Dienste und MCP {#credentials-for-external-services-and-mcp}
+
+Das Teable-Zugriffstoken ist nur für die App selbst bestimmt. Verwenden Sie es nicht in Diensten außerhalb der App; auch für die Verbindung mit MCP lässt es sich nicht verwenden.
+
+- **Externe Dienste, die die Teable-API aufrufen** (etwa Serverless-Funktionen, Skripte oder CI): Verwenden Sie ein [persönliches Zugriffstoken](/de/api-doc/token). Fügen Sie nur die benötigten Projekte oder Spaces und Berechtigungsbereiche hinzu und legen Sie ein Ablaufdatum fest. Ein persönliches Zugriffstoken handelt als der Benutzer, der es erstellt hat.
+- **MCP-Clients**: Verbinden Sie sich per OAuth (empfohlen). Der Client handelt in Ihrem Namen, und Sie können ihn jederzeit unter **Einstellungen** → **Entwicklertools** → **MCP** entfernen. Wo kein Browser verfügbar ist, verwenden Sie stattdessen ein persönliches Zugriffstoken, ebenfalls nur mit den benötigten Projekten und Berechtigungsbereichen. Siehe [Über MCP verbinden](/de/basic/ai/teable-skill#über-mcp-verbinden).
 
 #### App-Dateien verwalten
 
@@ -122,6 +195,8 @@ Sie können dem App-Builder sagen, was Sie möchten, beispielsweise: „Füge ei
 <Info>
 Nachdem der App-Builder die KI-Funktion hinzugefügt hat, verwendet die App-Vorschau die neue Version. Die veröffentlichte App verwendet sie erst nach einer erneuten Veröffentlichung.
 </Info>
+
+Auch den KI-Zugriffsschlüssel injiziert Teable, und die Karte **Plattform-Anmeldedaten** zeigt ihn neben dem Zugriffstoken an. Um ihn zu ersetzen, klicken Sie auf der Karte auf **Rotieren** und wählen Sie nur **KI-Zugriffsschlüssel** aus: Der alte Schlüssel ist sofort ungültig, die laufende Vorschau wechselt zum neuen Schlüssel, und die veröffentlichte App wird im Hintergrund neu bereitgestellt; bis dahin schlagen ihre KI-Aufrufe fehl. Wird nur der KI-Zugriffsschlüssel rotiert, werden Besucher nicht abgemeldet. Hat die App unveröffentlichte Änderungen, wird sie nicht automatisch neu bereitgestellt; schlagen KI-Aufrufe nach einigen Minuten weiterhin fehl, veröffentlichen Sie die App erneut.
 
 ## Code mit GitHub synchronisieren
 
@@ -170,23 +245,23 @@ Teable führt niemals einen Force-Push für Ihren Branch aus. Wenn die Verläufe
 
 ### Umgebungsvariablen und lokale Entwicklung
 
-Das Repository enthält nur Quellcode. Teable pusht niemals eine Datei, deren Name mit `.env` beginnt: weder im Stammverzeichnis des Projekts noch in einem Unterordner oder im Commit-Verlauf. Die Umgebungswerte stammen aus den für die App freigegebenen Zugangsdaten, liegen unter **Zugangsdaten & Konfiguration** und gelangen nie in Git. Die `.gitignore` des Repositorys enthält bereits `.env*`, sodass ein lokaler Klon nicht versehentlich eine solche Datei committet.
+Das Repository enthält nur Quellcode. Teable pusht niemals eine Datei, deren Name mit `.env` beginnt: weder im Stammverzeichnis des Projekts noch in einem Unterordner oder im Commit-Verlauf. Die Umgebungswerte stammen aus den von der Plattform injizierten Variablen und den für die App freigegebenen Zugangsdaten (siehe [Teable-Zugriffstoken](#teable-access-token)); Teable verwaltet sie, und sie gelangen nie in Git. Die `.gitignore` des Repositorys enthält bereits `.env*`, sodass ein lokaler Klon nicht versehentlich eine solche Datei committet.
 
 So führen Sie die App auf Ihrem eigenen Rechner aus:
 
 <Steps>
   <Step title="Klonen und installieren">Klonen Sie das Repository und führen Sie `pnpm install` aus.</Step>
-  <Step title="Variablen kopieren">Klicken Sie im GitHub-Bereich auf **Lokale Umgebungsvariablen kopieren** und fügen Sie dann die Zwischenablage in eine `.env`-Datei im Stammverzeichnis des Projekts ein.</Step>
+  <Step title="Variablen kopieren">Klicken Sie im GitHub-Bereich oder unter **Zugangsdaten & Konfiguration** auf **Umgebungsvariablen in die Zwischenablage kopieren** und fügen Sie dann die Zwischenablage in eine `.env`-Datei im Stammverzeichnis des Projekts ein.</Step>
   <Step title="App starten">Führen Sie `pnpm dev` aus.</Step>
 </Steps>
 
-Kopiert werden nur die von der Plattform injizierten Laufzeitvariablen: API-Endpunkt, Zugriffstoken und die Variablen für den KI-Zugriff. Unter der Schaltfläche steht dazu **Nur von der Plattform injizierte Laufzeitvariablen — gewährte Zugangsdaten sind nicht enthalten**. Die der App freigegebenen Zugangsdaten verlassen Teable nicht; wenn der lokale Lauf sie benötigt, tragen Sie die Werte selbst in die `.env` ein.
+Kopiert werden nur die von der Plattform injizierten Laufzeitvariablen: API-Endpunkt, Zugriffstoken und die Variablen für den KI-Zugriff. Unter **Zugangsdaten & Konfiguration** steht an der Schaltfläche zusätzlich **Nur von der Plattform injizierte Laufzeitvariablen — gewährte Zugangsdaten sind nicht enthalten**. Weder die kopierten Variablen noch heruntergeladener Code enthalten die der App freigegebenen Zugangsdaten; wenn Sie sie zum lokalen Debuggen benötigen, tragen Sie die Werte selbst in die `.env` ein.
 
 <Warning>
-Die Zeile `TEABLE_APP_TOKEN` in dieser Datei gewährt Zugriff auf die Daten der App. Deshalb können sie nur Mitglieder mit Bearbeitungszugriff auf die App kopieren. Committen Sie die Datei niemals und fügen Sie sie niemals in ein Issue oder einen Pull Request ein.
+Die Zeile `TEABLE_APP_TOKEN` in dieser Datei gewährt Zugriff auf die Daten der App. Deshalb können sie nur Mitglieder mit Bearbeitungszugriff auf die App kopieren. Committen Sie die Datei niemals und fügen Sie sie niemals in ein Issue oder einen Pull Request ein. Könnte sie kompromittiert sein, [rotieren Sie das Teable-Zugriffstoken](#teable-access-token).
 </Warning>
 
-Zugangsdaten, die die App im Betrieb verwendet, fügen Sie in Teable unter **Zugangsdaten & Konfiguration** hinzu oder ersetzen sie dort; die lokale Datei zu ändern oder eine `.env` nach GitHub zu committen, bewirkt nichts. Ändert sich eine Plattformvariable, etwa durch ein neu erzeugtes Zugriffstoken, kopieren Sie die Variablen erneut und überschreiben Ihre lokale `.env`.
+Zugangsdaten, die die App im Betrieb verwendet, fügen Sie in Teable unter **Zugangsdaten & Konfiguration** hinzu oder ersetzen sie dort; die lokale Datei zu ändern oder eine `.env` nach GitHub zu committen, bewirkt nichts. Ändert sich eine Plattformvariable, etwa weil das Teable-Zugriffstoken oder der KI-Zugriffsschlüssel rotiert wurde, kopieren Sie die Variablen erneut und überschreiben Ihre lokale `.env`.
 
 ### Verknüpfung mit dem Repository aufheben
 
@@ -316,6 +391,10 @@ Informationen zu Prompt-Mustern, Tipps zum Erstellen, Hinweisen zum Rollback und
 
   <Accordion title="Wie lade ich App-Code herunter oder importiere ihn?">
     Wechseln Sie im Editor zum Tab **Code**, klicken Sie in der Tab-Leiste auf das Menü **`...`** und wählen Sie dann **Code herunterladen** oder **Code importieren**. Importierte ZIP-Dateien können bis zu 20 MB groß sein und ersetzen das vorhandene Projekt. Schließen Sie daher jede Quelldatei ein, die Sie behalten möchten. Das importierte Projekt muss eine `package.json` im Stammverzeichnis enthalten. Eigene Variablen aus einer `.env`-Datei im Stammverzeichnis werden als Ihre Secrets gespeichert und der App unter denselben Namen freigegeben.
+  </Accordion>
+
+  <Accordion title="Was tue ich, wenn das Zugriffstoken einer App kompromittiert ist?">
+    Öffnen Sie im Chat-Bereich **+** → **Mehr** → **Zugangsdaten & Konfiguration** und klicken Sie auf der Karte **Plattform-Anmeldedaten** auf **Rotieren**; hat die App KI-Zugriff, lassen Sie beide Zugangsdaten ausgewählt. Das alte Token ist sofort ungültig, und Vorschau und veröffentlichte App wechseln automatisch zum neuen. Während die veröffentlichte App neu bereitgestellt wird, in der Regel einige Minuten lang, kann sie keine Daten lesen oder schreiben; ist für die App die Anmeldung aktiviert, müssen sich Besucher erneut anmelden. Siehe [Teable-Zugriffstoken](#teable-access-token).
   </Accordion>
 
   <Accordion title="Wann werden Anmeldeeinstellungen auf die Live-App angewendet?">

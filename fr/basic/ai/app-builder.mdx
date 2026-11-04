@@ -75,9 +75,15 @@ Pour une personnalisation sans limites, vous avez un accès direct au code.
 Vous pouvez télécharger l’intégralité de l’application sous forme d’archive ZIP à tout moment :
 1. Passez à l’onglet **Code** dans l’éditeur.
 2. Cliquez sur le menu **`...`** dans la barre d’onglets.
-3. Sélectionnez **Télécharger le code** pour enregistrer une archive ZIP qui comprend tous les fichiers sources.
+3. Sélectionnez **Télécharger le code**, puis cliquez de nouveau sur **Télécharger le code** dans la boîte de dialogue pour enregistrer une archive ZIP qui comprend tous les fichiers sources.
 
-L’archive contient à la racine un fichier `.env` qui ne comporte que les variables d’exécution injectées par la plateforme, jeton d’accès compris ; les identifiants accordés à l’application n’y figurent pas. Examinez le contenu avant de partager le ZIP.
+Par défaut, le ZIP n’inclut pas les identifiants valides de l’application. Sa racine contient un fichier `.env.example` qui liste les [variables d’exécution injectées par la plateforme](#teable-access-token) (celles que Teable ajoute automatiquement à chaque application), avec le jeton d’accès Teable et la clé d’accès à l’IA laissés vides, ainsi qu’un fichier `.gitignore` qui exclut les fichiers `.env` de Git.
+
+Pour exécuter le code en local sans attendre, cochez **Inclure le fichier .env avec les identifiants valides** dans la boîte de dialogue. Le ZIP contient alors le véritable fichier `.env` : les variables d’exécution injectées par la plateforme, dont le jeton d’accès Teable et, si l’accès à l’IA est activé, la clé d’accès à l’IA. Les identifiants accordés à l’application n’y figurent pas.
+
+<Warning>
+Quiconque détient ce fichier `.env` peut lire et modifier toutes les données du Projet auquel appartient l’application. Ne le validez pas dans un dépôt et ne le partagez pas ; s’il a pu fuiter, [renouvelez le jeton d’accès Teable](#teable-access-token).
+</Warning>
 
 #### Importer le code
 Vous pouvez mettre à jour le code de l’application en important un ZIP :
@@ -107,7 +113,74 @@ N’écrivez pas les clés API, les identifiants ni les valeurs de configuration
 
 Après l’ajout ou le retrait d’une autorisation, ou le remplacement d’une valeur, l’environnement de prévisualisation de l’application utilise la nouvelle valeur. L’application publiée ne l’utilise qu’après une nouvelle publication.
 
-Copier une application ne copie pas ses identifiants : le panneau conserve des emplacements **Pas encore lié**, et **Lier le mien** y place les vôtres. Pour la gestion des identifiants et le suivi de leur utilisation, voir [Identifiants et intégrations](/fr/basic/credential).
+Copier une application ne copie pas ses identifiants : le panneau conserve des emplacements **Pas encore lié**, et **Lier le mien** y place les vôtres. Copier ou exporter un Projet, ou utiliser un modèle, n’emporte pas non plus le fichier `.env` du code de l’application, et chaque application copiée reçoit son propre jeton d’accès Teable. Pour la gestion des identifiants et le suivi de leur utilisation, voir [Identifiants et intégrations](/fr/basic/credential) ; pour la façon dont les Tables, les Enregistrements et le reste d’un Projet sont copiés, voir [Dupliquer un Projet dans un autre Espace](/fr/basic/base#duplicate-a-base-to-another-space).
+
+#### Jeton d’accès Teable {#teable-access-token}
+
+Les variables d’environnement d’une application proviennent de deux sources :
+
+- **Variables injectées par la plateforme** : Teable les fournit à chaque application, dont le jeton d’accès Teable (`TEABLE_APP_TOKEN`), le point de terminaison API et les ID de l’application et du Projet. Lorsque l’option **Accès à l’IA** est activée, le point de terminaison et la clé d’accès à l’IA s’y ajoutent.
+- **Identifiants accordés à l’application** : les secrets et les connexions que vous accordez dans **Identifiants et configuration**, décrits ci-dessus.
+
+Les jetons d’accès personnels (**Paramètres** → **Outils de développement** → **Jetons d'accès personnel**) ne sont jamais injectés dans une application, et le code de l’application n’en a pas besoin ; ils servent à appeler Teable depuis l’extérieur de l’application. Voir [Identifiants pour les services externes et MCP](#credentials-for-external-services-and-mcp).
+
+Le jeton d’accès Teable est l’identifiant que l’application utilise pour lire et écrire des données. Il donne accès à l’ensemble du Projet auquel appartient l’application ; il ne peut pas être limité à certaines Tables ou à certains Champs, et il ne permet pas d’atteindre d’autres Projets. Il est utilisé dans l’environnement d’aperçu de l’application et dans l’application publiée. Teable ne le valide jamais dans le dépôt de l’application, et le code téléchargé l’exclut par défaut. Normalement, chaque application possède son propre jeton ; voir [Quand le jeton change ou cesse de fonctionner](#when-the-token-changes-or-stops-working).
+
+Renouvelez le jeton dans les cas suivants :
+
+- Il a pu fuiter, par exemple parce qu’un fichier `.env` a été validé dans un dépôt ou collé dans une issue GitHub, un message de forum ou une discussion.
+- Un membre qui a copié les variables d’environnement ou téléchargé le code avec un fichier `.env` ne travaille plus sur le Projet.
+- Le code de l’application a été remis à quelqu’un avec son fichier `.env`.
+
+Dans le panneau de chat, ouvrez **+** → **Plus** → **Identifiants et configuration**, puis cliquez sur **Renouveler** en haut à droite de la carte **Identifiants de la plateforme**. Le jeton d’accès Teable et la clé d’accès à l’IA se renouvellent tous deux à cet endroit, ce qui nécessite un accès de modification à l’application.
+
+Lorsque l’accès à l’IA est activé pour l’application, la confirmation vous permet de choisir ce que vous renouvelez : **Jeton d’accès Teable**, **Clé d’accès à l’IA**, ou les deux, ce qui est le choix par défaut. Un fichier `.env` contient les deux valeurs : si vous soupçonnez une fuite, renouvelez les deux. Que vous en renouveliez un seul ou les deux, l’aperçu et l’application publiée ne sont mis à jour qu’une seule fois. La confirmation liste les effets de votre sélection.
+
+| Élément | Après le renouvellement |
+| --- | --- |
+| Ancien jeton | Cesse de fonctionner immédiatement |
+| Aperçu en cours d’exécution | Passe au nouveau jeton sans redémarrage |
+| Application publiée | Teable la redéploie en arrière-plan avec le nouveau jeton ; rien de nouveau n’apparaît dans l’historique des versions. Jusqu’à la fin du redéploiement, généralement en quelques minutes, l’application ne peut ni lire ni écrire les données du Projet. Si l’application contient des modifications non publiées, elle n’est pas redéployée automatiquement (cela les publierait) et vous devez la republier |
+| Utilisateurs connectés à l’application | Si l’application utilise la [connexion à l’application](#connexion-à-l’application), les visiteurs doivent se reconnecter |
+| Fichier `.env` local et code téléchargé | L’ancien jeton qu’ils contiennent ne fonctionne plus ; copiez à nouveau les variables d’environnement, ou téléchargez le code en cochant **Inclure le fichier .env avec les identifiants valides** |
+
+Certaines applications issues d’anciennes copies de Projet partagent un même jeton. Renouveler le jeton de l’une d’elles renouvelle aussi celui de toutes les autres applications du Projet qui le partagent encore, chacune recevant son propre nouveau jeton, et un avis indique combien d’applications ont été renouvelées.
+
+Le redéploiement automatique de Teable se contente de changer de jeton et ne publie jamais des modifications que vous n’avez pas publiées ; republier, c’est publier vous-même la version actuelle depuis le menu de publication. Si vous voyez **Identifiants renouvelés, mais l’application publiée n’a pas pu être mise à jour automatiquement. Republiez-la.** ou **Identifiants renouvelés. L’application publiée contient des modifications non publiées : elle n’a pas été mise à jour automatiquement et utilisera les nouvelles valeurs une fois republiée.**, ou si cette application (ou une application renouvelée en même temps) ne peut toujours pas lire de données après quelques minutes, republiez l’application concernée pour qu’elle utilise le nouveau jeton. Si l’aperçu ne peut pas lire de données, rechargez-le.
+
+#### Quand le jeton change ou cesse de fonctionner {#when-the-token-changes-or-stops-working}
+
+| Action | Jeton d’accès Teable |
+| --- | --- |
+| Créer une application | Un nouveau jeton est émis |
+| Copier une application, copier ou importer un Projet, utiliser un modèle | Chaque copie reçoit son propre nouveau jeton ; le jeton de l’application d’origine reste inchangé |
+| [Déplacer l’application vers un autre Projet](/fr/basic/base#déplacer-des-ressources-vers-un-autre-projet) | Remplacé par un nouveau jeton, et l’ancien cesse de fonctionner immédiatement. L’aperçu passe au nouveau jeton et l’application publiée est redéployée en arrière-plan, comme après un renouvellement |
+| Publier, republier, restaurer une version | Inchangé |
+| Dépublier | Inchangé ; le jeton continue de fonctionner et l’aperçu continue de l’utiliser |
+| Télécharger le code, copier les variables d’environnement | Inchangé ; vous obtenez le même jeton à chaque fois, jusqu’à son renouvellement |
+| Renouveler | Remplacé par un nouveau jeton, et l’ancien cesse de fonctionner immédiatement (voir ci-dessus) |
+| Supprimer l’application | Cesse de fonctionner immédiatement. Si l’application est restaurée depuis la corbeille, le même jeton fonctionne de nouveau |
+
+Un jeton est émis avec une durée de validité de 10 ans et fonctionne jusqu’à son renouvellement ou la suppression de l’application ; il n’expire pas de lui-même. Si vous soupçonnez une fuite, renouvelez-le. Si vous restaurez une application depuis la corbeille et que son jeton a pu fuiter, renouvelez-le après la restauration.
+
+#### Entrées du journal d’audit {#audit-records}
+
+Les actions suivantes sont consignées dans le journal d’audit :
+
+- **Renouveler le jeton d'accès d'une application** et **Renouveler la clé IA d'une application** : un renouvellement depuis la carte **Identifiants de la plateforme** enregistre une entrée par identifiant renouvelé.
+- **Copier les variables d'environnement de l'application** : la copie des variables d’environnement, qui contiennent le jeton d’accès.
+- **Exporter le code de l'application** : le téléchargement du code ; l’entrée indique si le fichier `.env` était inclus.
+
+Lorsqu’une application écrit des données du Projet avec son jeton d’accès, le journal d’audit affiche **App Robot** comme opérateur. Il n’existe ni historique d’utilisation par jeton ni alertes, et les lectures ne sont pas consignées.
+
+Sur les instances auto-hébergées (offre Business ou supérieure), les administrateurs d’instance consultent le journal dans **Administration système** → **Journal d'audit**. Les journaux sont conservés un mois et peuvent être filtrés par utilisateur, Espace, Projet et type d’opération ; les entrées ci-dessus figurent sous **Applications**. Voir [Journal d’audit](/fr/basic/admin-panel/audit-log).
+
+#### Identifiants pour les services externes et MCP {#credentials-for-external-services-and-mcp}
+
+Le jeton d’accès Teable est réservé à l’application elle-même. Ne l’utilisez pas dans des services extérieurs à l’application ; il ne permet pas non plus de connecter MCP.
+
+- **Services externes qui appellent l’API Teable** (par exemple des fonctions serverless, des scripts ou la CI) : utilisez un [jeton d’accès personnel](/fr/api-doc/token). N’y ajoutez que les Projets ou Espaces et les portées dont il a besoin, et définissez une date d’expiration. Un jeton d’accès personnel agit en tant que l’utilisateur qui l’a créé.
+- **Clients MCP** : connectez-les avec OAuth (recommandé). Le client agit en votre nom, et vous pouvez le supprimer à tout moment dans **Paramètres** → **Outils de développement** → **MCP**. En l’absence de navigateur, utilisez plutôt un jeton d’accès personnel, là encore limité aux Projets et aux portées nécessaires. Voir [Se connecter via MCP](/fr/basic/ai/teable-skill#se-connecter-via-mcp).
 
 #### Gérer les fichiers de l’application
 
@@ -122,6 +195,8 @@ Vous pouvez indiquer au Créateur d’applications ce que vous souhaitez, par ex
 <Info>
 Après que le Créateur d’applications a ajouté la fonctionnalité IA, l’aperçu de l’application utilise la nouvelle version. L’application publiée ne l’utilise qu’après une nouvelle publication.
 </Info>
+
+Teable injecte aussi la clé d’accès à l’IA, et la carte **Identifiants de la plateforme** l’affiche à côté du jeton d’accès. Pour la remplacer, cliquez sur **Renouveler** sur la carte et sélectionnez uniquement **Clé d’accès à l’IA** : l’ancienne clé cesse de fonctionner immédiatement, l’aperçu en cours passe à la nouvelle clé et l’application publiée est redéployée en arrière-plan ; ses appels à l’IA échouent jusqu’à la fin du redéploiement. Renouveler uniquement la clé d’accès à l’IA ne déconnecte pas les visiteurs. Si l’application contient des modifications non publiées, elle n’est pas redéployée automatiquement ; si les appels à l’IA échouent encore après quelques minutes, republiez l’application.
 
 ## Synchroniser le code avec GitHub
 
@@ -170,23 +245,23 @@ Teable ne force jamais l’envoi vers votre branche. Lorsque les historiques div
 
 ### Variables d’environnement et développement local
 
-Le dépôt ne contient que le code source. Teable n’envoie jamais de fichier dont le nom commence par `.env` : ni à la racine du projet, ni dans un sous-dossier, ni dans l’historique des commits. Les valeurs d’environnement proviennent des identifiants accordés à l’application, se trouvent dans **Identifiants et configuration** et n’entrent jamais dans git. Le fichier `.gitignore` du dépôt répertorie déjà `.env*`, de sorte qu’un clone local n’en validera pas un par accident.
+Le dépôt ne contient que le code source. Teable n’envoie jamais de fichier dont le nom commence par `.env` : ni à la racine du projet, ni dans un sous-dossier, ni dans l’historique des commits. Les valeurs d’environnement proviennent des variables injectées par la plateforme et des identifiants accordés à l’application (voir [Jeton d’accès Teable](#teable-access-token)) ; Teable les gère, et elles n’entrent jamais dans Git. Le fichier `.gitignore` du dépôt répertorie déjà `.env*`, de sorte qu’un clone local n’en validera pas un par accident.
 
 Pour exécuter l’application sur votre propre machine :
 
 <Steps>
   <Step title="Cloner et installer">Clonez le dépôt et exécutez `pnpm install`.</Step>
-  <Step title="Copier les variables">Dans le panneau GitHub, cliquez sur **Copier les variables d’environnement locales**, puis collez le presse-papiers dans un fichier `.env` à la racine du projet.</Step>
+  <Step title="Copier les variables">Dans le panneau GitHub ou dans **Identifiants et configuration**, cliquez sur **Copier les variables d'environnement dans le presse-papiers**, puis collez le presse-papiers dans un fichier `.env` à la racine du projet.</Step>
   <Step title="Démarrer l’application">Exécutez `pnpm dev`.</Step>
 </Steps>
 
-Le contenu copié se limite aux variables d’exécution injectées par la plateforme : point de terminaison API, jeton d’accès et variables d’accès à l’IA. Sous le bouton figure la mention **Uniquement les variables d'exécution injectées par la plateforme — les identifiants accordés ne sont pas inclus**. Les identifiants accordés à l’application ne quittent pas Teable ; si l’exécution locale en a besoin, ajoutez vous-même ces valeurs dans le fichier `.env`.
+Le contenu copié se limite aux variables injectées par la plateforme : point de terminaison API, jeton d’accès et variables d’accès à l’IA. Dans **Identifiants et configuration**, le bouton porte aussi la mention **Uniquement les variables d'exécution injectées par la plateforme — les identifiants accordés ne sont pas inclus**. Ni les variables copiées ni le code téléchargé ne contiennent les identifiants accordés à l’application ; si le débogage local en a besoin, ajoutez-les vous-même dans le fichier `.env`.
 
 <Warning>
-La ligne `TEABLE_APP_TOKEN` de ce fichier donne accès aux données de l’application ; c’est pourquoi seuls les membres disposant d’un accès de modification à l’application peuvent la copier. Ne validez jamais le fichier et ne le collez jamais dans une issue ou une pull request.
+La ligne `TEABLE_APP_TOKEN` de ce fichier donne accès aux données de l’application ; c’est pourquoi seuls les membres disposant d’un accès de modification à l’application peuvent la copier. Ne validez jamais le fichier et ne le collez jamais dans une issue ou une pull request. S’il a pu fuiter, [renouvelez le jeton d’accès Teable](#teable-access-token).
 </Warning>
 
-Pour ajouter ou remplacer un identifiant utilisé par l’application en production, passez par **Identifiants et configuration** dans Teable ; modifier le fichier local ou valider un `.env` dans GitHub reste sans effet. Après le changement d’une variable de plateforme, par exemple un jeton d’accès régénéré, copiez à nouveau les variables pour actualiser votre fichier `.env` local.
+Pour ajouter ou remplacer un identifiant utilisé par l’application en production, passez par **Identifiants et configuration** dans Teable ; modifier le fichier local ou valider un `.env` dans GitHub reste sans effet. Après le changement d’une variable de plateforme, par exemple un jeton d’accès Teable ou une clé d’accès à l’IA renouvelés, copiez à nouveau les variables pour actualiser votre fichier `.env` local.
 
 ### Dissocier le dépôt
 
@@ -316,6 +391,10 @@ Pour les modèles de prompts, les conseils de création, les recommandations de 
 
   <Accordion title="Comment télécharger ou importer le code de l’application ?">
     Passez à l’onglet **Code** dans l’éditeur, cliquez sur le menu **`...`** dans la barre d’onglets, puis choisissez **Télécharger le code** ou **Importer le code**. Les fichiers ZIP importés peuvent atteindre 20 Mo et remplacent le projet existant ; incluez donc chaque fichier source que vous souhaitez conserver. Le projet importé doit inclure un fichier `package.json` à la racine. Les variables personnalisées d’un fichier `.env` à la racine sont enregistrées comme vos secrets et accordées à l’application sous les mêmes noms.
+  </Accordion>
+
+  <Accordion title="Que faire si le jeton d’accès d’une application a fuité ?">
+    Dans le panneau de chat, ouvrez **+** → **Plus** → **Identifiants et configuration** et cliquez sur **Renouveler** sur la carte **Identifiants de la plateforme** ; si l’application dispose de l’accès à l’IA, laissez les deux identifiants sélectionnés. L’ancien jeton cesse de fonctionner immédiatement, et l’aperçu comme l’application publiée passent automatiquement au nouveau. Pendant le redéploiement de l’application publiée, qui dure généralement quelques minutes, celle-ci ne peut ni lire ni écrire de données ; si la connexion est activée pour l’application, les visiteurs doivent se reconnecter. Voir [Jeton d’accès Teable](#teable-access-token).
   </Accordion>
 
   <Accordion title="Quand les paramètres de connexion s’appliquent-ils à l’application en direct ?">

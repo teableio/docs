@@ -75,9 +75,15 @@ Per una personalizzazione senza limiti, puoi accedere direttamente al codice.
 Puoi scaricare l'intera app come archivio ZIP in qualsiasi momento:
 1. Passa alla scheda **Codice** nell'editor.
 2. Fai clic sul menu **`...`** nella barra delle schede.
-3. Seleziona **Scarica codice** per salvare un archivio ZIP che include tutti i file sorgente.
+3. Seleziona **Scarica il codice**, quindi fai di nuovo clic su **Scarica il codice** nella finestra di dialogo per salvare un archivio ZIP che include tutti i file sorgente.
 
-L'archivio contiene nella radice un file `.env` con le sole variabili di runtime iniettate dalla piattaforma, token di accesso compreso; le credenziali concesse all'app non ne fanno parte. Esamina il contenuto prima di condividere il file ZIP.
+Per impostazione predefinita lo ZIP non include le credenziali valide dell'app. Nella radice contiene un file `.env.example` che elenca le [variabili di runtime iniettate dalla piattaforma](#teable-access-token) (quelle che Teable aggiunge automaticamente a ogni app), con il token di accesso Teable e la chiave di accesso all'IA lasciati vuoti, e un file `.gitignore` che esclude i file `.env` da Git.
+
+Per eseguire subito il codice in locale, seleziona **Includi il file .env con le credenziali valide** nella finestra di dialogo. Lo ZIP contiene allora il file `.env` reale: le variabili di runtime iniettate dalla piattaforma, compresi il token di accesso Teable e, se l'accesso all'IA è attivo, la chiave di accesso all'IA. Le credenziali concesse all'app non ne fanno parte.
+
+<Warning>
+Chiunque possieda questo file `.env` può leggere e modificare tutti i dati del Progetto a cui appartiene l'app. Non eseguirne il commit in un repository e non condividerlo; se potrebbe essere trapelato, [ruota il token di accesso Teable](#teable-access-token).
+</Warning>
 
 #### Importare il codice
 Puoi aggiornare il codice dell'app importando un file ZIP:
@@ -107,7 +113,74 @@ Non scrivere chiavi API, credenziali e valori di configurazione nel codice sorge
 
 Dopo aver aggiunto o rimosso una concessione, oppure sostituito il valore di una credenziale, l'ambiente di anteprima dell'app usa il nuovo valore. L'app pubblicata lo usa solo dopo una nuova pubblicazione.
 
-La copia di un'app non copia le sue credenziali: nel pannello restano segnaposto **Non associato** e con **Associa la mia** inserisci la tua. Per la gestione delle credenziali e per sapere dove sono usate, vedi [Credenziali e integrazioni](/it/basic/credential).
+La copia di un'app non copia le sue credenziali: nel pannello restano segnaposto **Non associato** e con **Associa la mia** inserisci la tua. Anche copiando o esportando un Progetto, oppure usando un modello, il file `.env` presente nel codice dell'app non viene trasferito, e ogni app copiata riceve un proprio token di accesso Teable. Per la gestione delle credenziali e per sapere dove sono usate, vedi [Credenziali e integrazioni](/it/basic/credential); per sapere come vengono copiati le Tabelle, i Record e il resto di un Progetto, vedi [Duplicare un Progetto in un altro Spazio](/it/basic/base#duplicate-a-base-to-another-space).
+
+#### Token di accesso Teable {#teable-access-token}
+
+Le variabili di ambiente di un'app provengono da due fonti:
+
+- **Variabili iniettate dalla piattaforma**: Teable le fornisce a ogni app e comprendono il token di accesso Teable (`TEABLE_APP_TOKEN`), l'endpoint API e gli ID dell'app e del Progetto. Con **Accesso all'IA** attivo si aggiungono l'endpoint e la chiave per l'accesso all'IA.
+- **Credenziali concesse all'app**: i segreti e le connessioni che concedi in **Credenziali e configurazione**, descritti sopra.
+
+I token di accesso personale (**Impostazioni** → **Strumenti per sviluppatori** → **Token di accesso personale**) non vengono mai iniettati in un'app e il codice dell'app non ne ha bisogno: servono per chiamare Teable dall'esterno dell'app. Vedi [Credenziali per servizi esterni e MCP](#credentials-for-external-services-and-mcp).
+
+Il token di accesso Teable è la credenziale con cui l'app legge e scrive i dati. Può accedere all'intero Progetto a cui appartiene l'app; non può essere limitato ad alcune Tabelle o ad alcuni Campi e non può raggiungere altri Progetti. Viene usato nell'ambiente di anteprima dell'app e nell'app pubblicata. Teable non ne esegue mai il commit nel repository dell'app e il codice scaricato lo esclude per impostazione predefinita. Di norma ogni app ha un proprio token; vedi [Quando il token cambia o smette di funzionare](#when-the-token-changes-or-stops-working).
+
+Ruota il token quando:
+
+- Potrebbe essere trapelato, ad esempio se un file `.env` è stato sottoposto a commit in un repository oppure incollato in una issue di GitHub, in un post di un forum o in una chat.
+- Un membro che ha copiato le variabili di ambiente o scaricato il codice con un file `.env` non lavora più al Progetto.
+- Il codice dell'app è stato consegnato a qualcuno insieme al relativo file `.env`.
+
+Nel pannello della chat apri **+** → **Altro** → **Credenziali e configurazione** e fai clic su **Ruota** in alto a destra nella scheda **Credenziali della piattaforma**. Qui si ruotano sia il token di accesso Teable sia la chiave di accesso all'IA; serve l'accesso in modifica all'app.
+
+Quando l'app ha l'accesso all'IA attivo, la conferma ti permette di scegliere cosa ruotare: **Token di accesso Teable**, **Chiave di accesso all'IA** o entrambi, che è l'impostazione predefinita. Un file `.env` contiene entrambi i valori, quindi se sospetti che sia trapelato ruotali entrambi. Che tu ne ruoti uno o entrambi, l'anteprima e l'app pubblicata vengono aggiornate una sola volta. La conferma elenca gli effetti di ciò che hai selezionato.
+
+| Elemento | Dopo la rotazione |
+| --- | --- |
+| Vecchio token | Smette subito di funzionare |
+| Anteprima in esecuzione | Passa al nuovo token senza riavviarsi |
+| App pubblicata | Teable la ridistribuisce in background con il nuovo token; nella Cronologia delle versioni non compare nulla di nuovo. Finché la ridistribuzione non termina, di solito entro pochi minuti, l'app non può leggere né scrivere i dati del Progetto. Se l'app ha modifiche non pubblicate, non viene ridistribuita automaticamente (altrimenti le pubblicherebbe) e devi pubblicarla di nuovo |
+| Utenti dell'app che hanno effettuato l'accesso | Se l'app usa l'[accesso all'app](#accesso-all’app), i visitatori devono accedere di nuovo |
+| File `.env` locale e codice scaricato | Il vecchio token che contengono non funziona più; copia di nuovo le variabili di ambiente oppure scarica il codice selezionando **Includi il file .env con le credenziali valide** |
+
+Alcune app provenienti da copie di Progetto meno recenti condividono un unico token. La rotazione di una di queste ruota anche tutte le altre app del Progetto che lo condividono ancora, ciascuna con un proprio nuovo token, e un avviso indica quante ne sono state ruotate.
+
+La ridistribuzione automatica di Teable si limita a sostituire il token e non pubblica mai le modifiche che non hai ancora pubblicato; pubblicare di nuovo significa invece pubblicare tu la versione corrente dal menu di pubblicazione. Se compare **Credenziali ruotate, ma non è stato possibile aggiornare automaticamente l'app pubblicata. Pubblicala di nuovo.** oppure **Credenziali ruotate. L'app pubblicata ha modifiche non pubblicate, quindi non è stata aggiornata automaticamente; userà i nuovi valori quando la pubblichi di nuovo.**, o se questa app (o un'app ruotata insieme a essa) dopo qualche minuto non riesce ancora a leggere i dati, pubblica di nuovo quell'app affinché usi il nuovo token. Se l'anteprima non riesce a leggere i dati, ricaricala.
+
+#### Quando il token cambia o smette di funzionare {#when-the-token-changes-or-stops-working}
+
+| Azione | Token di accesso Teable |
+| --- | --- |
+| Creare un'app | Viene emesso un nuovo token |
+| Copiare un'app, copiare o importare un Progetto, usare un modello | Ogni copia riceve un proprio nuovo token; il token dell'app originale non cambia |
+| [Spostare l'app in un altro Progetto](/it/basic/base#spostare-risorse-in-un-altro-progetto) | Viene sostituito da un nuovo token e il vecchio smette subito di funzionare. L'anteprima passa al nuovo token e l'app pubblicata viene ridistribuita in background, come dopo una rotazione |
+| Pubblicare, pubblicare di nuovo, ripristinare una versione | Invariato |
+| Annullare la pubblicazione | Invariato; il token continua a funzionare e l'anteprima continua a usarlo |
+| Scaricare il codice, copiare le variabili di ambiente | Invariato; ottieni sempre lo stesso token finché non viene ruotato |
+| Ruotare | Viene sostituito da un nuovo token e il vecchio smette subito di funzionare (vedi sopra) |
+| Eliminare l'app | Smette subito di funzionare. Se l'app viene ripristinata dal Cestino, lo stesso token torna a funzionare |
+
+Un token viene emesso con una durata di 10 anni e funziona finché non viene ruotato o l'app non viene eliminata; non scade da solo. Se sospetti una fuga, ruotalo. Se ripristini un'app dal Cestino e il suo token potrebbe essere trapelato, ruotalo dopo il ripristino.
+
+#### Voci del registro di controllo {#audit-records}
+
+Le azioni seguenti compaiono nel registro di controllo:
+
+- **Ruota token di accesso dell'app** e **Ruota chiave IA dell'app**: una rotazione dalla scheda **Credenziali della piattaforma** genera una voce per ciascuna credenziale ruotata.
+- **Copia le variabili d'ambiente dell'app**: la copia delle variabili di ambiente, che includono il token di accesso.
+- **Esporta il codice dell'app**: il download del codice; la voce indica se il file `.env` era incluso.
+
+Quando un'app scrive dati del Progetto con il proprio token di accesso, il registro di controllo mostra **App Robot** come operatore. La cronologia di utilizzo per singolo token e gli avvisi non sono disponibili, e le letture non vengono registrate.
+
+Nelle istanze Self-hosted (piano Business o superiore), gli amministratori dell'istanza consultano il registro in **Amministrazione di sistema** → **Log di controllo**. I log vengono conservati per un mese e possono essere filtrati per utente, Spazio, Progetto e tipo di operazione; le voci elencate sopra si trovano in **App**. Vedi [Registro di controllo](/it/basic/admin-panel/audit-log).
+
+#### Credenziali per servizi esterni e MCP {#credentials-for-external-services-and-mcp}
+
+Il token di accesso Teable serve solo all'app stessa. Non usarlo in servizi esterni all'app; non può nemmeno essere usato per connettere MCP.
+
+- **Servizi esterni che chiamano l'API di Teable** (ad esempio funzioni serverless, script o CI): usa un [token di accesso personale](/it/api-doc/token). Aggiungi solo i Progetti o gli Spazi e gli ambiti necessari e imposta una data di scadenza. Un token di accesso personale agisce come l'utente che lo ha creato.
+- **Client MCP**: connettiti con OAuth (consigliato). Il client agisce come te e puoi rimuoverlo in qualsiasi momento in **Impostazioni** → **Strumenti per sviluppatori** → **MCP**. Dove non è disponibile un browser, usa invece un token di accesso personale, anche in questo caso limitato ai Progetti e agli ambiti necessari. Vedi [Connettersi tramite MCP](/it/basic/ai/teable-skill#connettersi-tramite-mcp).
 
 #### Gestire i file dell'app
 
@@ -122,6 +195,8 @@ Puoi indicare ad App Builder ciò che desideri, ad esempio: «Aggiungi un assist
 <Info>
 Dopo l'aggiunta della funzionalità IA da parte di App Builder, l'anteprima dell'app utilizza la nuova versione. L'app pubblicata la utilizza soltanto dopo una nuova pubblicazione.
 </Info>
+
+Teable inietta anche la chiave di accesso all'IA, che la scheda **Credenziali della piattaforma** mostra accanto al token di accesso. Per sostituirla, fai clic su **Ruota** nella scheda e seleziona solo **Chiave di accesso all'IA**: la vecchia chiave smette subito di funzionare, l'anteprima in esecuzione passa alla nuova chiave e l'app pubblicata viene ridistribuita in background; finché l'operazione non termina, le sue chiamate all'IA non riescono. La rotazione della sola chiave di accesso all'IA non disconnette i visitatori. Se l'app ha modifiche non pubblicate, non viene ridistribuita automaticamente; se dopo qualche minuto le chiamate all'IA continuano a non riuscire, pubblica di nuovo l'app.
 
 ## Sincronizzare il codice con GitHub
 
@@ -170,23 +245,23 @@ Teable non esegue mai il force push del ramo. Quando le cronologie divergono, co
 
 ### Variabili di ambiente e sviluppo locale
 
-Il repository contiene soltanto il codice sorgente. Teable non invia mai file il cui nome inizia con `.env`: né nella radice del progetto, né in una sottocartella, né nella cronologia dei commit. I valori di ambiente provengono dalle credenziali concesse all'app, risiedono in **Credenziali e configurazione** e non entrano mai in git. Il file `.gitignore` del repository elenca già `.env*`, pertanto un clone locale non ne eseguirà accidentalmente il commit.
+Il repository contiene soltanto il codice sorgente. Teable non invia mai file il cui nome inizia con `.env`: né nella radice del progetto, né in una sottocartella, né nella cronologia dei commit. I valori di ambiente provengono dalle variabili iniettate dalla piattaforma e dalle credenziali concesse all'app (vedi [Token di accesso Teable](#teable-access-token)); li gestisce Teable e non entrano mai in Git. Il file `.gitignore` del repository elenca già `.env*`, pertanto un clone locale non ne eseguirà accidentalmente il commit.
 
 Per eseguire l'app sul tuo computer:
 
 <Steps>
   <Step title="Clona e installa">Clona il repository ed esegui `pnpm install`.</Step>
-  <Step title="Copia le variabili">Nel pannello GitHub, fai clic su **Copia variabili di ambiente locali**, quindi incolla gli appunti in un file `.env` nella radice del progetto.</Step>
+  <Step title="Copia le variabili">Nel pannello GitHub o in **Credenziali e configurazione**, fai clic su **Copia le variabili d'ambiente negli appunti**, quindi incolla gli appunti in un file `.env` nella radice del progetto.</Step>
   <Step title="Avvia l'app">Esegui `pnpm dev`.</Step>
 </Steps>
 
-Viene copiato solo ciò che la piattaforma inietta come variabili di runtime: endpoint API, token di accesso e variabili per l'accesso IA. Sotto il pulsante compare la nota **Solo le variabili di runtime iniettate dalla piattaforma: le credenziali concesse non sono incluse**. Le credenziali concesse all'app non escono da Teable: se servono all'esecuzione locale, aggiungi tu i valori nel file `.env`.
+Viene copiato solo ciò che la piattaforma inietta come variabili di runtime: endpoint API, token di accesso e variabili per l'accesso all'IA. In **Credenziali e configurazione**, accanto al pulsante compare anche la nota **Solo le variabili di runtime iniettate dalla piattaforma: le credenziali concesse non sono incluse**. Né le variabili copiate né il codice scaricato includono le credenziali concesse all'app: se ti servono per il debug locale, aggiungile tu nel file `.env`.
 
 <Warning>
-La riga `TEABLE_APP_TOKEN` in tale file concede l'accesso ai dati dell'app; per questo motivo soltanto i membri con accesso in modifica all'app possono copiarla. Non eseguire mai il commit del file e non incollarlo mai in un problema o in una pull request.
+La riga `TEABLE_APP_TOKEN` in tale file concede l'accesso ai dati dell'app; per questo motivo soltanto i membri con accesso in modifica all'app possono copiarla. Non eseguire mai il commit del file e non incollarlo mai in un problema o in una pull request. Se potrebbe essere trapelato, [ruota il token di accesso Teable](#teable-access-token).
 </Warning>
 
-Per aggiungere o sostituire una credenziale usata dall'app in produzione, usa **Credenziali e configurazione** in Teable: modificare il file locale o sottoporre a commit un `.env` su GitHub non ha effetto. Quando cambia una variabile di piattaforma, ad esempio dopo aver rigenerato il token di accesso, copia di nuovo le variabili per aggiornare il file `.env` locale.
+Per aggiungere o sostituire una credenziale usata dall'app in produzione, usa **Credenziali e configurazione** in Teable: modificare il file locale o sottoporre a commit un `.env` su GitHub non ha effetto. Quando cambia una variabile di piattaforma, ad esempio dopo aver ruotato il token di accesso Teable o la chiave di accesso all'IA, copia di nuovo le variabili per aggiornare il file `.env` locale.
 
 ### Scollegare il repository
 
@@ -315,7 +390,11 @@ Per schemi di prompt, suggerimenti per la creazione, consigli sul ripristino e r
   </Accordion>
 
   <Accordion title="Come posso scaricare o importare il codice dell'app?">
-    Passa alla scheda **Codice** nell'editor, fai clic sul menu **`...`** nella barra delle schede, quindi scegli **Scarica codice** o **Importa codice**. I file ZIP importati possono avere dimensioni massime di 20 MB e sostituiscono il progetto esistente, quindi includi tutti i file sorgente da conservare. Il progetto importato deve includere un file `package.json` nella radice. Le variabili personalizzate di un file `.env` nella radice vengono salvate come tuoi segreti e concesse all'app con gli stessi nomi.
+    Passa alla scheda **Codice** nell'editor, fai clic sul menu **`...`** nella barra delle schede, quindi scegli **Scarica il codice** o **Importa codice**. I file ZIP importati possono avere dimensioni massime di 20 MB e sostituiscono il progetto esistente, quindi includi tutti i file sorgente da conservare. Il progetto importato deve includere un file `package.json` nella radice. Le variabili personalizzate di un file `.env` nella radice vengono salvate come tuoi segreti e concesse all'app con gli stessi nomi.
+  </Accordion>
+
+  <Accordion title="Cosa devo fare se il token di accesso di un'app è trapelato?">
+    Nel pannello della chat apri **+** → **Altro** → **Credenziali e configurazione** e fai clic su **Ruota** nella scheda **Credenziali della piattaforma**; se l'app ha l'accesso all'IA, lascia selezionate entrambe le credenziali. Il vecchio token smette subito di funzionare e l'anteprima e l'app pubblicata passano automaticamente a quello nuovo. Mentre l'app pubblicata viene ridistribuita, di solito per qualche minuto, non può leggere né scrivere dati e, se l'app ha l'accesso attivo, i visitatori devono accedere di nuovo. Vedi [Token di accesso Teable](#teable-access-token).
   </Accordion>
 
   <Accordion title="Quando vengono applicate le impostazioni di accesso all'app live?">
