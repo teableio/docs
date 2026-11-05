@@ -75,7 +75,7 @@ A routine that has not been activated is a draft and does not run by itself. To 
   className="docs-screenshot"
 />
 
-**Run now** executes once without waiting for the trigger, which is useful for testing the objective. A routine cannot be run by hand again until its previous run has finished.
+**Run now** executes once without waiting for the trigger, which is useful for testing the objective. A routine cannot be run by hand again until its previous run has finished. Once a routine is active, only its owner can run it now; on a routine that is not active, clicking it takes the routine over, as described in [Owner](#owner).
 
 On a connector-event routine that is not yet active, **Run now** shows **Waiting for an event** instead: go into the app and do something that fires the event, and Teable uses the one it receives for a single run, which then appears in routine history. Click **Stop waiting** to end the wait early. An active routine already receives its events, so it neither needs nor allows this.
 
@@ -91,7 +91,7 @@ Open a routine to see **Routine details** on one side, summarizing the objective
   className="docs-screenshot"
 />
 
-Click a run to open its full conversation in the chat area. Members who can edit the routine can continue the conversation there; other members can only view it. A run whose conversation has been deleted shows **This conversation was deleted**.
+Click a run to open its full conversation in the chat area. Only the owner of that run can view and continue the conversation; other members see **Conversation unavailable** when they hover over the run. A run whose conversation has been deleted shows **This conversation was deleted**.
 
 Runs that hit an error and runs that were skipped are both marked as failed in the list. Hover over a run to see the reason; each reason calls for a different response:
 
@@ -105,15 +105,15 @@ Runs that hit an error and runs that were skipped are both marked as failed in t
 
 Each run's conversation also appears in the chat history of the routine's owner. Scheduled and manual runs carry the routine's name; event-triggered runs are renamed automatically based on the objective and the event received, so each event is easy to tell apart in the history. Deleting a routine does not delete these conversations: they keep their names and become ordinary chats.
 
-<Info>A project's owner and creator can create, edit, and delete routines; other collaborators have read access. Every collaborator can view routine history and the conversation of each run. With the **Authority Matrix** enabled, members see routine history only for the routines they are granted.</Info>
+<Info>A project's owner and creator can create, edit, and delete routines; other collaborators have read access. Every collaborator can view routine history. With the **Authority Matrix** enabled, members see routine history only for the routines they are granted.</Info>
 
 ## Owner
 
-A routine runs as its owner: each run's conversation belongs to the owner, and failure and disconnection notifications go to the owner too. The **Last updated by** label at the top of the page shows the owner.
+A routine runs as its owner: each run's conversation and the [artifacts](/en/basic/ai/artifact) it creates belong to the owner, and failure and disconnection notifications go to the owner too. The **Runs as** label at the top of the page shows the owner.
 
-A new routine's owner is its creator. After that, the owner is whoever most recently activated the routine or clicked **Update** to publish changes. Saving a draft, renaming, or deactivating does not change the owner.
+A new routine's owner is its creator. After that, the owner is whoever most recently activated the routine, clicked **Update** to publish changes, or clicked **Run now** on the routine while it was not active. Saving a draft, renaming, or deactivating does not change the owner. Before you take over a routine someone else owns, a notice at the top of the page tells you so, and the previous owner is notified once you do.
 
-If the owner can no longer edit the routine, for example because their account was deactivated, they were removed from the project or space, or they lost edit permission, the routine passes automatically to the member who has been an owner of the project (or its space) the longest, and keeps running.
+If the owner can no longer edit the routine, for example because their account was deactivated, they were removed from the project or space, or they lost edit permission, the routine passes automatically to the member who has been an owner of the project (or its space) the longest, and keeps running. Both the previous and the new owner are notified.
 
 ## Failure Alerts and Automatic Deactivation
 
