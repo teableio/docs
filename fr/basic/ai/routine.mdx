@@ -75,7 +75,7 @@ Une routine qui n’a pas été activée est un brouillon et ne s’exécute pas
   className="docs-screenshot"
 />
 
-**Exécuter maintenant** lance une exécution sans attendre le déclencheur, ce qui sert à tester l’objectif. Une routine ne peut pas être relancée à la main tant que son exécution précédente n’est pas terminée.
+**Exécuter maintenant** lance une exécution sans attendre le déclencheur, ce qui sert à tester l’objectif. Une routine ne peut pas être relancée à la main tant que son exécution précédente n’est pas terminée. Une fois la routine activée, seul son responsable peut l’exécuter immédiatement ; si elle n’est pas activée, cliquer sur ce bouton vous en fait le responsable (voir [Responsable](#responsable)).
 
 Sur une routine à événement de connecteur pas encore activée, **Exécuter maintenant** affiche plutôt **En attente d’un événement** : déclenchez cet événement dans l’application, et Teable s’en sert pour une exécution unique, qui apparaît ensuite dans l’historique de la routine. Cliquez sur **Arrêter d’attendre** pour interrompre l’attente. Une routine active reçoit déjà ses événements : elle n’en a pas besoin et ne l’autorise pas.
 
@@ -91,7 +91,7 @@ Lorsque vous ouvrez une routine, la page affiche d’un côté les **Détails de
   className="docs-screenshot"
 />
 
-Cliquez sur une exécution pour ouvrir sa conversation complète dans la zone de discussion. Les membres qui peuvent modifier la routine peuvent y poursuivre la conversation ; les autres peuvent seulement la consulter. Une exécution dont la conversation a été supprimée affiche **Cette conversation a été supprimée**.
+Cliquez sur une exécution pour ouvrir sa conversation complète dans la zone de discussion. Seul le responsable de cette exécution peut consulter et poursuivre la conversation ; les autres membres voient **Conversation indisponible** en survolant l’exécution. Une exécution dont la conversation a été supprimée affiche **Cette conversation a été supprimée**.
 
 Les exécutions en erreur comme les exécutions ignorées sont signalées en échec dans la liste. Survolez l’exécution pour voir le motif ; chaque motif appelle une réponse différente :
 
@@ -105,15 +105,15 @@ Les exécutions en erreur comme les exécutions ignorées sont signalées en éc
 
 La conversation de chaque exécution apparaît aussi dans l’historique des discussions ; elle appartient au responsable de la routine. Les exécutions planifiées et manuelles portent le nom de la routine ; celles déclenchées par un événement sont renommées automatiquement d’après l’objectif et l’événement reçu, pour distinguer chaque événement dans l’historique. Supprimer la routine ne supprime pas ces conversations : elles gardent leur nom et deviennent des discussions ordinaires.
 
-<Info>Le propriétaire et le créateur d’un projet peuvent créer, modifier et supprimer des routines ; les autres collaborateurs ont un accès en lecture. Tous les collaborateurs peuvent consulter l’historique de la routine et la conversation de chaque exécution. Lorsque la **Matrice d’autorité** est activée, les membres ne voient l’historique de la routine que pour les routines qui leur sont accordées.</Info>
+<Info>Le propriétaire et le créateur d’un projet peuvent créer, modifier et supprimer des routines ; les autres collaborateurs ont un accès en lecture. Tous les collaborateurs peuvent consulter l’historique de la routine. Lorsque la **Matrice d’autorité** est activée, les membres ne voient l’historique de la routine que pour les routines qui leur sont accordées.</Info>
 
 ## Responsable
 
-Une routine s’exécute au nom de son responsable : la conversation de chaque exécution lui appartient, et c’est à lui que partent les notifications d’échec et de déconnexion. La mention **Dernière mise à jour par** en haut de la page indique ce responsable.
+Une routine s’exécute au nom de son responsable : la conversation de chaque exécution et les [artefacts](/fr/basic/ai/artifact) qu’elle crée lui appartiennent, et c’est à lui que partent les notifications d’échec et de déconnexion. La mention **S'exécute en tant que** en haut de la page indique ce responsable.
 
-À la création, le responsable est la personne qui a créé la routine ; ensuite, c’est le dernier membre à l’avoir activée ou à avoir publié des modifications avec **Mettre à jour**. Enregistrer un brouillon, renommer ou désactiver la routine ne change pas le responsable.
+À la création, le responsable est la personne qui a créé la routine ; ensuite, c’est le dernier membre à l’avoir activée, à avoir publié des modifications avec **Mettre à jour** ou à avoir cliqué sur **Exécuter maintenant** alors qu’elle n’était pas activée. Enregistrer un brouillon, renommer ou désactiver la routine ne change pas le responsable. Avant que vous preniez en charge une routine dont quelqu’un d’autre est responsable, un avertissement s’affiche en haut de la page ; l’ancien responsable est ensuite prévenu.
 
-Si le responsable ne peut plus modifier la routine, par exemple parce que son compte a été désactivé, qu’il a été retiré du projet ou de l’espace, ou qu’il a perdu son droit de modification, la routine passe automatiquement au membre propriétaire du projet (ou de son espace) depuis le plus longtemps, et continue de s’exécuter.
+Si le responsable ne peut plus modifier la routine, par exemple parce que son compte a été désactivé, qu’il a été retiré du projet ou de l’espace, ou qu’il a perdu son droit de modification, la routine passe automatiquement au membre propriétaire du projet (ou de son espace) depuis le plus longtemps, et continue de s’exécuter. L’ancien et le nouveau responsable sont prévenus.
 
 ## Alertes d’échec et désactivation automatique
 
