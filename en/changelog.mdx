@@ -6,49 +6,48 @@ rss: true
 
 <Update label="Nov 4, 2026" rss={{ date: "2026-11-04" }} id="nov-4-2026">
 
-## Chat attachments, routines, and stability updates {#2026-11-04-chat-attachments-routines-and-stability-updates}
+## Collaboration, task reminders, and stability updates {#2026-11-04-collaboration-task-reminders-and-stability-updates}
 
 ### Feature Updates {#2026-11-04-feature-updates}
 
-* **Added chat image attachments**: Attach images when chatting with any AI model; image recognition depends on the selected model.
-* **Added comment management permissions**: Base creators can delete comments from collaborators and App Robots; only original authors can edit them.
-* **Added long-task email reminders**: Receive reminders with direct links for eligible long tasks, failures, and exhausted AI credits.
-* **Added “Shared with me” artifact view**: Find deduplicated artifacts previously accessed through shared links; current sharing permissions still apply.
-* **Added multiple schedules for routines**: Configure up to 10 schedules per routine; matching overlaps run only once.
-* **Added collapsible reply execution details**: Completed AI replies collapse intermediate steps while preserving access to timestamps, duration, and status.
-* **Added Teable MCP tool categories**: Tools now distinguish data queries, modifications, and read-only SQL; existing integrations must select appropriate tools.
+* **Project comment management**: Project creators can delete any comment; only authors can edit their own comments.
+* **Long-task email alerts**: Preference-based alerts link to 10-minute tasks unviewed for 30 minutes, failed tasks, and exhausted AI credits.
+* **“Shared with Me” artifact view**: Settings, Chat, and Artifact Manager now deduplicate accessed shared artifacts while respecting current sharing permissions.
+* **Multiple schedule rules**: Scheduled routines support up to 10 rules, grouped by frequency, without duplicate runs when times overlap.
+* **Collapsible reply execution**: Completed replies collapse intermediate steps while preserving answers, plans, resource changes, generated resources, timing, and status.
+* **Teable MCP tools**: APIs separate read and write operations with read-only SQL; replace `call-api` with `call-api-read` or `call-api-write`.
 
-### Bug Fixes & Improvements {#2026-11-04-bug-fixes-improvements}
+### Fixes & Improvements {#2026-11-04-fixes-improvements}
 
-* **Improved field filter messages**: Incompatible fields are identified clearly, and collaboration errors follow the page or browser language.
-* **Fixed App Builder progress navigation**: “View progress” opens the correct tab while preserving the current conversation and build context.
-* **Fixed Excel import permissions**: Permission matrix administrators can import Excel and view progress, regardless of Viewer or Commenter roles.
-* **Improved “Share to Web” flow**: Added loading states, immediate sharing details, a unified panel, and collapsed advanced options.
-* **Improved chat page performance**: Reduced duplicate loading requests and disabled AI fields and chat when AI is unavailable.
-* **Improved Agent Computer storage alerts**: Storage limit warnings are clearer and more reliable, with usage preserved after sessions end.
-* **Enhanced Agent Computer storage metrics**: Usage now includes uploads, outputs, configuration, and persistent home directories under a shared 10 GiB limit.
-* **Fixed bold formatting in long text**: Bold content ending with CJK punctuation persists, and edited Markdown cells no longer briefly overflow.
-* **Fixed multi-level link queries**: Corrected dependency detection for complex relationships while maintaining compatibility with existing single-table queries.
-* **Improved connected account selector**: The app list remains unobstructed and selectable across window sizes and scroll positions.
-* **Improved large CSV exports**: Faster exports preserve complete, correctly ordered data, while cancellation now stops tasks promptly.
-* **Fixed connector trigger status**: Disabled triggers appear disconnected, and removing missing triggers no longer causes task failures.
-* **Improved expired credential replacement**: Replace exact credentials directly, refresh app previews, and resume interrupted tasks with clearer statuses.
-* **Enhanced data and collaboration security**: Strengthened protections for URL imports, cross-Base links, and real-time collaboration against unauthorized access.
-* **Improved attachment cleanup**: Permanently deleted fields release unused attachments from storage and exports while preserving attachments used elsewhere.
-* **Improved onboarding language consistency**: Example prompts and attachment labels follow the interface language while filenames and proper names remain unchanged.
-* **Improved app publishing**: Added progress, prevented timeouts and duplicate publishing, restricted copying apps, and clarified build failures.
-* **Fixed subscription payment processing**: Paid invoices now update the correct subscription, preventing inconsistent statuses after successful payments.
-* **Fixed connected app skill loading**: Skills from connected apps like Gmail now load and activate within the current conversation.
-* **Improved AI reply recovery**: Replies recover more reliably after disconnections, preserving final answers, generated resources, and complete plain text.
-* **Improved Space project command palette**: Projects follow recent access order, open directly, and include only accessible projects in the current Space.
-* **Improved record “Add to chat” action**: Hidden when AI Chat is disabled; when enabled, records are referenced without automatic sending.
-* **Improved mobile app preview sharing**: Sharing uses only published app links and remains unavailable for unpublished apps.
-* **Fixed clearing link fields**: Empty lists now clear optional single-value and multi-value link fields; required fields still return validation errors.
-* **Fixed `.tea` file imports**: Exports containing Office documents or ZIP attachments now import completely without requiring re-export.
-* **Fixed artifact error messages**: Working artifacts no longer show false runtime errors, and canceled image loading is handled more reliably.
-* **Improved table and view collaboration stability**: Closing deleted tables or views now handles collaboration state more reliably.
-* **Improved automation script recovery**: Eligible interrupted runs resume without duplication; uncertain results or changed configurations stop recovery with clear explanations.
-* **Improved embedded shared forms**: Removed automatic cookie banners and improved loading when browsers restrict cookies, local storage, or iframe storage.
+* **Cross-field filter guidance**: Incompatible fields are identified; collaboration errors use the page or browser language when no preference is set.
+* **App Builder progress navigation**: “View Progress” opens the correct tab while preserving conversation and build context.
+* **Excel import permissions**: Permission Matrix administrators can import Excel and check progress, even with Viewer or Commenter base roles.
+* **Web sharing flow**: Sharing shows loading and details promptly; Base menus reuse the panel, with advanced options collapsed.
+* **Chat performance**: Reduced redundant requests; AI fields and Chat are disabled when AI configuration is empty.
+* **Agent Computer storage alerts**: Near-limit warnings are more reliable, and usage status persists after sessions end.
+* **Agent Computer storage usage**: All directories share a 10 GiB limit with per-directory usage; existing computers may reach limits sooner.
+* **Long-text formatting**: Preserved bold text ending in CJK punctuation and removed overflow flashes when leaving edited Markdown cells.
+* **Linked-query dependencies**: Generated query clients order relationships correctly for dependent and multi-level queries without breaking single-table compatibility.
+* **Connected account picker**: App selection is no longer obscured by “Add Secret” across window sizes and scroll positions.
+* **Large CSV exports**: Large exports are faster, complete, correctly ordered, and stop promptly when canceled.
+* **Connector trigger states**: Disabled triggers appear disconnected, and removing nonexistent triggers no longer fails unnecessarily.
+* **Expired credential replacement**: Web and mobile replace exact expired credentials, update app previews, clarify status, and support task retries.
+* **Data access security**: Strengthened URL imports, cross-Base links, and real-time collaboration against unintended access and data risks.
+* **Attachment cleanup**: Permanently deleted fields remove unused attachment references from usage and exports while preserving attachments used elsewhere.
+* **Onboarding localization**: Example prompts and attachment labels follow the interface language, while files and proper names remain unchanged.
+* **App publishing**: Publishing shows live progress, prevents timeouts and duplicates, restricts apps being copied, and provides clearer build-failure diagnostics.
+* **Subscription payments**: Paid invoices now update the correct subscription, keeping payment status and entitlements aligned.
+* **Connected app skills**: Connected app skills, including Gmail, now load and activate correctly in the current conversation.
+* **AI recovery**: Responses recover reliably after disconnections without rollback, duplication, or loss; answers and generated resources remain visible when collapsed.
+* **Space project command palette**: Projects are ordered by recency, open on click, and include only accessible projects in the current Space.
+* **Record “Add to Chat” action**: Hidden when AI Chat is disabled; otherwise, selected records are referenced without automatically sending.
+* **Mobile app sharing**: Share and browser actions use published links only and remain unavailable for unpublished apps.
+* **Linked-field clearing**: Optional single- and multi-value linked fields accept empty lists; required fields return clear validation errors.
+* **`.tea` imports**: Exports containing Office or ZIP attachments now import fully without failures or empty tables; no re-export is needed.
+* **Artifact status**: Healthy artifacts avoid false runtime errors and AI-fix prompts; canceled image loads during scrolling are handled.
+* **Table and view collaboration**: Closing deleted tables or views now handles collaboration state more reliably, reducing page errors.
+* **Automation script recovery**: Eligible runs resume without duplicate scripts; recovery stops with explanations when results are uncertain or configurations changed.
+* **Embedded shared forms**: Embedded pages suppress Cookie consent banners and handle blocked Cookie, local storage, or iframe storage access.
 
 </Update>
 
