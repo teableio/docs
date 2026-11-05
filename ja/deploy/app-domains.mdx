@@ -1,0 +1,140 @@
+---
+title: "セルフホスト版 Teable で公開済みアプリにカスタムドメインを設定する"
+description: "App Builder で作成したアプリに、Teable のドメイン配下でわかりやすいアドレスを設定します。Docker または Kubernetes を使って、crm.example.org のような別のドメインでアプリを提供することもできます。"
+sidebarTitle: "アプリのドメイン"
+---
+
+App Builder で公開したアプリには、それぞれデプロイ環境のドメイン配下に専用のアドレスが割り当てられます。
+
+```text
+https://<name>.app.<your-domain>      例: https://crm.app.teable.example.com
+```
+
+このアドレスは、すでに自社ドメイン配下にあります。変更する方法は2つあります。
+
+| 目的 | 操作する人 | 参照先 |
+|---|---|---|
+| ランダムな ID の代わりに、`crm.app.teable.example.com` のようなわかりやすい名前を使う | アプリを編集できるユーザー（アプリエディターで操作） | [アクセスリンクの名前を変更する](#アクセスリンクの名前を変更する) |
+| `crm.example.org` のような、まったく別のドメインを使う | サーバー管理者（ドメインごとに1回） | [別のドメインでアプリを提供する](#別のドメインでアプリを提供する) |
+
+## アクセスリンクの名前を変更する
+
+変更はすぐに反映されます。DNS や証明書を変更する必要はありません。
+
+1. アプリエディターでアプリを開き、**公開**をクリックします。
+2. **アクセスリンク**の横にある編集アイコンをクリックします。
+3. 新しい名前を入力し（使用できるのは小文字の英字、数字、ハイフンで、先頭と末尾は英字か数字にします）、**確認**をクリックします。
+
+<img
+  src="/images/selfhosted/app-domains/2026-11-04-app-domains-rename-access-link.png"
+  alt="公開済みアプリの公開パネル：アクセスリンクの横にある編集アイコンと、その後に表示される、キャンセルボタンと確認ボタンの付いた名前の入力欄"
+  className="docs-screenshot"
+/>
+
+これで、アプリに `https://<new-name>.app.<your-domain>` でアクセスできるようになります。以前にも名前を変更していた場合は、変更前の名前が使えなくなるため、共有済みのリンクを更新してください。
+
+## 別のドメインでアプリを提供する
+
+Teable のドメインの外でアプリを提供する必要がある場合に使用します。たとえば、顧客ポータルを `portal.example.org` で提供する場合です。訪問者のアドレスバーには引き続きそのドメインが表示され、リダイレクトは行われません。
+
+<img
+  src="/images/selfhosted/app-domains/2026-11-04-app-domains-request-flow.png"
+  alt="リクエストの流れ：訪問者が portal.example.org を開くと、DNS がそのドメインを Teable サーバーに向け、サーバーが portal.app.teable.example.com で公開されているアプリへ振り分けます"
+  className="docs-screenshot"
+/>
+
+必要なもの：
+
+- プラットフォームのリリース **v2026.11.5** 以降（[変更履歴](https://github.com/teableio/teable-deployment/blob/main/CHANGELOG.md)）。サインイン後に訪問者をこのドメインへ戻すには、2026-11-05 以降の Teable リリースも必要です。
+- アプリの現在のアクセスリンク（例：`portal.app.teable.example.com`）
+- 別のドメインの DNS 設定へのアクセス権
+- デプロイ環境のサーバー（Docker）または Helm の values（Kubernetes）へのアクセス権
+
+### ステップ1：ドメインをデプロイ環境に向ける
+
+別のドメインに DNS レコードを1つ追加します。
+
+| ドメイン | レコード |
+|---|---|
+| サブドメイン（例：`portal.example.org`） | `CNAME` → アプリのアクセスリンク（例：`portal.app.teable.example.com`） |
+| ルートドメイン（例：`example.org`） | `A` → サーバー（または Ingress のロードバランサー）のパブリック IP。ほとんどの DNS プロバイダーでは、ルートドメインに `CNAME` を設定できません。 |
+
+次へ進む前に確認します。`dig +short portal.example.org` を実行すると、アクセスリンクまたはサーバーの IP が返されるはずです。
+
+### ステップ2：ドメインをアプリにマッピングする
+
+<Tabs>
+<Tab title="Docker">
+デプロイディレクトリの `.env` にマッピングを追加します。複数のマッピングは、スペースを入れずに半角カンマで区切ります。
+
+```bash .env
+APP_CUSTOM_DOMAINS=portal.example.org=portal.app.teable.example.com
+```
+
+設定を適用します。
+
+```bash
+./apply.sh server --with-app    # ランタイムプレーンのみを運用している場合は --with-app を省略します
+docker compose up -d
+```
+
+**証明書**は自動的に処理されます。
+
+- 独自の証明書（`TLS_CERT_FILE`）がすでにそのドメインに対応している場合は、その証明書が使用されます。
+- それ以外の場合は、Let's Encrypt の証明書が自動的に取得、更新されます。そのためには、ドメインがサーバーを指していて、インターネットから80番ポートと443番ポートにアクセスできる必要があります。
+
+インターネットからのインバウンドアクセスがないイントラネットでは、代わりに `TLS_CERT_FILE` で指定する証明書にそのドメインを追加してください。
+</Tab>
+<Tab title="Kubernetes">
+Helm の values にマッピングを追加します。
+
+```yaml values.yaml
+appRuntime:
+  customDomains:
+    - host: portal.example.org
+      target: portal.app.teable.example.com
+```
+
+設定を適用します。
+
+```bash
+helm upgrade <release> <chart> -n <namespace> -f values.yaml
+```
+
+**証明書**：デフォルトでは、チャートが cert-manager を通じて HTTP-01 で Let's Encrypt の証明書を要求します。そのため、ドメインが Ingress コントローラーのパブリックアドレスを指している必要があります。プライベートネットワークでは、チャートをインストールした Namespace にドメイン用の TLS Secret を作成し、次のように参照します。
+
+```yaml values.yaml
+appRuntime:
+  customDomains:
+    - host: portal.example.org
+      target: portal.app.teable.example.com
+      tlsSecretName: portal-example-org-tls
+```
+
+クラスターの前段にあるロードバランサーで TLS を終端している場合は、代わりにそのロードバランサーにドメインの証明書を追加してください。
+</Tab>
+</Tabs>
+
+### ステップ3：動作を確認する
+
+`https://portal.example.org` を開きます。アプリが読み込まれ、アドレスバーは `portal.example.org` のままになります。ターミナルからは次のように確認します。
+
+```bash
+curl -sI https://portal.example.org    # 200 が返り、アクセスリンクへリダイレクトされないことを確認します
+```
+
+アプリの元のアクセスリンクも引き続き使用できます。サインインが必要なアプリでは、訪問者はサインイン後にこのドメインへ戻ります。複数のドメインが同じアプリを指している場合は、最初に記載されたドメインへ戻ります。
+
+### ドメインを変更または削除する
+
+- **ドメインを別のアプリへ移す場合**は、そのドメインを移動先アプリのアクセスリンクにマッピングし、設定を再度適用します。
+- **アプリの名前を変更した後や公開を停止した後**は、すぐにマッピングを更新または削除してください。解放されたアクセスリンクは、別のアプリに使われる可能性があります。
+- **ドメインを削除する場合**は、マッピングを削除して設定を再度適用してから、DNS レコードを削除します。
+
+## トラブルシューティング
+
+| 症状 | 考えられる原因 |
+|---|---|
+| `app_runtime_host_not_bound` エラー | マッピングしたアクセスリンクがアプリの現在のアクセスリンクと一致していない（名前の変更後など）。または、アプリが公開されていない。 |
+| 空白のページまたは証明書の警告 | ドメインがマッピングに含まれていない、または設定が適用されていない。DNS がまだデプロイ環境を指していない。80番ポートがブロックされていて、Let's Encrypt がドメインを検証できない。または、独自の証明書にそのドメインが含まれていない。 |
+| ブラウザーがドメインを見つけられない | DNS レコードがない、またはまだ反映されていない。`dig +short <domain>` で確認してください。 |

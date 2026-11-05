@@ -1,0 +1,140 @@
+---
+title: "Eigene Domains für veröffentlichte Apps im selbst gehosteten Teable"
+description: "Geben Sie einer mit App Builder erstellten App eine einprägsamere Adresse unter Ihrer Teable-Domain oder stellen Sie sie mit Docker oder Kubernetes unter einer separaten Domain wie crm.example.org bereit."
+sidebarTitle: "App-Domains"
+---
+
+Jede App, die Sie mit App Builder veröffentlichen, erhält eine eigene Adresse unter der Domain Ihrer Bereitstellung:
+
+```text
+https://<name>.app.<ihre-domain>      z. B. https://crm.app.teable.example.com
+```
+
+Diese Adresse liegt bereits unter Ihrer eigenen Domain. Sie können sie auf zwei Arten ändern:
+
+| Sie möchten | Wer ist zuständig | Weiter zu |
+|---|---|---|
+| Einen gut lesbaren Namen, z. B. `crm.app.teable.example.com` statt einer zufälligen ID | Alle, die die App bearbeiten können, im App-Editor | [Den Zugangslink umbenennen](#den-zugangslink-umbenennen) |
+| Eine völlig separate Domain, z. B. `crm.example.org` | Ihr Serveradministrator, einmal pro Domain | [Eine App unter einer separaten Domain bereitstellen](#eine-app-unter-einer-separaten-domain-bereitstellen) |
+
+## Den Zugangslink umbenennen
+
+Die Änderung wirkt sofort; DNS und Zertifikate müssen nicht angepasst werden.
+
+1. Öffnen Sie die App im App-Editor und klicken Sie auf **Veröffentlichen**.
+2. Klicken Sie neben **Zugangslink** auf das Bearbeitungssymbol.
+3. Geben Sie den neuen Namen ein (Kleinbuchstaben a–z ohne Umlaute oder ß, Ziffern und Bindestriche, mit einem Buchstaben oder einer Ziffer am Anfang und am Ende) und klicken Sie dann auf **Bestätigen**.
+
+<img
+  src="/images/selfhosted/app-domains/2026-11-04-app-domains-rename-access-link.png"
+  alt="Veröffentlichungsbereich einer veröffentlichten App: das Bearbeitungssymbol neben dem Zugangslink, danach das Namensfeld mit Abbrechen und Bestätigen"
+  className="docs-screenshot"
+/>
+
+Die App ist jetzt unter `https://<neuer-name>.app.<ihre-domain>` erreichbar. Wenn Sie sie bereits früher umbenannt hatten, funktioniert der vorherige Name nicht mehr. Aktualisieren Sie daher alle Links, die Sie geteilt haben.
+
+## Eine App unter einer separaten Domain bereitstellen
+
+Verwenden Sie diese Variante, wenn eine App außerhalb Ihrer Teable-Domain liegen muss, z. B. ein Kundenportal unter `portal.example.org`. Besucher sehen in der Adressleiste weiterhin Ihre Domain; es findet keine Weiterleitung statt.
+
+<img
+  src="/images/selfhosted/app-domains/2026-11-04-app-domains-request-flow.png"
+  alt="Ablauf einer Anfrage: Der Besucher öffnet portal.example.org, DNS verweist die Domain auf Ihren Teable-Server, und der Server leitet die Anfrage an die unter portal.app.teable.example.com veröffentlichte App weiter"
+  className="docs-screenshot"
+/>
+
+Sie benötigen:
+
+- Plattform-Release **v2026.11.5** oder neuer ([Changelog](https://github.com/teableio/teable-deployment/blob/main/CHANGELOG.md)). Damit Besucher nach der Anmeldung auf diese Domain zurückkehren, außerdem ein Teable-Release vom 2026-11-05 oder später.
+- Den aktuellen Zugangslink der App, z. B. `portal.app.teable.example.com`.
+- Zugriff auf die DNS-Einstellungen der separaten Domain.
+- Zugriff auf den Server (Docker) bzw. die Helm-Values (Kubernetes) Ihrer Bereitstellung.
+
+### Schritt 1: Domain auf Ihre Bereitstellung richten
+
+Legen Sie für die separate Domain einen DNS-Eintrag an:
+
+| Domain | Eintrag |
+|---|---|
+| Eine Subdomain, z. B. `portal.example.org` | `CNAME` → der Zugangslink der App, z. B. `portal.app.teable.example.com` |
+| Eine Root-Domain, z. B. `example.org` | `A` → die öffentliche IP-Adresse Ihres Servers (bzw. des Ingress-Load-Balancers). Die meisten DNS-Anbieter erlauben keinen `CNAME` auf einer Root-Domain. |
+
+Prüfen Sie den Eintrag, bevor Sie fortfahren: `dig +short portal.example.org` sollte Ihren Zugangslink oder die IP-Adresse Ihres Servers zurückgeben.
+
+### Schritt 2: Domain der App zuordnen
+
+<Tabs>
+<Tab title="Docker">
+Tragen Sie die Zuordnung in die Datei `.env` in Ihrem Bereitstellungsverzeichnis ein. Trennen Sie mehrere Zuordnungen durch Kommas, ohne Leerzeichen:
+
+```bash .env
+APP_CUSTOM_DOMAINS=portal.example.org=portal.app.teable.example.com
+```
+
+Wenden Sie die Konfiguration an:
+
+```bash
+./apply.sh server --with-app    # --with-app weglassen, wenn Sie nur die Runtime-Ebene betreiben
+docker compose up -d
+```
+
+**Zertifikate** werden automatisch verwaltet:
+
+- Wenn Ihr eigenes Zertifikat (`TLS_CERT_FILE`) die Domain bereits abdeckt, wird es verwendet.
+- Andernfalls wird automatisch ein Zertifikat von Let's Encrypt angefordert und erneuert. Dafür muss die Domain auf den Server auflösen, und die Ports 80 und 443 müssen aus dem Internet erreichbar sein.
+
+In einem Intranet ohne eingehenden Internetzugang nehmen Sie die Domain stattdessen in das Zertifikat auf, das Sie in `TLS_CERT_FILE` bereitstellen.
+</Tab>
+<Tab title="Kubernetes">
+Fügen Sie die Zuordnung zu Ihren Helm-Values hinzu:
+
+```yaml values.yaml
+appRuntime:
+  customDomains:
+    - host: portal.example.org
+      target: portal.app.teable.example.com
+```
+
+Wenden Sie die Konfiguration an:
+
+```bash
+helm upgrade <release> <chart> -n <namespace> -f values.yaml
+```
+
+**Zertifikate**: Standardmäßig fordert das Chart bei cert-manager per HTTP-01 ein Zertifikat von Let's Encrypt an. Dafür muss die Domain auf die öffentliche Adresse Ihres Ingress-Controllers auflösen. In einem privaten Netzwerk erstellen Sie in dem Namespace, in dem Sie das Chart installiert haben, ein TLS-Secret für die Domain und verweisen darauf:
+
+```yaml values.yaml
+appRuntime:
+  customDomains:
+    - host: portal.example.org
+      target: portal.app.teable.example.com
+      tlsSecretName: portal-example-org-tls
+```
+
+Wenn TLS an einem Load Balancer vor dem Cluster terminiert wird, hinterlegen Sie das Zertifikat der Domain stattdessen dort.
+</Tab>
+</Tabs>
+
+### Schritt 3: Überprüfen
+
+Öffnen Sie `https://portal.example.org`. Die App wird geladen, und die Adressleiste zeigt weiterhin `portal.example.org`. Im Terminal:
+
+```bash
+curl -sI https://portal.example.org    # erwartet: 200, ohne Weiterleitung zum Zugangslink
+```
+
+Der ursprüngliche Zugangslink der App funktioniert weiterhin. Bei Apps, die eine Anmeldung erfordern, kehren Besucher nach der Anmeldung zu dieser Domain zurück; zeigen mehrere Domains auf dieselbe App, kehren sie zur zuerst aufgeführten zurück.
+
+### Eine Domain ändern oder entfernen
+
+- **Um eine Domain einer anderen App zuzuordnen**, tragen Sie in der Zuordnung den Zugangslink der anderen App ein und wenden Sie die Konfiguration erneut an.
+- **Nachdem Sie die App umbenannt oder ihre Veröffentlichung zurückgezogen haben**, aktualisieren oder entfernen Sie ihre Zuordnung sofort: Der frei gewordene Zugangslink kann von einer anderen App belegt werden.
+- **Um eine Domain zu entfernen**, löschen Sie ihre Zuordnung, wenden Sie die Konfiguration erneut an und entfernen Sie anschließend den DNS-Eintrag.
+
+## Fehlerbehebung
+
+| Symptom | Wahrscheinliche Ursache |
+|---|---|
+| Fehler `app_runtime_host_not_bound` | Der zugeordnete Zugangslink stimmt nicht mit dem aktuellen Zugangslink der App überein (z. B. nach einer Umbenennung), oder die App ist nicht veröffentlicht. |
+| Leere Seite oder Zertifikatswarnung | Die Domain fehlt in der Zuordnung, oder die Konfiguration wurde nicht angewendet; DNS zeigt noch nicht auf Ihre Bereitstellung; Port 80 ist blockiert, sodass Let's Encrypt die Domain nicht verifizieren kann; oder Ihr eigenes Zertifikat enthält die Domain nicht. |
+| Der Browser findet die Domain nicht | Der DNS-Eintrag fehlt oder hat sich noch nicht verbreitet. Prüfen Sie ihn mit `dig +short <domain>`. |
