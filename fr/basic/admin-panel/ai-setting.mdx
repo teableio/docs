@@ -18,7 +18,7 @@ Avant d’ouvrir la page Paramètres d’IA, assurez-vous que les éléments sui
 |------|------|------|
 | **Configuration de l’environnement d’exécution des agents** | Requise pour le Chat IA et le Générateur d’Applications | Utilisée par le Chat IA et le Générateur d’Applications |
 | **Fournisseur personnalisé** | Requis lorsque le Chat IA ou le Générateur d’Applications utilise votre propre clé (BYOK) | Utilisez un fournisseur **Compatible OpenAI** ou **Anthropic** |
-| **Clé API OpenAI** | Facultative | Nécessaire uniquement si vous souhaitez activer la **Saisie vocale** dans le Chat IA |
+| **Clé d’API OpenAI** | Facultative | Nécessaire uniquement si vous souhaitez activer la **Saisie vocale** dans le Chat IA |
 | **Accès public** | Requis lorsque le moteur de déploiement **Vercel** est sélectionné | Votre **instance Teable** et votre **stockage d’objets (MinIO / S3)** doivent être accessibles publiquement par Vercel |
 
 ## Étapes de configuration
@@ -88,30 +88,30 @@ Dans l’onglet **Générateur d’applications**, choisissez sous **Vercel Depl
 | Moteur de déploiement | Exigences de configuration |
 |------|------|
 | **Vercel** | Saisissez un jeton d’accès Vercel, cliquez sur **Test Connection**, puis utilisez **Tester l’accès public** pour confirmer que Vercel peut atteindre votre instance Teable et votre stockage d’objets. |
-| **Infrastructure Teable** | Utilise l’environnement d’exécution de conteneur Infrastructure Teable configuré. Aucune information d’identification supplémentaire ni test d’accès public n’est requis ici. |
+| **Teable Infra** | Utilise l’environnement d’exécution de conteneur Infrastructure Teable configuré. Aucune information d’identification supplémentaire ni test d’accès public n’est requis ici. |
 
 Vous pouvez ajouter les paramètres facultatifs suivants du Générateur d’Applications si nécessaire :
 
 | Élément facultatif | Cas d’utilisation |
 |------|------|
 | **Domaine personnalisé** | Lorsque vous souhaitez publier des Applications sous votre propre domaine |
-| **Authentification de l’Application** | Lorsque les Applications générées nécessitent une connexion par **OTP par e-mail**, **Google** ou **SSO (OIDC)** |
+| **Authentification des applications** | Lorsque les Applications générées nécessitent une connexion par **OTP par e-mail**, **Google** ou **SSO (OIDC)** |
 
-Dans **Authentification de l’Application**, vous pouvez configurer des fournisseurs de connexion pour les Applications générées :
+Dans **Authentification des applications**, vous pouvez configurer des fournisseurs de connexion pour les Applications générées :
 
 - **OTP par e-mail** utilise une boîte aux lettres SMTP indépendante pour les e-mails de vérification de connexion à l’Application.
-- **Google OAuth** nécessite un ID client et un secret client. Ajoutez l’URI de redirection affichée sur cette page à la liste des URI de redirection autorisés dans Google Cloud Console.
+- **OAuth Google** nécessite un ID client et un secret client. Ajoutez l’URI de redirection affichée sur cette page à la liste des URI de redirection autorisés dans Google Cloud Console.
 - **SSO (OIDC)** permet aux visiteurs de l’Application de se connecter via le fournisseur d’identité de votre entreprise. Enregistrez l’URL affichée sur la page comme URI de redirection auprès de votre fournisseur d’identité, puis renseignez **URL d'autorisation**, **URL du jeton**, **URL des informations utilisateur**, **ID client** et **Secret client**. Si **Scope** reste vide, la valeur `openid email profile` est utilisée.
 
-La connexion **Teable** est disponible par défaut. **OTP par e-mail** apparaît dans le Générateur d’Applications uniquement une fois les paramètres SMTP terminés, **Google** apparaît uniquement une fois les deux informations d’identification OAuth configurées, et **SSO (OIDC)** uniquement une fois tous les champs SSO renseignés, à l’exception du scope.
+La connexion **Teable** est disponible par défaut. **Email OTP** apparaît dans le Générateur d’Applications uniquement une fois les paramètres SMTP terminés, **Google** apparaît uniquement une fois les deux informations d’identification OAuth configurées, et **SSO (OIDC)** uniquement une fois tous les champs SSO renseignés, à l’exception du scope.
 
-Dans **Paramètres des apps**, **Injecter automatiquement la clé API IA dans les Applications** est activé par défaut, afin que les Applications puissent appeler les modèles IA de la plateforme. Désactivez-le et les Applications ne pourront plus les atteindre.
+Dans **Paramètres des apps**, **Injecter automatiquement la clé d’API IA dans les applications** est activé par défaut, afin que les Applications puissent appeler les modèles IA de la plateforme. Désactivez-le et les Applications ne pourront plus les atteindre.
 
 Si, après une mise à niveau, d’anciennes Applications ne s’affichent plus en aperçu ou ne peuvent plus être publiées, cliquez sur **Lancer la réparation** dans **Compatibilité des anciens projets**, sous **Outils de maintenance**, pour rétablir automatiquement les fichiers manquants.
 
 ### Facultatif : configurer la saisie vocale
 
-Pour utiliser la saisie vocale dans le Chat IA, activez **Saisie vocale** dans l’onglet **Chat IA** et saisissez une **Clé API OpenAI**. Configurez le **Point de terminaison de transcription** uniquement si vous utilisez un service de transcription personnalisé. Vous pouvez également limiter la durée d’enregistrement et le nombre de requêtes par minute.
+Pour utiliser la saisie vocale dans le Chat IA, activez **Saisie vocale** dans l’onglet **Chat IA** et saisissez une **Clé d’API OpenAI**. Configurez le **Point de terminaison de transcription** uniquement si vous utilisez un service de transcription personnalisé. Vous pouvez également limiter la durée d’enregistrement et le nombre de requêtes par minute.
 
 ### Vérifier la configuration
 

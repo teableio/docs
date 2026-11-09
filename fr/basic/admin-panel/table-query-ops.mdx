@@ -20,14 +20,14 @@ La page s’ouvre sur la liste des Tables. Les boutons d’état en haut portent
 
 | État | Signification |
 | --- | --- |
-| **Toutes les Tables** | Toutes les tables non supprimées de l’instance, y compris celles sans observation de requête. |
+| **Toutes les tables** | Toutes les tables non supprimées de l’instance, y compris celles sans observation de requête. |
 | **Nécessite une attention** | Les tables avec des requêtes lentes, des délais dépassés ou des recommandations en attente, ou dont la recherche configurée reste inactive ou ne couvre pas tous les champs compatibles. Commencez ici. |
 | **Recherche indexée** | Tables dont les métadonnées d’index sont publiées et exploitables et dont le commutateur d’exécution est activé : la recherche passe réellement par l’index. |
 | **Configuré, non actif** | Le nombre indique les tables configurées qui utilisent encore un parcours complet. Un clic affiche toutes les tables avec une recherche configurée pour comparer configuration et utilisation effective. |
 | **Non configurée** | Tables sans couverture de recherche. |
 | **Indisponible** | Tables qui ne peuvent pas utiliser la recherche indexée pour l’instant. La ligne en indique la raison. |
 
-Le champ de recherche accepte les noms ou identifiants de Table, de Projet et d’Espace. Le tri se fait par **Plus de requêtes lentes** ou par **Nom de Table**. La **Fenêtre d’observation** couvre la dernière heure ou 24 heures, et toutes les valeurs d’observation de la liste suivent cette fenêtre. Les observations sont conservées 2 jours ; au-delà, elles n’apparaissent plus dans la liste.
+Le champ de recherche accepte les noms ou identifiants de Table, de Projet et d’Espace. Le tri se fait par **Le plus de requêtes lentes** ou par **Nom de la table**. La **Période d’observation** couvre la dernière heure ou 24 heures, et toutes les valeurs d’observation de la liste suivent cette fenêtre. Les observations sont conservées 2 jours ; au-delà, elles n’apparaissent plus dans la liste.
 
 Chaque ligne donne le nombre de lignes et la taille estimés de la Table, les requêtes et requêtes lentes de la fenêtre, la méthode de recherche actuelle et la couverture des Champs, le nombre d’index de filtre/tri, ainsi que les recommandations en attente et les tâches actives. Cliquez sur le nom d’une Table pour ouvrir son détail.
 
@@ -42,9 +42,9 @@ La liste des Tables et le détail affichent l’état de l’index à côté de 
 | **Non configuré** | Aucune configuration de recherche enregistrée ni métadonnées d’index. | Choisissez **Générer l’index de recherche** si la Table a besoin de la recherche indexée. |
 | **Publication en attente** | La configuration est enregistrée, l’index n’est pas encore publié. | Vérifiez dans **Historique** si une tâche est encore en cours. |
 | **Prêt** | Les métadonnées d’index sont publiées et exploitables. | Vérifiez la méthode de recherche effective et le commutateur d’exécution pour confirmer que l’index est utilisé. |
-| **Métadonnées inexploitables** | Les métadonnées d’index sont défectueuses et ne peuvent pas servir la recherche. | Choisissez **Restaurer l’index de recherche**. |
+| **Métadonnées inutilisables** | Les métadonnées d’index sont défectueuses et ne peuvent pas servir la recherche. | Choisissez **Restaurer l’index de recherche**. |
 
-Deux lignes peuvent apparaître sous l’état. **Configuré : pg_bigm / pg_trgm** signale que le fournisseur enregistré diffère de la méthode de recherche utilisée, et **Commutateur d’exécution de la recherche indexée : désactivé** signale que l’index est prêt mais que l’exécution est coupée, la recherche restant en `ILIKE`.
+Deux lignes peuvent apparaître sous l’état. **Configuré : pg_bigm / pg_trgm** signale que le fournisseur enregistré diffère de la méthode de recherche utilisée, et **La recherche indexée est désactivée à l’exécution** signale que l’index est prêt mais que l’exécution est coupée, la recherche restant en `ILIKE`.
 
 Lorsqu’une notification en haut de la page signale des Tables dont l’index de recherche configuré n’est pas en service, la recherche sur ces Tables retombe sur `ILIKE`. Si elle indique aussi que le worker de tâches est désactivé, définissez `V2_TABLE_QUERY_OPS_TASK_WORKER_ENABLED` sur `true` côté backend, puis redémarrez pour que les index puissent être reconstruits automatiquement. Vous pouvez aussi restaurer l’index manuellement en choisissant **Restaurer l’index de recherche** dans l’onglet **Recherche** des détails de la Table ; cette opération ne nécessite pas le worker de tâches. Si la cause est un commutateur d’exécution de la recherche indexée désactivé, activez-le côté backend : restaurer l’index ne suffit pas.
 
@@ -52,7 +52,7 @@ Lorsqu’une notification en haut de la page signale des Tables dont l’index d
 
 ## Configurer la couverture de recherche
 
-L’onglet **Recherche** indique la méthode de recherche actuelle de la Table, le nombre de Champs couverts et la **Couverture effective** de chaque Champ. **Afficher les champs non couverts** restreint la liste aux Champs pas encore inclus ; les Champs marqués **Non éligible** ne peuvent pas alimenter un index de recherche par sous-chaîne.
+L’onglet **Recherche** indique la méthode de recherche actuelle de la Table, le nombre de Champs couverts et la **Couverture active** de chaque Champ. **Afficher les champs non couverts** restreint la liste aux Champs pas encore inclus ; les Champs marqués **Non éligible** ne peuvent pas alimenter un index de recherche par sous-chaîne.
 
 <Info>La couverture effective suppose des métadonnées d’index publiées et exploitables ainsi qu’un commutateur d’exécution activé ; une configuration enregistrée seule ne compte pas. La couverture est explicite : les Champs ajoutés ensuite ne sont pas inclus automatiquement. Choisissez **Compléter la couverture** pour les intégrer.</Info>
 
@@ -67,7 +67,7 @@ Le bouton de maintenance proposé dans l’onglet **Recherche** dépend de l’�
 
 Le système choisit automatiquement un fournisseur de recherche disponible ; s’il manque l’extension `pg_bigm` ou `pg_trgm` dans la base de données, la boîte de dialogue en indique la raison. Lors d’une restauration, elle reprend les Champs enregistrés la fois précédente ; dans les autres cas, tous les Champs disponibles sont cochés par défaut. Ne gardez que les Champs que les utilisateurs recherchent vraiment et, sur une Table large, décochez ceux qui n’ont pas besoin de recherche : construire un document de recherche pour chaque Champ coûte cher.
 
-**Analyser et simuler** exécute la modification sans la valider et rend le nombre de Champs couverts, le nombre de lignes estimé, la présence d’éléments de plan et l’impact d’une création ou d’une reconstruction. Les Tables estimées à 50 000 lignes ou plus, ainsi que celles de taille inconnue, exigent en plus la confirmation de la fenêtre de maintenance. Choisissez ensuite **Confirmer et mettre la tâche en file d’attente**.
+**Analyser et simuler** exécute la modification sans la valider et rend le nombre de Champs couverts, le nombre de lignes estimé, la présence d’éléments de plan et l’impact d’une création ou d’une reconstruction. Les Tables estimées à 50 000 lignes ou plus, ainsi que celles de taille inconnue, exigent en plus la confirmation de la fenêtre de maintenance. Choisissez ensuite **Confirmer et mettre en file d’attente**.
 
 <Warning>Créer ou reconstruire la couverture de recherche génère une colonne de recherche et un index GIN. L’opération peut réécrire toute la Table, poser des verrous et interrompre brièvement la recherche indexée. Planifiez-la pendant une fenêtre de maintenance.</Warning>
 
@@ -77,7 +77,7 @@ La boîte de dialogue renvoie un accusé de réception de tâche, pas un résult
 
 L’onglet **Index** répertorie les index de filtrage/tri et les index système avec leur validité, leur gestion, leur taille et leur définition. Les index de recherche de sous-chaînes figurent séparément dans **Recherche**.
 
-En dessous, les **Actions en attente** regroupent les recommandations d’index du système et précisent si des éléments de plan les étayent. **Examiner la création d’index** montre l’index proposé, la base de données d’exécution et les éléments probants ; après votre confirmation, Teable exécute `CREATE INDEX CONCURRENTLY` de façon asynchrone. Les grandes Tables et celles de taille inconnue exigent ici aussi la confirmation de la fenêtre de maintenance.
+En dessous, les **Actions en attente** regroupent les recommandations d’index du système et précisent si des éléments de plan les étayent. **Examiner la création de l’index** montre l’index proposé, la base de données d’exécution et les éléments probants ; après votre confirmation, Teable exécute `CREATE INDEX CONCURRENTLY` de façon asynchrone. Les grandes Tables et celles de taille inconnue exigent ici aussi la confirmation de la fenêtre de maintenance.
 
 <Info>Cette page ne supprime pas d’index. Les index non gérés et les index système peuvent protéger des contraintes ou servir d’autres charges de travail ; ils ne sont pas touchés.</Info>
 
@@ -85,14 +85,14 @@ En dessous, les **Actions en attente** regroupent les recommandations d’index 
 
 Lorsqu’une Table est signalée comme lente sans recommandation associée, ouvrez l’onglet **Diagnostic** et choisissez **Analyser les requêtes**. L’analyse lit uniquement les formes de requêtes enregistrées et les éléments de plan disponibles ; elle ne crée rien.
 
-La conclusion est **Opportunités d’index étayées par un plan trouvées**, **Aucune opportunité d’index confirmée par les plans disponibles** ou **Éléments insuffisants**. Des éléments insuffisants ne signifient pas qu’un balayage séquentiel a eu lieu : une observation lente ne prouve pas à elle seule que le chemin d’accès est en cause. En dessous figure chaque requête concernée, avec l’origine (trafic réel ou configuration de Vue enregistrée) et le coût de plan estimé avant et après l’index proposé (coût de plan, pas des millisecondes).
+La conclusion est **Possibilités d’index étayées par les plans trouvées**, **Aucune possibilité d’index confirmée par les plans disponibles** ou **Preuves insuffisantes**. Des éléments insuffisants ne signifient pas qu’un balayage séquentiel a eu lieu : une observation lente ne prouve pas à elle seule que le chemin d’accès est en cause. En dessous figure chaque requête concernée, avec l’origine (trafic réel ou configuration de Vue enregistrée) et le coût de plan estimé avant et après l’index proposé (coût de plan, pas des millisecondes).
 
 ## Suivre les résultats
 
 L’onglet **Historique** comporte trois parties :
 
 - **Tâches** : les tâches d’arrière-plan de cette Table, avec statut, nombre de tentatives, type de tâche et cause de l’échec. Lorsqu’une tâche a fini par réussir après un échec, l’erreur est signalée comme une tentative antérieure.
-- **Historique de configuration de recherche** : le fournisseur, le statut et la liste des Champs de chaque configuration de couverture passée.
+- **Historique de la configuration de recherche** : le fournisseur, le statut et la liste des Champs de chaque configuration de couverture passée.
 - **Historique des recommandations** : les recommandations acceptées, écartées ou remplacées.
 
 L’historique ne charge que les entrées les plus récentes. S’il y en a davantage, une ligne au-dessus de la liste en donne le total.
