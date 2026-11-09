@@ -20,14 +20,14 @@ La pagina si apre sull'elenco delle Tabelle. I pulsanti di stato in alto riporta
 
 | Stato | Significato |
 | --- | --- |
-| **Tutte le Tabelle** | Tutte le tabelle non eliminate dell’istanza, comprese quelle senza osservazioni delle query. |
+| **Tutte le tabelle** | Tutte le tabelle non eliminate dell’istanza, comprese quelle senza osservazioni delle query. |
 | **Richiede attenzione** | Tabelle con query lente, timeout o suggerimenti in sospeso, oppure con ricerca configurata ma non attiva o che non copre tutti i campi compatibili. Inizia da qui. |
 | **Ricerca indicizzata** | Tabelle con metadati dell'indice pubblicati e utilizzabili e interruttore di runtime attivo: la ricerca passa davvero dall'indice. |
 | **Configurato, non in uso** | Il conteggio indica le tabelle configurate che usano ancora una scansione completa. Facendo clic vengono mostrate tutte le tabelle con ricerca configurata, per confrontare configurazione e utilizzo effettivo. |
-| **Non configurata** | Tabelle senza copertura di ricerca. |
+| **Non configurato** | Tabelle senza copertura di ricerca. |
 | **Non disponibile** | Tabelle che al momento non possono usare la ricerca indicizzata. La riga ne indica il motivo. |
 
-Il campo di ricerca accetta nomi o ID di Tabella, Progetto e Spazio. L'ordinamento è per **Più query lente** oppure **Nome Tabella**. La **Finestra di osservazione** copre l'ultima ora o 24 ore, e tutti i dati di osservazione dell'elenco seguono quella finestra. Le osservazioni vengono conservate per 2 giorni; quelle precedenti non compaiono più nell'elenco.
+Il campo di ricerca accetta nomi o ID di Tabella, Progetto e Spazio. L'ordinamento è per **Più query lente** oppure **Nome tabella**. La **Finestra di osservazione** copre l'ultima ora o 24 ore, e tutti i dati di osservazione dell'elenco seguono quella finestra. Le osservazioni vengono conservate per 2 giorni; quelle precedenti non compaiono più nell'elenco.
 
 Ogni riga riporta righe e dimensioni stimate della Tabella, richieste e query lente della finestra, metodo di ricerca corrente e copertura dei Campi, numero di indici di filtro/ordinamento, oltre ai suggerimenti in sospeso e alle attività attive. Fai clic sul nome di una Tabella per aprirne il dettaglio.
 
@@ -44,7 +44,7 @@ L'elenco delle Tabelle e il dettaglio mostrano lo stato dell'indice accanto al m
 | **Pronto** | I metadati dell'indice sono pubblicati e utilizzabili. | Controlla il metodo di ricerca effettivo e l’interruttore di runtime per confermare che l’indice sia in uso. |
 | **Metadati inutilizzabili** | I metadati dell'indice sono danneggiati e non possono servire la ricerca. | Scegli **Ripristina indice di ricerca**. |
 
-Sotto lo stato possono comparire due righe. **Configurato: pg_bigm / pg_trgm** indica che il provider salvato è diverso dal metodo di ricerca in uso, mentre **Interruttore di runtime della ricerca indicizzata: disattivato** indica che l'indice è pronto ma il runtime è spento e la ricerca resta su `ILIKE`.
+Sotto lo stato possono comparire due righe. **Configurato: pg_bigm / pg_trgm** indica che il provider salvato è diverso dal metodo di ricerca in uso, mentre **La ricerca indicizzata è disattivata a runtime** indica che l'indice è pronto ma il runtime è spento e la ricerca resta su `ILIKE`.
 
 Quando un avviso in cima alla pagina segnala Tabelle con un indice di ricerca configurato ma non attivo, la ricerca su quelle Tabelle ripiega su `ILIKE`. Se l'avviso indica anche che il worker delle attività è spento, imposta `V2_TABLE_QUERY_OPS_TASK_WORKER_ENABLED` su `true` nel backend e riavvia, così gli indici potranno essere ricostruiti automaticamente. In alternativa, puoi ripristinarli manualmente con **Ripristina indice di ricerca** nella scheda **Ricerca** dei dettagli della Tabella, senza bisogno del worker delle attività. Se invece la causa è l'interruttore di runtime della ricerca indicizzata spento, devi attivarlo nel backend: il solo ripristino dell'indice non basta.
 
@@ -52,7 +52,7 @@ Quando un avviso in cima alla pagina segnala Tabelle con un indice di ricerca co
 
 ## Configurare la copertura di ricerca
 
-La scheda **Ricerca** mostra il metodo di ricerca corrente della Tabella, quanti Campi sono coperti e la **Copertura attiva** di ciascun Campo. **Mostra campi non coperti** limita l'elenco ai Campi non ancora inclusi; i Campi contrassegnati come **Non idoneo** non possono contribuire a un indice di ricerca per sottostringa.
+La scheda **Ricerca** mostra il metodo di ricerca corrente della Tabella, quanti Campi sono coperti e la **Copertura in uso** di ciascun Campo. **Mostra i campi non coperti** limita l'elenco ai Campi non ancora inclusi; i Campi contrassegnati come **Non idoneo** non possono contribuire a un indice di ricerca per sottostringa.
 
 <Info>La copertura attiva richiede metadati dell'indice pubblicati e utilizzabili e l'interruttore di runtime attivo: la sola configurazione salvata non conta. La copertura è esplicita, quindi i Campi aggiunti in seguito non vengono inclusi automaticamente: scegli **Completa copertura** per integrarli.</Info>
 
@@ -67,7 +67,7 @@ I pulsanti di manutenzione della scheda **Ricerca** cambiano in base allo stato 
 
 Il sistema sceglie automaticamente un provider di ricerca disponibile; se nel database manca l'estensione `pg_bigm` o `pg_trgm`, la finestra di dialogo ne spiega il motivo. Durante il ripristino la finestra riprende i Campi salvati l'ultima volta; negli altri casi sono selezionati tutti i Campi disponibili. Mantieni solo i Campi che gli utenti cercano davvero: su una Tabella ampia deseleziona quelli che non servono alla ricerca, perché creare un documento di ricerca per ogni Campo è oneroso.
 
-**Analizza ed esegui la simulazione** applica la modifica senza confermarla e riporta il numero di Campi coperti, le righe stimate, l'eventuale presenza di prove dal piano e l'impatto della creazione o della ricostruzione. Le Tabelle stimate a 50.000 righe o più, e quelle di dimensioni sconosciute, richiedono anche la conferma della finestra di manutenzione. Poi scegli **Conferma e accoda attività**.
+**Analizza e simula** applica la modifica senza confermarla e riporta il numero di Campi coperti, le righe stimate, l'eventuale presenza di prove dal piano e l'impatto della creazione o della ricostruzione. Le Tabelle stimate a 50.000 righe o più, e quelle di dimensioni sconosciute, richiedono anche la conferma della finestra di manutenzione. Poi scegli **Conferma e accoda attività**.
 
 <Warning>La creazione o la ricostruzione della copertura di ricerca genera una colonna di ricerca e un indice GIN. L'operazione può riscrivere l'intera Tabella e mantenere lock, e la ricerca indicizzata si interrompe brevemente durante l'esecuzione. Pianificala in una finestra di manutenzione.</Warning>
 
@@ -77,7 +77,7 @@ Quello che la finestra restituisce è una ricevuta dell'attività, non un risult
 
 La scheda **Indici** elenca gli indici di filtro/ordinamento e di sistema, con validità, gestione, dimensioni e definizione. Gli indici per sottostringhe sono elencati separatamente in **Ricerca**.
 
-Sotto, le **Azioni in sospeso** raccolgono i suggerimenti di indice del sistema e indicano se sono supportati da prove del piano. **Esamina la creazione dell'indice** mostra l'indice proposto, il database su cui viene eseguito e le prove; dopo la conferma, Teable esegue `CREATE INDEX CONCURRENTLY` in modo asincrono. Anche qui le Tabelle grandi o di dimensioni sconosciute richiedono la conferma della finestra di manutenzione.
+Sotto, le **Azioni in attesa** raccolgono i suggerimenti di indice del sistema e indicano se sono supportati da prove del piano. **Rivedi la creazione dell’indice** mostra l'indice proposto, il database su cui viene eseguito e le prove; dopo la conferma, Teable esegue `CREATE INDEX CONCURRENTLY` in modo asincrono. Anche qui le Tabelle grandi o di dimensioni sconosciute richiedono la conferma della finestra di manutenzione.
 
 <Info>Questa pagina non elimina indici. Gli indici non gestiti e quelli di sistema possono proteggere vincoli o servire altri carichi di lavoro, quindi non vengono toccati.</Info>
 
@@ -85,7 +85,7 @@ Sotto, le **Azioni in sospeso** raccolgono i suggerimenti di indice del sistema 
 
 Quando una Tabella viene segnalata come lenta e nessun suggerimento la riguarda, apri la scheda **Diagnosi** e scegli **Analizza query**. L'analisi legge soltanto le forme di query salvate e le prove del piano disponibili, e non crea nulla.
 
-La conclusione è **Trovate opportunità di indice supportate dal piano**, **Nessuna opportunità di indice confermata dai piani disponibili** oppure **Prove insufficienti**. Prove insufficienti non significano che si sia verificata una scansione sequenziale: una singola osservazione lenta non dimostra che il percorso di accesso sia la causa. Sotto viene elencata ogni query interessata, con l'indicazione se proviene dal traffico reale o da una configurazione di Vista salvata, e il costo di piano stimato prima e dopo l'indice proposto (costo di piano, non millisecondi).
+La conclusione è **Trovate opportunità di indice supportate dal piano**, **Nessuna opportunità di indice confermata dai piani disponibili** oppure **Evidenza insufficiente**. Un'evidenza insufficiente non significa che si sia verificata una scansione sequenziale: una singola osservazione lenta non dimostra che il percorso di accesso sia la causa. Sotto viene elencata ogni query interessata, con l'indicazione se proviene dal traffico reale o da una configurazione di Vista salvata, e il costo di piano stimato prima e dopo l'indice proposto (costo di piano, non millisecondi).
 
 ## Seguire i risultati
 
@@ -93,7 +93,7 @@ La scheda **Cronologia** ha tre parti:
 
 - **Attività**: le attività in background di questa Tabella, con stato, numero di tentativi, tipo di attività e motivo dell'errore. Se un'attività è poi riuscita dopo un errore, l'errore è contrassegnato come tentativo precedente.
 - **Cronologia della configurazione di ricerca**: provider, stato ed elenco dei Campi di ogni configurazione di copertura precedente.
-- **Cronologia dei suggerimenti**: suggerimenti accettati, ignorati o sostituiti.
+- **Cronologia delle raccomandazioni**: suggerimenti accettati, ignorati o sostituiti.
 
 La cronologia carica soltanto le voci più recenti. Se ce ne sono altre, una riga sopra l'elenco ne indica il totale.
 
