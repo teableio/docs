@@ -23,13 +23,13 @@ Sayfa Tablo listesiyle açılır. Üstteki durum düğmeleri kendi sayılarını
 | Durum | Anlamı |
 | --- | --- |
 | **Tüm tablolar** | Henüz sorgu gözlemi bulunmayanlar dahil, örnekteki silinmemiş tüm tablolar. |
-| **Dikkat gerektiriyor** | Yavaş sorguları, zaman aşımları veya bekleyen önerileri olan; ya da yapılandırılmış araması hizmet vermeyen veya tüm uyumlu alanları kapsamayan tablolar. Buradan başlayın. |
+| **İlgilenilmesi gerekenler** | Yavaş sorguları, zaman aşımları veya bekleyen önerileri olan; ya da yapılandırılmış araması hizmet vermeyen veya tüm uyumlu alanları kapsamayan tablolar. Buradan başlayın. |
 | **Dizinli arama** | Dizin meta verileri yayımlanmış ve kullanılabilir olan, çalışma zamanı anahtarı da açık olan Tablolar; arama gerçekten dizin üzerinden çalışır. |
 | **Yapılandırıldı, hizmet vermiyor** | Sayı, araması yapılandırılmış ancak hâlâ tam taramaya dönen tabloları gösterir. Tıklayınca arama yapılandırılmış tüm tablolar listelenir; yapılandırmayı gerçek kullanım ile karşılaştırabilirsiniz. |
 | **Yapılandırılmamış** | Henüz arama kapsamı olmayan Tablolar. |
-| **Kullanılamıyor** | Şu anda dizinli aramayı kullanamayan Tablolar. Satırda nedeni yazar. |
+| **Kullanılamaz** | Şu anda dizinli aramayı kullanamayan Tablolar. Satırda nedeni yazar. |
 
-Arama kutusu Tablo, Proje ve Alan adlarını veya kimliklerini kabul eder. Sıralama **En çok yavaş sorgu** ya da **Tablo adı** şeklindedir. **Gözlem penceresi** son 1 saati veya 24 saati kapsar ve listedeki tüm gözlem değerleri bu pencereyi izler. Gözlem kayıtları 2 gün saklanır; daha eskisi listede görünmez.
+Arama kutusu Tablo, Proje ve Alan adlarını veya kimliklerini kabul eder. Sıralama **En çok yavaş sorgu** ya da **Tablo adı** şeklindedir. **Gözlem aralığı** son 1 saati veya 24 saati kapsar ve listedeki tüm gözlem değerleri bu pencereyi izler. Gözlem kayıtları 2 gün saklanır; daha eskisi listede görünmez.
 
 Her satırda Tablonun tahmini satır sayısı ve boyutu, pencere içindeki istekler ve yavaş sorgular, geçerli arama yöntemi ve Alan kapsamı, filtre/sıralama dizinlerinin sayısı, bekleyen öneriler ile etkin görevlerin sayısı yer alır. Ayrıntı için Tablo adına tıklayın.
 
@@ -41,12 +41,12 @@ Tablo listesi ve Tablo ayrıntısı, arama yönteminin yanında Tablonun dizin d
 
 | Durum | Anlamı | Sonraki adım |
 | --- | --- | --- |
-| **Yapılandırılmamış** | Kaydedilmiş arama yapılandırması da dizin meta verisi de yok. | Tablo dizinli aramaya ihtiyaç duyuyorsa **Arama dizini oluştur**'a tıklayın. |
+| **Yapılandırılmadı** | Kaydedilmiş arama yapılandırması da dizin meta verisi de yok. | Tablo dizinli aramaya ihtiyaç duyuyorsa **Arama dizini oluştur**'a tıklayın. |
 | **Yayımlanmayı bekliyor** | Yapılandırma kaydedildi, dizin henüz yayımlanmadı. | **Geçmiş** bölümünde çalışan bir görev olup olmadığına bakın. |
 | **Hazır** | Dizin meta verileri yayımlandı ve kullanılabilir. | Dizinin kullanıldığını doğrulamak için gerçek arama yöntemini ve çalışma zamanı anahtarını kontrol edin. |
-| **Meta veri kullanılamıyor** | Dizin meta verileri bozuk ve aramaya hizmet edemiyor. | **Arama dizinini geri yükle**'ye tıklayın. |
+| **Kullanılamayan meta veri** | Dizin meta verileri bozuk ve aramaya hizmet edemiyor. | **Arama dizinini geri yükle**'ye tıklayın. |
 
-Durumun altında iki satır görünebilir. **Yapılandırıldı: pg_bigm / pg_trgm**, kaydedilen sağlayıcının kullanılan arama yönteminden farklı olduğunu; **Dizinli arama çalışma zamanı anahtarı: kapalı** ise dizin hazır olsa da çalışma zamanının kapalı olduğunu ve aramanın hâlâ `ILIKE` ile yürüdüğünü gösterir.
+Durumun altında iki satır görünebilir. **Yapılandırılan: pg_bigm / pg_trgm**, kaydedilen sağlayıcının kullanılan arama yönteminden farklı olduğunu; **Dizinli arama çalışma zamanında kapatılmış** ise dizin hazır olsa da çalışma zamanının kapalı olduğunu ve aramanın hâlâ `ILIKE` ile yürüdüğünü gösterir.
 
 Sayfanın üstündeki bir bildirim, yapılandırılmış arama dizini devrede olmayan Tablolar olduğunu söylüyorsa bu Tablolardaki aramalar `ILIKE` taramasına geri döner. Bildirim görev işleyicisinin de kapalı olduğunu belirtiyorsa arka uçta `V2_TABLE_QUERY_OPS_TASK_WORKER_ENABLED` değerini `true` yapıp yeniden başlatın; dizinler ancak bu şekilde otomatik olarak yeniden oluşturulabilir. Dizini Tablo ayrıntısının **Arama** sekmesinde **Arama dizinini geri yükle**'ye tıklayarak elle de geri yükleyebilirsiniz; bu işlem görev işleyicisi gerektirmez. Sebep dizinli arama çalışma zamanı anahtarının kapalı olmasıysa anahtarı arka uçta açmanız gerekir; yalnızca dizini geri yüklemek yeterli olmaz.
 
@@ -54,7 +54,7 @@ Sayfanın üstündeki bir bildirim, yapılandırılmış arama dizini devrede ol
 
 ## Arama kapsamını yapılandırma
 
-**Arama** sekmesi Tablonun geçerli arama yöntemini, kapsanan Alan sayısını ve her Alanın **Etkin kapsamını** gösterir. **Kapsanmayan alanları göster**, listeyi henüz dahil edilmemiş Alanlara indirger; **Uygun değil** olarak işaretlenen Alanlar alt dize arama dizinine katkı veremez.
+**Arama** sekmesi Tablonun geçerli arama yöntemini, kapsanan Alan sayısını ve her Alanın **Hizmet veren kapsam** bilgisini gösterir. **Kapsanmayan alanları göster**, listeyi henüz dahil edilmemiş Alanlara indirger; **Uygun değil** olarak işaretlenen Alanlar alt dize arama dizinine katkı veremez.
 
 <Info>Etkin kapsam için dizin meta verilerinin yayımlanmış ve kullanılabilir olması, çalışma zamanı anahtarının da açık olması gerekir; yalnızca yapılandırmayı kaydetmek kapsama sayılmaz. Kapsam açıkça belirlendiğinden sonradan eklediğiniz Alanlar otomatik olarak dahil edilmez; bunları katmak için **Kapsamı tamamla**'ya tıklayın.</Info>
 
@@ -69,7 +69,7 @@ Sayfanın üstündeki bir bildirim, yapılandırılmış arama dizini devrede ol
 
 Sistem kullanılabilir arama sağlayıcısını otomatik olarak seçer; veritabanında `pg_bigm` veya `pg_trgm` uzantısı yoksa iletişim kutusu nedenini açıklar. Geri yüklemede iletişim kutusu en son kaydedilen Alanlarla açılır, diğer durumlarda kullanılabilir tüm Alanlar varsayılan olarak seçilidir. Yalnızca kullanıcıların gerçekten aradığı Alanları bırakın; geniş bir Tabloda aranması gerekmeyen Alanların seçimini kaldırın, her Alan için arama belgesi oluşturmak pahalıdır.
 
-**Analiz et ve prova çalıştır**, değişikliği işlemeden yürütür ve kapsanan Alan sayısını, tahmini satır sayısını, plan kanıtının olup olmadığını, oluşturma veya yeniden oluşturmanın etkisini bildirir. Tahminen 50.000 satır ve üzeri ya da boyutu bilinmeyen Tablolarda ayrıca bakım penceresi onayı gerekir. Ardından **Onayla ve görevi kuyruğa al** seçeneğini kullanın.
+**Analiz et ve prova yap**, değişikliği işlemeden yürütür ve kapsanan Alan sayısını, tahmini satır sayısını, plan kanıtının olup olmadığını, oluşturma veya yeniden oluşturmanın etkisini bildirir. Tahminen 50.000 satır ve üzeri ya da boyutu bilinmeyen Tablolarda ayrıca bakım penceresi onayı gerekir. Ardından **Onayla ve görevi kuyruğa al** seçeneğini kullanın.
 
 <Warning>Arama kapsamını oluşturmak veya yeniden oluşturmak bir arama sütunu ile GIN dizini üretir. Tablonun tamamını yeniden yazabilir, kilit tutabilir ve çalışırken dizinli arama kısa süre kesilir. Bunu bir bakım penceresine planlayın.</Warning>
 
@@ -79,7 +79,7 @@ Sistem kullanılabilir arama sağlayıcısını otomatik olarak seçer; veritaba
 
 **Dizinler** sekmesi filtre/sıralama ve sistem dizinlerini geçerlilik, yönetim durumu, boyut ve tanımlarıyla listeler. Alt dize arama dizinleri **Arama** sekmesinde ayrı gösterilir.
 
-Altındaki **Bekleyen işlemler**, sistemin dizin önerilerini tutar ve her birinin plan kanıtıyla desteklenip desteklenmediğini belirtir. **Dizin oluşturmayı incele**, önerilen dizini, çalıştırılacağı veritabanını ve kanıtları gösterir; onayınızın ardından Teable `CREATE INDEX CONCURRENTLY` komutunu eşzamansız çalıştırır. Büyük ve boyutu bilinmeyen Tablolarda burada da bakım penceresi onayı gerekir.
+Altındaki **Bekleyen işlemler**, sistemin dizin önerilerini tutar ve her birinin plan kanıtıyla desteklenip desteklenmediğini belirtir. **Dizin oluşturmayı gözden geçir**, önerilen dizini, çalıştırılacağı veritabanını ve kanıtları gösterir; onayınızın ardından Teable `CREATE INDEX CONCURRENTLY` komutunu eşzamansız çalıştırır. Büyük ve boyutu bilinmeyen Tablolarda burada da bakım penceresi onayı gerekir.
 
 <Info>Bu sayfa dizin silmez. Yönetilmeyen ve sistem dizinleri kısıtları koruyor ya da başka iş yüklerine hizmet ediyor olabilir, bu yüzden onlara dokunulmaz.</Info>
 
@@ -87,7 +87,7 @@ Altındaki **Bekleyen işlemler**, sistemin dizin önerilerini tutar ve her biri
 
 Bir Tablo yavaş olarak bildirildiğinde ve bunu karşılayan bir öneri yoksa **Tanılama** sekmesini açıp **Sorguları analiz et** seçeneğini kullanın. Analiz yalnızca kayıtlı sorgu biçimlerini ve mevcut plan kanıtlarını okur; hiçbir şey oluşturmaz.
 
-Sonuç şunlardan biridir: **Planla desteklenen dizin fırsatları bulundu**, **Mevcut planlar bir dizin fırsatını doğrulamıyor** veya **Yetersiz kanıt**. Yetersiz kanıt, sıralı tarama yapıldığı anlamına gelmez; tek başına yavaş bir gözlem, erişim yolunun sorumlu olduğunu göstermez. Altta, etkilenen her sorgu gerçek trafikten mi yoksa kayıtlı bir Görünüm yapılandırmasından mı geldiğiyle ve önerilen dizin öncesi ile sonrası tahmini plan maliyetiyle (milisaniye değil, plan maliyeti) listelenir.
+Sonuç şunlardan biridir: **Plan destekli dizin fırsatları bulundu**, **Mevcut planlarla doğrulanmış bir dizin fırsatı yok** veya **Yetersiz kanıt**. Yetersiz kanıt, sıralı tarama yapıldığı anlamına gelmez; tek başına yavaş bir gözlem, erişim yolunun sorumlu olduğunu göstermez. Altta, etkilenen her sorgu gerçek trafikten mi yoksa kayıtlı bir Görünüm yapılandırmasından mı geldiğiyle ve önerilen dizin öncesi ile sonrası tahmini plan maliyetiyle (milisaniye değil, plan maliyeti) listelenir.
 
 ## Sonuçları izleme
 
