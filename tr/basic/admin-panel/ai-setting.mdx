@@ -18,7 +18,7 @@ Yapay zekâ ayarları sayfasını açmadan önce aşağıdaki öğelerin hazır 
 |------|------|------|
 | **Aracı Çalışma Zamanı kurulumu** | AI Chat ve App Builder için zorunlu | AI Chat ve App Builder tarafından kullanılır |
 | **Özel sağlayıcı** | AI Chat veya App Builder kendi anahtarınızı (BYOK) kullandığında zorunlu | **OpenAI Compatible** veya **Anthropic** sağlayıcısı kullanın |
-| **OpenAI API Anahtarı** | İsteğe bağlı | Yalnızca AI Chat'te **Sesli girişi** etkinleştirmek istiyorsanız gereklidir |
+| **OpenAI API anahtarı** | İsteğe bağlı | Yalnızca AI Chat'te **Sesli giriş** seçeneğini etkinleştirmek istiyorsanız gereklidir |
 | **Genel erişim** | **Vercel** dağıtım motoru seçildiğinde zorunlu | **Teable örneğiniz** ve **nesne depolamanız (MinIO / S3)** Vercel tarafından genel olarak erişilebilir olmalıdır |
 
 ## Kurulum adımları
@@ -79,7 +79,7 @@ Her katmanın sağında iki denetim daha bulunur:
 
 ### AI özelliklerini etkinleştirme
 
-Sayfanın üst kısmındaki **Yapay Zekâ Yetenekleri** bölümünde gerektiği şekilde **AI Alanı** ve **AI Chat**'i etkinleştirin; bu anahtarlar tüm örnek için geçerlidir. **AI Chat**'i kullanmadan önce çalışma zamanını yapılandırın.
+Sayfanın üst kısmındaki **Yapay Zekâ Yetenekleri** bölümünde gerektiği şekilde **AI Alan** ve **AI Sohbet** anahtarlarını etkinleştirin; bu anahtarlar tüm örnek için geçerlidir. **AI Sohbet** özelliğini kullanmadan önce çalışma zamanını yapılandırın.
 
 ### App Builder'ı yapılandırma
 
@@ -95,15 +95,15 @@ Gerektiğinde aşağıdaki isteğe bağlı App Builder ayarlarını ekleyebilirs
 | İsteğe bağlı öğe | Gerektiği durum |
 |------|------|
 | **Özel alan adı** | Uygulamaları kendi alan adınız altında yayımlamak istediğinizde |
-| **Uygulama Kimlik Doğrulaması** | Oluşturulan uygulamalarda **E-posta OTP**, **Google** veya **SSO (OIDC)** ile oturum açma gerektiğinde |
+| **Uygulama kimlik doğrulaması** | Oluşturulan uygulamalarda **E-posta OTP**, **Google** veya **SSO (OIDC)** ile oturum açma gerektiğinde |
 
-**Uygulama Kimlik Doğrulaması** bölümünde, oluşturulan uygulamalar için oturum açma sağlayıcılarını yapılandırabilirsiniz:
+**Uygulama kimlik doğrulaması** bölümünde, oluşturulan uygulamalar için oturum açma sağlayıcılarını yapılandırabilirsiniz:
 
 - **E-posta OTP**, uygulama giriş doğrulama e-postaları için bağımsız bir SMTP posta kutusu kullanır.
 - **Google OAuth**, bir İstemci Kimliği ve İstemci Gizli Anahtarı gerektirir. Bu sayfada gösterilen yönlendirme URI'sini Google Cloud Console'daki yetkilendirilmiş yönlendirme URI'leri listesine ekleyin.
 - **SSO (OIDC)**, uygulama ziyaretçilerinin kurumsal kimlik sağlayıcısıyla oturum açmasını sağlar. Sayfada gösterilen adresi kimlik sağlayıcısında yönlendirme URI'si olarak kaydedin, ardından **Yetkilendirme URL'si**, **Token URL'si**, **Kullanıcı Bilgisi URL'si**, **İstemci kimliği** ve **İstemci gizli anahtarı** alanlarını doldurun. **Scope** boş bırakılırsa `openid email profile` kullanılır.
 
-**Teable** ile oturum açma varsayılan olarak kullanılabilir. **E-posta OTP**, yalnızca SMTP ayarları tamamlandıktan sonra App Builder'da görünür; **Google** yalnızca her iki OAuth kimlik bilgisi yapılandırıldıktan sonra, **SSO (OIDC)** ise Scope dışındaki tüm SSO alanları doldurulduktan sonra görünür.
+**Teable** ile oturum açma varsayılan olarak kullanılabilir. **Email OTP**, yalnızca SMTP ayarları tamamlandıktan sonra App Builder'da görünür; **Google** yalnızca her iki OAuth kimlik bilgisi yapılandırıldıktan sonra, **SSO (OIDC)** ise Scope dışındaki tüm SSO alanları doldurulduktan sonra görünür.
 
 **Uygulama ayarları** bölümündeki **Yapay zekâ API anahtarını uygulamalara otomatik ekle** varsayılan olarak açıktır; böylece uygulamalar platformun AI modellerini çağırabilir. Bu ayarı kapatırsanız uygulamalar artık bu modellere erişemez.
 
@@ -111,7 +111,7 @@ Yükseltmeden sonra eski uygulamalar düzgün önizlenemiyor veya yayımlanamıy
 
 ### İsteğe bağlı: Sesli girişi yapılandırma
 
-AI Chat'te sesli giriş kullanmak için **Yapay Zekâ Sohbeti** sekmesinde **Sesli giriş**'i etkinleştirip bir **OpenAI API Anahtarı** girin. **Transkripsiyon Uç Noktasını** yalnızca özel bir transkripsiyon hizmeti kullanırken yapılandırın. Kayıt uzunluğunu ve dakika başına istek sayısını da sınırlayabilirsiniz.
+AI Chat'te sesli giriş kullanmak için **Yapay Zekâ Sohbeti** sekmesinde **Sesli giriş**'i etkinleştirip bir **OpenAI API anahtarı** girin. **Yazıya dökme uç noktası** alanını yalnızca özel bir transkripsiyon hizmeti kullanırken yapılandırın. Kayıt uzunluğunu ve dakika başına istek sayısını da sınırlayabilirsiniz.
 
 ### Kurulumu doğrulama
 

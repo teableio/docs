@@ -20,14 +20,14 @@ La página se abre con la lista de Tablas. Los botones de estado de la parte sup
 
 | Estado | Significado |
 | --- | --- |
-| **Todas las Tablas** | Todas las tablas de la instancia que no se hayan eliminado, incluidas las que aún no tienen observaciones de consultas. |
+| **Todas las tablas** | Todas las tablas de la instancia que no se hayan eliminado, incluidas las que aún no tienen observaciones de consultas. |
 | **Requiere atención** | Tablas con consultas lentas, tiempos de espera agotados o recomendaciones pendientes, o con búsquedas configuradas que no se usan o no cubren todos los campos compatibles. Empieza aquí. |
 | **Búsqueda indexada** | Tablas cuyos metadatos de índice están publicados y utilizables y cuyo interruptor de ejecución está activado, de modo que la búsqueda usa realmente el índice. |
 | **Configurada, sin servir** | El recuento corresponde a tablas configuradas que aún recurren a un escaneo completo. Al hacer clic se muestran todas las tablas con búsqueda configurada para comparar la configuración con su uso efectivo. |
 | **Sin configurar** | Tablas sin cobertura de búsqueda. |
 | **No disponible** | Tablas que ahora mismo no pueden usar la búsqueda indexada. La fila indica el motivo. |
 
-El cuadro de búsqueda admite nombres o identificadores de Tabla, Proyecto y Espacio. La ordenación puede ser **Más consultas lentas** o **Nombre de Tabla**. La **Ventana de observación** abarca la última hora o 24 horas, y todas las cifras de observación de la lista siguen esa ventana. Las observaciones se conservan 2 días; lo anterior deja de aparecer en la lista.
+El cuadro de búsqueda admite nombres o identificadores de Tabla, Proyecto y Espacio. La ordenación puede ser **Más consultas lentas** o **Nombre de la tabla**. El **Intervalo de observación** abarca la última hora o 24 horas, y todas las cifras de observación de la lista siguen esa ventana. Las observaciones se conservan 2 días; lo anterior deja de aparecer en la lista.
 
 Cada fila muestra las filas y el tamaño estimados de la Tabla, las solicitudes y las consultas lentas de la ventana, el método de búsqueda actual y la cobertura de Campos, el número de índices de filtro/orden, y los recuentos de recomendaciones pendientes y tareas activas. Haz clic en el nombre de una Tabla para abrir su detalle.
 
@@ -44,7 +44,7 @@ La lista de Tablas y el detalle muestran el estado del índice junto al método 
 | **Listo** | Los metadatos del índice están publicados y son utilizables. | Comprueba el método de búsqueda real y el interruptor de ejecución para confirmar que el índice se utiliza. |
 | **Metadatos inutilizables** | Los metadatos del índice están dañados y no pueden atender la búsqueda. | Elige **Restaurar índice de búsqueda**. |
 
-Bajo el estado pueden aparecer dos líneas. **Configurado: pg_bigm / pg_trgm** indica que el proveedor guardado no coincide con el método de búsqueda en uso, y **Interruptor de ejecución de la búsqueda indexada: desactivado** indica que el índice está listo pero la ejecución está apagada, así que la búsqueda sigue usando `ILIKE`.
+Bajo el estado pueden aparecer dos líneas. **Configurado: pg_bigm / pg_trgm** indica que el proveedor guardado no coincide con el método de búsqueda en uso, y **La búsqueda indexada está desactivada en tiempo de ejecución** indica que el índice está listo pero la ejecución está apagada, así que la búsqueda sigue usando `ILIKE`.
 
 Cuando un aviso en la parte superior de la página informa de Tablas cuyo índice de búsqueda configurado no está en servicio, la búsqueda en esas Tablas recurre a `ILIKE`. Si además indica que el worker de tareas está desactivado, define `V2_TABLE_QUERY_OPS_TASK_WORKER_ENABLED` como `true` en el backend y reinicia para que los índices puedan reconstruirse automáticamente. También puedes restaurar el índice manualmente con **Restaurar índice de búsqueda** en la pestaña **Búsqueda** de los detalles de la Tabla; esta operación no necesita el worker de tareas. Si la causa es que el interruptor de ejecución de la búsqueda indexada está desactivado, tienes que activarlo en el backend: restaurar el índice no basta.
 
@@ -52,7 +52,7 @@ Cuando un aviso en la parte superior de la página informa de Tablas cuyo índic
 
 ## Configurar la cobertura de búsqueda
 
-La pestaña **Búsqueda** muestra el método de búsqueda actual de la Tabla, cuántos Campos están cubiertos y la **Cobertura efectiva** de cada Campo. **Mostrar campos no cubiertos** limita la lista a los Campos aún no incluidos; los Campos marcados como **No apto** no pueden formar parte de un índice de búsqueda por subcadena.
+La pestaña **Búsqueda** muestra el método de búsqueda actual de la Tabla, cuántos Campos están cubiertos y la **Cobertura en servicio** de cada Campo. **Mostrar campos sin cubrir** limita la lista a los Campos aún no incluidos; los Campos marcados como **No apto** no pueden formar parte de un índice de búsqueda por subcadena.
 
 <Info>La cobertura efectiva exige metadatos de índice publicados y utilizables y el interruptor de ejecución activado; una configuración guardada por sí sola no cuenta. La cobertura es explícita, así que los Campos que añadas después no se incluyen de forma automática: elige **Completar cobertura** para incorporarlos.</Info>
 
@@ -77,7 +77,7 @@ Lo que devuelve el cuadro de diálogo es un acuse de recibo de la tarea, no un r
 
 La pestaña **Índices** enumera los índices de filtrado/ordenación y del sistema, con su validez, gestión, tamaño y definición. Los índices de búsqueda de subcadenas aparecen por separado en **Búsqueda**.
 
-Debajo, **Acciones pendientes** reúne las recomendaciones de índice del sistema e indica si hay pruebas del plan que las respalden. **Revisar creación de índice** muestra el índice propuesto, la base de datos en la que se ejecuta y las pruebas; tras tu confirmación, Teable ejecuta `CREATE INDEX CONCURRENTLY` de forma asíncrona. Las Tablas grandes y las de tamaño desconocido también requieren aquí la confirmación de la ventana de mantenimiento.
+Debajo, **Acciones pendientes** reúne las recomendaciones de índice del sistema e indica si hay pruebas del plan que las respalden. **Revisar la creación del índice** muestra el índice propuesto, la base de datos en la que se ejecuta y las pruebas; tras tu confirmación, Teable ejecuta `CREATE INDEX CONCURRENTLY` de forma asíncrona. Las Tablas grandes y las de tamaño desconocido también requieren aquí la confirmación de la ventana de mantenimiento.
 
 <Info>Esta página no elimina índices. Los índices no gestionados y los del sistema pueden proteger restricciones o servir a otras cargas de trabajo, así que no se tocan.</Info>
 
@@ -85,7 +85,7 @@ Debajo, **Acciones pendientes** reúne las recomendaciones de índice del sistem
 
 Cuando alguien informa de una Tabla lenta y ninguna recomendación la cubre, abre la pestaña **Diagnóstico** y elige **Analizar consultas**. El análisis solo lee las formas de consulta guardadas y las pruebas de plan disponibles; no crea nada.
 
-La conclusión es **Se encontraron oportunidades de índice respaldadas por el plan**, **Ningún plan disponible confirma una oportunidad de índice** o **Pruebas insuficientes**. Que las pruebas sean insuficientes no significa que se produjera un escaneo secuencial: una observación lenta por sí sola no demuestra que la ruta de acceso sea la causa. Debajo se enumera cada consulta afectada, si procede del tráfico real o de una configuración de Vista guardada, y el coste de plan estimado antes y después del índice propuesto (coste de plan, no milisegundos).
+La conclusión es **Se encontraron oportunidades de índice respaldadas por el plan**, **Los planes disponibles no confirman ninguna oportunidad de índice** o **Evidencia insuficiente**. Que las pruebas sean insuficientes no significa que se produjera un escaneo secuencial: una observación lenta por sí sola no demuestra que la ruta de acceso sea la causa. Debajo se enumera cada consulta afectada, si procede del tráfico real o de una configuración de Vista guardada, y el coste de plan estimado antes y después del índice propuesto (coste de plan, no milisegundos).
 
 ## Seguir los resultados
 
