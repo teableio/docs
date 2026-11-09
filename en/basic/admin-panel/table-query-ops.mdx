@@ -46,7 +46,7 @@ The table list and the table detail both show an index state next to the search 
 | **Ready** | The index metadata is published and usable. | Check the actual search method and runtime switch to confirm the index is serving. |
 | **Unusable metadata** | The index metadata is broken and cannot serve search. | Choose **Restore search index**. |
 
-Two lines can appear below the state. **Configured: pg_bigm / pg_trgm** means the saved provider differs from the search method in use, and **Indexed-search runtime switch: off** means the index is ready but the runtime is off, so search still runs `ILIKE`.
+Two lines can appear below the state. **Configured: pg_bigm / pg_trgm** means the saved provider differs from the search method in use, and **Indexed search is switched off at runtime** means the index is ready but the runtime is off, so search still runs `ILIKE`.
 
 When a notice at the top of the page reports tables whose configured search index is not serving, search on those tables falls back to `ILIKE`. If it also says the task worker is off, set `V2_TABLE_QUERY_OPS_TASK_WORKER_ENABLED` to `true` on the backend and restart so the indexes can be rebuilt automatically. You can also restore an index manually by choosing **Restore search index** on the table's **Search** tab, which does not need the task worker. If the cause is that the indexed-search runtime switch is off, turn that switch on in the backend; restoring the index alone will not make it serve.
 
