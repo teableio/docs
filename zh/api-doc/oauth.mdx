@@ -432,17 +432,19 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 
 ## 错误处理
 
+令牌端点（`/api/oauth/access_token`）出错时返回 `{"error": "...", "error_description": "..."}`，`error` 为错误码。
+
 常见错误响应：
 
 | 错误 | 描述 |
 |------|------|
+| `invalid_request` | 请求缺少必需参数或参数格式不正确 |
 | `invalid_client` | 无效的客户端 ID 或客户端密钥 |
-| `invalid_grant` | 授权码已过期或已使用 |
+| `invalid_grant` | 授权码已过期或已使用、重定向 URI 与授权请求不一致、PKCE 的 `code_verifier` 不匹配；或刷新令牌已过期、已撤销、已被轮换。刷新令牌返回此错误时不要重试，请让用户重新授权 |
 | `invalid_scope` | 请求的权限范围不被该 OAuth 应用允许 |
 | `access_denied` | 用户拒绝了授权请求 |
-| `redirect_uri_mismatch` | 重定向 URI 与注册的 URL 不匹配 |
 | `unauthorized_client` | 该 OAuth 应用没有开启设备授权流程 |
-| `too_many_requests` | 超过速率限制。Token 请求默认每 15 分钟 30 次，设备授权码请求默认每个 IP 每 15 分钟 30 次 |
+| `too_many_requests` | 超过速率限制，HTTP 状态码为 429。Token 请求默认每 15 分钟 30 次，超限时 `Retry-After` 响应头给出需要等待的秒数；设备授权码请求默认每个 IP 每 15 分钟 30 次 |
 
 ## 最佳实践
 

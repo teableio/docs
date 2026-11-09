@@ -431,17 +431,19 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 
 ## Hata İşleme
 
+Token uç noktası (`/api/oauth/access_token`) hata durumunda `{"error": "...", "error_description": "..."}` döndürür; `error` alanı hata kodunu içerir.
+
 Yaygın hata yanıtları:
 
 | Hata | Açıklama |
 |-------|-------------|
+| `invalid_request` | İstekte zorunlu bir parametre eksik veya bir parametrenin biçimi hatalı |
 | `invalid_client` | Geçersiz İstemci Kimliği veya İstemci Gizli Anahtarı |
-| `invalid_grant` | Yetkilendirme kodunun süresi dolmuş veya kod daha önce kullanılmış |
+| `invalid_grant` | Yetkilendirme kodunun süresi dolmuş veya kod daha önce kullanılmış, yönlendirme URI'si yetkilendirme isteğindekiyle eşleşmiyor ya da PKCE `code_verifier` değeri eşleşmiyor; veya yenileme token'ının süresi dolmuş, token iptal edilmiş ya da rotasyonla yenisiyle değiştirilmiş. Bu hata token yenilerken dönerse yeniden denemeyin; kullanıcıdan yeniden yetkilendirme isteyin |
 | `invalid_scope` | İstenen kapsama bu OAuth Uygulaması için izin verilmiyor |
 | `access_denied` | Kullanıcı yetkilendirme isteğini reddetti |
-| `redirect_uri_mismatch` | Yönlendirme URI'si kayıtlı URL'lerle eşleşmiyor |
 | `unauthorized_client` | OAuth Uygulamasında cihaz akışı etkinleştirilmemiş |
-| `too_many_requests` | Hız sınırı aşıldı. Token istekleri varsayılan olarak 15 dakikada 30, cihaz kodu istekleri ise IP adresi başına 15 dakikada 30 istekle sınırlıdır |
+| `too_many_requests` | Hız sınırı aşıldı; HTTP durum kodu 429'dur. Token istekleri varsayılan olarak 15 dakikada 30 istekle sınırlıdır ve sınır aşıldığında `Retry-After` yanıt başlığı beklenmesi gereken saniye sayısını belirtir. Cihaz kodu istekleri ise IP adresi başına 15 dakikada 30 istekle sınırlıdır |
 
 ## En İyi Uygulamalar
 

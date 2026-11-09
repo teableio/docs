@@ -39,14 +39,14 @@ La liste des Tables et le détail affichent l’état de l’index à côté de 
 
 | État | Signification | Étape suivante |
 | --- | --- | --- |
-| **Non configuré** | Aucune configuration de recherche enregistrée ni métadonnées d’index. | Choisissez **Configurer la recherche** si la Table a besoin de la recherche indexée. |
+| **Non configuré** | Aucune configuration de recherche enregistrée ni métadonnées d’index. | Choisissez **Générer l’index de recherche** si la Table a besoin de la recherche indexée. |
 | **Publication en attente** | La configuration est enregistrée, l’index n’est pas encore publié. | Vérifiez dans **Historique** si une tâche est encore en cours. |
 | **Prêt** | Les métadonnées d’index sont publiées et exploitables. | Vérifiez la méthode de recherche effective et le commutateur d’exécution pour confirmer que l’index est utilisé. |
-| **Métadonnées inexploitables** | Les métadonnées d’index sont défectueuses et ne peuvent pas servir la recherche. | Relancez **Mettre à jour la sélection / reconstruire**. |
+| **Métadonnées inexploitables** | Les métadonnées d’index sont défectueuses et ne peuvent pas servir la recherche. | Choisissez **Restaurer l’index de recherche**. |
 
 Deux lignes peuvent apparaître sous l’état. **Configuré : pg_bigm / pg_trgm** signale que le fournisseur enregistré diffère de la méthode de recherche utilisée, et **Commutateur d’exécution de la recherche indexée : désactivé** signale que l’index est prêt mais que l’exécution est coupée, la recherche restant en `ILIKE`.
 
-Lorsqu’une notification en haut de la page signale des Tables dont l’index de recherche configuré n’est pas en service, la recherche sur ces Tables retombe sur `ILIKE`. Si elle indique aussi que le worker de tâches est désactivé, définissez `V2_TABLE_QUERY_OPS_TASK_WORKER_ENABLED` sur `true` côté backend, puis redémarrez pour que les index puissent être reconstruits.
+Lorsqu’une notification en haut de la page signale des Tables dont l’index de recherche configuré n’est pas en service, la recherche sur ces Tables retombe sur `ILIKE`. Si elle indique aussi que le worker de tâches est désactivé, définissez `V2_TABLE_QUERY_OPS_TASK_WORKER_ENABLED` sur `true` côté backend, puis redémarrez pour que les index puissent être reconstruits automatiquement. Vous pouvez aussi restaurer l’index manuellement en choisissant **Restaurer l’index de recherche** dans l’onglet **Recherche** des détails de la Table ; cette opération ne nécessite pas le worker de tâches. Si la cause est un commutateur d’exécution de la recherche indexée désactivé, activez-le côté backend : restaurer l’index ne suffit pas.
 
 <Info>Un index publié ne garantit pas que chaque recherche l’utilise : un terme trop court ou un Champ hors couverture retombe sur `ILIKE`. Cette page indique l’état de l’index, elle ne prouve pas que des requêtes récentes l’ont utilisé.</Info>
 
@@ -54,15 +54,18 @@ Lorsqu’une notification en haut de la page signale des Tables dont l’index d
 
 L’onglet **Recherche** indique la méthode de recherche actuelle de la Table, le nombre de Champs couverts et la **Couverture effective** de chaque Champ. **Afficher les champs non couverts** restreint la liste aux Champs pas encore inclus ; les Champs marqués **Non éligible** ne peuvent pas alimenter un index de recherche par sous-chaîne.
 
-<Info>La couverture effective suppose des métadonnées d’index publiées et exploitables ainsi qu’un commutateur d’exécution activé ; une configuration enregistrée seule ne compte pas. La couverture est explicite : les Champs ajoutés ensuite ne sont pas inclus automatiquement, reconfigurez la Table pour les intégrer.</Info>
+<Info>La couverture effective suppose des métadonnées d’index publiées et exploitables ainsi qu’un commutateur d’exécution activé ; une configuration enregistrée seule ne compte pas. La couverture est explicite : les Champs ajoutés ensuite ne sont pas inclus automatiquement. Choisissez **Compléter la couverture** pour les intégrer.</Info>
 
-Choisissez **Configurer la recherche** sur une Table jamais configurée, ou **Mettre à jour la sélection / reconstruire** sur une Table déjà configurée, qui s’ouvre avec le fournisseur et la sélection de Champs enregistrés la fois précédente. La boîte de dialogue demande :
+Le bouton de maintenance proposé dans l’onglet **Recherche** dépend de l’état de l’index :
 
-| Élément | Ce que vous saisissez |
+| Bouton | Quand il apparaît |
 | --- | --- |
-| **Fournisseur de recherche** | `pg_bigm` ou `pg_trgm`. Si l’extension manque, la boîte de dialogue indique ce qui manque et qui peut l’installer. |
-| **Texte de recherche représentatif** | Un texte que vos utilisateurs rechercheraient réellement. Il sert à vérifier la sémantique de sous-chaîne et à collecter des éléments de plan, et n’est jamais enregistré. S’il est trop court, la boîte de dialogue indique la longueur minimale. |
-| **Champs** | Sélectionnez les Champs que les utilisateurs recherchent vraiment. Ne sélectionnez pas tout sur une Table large : construire un document de recherche pour chaque Champ coûte cher. |
+| **Générer l’index de recherche** | Aucun index de recherche n’a encore été configuré |
+| **Restaurer l’index de recherche** | L’index est configuré mais pas en service, par exemple parce qu’il n’est pas prêt ou que la recherche retombe sur `ILIKE` |
+| **Compléter la couverture** | Certains Champs ne sont pas encore couverts |
+| **Mettre à jour l’index de recherche** | L’index fonctionne, mais la sélection de Champs doit être ajustée |
+
+Le système choisit automatiquement un fournisseur de recherche disponible ; s’il manque l’extension `pg_bigm` ou `pg_trgm` dans la base de données, la boîte de dialogue en indique la raison. Lors d’une restauration, elle reprend les Champs enregistrés la fois précédente ; dans les autres cas, tous les Champs disponibles sont cochés par défaut. Ne gardez que les Champs que les utilisateurs recherchent vraiment et, sur une Table large, décochez ceux qui n’ont pas besoin de recherche : construire un document de recherche pour chaque Champ coûte cher.
 
 **Analyser et simuler** exécute la modification sans la valider et rend le nombre de Champs couverts, le nombre de lignes estimé, la présence d’éléments de plan et l’impact d’une création ou d’une reconstruction. Les Tables estimées à 50 000 lignes ou plus, ainsi que celles de taille inconnue, exigent en plus la confirmation de la fenêtre de maintenance. Choisissez ensuite **Confirmer et mettre la tâche en file d’attente**.
 
@@ -94,7 +97,7 @@ L’onglet **Historique** comporte trois parties :
 
 L’historique ne charge que les entrées les plus récentes. S’il y en a davantage, une ligne au-dessus de la liste en donne le total.
 
-<Info>Tant qu’une tâche est en file d’attente ou en cours sur une Table, les boutons de configuration de la recherche et de création d’index restent désactivés. Attendez la fin de la tâche.</Info>
+<Info>Tant qu’une tâche est en file d’attente ou en cours sur une Table, les boutons de maintenance de l’index de recherche et de création d’index restent désactivés. Attendez la fin de la tâche. Une tâche de recherche en file d’attente ou en échec peut être annulée avec **Annuler la tâche non démarrée** dans l’onglet **Recherche** ; une tâche en cours doit aller à son terme.</Info>
 
 ## Évaluer l’impact des modifications {#assess-change-impact}
 

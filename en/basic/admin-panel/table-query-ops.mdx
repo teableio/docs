@@ -41,14 +41,14 @@ The table list and the table detail both show an index state next to the search 
 
 | State | Meaning | What to do next |
 | --- | --- | --- |
-| **Not configured** | No saved search configuration and no index metadata. | Choose **Configure search** if the table needs indexed search. |
+| **Not configured** | No saved search configuration and no index metadata. | Choose **Generate search index** if the table needs indexed search. |
 | **Pending publication** | The configuration is saved; the index is not published yet. | Check **History** for a task still running. |
 | **Ready** | The index metadata is published and usable. | Check the actual search method and runtime switch to confirm the index is serving. |
-| **Unusable metadata** | The index metadata is broken and cannot serve search. | Run **Update selection / rebuild** again. |
+| **Unusable metadata** | The index metadata is broken and cannot serve search. | Choose **Restore search index**. |
 
 Two lines can appear below the state. **Configured: pg_bigm / pg_trgm** means the saved provider differs from the search method in use, and **Indexed-search runtime switch: off** means the index is ready but the runtime is off, so search still runs `ILIKE`.
 
-When a notice at the top of the page reports tables whose configured search index is not serving, search on those tables falls back to `ILIKE`. If it also says the task worker is off, set `V2_TABLE_QUERY_OPS_TASK_WORKER_ENABLED` to `true` on the backend and restart so the indexes can be rebuilt.
+When a notice at the top of the page reports tables whose configured search index is not serving, search on those tables falls back to `ILIKE`. If it also says the task worker is off, set `V2_TABLE_QUERY_OPS_TASK_WORKER_ENABLED` to `true` on the backend and restart so the indexes can be rebuilt automatically. You can also restore an index manually by choosing **Restore search index** on the table's **Search** tab, which does not need the task worker. If the cause is that the indexed-search runtime switch is off, turn that switch on in the backend; restoring the index alone will not make it serve.
 
 <Info>A published index does not mean every search hits it: a probe that is too short, or a field outside the coverage, still falls back to `ILIKE`. This page reports the state of the index, not proof that recent requests hit it.</Info>
 
@@ -56,15 +56,18 @@ When a notice at the top of the page reports tables whose configured search inde
 
 The **Search** tab shows the table's current search method, how many fields are covered, and the **Serving coverage** of each field. **Show uncovered fields** narrows the list to the fields not yet included; fields marked **Not eligible** cannot contribute to a substring search index.
 
-<Info>Serving coverage requires published, usable index metadata and the runtime switch on; a saved configuration alone does not count. Coverage is explicit, so fields you add later are not included automatically; configure the table again to bring them in.</Info>
+<Info>Serving coverage requires published, usable index metadata and the runtime switch on; a saved configuration alone does not count. Coverage is explicit, so fields you add later are not included automatically; choose **Complete coverage** to bring them in.</Info>
 
-Choose **Configure search** on a table that has never been configured, or **Update selection / rebuild** on one that has, which opens with the provider and field selection saved last time. The dialog asks for:
+The maintenance button on the **Search** tab changes with the index state:
 
-| Item | What to enter |
+| Button | When it appears |
 | --- | --- |
-| **Search provider** | `pg_bigm` or `pg_trgm`. If the extension is missing, the dialog says what is missing and who can provision it. |
-| **Representative search text** | Text your users would really search for. It checks substring semantics and collects plan evidence, and is never saved. If it is too short, the dialog names the minimum length. |
-| **Fields** | Select the fields users actually search. Do not select everything on a wide table; building a search document for every field is expensive. |
+| **Generate search index** | No search index has been configured yet |
+| **Restore search index** | An index is configured but not serving, for example because it is not ready or search has fallen back to `ILIKE` |
+| **Complete coverage** | Some fields are not covered yet |
+| **Update search index** | The index is healthy and you want to change the field selection |
+
+Teable picks an available search provider automatically; if the database lacks the `pg_bigm` or `pg_trgm` extension, the dialog explains why. When restoring, the dialog opens with the fields saved last time; otherwise every eligible field is selected by default. Keep only the fields users actually search, and on a wide table clear the ones nobody searches; building a search document for every field is expensive.
 
 **Analyze and dry-run** runs the change without committing it and reports the covered field count, estimated rows, whether plan evidence exists, and the impact of creating or rebuilding. Tables estimated at 50,000 rows or more, or of unknown size, also require the maintenance-window acknowledgement. Then choose **Confirm and queue task**.
 
@@ -96,7 +99,7 @@ The **History** tab holds three parts:
 
 History loads only the most recent entries; when there are more, a line above the list gives the total.
 
-<Info>While a table has a queued or running task, the buttons for configuring search and creating indexes stay disabled. Wait for the task to finish.</Info>
+<Info>While a table has a queued or running task, the buttons for maintaining the search index and creating indexes stay disabled. Wait for the task to finish. To cancel a queued or failed search task, choose **Cancel unstarted task** on the **Search** tab; a running task has to finish.</Info>
 
 ## Assess change impact
 

@@ -432,17 +432,19 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 
 ## Fehlerbehandlung
 
+Bei Fehlern gibt der Token-Endpunkt (`/api/oauth/access_token`) `{"error": "...", "error_description": "..."}` zurück; `error` enthält den Fehlercode.
+
 Häufige Fehlerantworten:
 
 | Fehler | Beschreibung |
 |-------|-------------|
+| `invalid_request` | In der Anfrage fehlt ein erforderlicher Parameter oder ein Parameter hat ein ungültiges Format |
 | `invalid_client` | Ungültige Client ID oder ungültiges Client Secret |
-| `invalid_grant` | Autorisierungscode abgelaufen oder bereits verwendet |
+| `invalid_grant` | Autorisierungscode abgelaufen oder bereits verwendet, Redirect URI weicht von der Autorisierungsanfrage ab oder der PKCE-`code_verifier` passt nicht; oder das Aktualisierungstoken ist abgelaufen, widerrufen oder bereits rotiert. Wiederholen Sie die Anfrage nicht, wenn eine Token-Aktualisierung diesen Fehler liefert, sondern lassen Sie den Nutzer die App erneut autorisieren |
 | `invalid_scope` | Angeforderter Scope ist für diese OAuth-App nicht erlaubt |
 | `access_denied` | Nutzer hat die Autorisierungsanfrage abgelehnt |
-| `redirect_uri_mismatch` | Redirect URI stimmt nicht mit registrierten URLs überein |
 | `unauthorized_client` | Die OAuth-App hat den Geräteablauf nicht aktiviert |
-| `too_many_requests` | Ratenlimit überschritten. Token-Anfragen sind standardmäßig auf 30 pro 15 Minuten begrenzt, Gerätecode-Anfragen auf 30 pro 15 Minuten und IP-Adresse |
+| `too_many_requests` | Ratenlimit überschritten, HTTP-Statuscode 429. Token-Anfragen sind standardmäßig auf 30 pro 15 Minuten begrenzt; bei Überschreitung gibt der Response-Header `Retry-After` an, wie viele Sekunden Sie warten müssen. Gerätecode-Anfragen sind auf 30 pro 15 Minuten und IP-Adresse begrenzt |
 
 ## Bewährte Verfahren
 

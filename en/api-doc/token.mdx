@@ -1,6 +1,6 @@
 ---
 title: "Create and use personal access tokens"
-description: "Create a personal access token for scripts or integrations. Set its expiration, resource access and permission scopes, then send it as a Bearer token."
+description: "Create a personal access token for scripts or integrations. Set its expiration, permissions and resource access, then send it as a Bearer token."
 sidebarTitle: "Access Token"
 ---
 
@@ -16,13 +16,22 @@ If you're building a multi-tenant integration for external users, use OAuth inst
 
 2. Choose an expiration period for your token. Note that this period cannot be modified once set.
 
-3. Add appropriate permission scopes to your token.
+3. Under **Permissions**, choose a preset. New tokens start on **Build**:
 
-4. Under **Access**, click **Add all resources** to give the token access to all current and future spaces and projects, or click **Add project or space** to choose specific ones.
+   | Preset | What it can do |
+   | --- | --- |
+   | **Read only** | View and export, change nothing |
+   | **Edit data** | Create, update and delete records, but not the table structure |
+   | **Build** | Build tables, change fields, and set up automations and apps; cannot manage members or spaces. Suited to AI agents and the CLI |
+   | **Full access** | Everything you can do in the space, including inviting members and deleting spaces |
+
+   To fine-tune it, expand **Customize each part** and set **Data**, **Structure**, **Automations & apps**, and **Spaces & members** to **None**, **Read**, or **Write**. A token can never do more than your own role allows in a space.
+
+4. Under **Access**, choose **All spaces and projects** to give the token access to all current and future spaces and projects. To limit it to some of them, choose **Specific spaces or projects**, then click **Add project or space** to pick them.
 
 <img
-  src="/images/api/token/2026-10-21-api-token-create-form.png"
-  alt="Create new token form filled in with a name, expiration, scopes, and project access"
+  src="/images/api/token/2026-11-09-api-token-create-form.png"
+  alt="Create new token form filled in with a name, expiration, permission preset, and project access"
   className="docs-screenshot"
 />
 

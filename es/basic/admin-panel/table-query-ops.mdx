@@ -39,14 +39,14 @@ La lista de Tablas y el detalle muestran el estado del índice junto al método 
 
 | Estado | Significado | Qué hacer |
 | --- | --- | --- |
-| **Sin configurar** | No hay configuración de búsqueda guardada ni metadatos de índice. | Elige **Configurar búsqueda** si la Tabla necesita búsqueda indexada. |
+| **Sin configurar** | No hay configuración de búsqueda guardada ni metadatos de índice. | Elige **Generar índice de búsqueda** si la Tabla necesita búsqueda indexada. |
 | **Publicación pendiente** | La configuración está guardada; el índice aún no se ha publicado. | Comprueba en **Historial** si queda alguna tarea en curso. |
 | **Listo** | Los metadatos del índice están publicados y son utilizables. | Comprueba el método de búsqueda real y el interruptor de ejecución para confirmar que el índice se utiliza. |
-| **Metadatos inutilizables** | Los metadatos del índice están dañados y no pueden atender la búsqueda. | Vuelve a ejecutar **Actualizar selección / reconstruir**. |
+| **Metadatos inutilizables** | Los metadatos del índice están dañados y no pueden atender la búsqueda. | Elige **Restaurar índice de búsqueda**. |
 
 Bajo el estado pueden aparecer dos líneas. **Configurado: pg_bigm / pg_trgm** indica que el proveedor guardado no coincide con el método de búsqueda en uso, y **Interruptor de ejecución de la búsqueda indexada: desactivado** indica que el índice está listo pero la ejecución está apagada, así que la búsqueda sigue usando `ILIKE`.
 
-Cuando un aviso en la parte superior de la página informa de Tablas cuyo índice de búsqueda configurado no está en servicio, la búsqueda en esas Tablas recurre a `ILIKE`. Si además indica que el worker de tareas está desactivado, define `V2_TABLE_QUERY_OPS_TASK_WORKER_ENABLED` como `true` en el backend y reinicia para que los índices puedan reconstruirse.
+Cuando un aviso en la parte superior de la página informa de Tablas cuyo índice de búsqueda configurado no está en servicio, la búsqueda en esas Tablas recurre a `ILIKE`. Si además indica que el worker de tareas está desactivado, define `V2_TABLE_QUERY_OPS_TASK_WORKER_ENABLED` como `true` en el backend y reinicia para que los índices puedan reconstruirse automáticamente. También puedes restaurar el índice manualmente con **Restaurar índice de búsqueda** en la pestaña **Búsqueda** de los detalles de la Tabla; esta operación no necesita el worker de tareas. Si la causa es que el interruptor de ejecución de la búsqueda indexada está desactivado, tienes que activarlo en el backend: restaurar el índice no basta.
 
 <Info>Que un índice esté publicado no significa que todas las búsquedas lo usen: un término demasiado corto o un Campo fuera de la cobertura siguen recurriendo a `ILIKE`. Esta página refleja el estado del índice, no demuestra que las solicitudes recientes lo hayan usado.</Info>
 
@@ -54,15 +54,18 @@ Cuando un aviso en la parte superior de la página informa de Tablas cuyo índic
 
 La pestaña **Búsqueda** muestra el método de búsqueda actual de la Tabla, cuántos Campos están cubiertos y la **Cobertura efectiva** de cada Campo. **Mostrar campos no cubiertos** limita la lista a los Campos aún no incluidos; los Campos marcados como **No apto** no pueden formar parte de un índice de búsqueda por subcadena.
 
-<Info>La cobertura efectiva exige metadatos de índice publicados y utilizables y el interruptor de ejecución activado; una configuración guardada por sí sola no cuenta. La cobertura es explícita, así que los Campos que añadas después no se incluyen de forma automática: vuelve a configurar la Tabla para incorporarlos.</Info>
+<Info>La cobertura efectiva exige metadatos de índice publicados y utilizables y el interruptor de ejecución activado; una configuración guardada por sí sola no cuenta. La cobertura es explícita, así que los Campos que añadas después no se incluyen de forma automática: elige **Completar cobertura** para incorporarlos.</Info>
 
-Elige **Configurar búsqueda** en una Tabla que nunca se haya configurado, o **Actualizar selección / reconstruir** en una que sí, que abre con el proveedor y la selección de Campos guardados la última vez. El cuadro de diálogo pide:
+El botón de mantenimiento que ofrece la pestaña **Búsqueda** depende del estado del índice:
 
-| Elemento | Qué introducir |
+| Botón | Cuándo aparece |
 | --- | --- |
-| **Proveedor de búsqueda** | `pg_bigm` o `pg_trgm`. Si falta la extensión, el cuadro de diálogo indica qué falta y quién puede instalarla. |
-| **Texto de búsqueda representativo** | Un texto que tus usuarios buscarían de verdad. Sirve para comprobar la semántica de subcadena y recoger pruebas del plan, y nunca se guarda. Si es demasiado corto, el cuadro de diálogo indica la longitud mínima. |
-| **Campos** | Selecciona los Campos que los usuarios buscan realmente. No lo selecciones todo en una Tabla ancha: crear un documento de búsqueda para cada Campo sale caro. |
+| **Generar índice de búsqueda** | Todavía no se ha configurado ningún índice de búsqueda |
+| **Restaurar índice de búsqueda** | El índice está configurado pero no está en servicio, por ejemplo porque no está listo o la búsqueda recurre a `ILIKE` |
+| **Completar cobertura** | Hay Campos que aún no están cubiertos |
+| **Actualizar índice de búsqueda** | El índice funciona, pero hay que ajustar la selección de Campos |
+
+El sistema elige automáticamente un proveedor de búsqueda disponible; si a la base de datos le falta la extensión `pg_bigm` o `pg_trgm`, el cuadro de diálogo indica el motivo. Al restaurar, el cuadro de diálogo recupera los Campos guardados la última vez; en los demás casos, todos los Campos disponibles aparecen marcados. Deja solo los Campos que los usuarios buscan realmente y, en una Tabla ancha, desmarca los que no necesitan búsqueda: crear un documento de búsqueda para cada Campo sale caro.
 
 **Analizar y simular** ejecuta el cambio sin aplicarlo e informa del número de Campos cubiertos, las filas estimadas, si existen pruebas del plan y el impacto de crear o reconstruir. Las Tablas estimadas en 50.000 filas o más, y las de tamaño desconocido, requieren además marcar la confirmación de la ventana de mantenimiento. Después elige **Confirmar y poner la tarea en cola**.
 
@@ -94,7 +97,7 @@ La pestaña **Historial** tiene tres partes:
 
 El historial solo carga las entradas más recientes. Si hay más, una línea sobre la lista indica el total.
 
-<Info>Mientras una Tabla tenga una tarea en cola o en ejecución, los botones para configurar la búsqueda y crear índices permanecen deshabilitados. Espera a que termine la tarea.</Info>
+<Info>Mientras una Tabla tenga una tarea en cola o en ejecución, los botones para mantener el índice de búsqueda y crear índices permanecen deshabilitados. Espera a que termine la tarea. Las tareas de búsqueda en cola o fallidas se pueden cancelar con **Cancelar tarea sin iniciar** en la pestaña **Búsqueda**; las que están en ejecución tienen que terminar.</Info>
 
 ## Evaluar el impacto de los cambios
 

@@ -9,7 +9,7 @@ sidebarTitle: "Instance AI settings"
 
 Path: System Admin → AI settings
 
-The **AI settings** page is used to configure **AI Chat**, **AI fields**, **AI automation**, and **App Builder**. The **Pending configuration** panel on the right shows which required items are still missing.
+The **AI settings** page is used to configure **AI Chat**, **AI fields**, **AI automation**, and **App Builder**. The **AI Capabilities** switches sit at the top of the page, and the settings below are split into three tabs, **Models**, **AI Chat**, and **App Builder**, completed in order. Each tab depends on the one before it, and the page tells you what is still missing until that one is done. The **Pending configuration** panel on the right lists the required items still missing; click one to jump to its tab and step.
 
 ## Before you start
 
@@ -24,7 +24,7 @@ Before you open the AI settings page, make sure the following items are ready.
 
 ## Setup steps
 
-The setup wizard at the top of the page walks through three steps for connecting and choosing models:
+The setup wizard on the **Models** tab walks through three steps for connecting and choosing models. Completed steps are collapsed; click one to expand and change it:
 
 <Steps>
   <Step title="Configure LLM API">
@@ -38,15 +38,15 @@ The setup wizard at the top of the page walks through three steps for connecting
   </Step>
 </Steps>
 
-AI Chat and App Builder also need a runtime and app deployment, which are not part of the wizard. Choose a [deployment option](/en/deploy/choose) and complete the deployment first, then configure the runtime and App Builder as described below.
+AI Chat and App Builder also need a runtime and app deployment, configured on the **AI Chat** and **App Builder** tabs respectively. Choose a [deployment option](/en/deploy/choose) and complete the deployment first, then configure them as described below.
 
 ### Configure LLM API
 
 In the **Configure LLM API** step, click **Add LLM provider** to add a model provider, then test its models. If you use your own key (BYOK), choose **OpenAI Compatible** or **Anthropic** as the provider type.
 
 <img
-  src="/images/docs/admin-panel/2026-10-21-admin-ai-llm-api-step.png"
-  alt="The Configure LLM API step with a custom provider added"
+  src="/images/docs/admin-panel/2026-11-09-admin-ai-llm-api-step.png"
+  alt="The Configure LLM API step expanded on the Models tab of AI settings, with a custom provider added"
   className="docs-screenshot"
 />
 
@@ -60,7 +60,7 @@ Choose the recommended models users can select in **AI fields** and **AI automat
 
 ### Set Chat Model
 
-In **Chat model tiers**, pick a model for **Ultra**, **Smart**, **Standard**, and **Lite**; the models you can pick are the recommended models from step 2, **Configure Recommended Models**. Users choose by tier in the model menu of sidebar **AI Chat** and see the tier name rather than the model name, so you can swap the model behind a tier at any time without affecting anyone who already picked it.
+In **Chat model tiers**, pick a model for **Ultra**, **Smart**, **Standard**, and **Lite**; the models you can pick are grouped by source into **Vercel AI Gateway** and **Custom Providers**, and the **Vercel AI Gateway** group lists only the recommended models enabled in step 2. Users choose by tier in the model menu of sidebar **AI Chat** and see the tier name rather than the model name, so you can swap the model behind a tier at any time without affecting anyone who already picked it.
 
 | Tier | Description |
 |------|------|
@@ -76,15 +76,15 @@ Each tier has two more controls on its right:
 
 ### Configure the runtime
 
-The runtime is configured in the **AI Chat Runtime** card below the wizard. After the deployment is complete, click **Run test** to verify the AI Chat runtime.
+The runtime is configured under **AI Chat Runtime** on the **AI Chat** tab. After the deployment is complete, click **Run test** to verify the AI Chat runtime.
 
 ### Enable AI features
 
-In **AI Capabilities**, enable **AI Field** and **AI Chat** as needed. Configure the runtime before using **AI Chat**.
+In **AI Capabilities** at the top of the page, enable **AI Field** and **AI Chat** as needed; these switches apply to the whole instance. Configure the runtime before using **AI Chat**.
 
 ### Configure App Builder
 
-In **Deployment Engine**, choose how apps are deployed:
+On the **App Builder** tab, choose how apps are deployed in **Deployment Engine**:
 
 | Deployment engine | Setup requirements |
 |------|------|
@@ -96,20 +96,23 @@ You can add these optional App Builder settings when needed:
 | Optional item | When you need it |
 |------|------|
 | **Custom domain** | When you want to publish apps under your own domain |
-| **App Auth** | When generated apps need **Email OTP** or **Google** sign-in |
+| **App Auth** | When generated apps need **Email OTP**, **Google**, or **SSO (OIDC)** sign-in |
 
 In **App Auth**, you can configure sign-in providers for generated apps:
 
 - **Email OTP** uses an independent SMTP mailbox for app login verification emails.
 - **Google OAuth** requires a Client ID and Client Secret. Add the redirect URI shown on this page to the authorized redirect URI list in Google Cloud Console.
+- **SSO (OIDC)** lets app visitors sign in through your organization's identity provider. Register the URL shown on this page as a redirect URI with your identity provider, then fill in **Authorization URL**, **Token URL**, **User info URL**, **Client ID**, and **Client Secret**. If **Scope** is left empty, it defaults to `openid email profile`.
 
-**Teable** sign-in is available by default. **Email OTP** appears in App Builder only after the SMTP settings are complete, and **Google** appears only after both OAuth credentials are configured.
+**Teable** sign-in is available by default. **Email OTP** appears in App Builder only after the SMTP settings are complete, **Google** appears only after both OAuth credentials are configured, and **SSO (OIDC)** appears only after every SSO field except Scope is filled in.
 
-**Auto-inject AI API Key into apps** is on by default, so apps can call the platform's AI models. Turn it off and apps can no longer reach them.
+**Auto-inject AI API Key into apps** under **App settings** is on by default, so apps can call the platform's AI models. Turn it off and apps can no longer reach them.
+
+If older apps fail to preview or publish after an upgrade, click **Run repair** under **Legacy project compatibility** in **Maintenance tools** to restore the missing files.
 
 ### Optional. Configure Voice input
 
-To use voice input in AI Chat, enable the feature and enter an **OpenAI API Key**. Configure the **Transcription Endpoint** only when using a custom transcription service. You can also limit the recording length and requests per minute.
+To use voice input in AI Chat, enable **Voice input** on the **AI Chat** tab and enter an **OpenAI API Key**. Configure the **Transcription Endpoint** only when using a custom transcription service. You can also limit the recording length and requests per minute.
 
 ### Verify the setup
 

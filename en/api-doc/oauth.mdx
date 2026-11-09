@@ -432,17 +432,19 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 
 ## Error Handling
 
+When a request to the token endpoint (`/api/oauth/access_token`) fails, it returns `{"error": "...", "error_description": "..."}`, where `error` is the error code.
+
 Common error responses:
 
 | Error | Description |
 |-------|-------------|
+| `invalid_request` | A required parameter is missing or a parameter is malformed |
 | `invalid_client` | Invalid Client ID or Client Secret |
-| `invalid_grant` | Authorization code expired or already used |
+| `invalid_grant` | The authorization code expired or was already used, the redirect URI differs from the one in the authorization request, or the PKCE `code_verifier` doesn't match; or the refresh token expired, was revoked, or was already rotated. If a refresh token returns this error, don't retry; ask the user to authorize again |
 | `invalid_scope` | Requested scope not allowed for this OAuth App |
 | `access_denied` | User denied the authorization request |
-| `redirect_uri_mismatch` | Redirect URI doesn't match registered URLs |
 | `unauthorized_client` | The OAuth App has not enabled the device flow |
-| `too_many_requests` | Rate limit exceeded. Token requests default to 30 per 15 minutes, and device code requests to 30 per 15 minutes per IP address |
+| `too_many_requests` | Rate limit exceeded, returned with HTTP status 429. Token requests default to 30 per 15 minutes, and the `Retry-After` response header gives the number of seconds to wait when the limit is hit; device code requests default to 30 per 15 minutes per IP address |
 
 ## Best Practices
 

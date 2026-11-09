@@ -431,17 +431,19 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 
 ## Gestione degli errori
 
+In caso di errore, l'endpoint del token (`/api/oauth/access_token`) restituisce `{"error": "...", "error_description": "..."}`, dove `error` contiene il codice di errore.
+
 Risposte di errore comuni:
 
 | Errore | Descrizione |
 |-------|-------------|
+| `invalid_request` | Nella richiesta manca un parametro obbligatorio oppure un parametro ha un formato non valido |
 | `invalid_client` | ID client o Segreto client non valido |
-| `invalid_grant` | Codice di autorizzazione scaduto o già utilizzato |
+| `invalid_grant` | Il codice di autorizzazione è scaduto o è già stato utilizzato, l'URI di reindirizzamento non coincide con quello della richiesta di autorizzazione oppure il `code_verifier` PKCE non corrisponde; in alternativa, il token di aggiornamento è scaduto, revocato o già sostituito dalla rotazione. Se questo errore arriva durante l'aggiornamento del token, non riprovare: chiedi all'utente di autorizzare di nuovo l'app |
 | `invalid_scope` | L'ambito richiesto non è consentito per questa app OAuth |
 | `access_denied` | L'utente ha rifiutato la richiesta di autorizzazione |
-| `redirect_uri_mismatch` | L'URI di reindirizzamento non corrisponde agli URL registrati |
 | `unauthorized_client` | L'app OAuth non ha abilitato il flusso del dispositivo |
-| `too_many_requests` | Limite di frequenza superato. Per impostazione predefinita, le richieste di token sono limitate a 30 ogni 15 minuti e le richieste di codice dispositivo a 30 ogni 15 minuti per indirizzo IP |
+| `too_many_requests` | Limite di frequenza superato (codice di stato HTTP 429). Per impostazione predefinita, le richieste di token sono limitate a 30 ogni 15 minuti e, al superamento del limite, l'header di risposta `Retry-After` indica quanti secondi attendere; le richieste di codice dispositivo a 30 ogni 15 minuti per indirizzo IP |
 
 ## Procedure consigliate
 

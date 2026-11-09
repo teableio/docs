@@ -432,17 +432,19 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 
 ## Gestion des erreurs
 
+En cas d’erreur, le point de terminaison de jeton (`/api/oauth/access_token`) renvoie `{"error": "...", "error_description": "..."}`, où `error` contient le code d’erreur.
+
 Réponses d’erreur courantes :
 
 | Erreur | Description |
 |-------|-------------|
+| `invalid_request` | Il manque un paramètre obligatoire dans la requête ou un paramètre est mal formé |
 | `invalid_client` | ID client ou secret client invalide |
-| `invalid_grant` | Le code d’autorisation a expiré ou a déjà été utilisé |
+| `invalid_grant` | Le code d’autorisation a expiré ou a déjà été utilisé, l’URI de redirection diffère de celle de la demande d’autorisation ou le `code_verifier` PKCE ne correspond pas ; ou bien le jeton d’actualisation a expiré, a été révoqué ou a déjà été renouvelé par rotation. Si une actualisation de jeton renvoie cette erreur, ne réessayez pas : demandez à l’utilisateur d’autoriser à nouveau l’application |
 | `invalid_scope` | Le scope demandé n’est pas autorisé pour cette application OAuth |
 | `access_denied` | L’utilisateur a refusé la demande d’autorisation |
-| `redirect_uri_mismatch` | L’URI de redirection ne correspond pas aux URL enregistrées |
 | `unauthorized_client` | L’application OAuth n’a pas activé le flux d’appareil |
-| `too_many_requests` | Limite de débit dépassée. Les requêtes de jeton sont limitées par défaut à 30 par 15 minutes, et les requêtes de code d’appareil à 30 par 15 minutes et par adresse IP |
+| `too_many_requests` | Limite de débit dépassée (code d’état HTTP 429). Les requêtes de jeton sont limitées par défaut à 30 par 15 minutes ; en cas de dépassement, l’en-tête de réponse `Retry-After` indique le nombre de secondes à attendre. Les requêtes de code d’appareil sont limitées à 30 par 15 minutes et par adresse IP |
 
 ## Bonnes pratiques
 

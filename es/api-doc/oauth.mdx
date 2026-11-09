@@ -432,17 +432,19 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 
 ## Gestión de errores
 
+Cuando se produce un error, el endpoint de tokens (`/api/oauth/access_token`) devuelve `{"error": "...", "error_description": "..."}`, donde `error` es el código de error.
+
 Respuestas de error habituales:
 
 | Error | Descripción |
 |-------|-------------|
+| `invalid_request` | Falta un parámetro obligatorio en la solicitud o algún parámetro tiene un formato incorrecto |
 | `invalid_client` | El ID de cliente o el secreto de cliente no son válidos |
-| `invalid_grant` | El código de autorización caducó o ya se utilizó |
+| `invalid_grant` | El código de autorización caducó o ya se utilizó, la URI de redirección no coincide con la de la solicitud de autorización o el `code_verifier` de PKCE no coincide; o bien el token de actualización caducó, se revocó o ya se rotó. Si al actualizar el token se recibe este error, no vuelvas a intentarlo: pide al usuario que vuelva a autorizar la aplicación |
 | `invalid_scope` | El ámbito solicitado no está permitido para esta aplicación OAuth |
 | `access_denied` | El usuario denegó la solicitud de autorización |
-| `redirect_uri_mismatch` | La URI de redirección no coincide con las URL registradas |
 | `unauthorized_client` | La aplicación OAuth no tiene habilitado el flujo de dispositivo |
-| `too_many_requests` | Se superó el límite de solicitudes. De forma predeterminada, las solicitudes de tokens están limitadas a 30 cada 15 minutos y las solicitudes de códigos de dispositivo, a 30 cada 15 minutos por dirección IP |
+| `too_many_requests` | Se superó el límite de solicitudes (código de estado HTTP 429). De forma predeterminada, las solicitudes de tokens están limitadas a 30 cada 15 minutos; al superarlo, el encabezado de respuesta `Retry-After` indica cuántos segundos hay que esperar. Las solicitudes de códigos de dispositivo están limitadas a 30 cada 15 minutos por dirección IP |
 
 ## Prácticas recomendadas
 
