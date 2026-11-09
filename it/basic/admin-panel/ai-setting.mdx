@@ -8,7 +8,7 @@ description: "Configura AI Chat, Campi IA, Automazione IA e App Builder per un'i
 
 Percorso: Amministrazione di sistema → Impostazioni IA
 
-La pagina **Impostazioni IA** consente di configurare **AI Chat**, **Campi IA**, **Automazione IA** e **App Builder**. Il pannello **Configurazione in attesa** a destra mostra quali elementi obbligatori sono ancora mancanti.
+La pagina **Impostazioni IA** consente di configurare **AI Chat**, **Campi IA**, **Automazione IA** e **App Builder**. In alto si trova l'interruttore **Funzionalità IA**; sotto, la configurazione procede in ordine nelle schede **Modelli**, **Chat IA** e **Generatore di app**. Ogni scheda dipende dalla precedente e, finché questa non è completa, la pagina indica quali impostazioni mancano. Il pannello **Configurazione in attesa** a destra elenca gli elementi obbligatori ancora mancanti: fai clic su uno di essi per passare alla scheda e al passaggio corrispondenti.
 
 ## Prima di iniziare
 
@@ -23,7 +23,7 @@ Prima di aprire la pagina Impostazioni IA, assicurati che siano pronti gli eleme
 
 ## Procedura di configurazione
 
-La procedura guidata nella parte superiore della pagina prevede tre passaggi per collegare e scegliere i modelli:
+La procedura guidata della scheda **Modelli** prevede tre passaggi per collegare e scegliere i modelli. I passaggi già completati restano compressi; fai clic su un passaggio per espanderlo e modificarlo:
 
 <Steps>
   <Step title="Configura l’API LLM">
@@ -37,15 +37,15 @@ La procedura guidata nella parte superiore della pagina prevede tre passaggi per
   </Step>
 </Steps>
 
-AI Chat e App Builder richiedono anche un runtime e la distribuzione delle app, che non fanno parte della procedura guidata. Scegli prima un'[opzione di distribuzione](/it/deploy/choose) e completa la distribuzione, quindi configura il runtime e App Builder come descritto di seguito.
+AI Chat e App Builder richiedono anche un runtime e la distribuzione delle app, che si configurano rispettivamente nelle schede **Chat IA** e **Generatore di app**. Scegli prima un'[opzione di distribuzione](/it/deploy/choose) e completa la distribuzione, quindi procedi come descritto di seguito.
 
 ### Configurare l'API LLM
 
 Nel passaggio **Configura l’API LLM**, fai clic su **Aggiungi fornitore LLM** per aggiungere un provider di modelli, quindi testane i modelli. Se utilizzi la tua chiave (BYOK), scegli **Compatibile con OpenAI** o **Anthropic** come tipo di provider.
 
 <img
-  src="/images/docs/admin-panel/2026-10-21-admin-ai-llm-api-step.png"
-  alt="Il passaggio Configura LLM API con un provider personalizzato aggiunto"
+  src="/images/docs/admin-panel/2026-11-09-admin-ai-llm-api-step.png"
+  alt="Il passaggio Configura LLM API espanso nella scheda Modelli delle impostazioni IA, con un provider personalizzato aggiunto"
   className="docs-screenshot"
 />
 
@@ -59,7 +59,7 @@ Scegli i modelli consigliati che gli utenti possono selezionare nei **Campi IA**
 
 ### Impostare il modello di chat
 
-In **Livelli del modello di chat** scegli un modello per **Ultra**, **Smart**, **Standard** e **Lite**; i modelli disponibili sono i modelli consigliati del passaggio 2, **Configura i modelli consigliati**. Gli utenti scelgono per livello nel menu dei modelli di **AI Chat** nella barra laterale e vedono il nome del livello anziché quello del modello, quindi puoi sostituire in qualsiasi momento il modello dietro un livello senza conseguenze per chi lo ha già selezionato.
+In **Livelli del modello di chat** scegli un modello per **Ultra**, **Smart**, **Standard** e **Lite**; i modelli disponibili sono divisi per origine in due gruppi, **Vercel AI Gateway** e **Provider personalizzato**, e il gruppo **Vercel AI Gateway** elenca solo i modelli consigliati abilitati nel passaggio 2. Gli utenti scelgono per livello nel menu dei modelli di **AI Chat** nella barra laterale e vedono il nome del livello anziché quello del modello, quindi puoi sostituire in qualsiasi momento il modello dietro un livello senza conseguenze per chi lo ha già selezionato.
 
 | Livello | Descrizione |
 |------|------|
@@ -75,15 +75,15 @@ A destra di ogni livello si trovano altri due controlli:
 
 ### Configurare il runtime
 
-Il runtime si configura nella scheda **Runtime della chat IA**, sotto la procedura guidata. Al termine della distribuzione, fai clic su **Esegui il test** per verificare il runtime di AI Chat.
+Il runtime si configura in **Runtime della chat IA**, nella scheda **Chat IA**. Al termine della distribuzione, fai clic su **Esegui il test** per verificare il runtime di AI Chat.
 
 ### Abilitare le funzionalità IA
 
-In **Capacità IA**, abilita **Campo IA** e **AI Chat** secondo necessità. Configura il runtime prima di utilizzare **AI Chat**.
+In **Funzionalità IA**, nella parte superiore della pagina, abilita **Campo IA** e **Chat IA** secondo necessità; gli interruttori valgono per l'intera istanza. Configura il runtime prima di utilizzare **Chat IA**.
 
 ### Configurare App Builder
 
-In **Motore di deploy**, scegli come distribuire le app:
+Nella scheda **Generatore di app**, in **Motore di deploy**, scegli come distribuire le app:
 
 | Motore di distribuzione | Requisiti di configurazione |
 |------|------|
@@ -95,20 +95,23 @@ Quando necessario, puoi aggiungere queste impostazioni facoltative di App Builde
 | Elemento facoltativo | Quando è necessario |
 |------|------|
 | **Dominio personalizzato** | Quando vuoi pubblicare le app nel tuo dominio |
-| **Autenticazione app** | Quando le app generate richiedono l'accesso tramite **OTP via email** o **Google** |
+| **Autenticazione delle app** | Quando le app generate richiedono l'accesso tramite **OTP via email**, **Google** o **SSO (OIDC)** |
 
-In **Autenticazione app**, puoi configurare i provider di accesso per le app generate:
+In **Autenticazione delle app**, puoi configurare i provider di accesso per le app generate:
 
 - **OTP via email** utilizza una casella SMTP indipendente per le email di verifica dell'accesso all'app.
 - **Google OAuth** richiede un ID client e un Segreto client. Aggiungi l'URI di reindirizzamento mostrato in questa pagina all'elenco degli URI di reindirizzamento autorizzati nella console Google Cloud.
+- **SSO (OIDC)** consente ai visitatori dell'app di accedere tramite il provider di identità aziendale. Registra presso il provider di identità l'indirizzo mostrato nella pagina come URI di reindirizzamento, quindi compila **URL di autorizzazione**, **URL del token**, **URL delle informazioni utente**, **Client ID** e **Client Secret**. Se lasci vuoto **Scope**, viene usato `openid email profile`.
 
-L'accesso con **Teable** è disponibile per impostazione predefinita. **OTP via email** viene visualizzato in App Builder soltanto dopo aver completato le impostazioni SMTP, mentre **Google** viene visualizzato soltanto dopo aver configurato entrambe le credenziali OAuth.
+L'accesso con **Teable** è disponibile per impostazione predefinita. **OTP via email** viene visualizzato in App Builder soltanto dopo aver completato le impostazioni SMTP, **Google** soltanto dopo aver configurato entrambe le credenziali OAuth e **SSO (OIDC)** soltanto dopo aver compilato tutti i campi SSO tranne lo scope.
 
-**Inserisci automaticamente la chiave API IA nelle app** è attivo per impostazione predefinita, così le app possono chiamare i modelli IA della piattaforma. Disattivandolo, le app non potranno più accedervi.
+In **Impostazioni app**, **Inietta automaticamente la chiave API dell'IA nelle app** è attivo per impostazione predefinita, così le app possono chiamare i modelli IA della piattaforma. Disattivandolo, le app non potranno più accedervi.
+
+Se dopo un aggiornamento le app create con versioni precedenti non si aprono in anteprima o non si pubblicano, fai clic su **Esegui la riparazione** in **Compatibilità con i progetti legacy**, all'interno di **Strumenti di manutenzione**, per ripristinare automaticamente i file mancanti.
 
 ### Facoltativo. Configurare l'input vocale
 
-Per utilizzare l'input vocale in AI Chat, abilita la funzionalità e inserisci una **chiave API OpenAI**. Configura l'**endpoint di trascrizione** soltanto se utilizzi un servizio di trascrizione personalizzato. Puoi anche limitare la durata della registrazione e il numero di richieste al minuto.
+Per utilizzare l'input vocale in AI Chat, abilita **Input vocale** nella scheda **Chat IA** e inserisci una **chiave API OpenAI**. Configura l'**endpoint di trascrizione** soltanto se utilizzi un servizio di trascrizione personalizzato. Puoi anche limitare la durata della registrazione e il numero di richieste al minuto.
 
 ### Verificare la configurazione
 

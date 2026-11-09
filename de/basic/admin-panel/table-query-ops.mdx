@@ -41,14 +41,14 @@ Tabellenliste und Detailansicht zeigen neben der Suchmethode den Indexzustand de
 
 | Zustand | Bedeutung | Nächster Schritt |
 | --- | --- | --- |
-| **Nicht konfiguriert** | Keine gespeicherte Suchkonfiguration und keine Indexmetadaten. | Wählen Sie **Suche konfigurieren**, wenn die Tabelle indizierte Suche braucht. |
+| **Nicht konfiguriert** | Keine gespeicherte Suchkonfiguration und keine Indexmetadaten. | Wählen Sie **Suchindex erzeugen**, wenn die Tabelle indizierte Suche braucht. |
 | **Veröffentlichung ausstehend** | Die Konfiguration ist gespeichert, der Index noch nicht veröffentlicht. | Prüfen Sie unter **Verlauf**, ob noch eine Aufgabe läuft. |
 | **Bereit** | Die Indexmetadaten sind veröffentlicht und nutzbar. | Prüfen Sie die tatsächliche Suchmethode und den Laufzeitschalter, um festzustellen, ob der Index aktiv ist. |
-| **Metadaten unbrauchbar** | Die Indexmetadaten sind defekt und können die Suche nicht bedienen. | Führen Sie **Auswahl aktualisieren / neu aufbauen** erneut aus. |
+| **Metadaten unbrauchbar** | Die Indexmetadaten sind defekt und können die Suche nicht bedienen. | Wählen Sie **Suchindex wiederherstellen**. |
 
 Unter dem Zustand können zwei Zeilen erscheinen: **Konfiguriert: pg_bigm / pg_trgm** bedeutet, dass der gespeicherte Anbieter von der aktuell verwendeten Suchmethode abweicht, und **Laufzeitschalter für indizierte Suche: aus** bedeutet, dass der Index bereit ist, die Laufzeit aber aus ist und die Suche weiterhin `ILIKE` verwendet.
 
-Meldet ein Hinweis oben auf der Seite Tabellen, deren konfigurierter Suchindex nicht greift, fällt die Suche in diesen Tabellen auf `ILIKE` zurück. Meldet er außerdem, dass der Task-Worker ausgeschaltet ist, setzen Sie im Backend `V2_TABLE_QUERY_OPS_TASK_WORKER_ENABLED` auf `true` und starten Sie neu, damit die Indizes neu aufgebaut werden können.
+Meldet ein Hinweis oben auf der Seite Tabellen, deren konfigurierter Suchindex nicht greift, fällt die Suche in diesen Tabellen auf `ILIKE` zurück. Meldet er außerdem, dass der Task-Worker ausgeschaltet ist, setzen Sie im Backend `V2_TABLE_QUERY_OPS_TASK_WORKER_ENABLED` auf `true` und starten Sie neu, damit die Indizes automatisch neu aufgebaut werden können. Alternativ stellen Sie den Index manuell wieder her, indem Sie im Tab **Suche** der Tabellendetails **Suchindex wiederherstellen** wählen; dafür ist kein Task-Worker nötig. Liegt die Ursache dagegen im ausgeschalteten Laufzeitschalter für indizierte Suche, müssen Sie diesen im Backend einschalten; ein Wiederherstellen des Index allein reicht dann nicht.
 
 <Info>Ein veröffentlichter Index bedeutet nicht, dass jede Suche ihn trifft: Ein zu kurzer Suchbegriff oder ein Feld außerhalb der Abdeckung fällt weiterhin auf `ILIKE` zurück. Diese Seite zeigt den Zustand des Index, nicht den Nachweis, dass ihn kürzlich Anfragen getroffen haben.</Info>
 
@@ -56,15 +56,18 @@ Meldet ein Hinweis oben auf der Seite Tabellen, deren konfigurierter Suchindex n
 
 Der Tab **Suche** zeigt die aktuelle Suchmethode der Tabelle, die Anzahl der abgedeckten Felder und die **Aktive Abdeckung** jedes Felds. **Nicht abgedeckte Felder anzeigen** beschränkt die Liste auf die noch nicht einbezogenen Felder; Felder mit der Kennzeichnung **Nicht geeignet** können nicht zu einem Substring-Suchindex beitragen.
 
-<Info>Aktive Abdeckung setzt veröffentlichte, nutzbare Indexmetadaten und einen eingeschalteten Laufzeitschalter voraus; eine gespeicherte Konfiguration allein zählt nicht. Die Abdeckung wird ausdrücklich festgelegt, später hinzugefügte Felder kommen also nicht automatisch hinzu, konfigurieren Sie die Tabelle erneut, um sie aufzunehmen.</Info>
+<Info>Aktive Abdeckung setzt veröffentlichte, nutzbare Indexmetadaten und einen eingeschalteten Laufzeitschalter voraus; eine gespeicherte Konfiguration allein zählt nicht. Die Abdeckung wird ausdrücklich festgelegt, später hinzugefügte Felder kommen also nicht automatisch hinzu. Wählen Sie **Abdeckung vervollständigen**, um sie aufzunehmen.</Info>
 
-Wählen Sie **Suche konfigurieren** bei einer noch nicht konfigurierten Tabelle oder **Auswahl aktualisieren / neu aufbauen** bei einer bereits konfigurierten, wobei der Dialog mit dem zuletzt gespeicherten Anbieter und der zuletzt gespeicherten Feldauswahl öffnet. Der Dialog fragt Folgendes ab:
+Welche Wartungsschaltfläche der Tab **Suche** anbietet, hängt vom Indexzustand ab:
 
-| Angabe | Was Sie eintragen |
+| Schaltfläche | Wann sie erscheint |
 | --- | --- |
-| **Suchanbieter** | `pg_bigm` oder `pg_trgm`. Fehlt die Erweiterung, nennt der Dialog, was fehlt und wer es bereitstellen kann. |
-| **Repräsentativer Suchtext** | Text, nach dem Ihre Benutzer tatsächlich suchen würden. Er prüft die Substring-Semantik und sammelt Nachweise aus dem Ausführungsplan und wird nie gespeichert. Ist er zu kurz, nennt der Dialog die Mindestlänge. |
-| **Felder** | Wählen Sie die Felder aus, nach denen Benutzer wirklich suchen. Wählen Sie bei einer breiten Tabelle nicht alles aus, ein Suchdokument über alle Felder ist teuer. |
+| **Suchindex erzeugen** | Für die Tabelle wurde noch kein Suchindex konfiguriert |
+| **Suchindex wiederherstellen** | Der Index ist konfiguriert, greift aber nicht, etwa weil er nicht bereit ist oder die Suche auf `ILIKE` zurückfällt |
+| **Abdeckung vervollständigen** | Einige Felder sind noch nicht abgedeckt |
+| **Suchindex aktualisieren** | Der Index funktioniert, die Feldauswahl soll aber angepasst werden |
+
+Das System wählt automatisch einen verfügbaren Suchanbieter; fehlt der Datenbank die Erweiterung `pg_bigm` oder `pg_trgm`, nennt der Dialog den Grund. Beim Wiederherstellen übernimmt der Dialog die zuletzt gespeicherten Felder, in allen anderen Fällen sind alle verfügbaren Felder vorausgewählt. Behalten Sie nur die Felder, nach denen Benutzer wirklich suchen, und wählen Sie bei einer breiten Tabelle die übrigen ab, denn ein Suchdokument über alle Felder ist teuer.
 
 **Analysieren und Testlauf** führt die Änderung ohne Festschreibung aus und meldet die Anzahl abgedeckter Felder, die geschätzte Zeilenzahl, ob Nachweise aus dem Ausführungsplan vorliegen und welche Auswirkungen das Erstellen oder Neuaufbauen hat. Bei Tabellen mit geschätzt 50.000 Zeilen oder mehr sowie bei unbekannter Größe ist zusätzlich die Bestätigung des Wartungsfensters nötig. Anschließend wählen Sie **Bestätigen und Aufgabe einreihen**.
 
@@ -96,7 +99,7 @@ Der Tab **Verlauf** besteht aus drei Teilen:
 
 Der Verlauf lädt nur die neuesten Einträge. Gibt es mehr, nennt eine Zeile über der Liste die Gesamtzahl.
 
-<Info>Solange für eine Tabelle eine Aufgabe eingereiht ist oder läuft, bleiben die Schaltflächen zum Konfigurieren der Suche und zum Erstellen von Indizes deaktiviert. Warten Sie das Ende der Aufgabe ab.</Info>
+<Info>Solange für eine Tabelle eine Aufgabe eingereiht ist oder läuft, bleiben die Schaltflächen zum Pflegen des Suchindex und zum Erstellen von Indizes deaktiviert. Warten Sie das Ende der Aufgabe ab. Eingereihte oder fehlgeschlagene Suchaufgaben können Sie im Tab **Suche** mit **Nicht gestartete Aufgabe abbrechen** abbrechen; laufende Aufgaben müssen erst abgeschlossen sein.</Info>
 
 ## Auswirkungen einer Änderung bewerten
 

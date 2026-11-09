@@ -8,7 +8,7 @@ description: "Configura el Chat de IA, los Campos de IA, las automatizaciones de
 
 Ruta: Administración del sistema → Ajustes de IA
 
-La página **Ajustes de IA** permite configurar el **Chat de IA**, los **Campos de IA**, las **automatizaciones de IA** y **App Builder**. El panel **Configuración pendiente** de la derecha muestra qué elementos obligatorios siguen pendientes.
+La página **Ajustes de IA** permite configurar el **Chat de IA**, los **Campos de IA**, las **automatizaciones de IA** y **App Builder**. En la parte superior de la página está el interruptor **Capacidades de IA**; debajo, la configuración se completa en orden en las pestañas **Modelos**, **Chat de IA** y **Creador de aplicaciones**. Cada pestaña depende de la anterior y, mientras esta no esté completa, la página indica qué ajustes faltan. El panel **Configuración pendiente** de la derecha enumera los elementos obligatorios que faltan; al hacer clic en uno, se abre la pestaña y el paso correspondientes.
 
 ## Antes de empezar
 
@@ -23,7 +23,7 @@ Antes de abrir la página Ajustes de IA, asegúrate de que los siguientes elemen
 
 ## Pasos de configuración
 
-El asistente de configuración de la parte superior de la página tiene tres pasos para conectar y elegir modelos:
+El asistente de configuración de la pestaña **Modelos** tiene tres pasos para conectar y elegir modelos. Los pasos completados aparecen contraídos de forma predeterminada; haz clic en uno para desplegarlo y modificarlo:
 
 <Steps>
   <Step title="Configurar la API del LLM">
@@ -37,15 +37,15 @@ El asistente de configuración de la parte superior de la página tiene tres pas
   </Step>
 </Steps>
 
-El Chat de IA y App Builder también necesitan un entorno de ejecución y la implementación de aplicaciones, que no forman parte del asistente. Elige primero una [opción de implementación](/es/deploy/choose) y completa la implementación; después, configura el entorno de ejecución y App Builder como se describe más abajo.
+El Chat de IA y App Builder también necesitan un entorno de ejecución y la implementación de aplicaciones, que se configuran en las pestañas **Chat de IA** y **Creador de aplicaciones**, respectivamente. Elige primero una [opción de implementación](/es/deploy/choose) y completa la implementación; después, sigue las indicaciones de más abajo.
 
 ### Configurar la API de LLM
 
 En el paso **Configurar la API del LLM**, haz clic en **Agregar proveedor de LLM** para añadir un proveedor de modelos y prueba sus modelos. Si usas tu propia clave (BYOK), elige **Compatible con OpenAI** o **Anthropic** como tipo de proveedor.
 
 <img
-  src="/images/docs/admin-panel/2026-10-21-admin-ai-llm-api-step.png"
-  alt="El paso Configurar LLM API con un proveedor personalizado añadido"
+  src="/images/docs/admin-panel/2026-11-09-admin-ai-llm-api-step.png"
+  alt="El paso Configurar LLM API desplegado en la pestaña Modelos, con un proveedor personalizado añadido"
   className="docs-screenshot"
 />
 
@@ -59,7 +59,7 @@ Elige los modelos recomendados que los usuarios pueden seleccionar en los **Camp
 
 ### Establecer modelo de chat
 
-En **Niveles de modelo de chat**, elige un modelo para **Ultra**, **Smart**, **Standard** y **Lite**; los modelos disponibles son los modelos recomendados del paso 2, **Configurar modelos recomendados**. Los usuarios eligen por nivel en el menú de modelos del **Chat de IA** de la barra lateral y ven el nombre del nivel en lugar del modelo, así que puedes cambiar el modelo de un nivel en cualquier momento sin afectar a quienes ya lo seleccionaron.
+En **Niveles de modelo de chat**, elige un modelo para **Ultra**, **Smart**, **Standard** y **Lite**; los modelos disponibles se agrupan según su origen en **Vercel AI Gateway** y **Proveedor personalizado**, y el grupo **Vercel AI Gateway** solo incluye los modelos recomendados que activaste en el paso 2. Los usuarios eligen por nivel en el menú de modelos del **Chat de IA** de la barra lateral y ven el nombre del nivel en lugar del modelo, así que puedes cambiar el modelo de un nivel en cualquier momento sin afectar a quienes ya lo seleccionaron.
 
 | Nivel | Descripción |
 |------|------|
@@ -75,15 +75,15 @@ A la derecha de cada nivel hay dos controles más:
 
 ### Configurar el entorno de ejecución
 
-El entorno de ejecución se configura en la tarjeta **Entorno de ejecución del chat de IA**, debajo del asistente. Cuando termine la implementación, haz clic en **Ejecutar la prueba** para verificar el entorno de ejecución del Chat de IA.
+El entorno de ejecución se configura en **Entorno de ejecución del chat de IA**, dentro de la pestaña **Chat de IA**. Cuando termine la implementación, haz clic en **Ejecutar la prueba** para verificar el entorno de ejecución del Chat de IA.
 
 ### Habilitar funciones de IA
 
-En **Capacidades de IA**, habilita **Campo de IA** y **Chat de IA** según sea necesario. Configura el entorno de ejecución antes de usar el **Chat de IA**.
+En **Capacidades de IA**, en la parte superior de la página, habilita **Campo de IA** y **Chat de IA** según sea necesario. Estos interruptores se aplican a toda la instancia. Configura el entorno de ejecución antes de usar el **Chat de IA**.
 
 ### Configurar App Builder
 
-En **Motor de despliegue**, elige cómo se implementan las aplicaciones:
+En la pestaña **Creador de aplicaciones**, elige en **Motor de despliegue** cómo se implementan las aplicaciones:
 
 | Motor de implementación | Requisitos de configuración |
 |------|------|
@@ -95,20 +95,23 @@ Puedes añadir estos ajustes opcionales de App Builder cuando los necesites:
 | Elemento opcional | Cuándo lo necesitas |
 |------|------|
 | **Dominio personalizado** | Cuando quieras publicar aplicaciones en tu propio dominio |
-| **Autenticación de aplicaciones** | Cuando las aplicaciones generadas necesiten iniciar sesión mediante **OTP por correo electrónico** o **Google** |
+| **Autenticación de aplicaciones** | Cuando las aplicaciones generadas necesiten iniciar sesión mediante **OTP por correo electrónico**, **Google** o **SSO (OIDC)** |
 
 En **Autenticación de aplicaciones**, puedes configurar proveedores de inicio de sesión para las aplicaciones generadas:
 
 - **OTP por correo electrónico** usa un buzón SMTP independiente para los mensajes de verificación de inicio de sesión de las aplicaciones.
 - **Google OAuth** requiere un ID de cliente y un secreto de cliente. Añade la URI de redirección que aparece en esta página a la lista de URI de redirección autorizadas de Google Cloud Console.
+- **SSO (OIDC)** permite que los visitantes de la aplicación inicien sesión con el proveedor de identidad de tu empresa. Registra la URL que aparece en la página como URI de redirección en tu proveedor de identidad y, después, rellena **URL de autorización**, **URL del token**, **URL de información de usuario**, **Client ID** y **Client Secret**. Si dejas **Scope** vacío, se usa `openid email profile`.
 
-El inicio de sesión con **Teable** está disponible de forma predeterminada. **OTP por correo electrónico** solo aparece en App Builder cuando se han completado los ajustes de SMTP, y **Google** solo aparece cuando se han configurado ambas credenciales de OAuth.
+El inicio de sesión con **Teable** está disponible de forma predeterminada. **OTP por correo electrónico** solo aparece en App Builder cuando se han completado los ajustes de SMTP, **Google** solo aparece cuando se han configurado ambas credenciales de OAuth, y **SSO (OIDC)** solo aparece cuando se han rellenado todos los campos de SSO salvo el scope.
 
-La opción **Inyectar automáticamente la clave de API de IA en las aplicaciones** está activada de forma predeterminada, por lo que las aplicaciones pueden llamar a los modelos de IA de la plataforma. Si la desactivas, las aplicaciones dejan de tener acceso a ellos.
+La opción **Inyectar automáticamente la clave de API de IA en las aplicaciones** de **Ajustes de apps** está activada de forma predeterminada, por lo que las aplicaciones pueden llamar a los modelos de IA de la plataforma. Si la desactivas, las aplicaciones dejan de tener acceso a ellos.
+
+Si después de una actualización las aplicaciones antiguas no se pueden previsualizar ni publicar, haz clic en **Ejecutar la reparación** en **Compatibilidad con proyectos antiguos**, dentro de **Herramientas de mantenimiento**, para restaurar automáticamente los archivos que falten.
 
 ### Opcional: configurar la Entrada de voz
 
-Para usar la Entrada de voz en el Chat de IA, habilita la función e introduce una **Clave de API de OpenAI**. Configura el **Punto de conexión de transcripción** únicamente cuando uses un servicio de transcripción personalizado. También puedes limitar la duración de las grabaciones y las solicitudes por minuto.
+Para usar la Entrada de voz en el Chat de IA, habilita **Entrada de voz** en la pestaña **Chat de IA** e introduce una **Clave de API de OpenAI**. Configura el **Punto de conexión de transcripción** únicamente cuando uses un servicio de transcripción personalizado. También puedes limitar la duración de las grabaciones y las solicitudes por minuto.
 
 ### Verificar la configuración
 

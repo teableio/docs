@@ -8,7 +8,7 @@ description: "Configurez le Chat IA, les Champs IA, l’Automatisation IA et le 
 
 Chemin : Administration système → Paramètres d’IA
 
-La page **Paramètres d’IA** permet de configurer le **Chat IA**, les **Champs IA**, l’**Automatisation IA** et le **Générateur d’Applications**. Le panneau **Configuration en attente** à droite indique quels éléments requis sont encore manquants.
+La page **Paramètres d’IA** permet de configurer le **Chat IA**, les **Champs IA**, l’**Automatisation IA** et le **Générateur d’Applications**. En haut de la page se trouve l’interrupteur **Capacités IA** ; en dessous, la configuration se fait dans l’ordre via les onglets **Modèles**, **Chat IA** et **Générateur d’applications**. Chaque onglet dépend du précédent : tant que celui-ci n’est pas terminé, la page indique les réglages qui manquent encore. Le panneau **Configuration en attente** à droite liste les éléments requis manquants ; un clic sur l’un d’eux ouvre l’onglet et l’étape correspondants.
 
 ## Avant de commencer
 
@@ -23,7 +23,7 @@ Avant d’ouvrir la page Paramètres d’IA, assurez-vous que les éléments sui
 
 ## Étapes de configuration
 
-L’assistant de configuration en haut de la page comporte trois étapes pour connecter et choisir les modèles :
+Dans l’onglet **Modèles**, l’assistant de configuration comporte trois étapes pour connecter et choisir les modèles. Les étapes terminées sont repliées par défaut ; cliquez sur une étape pour la déplier et la modifier :
 
 <Steps>
   <Step title="Configurer l’API LLM">
@@ -37,15 +37,15 @@ L’assistant de configuration en haut de la page comporte trois étapes pour co
   </Step>
 </Steps>
 
-Le Chat IA et le Générateur d’Applications nécessitent aussi un environnement d’exécution et le déploiement des Applications, qui ne font pas partie de l’assistant. Choisissez d’abord une [option de déploiement](/fr/deploy/choose) et terminez le déploiement, puis configurez l’environnement d’exécution et le Générateur d’Applications comme indiqué ci-dessous.
+Le Chat IA et le Générateur d’Applications nécessitent aussi un environnement d’exécution et le déploiement des Applications, qui se configurent respectivement dans les onglets **Chat IA** et **Générateur d’applications**. Choisissez d’abord une [option de déploiement](/fr/deploy/choose) et terminez le déploiement, puis suivez les instructions ci-dessous.
 
 ### Configurer l’API LLM
 
 À l’étape **Configurer l’API LLM**, cliquez sur **Ajouter un fournisseur LLM** pour ajouter un fournisseur de modèles, puis testez ses modèles. Si vous utilisez votre propre clé (BYOK), choisissez **Compatible OpenAI** ou **Anthropic** comme type de fournisseur.
 
 <img
-  src="/images/docs/admin-panel/2026-10-21-admin-ai-llm-api-step.png"
-  alt="L’étape Configurer l’API LLM avec un fournisseur personnalisé ajouté"
+  src="/images/docs/admin-panel/2026-11-09-admin-ai-llm-api-step.png"
+  alt="L’étape Configurer l’API LLM dépliée dans l’onglet Modèles, avec un fournisseur personnalisé ajouté"
   className="docs-screenshot"
 />
 
@@ -59,7 +59,7 @@ Choisissez les modèles recommandés que les utilisateurs peuvent sélectionner 
 
 ### Définir le modèle de chat
 
-Dans **Niveaux de modèle de chat**, choisissez un modèle pour **Ultra**, **Smart**, **Standard** et **Lite** ; les modèles proposés sont les modèles recommandés de l’étape 2, **Configurer les modèles recommandés**. Les utilisateurs choisissent par niveau dans le menu de modèles du **Chat IA** de la barre latérale et voient le nom du niveau plutôt que celui du modèle : vous pouvez donc remplacer à tout moment le modèle associé à un niveau sans incidence pour ceux qui l’ont déjà sélectionné.
+Dans **Niveaux de modèle de chat**, choisissez un modèle pour **Ultra**, **Smart**, **Standard** et **Lite** ; les modèles proposés sont répartis selon leur origine en deux groupes, **Vercel AI Gateway** et **Fournisseur personnalisé**, le groupe **Vercel AI Gateway** ne contenant que les modèles recommandés activés à l’étape 2. Les utilisateurs choisissent par niveau dans le menu de modèles du **Chat IA** de la barre latérale et voient le nom du niveau plutôt que celui du modèle : vous pouvez donc remplacer à tout moment le modèle associé à un niveau sans incidence pour ceux qui l’ont déjà sélectionné.
 
 | Niveau | Description |
 |------|------|
@@ -75,15 +75,15 @@ Deux commandes supplémentaires figurent à droite de chaque niveau :
 
 ### Configurer l’environnement d’exécution
 
-L’environnement d’exécution se configure dans la carte **Environnement d'exécution du chat IA**, sous l’assistant. Une fois le déploiement terminé, cliquez sur **Run test** pour vérifier l’environnement d’exécution du Chat IA.
+L’environnement d’exécution se configure dans **Environnement d'exécution du chat IA**, sous l’onglet **Chat IA**. Une fois le déploiement terminé, cliquez sur **Run test** pour vérifier l’environnement d’exécution du Chat IA.
 
 ### Activer les fonctionnalités IA
 
-Dans **Capacités IA**, activez **Champ IA** et **Chat IA** selon vos besoins. Configurez l’environnement d’exécution avant d’utiliser le **Chat IA**.
+Dans **Capacités IA**, en haut de la page, activez **Champ IA** et **Chat IA** selon vos besoins. Ces interrupteurs s’appliquent à toute l’instance. Configurez l’environnement d’exécution avant d’utiliser le **Chat IA**.
 
 ### Configurer le Générateur d’Applications
 
-Dans **Vercel Deploy**, choisissez comment les Applications sont déployées :
+Dans l’onglet **Générateur d’applications**, choisissez sous **Vercel Deploy** comment les Applications sont déployées :
 
 | Moteur de déploiement | Exigences de configuration |
 |------|------|
@@ -95,20 +95,23 @@ Vous pouvez ajouter les paramètres facultatifs suivants du Générateur d’App
 | Élément facultatif | Cas d’utilisation |
 |------|------|
 | **Domaine personnalisé** | Lorsque vous souhaitez publier des Applications sous votre propre domaine |
-| **Authentification de l’Application** | Lorsque les Applications générées nécessitent une connexion par **OTP par e-mail** ou **Google** |
+| **Authentification de l’Application** | Lorsque les Applications générées nécessitent une connexion par **OTP par e-mail**, **Google** ou **SSO (OIDC)** |
 
 Dans **Authentification de l’Application**, vous pouvez configurer des fournisseurs de connexion pour les Applications générées :
 
 - **OTP par e-mail** utilise une boîte aux lettres SMTP indépendante pour les e-mails de vérification de connexion à l’Application.
 - **Google OAuth** nécessite un ID client et un secret client. Ajoutez l’URI de redirection affichée sur cette page à la liste des URI de redirection autorisés dans Google Cloud Console.
+- **SSO (OIDC)** permet aux visiteurs de l’Application de se connecter via le fournisseur d’identité de votre entreprise. Enregistrez l’URL affichée sur la page comme URI de redirection auprès de votre fournisseur d’identité, puis renseignez **URL d'autorisation**, **URL du jeton**, **URL des informations utilisateur**, **ID client** et **Secret client**. Si **Scope** reste vide, la valeur `openid email profile` est utilisée.
 
-La connexion **Teable** est disponible par défaut. **OTP par e-mail** apparaît dans le Générateur d’Applications uniquement une fois les paramètres SMTP terminés, et **Google** apparaît uniquement une fois les deux informations d’identification OAuth configurées.
+La connexion **Teable** est disponible par défaut. **OTP par e-mail** apparaît dans le Générateur d’Applications uniquement une fois les paramètres SMTP terminés, **Google** apparaît uniquement une fois les deux informations d’identification OAuth configurées, et **SSO (OIDC)** uniquement une fois tous les champs SSO renseignés, à l’exception du scope.
 
-**Injecter automatiquement la clé API IA dans les Applications** est activé par défaut, afin que les Applications puissent appeler les modèles IA de la plateforme. Désactivez-le et les Applications ne pourront plus les atteindre.
+Dans **Paramètres des apps**, **Injecter automatiquement la clé API IA dans les Applications** est activé par défaut, afin que les Applications puissent appeler les modèles IA de la plateforme. Désactivez-le et les Applications ne pourront plus les atteindre.
+
+Si, après une mise à niveau, d’anciennes Applications ne s’affichent plus en aperçu ou ne peuvent plus être publiées, cliquez sur **Lancer la réparation** dans **Compatibilité des anciens projets**, sous **Outils de maintenance**, pour rétablir automatiquement les fichiers manquants.
 
 ### Facultatif : configurer la saisie vocale
 
-Pour utiliser la saisie vocale dans le Chat IA, activez la fonctionnalité et saisissez une **Clé API OpenAI**. Configurez le **Point de terminaison de transcription** uniquement si vous utilisez un service de transcription personnalisé. Vous pouvez également limiter la durée d’enregistrement et le nombre de requêtes par minute.
+Pour utiliser la saisie vocale dans le Chat IA, activez **Saisie vocale** dans l’onglet **Chat IA** et saisissez une **Clé API OpenAI**. Configurez le **Point de terminaison de transcription** uniquement si vous utilisez un service de transcription personnalisé. Vous pouvez également limiter la durée d’enregistrement et le nombre de requêtes par minute.
 
 ### Vérifier la configuration
 
