@@ -1,7 +1,7 @@
 ---
 title: "Automatisierungen zeitgesteuert auslösen"
 description: "Führen Sie einen Workflow nach einem wiederkehrenden oder einmaligen Zeitplan aus"
-sidebarTitle: "Zum geplanten Zeitpunkt"
+sidebarTitle: "Zu geplanter Zeit"
 ---
 
 {/* mintlify-resync: 2026-05-14 */}
@@ -26,11 +26,11 @@ Beschreiben Sie Ihr Ziel einmal, und der Workflow ist bereit – eine manuelle E
 | Startzeit | Ja | Wann der Zeitplan beginnt |
 | Endzeit | Nein | Wann der Zeitplan endet (leer lassen, um ihn unbegrenzt auszuführen) |
 | Zeitzone | Ja | Standardmäßig Ihre aktuelle Zeitzone. Alle Zeiten werden in dieser Zeitzone interpretiert |
-| Häufigkeit | Ja | Wie häufig der Auslöser ausgeführt wird – siehe Optionen unten |
+| Intervalltyp | Ja | Wie häufig der Auslöser ausgeführt wird – siehe Optionen unten |
 
-## Häufigkeitsoptionen
+## Optionen für den Intervalltyp {#häufigkeitsoptionen}
 
-| Häufigkeit | Intervall | Zusätzliche Einstellungen |
+| Intervalltyp | Intervall | Zusätzliche Einstellungen |
 |---|---|---|
 | Minuten | Alle 10–60 Min. | – |
 | Stunden | Alle 1–24 Std. | – |
@@ -44,17 +44,18 @@ Verwenden Sie **-1** als Monatstag, um unabhängig davon, ob der Monat 28, 30 od
 ## Einrichtung
 
 1. Öffnen Sie Ihre Automatisierung und fügen Sie einen neuen Auslöser hinzu.
-2. Wählen Sie **Zum geplanten Zeitpunkt** aus.
+2. Wählen Sie **Zu geplanter Zeit** aus.
 3. Legen Sie die **Zeitzone** fest. Dies ist besonders wichtig, wenn Ihr Team in mehreren Zeitzonen arbeitet – der Zeitplan wird in der hier ausgewählten Zeitzone ausgeführt.
-4. Wählen Sie eine **Häufigkeit** aus. So legen Sie beispielsweise eine Ausführung jeden Montag um 9:00 Uhr fest:
-   - Legen Sie die Häufigkeit auf **Wochen** fest.
+4. Wählen Sie einen **Intervalltyp** aus. So legen Sie beispielsweise eine Ausführung jeden Montag um 9:00 Uhr fest:
+   - Legen Sie den **Intervalltyp** auf **Wochen** fest.
    - Legen Sie das Intervall auf **1** fest (alle 1 Woche).
    - Aktivieren Sie im Wochentagswähler **Montag**.
    - Legen Sie die Auslösezeit auf **09:00** fest.
-5. Legen Sie eine **Startzeit** fest (ab wann der Zeitplan aktiv ist).
-6. (Optional) Legen Sie eine **Endzeit** fest, wenn der Zeitplan ablaufen soll.
-7. Speichern und aktivieren Sie die Automatisierung.
-8. Da keine Datensatzdaten vorhanden sind, ist Ihre erste Aktion in der Regel ein Schritt **Datensätze abrufen**, der die benötigten Daten lädt.
+5. Legen Sie die **Startzeit** fest (ab wann der Zeitplan aktiv ist).
+6. (Optional) Legen Sie die **Endzeit** fest, wenn der Zeitplan ablaufen soll.
+7. Da keine Datensatzdaten vorhanden sind, ist Ihre erste Aktion in der Regel ein Schritt **Datensätze abrufen**, der die benötigten Daten lädt.
+8. Klicken Sie auf **Testen**, um die Automatisierung einmal manuell auszuführen und das Ergebnis zu prüfen.
+9. Speichern und aktivieren Sie die Automatisierung.
 
 ## Konkretes Beispiel: wöchentlicher Bericht am Montagmorgen
 
@@ -66,7 +67,7 @@ Ziel: Jeden Montag um 9:00 Uhr alle in dieser Woche fälligen Aufgaben abrufen u
 
 ## Einmalige Zeitpläne
 
-Wenn Sie die Häufigkeit **Einmalig** auswählen, wird die Automatisierung einmal zum angegebenen Datum und Zeitpunkt ausgeführt und danach automatisch deaktiviert. Dies ist für folgende Zwecke hilfreich:
+Wenn Sie den Intervalltyp **Einmalig** auswählen, wird die Automatisierung einmal zum angegebenen Datum und Zeitpunkt ausgeführt und danach automatisch deaktiviert. Dies ist für folgende Zwecke hilfreich:
 
 - Eine Erinnerung, an einem bestimmten Datum nachzufassen.
 - Eine verzögerte Aktion, die einmal ausgeführt werden muss (z. B. das Senden einer Einführungsankündigung an einem zukünftigen Datum).
@@ -90,6 +91,7 @@ Nachdem ein einmaliger Auslöser ausgeführt wurde, wird die Automatisierung als
 - Achten Sie auf Zeitzonen, insbesondere bei Teams, die regionsübergreifend arbeiten. Die Zeitzoneneinstellung des Auslösers bestimmt, wann er ausgeführt wird – nicht die lokale Zeit des Betrachters.
 - Halten Sie Ihren Workflow bei häufigen Zeitplänen (alle paar Minuten) kompakt, um sich überschneidende Ausführungen zu vermeiden.
 - Wenn Ihre Automatisierung zeitkritisch ist (z. B. vor einer täglichen Besprechung ausgeführt werden muss), planen Sie sie einige Minuten früher ein, um Verarbeitungszeit zu berücksichtigen.
+- Läuft die vorherige Ausführung noch, wenn der Zeitplan auslöst, wartet die neue Ausführung in der Warteschlange und startet, sobald die vorherige abgeschlossen ist.
 - Der **-1**-Trick für den Monatstag ist hilfreich für Berichte oder Prozesse zum Monatsende. -1 bedeutet „letzter Tag des Monats“, sodass der Workflow am 31. Januar, am 28. (oder 29.) Februar, am 31. März usw. korrekt ausgeführt wird.
 
 ## Verwandte Themen

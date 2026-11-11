@@ -1,5 +1,5 @@
 ---
-title: "Get Records action: filters and pagination"
+title: "Get records action: filters and pagination"
 description: "Query a table in an automation with filter conditions and pagination. Use the returned record list in later steps or a loop for batch processing."
 sidebarTitle: "Get records"
 ---
@@ -15,9 +15,9 @@ Please note: if you add actions manually, AI will not recognize or modify them l
 
 Open the AI Chat in your table's right sidebar and describe what you want.
 
-AI handles everything: it picks the right trigger, chooses the appropriate actions, maps the fields, and configures the entire workflow automatically.
+AI handles everything: it picks the right trigger, chooses the appropriate actions, maps the fields, and configures the entire automation automatically.
 
-Describe the goal once, and the workflow is ready — no manual setup needed.
+Describe the goal once, and the automation is ready with no manual setup.
 
 Retrieves records from a table and returns them as an array. Use the results in later steps to loop through records, pass data to a script, or feed into other actions.
 
@@ -33,12 +33,12 @@ Retrieves records from a table and returns them as an array. Use the results in 
 
 ## How to set it up
 
-1. Add a **Get Records** action to your workflow.
+1. Add a **Get records** action to your automation.
 2. Choose the **Table** you want to query. Use [Cross-Project Access](/en/basic/automation/actions/records/cross-base) if the table is in a different project.
 3. (Optional) Select a **View** to inherit that view's filter, sort, and field visibility settings.
 4. (Optional) Add **Filter** conditions to narrow the results. For example, `Status` equals `Active` and `Due Date` is before today.
 5. (Optional) Set **Skip** and **Take** for pagination. For example, Skip 0 and Take 100 to get the first 100 records.
-6. Save the action. When the workflow runs, the results will be available as an array for subsequent steps.
+6. Save the action. When the automation runs, the results will be available as an array for subsequent steps.
 
 ## Output: working with the results
 
@@ -50,7 +50,7 @@ The output is an **array of records**. Each record in the array contains:
 ### Using results in the next step
 
 - **Reference a single record:** If you only expect one result (or want the first one), you can reference fields from the first record directly using the **+** variable picker.
-- **Loop through all records:** Add a [Loop (Batch)](../logic/loop-run) action after Get Records and select the results array as the data source. Inside the loop, reference each item's fields.
+- **Loop through all records:** Add a [Loop (Batch)](../logic/loop-run) action after Get records and select the results array as the data source. Inside the loop, reference each item's fields.
 - **Process in a script:** Pass the array to a [Run script](/en/basic/automation/actions/ai/ai-script) step for custom processing, filtering, or transformation.
 
 ## Pagination
@@ -62,14 +62,14 @@ If you do not set **Skip** and **Take**, the action returns records up to the sy
 | Skip | How many records to skip from the start | `0` (start from the beginning) |
 | Take | How many records to return | `100` (return 100 records) |
 
-To process an entire large table, you could use multiple Get Records steps with increasing Skip values, or handle pagination in a script.
+To process an entire large table, you could use multiple Get records steps with increasing Skip values, or handle pagination in a script.
 
 ## When to use
 
 - **Find overdue tasks to send reminders.** Filter for tasks where Due Date is before today and Status is not "Done". Loop through the results and send an email for each.
 - **Gather data for a daily digest.** Retrieve all records updated in the last 24 hours and compile them into a summary email.
 - **Look up related records before creating or updating.** Before creating a duplicate, check if a record with the same email already exists.
-- **Feed data into an AI action.** Get records with long text fields, then use AI Generate in a loop to summarize or classify each one.
+- **Feed data into an AI action.** Get records with long text fields, then use AI generate in a loop to summarize or classify each one.
 - **Sync records to an external system.** Get all records that have changed since the last sync, then push them to a CRM or data warehouse via HTTP requests.
 
 ## Tips
@@ -78,14 +78,14 @@ To process an entire large table, you could use multiple Get Records steps with 
 - **Limit results with Take.** If you only need the first 10 records, set Take to 10. There is no need to retrieve thousands of records when you only need a few.
 - **Select a View** that already filters and sorts the data you need. This keeps your automation configuration simpler.
 - **Avoid fetching the entire table** unless you genuinely need all records. Large result sets take longer to process and use more resources, especially when combined with Loop.
-- Get Records does not modify any data — it is read-only.
-- If the query returns zero records, subsequent steps referencing the results will receive an empty array. Make sure your workflow handles this gracefully (e.g., do not send an email saying "here are your results" when there are no results).
-- Filters in Get Records work the same as view filters: you can combine conditions with AND/OR logic.
-- When using Cross-Project Access, the query runs under the workflow creator's permissions. If the creator loses access to the target project, the step will fail.
+- Get records does not modify any data — it is read-only.
+- If the query returns zero records, subsequent steps referencing the results will receive an empty array. Make sure your automation handles this gracefully (e.g., do not send an email saying "here are your results" when there are no results).
+- Filters in Get records work the same as view filters: you can combine conditions with AND/OR logic.
+- When using Cross-Project Access, the query runs under the automation creator's permissions. If the creator loses access to the target project, the step will fail.
 
 ## Related
 
 - [Cross-project access](/en/basic/automation/actions/records/cross-base) — query tables in other projects
 - [Loop (batch)](../logic/loop-run) — iterate over the results array
 - [Create record](/en/basic/automation/actions/records/create-record) — create records based on retrieved data
-- [Update record](/en/basic/automation/actions/records/update-record) — update records found by Get Records
+- [Update record](/en/basic/automation/actions/records/update-record) — update records found by Get records

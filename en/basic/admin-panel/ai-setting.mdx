@@ -9,7 +9,7 @@ sidebarTitle: "Instance AI settings"
 
 Path: System Admin → AI settings
 
-The **AI settings** page is used to configure **AI Chat**, **AI fields**, **AI automation**, and **App Builder**. The **AI Capabilities** switches sit at the top of the page, and the settings below are split into three tabs, **Models**, **AI Chat**, and **App Builder**, completed in order. Each tab depends on the one before it, and the page tells you what is still missing until that one is done. The **Pending configuration** panel on the right lists the required items still missing; click one to jump to its tab and step.
+The **AI settings** page is used to configure **AI Chat**, **AI fields**, **AI automation**, and **App Builder**. The **AI capabilities** switches sit at the top of the page, and the settings below are split into three tabs, **Models**, **AI Chat**, and **App Builder**, completed in order. Each tab depends on the one before it, and the page tells you what is still missing until that one is done. The **Pending configuration** panel on the right lists the required items still missing; click one to jump to its tab and step.
 
 ## Before you start
 
@@ -19,7 +19,7 @@ Before you open the AI settings page, make sure the following items are ready.
 |------|------|------|
 | **Agent Runtime setup** | Required for AI Chat and App Builder | Used by AI Chat and App Builder |
 | **Custom provider** | Required when AI Chat or App Builder uses your own key (BYOK) | Use an **OpenAI Compatible** or **Anthropic** provider |
-| **OpenAI API Key** | Optional | Only needed if you want to enable **Voice input** in AI Chat |
+| **OpenAI API key** | Optional | Only needed if you want to enable **Voice input** in AI Chat |
 | **Public access** | Required when the **Vercel** deployment engine is selected | Your **Teable instance** and **object storage (MinIO / S3)** must be publicly accessible to Vercel |
 
 ## Setup steps
@@ -30,10 +30,10 @@ The setup wizard on the **Models** tab walks through three steps for connecting 
   <Step title="Configure LLM API">
     Set up your model connection and complete the initial test.
   </Step>
-  <Step title="Configure Recommended Models">
+  <Step title="Configure recommended models">
     Choose the recommended models for AI fields and AI automation.
   </Step>
-  <Step title="Set Chat Model">
+  <Step title="Set chat model">
     Choose a model for each of the four chat model tiers.
   </Step>
 </Steps>
@@ -45,7 +45,7 @@ AI Chat and App Builder also need a runtime and app deployment, configured on th
 In the **Configure LLM API** step, click **Add LLM provider** to add a model provider, then test its models. If you use your own key (BYOK), choose **OpenAI Compatible** or **Anthropic** as the provider type.
 
 <img
-  src="/images/docs/admin-panel/2026-11-09-admin-ai-llm-api-step.png"
+  src="/images/docs/admin-panel/2026-11-11-admin-ai-llm-api-step.png"
   alt="The Configure LLM API step expanded on the Models tab of AI settings, with a custom provider added"
   className="docs-screenshot"
 />
@@ -54,13 +54,13 @@ A model's context window and maximum output per response are resolved automatica
 
 When the catalog holds no matching entry (a newly released or self-built model, for example), the model runs on the values set under **Nothing matched** in **Matching rules**: a context window of 200000 and a max output of 32000 by default, with **Matching rule** shown as the source of both in **Parameter details**. If those values do not fit the model, adjust them in **Matching rules** and click **Save**.
 
-### Configure Recommended Models
+### Configure recommended models
 
 Choose the recommended models users can select in **AI fields** and **AI automation**.
 
-### Set Chat Model
+### Set chat model
 
-In **Chat model tiers**, pick a model for **Ultra**, **Smart**, **Standard**, and **Lite**; the models you can pick are grouped by source into **Vercel AI Gateway** and **Custom Provider**, and the **Vercel AI Gateway** group lists only the recommended models enabled in step 2. Users choose by tier in the model menu of sidebar **AI Chat** and see the tier name rather than the model name, so you can swap the model behind a tier at any time without affecting anyone who already picked it.
+In **Chat model tiers**, pick a model for **Ultra**, **Smart**, **Standard**, and **Lite**; the models you can pick are grouped by source into **Vercel AI Gateway** and **Custom provider**, and the **Vercel AI Gateway** group lists only the recommended models enabled in step 2. Users choose by tier in the model menu of sidebar **AI Chat** and see the tier name rather than the model name, so you can swap the model behind a tier at any time without affecting anyone who already picked it.
 
 | Tier | Description |
 |------|------|
@@ -76,43 +76,43 @@ Each tier has two more controls on its right:
 
 ### Configure the runtime
 
-The runtime is configured under **AI Chat Runtime** on the **AI Chat** tab. After the deployment is complete, click **Run test** to verify the AI Chat runtime.
+The runtime is configured under **AI Chat runtime** on the **AI Chat** tab. After the deployment is complete, click **Run test** to verify the AI Chat runtime.
 
 ### Enable AI features
 
-In **AI Capabilities** at the top of the page, enable **AI Field** and **AI Chat** as needed; these switches apply to the whole instance. Configure the runtime before using **AI Chat**.
+In **AI capabilities** at the top of the page, enable **AI field** and **AI Chat** as needed; these switches apply to the whole instance. Configure the runtime before using **AI Chat**.
 
 ### Configure App Builder
 
-On the **App Builder** tab, choose how apps are deployed in **Deployment Engine**:
+On the **App Builder** tab, choose how apps are deployed in **Deployment engine**:
 
 | Deployment engine | Setup requirements |
 |------|------|
-| **Vercel** | Enter a Vercel access token, click **Test Connection**, and use **Test Public Access** to confirm that Vercel can reach your Teable instance and object storage. |
+| **Vercel** | Enter a Vercel access token, click **Test connection**, and use **Test public access** to confirm that Vercel can reach your Teable instance and object storage. |
 | **Teable Infra** | Uses the configured Teable Infra container runtime. No additional credentials or public access test is required here. |
 
 You can add these optional App Builder settings when needed:
 
 | Optional item | When you need it |
 |------|------|
-| **Custom Domain** | When you want to publish apps under your own domain |
-| **App Auth** | When generated apps need **Email OTP**, **Google**, or **SSO (OIDC)** sign-in |
+| **Custom domain** | When you want to publish apps under your own domain |
+| **App auth** | When generated apps need **Email OTP**, **Google**, or **SSO (OIDC)** sign-in |
 
-In **App Auth**, you can configure sign-in providers for generated apps:
+In **App auth**, you can configure sign-in providers for generated apps:
 
 - **Email OTP** uses an independent SMTP mailbox for app login verification emails.
-- **Google OAuth** requires a Client ID and Client Secret. Add the redirect URI shown on this page to the authorized redirect URI list in Google Cloud Console.
-- **SSO (OIDC)** lets app visitors sign in through your organization's identity provider. Register the URL shown on this page as a redirect URI with your identity provider, then fill in **Authorization URL**, **Token URL**, **User info URL**, **Client ID**, and **Client Secret**. If **Scope** is left empty, it defaults to `openid email profile`.
+- **Google OAuth** requires a client ID and client secret. Add the redirect URI shown on this page to the authorized redirect URI list in Google Cloud Console.
+- **SSO (OIDC)** lets app visitors sign in through your organization's identity provider. Register the URL shown on this page as a redirect URI with your identity provider, then fill in **Authorization URL**, **Token URL**, **User info URL**, **Client ID**, and **Client secret**. If **Scope** is left empty, it defaults to `openid email profile`. If you later change a saved **Token URL**, enter the **Client secret** again.
 
 **Teable** sign-in is available by default. **Email OTP** appears in App Builder only after the SMTP settings are complete, **Google** appears only after both OAuth credentials are configured, and **SSO (OIDC)** appears only after every SSO field except Scope is filled in.
 
-**Auto-inject AI API Key into apps** under **App settings** is on by default, so apps can call the platform's AI models. Turn it off and apps can no longer reach them.
+**Auto-inject AI API key into apps** under **App settings** is on by default, so apps can call the platform's AI models. Turn it off and apps can no longer reach them.
 
-If older apps fail to preview or publish after an upgrade, click **Run repair** under **Legacy project compatibility** in **Maintenance tools** to restore the missing files.
+If older apps fail to preview or publish after an upgrade, click **Run repair** under **Legacy app compatibility** in **Maintenance tools** to restore the missing files.
 
 ### Optional. Configure Voice input
 
-To use voice input in AI Chat, enable **Voice input** on the **AI Chat** tab and enter an **OpenAI API Key**. Configure the **Transcription Endpoint** only when using a custom transcription service. You can also limit the recording length and requests per minute.
+To use voice input in AI Chat, enable **Voice input** on the **AI Chat** tab and enter an **OpenAI API key**. Configure the **Transcription endpoint** only when using a custom transcription service; if you change a saved **Transcription endpoint**, enter the **OpenAI API key** again. You can also limit the recording length and requests per minute.
 
 ### Verify the setup
 

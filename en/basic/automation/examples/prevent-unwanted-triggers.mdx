@@ -3,7 +3,7 @@ title: "Avoid unwanted triggers with filters and watch fields"
 description: "Limit automation runs to relevant field changes and matching records. Combine watch fields with filters, or trigger only when a record starts matching conditions."
 ---
 
-<Tip>We recommend building automation examples directly in AI chat. Just describe the workflow you want, and AI will handle the full setup for you, including the trigger, actions, script, and configuration.</Tip>
+<Tip>We recommend building automation examples directly in AI chat. Just describe the automation you want, and AI will handle the full setup for you, including the trigger, actions, script, and configuration.</Tip>
 
 ## Build with AI
 
@@ -11,35 +11,35 @@ Open the AI Chat in your table's right sidebar and tell AI what you want. For ex
 
 *"When the Status field changes to Approved, send a notification email to the assignee. Only trigger on Status changes, ignore other field edits"*
 
-AI will create the complete workflow automatically. You can review the generated script, test it with real data, and enable the workflow when ready.
+AI will create the complete automation automatically. You can review the generated script, test it with real data, and enable the automation when ready.
 
-A workflow that triggers too often wastes runs, sends unwanted emails, and creates noise. Here's how to keep triggers precise.
+An automation that triggers too often wastes runs, sends unwanted emails, and creates noise. Here's how to keep triggers precise.
 
-## Use Watch Fields
+## Use Watch fields
 
-When using **When Record Updated**, always select specific fields instead of "All Fields".
+When using **When record updated**, always select specific fields instead of clicking **Watch all**.
 
-**Problem:** A workflow sends a notification when the Status field changes. With "All Fields" selected, it also triggers when someone edits the Description or adds a comment.
+**Problem:** An automation sends a notification when the Status field changes. With all fields watched, it also triggers when someone edits the Description or adds a comment.
 
-**Fix:** Set Watch Fields to **Status** only. Now the workflow ignores all other changes.
+**Fix:** Set Watch fields to **Status** only. Now the automation ignores all other changes.
 
 ## Use Filters
 
-Add a filter to any record trigger to narrow which records activate the workflow.
+Add a filter to any record trigger to narrow which records activate the automation.
 
-**Problem:** A workflow processes all new records, but some are test entries.
+**Problem:** An automation processes all new records, but some are test entries.
 
-**Fix:** Add a filter: `Type` **is not** `Test`. Only real records trigger the workflow.
+**Fix:** Add a filter: `Type` **is not** `Test`. Only real records trigger the automation.
 
 ## Combine Both
 
 For maximum control, use watch fields **and** a filter together:
 
-- Watch Fields: `Status`
+- Watch fields: `Status`
 - Filter: `Status` **is** `Approved`
 
 This means: only trigger when the Status field changes **and** the new value is "Approved".
 
-## Use "When Record Matches Conditions" for State Changes
+## Use "When record matches conditions" for State Changes
 
-If you want to trigger **only on the transition** (e.g. from "Pending" to "Approved"), use the **When Record Matches Conditions** trigger instead. It fires once at the moment the record begins to match — not on every subsequent edit.
+If you want to trigger **only on the transition** (e.g. from "Pending" to "Approved"), use the **When record matches conditions** trigger instead. It fires once at the moment the record begins to match — not on every subsequent edit.

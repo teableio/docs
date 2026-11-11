@@ -22,7 +22,7 @@ Beschreiben Sie Ihr Ziel einmal, und der Workflow ist bereit – eine manuelle E
 | Einstellung | Erforderlich | Beschreibung |
 |---|---|---|
 | Tabelle | Ja | Die Tabelle, die auf Änderungen überwacht werden soll |
-| Überwachte Felder | Ja | Wählen Sie bestimmte zu überwachende Felder oder „Alle Felder“ aus, um bei jeder Änderung auszulösen |
+| Felder überwachen | Ja | Wählen Sie bestimmte zu überwachende Felder aus, oder klicken Sie auf **Alle überwachen**, um bei jeder Änderung auszulösen |
 | Filter | Nein | Nur auslösen, wenn der aktualisierte Datensatz nach der Änderung diese Bedingungen erfüllt |
 
 ## Einrichtung
@@ -30,7 +30,7 @@ Beschreiben Sie Ihr Ziel einmal, und der Workflow ist bereit – eine manuelle E
 1. Öffnen Sie Ihre Automatisierung und fügen Sie einen neuen Auslöser hinzu.
 2. Wählen Sie **Wenn Datensatz aktualisiert wird** aus.
 3. Wählen Sie die zu überwachende **Tabelle** aus.
-4. Wählen Sie unter **Überwachte Felder** mindestens ein bestimmtes Feld aus. Wählen Sie beispielsweise nur „Status“ aus, wenn Sie auf Statusänderungen reagieren möchten.
+4. Wählen Sie unter **Felder überwachen** mindestens ein bestimmtes Feld aus. Wählen Sie beispielsweise nur „Status“ aus, wenn Sie auf Statusänderungen reagieren möchten.
 5. (Optional) Fügen Sie einen **Filter** hinzu, um weiter einzugrenzen, welche Aktualisierungen den Auslöser aktivieren. Beispielsweise wird bei `Status` ist gleich `Erledigt` nur ausgelöst, wenn der Status eines Datensatzes zu „Erledigt“ geändert wird.
 6. Speichern und aktivieren Sie die Automatisierung.
 7. Fügen Sie Ihre Aktionsschritte hinzu. Klicken Sie in einem beliebigen Aktionsfeld auf **+**, um Werte aus dem aktualisierten Datensatz einzufügen.
@@ -40,7 +40,7 @@ Beschreiben Sie Ihr Ziel einmal, und der Workflow ist bereit – eine manuelle E
 Die Einstellung „Überwachte Felder“ ist der wichtigste Bestandteil dieses Auslösers:
 
 - **Bestimmte Felder (empfohlen):** Wählen Sie nur die Felder aus, die für Sie relevant sind. Der Auslöser wird nur ausgeführt, wenn sich eines dieser Felder ändert. Alle anderen Bearbeitungen des Datensatzes werden ignoriert.
-- **Alle Felder:** Der Auslöser wird immer ausgeführt, wenn sich ein *beliebiges* Feld im Datensatz ändert. Dazu gehören berechnete Felder, Zeitstempel der letzten Änderung und kleinere Bearbeitungen, die für Sie möglicherweise nicht relevant sind.
+- **Alle Felder (Alle überwachen):** Der Auslöser wird immer ausgeführt, wenn sich ein *beliebiges* Feld im Datensatz ändert. Dazu gehören berechnete Felder, Zeitstempel der letzten Änderung und kleinere Bearbeitungen, die für Sie möglicherweise nicht relevant sind.
 
 **Warum bestimmte Felder in den meisten Fällen besser sind:**
 
@@ -48,13 +48,13 @@ Die Einstellung „Überwachte Felder“ ist der wichtigste Bestandteil dieses A
 - Verhindert versehentliche Schleifen (siehe unten).
 - Macht den Zweck Ihrer Automatisierung für alle, die sie lesen, verständlicher.
 
-Wählen Sie „Alle Felder“ nur aus, wenn Sie wirklich auf jede mögliche Änderung reagieren müssen – beispielsweise für ein vollständiges Audit-Protokoll.
+Überwachen Sie alle Felder nur, wenn Sie wirklich auf jede mögliche Änderung reagieren müssen – beispielsweise für ein vollständiges Audit-Protokoll.
 
-<Tip>Es wird dringend empfohlen, bestimmte überwachte Felder auszuwählen. Wenn Sie „Alle Felder“ auswählen, kann der Workflow bei nicht zusammenhängenden Bearbeitungen ausgelöst werden, Automatisierungsausführungen vergeuden und zu unerwartetem Verhalten führen.</Tip>
+<Tip>Es wird dringend empfohlen, bestimmte überwachte Felder auszuwählen. Wenn Sie alle Felder überwachen, kann der Workflow bei nicht zusammenhängenden Bearbeitungen ausgelöst werden, Automatisierungsausführungen vergeuden und zu unerwartetem Verhalten führen.</Tip>
 
 ### Berechnete Felder
 
-Die Werte von [Formel](/de/basic/field/formula), [Lookup](/de/basic/field/lookup), [Rollup](/de/basic/field/rollup), [Bedingtem Lookup](/de/basic/field/conditional-lookup) und [Bedingtem Rollup](/de/basic/field/conditional-rollup) stammen aus Teables eigener Berechnung und nicht aus einer Eingabe. Eine Neuberechnung löst diesen Auslöser nur aus, wenn Sie das berechnete Feld unter **Überwachte Felder** angeben. Alle fünf Feldtypen verhalten sich gleich.
+Die Werte von [Formel](/de/basic/field/formula), [Lookup](/de/basic/field/lookup), [Rollup](/de/basic/field/rollup), [Bedingtem Lookup](/de/basic/field/conditional-lookup) und [Bedingtem Rollup](/de/basic/field/conditional-rollup) stammen aus Teables eigener Berechnung und nicht aus einer Eingabe. Eine Neuberechnung löst diesen Auslöser nur aus, wenn Sie das berechnete Feld unter **Felder überwachen** angeben. Alle fünf Feldtypen verhalten sich gleich.
 
 So können Sie auf ein abgeleitetes Ergebnis statt auf die zugrunde liegenden Rohdaten reagieren. Überwachen Sie ein Formelfeld `Gesamtbetrag`, und der Workflow wird ausgeführt, sobald sich der Gesamtbetrag tatsächlich ändert – unabhängig davon, welches der zugrunde liegenden Felder geändert wurde. Überwachen Sie einen Rollup verknüpfter Aufgaben, und der Workflow wird ausgeführt, wenn sich der aggregierte Wert ändert, auch wenn die Änderung durch eine Bearbeitung in der verknüpften Tabelle entstanden ist.
 
@@ -78,7 +78,7 @@ Wenn Ihre Automatisierung durch Aktualisierungen einer Tabelle ausgelöst wird u
 
 - **Preisänderungen mit einem externen System synchronisieren.** Überwachen Sie das Feld „Preis“. Senden Sie bei einer Änderung eine HTTP-Anfrage, um den Preis auf Ihrer E-Commerce-Plattform zu aktualisieren.
 - **Benachrichtigung senden, wenn sich der Status einer Aufgabe ändert.** Überwachen Sie das Feld „Status“. Benachrichtigen Sie die zugewiesene Person oder die Führungskraft, wenn eine Aufgabe zu „Blockiert“ oder „Erledigt“ wechselt.
-- **Feldänderungen für Audits protokollieren.** Überwachen Sie „Alle Felder“ und erstellen Sie in einer Audit-Protokolltabelle einen Datensatz mit den alten und neuen Werten.
+- **Feldänderungen für Audits protokollieren.** Überwachen Sie alle Felder und erstellen Sie in einer Audit-Protokolltabelle einen Datensatz mit den alten und neuen Werten.
 - **Verknüpften Datensatz aktualisieren, wenn sich ein übergeordneter Datensatz ändert.** Überwachen Sie wichtige Felder eines Projektdatensatzes. Aktualisieren Sie alle verknüpften Aufgaben, wenn sich die Projektfrist ändert.
 - **Neuberechnung in einem anderen System auslösen.** Überwachen Sie Zahlenfelder wie „Menge“ oder „Stückpreis“. Rufen Sie bei einer Änderung eine API auf, um Summen neu zu berechnen.
 

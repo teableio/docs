@@ -1,6 +1,6 @@
 ---
-title: "Update Record action in an automation"
-description: "Find a target record by ID and map the fields to change. Apply partial updates with workflow values and check for loops caused by update triggers."
+title: "Update record action in an automation"
+description: "Find a target record by ID and map the fields to change. Apply partial updates with automation values and check for loops caused by update triggers."
 sidebarTitle: "Update record"
 ---
 
@@ -15,9 +15,9 @@ Please note: if you add actions manually, AI will not recognize or modify them l
 
 Open the AI Chat in your table's right sidebar and describe what you want.
 
-AI handles everything: it picks the right trigger, chooses the appropriate actions, maps the fields, and configures the entire workflow automatically.
+AI handles everything: it picks the right trigger, chooses the appropriate actions, maps the fields, and configures the entire automation automatically.
 
-Describe the goal once, and the workflow is ready — no manual setup needed.
+Describe the goal once, and the automation is ready with no manual setup.
 
 Updates one or more fields in an existing record. Only the fields you map will change — everything else stays the same.
 
@@ -31,11 +31,11 @@ Updates one or more fields in an existing record. Only the fields you map will c
 
 ## How to set it up
 
-1. Add an **Update Record** action to your workflow.
+1. Add an **Update record** action to your automation.
 2. Choose the **Table** that contains the record you want to modify.
 3. Set the **Record ID**. Click **+** to insert a dynamic variable:
    - From a **record trigger** (created, updated, button clicked): the trigger provides the Record ID directly.
-   - From a **Get Records** action: reference the Record ID from the retrieved results.
+   - From a **Get records** action: reference the Record ID from the retrieved results.
    - You can also type a static Record ID or use a comma-separated list to update multiple records at once (e.g., `rec123,rec456,rec789`).
 4. Map the fields you want to change. For each field:
    - **Static value:** Type the new value directly.
@@ -53,10 +53,10 @@ The Record ID is the key piece of information this action needs. Here is where t
 | When record updated | Available directly as a trigger output variable |
 | When button clicked | Available directly — it is the row where the button was clicked |
 | When form submitted | Available directly — it is the record created by the submission |
-| Get Records action | Each record in the results has an ID. In a Loop, reference the current item's ID |
-| Webhook received | You must include the Record ID in the webhook payload, or look it up with Get Records |
+| Get records action | Each record in the results has an ID. In a Loop, reference the current item's ID |
+| Webhook received | You must include the Record ID in the webhook payload, or look it up with Get records |
 
-<Tip>Need to update multiple records at once? You can pass comma-separated Record IDs, or use [Loop (Batch)](../logic/loop-run) with a Get Records result to update records in bulk.</Tip>
+<Tip>Need to update multiple records at once? You can pass comma-separated Record IDs, or use [Loop (Batch)](../logic/loop-run) with a Get records result to update records in bulk.</Tip>
 
 ## Partial updates
 
@@ -69,9 +69,9 @@ You do not need to re-send all field values — just the ones you want to change
 
 ## Warning: trigger loops
 
-<Warning>If your workflow uses a "When record updated" trigger and a subsequent step updates the same watched fields in the same table, the workflow will fire again, creating an infinite loop.</Warning>
+<Warning>If your automation uses a "When record updated" trigger and a subsequent step updates the same watched fields in the same table, the automation will fire again, creating an infinite loop.</Warning>
 
-If your automation is triggered by **When record updated** and your Update Record action writes back to the **same table**, you can create an infinite loop:
+If your automation is triggered by **When record updated** and your Update record action writes back to the **same table**, you can create an infinite loop:
 
 1. Record changes → trigger fires → automation updates the record → trigger fires again → and so on.
 
@@ -85,9 +85,9 @@ If your automation is triggered by **When record updated** and your Update Recor
 
 - **Mark a task as complete after approval.** When a button is clicked, set Status to "Approved" and fill in the approval date.
 - **Update a status field based on external events.** When a webhook reports a payment, find the order record and update its status to "Paid".
-- **Write a timestamp when something changes.** When a record is updated, set a "Last Modified By Automation" date field to the current time.
+- **Write a timestamp when something changes.** When a record is updated, set a "Last modified by Automation" date field to the current time.
 - **Sync data back from an external system.** After calling an external API, write the response data (e.g., a tracking number) back into the record.
-- **Batch-update records.** Combine with Get Records and Loop to update multiple records at once — for example, marking all overdue tasks as "Escalated".
+- **Batch-update records.** Combine with Get records and Loop to update multiple records at once — for example, marking all overdue tasks as "Escalated".
 
 ## Tips
 
