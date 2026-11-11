@@ -32,7 +32,7 @@ Dans le domaine de l’éducation, découvrez comment [Zakrly organise les donn�
 Le Créateur d’applications propose une double interface, destinée à la fois aux utilisateurs non techniques et aux développeurs.
 
 <img
-  src="/images/docs/ai/2026-10-21-app-builder-editor-interface.png"
+  src="/images/docs/ai/2026-11-11-app-builder-editor-interface.png"
   alt="Interface de l’éditeur du Créateur d’applications"
   className="docs-screenshot"
 />
@@ -44,7 +44,7 @@ Le centre de commande de votre application.
 - **Demandes d’identifiants** : lorsque l’application a besoin d’accéder à un compte tiers ou à un secret à l’exécution, le Créateur d’applications épingle une carte dans le panneau de chat, par exemple **Cette application a besoin de votre connexion Slack**. Cliquez sur **Connecter mon compte** pour lancer un parcours OAuth ; la nouvelle connexion est aussitôt accordée à cette application. Si vous disposez déjà d’une connexion ou d’un secret utilisable, accordez-le simplement : inutile de vous reconnecter. **Ignorer** ne fournit pas l’identifiant ; l’IA poursuit les parties qu’elle peut réaliser sans lui.
 - **Compétences** : ouvrez le menu **+** et choisissez **Compétences** pour gérer les compétences de cette conversation d’application. Une compétence ajoutée ici est disponible uniquement pour l’application actuelle ; les compétences partagées avec le Projet et l’Espace de l’application peuvent également être utilisées ici. Saisissez `/` dans le champ de saisie pour choisir une compétence activée.
 - **Gérer les fichiers** : ouvrez **+** → **Plus** → **Gérer les fichiers** pour afficher les fichiers dans le bac à sable de l’application. Utilisez cette option pour prévisualiser les fichiers pris en charge, télécharger les fichiers générés ou supprimer les fichiers et dossiers dont vous n’avez plus besoin.
-- **Effacer la conversation** : si la conversation actuelle s’est écartée du sujet, cliquez sur **Effacer la conversation** dans l’angle inférieur droit du panneau pour démarrer une nouvelle session. Cela efface l’historique de chat de la conversation actuelle, mais ne supprime pas l’application elle-même. Lors de la première utilisation, une confirmation s’affiche et vous pouvez choisir de ne plus l’afficher la prochaine fois.
+- **Effacer la conversation** : si la conversation actuelle s’est écartée du sujet, cliquez sur le bouton **`...`** en haut du panneau de conversation, puis sélectionnez **Effacer la conversation** pour démarrer une nouvelle session. Cela efface l’historique de chat de la conversation actuelle, mais ne supprime pas l’application elle-même. Lors de la première utilisation, une confirmation s’affiche et vous pouvez choisir de ne plus l’afficher la prochaine fois.
 
 ### 2. Panneau d’aperçu
 - **Aperçu et En ligne** : le panneau comporte deux onglets. **Aperçu** exécute la version que vous construisez, y compris les modifications qui ne sont pas encore publiées. **En ligne** charge l’application publiée depuis son adresse publique afin que vous puissiez comparer ce que voient vos utilisateurs avec ce sur quoi vous travaillez. Tant que l’application n’est pas publiée, **En ligne** affiche à la place une invite de publication. Le Créateur d’applications ouvre une application publiée dans **En ligne** et une application non publiée dans **Aperçu**, puis mémorise l’onglet que vous avez utilisé en dernier pour cette application.
@@ -66,16 +66,22 @@ Pour une personnalisation sans limites, vous avez un accès direct au code.
 - **Arborescence de fichiers** : naviguez dans la structure du projet.
 
 <img
-  src="/images/docs/ai/2026-10-21-app-builder-code-editor.png"
+  src="/images/docs/ai/2026-11-11-app-builder-code-editor.png"
   alt="Éditeur de code du Créateur d’applications"
   className="docs-screenshot"
 />
 
 #### Télécharger le code
 Vous pouvez télécharger l’intégralité de l’application sous forme d’archive ZIP à tout moment :
-1. Passez à l’onglet **Code** dans l’éditeur.
-2. Cliquez sur le menu **`...`** dans la barre d’onglets.
+1. Cliquez sur le bouton **Paramètres** (icône de curseurs) dans l’en-tête de l’application, puis sélectionnez **Code**.
+2. Cliquez sur le menu **`...`** en haut de la vue du code.
 3. Sélectionnez **Télécharger le code**, puis cliquez de nouveau sur **Télécharger le code** dans la boîte de dialogue pour enregistrer une archive ZIP qui comprend tous les fichiers sources.
+
+<img
+  src="/images/docs/ai/2026-11-11-app-builder-settings-menu.png"
+  alt="Menu Paramètres dans l’en-tête de l’application, avec Paramètres de connexion, Synchronisation GitHub, Code et Historique des versions"
+  className="docs-screenshot"
+/>
 
 Par défaut, le ZIP n’inclut pas les identifiants valides de l’application. Sa racine contient un fichier `.env.example` qui liste les [variables d’exécution injectées par la plateforme](#teable-access-token) (celles que Teable ajoute automatiquement à chaque application), avec le jeton d’accès Teable et la clé d’accès à l’IA laissés vides, ainsi qu’un fichier `.gitignore` qui exclut les fichiers `.env` de Git.
 
@@ -87,8 +93,8 @@ Quiconque détient ce fichier `.env` peut lire et modifier toutes les données d
 
 #### Importer le code
 Vous pouvez mettre à jour le code de l’application en important un ZIP :
-1. Passez à l’onglet **Code** dans l’éditeur.
-2. Cliquez sur le menu **`...`** dans la barre d’onglets.
+1. Cliquez sur le bouton **Paramètres** dans l’en-tête de l’application, puis sélectionnez **Code**.
+2. Cliquez sur le menu **`...`** en haut de la vue du code.
 3. Sélectionnez **Importer le code** et choisissez un fichier ZIP d’une taille maximale de 20 Mo.
 
 <Note>
@@ -206,10 +212,10 @@ Liez une application à un dépôt GitHub privé lorsque vous souhaitez examiner
 
 ### Connecter un compte et créer le dépôt
 
-Générez d’abord l’application au moins une fois. Tant que l’application n’a pas de code, le bouton GitHub affiche **Générez d’abord l’application pour connecter GitHub** et ne fait rien.
+Générez d’abord l’application au moins une fois. Tant que l’application n’a pas de code, **Synchronisation GitHub** est grisé dans le menu **Paramètres** et ne peut pas être sélectionné.
 
 <Steps>
-  <Step title="Ouvrir le panneau GitHub">Cliquez sur l’icône GitHub dans l’en-tête de l’application pour ouvrir **Synchronisation GitHub**. Vous avez besoin d’un accès de modification à l’application.</Step>
+  <Step title="Ouvrir le panneau GitHub">Cliquez sur le bouton **Paramètres** dans l’en-tête de l’application, puis sélectionnez **Synchronisation GitHub**. Vous avez besoin d’un accès de modification à l’application.</Step>
   <Step title="Connecter un compte">Cliquez sur **Connecter GitHub** et terminez l’installation dans la fenêtre contextuelle. Choisissez votre compte personnel ou une organisation que vous administrez. Autorisez les fenêtres contextuelles si votre navigateur bloque la fenêtre.</Step>
   <Step title="Choisir le compte">Sélectionnez le compte connecté sous **Compte GitHub**. Cliquez sur **+** pour en connecter un autre.</Step>
   <Step title="Nommer le dépôt">Le **Nom du dépôt** est prérempli à partir du nom de l’application. Les noms peuvent contenir des lettres, des chiffres, `.`, `-` et `_`, avec un maximum de 100 caractères.</Step>
@@ -281,7 +287,7 @@ Lorsque votre application est prête, cliquez sur le bouton **Publier** (icône 
 <Info>Masquer le badge **Build with Teable** nécessite l’offre Business ou une offre supérieure.</Info>
 
 <img
-  src="/images/docs/ai/2026-10-21-app-builder-publish-app.png"
+  src="/images/docs/ai/2026-11-11-app-builder-publish-app.png"
   alt="Menu de publication de l’application"
   className="docs-screenshot"
 />
@@ -293,7 +299,7 @@ Pour un exemple de site public, découvrez comment [Waconzy réunit musique, out
 Pour mettre une application publiée hors ligne, ouvrez le menu **Publier** et cliquez sur **Dépublier**. Après confirmation, l’URL publique de l’application n’est plus accessible.
 
 <img
-  src="/images/docs/ai/2026-10-21-app-builder-unpublish.png"
+  src="/images/docs/ai/2026-11-11-app-builder-unpublish.png"
   alt="Bouton Dépublier dans le menu de publication"
   className="docs-screenshot"
 />
@@ -313,7 +319,7 @@ Vous pouvez également utiliser un sous-domaine disponible sous `teable.app` et 
 Lorsque l’offre Business de l’espace expire, Teable prévient les propriétaires de l’espace que le domaine personnalisé cessera bientôt d’être résolu. Renouvelez avant cette date pour conserver le domaine. Sans renouvellement, le domaine personnalisé cesse d’être résolu et le lien public de l’application revient à l’adresse Teable par défaut. Si vous repassez ensuite à l’offre Business, vous devrez associer à nouveau le domaine personnalisé manuellement.
 
 <img
-  src="/images/docs/ai/2026-10-21-app-builder-custom-domain.png"
+  src="/images/docs/ai/2026-11-11-app-builder-custom-domain.png"
   alt="Paramètres de domaine personnalisé"
   className="docs-screenshot"
 />
@@ -332,10 +338,10 @@ Laissez un champ vide pour conserver la valeur que le Créateur d’applications
 
 ### Connexion à l’application
 
-Cliquez sur **Ajouter la connexion** dans l’en-tête de l’application pour exiger des visiteurs qu’ils se connectent avant de pouvoir utiliser l’application. Une fois la connexion configurée, le bouton devient **Paramètres de connexion**.
+Pour exiger des visiteurs qu’ils se connectent avant de pouvoir utiliser l’application, cliquez sur le bouton **Paramètres** dans l’en-tête de l’application, puis sélectionnez **Ajouter la connexion**. Une fois la connexion configurée, cet élément de menu devient **Paramètres de connexion** ; si vous désactivez la connexion, il affiche **Connexion désactivée**.
 
 <img
-  src="/images/docs/ai/2026-10-21-app-builder-login-settings.png"
+  src="/images/docs/ai/2026-11-11-app-builder-login-settings.png"
   alt="Paramètres de connexion à l’application"
   className="docs-screenshot"
 />
@@ -354,11 +360,11 @@ Découvrez cette fonctionnalité en pratique : [exemples de connexion à une app
 
 ### Historique des versions et restauration
 Teable suit automatiquement chaque déploiement.
-- Cliquez sur le bouton **Historique** (icône d’horloge) pour afficher la liste de toutes les versions déployées.
+- Cliquez sur le bouton **Paramètres** dans l’en-tête de l’application, puis sélectionnez **Historique des versions** pour afficher la liste de toutes les versions déployées.
 - **Restauration en un clic** : si une nouvelle mise à jour provoque des problèmes, vous pouvez instantanément restaurer l’application en direct vers toute version stable précédente.
 
 <img
-  src="/images/docs/ai/2026-10-21-app-builder-version-history.png"
+  src="/images/docs/ai/2026-11-11-app-builder-version-history.png"
   alt="Historique des versions de l’application"
   className="docs-screenshot"
 />
@@ -378,7 +384,7 @@ Si vos modifications de code personnalisé provoquent une erreur de compilation,
 - En cliquant dessus, vous permettez à l’IA d’analyser l’erreur de compilation et de corriger automatiquement le code afin de résoudre le problème.
 
 ### Supprimer une application
-Pour supprimer une application, cliquez sur le bouton **Paramètres** (icône d’engrenage) dans l’en-tête et sélectionnez **Supprimer**.
+Pour supprimer une application, cliquez sur le bouton **`...`** dans l’en-tête de l’application et sélectionnez **Supprimer**.
 
 ## Bonnes pratiques
 
@@ -392,7 +398,7 @@ Pour les modèles de prompts, les conseils de création, les recommandations de 
   </Accordion>
 
   <Accordion title="Comment télécharger ou importer le code de l’application ?">
-    Passez à l’onglet **Code** dans l’éditeur, cliquez sur le menu **`...`** dans la barre d’onglets, puis choisissez **Télécharger le code** ou **Importer le code**. Les fichiers ZIP importés peuvent atteindre 20 Mo et remplacent le projet existant ; incluez donc chaque fichier source que vous souhaitez conserver. Le projet importé doit inclure un fichier `package.json` à la racine. Les variables personnalisées d’un fichier `.env` à la racine sont enregistrées comme vos secrets et accordées à l’application sous les mêmes noms.
+    Cliquez sur le bouton **Paramètres** dans l’en-tête de l’application, sélectionnez **Code**, cliquez sur le menu **`...`** en haut de la vue du code, puis choisissez **Télécharger le code** ou **Importer le code**. Les fichiers ZIP importés peuvent atteindre 20 Mo et remplacent le projet existant ; incluez donc chaque fichier source que vous souhaitez conserver. Le projet importé doit inclure un fichier `package.json` à la racine. Les variables personnalisées d’un fichier `.env` à la racine sont enregistrées comme vos secrets et accordées à l’application sous les mêmes noms.
   </Accordion>
 
   <Accordion title="Que faire si le jeton d’accès d’une application a fuité ?">
@@ -414,11 +420,11 @@ Pour les modèles de prompts, les conseils de création, les recommandations de 
   </Accordion>
 
   <Accordion title="Comment restaurer une version précédente ?">
-    Cliquez sur le bouton **Historique** (icône d’horloge) pour afficher les versions déployées, puis restaurez l’application en direct vers une version stable précédente.
+    Cliquez sur le bouton **Paramètres** dans l’en-tête de l’application, puis sélectionnez **Historique des versions** pour afficher les versions déployées, puis restaurez l’application en direct vers une version stable précédente.
   </Accordion>
 
-  <Accordion title="Pourquoi le Créateur d’applications indique-t-il qu’un Agent est occupé dans une autre conversation ?">
-    Chaque utilisateur peut exécuter jusqu’à 3 Agents en même temps, y compris Chat IA et le Créateur d’applications. Si le Créateur d’applications indique qu’un Agent est occupé dans une autre conversation, une autre tâche est toujours en cours. Attendez la fin de la tâche précédente avant de continuer.
+  <Accordion title="Pourquoi le Créateur d’applications indique-t-il que la limite de conversations simultanées est atteinte ?">
+    Chaque utilisateur peut exécuter jusqu’à 3 Agents en même temps, y compris Chat IA et le Créateur d’applications. Si le Créateur d’applications affiche `La limite de conversations simultanées (3) est atteinte. Attendez qu’une se termine.`, une autre tâche est toujours en cours. Attendez la fin de la tâche précédente avant de continuer.
   </Accordion>
 
   <Accordion title="Comment les crédits sont-ils remboursés lorsqu’une exécution du Créateur d’applications échoue ?">

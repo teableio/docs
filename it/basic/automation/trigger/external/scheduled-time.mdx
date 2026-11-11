@@ -1,7 +1,7 @@
 ---
 title: "Pianificare l’esecuzione di un’automazione"
 description: "Imposta frequenza, fuso orario e date di inizio e fine per eseguire il workflow una volta o a intervalli regolari."
-sidebarTitle: "All'orario pianificato"
+sidebarTitle: "A un orario pianificato"
 ---
 
 {/* mintlify-resync: 2026-05-14 */}
@@ -23,14 +23,14 @@ Descrivi l'obiettivo una sola volta e il workflow è pronto, senza alcuna config
 
 | Impostazione | Obbligatoria | Descrizione |
 |---|---|---|
-| Ora di inizio | Sì | Quando inizia la pianificazione |
-| Ora di fine | No | Quando termina la pianificazione (lascia vuoto per eseguirla senza scadenza) |
+| Inizio | Sì | Quando inizia la pianificazione |
+| Fine | No | Quando termina la pianificazione (lascia vuoto per eseguirla senza scadenza) |
 | Fuso orario | Sì | Il valore predefinito è il fuso orario corrente. Tutti gli orari vengono interpretati in questo fuso |
-| Frequenza | Sì | Frequenza di attivazione del trigger; consulta le opzioni seguenti |
+| Tipo di intervallo | Sì | Frequenza di attivazione del trigger; consulta le opzioni seguenti |
 
-## Opzioni di frequenza
+## Opzioni del tipo di intervallo {#opzioni-di-frequenza}
 
-| Frequenza | Intervallo | Impostazioni aggiuntive |
+| Tipo di intervallo | Intervallo | Impostazioni aggiuntive |
 |---|---|---|
 | Minuti | Ogni 10–60 min | — |
 | Ore | Ogni 1–24 ore | — |
@@ -44,17 +44,18 @@ Usa **-1** come giorno del mese per indicare l'ultimo giorno del mese, indipende
 ## Come configurarlo
 
 1. Apri l'Automazione e aggiungi un nuovo trigger.
-2. Seleziona **All'orario pianificato**.
+2. Seleziona **A un orario pianificato**.
 3. Imposta il **Fuso orario**. È particolarmente importante se il team opera in fusi orari diversi: la pianificazione viene eseguita nel fuso selezionato qui.
-4. Scegli una **Frequenza**. Ad esempio, per eseguire il workflow ogni lunedì alle 9:00:
-   - Imposta Frequenza su **Settimane**.
+4. Scegli un **Tipo di intervallo**. Ad esempio, per eseguire il workflow ogni lunedì alle 9:00:
+   - Imposta **Tipo di intervallo** su **Settimane**.
    - Imposta l'intervallo su **1** (ogni settimana).
    - Seleziona **Lunedì** nel selettore dei giorni della settimana.
    - Imposta l'ora di attivazione su **09:00**.
-5. Imposta un'**Ora di inizio** (il momento in cui la pianificazione diventa attiva).
-6. (Facoltativo) Imposta un'**Ora di fine** se vuoi che la pianificazione scada.
-7. Salva e attiva l'Automazione.
-8. Poiché non sono disponibili dati di alcun Record, la prima azione sarà in genere un passaggio **Ottieni Record** per caricare i dati necessari.
+5. Imposta **Inizio** (il momento in cui la pianificazione diventa attiva).
+6. (Facoltativo) Imposta **Fine** se vuoi che la pianificazione scada.
+7. Poiché non sono disponibili dati di alcun Record, la prima azione sarà in genere un passaggio **Ottieni Record** per caricare i dati necessari.
+8. Fai clic su **Test** per eseguire manualmente l'Automazione una volta e verificarne il risultato.
+9. Salva e attiva l'Automazione.
 
 ## Esempio concreto: report settimanale del lunedì mattina
 
@@ -66,7 +67,7 @@ Obiettivo: ogni lunedì alle 9:00, ottenere tutte le attività in scadenza duran
 
 ## Pianificazioni una tantum
 
-Quando selezioni la frequenza **Una tantum**, l'Automazione si attiva una volta alla data e all'ora specificate, quindi si disattiva automaticamente. È utile per:
+Quando selezioni il tipo di intervallo **Una tantum**, l'Automazione si attiva una volta alla data e all'ora specificate, quindi si disattiva automaticamente. È utile per:
 
 - Un promemoria per ricontattare qualcuno in una data specifica.
 - Un'azione ritardata che deve essere eseguita una sola volta (ad esempio, inviare l'annuncio di un lancio in una data futura).
@@ -90,6 +91,7 @@ Dopo l'attivazione di un trigger una tantum, l'Automazione viene contrassegnata 
 - Presta attenzione ai fusi orari, soprattutto se il team opera in regioni diverse. L'impostazione del fuso orario del trigger determina quando viene eseguito, non l'ora locale di chi lo visualizza.
 - Per pianificazioni ad alta frequenza (ogni pochi minuti), mantieni il workflow leggero per evitare sovrapposizioni tra le esecuzioni.
 - Se l'Automazione è sensibile agli orari (ad esempio, deve essere eseguita prima di una riunione giornaliera), pianificala qualche minuto prima per lasciare il tempo necessario all'elaborazione.
+- Se l'esecuzione precedente è ancora in corso quando scatta la pianificazione, la nuova esecuzione attende in coda e parte al termine di quella precedente.
 - Il valore **-1** per il giorno del mese è utile per report o processi di fine mese. Usare -1 significa "ultimo giorno del mese", quindi il trigger verrà eseguito correttamente il 31 gennaio, il 28 (o 29) febbraio, il 31 marzo e così via.
 
 ## Contenuti correlati

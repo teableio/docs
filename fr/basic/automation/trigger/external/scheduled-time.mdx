@@ -1,7 +1,7 @@
 ---
 title: "Planifier le déclenchement d’une automatisation"
 description: "Exécutez un flux de travail selon une planification récurrente ou ponctuelle"
-sidebarTitle: "À l’heure planifiée"
+sidebarTitle: "À l'heure programmée"
 ---
 
 {/* mintlify-resync: 2026-05-14 */}
@@ -23,38 +23,39 @@ Décrivez une seule fois votre objectif et le flux de travail est prêt, sans au
 
 | Paramètre | Obligatoire | Description |
 |---|---|---|
-| Heure de début | Oui | Moment où la planification commence |
-| Heure de fin | Non | Moment où la planification s’arrête (laissez ce champ vide pour une exécution illimitée) |
+| Début | Oui | Moment où la planification commence |
+| Fin | Non | Moment où la planification s’arrête (laissez ce champ vide pour une exécution illimitée) |
 | Fuseau horaire | Oui | Votre fuseau horaire actuel par défaut. Toutes les heures sont interprétées dans ce fuseau |
-| Fréquence | Oui | Fréquence d’exécution du déclencheur — voir les options ci-dessous |
+| Type d’intervalle | Oui | Fréquence d’exécution du déclencheur — voir les options ci-dessous |
 
-## Options de fréquence
+## Options de type d’intervalle {#options-de-fréquence}
 
-| Fréquence | Intervalle | Paramètres supplémentaires |
+| Type d’intervalle | Intervalle | Paramètres supplémentaires |
 |---|---|---|
 | Minutes | Toutes les 10 à 60 min | — |
 | Heures | Toutes les 1 à 24 h | — |
 | Jours | Tous les 1 à 31 jours | Heure de déclenchement (heure + minute) |
 | Semaines | Toutes les 1 à 52 semaines | Jours de la semaine (lun.–dim.) + heure de déclenchement |
 | Mois | Tous les 1 à 12 mois | Jours du mois + heure de déclenchement |
-| Une fois | — | S’exécute une fois à l’heure indiquée, puis se désactive automatiquement |
+| Une seule fois | — | S’exécute une fois à l’heure indiquée, puis se désactive automatiquement |
 
 Utilisez **-1** comme jour du mois pour cibler son dernier jour, qu’il en compte 28, 30 ou 31.
 
 ## Procédure de configuration
 
 1. Ouvrez votre automatisation et ajoutez un nouveau déclencheur.
-2. Sélectionnez **À l’heure planifiée**.
+2. Sélectionnez **À l'heure programmée**.
 3. Définissez le **Fuseau horaire**. Ce paramètre est particulièrement important si les membres de votre équipe se trouvent dans plusieurs fuseaux horaires : la planification s’exécute selon le fuseau sélectionné ici.
-4. Choisissez une **Fréquence**. Par exemple, pour une exécution tous les lundis à 9 h :
-   - Définissez la fréquence sur **Semaines**.
+4. Choisissez un **Type d’intervalle**. Par exemple, pour une exécution tous les lundis à 9 h :
+   - Définissez **Type d’intervalle** sur **Semaines**.
    - Définissez l’intervalle sur **1** (toutes les 1 semaine).
    - Cochez **Lundi** dans le sélecteur des jours de la semaine.
    - Définissez l’heure de déclenchement sur **09:00**.
-5. Définissez une **Heure de début** (moment où la planification devient active).
-6. (Facultatif) Définissez une **Heure de fin** si vous souhaitez que la planification expire.
-7. Enregistrez et activez l’automatisation.
-8. Comme aucune donnée d’enregistrement n’est disponible, votre première action sera généralement une étape **Obtenir les enregistrements** afin de charger les données dont vous avez besoin.
+5. Définissez **Début** (moment où la planification devient active).
+6. (Facultatif) Définissez **Fin** si vous souhaitez que la planification expire.
+7. Comme aucune donnée d’enregistrement n’est disponible, votre première action sera généralement une étape **Obtenir des enregistrements** afin de charger les données dont vous avez besoin.
+8. Cliquez sur **Tester** pour exécuter l’automatisation une fois manuellement et vérifier le résultat.
+9. Enregistrez et activez l’automatisation.
 
 ## Exemple concret : rapport hebdomadaire du lundi matin
 
@@ -66,7 +67,7 @@ Objectif : chaque lundi à 9 h, récupérer toutes les tâches à terminer dans 
 
 ## Planifications ponctuelles
 
-Lorsque vous sélectionnez la fréquence **Une fois**, l’automatisation s’exécute une seule fois à la date et à l’heure indiquées, puis se désactive automatiquement. Cette option est utile pour :
+Lorsque vous sélectionnez le type d’intervalle **Une seule fois**, l’automatisation s’exécute une seule fois à la date et à l’heure indiquées, puis se désactive automatiquement. Cette option est utile pour :
 
 - Un rappel de suivi à une date précise.
 - Une action différée qui doit avoir lieu une seule fois (par exemple, envoyer une annonce de lancement à une date future).
@@ -86,10 +87,11 @@ Après l’exécution d’un déclencheur ponctuel, l’automatisation est marqu
 
 ## Conseils
 
-- Comme les déclencheurs planifiés n’ont aucun « enregistrement actuel », vous ne pouvez pas référencer leurs données dans les actions comme vous le feriez avec des déclencheurs fondés sur des enregistrements. Commencez toujours par une action **Obtenir les enregistrements** si vous avez besoin de données.
+- Comme les déclencheurs planifiés n’ont aucun « enregistrement actuel », vous ne pouvez pas référencer leurs données dans les actions comme vous le feriez avec des déclencheurs fondés sur des enregistrements. Commencez toujours par une action **Obtenir des enregistrements** si vous avez besoin de données.
 - Tenez compte des fuseaux horaires, surtout si votre équipe travaille dans plusieurs régions. Le paramètre de fuseau horaire du déclencheur détermine le moment de son exécution, et non l’heure locale de la personne qui consulte la page.
 - Pour les planifications à haute fréquence (toutes les quelques minutes), privilégiez un flux de travail léger afin d’éviter le chevauchement des exécutions.
 - Si votre automatisation est sensible à l’heure (par exemple, si elle doit s’exécuter avant une réunion quotidienne), planifiez-la quelques minutes plus tôt afin de laisser le temps au traitement.
+- Si l’exécution précédente est toujours en cours au moment du déclenchement planifié, la nouvelle exécution attend dans la file et démarre une fois la précédente terminée.
 - L’astuce du jour du mois **-1** est utile pour les rapports ou processus de fin de mois. La valeur -1 signifie « dernier jour du mois » : le déclencheur s’exécute donc correctement le 31 janvier, le 28 (ou le 29) février, le 31 mars, etc.
 
 ## Pages associées

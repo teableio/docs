@@ -1,7 +1,7 @@
 ---
 title: "Avviare un’automazione quando cambia un record"
 description: "Scegli tabella, campi da monitorare e filtri per avviare il workflow solo con gli aggiornamenti pertinenti."
-sidebarTitle: "Quando viene aggiornato un Record"
+sidebarTitle: "Quando un record viene aggiornato"
 ---
 
 <Tip>Nota: puoi configurare tutti i trigger in AI Chat. Spiega all'IA cosa deve fare il workflow e si occuperà del resto.</Tip>
@@ -23,13 +23,13 @@ Descrivi l'obiettivo una sola volta e il workflow è pronto, senza alcuna config
 | Impostazione | Obbligatoria | Descrizione |
 |---|---|---|
 | Tabella | Sì | La Tabella da monitorare per rilevare le modifiche |
-| Campi monitorati | Sì | Scegli Campi specifici da monitorare oppure seleziona "Tutti i Campi" per attivare il workflow con qualsiasi modifica |
+| Campi monitorati | Sì | Scegli Campi specifici da monitorare oppure fai clic su **Monitora tutti** per attivare il workflow con qualsiasi modifica |
 | Filtro | No | Attiva il workflow soltanto se, dopo la modifica, il Record aggiornato soddisfa queste condizioni |
 
 ## Come configurarlo
 
 1. Apri l'Automazione e aggiungi un nuovo trigger.
-2. Seleziona **Quando viene aggiornato un Record**.
+2. Seleziona **Quando un record viene aggiornato**.
 3. Scegli la **Tabella** da monitorare.
 4. In **Campi monitorati**, seleziona uno o più Campi specifici. Ad esempio, scegli soltanto "Stato" se vuoi reagire alle modifiche dello stato.
 5. (Facoltativo) Aggiungi un **Filtro** per limitare ulteriormente gli aggiornamenti che attivano il trigger. Ad esempio, `Stato` uguale a `Completato` attiverà il workflow soltanto quando lo stato di un Record passa a "Completato".
@@ -41,7 +41,7 @@ Descrivi l'obiettivo una sola volta e il workflow è pronto, senza alcuna config
 L'impostazione Campi monitorati è la parte più importante di questo trigger:
 
 - **Campi specifici (consigliato):** seleziona soltanto i Campi che ti interessano. Il trigger si attiva esclusivamente quando cambia uno di questi Campi. Tutte le altre modifiche apportate al Record vengono ignorate.
-- **Tutti i Campi:** il trigger si attiva ogni volta che cambia *qualsiasi* Campo del Record. Sono inclusi i Campi calcolati, i timestamp dell'ultima modifica e le modifiche minori che potrebbero non interessarti.
+- **Tutti i Campi (Monitora tutti):** il trigger si attiva ogni volta che cambia *qualsiasi* Campo del Record. Sono inclusi i Campi calcolati, i timestamp dell'ultima modifica e le modifiche minori che potrebbero non interessarti.
 
 **Perché nella maggior parte dei casi è preferibile scegliere Campi specifici:**
 
@@ -49,9 +49,9 @@ L'impostazione Campi monitorati è la parte più importante di questo trigger:
 - Previene i cicli accidentali (vedi sotto).
 - Rende più chiaro lo scopo dell'Automazione a chiunque la consulti.
 
-Scegli "Tutti i Campi" soltanto quando devi realmente reagire a ogni possibile modifica, ad esempio per un log di controllo completo.
+Monitora tutti i Campi soltanto quando devi realmente reagire a ogni possibile modifica, ad esempio per un log di controllo completo.
 
-<Tip>È vivamente consigliato selezionare Campi monitorati specifici. Se selezioni "Tutti i Campi", il workflow potrebbe attivarsi a causa di modifiche non correlate, sprecare esecuzioni delle Automazioni e produrre comportamenti imprevisti.</Tip>
+<Tip>È vivamente consigliato selezionare Campi monitorati specifici. Se monitori tutti i Campi, il workflow potrebbe attivarsi a causa di modifiche non correlate, sprecare esecuzioni delle Automazioni e produrre comportamenti imprevisti.</Tip>
 
 ### Campi calcolati
 
@@ -73,13 +73,13 @@ Se l'Automazione viene attivata dagli aggiornamenti di una Tabella e include anc
 
 - Monitora soltanto Campi specifici e assicurati che l'azione Aggiorna Record scriva in Campi *diversi* da quelli monitorati.
 - Usa una condizione di filtro per interrompere il ciclo. Ad esempio, attiva il workflow soltanto quando `Stato` è diverso da `Elaborato` e configura l'azione affinché imposti `Stato` su `Elaborato`.
-- Se l'azione deve aggiornare lo stesso Campo, valuta invece l'uso del trigger [Quando un Record soddisfa le condizioni](/it/basic/automation/trigger/records/record-matches-conditions), che si attiva soltanto durante le transizioni.
+- Se l'azione deve aggiornare lo stesso Campo, valuta invece l'uso del trigger [Quando un record soddisfa determinate condizioni](/it/basic/automation/trigger/records/record-matches-conditions), che si attiva soltanto durante le transizioni.
 
 ## Quando utilizzarlo
 
 - **Sincronizzare le variazioni di prezzo con un sistema esterno.** Monitora il Campo "Prezzo". Quando cambia, invia una richiesta HTTP per aggiornare il prezzo nella piattaforma di e-commerce.
 - **Inviare una notifica quando cambia lo stato di un'attività.** Monitora il Campo "Stato". Quando un'attività passa a "Bloccata" o "Completata", avvisa l'assegnatario o il responsabile.
-- **Registrare le modifiche dei Campi per i controlli.** Monitora "Tutti i Campi" e crea un Record in una Tabella del log di controllo con i valori precedenti e nuovi.
+- **Registrare le modifiche dei Campi per i controlli.** Monitora tutti i Campi e crea un Record in una Tabella del log di controllo con i valori precedenti e nuovi.
 - **Aggiornare un Record collegato quando cambia il Record principale.** Monitora i Campi chiave di un Record di progetto. Quando cambia la scadenza del progetto, aggiorna tutte le attività collegate.
 - **Attivare un ricalcolo in un altro sistema.** Monitora Campi numerici come "Quantità" o "Prezzo unitario". Quando cambiano, chiama un'API per ricalcolare i totali.
 
@@ -92,6 +92,6 @@ Se l'Automazione viene attivata dagli aggiornamenti di una Tabella e include anc
 
 ## Contenuti correlati
 
-- [Quando un Record soddisfa le condizioni](/it/basic/automation/trigger/records/record-matches-conditions) — si attiva soltanto durante le transizioni di stato, non a ogni modifica
+- [Quando un record soddisfa determinate condizioni](/it/basic/automation/trigger/records/record-matches-conditions) — si attiva soltanto durante le transizioni di stato, non a ogni modifica
 - [Quando viene creato un Record](/it/basic/automation/trigger/records/record-created) — si attiva per i nuovi Record, non per gli aggiornamenti
 - [Azione Aggiorna Record](/it/basic/automation/actions/records/update-record) — l'azione corrispondente per modificare i Record nei workflow
