@@ -13,7 +13,7 @@ sidebarTitle: "自定义 AI 模型"
 3. 进入 **AI 配置**。
 
 <img
-  src="/images/docs/ai/2026-10-21-custom-model-ai-settings-zh.png"
+  src="/images/docs/ai/2026-11-11-custom-model-ai-settings-zh.png"
   alt="AI 配置页面"
   className="docs-screenshot"
 />
@@ -23,9 +23,9 @@ sidebarTitle: "自定义 AI 模型"
 在 **AI 能力** 中按需开启：
 
 - **AI 字段**
-- **AI 聊天**
+- **AI 对话**
 
-开启 **AI 聊天** 表示允许空间使用聊天功能。
+开启 **AI 对话** 表示允许空间使用对话功能。
 
 **AI 字段** 下方的 **并发** 一行，用于设置该空间同时进行的 AI 字段生成数量，超出的会排队等待。当这个空间的批量填充拖慢了其他人的工作时可以调低，想让大批量填充更快跑完时再调高。
 
@@ -39,12 +39,14 @@ sidebarTitle: "自定义 AI 模型"
 
 - **名称**：用于区分不同的模型提供商。
 - **提供商类型**：选择服务商类型。
-- **基础 URL**：填写服务商的 API 地址。
+- **Base URL**：填写服务商的 API 地址。
 - **API 密钥**：填写服务商提供的 API 密钥。
 - **模型**：填写要接入的模型名称，多个模型之间使用英文逗号分隔。
 
+编辑已保存的提供商时，如果修改了 **提供商类型** 或 **Base URL**，需要重新填写 **API 密钥** 才能保存或测试。已保存的密钥只会发往保存时的地址。
+
 <img
-  src="/images/docs/ai/2026-10-21-custom-model-add-provider-zh.png"
+  src="/images/docs/ai/2026-11-11-custom-model-add-provider-zh.png"
   alt="添加模型提供商弹窗"
   className="docs-screenshot"
 />
@@ -61,13 +63,13 @@ sidebarTitle: "自定义 AI 模型"
 
 ## 填写提示
 
-### 基础 URL 和模型
+### Base URL 和模型 {#基础-url-和模型}
 
 <Warning>部分 Coding Plan Key 可能只允许在指定开发工具中使用，并不是标准 API Key。是否可用于第三方服务，请以对应提供商的条款和说明为准；如需接入 Teable，请使用提供商后台创建的标准 API Key。</Warning>
 
 常见填写示例：
 
-| 提供商类型 | 基础 URL 格式 | 模型名称示例 |
+| 提供商类型 | Base URL 格式 | 模型名称示例 |
 |--------|--------------|--------------|
 | OpenAI | `https://api.openai.com/v1` | `gpt-5.5,o3,gpt-5-mini` |
 | Anthropic | `https://api.anthropic.com/v1` | `claude-opus-4-8,claude-sonnet-5,claude-haiku-4-5` |
@@ -85,7 +87,7 @@ sidebarTitle: "自定义 AI 模型"
 
 <AccordionGroup>
 <Accordion title="所有模型测试失败">
-先检查 **基础 URL** 是否正确，是否误填成官网地址，或在末尾多加了 `/`。如果使用的是 OpenAI 兼容接口，也请确认地址是否缺少 `/v1`。
+先检查 **Base URL** 是否正确，是否误填成官网地址，或在末尾多加了 `/`。如果使用的是 OpenAI 兼容接口，也请确认地址是否缺少 `/v1`。
 </Accordion>
 
 <Accordion title="出现“测试失败”错误">
@@ -93,7 +95,7 @@ sidebarTitle: "自定义 AI 模型"
 </Accordion>
 
 <Accordion title="连接超时">
-检查 **基础 URL** 是否正确，且当前环境可以访问这个地址。
+检查 **Base URL** 是否正确，且当前环境可以访问这个地址。
 </Accordion>
 
 <Accordion title="找不到模型">

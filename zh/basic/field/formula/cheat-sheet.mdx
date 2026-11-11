@@ -20,14 +20,14 @@ sidebarTitle: "函数速查表"
 | ROUND     | 按 `precision` 指定的小数位数四舍五入。| `value, [precision]`      | Number | `ROUND(1.99, 0) => 2` `ROUND(16.8, -1) => 20`       |
 | ROUNDUP   | 总是向上四舍五入，即远离零。| `value, [precision]`      | Number | `ROUNDUP(1.1, 0) => 2` `ROUNDUP(-1.1, 0) => -2`     |
 | ROUNDDOWN | 总是向下四舍五入，即朝向零。| `value, [precision]`      | Number | `ROUNDDOWN(1.9, 0) => 1` `ROUNDDOWN(-1.9, 0) => -1` |
-| CEILING   | 返回大于或等于该值的最接近的整数倍数。| `value, [significance]`   | Number | `CEILING(2.49) => 3` `CEILING(2.49, 1) => 2.5`      |
-| FLOOR     | 返回小于或等于该值的最接近的整数倍数。| `value, [significance]`   | Number | `FLOOR(2.49) => 2` `FLOOR(2.49, 1) => 2.4`          |
-| EVEN      | 返回大于或等于指定值的最小偶数。| `value`                   | Number | `EVEN(0.1) => 2` `EVEN(-0.1) => -2`                 |
+| CEILING   | 将数值向上舍入到指定的小数位数（默认 0），负数表示舍入到十位、百位等。| `value, [significance]`   | Number | `CEILING(2.49) => 3` `CEILING(2.49, 1) => 2.5`      |
+| FLOOR     | 将数值向下舍入到指定的小数位数（默认 0），负数表示舍入到十位、百位等。| `value, [significance]`   | Number | `FLOOR(2.49) => 2` `FLOOR(2.49, 1) => 2.4`          |
+| EVEN      | 将正数向上、负数向下舍入到最接近的偶数。| `value`                   | Number | `EVEN(0.1) => 2` `EVEN(-0.1) => -2`                 |
 | ODD       | 将正值四舍五入到最接近的奇数，将负值四舍五入到最接近的奇数。| `value`                   | Number | `ODD(0.1) => 1` `ODD(-0.1) => -1`                   |
 | INT       | 返回数值的整数部分，向负无穷取整。| `value`                   | Number | `INT(1.9) => 1` `INT(-1.9) => -2`                   |
 | ABS       | 返回绝对值。| `value`                   | Number | `ABS(-1) => 1`                                                                         |
 | SQRT      | 返回非负数的平方根。| `value`                   | Number | `SQRT(4) => 2`                                                                         |
-| POWER     | 计算指定的基数到指定的功率。| `value`                   | Number | `POWER(2) => 4`                                                                        |
+| POWER     | 计算指定底数的指定幂。| `base, exponent`          | Number | `POWER(2, 2) => 4`                                                                        |
 | EXP       | 计算欧拉数（e）的指定次幂。| `value`                   | Number | `EXP(0) => 1` `EXP(1) => 2.718`                     |
 | LOG       | 按指定基数计算值的对数。如果未指定，基数默认为 10。| `value, [base=10]`        | Number | `LOG(100) => 2` `LOG(1024, 2) => 10`                |
 | MOD       | 返回将第一个参数除以第二个后的余数。| `value, divisor`          | Number | `MOD(9, 2) => 1` `MOD(9, 3) => 0`                   |
@@ -54,7 +54,7 @@ sidebarTitle: "函数速查表"
 | TEXTSPLIT              | 按指定分隔符拆分文本，并返回多个文本值。| `text, delimiter`                                  | Array         | `TEXTSPLIT("20, 04, 79", ",") => ["20", " 04", " 79"]`                      |
 | LOWER                  | 将字符串转为小写。| `text`                                             | Text          | `LOWER("Hello Teable") => "hello teable"`                                   |
 | UPPER                  | 将字符串转为大写。| `text`                                             | Text          | `UPPER("Hello Teable") => "HELLO TEABLE"`                                   |
-| REPT                   | 将字符串重复指定的次数。| `text, number`                                     | Text          | `REPT("Hello!") => "Hello!Hello!Hello!"`                                    |
+| REPT                   | 将字符串重复指定的次数。| `text, number`                                     | Text          | `REPT("Hello!", 3) => "Hello!Hello!Hello!"`                                    |
 | TRIM                   | 去除字符串开始和结束的空白字符。| `text`                                             | Text          | `TRIM(" Hello ") => "Hello"`                                                |
 | LEN                    | 计算字符串的字符数。| `text`                                             | Number        | `LEN("Hello") => 5`                                                         |
 | T                      | 如果参数是文本，则返回该参数，否则返回空。| `value`                                            | Text or Empty | <p><code>T("Hello") => "Hello"</code></p><p><code>T(100) => null</code></p> |
