@@ -1,5 +1,5 @@
 ---
-title: "Lorsqu’un enregistrement remplit les conditions"
+title: "Lorsqu'un enregistrement correspond aux conditions"
 description: "Déclenchez un flux de travail lorsqu’un enregistrement commence à remplir des conditions précises"
 ---
 
@@ -33,7 +33,7 @@ Décrivez une seule fois votre objectif et le flux de travail est prêt, sans au
 ## Procédure de configuration
 
 1. Ouvrez votre automatisation et ajoutez un nouveau déclencheur.
-2. Sélectionnez **Lorsqu’un enregistrement remplit les conditions**.
+2. Sélectionnez **Lorsqu'un enregistrement correspond aux conditions**.
 3. Choisissez la **Table** à surveiller.
 4. Cliquez sur **Ajouter un filtre** pour définir les conditions. Par exemple : `Statut` est égal à `En retard`, ou `Montant` est supérieur à `10000`.
 5. Vous pouvez combiner plusieurs conditions avec une logique ET/OU, comme dans les filtres de vues.
@@ -42,16 +42,16 @@ Décrivez une seule fois votre objectif et le flux de travail est prêt, sans au
 
 <Tip>Après l’exécution du déclencheur, les étapes suivantes peuvent utiliser toutes les données de champ de l’enregistrement correspondant, y compris les valeurs les plus récentes au moment de la transition.</Tip>
 
-## En quoi ce déclencheur diffère-t-il de « Lorsqu’un enregistrement est mis à jour » ?
+## En quoi ce déclencheur diffère-t-il de « Lorsqu'un enregistrement est modifié » ? {#en-quoi-ce-déclencheur-diffère-t-il-de-lorsquun-enregistrement-est-mis-à-jour-}
 
 Ces deux déclencheurs peuvent facilement être confondus. Voici leur principale différence :
 
-- **Lorsqu’un enregistrement est mis à jour** s’exécute chaque fois qu’un champ surveillé change, quelle que soit sa nouvelle valeur. Si vous surveillez le champ « Statut », il s’exécute aussi bien lorsque le Statut devient « En cours » que « Terminé » ou toute autre valeur.
-- **Lorsqu’un enregistrement remplit les conditions** s’exécute uniquement lorsqu’un enregistrement franchit la limite entre « ne remplit pas les conditions » et « remplit les conditions » du filtre. Il ne s’exécute pas à chaque modification, mais uniquement lors de cette transition.
+- **Lorsqu'un enregistrement est modifié** s’exécute chaque fois qu’un champ surveillé change, quelle que soit sa nouvelle valeur. Si vous surveillez le champ « Statut », il s’exécute aussi bien lorsque le Statut devient « En cours » que « Terminé » ou toute autre valeur.
+- **Lorsqu'un enregistrement correspond aux conditions** s’exécute uniquement lorsqu’un enregistrement franchit la limite entre « ne remplit pas les conditions » et « remplit les conditions » du filtre. Il ne s’exécute pas à chaque modification, mais uniquement lors de cette transition.
 
-Utilisez **Lorsqu’un enregistrement est mis à jour** lorsque vous devez réagir à n’importe quel changement. Utilisez **Lorsqu’un enregistrement remplit les conditions** lorsque seul le passage à un état précis vous intéresse.
+Utilisez **Lorsqu'un enregistrement est modifié** lorsque vous devez réagir à n’importe quel changement. Utilisez **Lorsqu'un enregistrement correspond aux conditions** lorsque seul le passage à un état précis vous intéresse.
 
-<Note>Si vous souhaitez exécuter une action chaque fois qu’un enregistrement est modifié, utilisez le déclencheur [Lorsqu’un enregistrement est mis à jour](/fr/basic/automation/trigger/records/record-updated). Ce déclencheur s’exécute à chaque passage de « ne remplit pas les conditions » à « remplit les conditions » du filtre. Les modifications effectuées tant que les conditions restent remplies ne le relancent pas. Si l’enregistrement cesse de les remplir puis les remplit à nouveau, le déclencheur peut s’exécuter de nouveau.</Note>
+<Note>Si vous souhaitez exécuter une action chaque fois qu’un enregistrement est modifié, utilisez le déclencheur [Lorsqu'un enregistrement est modifié](/fr/basic/automation/trigger/records/record-updated). Ce déclencheur s’exécute à chaque passage de « ne remplit pas les conditions » à « remplit les conditions » du filtre. Les modifications effectuées tant que les conditions restent remplies ne le relancent pas. Si l’enregistrement cesse de les remplir puis les remplit à nouveau, le déclencheur peut s’exécuter de nouveau.</Note>
 
 ## Cas d’utilisation
 
@@ -66,10 +66,10 @@ Utilisez **Lorsqu’un enregistrement est mis à jour** lorsque vous devez réag
 - Vous **devez** définir au moins une condition de filtre. Sans cela, le déclencheur n’a rien à évaluer.
 - Le déclencheur vérifie la transition au moment où un enregistrement est enregistré. Il ne s’exécute pas rétroactivement pour les enregistrements qui remplissaient déjà les conditions avant la création de l’automatisation.
 - Les enregistrements créés après l’activation sont également vérifiés par rapport au filtre. Si leurs valeurs initiales remplissent les conditions, le flux de travail peut se déclencher immédiatement.
-- Associez ce déclencheur à une action **Envoyer un e-mail** ou **Mettre à jour l’enregistrement** afin de créer de puissants flux de travail liés aux changements d’état, sans écrire de code.
+- Associez ce déclencheur à une action **Envoyer un e-mail** ou **Mettre à jour un enregistrement** afin de créer de puissants flux de travail liés aux changements d’état, sans écrire de code.
 
 ## Pages associées
 
-- [Lorsqu’un enregistrement est mis à jour](/fr/basic/automation/trigger/records/record-updated) — s’exécute lors de toute modification de champ, et pas uniquement lors des transitions
+- [Lorsqu'un enregistrement est modifié](/fr/basic/automation/trigger/records/record-updated) — s’exécute lors de toute modification de champ, et pas uniquement lors des transitions
 - [Lorsqu’un enregistrement est créé](/fr/basic/automation/trigger/records/record-created) — s’exécute lorsque de nouveaux enregistrements sont ajoutés
 - [Envoyer un e-mail](/fr/basic/automation/actions/communication/send-email-overview)

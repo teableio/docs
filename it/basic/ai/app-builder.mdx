@@ -32,7 +32,7 @@ Per un esempio nel settore educativo, scopri come [Zakrly organizza i dati didat
 App Builder offre una doppia interfaccia, sia per gli utenti non tecnici sia per gli sviluppatori.
 
 <img
-  src="/images/docs/ai/2026-10-21-app-builder-editor-interface.png"
+  src="/images/docs/ai/2026-11-11-app-builder-editor-interface.png"
   alt="Interfaccia dell'editor di App Builder"
   className="docs-screenshot"
 />
@@ -44,7 +44,7 @@ Il centro di comando della tua app.
 - **Richieste di credenziali**: quando l'app ha bisogno di accedere a un account di terze parti o a un segreto durante l'esecuzione, App Builder fissa una scheda nel pannello della chat, per esempio **Questa app ha bisogno della tua connessione Slack**. Fai clic su **Collega il mio account** per avviare un flusso OAuth; la nuova connessione viene concessa subito a questa app. Se possiedi già una connessione o un segreto utilizzabile, ti basta concederlo: non serve collegarsi di nuovo. Con **Salta** non fornisci la credenziale e l'IA continua con le parti che può completare senza di essa.
 - **Competenze**: apri il menu **+** e scegli **Competenze** per gestire le skill della conversazione di questa app. Una skill aggiunta qui è disponibile soltanto per l'app corrente; qui è inoltre possibile utilizzare le skill condivise con il Progetto e lo Spazio dell'app. Digita `/` nella casella di input per scegliere una skill abilitata.
 - **Gestisci i file**: apri **+** → **Altro** → **Gestisci i file** per visualizzare i file nella sandbox dell'app. Usalo per visualizzare in anteprima i file supportati, scaricare i file generati oppure eliminare file e cartelle non più necessari.
-- **Cancella conversazione**: se la conversazione corrente ha perso il filo, fai clic su **Cancella chat** nell'angolo in basso a destra del pannello per avviare una nuova sessione. In questo modo viene cancellata la cronologia della chat per la conversazione corrente, ma l'app non viene eliminata. Al primo utilizzo viene mostrata una conferma e puoi scegliere di non visualizzarla più in futuro.
+- **Cancella conversazione**: se la conversazione corrente ha perso il filo, fai clic sul pulsante **`...`** nella parte superiore del pannello della chat e seleziona **Cancella chat** per avviare una nuova sessione. In questo modo viene cancellata la cronologia della chat per la conversazione corrente, ma l'app non viene eliminata. Al primo utilizzo viene mostrata una conferma e puoi scegliere di non visualizzarla più in futuro.
 
 ### 2. Pannello di anteprima
 - **Anteprima e Live**: il pannello contiene due schede. **Anteprima** esegue la versione in fase di creazione, incluse le modifiche non ancora pubblicate. **Live** carica l'app pubblicata dal relativo indirizzo pubblico, consentendoti di confrontare ciò che vedono gli utenti con ciò su cui stai lavorando. Finché l'app non è pubblicata, **Live** mostra invece una richiesta di pubblicazione. App Builder apre un'app pubblicata su **Live** e una non pubblicata su **Anteprima**, quindi ricorda l'ultima scheda utilizzata per tale app.
@@ -66,16 +66,22 @@ Per una personalizzazione senza limiti, puoi accedere direttamente al codice.
 - **Albero dei file**: esplora la struttura del progetto.
 
 <img
-  src="/images/docs/ai/2026-10-21-app-builder-code-editor.png"
+  src="/images/docs/ai/2026-11-11-app-builder-code-editor.png"
   alt="Editor di codice di App Builder"
   className="docs-screenshot"
 />
 
 #### Scaricare il codice
 Puoi scaricare l'intera app come archivio ZIP in qualsiasi momento:
-1. Passa alla scheda **Codice** nell'editor.
-2. Fai clic sul menu **`...`** nella barra delle schede.
+1. Fai clic sul pulsante **Impostazioni** (icona dei cursori) nell'intestazione dell'app e seleziona **Codice**.
+2. Fai clic sul menu **`...`** nella parte superiore della vista del codice.
 3. Seleziona **Scarica il codice**, quindi fai di nuovo clic su **Scarica il codice** nella finestra di dialogo per salvare un archivio ZIP che include tutti i file sorgente.
+
+<img
+  src="/images/docs/ai/2026-11-11-app-builder-settings-menu.png"
+  alt="Menu Impostazioni nell'intestazione dell'app, con Impostazioni di accesso, Sincronizzazione con GitHub, Codice e Cronologia delle versioni"
+  className="docs-screenshot"
+/>
 
 Per impostazione predefinita lo ZIP non include le credenziali valide dell'app. Nella radice contiene un file `.env.example` che elenca le [variabili di runtime iniettate dalla piattaforma](#teable-access-token) (quelle che Teable aggiunge automaticamente a ogni app), con il token di accesso Teable e la chiave di accesso all'IA lasciati vuoti, e un file `.gitignore` che esclude i file `.env` da Git.
 
@@ -87,8 +93,8 @@ Chiunque possieda questo file `.env` può leggere e modificare tutti i dati del 
 
 #### Importare il codice
 Puoi aggiornare il codice dell'app importando un file ZIP:
-1. Passa alla scheda **Codice** nell'editor.
-2. Fai clic sul menu **`...`** nella barra delle schede.
+1. Fai clic sul pulsante **Impostazioni** nell'intestazione dell'app e seleziona **Codice**.
+2. Fai clic sul menu **`...`** nella parte superiore della vista del codice.
 3. Seleziona **Importa codice** e scegli un file ZIP fino a 20 MB.
 
 <Note>
@@ -206,10 +212,10 @@ Collega un'app a un repository GitHub privato quando vuoi esaminare il codice ne
 
 ### Collegare un account e creare il repository
 
-Prima genera l'app almeno una volta. Finché l'app non contiene codice, il pulsante GitHub mostra **Genera prima l'app per collegare GitHub** e non esegue alcuna operazione.
+Prima genera l'app almeno una volta. Finché l'app non contiene codice, **Sincronizzazione con GitHub** nel menu **Impostazioni** è disattivata e non si può selezionare.
 
 <Steps>
-  <Step title="Apri il pannello GitHub">Fai clic sull'icona GitHub nell'intestazione dell'app per aprire **Sincronizzazione con GitHub**. Devi disporre dell'accesso in modifica all'app.</Step>
+  <Step title="Apri il pannello GitHub">Fai clic sul pulsante **Impostazioni** nell'intestazione dell'app e seleziona **Sincronizzazione con GitHub**. Devi disporre dell'accesso in modifica all'app.</Step>
   <Step title="Collega un account">Fai clic su **Collega GitHub** e completa l'installazione nella finestra popup. Scegli il tuo account personale o un'organizzazione che amministri. Consenti le finestre popup se il browser le blocca.</Step>
   <Step title="Scegli l'account">Seleziona l'account collegato sotto **Account GitHub**. Fai clic su **+** per collegarne un altro.</Step>
   <Step title="Assegna un nome al repository">Il **Nome del repository** è precompilato in base al nome dell'app. I nomi possono contenere lettere, cifre, `.`, `-` e `_`, fino a 100 caratteri.</Step>
@@ -281,7 +287,7 @@ Quando l'app è pronta, fai clic sul pulsante **Pubblica** (icona a forma di fre
 <Info>Per nascondere il badge **Creato con Teable** è richiesto il piano Business o superiore.</Info>
 
 <img
-  src="/images/docs/ai/2026-10-21-app-builder-publish-app.png"
+  src="/images/docs/ai/2026-11-11-app-builder-publish-app.png"
   alt="Menu Pubblica app"
   className="docs-screenshot"
 />
@@ -293,7 +299,7 @@ Per un esempio di sito pubblico, scopri come [Waconzy riunisce musica, strumenti
 Per disattivare un'app pubblicata, apri il menu **Pubblica** e fai clic su **Annulla pubblicazione**. Dopo la conferma, l'URL pubblico dell'app non sarà più accessibile.
 
 <img
-  src="/images/docs/ai/2026-10-21-app-builder-unpublish.png"
+  src="/images/docs/ai/2026-11-11-app-builder-unpublish.png"
   alt="Pulsante Annulla pubblicazione nel menu Pubblica"
   className="docs-screenshot"
 />
@@ -313,7 +319,7 @@ Puoi anche utilizzare un sottodominio disponibile sotto `teable.app` e modificar
 Alla scadenza del piano Business dello Spazio, Teable avvisa i proprietari dello Spazio che il dominio personalizzato smetterà presto di essere risolto. Rinnova prima di quella data per mantenere il dominio. Senza rinnovo, il dominio personalizzato smette di essere risolto e il link pubblico dell'app torna all'indirizzo predefinito di Teable. Se in seguito passi di nuovo al piano Business, dovrai associare di nuovo manualmente il dominio personalizzato.
 
 <img
-  src="/images/docs/ai/2026-10-21-app-builder-custom-domain.png"
+  src="/images/docs/ai/2026-11-11-app-builder-custom-domain.png"
   alt="Impostazioni del dominio personalizzato"
   className="docs-screenshot"
 />
@@ -332,10 +338,10 @@ Lascia vuoto un Campo per mantenere il valore scritto da App Builder. Il salvata
 
 ### Accesso all'app
 
-Fai clic su **Aggiungi accesso** nell'intestazione dell'app per richiedere ai visitatori di effettuare l'accesso prima di poterla utilizzare. Dopo la configurazione dell'accesso, il pulsante diventa **Impostazioni di accesso**.
+Per richiedere ai visitatori di effettuare l'accesso prima di poter utilizzare l'app, fai clic sul pulsante **Impostazioni** nell'intestazione dell'app e seleziona **Aggiungi accesso**. Dopo la configurazione, la voce di menu diventa **Impostazioni di accesso**; se disattivi l'accesso, mostra **Accesso disattivato**.
 
 <img
-  src="/images/docs/ai/2026-10-21-app-builder-login-settings.png"
+  src="/images/docs/ai/2026-11-11-app-builder-login-settings.png"
   alt="Impostazioni di accesso all'app"
   className="docs-screenshot"
 />
@@ -354,11 +360,11 @@ Per esempi d’uso di questa funzione, leggi [esempi di accesso alle app](https:
 
 ### Cronologia delle versioni e ripristino
 Teable tiene automaticamente traccia di ogni distribuzione.
-- Fai clic sul pulsante **Cronologia** (icona dell'orologio) per visualizzare un elenco di tutte le versioni distribuite.
+- Fai clic sul pulsante **Impostazioni** nell'intestazione dell'app e seleziona **Cronologia delle versioni** per visualizzare un elenco di tutte le versioni distribuite.
 - **Ripristino con un clic**: se un nuovo aggiornamento causa problemi, puoi ripristinare immediatamente una versione stabile precedente dell'app live.
 
 <img
-  src="/images/docs/ai/2026-10-21-app-builder-version-history.png"
+  src="/images/docs/ai/2026-11-11-app-builder-version-history.png"
   alt="Cronologia delle versioni dell'app"
   className="docs-screenshot"
 />
@@ -378,7 +384,7 @@ Se le modifiche al codice personalizzato causano un errore di build, la distribu
 - Facendo clic su di esso, l'IA analizza l'errore di compilazione e applica automaticamente una correzione al codice per risolvere il problema.
 
 ### Eliminare un'app
-Per eliminare un'app, fai clic sul pulsante **Impostazioni** (icona dell'ingranaggio) nell'intestazione e seleziona **Elimina**.
+Per eliminare un'app, fai clic sul pulsante **`...`** nell'intestazione dell'app e seleziona **Elimina**.
 
 ## Procedure consigliate
 
@@ -392,7 +398,7 @@ Per schemi di prompt, suggerimenti per la creazione, consigli sul ripristino e r
   </Accordion>
 
   <Accordion title="Come posso scaricare o importare il codice dell'app?">
-    Passa alla scheda **Codice** nell'editor, fai clic sul menu **`...`** nella barra delle schede, quindi scegli **Scarica il codice** o **Importa codice**. I file ZIP importati possono avere dimensioni massime di 20 MB e sostituiscono il progetto esistente, quindi includi tutti i file sorgente da conservare. Il progetto importato deve includere un file `package.json` nella radice. Le variabili personalizzate di un file `.env` nella radice vengono salvate come tuoi segreti e concesse all'app con gli stessi nomi.
+    Fai clic sul pulsante **Impostazioni** nell'intestazione dell'app e seleziona **Codice**, poi fai clic sul menu **`...`** nella parte superiore della vista del codice e scegli **Scarica il codice** o **Importa codice**. I file ZIP importati possono avere dimensioni massime di 20 MB e sostituiscono il progetto esistente, quindi includi tutti i file sorgente da conservare. Il progetto importato deve includere un file `package.json` nella radice. Le variabili personalizzate di un file `.env` nella radice vengono salvate come tuoi segreti e concesse all'app con gli stessi nomi.
   </Accordion>
 
   <Accordion title="Cosa devo fare se il token di accesso di un'app è trapelato?">
@@ -414,11 +420,11 @@ Per schemi di prompt, suggerimenti per la creazione, consigli sul ripristino e r
   </Accordion>
 
   <Accordion title="Come posso tornare a una versione precedente?">
-    Fai clic sul pulsante **Cronologia** (icona dell'orologio) per visualizzare le versioni distribuite, quindi ripristina una versione stabile precedente dell'app live.
+    Fai clic sul pulsante **Impostazioni** nell'intestazione dell'app e seleziona **Cronologia delle versioni** per visualizzare le versioni distribuite, quindi ripristina una versione stabile precedente dell'app live.
   </Accordion>
 
-  <Accordion title="Perché App Builder indica che un agente è occupato in un'altra conversazione?">
-    Ogni utente può eseguire contemporaneamente fino a 3 agenti, inclusi AI Chat e App Builder. Se App Builder indica che un agente è occupato in un'altra conversazione, un'altra attività è ancora in esecuzione. Attendi il completamento dell'attività precedente prima di continuare.
+  <Accordion title="Perché App Builder indica che è stato raggiunto il limite di conversazioni simultanee?">
+    Ogni utente può eseguire contemporaneamente fino a 3 agenti, inclusi AI Chat e App Builder. Se App Builder mostra `Raggiunto il limite di conversazioni simultanee (3). Attendi che una termini.`, un'altra attività è ancora in esecuzione. Attendi il completamento dell'attività precedente prima di continuare.
   </Accordion>
 
   <Accordion title="Come vengono rimborsati i Crediti quando un'esecuzione di App Builder non riesce?">

@@ -1,7 +1,7 @@
 ---
 title: "Programar el inicio de automatizaciones"
 description: "Ejecuta un flujo de trabajo con una programación periódica o una sola vez"
-sidebarTitle: "A la hora programada"
+sidebarTitle: "A una hora programada"
 ---
 
 {/* mintlify-resync: 2026-05-14 */}
@@ -23,38 +23,39 @@ Describe el objetivo una sola vez y el flujo de trabajo estará listo, sin neces
 
 | Ajuste | Obligatorio | Descripción |
 |---|---|---|
-| Hora de inicio | Sí | Momento en que comienza la programación |
-| Hora de finalización | No | Momento en que se detiene la programación (déjalo en blanco para ejecutarla indefinidamente) |
+| Inicio | Sí | Momento en que comienza la programación |
+| Fin | No | Momento en que se detiene la programación (déjalo en blanco para ejecutarla indefinidamente) |
 | Zona horaria | Sí | De forma predeterminada, tu zona horaria actual. Todas las horas se interpretan en esta zona |
-| Frecuencia | Sí | Frecuencia con la que se activa el disparador; consulta las opciones siguientes |
+| Tipo de intervalo | Sí | Frecuencia con la que se activa el disparador; consulta las opciones siguientes |
 
-## Opciones de frecuencia
+## Opciones de tipo de intervalo {#opciones-de-frecuencia}
 
-| Frecuencia | Intervalo | Ajustes adicionales |
+| Tipo de intervalo | Intervalo | Ajustes adicionales |
 |---|---|---|
 | Minutos | Cada 10–60 min | — |
 | Horas | Cada 1–24 h | — |
 | Días | Cada 1–31 días | Hora del disparador (hora + minuto) |
 | Semanas | Cada 1–52 semanas | Días de la semana (lun.–dom.) + hora del disparador |
 | Meses | Cada 1–12 meses | Días del mes + hora del disparador |
-| Una vez | — | Se activa una vez a la hora especificada y después se desactiva automáticamente |
+| Una sola vez | — | Se activa una vez a la hora especificada y después se desactiva automáticamente |
 
 Usa **-1** como día del mes para seleccionar el último día del mes, independientemente de que tenga 28, 30 o 31 días.
 
 ## Cómo configurarlo
 
 1. Abre tu Automatización y añade un disparador nuevo.
-2. Selecciona **A la hora programada**.
+2. Selecciona **A una hora programada**.
 3. Establece la **Zona horaria**. Esto es especialmente importante si tu equipo trabaja en varias zonas horarias: la programación se ejecuta en la zona que selecciones aquí.
-4. Elige una **Frecuencia**. Por ejemplo, para ejecutarla cada lunes a las 9:00:
-   - Establece Frecuencia en **Semanas**.
+4. Elige un **Tipo de intervalo**. Por ejemplo, para ejecutarla cada lunes a las 9:00:
+   - Establece **Tipo de intervalo** en **Semanas**.
    - Establece el intervalo en **1** (cada 1 semana).
    - Marca **Lunes** en el selector de días de la semana.
    - Establece la hora del disparador en **09:00**.
-5. Establece una **Hora de inicio** (momento en que se activa la programación).
-6. (Opcional) Establece una **Hora de finalización** si quieres que la programación caduque.
-7. Guarda y activa la Automatización.
-8. Como no hay datos de ningún Registro, la primera acción suele ser un paso **Obtener Registros** para cargar los datos que necesitas.
+5. Establece **Inicio** (momento en que se activa la programación).
+6. (Opcional) Establece **Fin** si quieres que la programación caduque.
+7. Como no hay datos de ningún Registro, la primera acción suele ser un paso **Obtener Registros** para cargar los datos que necesitas.
+8. Haz clic en **Probar** para ejecutar la Automatización una vez manualmente y comprobar el resultado.
+9. Guarda y activa la Automatización.
 
 ## Ejemplo concreto: informe semanal del lunes por la mañana
 
@@ -66,7 +67,7 @@ Objetivo: cada lunes a las 9:00, obtener todas las tareas que vencen esa semana 
 
 ## Programaciones de una sola vez
 
-Cuando seleccionas la frecuencia **Una vez**, la Automatización se activa una vez en la fecha y hora especificadas y después se desactiva automáticamente. Esto resulta útil para:
+Cuando seleccionas el tipo de intervalo **Una sola vez**, la Automatización se activa una vez en la fecha y hora especificadas y después se desactiva automáticamente. Esto resulta útil para:
 
 - Un recordatorio para realizar un seguimiento en una fecha concreta.
 - Una acción aplazada que solo debe ocurrir una vez (p. ej., enviar el anuncio de un lanzamiento en una fecha futura).
@@ -90,6 +91,7 @@ Después de que se active un disparador de una sola vez, la Automatización apar
 - Presta atención a las zonas horarias, especialmente en equipos que trabajan en varias regiones. El ajuste de zona horaria del disparador determina cuándo se activa, no la hora local de quien lo visualiza.
 - Para programaciones de alta frecuencia (cada pocos minutos), procura que el flujo de trabajo sea ligero para evitar que las ejecuciones se solapen.
 - Si tu Automatización depende del tiempo (p. ej., debe ejecutarse antes de una reunión diaria), prográmala unos minutos antes para dejar tiempo suficiente para el procesamiento.
+- Si la ejecución anterior sigue en curso cuando llega la hora programada, la nueva ejecución espera en la cola y empieza cuando termina la anterior.
 - El truco del día del mes **-1** resulta útil para informes o procesos de fin de mes. Usar -1 significa «último día del mes», por lo que se activa correctamente el 31 de enero, el 28 (o 29) de febrero, el 31 de marzo, etc.
 
 ## Contenido relacionado

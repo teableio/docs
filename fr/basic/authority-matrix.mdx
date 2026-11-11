@@ -25,7 +25,7 @@ et la direction peut consulter l’ensemble des données.
 | Enregistrements basés sur l’attribution | Les commerciaux peuvent uniquement consulter et mettre à jour les enregistrements qui leur sont attribués. |
 | Saisie de données restreinte | Les membres peuvent créer de nouveaux enregistrements sans modifier ni supprimer les enregistrements existants. |
 | Champs sensibles dans un projet partagé | Les membres peuvent consulter les enregistrements de commande sans voir les champs de paiement ou de coût. |
-| Applications et workflows contrôlés | Les rôles peuvent ouvrir les applications ou workflows sélectionnés, tandis que les nœuds non autorisés restent masqués. |
+| Applications et workflows contrôlés | Les rôles peuvent ouvrir les applications ou workflows sélectionnés, tandis que les ressources non autorisées restent masquées. |
 
 ## Fonctionnement des autorisations
 
@@ -33,36 +33,37 @@ La Matrice d’autorité attribue les accès par rôle. Les utilisateurs peuvent
 des rôles qui leur sont directement attribués ou des rôles de leur département. Lorsque plusieurs
 rôles s’appliquent, Teable combine les autorisations accordées par ces rôles.
 
-<Info>Les utilisateurs de l’Espace disposant de l’autorisation **Gestionnaire** et les administrateurs de la Matrice d’autorité peuvent gérer la Matrice d’autorité et ne sont pas limités par celle-ci.</Info>
+<Info>Les utilisateurs de l’Espace disposant de l’autorisation **Propriétaire** et les **Administrateurs du projet** peuvent gérer la Matrice d’autorité et ne sont pas limités par celle-ci.</Info>
 
-La liste des rôles comprend une section `Administrateurs` et une section `Rôles personnalisés` :
+La liste des rôles comprend une section `Administrateurs du projet` et une section `Rôles personnalisés` :
 
 <img
-  src="/images/docs/authority-matrix/2026-10-21-authority-matrix-role-list.png"
+  src="/images/docs/authority-matrix/2026-11-11-authority-matrix-role-list.png"
   alt="Liste des rôles de la Matrice d’autorité"
   className="docs-screenshot"
 />
 
 Utilisez `Ajouter un rôle` pour créer un rôle personnalisé. Dans la page de détail du rôle, attribuez
-des collaborateurs, rédigez une courte description et configurez l’accès à chaque nœud de
-le projet :
+des collaborateurs, rédigez une courte description et configurez l’accès à chaque ressource du
+projet :
 
 <img
-  src="/images/docs/authority-matrix/2026-10-21-authority-matrix-role-detail.png"
+  src="/images/docs/authority-matrix/2026-11-11-authority-matrix-role-detail.png"
   alt="Page de détail du rôle de la Matrice d’autorité"
   className="docs-screenshot"
 />
 
 ## Configurer l’accès des rôles
 
-Chaque table, application et workflow possède son propre paramètre d’accès.
+Chaque table, application, workflow et routine possède son propre paramètre d’accès.
 
-| Type de nœud | Paramètre disponible |
+| Type de ressource | Paramètre disponible |
 | --- | --- |
 | Table | Choisissez `Peut modifier` ou `Aucun accès`. Une fois qu’une table est définie sur `Peut modifier`, configurez ses autorisations détaillées. |
 | Application | Choisissez `Peut accéder` ou `Aucun accès`. Cela détermine si le rôle peut ouvrir l’application. |
 | Workflow | Choisissez `Peut accéder` ou `Aucun accès`. Cela détermine si le rôle peut ouvrir le workflow. |
-| Dossier | Les dossiers sont affichés pour la navigation. Si aucun des nœuds enfants n’est accessible, le dossier est masqué pour le rôle. |
+| Routine | Choisissez `Peut accéder` ou `Aucun accès`. Cela détermine si le rôle peut ouvrir la routine. |
+| Dossier | Les dossiers sont affichés pour la navigation. Si le rôle n’a accès à aucune ressource du dossier, une icône de masquage (info-bulle `masquer automatiquement`) apparaît à côté du dossier, et le rôle ne voit pas ce dossier. |
 
 Pour configurer les autorisations détaillées des vues, enregistrements, champs et autres éléments d’une table, définissez
 d’abord la table sur `Peut modifier`. Une table avec `Aucun accès` est masquée pour les membres ayant ce rôle.
@@ -79,7 +80,7 @@ Lorsqu’une table est définie sur `Peut modifier`, configurez les zones d’au
 | Autorisations d’importation et d’exportation | Si le rôle peut importer des données dans la table ou exporter les données de la table. |
 
 <img
-  src="/images/docs/authority-matrix/2026-10-21-authority-matrix-table-permissions.png"
+  src="/images/docs/authority-matrix/2026-11-11-authority-matrix-table-permissions.png"
   alt="Autorisations de table de la Matrice d’autorité"
   className="docs-screenshot"
 />
@@ -98,20 +99,20 @@ peuvent également masquer ou verrouiller les valeurs de champs sensibles dans l
 />
 
 Utilisez `Rôle par défaut` pour les membres auxquels aucun rôle personnalisé n’a été attribué. Vous
-pouvez sélectionner un rôle personnalisé activé ou choisir `Autorisation refusée` afin que ces
+pouvez sélectionner un rôle personnalisé activé ou choisir `Permission refusée` afin que ces
 membres ne puissent pas accéder au contenu contrôlé par la Matrice d’autorité.
 
 ## Remarques
 
 - Une fois la Matrice d’autorité activée, les utilisateurs dont l’autorisation d’Espace est inférieure à
-  `Gestionnaire` sont limités par celle-ci, sauf s’ils sont ajoutés comme administrateurs de la Matrice d’autorité.
+  `Propriétaire` sont limités par celle-ci, sauf s’ils sont ajoutés aux administrateurs du projet.
 - L’utilisateur qui active la Matrice d’autorité est automatiquement ajouté aux
-  `Administrateurs`.
+  `Administrateurs du projet`.
 - Les nouveaux rôles personnalisés sont activés lorsqu’ils sont créés avec `Ajouter un rôle`, mais chaque
   table, application et workflow nécessite toujours son propre paramètre d’accès.
 - Une table définie sur `Aucun accès` pour un rôle est masquée pour ce rôle, même si ses
   options d’autorisation détaillées ont été modifiées auparavant.
-- L’attribution d’un rôle depuis `Ajouter un utilisateur` ou `Ajouter depuis l’organisation` peut ajouter les
+- L’attribution d’un rôle depuis `Ajouter un utilisateur` ou `Ajouter depuis l'organisation` peut ajouter les
   membres ou départements sélectionnés comme collaborateurs du projet. La Matrice d’autorité limite ensuite
   ce à quoi ils peuvent accéder à l’intérieur du projet.
 

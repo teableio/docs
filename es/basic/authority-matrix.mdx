@@ -25,7 +25,7 @@ consultar los Campos de facturación y dirección puede ver el conjunto de datos
 | Registros por responsable | Los representantes de ventas solo pueden ver y actualizar los Registros que tienen asignados. |
 | Entrada de datos restringida | Los miembros pueden crear Registros nuevos sin editar ni eliminar los existentes. |
 | Campos confidenciales en un Proyecto compartido | Los miembros pueden ver los Registros de pedidos sin consultar los Campos de pagos o costes. |
-| Aplicaciones y flujos de trabajo controlados | Los roles pueden abrir determinadas aplicaciones o flujos de trabajo, mientras que los nodos no autorizados permanecen ocultos. |
+| Aplicaciones y flujos de trabajo controlados | Los roles pueden abrir determinadas aplicaciones o flujos de trabajo, mientras que los recursos no autorizados permanecen ocultos. |
 
 ## Cómo funcionan los permisos
 
@@ -33,36 +33,37 @@ La Matriz de Autoridad asigna el acceso por rol. Los usuarios pueden recibir per
 de los roles que se les asignen directamente o de los roles de departamento. Cuando se aplican
 varios roles, Teable combina los permisos que estos conceden.
 
-<Info>Los usuarios del Espacio con el permiso **Gestor** y los administradores de la Matriz de Autoridad pueden administrarla y no están sujetos a sus restricciones.</Info>
+<Info>Los usuarios del Espacio con el permiso **Propietario** y los **Administradores del proyecto** pueden administrarla y no están sujetos a sus restricciones.</Info>
 
-La lista de roles incluye una sección `Administradores` y otra de `Roles personalizados`:
+La lista de roles incluye una sección `Administradores del proyecto` y otra de `Roles personalizados`:
 
 <img
-  src="/images/docs/authority-matrix/2026-10-21-authority-matrix-role-list.png"
+  src="/images/docs/authority-matrix/2026-11-11-authority-matrix-role-list.png"
   alt="Lista de roles de la Matriz de Autoridad"
   className="docs-screenshot"
 />
 
 Usa `Añadir rol` para crear un rol personalizado. En la página de detalles del rol, asigna
-colaboradores, escribe una descripción breve y configura el acceso de cada nodo de
-el Proyecto:
+colaboradores, escribe una descripción breve y configura el acceso de cada recurso del
+Proyecto:
 
 <img
-  src="/images/docs/authority-matrix/2026-10-21-authority-matrix-role-detail.png"
+  src="/images/docs/authority-matrix/2026-11-11-authority-matrix-role-detail.png"
   alt="Página de detalles de un rol de la Matriz de Autoridad"
   className="docs-screenshot"
 />
 
 ## Configurar el acceso de los roles
 
-Cada Tabla, aplicación y flujo de trabajo tiene su propio ajuste de acceso.
+Cada Tabla, aplicación, flujo de trabajo y rutina tiene su propio ajuste de acceso.
 
-| Tipo de nodo | Ajuste disponible |
+| Tipo de recurso | Ajuste disponible |
 | --- | --- |
 | Tabla | Elige `Puede editar` o `Sin acceso`. Después de establecer una Tabla en `Puede editar`, configura sus permisos detallados. |
 | Aplicación | Elige `Puede acceder` o `Sin acceso`. Esto controla si el rol puede abrir la aplicación. |
 | Flujo de trabajo | Elige `Puede acceder` o `Sin acceso`. Esto controla si el rol puede abrir el flujo de trabajo. |
-| Carpeta | Las carpetas se muestran para facilitar la navegación. Si ninguno de sus nodos secundarios es accesible, la carpeta permanece oculta para el rol. |
+| Rutina | Elige `Puede acceder` o `Sin acceso`. Esto controla si el rol puede abrir la rutina. |
+| Carpeta | Las carpetas se muestran para facilitar la navegación. Si el rol no puede acceder a ningún recurso de la carpeta, junto a ella aparece un icono de ocultar (con la indicación `ocultar automáticamente`) y el rol no ve la carpeta. |
 
 Para configurar permisos detallados de Vistas, Registros, Campos y otros elementos de una Tabla, establece primero
 la Tabla en `Puede editar`. Una Tabla con `Sin acceso` permanece oculta para los miembros de
@@ -80,7 +81,7 @@ Cuando una Tabla está configurada como `Puede editar`, define estas áreas de p
 | Permisos de importación y exportación | Si el rol puede importar datos en la Tabla o exportar sus datos. |
 
 <img
-  src="/images/docs/authority-matrix/2026-10-21-authority-matrix-table-permissions.png"
+  src="/images/docs/authority-matrix/2026-11-11-authority-matrix-table-permissions.png"
   alt="Permisos de Tabla de la Matriz de Autoridad"
   className="docs-screenshot"
 />
@@ -106,9 +107,9 @@ miembros accedan al contenido controlado por la Matriz de Autoridad.
 ## Notas
 
 - Después de habilitar la Matriz de Autoridad, los usuarios cuyo permiso de Espacio sea inferior a
-  `Gestor` estarán sujetos a sus restricciones, salvo que se añadan como administradores de la Matriz de Autoridad.
+  `Propietario` estarán sujetos a sus restricciones, salvo que se añadan a los administradores del proyecto.
 - El usuario que habilita la Matriz de Autoridad se añade automáticamente a
-  `Administradores`.
+  `Administradores del proyecto`.
 - Los roles personalizados nuevos se habilitan al crearlos desde `Añadir rol`, pero cada
   Tabla, aplicación y flujo de trabajo sigue necesitando su propio ajuste de acceso.
 - Una Tabla configurada como `Sin acceso` para un rol permanece oculta para ese rol, aunque sus

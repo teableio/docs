@@ -24,7 +24,7 @@ Décrivez une seule fois votre objectif et le flux de travail est prêt, sans au
 | Paramètre | Obligatoire | Description |
 |---|---|---|
 | Type de connexion | Oui | IMAP uniquement |
-| Intervalle de relève | Oui | Fréquence de recherche des nouveaux e-mails : de 10 à 60 minutes (10 par défaut) |
+| Intervalle de vérification | Oui | Fréquence de recherche des nouveaux e-mails : de 10 à 60 minutes (10 par défaut) |
 
 ## Connecter la boîte aux lettres
 
@@ -32,11 +32,11 @@ Le déclencheur se connecte en IMAP et fonctionne donc avec tous les fournisseur
 
 | Paramètre | Obligatoire | Description |
 |---|---|---|
-| Hôte | Oui | Adresse de votre serveur IMAP (par exemple, `imap.gmail.com`, `imap.mail.yahoo.com`) |
+| Adresse du serveur | Oui | Adresse de votre serveur IMAP (par exemple, `imap.gmail.com`, `imap.mail.yahoo.com`) |
 | Port | Oui | Généralement 993 (SSL/TLS) ou 143 (non chiffré, déconseillé) |
 | Nom d’utilisateur | Oui | Votre adresse e-mail ou le nom d’utilisateur de votre compte |
-| Mot de passe | Oui | Un secret accordé à cette automatisation, et non une valeur saisie dans le déclencheur |
-| Boîte aux lettres | Non | Dossier à surveiller (`INBOX` par défaut) |
+| Mot de passe d’application | Oui | Un secret accordé à cette automatisation, et non une valeur saisie dans le déclencheur |
+| Dossier | Non | Dossier à surveiller (`INBOX` par défaut) |
 
 Pour le mot de passe, cliquez sur **Sélectionner un secret** afin de choisir l’un des secrets accordés à cette automatisation, ou sur **Ajouter un secret** pour en créer un (nom de variable par défaut `IMAP_PASSWORD`). Enregistrez-y le mot de passe d’application ou le code d’autorisation, et non le mot de passe de connexion à la messagerie ; le déclencheur ne conserve que la référence au secret.
 
@@ -58,11 +58,11 @@ Vous pouvez référencer n’importe laquelle de ces données en cliquant sur **
 ## Procédure de configuration (exemple IMAP)
 
 1. Ouvrez votre automatisation et ajoutez un nouveau déclencheur.
-2. Sélectionnez **À la réception d’un e-mail**.
-3. Choisissez **IMAP** comme type de connexion.
-4. Saisissez l’hôte, le port et le nom d’utilisateur de votre serveur IMAP, puis sélectionnez ou ajoutez le secret qui contient le mot de passe.
-5. (Facultatif) Modifiez la **Boîte aux lettres** si vous souhaitez surveiller un autre dossier que INBOX.
-6. Définissez l’**Intervalle de relève**, c’est-à-dire la fréquence de recherche des nouveaux e-mails. Un intervalle plus court permet de réagir plus vite, mais sollicite le serveur plus fréquemment.
+2. Sélectionnez **Lorsqu'un nouvel e-mail est reçu**.
+3. Choisissez **IMAP (Générique)** dans **Type de connexion**.
+4. Saisissez les informations de votre serveur IMAP (**Adresse du serveur**, **Port** et **Nom d’utilisateur**), puis sélectionnez ou ajoutez le secret qui contient le mot de passe.
+5. (Facultatif) Modifiez le **Dossier** si vous souhaitez surveiller un autre dossier que INBOX.
+6. Définissez l’**Intervalle de vérification**, c’est-à-dire la fréquence de recherche des nouveaux e-mails. Un intervalle plus court permet de réagir plus vite, mais sollicite le serveur plus fréquemment.
 7. Cliquez sur **Tester** pour vérifier la connexion. Teable tentera de se connecter à votre boîte aux lettres et vous indiquera si la tentative a réussi ou échoué.
 8. Enregistrez et activez l’automatisation.
 9. Ajoutez vos étapes d’action en utilisant les données de l’e-mail (Expéditeur, Objet, Corps, etc.) comme variables.

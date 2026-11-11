@@ -24,7 +24,7 @@ Descrivi l'obiettivo una sola volta e il workflow è pronto, senza alcuna config
 | Impostazione | Obbligatoria | Descrizione |
 |---|---|---|
 | Tipo di connessione | Sì | Solo IMAP |
-| Intervallo di polling | Sì | Frequenza con cui verificare la presenza di nuove email: da 10 a 60 minuti (valore predefinito: 10) |
+| Intervallo di controllo | Sì | Frequenza con cui verificare la presenza di nuove email: da 10 a 60 minuti (valore predefinito: 10) |
 
 ## Collegare la casella di posta
 
@@ -32,11 +32,11 @@ Il trigger si collega via IMAP, quindi funziona con qualsiasi provider che suppo
 
 | Impostazione | Obbligatoria | Descrizione |
 |---|---|---|
-| Host | Sì | Indirizzo del server IMAP (ad esempio, `imap.gmail.com`, `imap.mail.yahoo.com`) |
+| Indirizzo del server | Sì | Indirizzo del server IMAP (ad esempio, `imap.gmail.com`, `imap.mail.yahoo.com`) |
 | Porta | Sì | In genere 993 (SSL/TLS) o 143 (senza crittografia, sconsigliato) |
 | Nome utente | Sì | Indirizzo email o nome utente dell'account |
-| Password | Sì | Un segreto concesso a questa automazione, non un valore digitato nel trigger |
-| Casella | No | Cartella da monitorare (valore predefinito: `INBOX`) |
+| Password per l'app | Sì | Un segreto concesso a questa automazione, non un valore digitato nel trigger |
+| Cartella | No | Cartella da monitorare (valore predefinito: `INBOX`) |
 
 Per la password, fai clic su **Seleziona un segreto** e scegli uno dei segreti concessi a questa automazione, oppure su **Aggiungi segreto** per crearne uno (nome variabile predefinito `IMAP_PASSWORD`). Conserva lì la password per l'app o il codice di autorizzazione, non la password di accesso alla casella; il trigger mantiene soltanto il riferimento al segreto.
 
@@ -59,10 +59,10 @@ Puoi fare riferimento a uno qualsiasi di questi dati facendo clic su **+** nei C
 
 1. Apri l'Automazione e aggiungi un nuovo trigger.
 2. Seleziona **Quando viene ricevuta un'email**.
-3. Scegli **IMAP** come tipo di connessione.
-4. Inserisci host, porta e nome utente del server IMAP, poi seleziona o aggiungi il segreto che contiene la password.
-5. (Facoltativo) Modifica la **Casella** se vuoi monitorare una cartella diversa da INBOX.
-6. Imposta l'**Intervallo di polling**, ossia la frequenza con cui verificare la presenza di nuove email. Un intervallo più breve offre risposte più rapide, ma comporta controlli più frequenti del server.
+3. Scegli **IMAP (generico)** in **Tipo di connessione**.
+4. Inserisci i dati del server IMAP (**Indirizzo del server**, **Porta** e **Nome utente**), poi seleziona o aggiungi il segreto che contiene la password.
+5. (Facoltativo) Modifica la **Cartella** se vuoi monitorare una cartella diversa da INBOX.
+6. Imposta l'**Intervallo di controllo**, ossia la frequenza con cui verificare la presenza di nuove email. Un intervallo più breve offre risposte più rapide, ma comporta controlli più frequenti del server.
 7. Fai clic su **Test** per verificare la connessione. Teable tenterà di collegarsi alla casella e segnalerà se l'operazione è riuscita o meno.
 8. Salva e attiva l'Automazione.
 9. Aggiungi i passaggi delle azioni, utilizzando i dati dell'email (Da, Oggetto, Corpo e così via) come variabili.
