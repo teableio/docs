@@ -1,13 +1,13 @@
 ---
-title: "Webhook trigger: start a workflow with HTTP POST"
+title: "Webhook trigger: start an automation with HTTP POST"
 description: "Generate a webhook URL and start an automation from an external HTTP POST. Read request data, customize the response and test the integration."
 sidebarTitle: "When webhook received"
 ---
 
 {/* mintlify-resync: 2026-05-14 */}
-<Tip>Please note: all trigger setup can be done in AI chat. Tell AI what you want the workflow to do, and it will handle the rest.</Tip>
+<Tip>Please note: all trigger setup can be done in AI chat. Tell AI what you want the automation to do, and it will handle the rest.</Tip>
 
-This trigger generates a unique URL. When an external system sends an HTTP POST to it, the workflow runs.
+This trigger generates a unique URL. When an external system sends an HTTP POST to it, the automation runs.
 
 ## Build with AI
 
@@ -15,7 +15,7 @@ Open the AI Chat in your table's right sidebar and describe what you want.
 
 AI handles everything: it chooses the right trigger, maps the relevant fields, and sets up all actions automatically.
 
-Describe the goal once, and the workflow is ready — no manual setup needed.
+Describe the goal once, and the automation is ready with no manual setup.
 
 **Example:** *"When I receive a Stripe payment webhook, create an order record."*
 
@@ -31,7 +31,7 @@ Describe the goal once, and the workflow is ready — no manual setup needed.
 1. Open your automation and add a new trigger.
 2. Select **When webhook received**.
 3. The trigger immediately generates a unique **webhook URL**. Copy this URL — you will need it for the external system.
-4. (Optional but recommended) Click **Generate Token** to enable Bearer Token authorization. This produces a token that must be included in the `Authorization` header of incoming requests.
+4. (Optional but recommended) Click **Enable authorization** to turn on Bearer token authorization. This produces a token that must be included in the `Authorization` header of incoming requests.
 5. Save and activate the automation.
 6. Configure your external system to send a POST request to the webhook URL. Include the token in the header if you enabled authorization.
 7. Send a test request (see examples below). Check the automation's run history to verify it received the data correctly.
@@ -79,7 +79,7 @@ Switch **Response** back to **Default** at any time to return to Teable's own ac
 
 ## Testing your webhook
 
-The easiest way to test is with `curl` from the command line. Copy the real URL from the trigger panel rather than typing it out; it carries the project and workflow ids.
+The easiest way to test is with `curl` from the command line. Copy the real URL from the trigger panel rather than typing it out; it carries the project and automation ids.
 
 **Without authorization:**
 
@@ -122,7 +122,7 @@ After sending a test request, check the automation's run history to confirm the 
 | Scope | Limit |
 |---|---|
 | Per project | 50 requests / second |
-| Per workflow | 2 requests / second |
+| Per automation | 2 requests / second |
 
 Requests exceeding the rate limit will receive an HTTP 429 response. If your external system sends bursts of requests, consider implementing retry logic with exponential backoff.
 
@@ -131,7 +131,7 @@ Requests exceeding the rate limit will receive an HTTP 429 response. If your ext
 - **Always use Bearer Token authorization** for production webhooks. A public webhook URL can be triggered by anyone who discovers the URL.
 - **Keep your webhook URL private.** Treat it like a password. Do not commit it to public repositories or share it in open channels.
 - **Regenerate the token** if you suspect it has been compromised. You can generate a new token from the trigger panel at any time.
-- **Validate data in your workflow.** Do not assume the incoming data is well-formed. Use filters or script steps to verify required fields are present before processing.
+- **Validate data in your automation.** Do not assume the incoming data is well-formed. Use filters or script steps to verify required fields are present before processing.
 - **Monitor run history.** Regularly check your automation's run logs to spot unexpected or unauthorized requests.
 
 ## When to use
@@ -139,18 +139,18 @@ Requests exceeding the rate limit will receive an HTTP 429 response. If your ext
 - **Receive payment events from Stripe or PayPal.** Configure a Stripe webhook to send `invoice.paid` events to your Teable automation, creating or updating order records automatically.
 - **Accept form submissions from your website.** Point your website's contact or signup form to the webhook URL to create records directly in Teable.
 - **Ingest data from IoT devices.** Sensors or devices that can send HTTP requests can push data into Teable for monitoring and alerting.
-- **Connect CI/CD pipelines.** Trigger workflows when a build succeeds or fails — create records, send notifications, or update project status.
+- **Connect CI/CD pipelines.** Trigger automations when a build succeeds or fails — create records, send notifications, or update project status.
 - **Receive events from any SaaS tool.** Many tools (GitHub, Jira, Shopify, Twilio, etc.) support webhook notifications. Point them at your Teable webhook to automate cross-tool workflows.
 
 ## Tips
 
 - The webhook only accepts **POST** requests. GET, PUT, and other methods will not trigger the automation.
 - Always send a `Content-Type: application/json` header. If the body is not valid JSON, the trigger may not parse the data correctly.
-- If you need to send data from a system that does not support custom headers (for Bearer auth), consider using the public mode but adding a secret key in the JSON body that your workflow validates with a filter or script.
+- If you need to send data from a system that does not support custom headers (for Bearer auth), consider using the public mode but adding a secret key in the JSON body that your automation validates with a filter or script.
 - For debugging, you can use services like [webhook.site](https://webhook.site) to inspect what your external system is actually sending before pointing it at Teable.
 
 ## Related
 
-- [HTTP request action](/en/basic/automation/actions/logic/http-request) — the outbound counterpart: call external APIs from your workflow
+- [HTTP request action](/en/basic/automation/actions/logic/http-request) — the outbound counterpart: call external APIs from your automation
 - [Run script](/en/basic/automation/ai/scripting/runscript) — for advanced webhook payload processing
 - [Loop (batch) action](/en/basic/automation/actions/logic/loop-run) — process arrays in webhook payloads

@@ -5,7 +5,7 @@ sidebarTitle: "When email received overview"
 ---
 
 {/* mintlify-resync: 2026-05-14 */}
-<Tip>Please note: all trigger setup can be done in AI chat. Tell AI what you want the workflow to do, and it will handle the rest.</Tip>
+<Tip>Please note: all trigger setup can be done in AI chat. Tell AI what you want the automation to do, and it will handle the rest.</Tip>
 
 This trigger runs when a new, unread email arrives in a monitored mailbox.
 
@@ -15,7 +15,7 @@ Open the AI Chat in your table's right sidebar and describe what you want.
 
 AI handles everything: it chooses the right trigger, maps the relevant fields, and sets up all actions automatically.
 
-Describe the goal once, and the workflow is ready — no manual setup needed.
+Describe the goal once, and the automation is ready with no manual setup.
 
 **Example:** *"When I receive a support email, create a ticket and classify it."*
 
@@ -23,8 +23,8 @@ Describe the goal once, and the workflow is ready — no manual setup needed.
 
 | Setting | Required | Description |
 |---|---|---|
-| Connection Type | Yes | IMAP only |
-| Poll Interval | Yes | How often to check for new emails: 10 to 60 minutes (default 10) |
+| Connection type | Yes | IMAP only |
+| Check interval | Yes | How often to check for new emails: 10 to 60 minutes (default 10) |
 
 ## Connect the mailbox
 
@@ -59,10 +59,10 @@ You can reference any of these by clicking **+** in your action fields.
 
 1. Open your automation and add a new trigger.
 2. Select **When email received**.
-3. Choose **IMAP** as the connection type.
-4. Enter your IMAP server details: host, port, and username, then select or add the secret that holds the password.
-5. (Optional) Change the **Mailbox** if you want to monitor a folder other than INBOX.
-6. Set the **Poll Interval** — how often to check for new emails. A shorter interval means faster responses but more frequent server checks.
+3. Choose **IMAP (generic)** under **Connection type**.
+4. Enter your IMAP server details (**Server address**, **Port**, and **Username**), then select or add the secret that holds the password.
+5. (Optional) Change the **Folder** if you want to monitor a folder other than INBOX.
+6. Set the **Check interval**, which controls how often to check for new emails. A shorter interval means faster responses but more frequent server checks.
 7. Click **Test** to verify the connection. Teable will attempt to connect to your mailbox and report success or failure.
 8. Save and activate the automation.
 9. Add your action steps, using the email data (From, Subject, Body, etc.) as variables.
@@ -70,7 +70,7 @@ You can reference any of these by clicking **+** in your action fields.
 ## When to use
 
 - **Create a record for each incoming support email.** Parse the subject and body to populate fields in a support tickets table automatically.
-- **Extract invoice data from emails with AI.** Use the AI Generate action to read the email body or attachment and pull out amounts, dates, and vendor names.
+- **Extract invoice data from emails with AI.** Use the AI generate action to read the email body or attachment and pull out amounts, dates, and vendor names.
 - **Route customer inquiries to the right team.** Based on keywords in the subject or body, update a "Team" field or send notifications to specific people.
 - **Archive important emails as records.** Automatically log emails from specific senders or with specific subjects into a Teable table for easy searching and tracking.
 - **Process order confirmations.** When an order confirmation email arrives, extract the order number and details to update your orders table.
@@ -79,14 +79,14 @@ You can reference any of these by clicking **+** in your action fields.
 
 - **Connection failed (IMAP):** Double-check your host, port, username, and password. Make sure your email provider allows IMAP access — some providers disable it by default.
 - **Gmail: "Less secure app" error:** Gmail does not allow plain password login. Store an **App Password** as the secret instead. See [Set up Gmail IMAP](/en/basic/automation/trigger/email/gmail-imap) for instructions.
-- **Emails not being picked up:** Check the poll interval. Also confirm that the emails are arriving in the monitored folder. Emails in subfolders may be missed if the wrong mailbox is selected.
+- **Emails not being picked up:** Review the **Check interval** setting. Also confirm that the emails are arriving in the monitored folder. Emails in subfolders may be missed if the wrong mailbox is selected.
 - **Duplicate processing:** The trigger tracks which emails it has already processed. However, if you deactivate and reactivate the automation, it may reprocess recent emails. Mark emails as read in your inbox if needed.
 
 ## Tips
 
-- A shorter poll interval means faster response to emails but does not guarantee real-time delivery. For true real-time processing, consider using a webhook-based approach if your email provider supports it.
+- A shorter check interval means faster response to emails but does not guarantee real-time delivery. For true real-time processing, consider using a webhook-based approach if your email provider supports it.
 - Use filters in your email client to route relevant emails to a specific label or folder, then have Teable monitor only that label. This reduces noise.
-- For high-volume mailboxes, consider increasing the poll interval and processing in batches to avoid overwhelming your workflow.
+- For high-volume mailboxes, consider increasing the check interval and processing in batches to avoid overwhelming your automation.
 - A trigger that still holds a typed password keeps running, and the password field reads **Password set. Select a secret to replace it.** The next change to that password has to be a secret.
 
 ## Related

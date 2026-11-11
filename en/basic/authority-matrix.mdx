@@ -13,7 +13,7 @@ and whether they can import or export data. The Authority Matrix helps teams
 keep data in one place while separating access by responsibility.
 
 You can assign custom roles to members or departments, then let each role
-access only the tables, apps, and workflows it needs. For tables, you can also
+access only the tables, apps, and automations it needs. For tables, you can also
 limit visible views, visible records, editable fields, and import or export
 permissions. For example, sales can maintain their own customers, finance can
 view billing fields, and leadership can view the full dataset.
@@ -26,7 +26,7 @@ view billing fields, and leadership can view the full dataset.
 | Assignee-based records | Sales reps can view and update only records assigned to them. |
 | Restricted data entry | Members can create new records without editing or deleting existing records. |
 | Sensitive fields in a shared project | Members can view order records without seeing payment or cost fields. |
-| Controlled apps and workflows | Roles can open selected apps or workflows, while unauthorized nodes stay hidden. |
+| Controlled apps and automations | Roles can open selected apps or automations, while unauthorized resources stay hidden. |
 
 ## How Permissions Work
 
@@ -34,37 +34,38 @@ The Authority Matrix assigns access by role. Users can receive permissions
 from roles assigned directly to them or from department roles. When multiple
 roles apply, Teable combines the permissions allowed by those roles.
 
-<Info>Space users with the **Manager** permission and Authority Matrix administrators can manage the Authority Matrix and are not restricted by it.</Info>
+<Info>Space users with the **Owner** permission and project admins can manage the Authority Matrix and are not restricted by it.</Info>
 
-The role list includes an `Administrators` section and a `Custom roles`
+The role list includes a `Project admins` section and a `Custom roles`
 section:
 
 <img
-  src="/images/docs/authority-matrix/2026-10-21-authority-matrix-role-list.png"
+  src="/images/docs/authority-matrix/2026-11-11-authority-matrix-role-list.png"
   alt="Authority Matrix role list"
   className="docs-screenshot"
 />
 
 Use `Add role` to create a custom role. In the role detail page, assign
-collaborators, write a short description, and configure access for each node in
+collaborators, write a short description, and configure access for each resource in
 the project:
 
 <img
-  src="/images/docs/authority-matrix/2026-10-21-authority-matrix-role-detail.png"
+  src="/images/docs/authority-matrix/2026-11-11-authority-matrix-role-detail.png"
   alt="Authority Matrix role detail page"
   className="docs-screenshot"
 />
 
 ## Configure Role Access
 
-Each table, app, and workflow has its own access setting.
+Each table, app, automation, and routine has its own access setting.
 
-| Node type | Available setting |
+| Resource type | Available setting |
 | --- | --- |
 | Table | Choose `Can edit` or `No access`. After a table is set to `Can edit`, configure its detailed permissions. |
 | App | Choose `Can access` or `No access`. This controls whether the role can open the app. |
-| Workflow | Choose `Can access` or `No access`. This controls whether the role can open the workflow. |
-| Folder | Folders are shown for navigation. If none of the child nodes are accessible, the folder is hidden for the role. |
+| Automation | Choose `Can access` or `No access`. This controls whether the role can open the automation. |
+| Routine | Choose `Can access` or `No access`. This controls whether the role can open the routine. |
+| Folder | Folders are shown for navigation. If the role cannot access any resource in a folder, a hidden icon (tooltip `auto hide`) appears beside the folder, and the role does not see it. |
 
 To configure view, record, field, and other detailed table permissions, set the
 table to `Can edit` first. A table with `No access` is hidden from members in
@@ -82,7 +83,7 @@ When a table is set to `Can edit`, configure these permission areas:
 | Import and export permissions | Whether the role can import data into the table or export table data. |
 
 <img
-  src="/images/docs/authority-matrix/2026-10-21-authority-matrix-table-permissions.png"
+  src="/images/docs/authority-matrix/2026-11-11-authority-matrix-table-permissions.png"
   alt="Authority Matrix table permissions"
   className="docs-screenshot"
 />
@@ -108,12 +109,12 @@ members cannot access content controlled by the Authority Matrix.
 ## Notes
 
 - After the Authority Matrix is enabled, users whose Space permission is below
-  `Manager` are restricted by it unless they are added as Authority Matrix
-  administrators.
+  `Owner` are restricted by it unless they are added as project
+  admins.
 - The user who enables the Authority Matrix is automatically added to
-  `Administrators`.
+  `Project admins`.
 - New custom roles are enabled when they are created from `Add role`, but each
-  table, app, and workflow still needs its own access setting.
+  table, app, automation, and routine still needs its own access setting.
 - A table set to `No access` for a role is hidden from that role, even if its
   detailed permission options were edited earlier.
 - Assigning a role from `Add user` or `Add from organization` can add selected

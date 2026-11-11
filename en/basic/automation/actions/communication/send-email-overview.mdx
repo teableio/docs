@@ -15,9 +15,9 @@ Please note: if you add actions manually, AI will not recognize or modify them l
 
 Open the AI Chat in your table's right sidebar and describe what you want.
 
-AI handles everything: it picks the right trigger, chooses the appropriate actions, maps the fields, and configures the entire workflow automatically.
+AI handles everything: it picks the right trigger, chooses the appropriate actions, maps the fields, and configures the entire automation automatically.
 
-Describe the goal once, and the workflow is ready — no manual setup needed.
+Describe the goal once, and the automation is ready with no manual setup.
 
 This action sends an email to one or more recipients. You can customize recipients, subject, body, and reply-to address, and use dynamic values from previous steps to personalize each message.
 
@@ -30,19 +30,19 @@ By default, emails are sent from Teable's built-in mail service. If you need to 
 | To | Yes* | Recipient email address(es). Separate multiple addresses with commas |
 | Subject | Yes | The subject line. Supports dynamic variables via **+** |
 | Body | Yes | The email body. Supports Markdown, HTML, and dynamic variables |
-| Sender Name | No | The display name shown in the recipient's inbox (e.g., "Acme Support") |
+| Sender name | No | The display name shown in the recipient's inbox (e.g., "Acme Support") |
 | CC | No | Carbon copy recipients |
-| BCC | No | Blind carbon copy recipients |
-| Reply-To | No | The address recipients reply to (if different from the sender) |
+| Bcc | No | Blind carbon copy recipients |
+| Reply To | No | The address recipients reply to (if different from the sender) |
 | Custom email server | No | Sends this action through a specific SMTP account, leaving other automations untouched |
 
-\* At least one of **To** or **BCC** is required.
+\* At least one of **To** or **Bcc** is required.
 
 **Rate limit:** 5 emails / second / project.
 
 ## How to set it up
 
-1. Add a **Send Email** action to your workflow.
+1. Add a **Send email** action to your automation.
 2. In the **To** field, enter a static email address or click **+** to insert a dynamic value (e.g., the Email field from the trigger record).
 3. Write the **Subject**. Click **+** to include dynamic values like the record's name or a status. Example: `New order from {{Customer Name}} — #{{Order ID}}`.
 4. Write the **Body**. You can use:
@@ -50,20 +50,20 @@ By default, emails are sent from Teable's built-in mail service. If you need to 
    - **Markdown** — use `**bold**`, `*italic*`, `- lists`, `[links](url)`, etc.
    - **HTML** — for full control over formatting, write HTML tags directly.
    - **Dynamic variables** — click **+** anywhere in the body to insert values from previous steps.
-5. (Optional) Set **Sender Name**, **CC**, **BCC**, or **Reply-To** as needed.
+5. (Optional) Set **Sender name**, **CC**, **Bcc**, or **Reply To** as needed.
 6. Save the action.
 
 ### Give this action its own SMTP
 
 To send this one action through a different SMTP account, click **Add config** under **Custom email server** and fill in the host, port, username, and sender details.
 
-The password is no longer typed in. Click **Select a secret** to pick one of the secrets granted to this automation, or **Add secret** to create one (default variable name `SMTP_PASSWORD`; a second SMTP account in the same workflow is numbered `SMTP_PASSWORD_2`). The action stores a reference, so the plain value never enters the workflow configuration and run history and exports show it masked.
+The password is no longer typed in. Click **Select a secret** to pick one of the secrets granted to this automation, or **Add secret** to create one (default variable name `SMTP_PASSWORD`; a second SMTP account in the same automation is numbered `SMTP_PASSWORD_2`). The action stores a reference, so the plain value never enters the automation configuration and run history and exports show it masked.
 
 **Reset** clears the config, and the action goes back to the default email server.
 
 With Teable's built-in email service, emails always include an unsubscribe link and skip recipients who have unsubscribed. Once you set a custom email server for the action, an **Add unsubscribe link** switch appears and is off by default: emails go out without an unsubscribe link and are not filtered by unsubscribe status, which suits replies and notifications. Turn the switch on for marketing emails.
 
-<Info>This dialog does not send a test email. Once it is configured, run the workflow once to confirm delivery.</Info>
+<Info>This dialog does not send a test email. Once it is configured, run the automation once to confirm delivery.</Info>
 
 ## Using variables in subject and body
 
@@ -99,7 +99,7 @@ You can mix Markdown and dynamic variables in the same body. For complex email d
 
 - **Send order confirmations.** When a new order is created, send an email with the order details and a thank-you message.
 - **Notify team members of status changes.** When a task moves to "Blocked", email the assignee and their manager.
-- **Deliver scheduled reports.** Combine with a scheduled trigger and Get Records to email a weekly summary.
+- **Deliver scheduled reports.** Combine with a scheduled trigger and Get records to email a weekly summary.
 - **Send personalized outreach.** Use record data to customize subject and body for each recipient.
 - **Confirm form submissions.** After a form is submitted, send the submitter a confirmation with their responses.
 

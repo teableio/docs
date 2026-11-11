@@ -1,10 +1,10 @@
 ---
-title: "Conditional Lookup: find matching table records"
-description: "Find values in another table using filter conditions, without creating a Link field first. Configure matching rules for customer lookups or period comparisons."
-sidebarTitle: "Conditional Lookup"
+title: "Conditional lookup: find matching table records"
+description: "Find values in another table using filter conditions, without creating a Link to record field first. Configure matching rules for customer lookups or period comparisons."
+sidebarTitle: "Conditional lookup"
 ---
 
-Conditional Lookup can fetch matching data from a target table without creating a link relationship first. It is useful when the lookup needs to change based on field values in the current record, such as finding the top-selling product in the same category or looking up data for a matching period.
+Conditional lookup can fetch matching data from a target table without creating a link relationship first. It is useful when the lookup needs to change based on field values in the current record, such as finding the top-selling product in the same category or looking up data for a matching period.
 
 ## Use Cases
 
@@ -19,7 +19,7 @@ Conditional Lookup can fetch matching data from a target table without creating 
 
 <Steps>
   <Step title="Create a conditional lookup field">
-    Click the `+` icon on the right side of a field name, choose **Conditional Lookup**, and enter a field title, such as "Related orders".
+    Click the `+` icon on the right side of a field name, choose **Conditional lookup**, and enter a field title, such as "Related orders".
   </Step>
   <Step title="Choose the target table">
     In the target table dropdown, choose the table to query.
@@ -30,7 +30,7 @@ Conditional Lookup can fetch matching data from a target table without creating 
   <Step title="Set filter conditions">
     Add filter conditions, choose the field, condition type, and comparison value. The comparison value can be a static value or a field from the current table.
 
-    When matching across tables, you can use **is** to compare a Link field in the target table with a text field or a formula that returns a single text value in the current table. Click **Use field value** and select the field to match against linked record titles.
+    When matching across tables, you can use **is** to compare a Link to record field in the target table with a text field or a formula that returns a single text value in the current table. Click **Use field value** and select the field to match against linked record titles.
   </Step>
   <Step title="Configure sorting and limits">
     Set the sort field, sort direction, and number of records to show when needed.
@@ -51,13 +51,13 @@ At least one filter condition is required. For multiple conditions, choose "All 
 - Period sales summary table, with fields such as period, start date, end date, and sales amount
 - Sales detail table, with fields such as sales amount and sales date
 
-In the period sales summary table, calculate period-over-period growth for each period. First use Conditional Rollup to calculate current period sales, then use Conditional Lookup to fetch previous period sales, and finally use a Formula field to calculate the growth rate.
+In the period sales summary table, calculate period-over-period growth for each period. First use Conditional rollup to calculate current period sales, then use Conditional lookup to fetch previous period sales, and finally use a Formula field to calculate the growth rate.
 
 **Steps**
 
 **Create a conditional rollup field for current period sales**
 
-1. In the period sales summary table, create a Conditional Rollup field named "Current period sales"
+1. In the period sales summary table, create a Conditional rollup field named "Current period sales"
 2. Target table: Sales detail table
 3. Rollup field: Sales amount
 4. Filter conditions:
@@ -67,7 +67,7 @@ In the period sales summary table, calculate period-over-period growth for each 
 
 **Create a conditional lookup field for previous period sales**
 
-1. Create a Conditional Lookup field named "Previous period sales"
+1. Create a Conditional lookup field named "Previous period sales"
 2. Target table: Period sales summary table (this table)
 3. Field: Current period sales
 4. Filter condition:
@@ -93,7 +93,7 @@ In the categories table, find the top-selling product for each category to ident
 
 **Top-selling product**
 
-1. In the categories table, create a Conditional Lookup field named "Top-selling product"
+1. In the categories table, create a Conditional lookup field named "Top-selling product"
 2. Target table: Products table
 3. Lookup field: Product name
 4. Filter condition:
@@ -103,7 +103,7 @@ In the categories table, find the top-selling product for each category to ident
 
 **Sales volume**
 
-1. Create another Conditional Lookup field named "Sales volume"
+1. Create another Conditional lookup field named "Sales volume"
 2. Target table: Products table
 3. Lookup field: Sales volume
 4. Filter condition:
@@ -118,7 +118,7 @@ In the categories table, find the top-selling product for each category to ident
     Some complex field types, such as images and attachments, may not support filter conditions.
   </Accordion>
 
-  <Accordion title="What is the difference between Conditional Lookup and a regular Lookup field?">
-    A regular Lookup field requires a Link field first. Conditional Lookup can match data in the target table directly with filter conditions.
+  <Accordion title="What is the difference between Conditional lookup and a regular Lookup field?">
+    A regular Lookup field requires a Link to record field first. Conditional lookup can match data in the target table directly with filter conditions.
   </Accordion>
 </AccordionGroup>

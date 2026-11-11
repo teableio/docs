@@ -19,7 +19,7 @@ For users unfamiliar with projects, you can think of them as workbooks in Excel,
 2. Click "Create a project" in the upper right corner
 
 <img
-  src="/images/docs/base/2026-10-21-space-create-project.png"
+  src="/images/docs/base/2026-11-11-space-create-project.png"
   alt="Create a project"
   className="docs-screenshot"
 />
@@ -32,9 +32,9 @@ The template center holds projects you can use as they are. Open it from **Templ
 
 If the template's automations need external platforms connected, the template detail lists those platforms. After installing, Teable opens the project's chat and shows a **Connect accounts** card above the input box:
 
-1. Connect accounts platform by platform. When a platform needs more than one account (for example, two YouTube channels), each account gets its own row and is bound separately. If you have connected only one account for a platform under **Settings** → **Integrations**, it is bound automatically; if you have connected several, click **Authorize mine** to choose which one to use. For a platform you haven't connected yet, click **Connect account** to run an OAuth flow.
+1. Connect accounts platform by platform. When a platform needs more than one account (for example, two YouTube channels), each account gets its own row and is bound separately. If you have connected only one account for a platform under **Settings** → **Integrations**, it is bound automatically; if you have connected several, click **Use my account** to choose which one to use. For a platform you haven't connected yet, click **Connect account** to run an OAuth flow.
 2. Entries that need an API key are listed under **Keys to enter**. Click **Enter** to create one, or pick a secret you already saved.
-3. Click **Start**. Every workflow and [routine](/en/basic/ai/routine) whose credentials are complete is switched on. Those that run on a schedule take their first run right away, which you can follow in the run history; those triggered by a third-party app event wait for the first event.
+3. Click **Start**. Every automation and [routine](/en/basic/ai/routine) whose credentials are complete is switched on. Those that run on a schedule take their first run right away, which you can follow in the run history; those triggered by a third-party app event wait for the first event.
 
 Click **Later** to put the card away for now. As long as the project still has an integration that is not connected, the page shows **N integrations are not connected**; click **Connect** to fill it in at any time. See [Credentials and Integrations](/en/basic/credential).
 
@@ -54,7 +54,7 @@ Click the project name in the top-left corner, or click **...** next to the proj
 4. Click "Rename" or "Delete"
 
 <img
-  src="/images/docs/base/2026-10-21-space-project-menu.png"
+  src="/images/docs/base/2026-11-11-space-project-menu.png"
   alt="Rename or delete a project"
   className="docs-screenshot"
 />
@@ -67,9 +67,9 @@ Common operations include:
 
 - **Create folders**: Create folders in the project directory to group related resources.
 - **Move resources**: Drag tables, apps, or automations into folders, or drag them to reorder.
-- **Organize hierarchy**: Folders can contain child nodes. Keep the hierarchy shallow enough for easy navigation.
+- **Organize hierarchy**: Folders can hold tables, apps, and other resources, as well as subfolders. Keep the hierarchy shallow enough for easy navigation.
 - **Add descriptions**: For tables, apps, and automations, click **Add description** under the resource name in the header. Use descriptions to record purpose, owner, handoff notes, or usage rules. Teable opens a description the first time you open its resource, and once more after it changes.
-- **Check node info**: Open a resource's `...` menu and choose **Node info** to view the folder, table, automation, or app ID, plus created and modified information.
+- **View details**: Open a resource's `...` menu and choose **Details** to view the folder, table, automation, or app ID, plus created and modified information.
 
 ### Command Palette {#command-palette}
 
@@ -78,6 +78,8 @@ Press `Ctrl + K` (Mac: `Command + K`), or click the search icon at the top of th
 - **Jump to a resource**: Type a name to find tables, views, apps, and other resources. With nothing typed, the palette lists **Recently visited** resources and views. If nothing matches, you can create a table with that name, or use **Search in current table** to look for what you typed.
 - **Run a command**: Type a command name to run it, or start with `>` to search commands only. Commands create tables, dashboards, apps, automations, routines, folders, or views, invite collaborators, switch the appearance, or open settings and keyboard shortcuts.
 - **Ask Cuppy**: Inside a project, type a question and choose **Ask Cuppy** to send it to AI Chat along with the current project, table, and view. See [AI Chat](/en/basic/ai/ai-chat).
+
+When you open the command palette from the space sidebar, results are split into tabs by resource type, and chats whose name or messages match are listed as well. See [Manage Chats](/en/basic/ai/ai-chat#manage-chats).
 
 ### Duplicate a Project to Another Space {#duplicate-a-base-to-another-space}
 
@@ -89,10 +91,10 @@ Step 3: In the popup, choose the target space. You need Creator permissions in t
 
 For larger projects, Teable shows progress in the duplicate dialog while it copies the project structure, records, and attachments. Keep the dialog open until the copy finishes. Revision history and collaborators are not copied.
 
-If the project contains Link, Lookup, Rollup, Conditional Lookup, or Conditional Rollup fields that point to another Space, Teable shows the affected fields before duplication. If you continue, Teable converts those fields to **Single line text** in the duplicated project.
+If the project contains Link, Lookup, Rollup, Conditional lookup, or Conditional rollup fields that point to another Space, Teable shows the affected fields before duplication. If you continue, Teable converts those fields to **Single line text** in the duplicated project.
 
 <img
-  src="/images/docs/base/2026-10-21-base-duplicate-dialog.png"
+  src="/images/docs/base/2026-11-11-base-duplicate-dialog.png"
   alt="Duplicate a project to another space"
   className="docs-screenshot"
 />
@@ -105,7 +107,7 @@ If you have the required Space permissions, you can move a project to another Sp
 
 You can move tables, folders, apps, automations, and routines to another project in the same Space. Their data and configuration stay the same; only the project they belong to changes.
 
-<Warning>The pre-move check cannot guarantee that it finds every reference. Some references in automation scripts or app code can be missed. After moving, make sure to check that your workflows are not affected, and adjust anything that is.</Warning>
+<Warning>The pre-move check cannot guarantee that it finds every reference. Some references in automation scripts or app code can be missed. After moving, make sure to check that your automations are not affected, and adjust anything that is.</Warning>
 
 1. In the project directory, open the resource's `...` menu and select **Move**.
 2. Choose a project under **Target project**. Teable first checks what the move will affect.
@@ -116,7 +118,7 @@ The check only reads the project's configuration and does not change any data. I
 
 - **Whether the move is allowed**: Teable shows the reason and blocks the move when the target project is in a different Space, either project is read-only, you lack permission, or the target project already has a folder with the same name.
 - **Resources that may stop working**: Automations and apps that stay in the current project but reference a moved table may stop working after the move. For example, an automation trigger or action points to the table, a script or HTTP request contains the table ID, or an app signs in with the table or references it in code.
-- **Cross-project links**: Link fields between a moved table and a table that stays behind become cross-project links and keep working.
+- **Cross-project links**: Link to record fields between a moved table and a table that stays behind become cross-project links and keep working.
 
 **Move everything referenced** is on by default and moves the resources along the reference chain together, so no broken references are left behind. Linked tables do not move.
 
@@ -147,7 +149,7 @@ A Teable project export file (`.tea`) contains project structure and configurati
 4. Choose **Teable file** and upload the `.tea` file.
 
 <img
-  src="/images/docs/base/2026-10-21-space-more-menu-import.png"
+  src="/images/docs/base/2026-11-11-space-more-menu-import.png"
   alt="Import a project from a .tea file"
   className="docs-screenshot"
 />
@@ -168,7 +170,7 @@ Export a Teable project file (`.tea`) to back up its structure and configuration
 7. Click **Download** in the export dialog to save the `.tea` file.
 
 <img
-  src="/images/docs/base/2026-10-21-base-export-dialog.png"
+  src="/images/docs/base/2026-11-11-base-export-dialog.png"
   alt="Export a project to a .tea file"
   className="docs-screenshot"
 />
@@ -182,10 +184,10 @@ Export a Teable project file (`.tea`) to back up its structure and configuration
 
 ## Share a Project {#share-a-base}
 
-Projects can be shared through public links. The sharing scope can be the entire project or the currently selected item.
+Projects can be shared through public links. The sharing scope can be the entire project or a single resource in it.
 
 1. Enter the target project
-2. Open the share menu for the project or selected item
+2. Open the share menu for the project or resource
 3. Turn on **Share to web**
 4. Copy the share link or QR code
 
@@ -199,13 +201,13 @@ Sharing scopes include:
 
 | Scope | Description |
 |------|------|
-| **Share entire project** | Shares all items in the current project. New tables and folders added later are automatically included. |
-| **Share selected item** | Shares the currently selected item. When a folder is shared, its child items are included. |
+| Entire project | Open **Share** from the project's share menu to share every resource in the project. New tables and folders added later are automatically included. |
+| Single resource | Open **Share** from a resource's share menu to share only that resource. Sharing a folder includes the resources inside it; when sharing from a table, you can switch between **Share table** and **Share view**. |
 
-In the share settings, you can configure link permissions, regenerate the link, or delete the share link. Expand **Advanced** to set **Allow viewers to copy data**, **Restrict by password**, and **Embed config**. When you turn on password access, Teable generates a random password; click **Copy link and password** to send both to visitors at once. See [Share Link Protection](/en/basic/security#share-link-protection).
+Only project members with the Owner or Creator role can see and manage the share links, QR codes, and embed code of a project and its resources; other members can only see whether something is shared. View sharing follows the view's own share permission; see [Collaboration Permission Details](/en/basic/space/space-permission). In the share settings, you can configure link permissions, regenerate the link, or delete the share link. Expand **Advanced** to set **Allow viewers to copy data**, **Restrict by password**, and **Embed config**. When you turn on password access, Teable generates a random password; click **Copy link and password** to send both to visitors at once. See [Share Link Protection](/en/basic/security#share-link-protection).
 
 <img
-  src="/images/docs/base/2026-10-30-base-share-dialog.png"
+  src="/images/docs/base/2026-11-11-base-share-dialog.png"
   alt="Project sharing settings with Advanced collapsed by default"
   className="docs-screenshot"
 />

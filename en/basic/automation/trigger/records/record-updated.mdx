@@ -4,7 +4,7 @@ description: "Run an automation when an existing record changes. Select watch fi
 sidebarTitle: "When record updated"
 ---
 
-<Tip>Please note: all trigger setup can be done in AI chat. Tell AI what you want the workflow to do, and it will handle the rest.</Tip>
+<Tip>Please note: all trigger setup can be done in AI chat. Tell AI what you want the automation to do, and it will handle the rest.</Tip>
 
 This trigger runs when an existing record is modified. It does not fire on creation.
 
@@ -14,7 +14,7 @@ Open the AI Chat in your table's right sidebar and describe what you want.
 
 AI handles everything: it chooses the right trigger, maps the relevant fields, and sets up all actions automatically.
 
-Describe the goal once, and the workflow is ready — no manual setup needed.
+Describe the goal once, and the automation is ready with no manual setup.
 
 **Example:** *"When the status field changes, send an email to the assignee."*
 
@@ -23,7 +23,7 @@ Describe the goal once, and the workflow is ready — no manual setup needed.
 | Setting | Required | Description |
 |---|---|---|
 | Table | Yes | The table to watch for changes |
-| Watch Fields | Yes | Choose specific fields to monitor, or select "All Fields" to trigger on any change |
+| Watch fields | Yes | Choose specific fields to monitor, or click **Watch all** to trigger on any change |
 | Filter | No | Only trigger if the updated record matches these conditions after the change |
 
 ## How to set it up
@@ -31,17 +31,17 @@ Describe the goal once, and the workflow is ready — no manual setup needed.
 1. Open your automation and add a new trigger.
 2. Select **When record updated**.
 3. Choose the **Table** you want to monitor.
-4. In **Watch Fields**, select one or more specific fields. For example, choose only "Status" if you want to react to status changes.
+4. In **Watch fields**, select one or more specific fields. For example, choose only "Status" if you want to react to status changes.
 5. (Optional) Add a **Filter** to further narrow which updates fire the trigger. For example, `Status` equals `Done` will only fire when a record's status is changed to "Done".
 6. Save and activate the automation.
 7. Add your action steps. Click **+** in any action field to insert values from the updated record.
 
-## Understanding Watch Fields
+## Understanding Watch fields
 
-The Watch Fields setting is the most important part of this trigger:
+The Watch fields setting is the most important part of this trigger:
 
 - **Specific fields (recommended):** Select only the fields you care about. The trigger only fires when one of these fields changes. All other edits to the record are ignored.
-- **All Fields:** The trigger fires whenever *any* field in the record changes. This includes computed fields, last-modified timestamps, and minor edits you might not care about.
+- **All fields (Watch all):** The trigger fires whenever *any* field in the record changes. This includes computed fields, last-modified timestamps, and minor edits you might not care about.
 
 **Why specific fields are better in most cases:**
 
@@ -49,21 +49,21 @@ The Watch Fields setting is the most important part of this trigger:
 - Prevents accidental loops (see below).
 - Makes your automation's purpose clearer to anyone reading it.
 
-Choose "All Fields" only when you genuinely need to react to every possible change — for example, a full audit log.
+Watch all fields only when you genuinely need to react to every possible change — for example, a full audit log.
 
-<Tip>It is strongly recommended to select specific watch fields. Selecting "All Fields" can cause the workflow to fire on unrelated edits, waste automation runs, and lead to unexpected behavior.</Tip>
+<Tip>It is strongly recommended to select specific watch fields. Watching all fields can cause the automation to fire on unrelated edits, waste automation runs, and lead to unexpected behavior.</Tip>
 
 ### Computed fields
 
-[Formula](/en/basic/field/formula), [Lookup](/en/basic/field/lookup), [Rollup](/en/basic/field/rollup), [Conditional Lookup](/en/basic/field/conditional-lookup), and [Conditional Rollup](/en/basic/field/conditional-rollup) values come from Teable's own calculation rather than from typing, and a recalculation only fires this trigger when you name the computed field in **Watch Fields**. All five behave the same way.
+[Formula](/en/basic/field/formula), [Lookup](/en/basic/field/lookup), [Rollup](/en/basic/field/rollup), [Conditional lookup](/en/basic/field/conditional-lookup), and [Conditional rollup](/en/basic/field/conditional-rollup) values come from Teable's own calculation rather than from typing, and a recalculation only fires this trigger when you name the computed field in **Watch fields**. All five behave the same way.
 
-This lets you react to a derived result instead of to the raw inputs behind it. Watch a `Total amount` Formula field and the workflow runs whenever the total actually changes, no matter which of the underlying fields moved. Watch a Rollup of linked tasks and the workflow runs when the rolled-up value changes, including when the change came from an edit in the linked table.
+This lets you react to a derived result instead of to the raw inputs behind it. Watch a `Total amount` Formula field and the automation runs whenever the total actually changes, no matter which of the underlying fields moved. Watch a Rollup of linked tasks and the automation runs when the rolled-up value changes, including when the change came from an edit in the linked table.
 
 ## Common pitfall: update loops
 
-<Warning>If your workflow includes an Update Record action that writes to the same table and updates a watched field, the trigger will fire again, creating an infinite loop.</Warning>
+<Warning>If your automation includes an Update record action that writes to the same table and updates a watched field, the trigger will fire again, creating an infinite loop.</Warning>
 
-If your automation is triggered by updates to a table and also has an **Update Record** action that writes back to the *same table*, you can create an infinite loop:
+If your automation is triggered by updates to a table and also has an **Update record** action that writes back to the *same table*, you can create an infinite loop:
 
 1. A field changes → trigger fires.
 2. The automation updates another field in the same record → trigger fires again.
@@ -71,7 +71,7 @@ If your automation is triggered by updates to a table and also has an **Update R
 
 **How to avoid this:**
 
-- Watch only specific fields, and make sure your Update Record action writes to *different* fields than the ones being watched.
+- Watch only specific fields, and make sure your Update record action writes to *different* fields than the ones being watched.
 - Use a filter condition to stop the loop. For example, only trigger when `Status` does not equal `Processed`, and have your action set `Status` to `Processed`.
 - If your action must update the same field, consider using the [When record matches conditions](/en/basic/automation/trigger/records/record-matches-conditions) trigger instead, which fires only on transitions.
 
@@ -79,7 +79,7 @@ If your automation is triggered by updates to a table and also has an **Update R
 
 - **Sync price changes to an external system.** Watch the "Price" field. When it changes, send an HTTP request to update the price in your e-commerce platform.
 - **Send a notification when a task's status changes.** Watch the "Status" field. When a task moves to "Blocked" or "Done", notify the assignee or manager.
-- **Log field changes for auditing.** Watch "All Fields" and create a record in an audit log table with the old and new values.
+- **Log field changes for auditing.** Watch all fields and create a record in an audit log table with the old and new values.
 - **Update a linked record when a parent changes.** Watch key fields on a project record. When the project deadline changes, update all linked tasks.
 - **Trigger a recalculation in another system.** Watch numeric fields like "Quantity" or "Unit Price". When they change, call an API to recalculate totals.
 
@@ -94,4 +94,4 @@ If your automation is triggered by updates to a table and also has an **Update R
 
 - [When record matches conditions](/en/basic/automation/trigger/records/record-matches-conditions) — fires only on state transitions, not every edit
 - [When record created](/en/basic/automation/trigger/records/record-created) — fires on new records, not updates
-- [Update record action](/en/basic/automation/actions/records/update-record) — the action counterpart for modifying records in workflows
+- [Update record action](/en/basic/automation/actions/records/update-record) — the action counterpart for modifying records in automations

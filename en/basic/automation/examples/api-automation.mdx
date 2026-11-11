@@ -1,10 +1,10 @@
 ---
 title: "Build automations programmatically with the API"
-description: "Use a personal access token and JavaScript to create workflows through the API, add triggers and actions, then test and enable the automation."
+description: "Use a personal access token and JavaScript to create automations through the API, add triggers and actions, then test and enable the automation."
 ---
 
 {/* mintlify-resync: 2026-05-14 */}
-<Tip>We recommend building automation examples directly in AI chat. Just describe the workflow you want, and AI will handle the full setup for you, including the trigger, actions, script, and configuration.</Tip>
+<Tip>We recommend building automation examples directly in AI chat. Just describe the automation you want, and AI will handle the full setup for you, including the trigger, actions, script, and configuration.</Tip>
 
 ## Build with AI
 
@@ -12,7 +12,7 @@ Open the AI Chat in your table's right sidebar and tell AI what you want. For ex
 
 *"Create an automation that watches for order status changes and sends a webhook notification when an order ships"*
 
-AI will create the complete workflow automatically. You can review the generated script, test it with real data, and enable the workflow when ready.
+AI will create the complete automation automatically. You can review the generated script, test it with real data, and enable the automation when ready.
 
 ## Prerequisites
 
@@ -42,10 +42,10 @@ async function api(method, path, body) {
 }
 ```
 
-## Create the Workflow
+## Create the Automation {#create-the-workflow}
 
 ```javascript
-// 1. Create a workflow
+// 1. Create an automation
 const wf = await api("POST", `/base/${baseId}/workflow`, {
   name: "Notify on shipment",
   description: "Send webhook when order status becomes Shipped",
@@ -60,7 +60,7 @@ const trigger = await api("POST", `/base/${baseId}/workflow/${wf.id}/trigger`, {
 // 3. Test the trigger
 await api("POST", `/base/${baseId}/workflow/${wf.id}/test/${trigger.id}`);
 
-// 4. Add an HTTP Request action
+// 4. Add an HTTP request action
 const action = await api("POST", `/base/${baseId}/workflow/${wf.id}/action`, {
   type: "httpRequest",
   parentNodeId: trigger.id,

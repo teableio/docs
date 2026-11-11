@@ -1,5 +1,5 @@
 ---
-title: "Run Script action: custom JavaScript automations"
+title: "Run script action: custom JavaScript automations"
 description: "Write JavaScript in an automation sandbox, read trigger data and earlier outputs, and return results for later steps. Find input formats and code examples."
 sidebarTitle: "Write automation scripts"
 ---
@@ -21,7 +21,7 @@ Scripts receive data from previous steps via the `input` object and pass results
 |---|---|---|
 | Create, update, or get records | Yes | Only if you need complex logic around it |
 | Send a simple email | Yes | No |
-| Call a single API endpoint | Yes (HTTP Request) | Only if you need to process the response in complex ways |
+| Call a single API endpoint | Yes (HTTP request) | Only if you need to process the response in complex ways |
 | Transform data between steps | Sometimes | Yes — when you need conditional logic, loops, or string manipulation |
 | Parse complex JSON structures | No | Yes |
 | Calculate dates, format numbers | No | Yes |
@@ -41,7 +41,7 @@ In general, use built-in actions when they fit your needs. Use Run script when y
 
 ## How to set it up
 
-1. Add a **Run script** action to your workflow.
+1. Add a **Run script** action to your automation.
 2. The script editor opens with a blank canvas. Write your JavaScript code here.
 3. Your script can read data from previous steps using the `input` object (see below).
 4. Use `output.set(key, value)` to pass results to subsequent steps.
@@ -52,7 +52,7 @@ In general, use built-in actions when they fit your needs. Use Run script when y
 
 ## Reading input data
 
-The `input` object contains data from all previous steps in the workflow. Each step is identified by its action ID.
+The `input` object contains data from all previous steps in the automation. Each step is identified by its action ID.
 
 ### Input structure
 
@@ -79,7 +79,7 @@ const customerName = fields.fldXXXXXXX;  // Replace with actual field ID
 const orderAmount = fields.fldYYYYYYY;
 ```
 
-### Getting data from a Get Records step
+### Getting data from a Get records step
 
 ```javascript
 const actionIds = Object.keys(input);
@@ -217,7 +217,7 @@ Attachments are `{ url, mimetype, name }` items, up to 10 per call, each under 2
 
 ## Error handling
 
-Always wrap risky operations in try/catch blocks so your workflow can handle failures gracefully:
+Always wrap risky operations in try/catch blocks so your automation can handle failures gracefully:
 
 ```javascript
 try {

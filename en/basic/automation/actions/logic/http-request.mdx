@@ -1,6 +1,6 @@
 ---
-title: "HTTP Request action: call an external API"
-description: "Configure an automation request with a URL, method, headers and body. Add API authentication and use response data in later workflow steps."
+title: "HTTP request action: call an external API"
+description: "Configure an automation request with a URL, method, headers and body. Add API authentication and use response data in later automation steps."
 sidebarTitle: "HTTP request"
 ---
 
@@ -15,9 +15,9 @@ Please note: if you add actions manually, AI will not recognize or modify them l
 
 Open the AI Chat in your table's right sidebar and describe what you want.
 
-AI handles everything: it picks the right trigger, chooses the appropriate actions, maps the fields, and configures the entire workflow automatically.
+AI handles everything: it picks the right trigger, chooses the appropriate actions, maps the fields, and configures the entire automation automatically.
 
-Describe the goal once, and the workflow is ready — no manual setup needed.
+Describe the goal once, and the automation is ready with no manual setup.
 
 Sends an HTTP request to any URL and returns the response. Use it to call REST APIs, send notifications to Slack or Discord, push data to CRMs, or interact with any service that has an HTTP API.
 
@@ -33,7 +33,7 @@ Sends an HTTP request to any URL and returns the response. Use it to call REST A
 
 ## How to set it up
 
-1. Add an **HTTP Request** action to your workflow.
+1. Add an **HTTP request** action to your automation.
 2. Enter the **URL** of the API endpoint. You can use **+** to insert dynamic values (e.g., include a Record ID in the URL path).
 3. Choose the **Method**:
    - **GET** — retrieve data.
@@ -88,7 +88,7 @@ You will need to Base64-encode your credentials outside of Teable or use a Scrip
 Goal: Post a message to a Slack channel when a new record is created.
 
 1. **Trigger:** When record created.
-2. **Action:** HTTP Request with:
+2. **Action:** HTTP request with:
    - **URL:** `https://hooks.slack.com/services/T00/B00/xxxx` (your Slack webhook URL)
    - **Method:** POST
    - **Content-Type:** `application/json`
@@ -109,7 +109,7 @@ After the HTTP request runs, the response is available to subsequent actions:
 
 You can reference specific fields from the response using the **+** variable picker in later steps. For example, if the API returns `{"id": "abc123", "status": "created"}`, you can reference `id` and `status` individually. When inserting dynamic values with **+**, you can also use field paths and formatting options when an external API requires a specific request format.
 
-This is useful for chaining API calls — for example, create something via POST, get back an ID, then use that ID in a subsequent Update Record or another HTTP request.
+This is useful for chaining API calls — for example, create something via POST, get back an ID, then use that ID in a subsequent Update record or another HTTP request.
 
 ## When to use
 
@@ -117,13 +117,13 @@ This is useful for chaining API calls — for example, create something via POST
 - **Sync data with a CRM or ERP.** Push new or updated records to Salesforce, HubSpot, or any system with an API.
 - **Call any third-party API.** Interact with payment processors, shipping services, analytics tools, or custom internal APIs.
 - **Trigger external workflows.** Call Zapier webhooks, Make (Integromat) scenarios, or other automation platforms.
-- **Fetch data from external sources.** Use GET requests to pull exchange rates, weather data, or any public API data into your workflow.
+- **Fetch data from external sources.** Use GET requests to pull exchange rates, weather data, or any public API data into your automation.
 
 ## Tips
 
 - Always check the API's documentation for required headers, authentication, and expected body format.
 - Use `application/json` as the Content-Type for most modern APIs. If the API expects form data, switch to `x-www-form-urlencoded`.
-- If the API returns an error (4xx or 5xx status), the action still completes — but subsequent steps will see the error response. Check the status code in your workflow if you need conditional handling.
+- If the API returns an error (4xx or 5xx status), the action still completes — but subsequent steps will see the error response. Check the status code in your automation if you need conditional handling.
 - For APIs that return large responses, only reference the specific fields you need in subsequent steps.
 - Combine with [Loop (Batch)](/en/basic/automation/actions/logic/loop-run) to make multiple API calls, one per record. Be mindful of the external API's rate limits.
 - Use the [HTTP Array Body](/en/basic/automation/actions/logic/loop-run) feature when you need to send multiple items in a single request instead of one request per item.

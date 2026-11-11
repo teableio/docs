@@ -24,7 +24,7 @@ Beschreiben Sie Ihr Ziel einmal, und der Workflow ist bereit – eine manuelle E
 | Einstellung | Erforderlich | Beschreibung |
 |---|---|---|
 | Verbindungstyp | Ja | Nur IMAP |
-| Abfrageintervall | Ja | Wie häufig auf neue E-Mails geprüft wird: 10 bis 60 Minuten (Standard: 10) |
+| Prüfintervall | Ja | Wie häufig auf neue E-Mails geprüft wird: 10 bis 60 Minuten (Standard: 10) |
 
 ## Postfach verbinden
 
@@ -32,11 +32,11 @@ Der Trigger verbindet sich über IMAP und funktioniert damit mit jedem Anbieter,
 
 | Einstellung | Erforderlich | Beschreibung |
 |---|---|---|
-| Host | Ja | Die Adresse Ihres IMAP-Servers (z. B. `imap.gmail.com`, `imap.mail.yahoo.com`) |
+| Serveradresse | Ja | Die Adresse Ihres IMAP-Servers (z. B. `imap.gmail.com`, `imap.mail.yahoo.com`) |
 | Port | Ja | Üblicherweise 993 (SSL/TLS) oder 143 (unverschlüsselt, nicht empfohlen) |
 | Benutzername | Ja | Ihre E-Mail-Adresse oder der Benutzername Ihres Kontos |
-| Passwort | Ja | Ein dieser Automatisierung freigegebenes Secret, kein im Trigger eingetippter Wert |
-| Postfach | Nein | Der zu überwachende Ordner (standardmäßig `INBOX`) |
+| App-Passwort | Ja | Ein dieser Automatisierung freigegebenes Secret, kein im Trigger eingetippter Wert |
+| Ordner | Nein | Der zu überwachende Ordner (standardmäßig `INBOX`) |
 
 Klicken Sie beim Passwort auf **Secret auswählen**, um eines der dieser Automatisierung freigegebenen Secrets zu nehmen, oder auf **Secret hinzufügen**, um eines anzulegen (Standardvariablenname `IMAP_PASSWORD`). Hinterlegen Sie dort das App-Passwort oder den Autorisierungscode, nicht das Anmeldepasswort des Postfachs; der Trigger speichert nur die Referenz auf das Secret.
 
@@ -58,11 +58,11 @@ Sie können auf jeden dieser Werte verweisen, indem Sie in Ihren Aktionsfeldern 
 ## Einrichtung (IMAP-Beispiel)
 
 1. Öffnen Sie Ihre Automatisierung und fügen Sie einen neuen Auslöser hinzu.
-2. Wählen Sie **Wenn E-Mail empfangen wird** aus.
-3. Wählen Sie **IMAP** als Verbindungstyp aus.
-4. Geben Sie Host, Port und Benutzernamen Ihres IMAP-Servers ein und wählen oder erstellen Sie dann das Secret mit dem Passwort.
-5. (Optional) Ändern Sie das **Postfach**, wenn Sie einen anderen Ordner als INBOX überwachen möchten.
-6. Legen Sie das **Abfrageintervall** fest – also wie häufig auf neue E-Mails geprüft werden soll. Ein kürzeres Intervall führt zu schnelleren Reaktionen, aber auch zu häufigeren Serverabfragen.
+2. Wählen Sie **Wenn eine neue E-Mail eingeht** aus.
+3. Wählen Sie unter **Verbindungstyp** die Option **IMAP (Allgemein)** aus.
+4. Geben Sie die Daten Ihres IMAP-Servers ein (**Serveradresse**, **Port** und **Benutzername**) und wählen oder erstellen Sie dann das Secret mit dem Passwort.
+5. (Optional) Ändern Sie den **Ordner**, wenn Sie einen anderen Ordner als INBOX überwachen möchten.
+6. Legen Sie das **Prüfintervall** fest – also wie häufig auf neue E-Mails geprüft werden soll. Ein kürzeres Intervall führt zu schnelleren Reaktionen, aber auch zu häufigeren Serverabfragen.
 7. Klicken Sie auf **Testen**, um die Verbindung zu überprüfen. Teable versucht, eine Verbindung zu Ihrem Postfach herzustellen, und meldet Erfolg oder Fehler.
 8. Speichern und aktivieren Sie die Automatisierung.
 9. Fügen Sie Ihre Aktionsschritte hinzu und verwenden Sie dabei die E-Mail-Daten (Von, Betreff, Text usw.) als Variablen.

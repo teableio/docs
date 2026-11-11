@@ -22,7 +22,7 @@ For practical use cases, see [AI app builder examples](https://teable.ai/ai-app-
 
 There are two main ways to create an app:
 
-1. **From Project**: In any Project, click "Create App" to generate an application linked to your current data.
+1. **From Project**: In any Project, click "Create app" to generate an application linked to your current data.
 2. **From Chat**: Open AI Chat and say "Create a CRM app for this customer table".
 
 For an education example, see how [Zakrly organizes teaching data and designs student portal interfaces](https://teable.ai/customers/zakrly).
@@ -32,7 +32,7 @@ For an education example, see how [Zakrly organizes teaching data and designs st
 The App Builder provides a dual-interface for both non-technical users and developers.
 
 <img
-  src="/images/docs/ai/2026-10-21-app-builder-editor-interface.png"
+  src="/images/docs/ai/2026-11-11-app-builder-editor-interface.png"
   alt="App Builder editor interface"
   className="docs-screenshot"
 />
@@ -44,7 +44,7 @@ The command center for your app.
 - **Credential requests**: When the app needs access to a third-party account or a secret at run time, App Builder pins a card to the chat panel, such as **This app needs your Slack connection**. Click **Connect my account** to run an OAuth flow; the new connection is granted to this app right away. If you already have a usable connection or secret, just grant it; there is no need to connect again. Click **Skip** to withhold the credential; AI continues with the parts it can complete without it.
 - **Skills**: Open the **+** menu and choose **Skills** to manage skills for this app conversation. A skill added here is only available to the current app, and the skills shared with the app's project and space can be used here as well. Type `/` in the input box to choose an enabled skill.
 - **Manage files**: Open **+** → **More** → **Manage files** to view files in the app sandbox. Use it to preview supported files, download generated files, or delete files and folders you no longer need.
-- **Clear Conversation**: If the current conversation has drifted, click **Clear Chat** in the bottom-right corner of the panel to start a new session. This clears the chat history for the current conversation but does not delete the app itself. The first use shows a confirmation, and you can choose not to show it again next time.
+- **Clear Conversation**: If the current conversation has drifted, click the **`...`** button at the top of the chat panel and choose **Clear chat** to start a new session. This clears the chat history for the current conversation but does not delete the app itself. The first use shows a confirmation, and you can choose not to show it again next time.
 
 ### 2. Preview Panel
 - **Preview and Live**: The panel has two tabs. **Preview** runs the version you are building, including changes that are not published yet. **Live** loads the published app from its public address, so you can compare what your users see with what you are working on. Until the app is published, **Live** shows a publish prompt instead. App Builder opens a published app on **Live** and an unpublished one on **Preview**, and afterwards remembers the tab you last used for that app.
@@ -66,16 +66,22 @@ For infinite customization, you have direct access to the code.
 - **File Tree**: Navigate through the project structure.
 
 <img
-  src="/images/docs/ai/2026-10-21-app-builder-code-editor.png"
+  src="/images/docs/ai/2026-11-11-app-builder-code-editor.png"
   alt="App Builder code editor"
   className="docs-screenshot"
 />
 
 #### Download Code
 You can download the entire app as a ZIP archive at any time:
-1. Switch to the **Code** tab in the editor.
-2. Click the **`...`** menu in the tab bar.
+1. Click the **Settings** button (slider icon) at the top of the app and choose **Code**.
+2. Click the **`...`** menu at the top of the code view.
 3. Select **Download code**, then click **Download code** again in the dialog to save a ZIP archive that includes all source files.
+
+<img
+  src="/images/docs/ai/2026-11-11-app-builder-settings-menu.png"
+  alt="The Settings menu at the top of the app, with Sign-in settings, GitHub sync, Code, and Version history"
+  className="docs-screenshot"
+/>
 
 By default the ZIP leaves out the app's live credentials. Its root holds a `.env.example` that lists the [platform-injected runtime variables](#teable-access-token) (the ones Teable adds to every app automatically) with the Teable access token and the AI access key left blank, and a `.gitignore` that keeps `.env` files out of Git.
 
@@ -87,8 +93,8 @@ Anyone who has this `.env` can read and change all data in the project the app b
 
 #### Import Code
 You can update the app's code by importing a ZIP:
-1. Switch to the **Code** tab in the editor.
-2. Click the **`...`** menu in the tab bar.
+1. Click the **Settings** button at the top of the app and choose **Code**.
+2. Click the **`...`** menu at the top of the code view.
 3. Select **Import code** and choose a ZIP file up to 20 MB.
 
 <Note>
@@ -206,10 +212,10 @@ Link an app to a private GitHub repository when you want to review code in pull 
 
 ### Connect an Account and Create the Repository
 
-Generate the app at least once first. Until the app has code, the GitHub button shows **Generate the app first to connect GitHub** and does nothing.
+Generate the app at least once first. Until the app has code, **GitHub sync** in the **Settings** menu is grayed out and can't be selected.
 
 <Steps>
-  <Step title="Open the GitHub panel">Click the GitHub icon in the app header to open **GitHub sync**. You need edit access to the app.</Step>
+  <Step title="Open the GitHub panel">Click the **Settings** button at the top of the app and choose **GitHub sync**. You need edit access to the app.</Step>
   <Step title="Connect an account">Click **Connect GitHub** and complete the installation in the popup window. Choose your personal account or an organization you administer. Allow popups if your browser blocks the window.</Step>
   <Step title="Pick the account">Select the connected account under **GitHub account**. Click **+** to connect another one.</Step>
   <Step title="Name the repository">**Repository name** is prefilled from the app name. Names may contain letters, digits, `.`, `-`, and `_`, up to 100 characters.</Step>
@@ -272,7 +278,7 @@ Click the delete icon next to the repository name and confirm. Syncing stops, an
 ### Publishing Your App
 When your app is ready, click the **Publish** button (arrow icon) in the top right corner.
 - **Public URL**: Teable generates a secure, publicly accessible URL for your app.
-- **Custom Domain**: Map your own domain to the app.
+- **Custom domain**: Map your own domain to the app.
 - **Show branding**: Use **Show branding** in the **Publish** menu to control whether the published app shows the **Build with Teable** badge. If you change this setting after publishing, click **Redeploy** to apply it.
 - **Unpublish**: For a published app, use **Unpublish** in the publish menu to take the public link offline.
 - **App configuration changes**: When the publish menu shows **Runtime configuration changed. Redeploy to apply it to the live app** or **Branding setting changed. Redeploy to apply it to the live app**, click **Redeploy**.
@@ -281,7 +287,7 @@ When your app is ready, click the **Publish** button (arrow icon) in the top rig
 <Info>Hiding the **Build with Teable** badge requires the Business plan or above.</Info>
 
 <img
-  src="/images/docs/ai/2026-10-21-app-builder-publish-app.png"
+  src="/images/docs/ai/2026-11-11-app-builder-publish-app.png"
   alt="Publish app menu"
   className="docs-screenshot"
 />
@@ -293,7 +299,7 @@ For a public website example, see how [Waconzy brings music, tools, and digital 
 To take a published app offline, open the **Publish** menu and click **Unpublish**. After you confirm, the public app URL can no longer be accessed.
 
 <img
-  src="/images/docs/ai/2026-10-21-app-builder-unpublish.png"
+  src="/images/docs/ai/2026-11-11-app-builder-unpublish.png"
   alt="Unpublish app button in the publish menu"
   className="docs-screenshot"
 />
@@ -313,7 +319,7 @@ You can also use an available subdomain under `teable.app` and edit the `teable.
 When the space's Business plan expires, Teable notifies the space owners that the custom domain will stop resolving. Renew before then to keep the domain. If the plan isn't renewed, the custom domain stops resolving and the app's public link reverts to the default Teable address. If you upgrade to Business again later, you need to bind the custom domain again manually.
 
 <img
-  src="/images/docs/ai/2026-10-21-app-builder-custom-domain.png"
+  src="/images/docs/ai/2026-11-11-app-builder-custom-domain.png"
   alt="Custom domain settings"
   className="docs-screenshot"
 />
@@ -332,10 +338,10 @@ Leave a field empty to keep the value App Builder wrote for you. Saving applies 
 
 ### App Login
 
-Click **Add login** in the app header to require visitors to sign in before they can use the app. Once login is configured, the button changes to **Login settings**.
+Click the **Settings** button at the top of the app and choose **Add sign-in** to require visitors to sign in before they can use the app. Once sign-in is configured, the menu item changes to **Sign-in settings**; after you turn sign-in off, it shows **Sign-in disabled**.
 
 <img
-  src="/images/docs/ai/2026-10-21-app-builder-login-settings.png"
+  src="/images/docs/ai/2026-11-11-app-builder-login-settings.png"
   alt="App login settings"
   className="docs-screenshot"
 />
@@ -354,11 +360,11 @@ For examples of this feature in use, read [app login examples](https://teable.ai
 
 ### Version History & Rollback
 Teable automatically tracks every deployment.
-- Click the **History** (clock icon) button to view a list of all deployed versions.
+- Click the **Settings** button at the top of the app and choose **Version history** to view a list of all deployed versions.
 - **One-Click Rollback**: If a new update causes issues, you can instantly revert the live app to any previous stable version.
 
 <img
-  src="/images/docs/ai/2026-10-21-app-builder-version-history.png"
+  src="/images/docs/ai/2026-11-11-app-builder-version-history.png"
   alt="App version history"
   className="docs-screenshot"
 />
@@ -378,7 +384,7 @@ If your custom code changes cause a build error, the deployment will fail.
 - Clicking this lets AI analyze the compilation error and automatically patch the code to resolve the issue.
 
 ### Deleting an App
-To delete an app, click the **Settings** (gear icon) button in the header and select **Delete**.
+To delete an app, click the **`...`** button at the top of the app and select **Delete**.
 
 ## Best Practices
 
@@ -392,15 +398,15 @@ For prompt patterns, build tips, rollback advice, and common troubleshooting, se
   </Accordion>
 
   <Accordion title="How do I download or import app code?">
-    Switch to the **Code** tab in the editor, click the **`...`** menu in the tab bar, then choose **Download code** or **Import code**. Imported ZIP files can be up to 20 MB and replace the existing project, so include every source file you want to keep. The imported project must include a root `package.json`. Custom variables in a root `.env` file are stored as your secrets and granted to the app under the same names.
+    Click the **Settings** button at the top of the app and choose **Code**, click the **`...`** menu at the top of the code view, then choose **Download code** or **Import code**. Imported ZIP files can be up to 20 MB and replace the existing project, so include every source file you want to keep. The imported project must include a root `package.json`. Custom variables in a root `.env` file are stored as your secrets and granted to the app under the same names.
   </Accordion>
 
   <Accordion title="What should I do if an app's access token leaks?">
     In the chat panel, open **+** → **More** → **Credentials & config** and click **Rotate** on the **Platform credentials** card; if the app has AI access, keep both credentials selected. The old token stops working at once, and the preview and the published app switch to the new one automatically. While the published app redeploys, usually for a few minutes, it can't read or write data, and if the app has login turned on, visitors must sign in again. See [Teable Access Token](#teable-access-token).
   </Accordion>
 
-  <Accordion title="When do login settings apply to the live app?">
-    Login settings appear in the app preview environment after it reloads. Publish the app again to apply those changes to the published app.
+  <Accordion title="When do sign-in settings apply to the live app?">
+    Changes to **Sign-in settings** appear in the app preview environment after it reloads. Publish the app again to apply those changes to the published app.
   </Accordion>
 
   <Accordion title="How can an app call AI models at runtime?">
@@ -408,17 +414,17 @@ For prompt patterns, build tips, rollback advice, and common troubleshooting, se
   </Accordion>
 
   <Accordion title="How are Built-in AI and In-app AI charged?">
-    **Built-in AI** includes AI features available directly in Teable, such as AI Field generation, AI Chat, IM Bot, and App Builder. These features currently use credits at a significantly discounted rate.
+    **Built-in AI** includes AI features available directly in Teable, such as AI field generation, AI Chat, IM bots, and App Builder. These features currently use credits at a significantly discounted rate.
 
     **In-app AI** refers to AI features used inside apps created with App Builder. Usage is charged at the selected model provider's [official API price](https://vercel.com/ai-gateway/models), with no markup or discount. US$1 of API usage equals 100 credits.
   </Accordion>
 
   <Accordion title="How do I roll back to a previous version?">
-    Click the **History** (clock icon) button to view deployed versions, then restore the live app to a previous stable version.
+    Click the **Settings** button at the top of the app and choose **Version history** to view deployed versions, then restore the live app to a previous stable version.
   </Accordion>
 
-  <Accordion title="Why does App Builder say an Agent is busy in another conversation?">
-    Each user can run up to 3 Agents at the same time, including AI Chat and App Builder. If App Builder says an Agent is busy in another conversation, another task is still running. Wait for the previous task to finish before continuing.
+  <Accordion title="Why does App Builder say the concurrent conversation limit is reached?">
+    Each user can run up to 3 agents at the same time, including AI Chat and App Builder. If App Builder shows `Concurrent conversation limit (3) reached. Please wait for one to finish.`, another task is still running. Wait for the previous task to finish before continuing.
   </Accordion>
 
   <Accordion title="How are credits refunded when an App Builder run fails?">
@@ -429,7 +435,7 @@ For prompt patterns, build tips, rollback advice, and common troubleshooting, se
     If you are running Teable self-hosted, follow the setup on the [AI Settings](/en/basic/admin-panel/ai-setting) page. If App Builder uses your own key (BYOK), the chat model must come from an **OpenAI Compatible** or **Anthropic** provider. For deployment support, contact Teable at **support@teable.ai**.
 
     <Note>
-    If you select **Vercel** under **Deployment Engine**, make sure both your Teable instance and object storage (MinIO / S3) are publicly accessible, then use **Test Public Access** on the [AI Settings](/en/basic/admin-panel/ai-setting) page. This check is not required when you select **Teable Infra**.
+    If you select **Vercel** under **Deployment engine**, make sure both your Teable instance and object storage (MinIO / S3) are publicly accessible, then use **Test public access** on the [AI Settings](/en/basic/admin-panel/ai-setting) page. This check is not required when you select **Teable Infra**.
     </Note>
   </Accordion>
 </AccordionGroup>

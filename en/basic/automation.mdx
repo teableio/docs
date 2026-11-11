@@ -1,11 +1,11 @@
 ---
 title: "Build automations with triggers and actions"
 description: "Create an automation with AI or configure its steps manually. Choose a trigger, add actions, test with real data and inspect run history before rollout."
-sidebarTitle: "Build automation workflows"
+sidebarTitle: "Build automations"
 ---
 
 {/* mintlify-resync: 2026-05-26 */}
-Teable Automation makes powerful workflows simple. No code, no drag-and-drop, no complicated setup. Just tell AI what you need in plain language, and Teable takes care of the repetitive work for you.
+Teable makes powerful automations simple. No code, no drag-and-drop, no complicated setup. Just tell AI what you need in plain language, and Teable takes care of the repetitive work for you.
 
 ## Build with AI (from scratch)
 
@@ -23,46 +23,46 @@ Starting from an existing business file? Explore [workflows generated from busin
 
 You can also start from a specific trigger and let AI build the actions:
 
-1. **Add a trigger** — choose a trigger type (e.g. "When Record Created") and configure it.
-2. **Add an action** — click **+**, go to **Build with AI**, and select **Run Script**.
+1. **Add a trigger** — choose a trigger type (e.g. "When record created") and configure it.
+2. **Add an action** — click **+**, go to **Build with AI**, and select **Run script**.
 3. In the configuration panel, click **Open Editor**.
 4. Pick from the **suggestions** to get started quickly, or describe what you need in your own words.
 5. AI generates the JavaScript code. Review it, click **Apply**.
-6. Click **Test** to run the script with real data, then **Enable** the workflow.
+6. Click **Test** to run the script with real data, then **Enable** the automation.
 
 ## Build manually
 
 You can also build automations step by step using the built-in actions:
 
 1. **Add a trigger** — choose a trigger type, select the table, configure fields. Click **Test**.
-2. **Add an action** — choose an action type (Create Record, Send Email, HTTP Request, etc.), map field values using **+** to insert dynamic variables. Click **Generate Preview** or **Run as Configured**.
+2. **Add an action** — choose an action type (Create record, Send email, HTTP request, etc.), map field values using **+** to insert dynamic variables. Click **Generate Preview** or **Run as Configured**.
 3. **Enable** — click the toggle in the top-left corner.
 
-## Editing a live workflow
+## Editing a live automation {#editing-a-live-workflow}
 
-Changes are saved as a draft. The live workflow keeps running on the previous version until you click **Apply Update**.
+Changes are saved as a draft. The live automation keeps running on the previous version until you click **Update**.
 
 ## Credentials and Config
 
-An automation calls external services with your credentials: an OAuth connection or a secret you store. Open the workflow on the editing tab, click **Credentials & config** next to the test controls, grant a credential to this automation, and give it a **Variable name**.
+An automation calls external services with your credentials: an OAuth connection or a secret you store. Open the automation on the editing tab, click **Credentials & config** next to the test controls, grant a credential to this automation, and give it a **Variable name**.
 
 Script actions read that name from an environment variable such as `process.env.EXTERNAL_API_KEY`; other actions can click **Insert secret** beside an input field to insert a reference. Values are never shown in plaintext, and test results mask them.
 
 Credentials themselves live in **Settings** → **Integrations**. See [Credentials and Integrations](/en/basic/credential).
 
-### Workflows from shared projects or templates
+### Automations from shared projects or templates {#workflows-from-shared-projects-or-templates}
 
-When you save a copy of a shared project or install a template, directly entered SMTP and IMAP passwords are cleared from its workflows. Common HTTP headers such as `Content-Type` are preserved; directly entered values in other headers are cleared. Add your own credentials and check the HTTP headers before enabling the workflow. For configurations that reference secrets or connections, bind your own credentials.
+When you save a copy of a shared project or install a template, directly entered SMTP and IMAP passwords are cleared from its automations. Common HTTP headers such as `Content-Type` are preserved; directly entered values in other headers are cleared. Add your own credentials and check the HTTP headers before enabling the automation. For configurations that reference secrets or connections, bind your own credentials.
 
-If the workflow authenticates its webhook with a Bearer Token, the copy generates a new token. Copy the Webhook URL and token from the copied workflow’s trigger panel and update the external system.
+If the automation authenticates its webhook with a Bearer Token, the copy generates a new token. Copy the Webhook URL and token from the copied automation’s trigger panel and update the external system.
 
-### Viewing sensitive workflow settings
+### Viewing sensitive automation settings {#viewing-sensitive-workflow-settings}
 
 With view permission but no edit permission, Webhook tokens, directly entered email passwords, and directly entered values in other HTTP headers are masked.
 
 ## Run history
 
-Open a workflow → **Run history**. The history panel lists each run with its status, time spent, and step details. Click a run to inspect per-step input/output.
+Open an automation → **Run history**. The history panel lists each run with its status, time spent, and step details. Click a run to inspect per-step input/output.
 
 Use the history filters to narrow the list by status, duration, or date range. For failed runs, use the run detail panel to diagnose or rerun:
 
@@ -70,7 +70,7 @@ Use the history filters to narrow the list by status, duration, or date range. F
 - **Full rerun** runs every step again and may create duplicate records, emails, or notifications.
 - **Resume from failed step** is available when Teable can safely continue from the failed step.
 
-When **Resume from failed step** is unavailable, Teable explains why only **Full rerun** can be used. This can happen when the workflow was modified after the failed run, the workflow is disabled, no step finished successfully before the failure, or control-step data is missing.
+When **Resume from failed step** is unavailable, Teable explains why only **Full rerun** can be used. This can happen when the automation was modified after the failed run, the automation is disabled, no step finished successfully before the failure, or control-step data is missing.
 
 Rerun attempts are marked as retries and link back to the original run.
 
@@ -79,7 +79,7 @@ Rerun attempts are marked as retries and link back to the original run.
 | Item | Limit |
 |---|---|
 | Email sending rate | 5 / second / project |
-| Webhook receiving rate | 50 / second / project, 2 / second / workflow |
+| Webhook receiving rate | 50 / second / project, 2 / second / automation |
 | Webhook payload size | 4 MB |
 | Run quota & history retention | Varies by plan |
 
@@ -95,9 +95,9 @@ Rerun attempts are marked as retries and link back to the original run.
 
     Teable Cloud may also send critical notifications for unusual usage, such as a large daily increase or a sudden burst in a short time. The system uses recent daily and hourly run patterns, and the exact thresholds may change.
 
-    The notification opens **Space Settings** → **Billing**. When available, it shows which workflow and Project contributed the most runs. Quota reminders are based on runs counted toward your plan limit; unusual usage checks may also consider recent runs with **success**, **failed**, or **pending** status.
+    The notification opens **Space settings** → **Billing**. When available, it shows which automation and Project contributed the most runs. Quota reminders are based on runs counted toward your plan limit; unusual usage checks may also consider recent runs with **success**, **failed**, or **pending** status.
 
-    If the usage is expected, consider buying extra automation quota or changing your plan. If it is unexpected, review the top workflow and adjust or pause the related automation.
+    If the usage is expected, consider buying extra automation quota or changing your plan. If it is unexpected, review the automations with the most runs and adjust or pause them.
   </Accordion>
 </AccordionGroup>
 
