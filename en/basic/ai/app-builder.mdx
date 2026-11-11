@@ -140,13 +140,13 @@ When the app has AI access on, the confirmation lets you choose what to rotate: 
 | --- | --- |
 | Old token | Stops working at once |
 | Running preview | Switches to the new token without a restart |
-| Published app | Teable redeploys it in the background with the new token; nothing new appears in Version History. Until the redeploy finishes, usually within a few minutes, the app can't read or write project data. If the app has unpublished changes, it is not redeployed automatically (that would publish them) and you need to republish it |
+| Published app | Teable redeploys it in the background with the new token; nothing new appears in Version History. Until the redeploy finishes, usually within a few minutes, the app can't read or write project data. If the app has unpublished changes, Teable redeploys the version that is already published, and your unpublished changes stay unpublished |
 | Signed-in app users | If the app uses [App Login](#app-login), visitors must sign in again |
 | Local `.env` and downloaded code | The old token in them no longer works; copy the env variables again, or download the code with **Include .env with live credentials** selected |
 
 Some apps from older project copies share one token. Rotating one of them also rotates every other app in the project that still shares it, each to its own new token, and a notice tells you how many were rotated.
 
-Teable's automatic redeploy only switches the token and never publishes changes you haven't published; republishing is you publishing the current version from the publish panel. If you see **Credentials rotated, but the published app couldn't be updated automatically. Republish it.** or **Credentials rotated. The published app has unpublished changes, so it wasn't updated automatically; it picks up the new values when you republish.**, or this app (or an app rotated with it) still can't read data after a few minutes, republish that app so it picks up the new token. If the preview can't read data, reload the preview.
+Teable's automatic redeploy only switches the token: it rebuilds the version that is already published and never publishes changes you haven't published. Republishing is you publishing the current version from the publish panel, unpublished changes included. If you see **Credentials rotated, but the published app couldn't be updated automatically. Republish it.**, or this app (or an app rotated with it) still can't read data after a few minutes, republish that app so it picks up the new token. If the preview can't read data, reload the preview.
 
 #### When the Token Changes or Stops Working
 
@@ -196,7 +196,7 @@ You can tell App Builder what you want, such as: "Add an AI reply assistant for 
 After App Builder adds the AI feature, the app preview uses the new version. The published app uses it only after you republish.
 </Info>
 
-Teable injects the AI access key too, and the **Platform credentials** card shows it next to the access token. To replace it, click **Rotate** on the card and select only **AI access key**: the old key stops working at once, the running preview switches to the new key, and the published app redeploys in the background; its AI calls fail until that finishes. Rotating only the AI access key doesn't sign visitors out. If the app has unpublished changes, it is not redeployed automatically; if AI calls still fail after a few minutes, republish the app.
+Teable injects the AI access key too, and the **Platform credentials** card shows it next to the access token. To replace it, click **Rotate** on the card and select only **AI access key**: the old key stops working at once, the running preview switches to the new key, and the published app redeploys in the background; its AI calls fail until that finishes. Rotating only the AI access key doesn't sign visitors out. If the app has unpublished changes, the version that is already published is redeployed and your changes stay unpublished. If AI calls still fail after a few minutes, republish the app.
 
 ## Sync Code with GitHub
 
