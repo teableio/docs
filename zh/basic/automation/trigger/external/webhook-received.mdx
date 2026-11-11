@@ -1,12 +1,12 @@
 ---
-title: "Webhook 触发器：通过 HTTP POST 启动工作流"
+title: "Webhook 触发器：通过 HTTP POST 启动自动化"
 description: "生成 Webhook 地址，接收外部 HTTP POST 请求以启动自动化，读取请求数据、自定义响应并测试集成。"
-sidebarTitle: "Webhook 接收时"
+sidebarTitle: "当接收 Webhook 时"
 ---
 
-<Tip>请注意：所有触发器设置都可以在 AI 对话中完成。告诉 AI 你希望工作流做什么，剩下的交给 AI。</Tip>
+<Tip>请注意：所有触发器设置都可以在 AI 对话中完成。告诉 AI 你希望自动化做什么，剩下的交给 AI。</Tip>
 
-生成唯一 URL，外部系统发送 HTTP POST 即可触发工作流。
+生成唯一 URL，外部系统发送 HTTP POST 即可触发自动化。
 
 ## 用 AI 创建
 
@@ -14,7 +14,7 @@ sidebarTitle: "Webhook 接收时"
 
 AI 会为你处理一切：选择合适的触发器，映射相关字段，自动设置所有操作。
 
-只需描述一次目标，工作流即刻就绪，无需手动配置。
+只需描述一次目标，自动化即刻就绪，无需手动配置。
 
 **示例：** *"收到 Stripe 支付 Webhook 时创建订单记录"*
 
@@ -27,17 +27,17 @@ AI 会为你处理一切：选择合适的触发器，映射相关字段，自�
 
 ## 如何设置
 
-1. 新建工作流，选择 **Webhook 接收时**作为触发器。
+1. 新建自动化，选择 **当接收 Webhook 时**作为触发器。
 2. 从触发器面板复制生成的 Webhook URL。
-3.（推荐）点击**生成 Token** 启用 Bearer Token 鉴权，防止未授权的请求触发工作流。
+3.（推荐）点击 **开启授权**，启用 Bearer Token 鉴权，防止未授权的请求触发自动化。
 4. 将 Webhook URL 配置到外部系统中。
 5. 发送一个测试请求来验证连接。
 6. 添加后续操作步骤。
-7. 开启工作流。
+7. 开启自动化。
 
 ## 测试 Webhook
 
-使用 `curl` 发送测试请求。URL 中包含项目和工作流的 ID，请直接从触发器面板复制，不要手写：
+使用 `curl` 发送测试请求。URL 中包含项目和自动化的 ID，请直接从触发器面板复制，不要手写：
 
 ```bash
 # 不带鉴权
@@ -108,7 +108,7 @@ curl -X POST https://your-teable-instance.com/api/webhook/base/bseXXXXXXXXXXXX/w
 | 范围 | 限制 |
 |---|---|
 | 每个项目 | 50 请求/秒 |
-| 每个工作流 | 2 请求/秒 |
+| 每个自动化 | 2 请求/秒 |
 
 超过限制的请求会返回 HTTP 429 错误。如果外部系统发送频率较高，建议在发送端实现重试和退避机制。
 
@@ -131,8 +131,8 @@ curl -X POST https://your-teable-instance.com/api/webhook/base/bseXXXXXXXXXXXX/w
 
 - Webhook 只接受 POST 方法。GET、PUT 等其他方法的请求会被拒绝。
 - 请求体必须是合法的 JSON 格式，且 `Content-Type` 头设置为 `application/json`。
-- 如果工作流处于关闭状态，收到的 Webhook 请求会被丢弃，不会排队等待。
-- Webhook URL 在工作流删除后会失效。重新创建工作流会生成新的 URL。
+- 如果自动化处于关闭状态，收到的 Webhook 请求会被丢弃，不会排队等待。
+- Webhook URL 在自动化删除后会失效。重新创建自动化会生成新的 URL。
 
 ## 相关文档
 

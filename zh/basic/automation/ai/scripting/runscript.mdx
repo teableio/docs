@@ -17,7 +17,7 @@ sidebarTitle: "编写自动化脚本"
 
 | 场景 | 推荐方式 | 原因 |
 |---|---|---|
-| 创建 / 更新 / 查询记录 | 内置操作 | 配置简单，无需编码 |
+| 创建 / 更新 / 获取记录 | 内置操作 | 配置简单，无需编码 |
 | 发送邮件 | 内置操作 | 可视化配置，支持模板 |
 | 调用单个 API | HTTP 请求操作 | 可视化配置，无需写代码 |
 | 复杂数据转换和计算 | 运行脚本 | 需要编程逻辑处理 |
@@ -39,7 +39,7 @@ sidebarTitle: "编写自动化脚本"
 
 ## 如何设置
 
-1. 在工作流中添加**运行脚本**操作。
+1. 在自动化中添加**运行脚本**操作。
 2. 在代码编辑器中编写 JavaScript 代码。
 3. 通过 `input` 对象访问前序步骤的数据。
 4. 通过 `output.set()` 将结果传递给后续步骤。
@@ -58,13 +58,13 @@ console.log("可用步骤:", actionIds);
 // 访问第一个步骤的数据
 const data = input[actionIds[0]];
 
-// 如果前序步骤是触发器（如记录创建时），数据结构为：
+// 如果前序步骤是触发器（如当记录创建时），数据结构为：
 // data.record.id       - 记录 ID
 // data.record.fields   - 所有字段的值（以字段 ID 为键）
 const recordId = data.record.id;
 const name = data.record.fields.fldXXXXXX; // 替换为实际字段 ID
 
-// 如果前序步骤是查询记录，数据结构为：
+// 如果前序步骤是获取记录，数据结构为：
 // data.records - 记录数组
 const records = data.records;
 ```
@@ -187,7 +187,7 @@ output.set("debug_firstStep", input[actionIds[0]]);
 
 ## 错误处理
 
-使用 `try/catch` 捕获错误，避免脚本崩溃导致工作流中断：
+使用 `try/catch` 捕获错误，避免脚本崩溃导致自动化中断：
 
 ```javascript
 try {
@@ -207,7 +207,7 @@ try {
 ## 安全说明
 
 - 脚本在安全沙箱中运行，与宿主系统隔离，无法访问文件系统或操作系统资源。
-- `AUTOMATION_TOKEN` 是自动生成的临时凭证，仅在当前工作流运行期间有效。
+- `AUTOMATION_TOKEN` 是自动生成的临时凭证，仅在当前自动化运行期间有效。
 - 不要在脚本代码中硬编码密码或 API 密钥。建议通过 Webhook 触发器或记录字段传入敏感信息。
 - 脚本有 60 秒的执行时间限制，超时会自动终止。
 
