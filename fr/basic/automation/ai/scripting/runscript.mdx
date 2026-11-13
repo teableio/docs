@@ -214,6 +214,10 @@ output.set("records", data);
 
 Les pièces jointes sont des éléments `{ url, mimetype, name }`, dans la limite de 10 par appel, chacun inférieur à 20 Mo et téléchargeable en moins de 30 secondes. Elles peuvent être des images, des PDF ou des documents Office. Le modèle de chat par défaut peut ne pas lire les images et pièces jointes similaires ; transmettez donc `modelKey` lorsque vous envoyez des fichiers. Chaque appel consomme des crédits.
 
+## Envoyer un e-mail depuis un script
+
+`POST /api/automation/runtime/email` envoie un e-mail. Le corps accepte `to` (ou `bcc`), `subject` et `body`, ainsi que, en option, `cc`, `senderName` et votre propre configuration SMTP. `body` est interprété comme du Markdown par défaut ; avec `"bodyType": "html"`, il est envoyé tel quel comme HTML de l’e-mail, sans conversion des sauts de ligne ni de la syntaxe Markdown. Utilisez-le pour un modèle HTML tout fait, des tableaux ou des styles en ligne.
+
 ## Gestion des erreurs
 
 Encadrez toujours les opérations risquées de blocs try/catch afin que votre workflow puisse gérer correctement les échecs :

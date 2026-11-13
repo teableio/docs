@@ -214,6 +214,10 @@ output.set("records", data);
 
 Los archivos adjuntos son elementos `{ url, mimetype, name }`: se admiten hasta 10 por llamada, cada uno de menos de 20 MB y con 30 segundos para su descarga, e incluyen imágenes, archivos PDF y documentos de Office. Es posible que el modelo de chat predeterminado no pueda leer imágenes y archivos similares, así que proporciona `modelKey` cuando envíes archivos. Cada llamada consume créditos.
 
+## Enviar correo desde un script
+
+`POST /api/automation/runtime/email` envía un correo. El cuerpo admite `to` (o `bcc`), `subject` y `body`, y opcionalmente `cc`, `senderName` y tu propia configuración SMTP. `body` se interpreta como Markdown de forma predeterminada; con `"bodyType": "html"` se envía tal cual como HTML del correo, sin convertir saltos de línea ni sintaxis Markdown. Úsalo para plantillas HTML ya preparadas, tablas o estilos en línea.
+
 ## Gestión de errores
 
 Envuelve siempre las operaciones de riesgo en bloques try/catch para que el flujo de trabajo pueda gestionar los fallos correctamente:

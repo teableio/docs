@@ -130,6 +130,10 @@ output.set("records", data);
 
 附件按 `{ url, mimetype, name }` 传，最多 10 项，单个文件需在 20MB、30 秒内下载完成，支持图片、PDF 和 Office 文档。默认对话模型未必能读取图片这类附件，发送文件时建议用 `modelKey` 指定合适的模型。每次调用都会消耗算力。
 
+## 在脚本中发送邮件
+
+用 `POST /api/automation/runtime/email` 发送邮件，请求体包含 `to`（或 `bcc`）、`subject`、`body`，可选 `cc`、`senderName` 和自己的 SMTP 配置。`body` 默认按 Markdown 渲染；传 `"bodyType": "html"` 时，`body` 会原样作为邮件 HTML 发送，换行和 Markdown 语法不会转换，适合已经生成好的 HTML 模板、表格或内联样式。
+
 ## 调用外部 API
 
 ```javascript

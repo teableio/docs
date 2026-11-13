@@ -27,7 +27,7 @@ Lorsque vous démarrez une discussion dans un nouveau Projet, l’IA nomme le Pr
 
 ### Créer un Projet à partir d’un modèle
 
-Le centre de modèles rassemble des Projets utilisables tels quels. Ouvrez-le depuis **Modèle** dans la barre latérale de l’Espace, ou choisissez **À partir d'un modèle** au moment de créer un Projet. Dans le détail du modèle, cliquez sur **Installer**, choisissez **Nouveau projet** (un nouveau Projet portant le nom du modèle) ou **Ajouter à un projet existant** (un Projet que vous pouvez modifier), puis cliquez à nouveau sur **Installer**. Si vous installez depuis un lien de partage, choisissez d’abord l’Espace. Chaque modèle est placé dans son propre dossier du Projet ; c’est l’auteur du modèle qui décide s’il inclut des données d’exemple.
+Le centre de modèles rassemble des Projets utilisables tels quels. Ouvrez-le depuis **Modèle** dans la barre latérale de l’Espace, ou choisissez **À partir d'un modèle** au moment de créer un Projet. Dans le détail du modèle, cliquez sur **Installer**, choisissez **Nouveau projet** (un nouveau Projet portant le nom du modèle) ou **Ajouter à un projet existant** (un Projet que vous pouvez modifier), puis cliquez à nouveau sur **Installer**. Si vous installez depuis un lien de partage, choisissez d’abord l’Espace. Chaque modèle est placé dans son propre dossier du Projet ; c’est l’auteur du modèle qui décide s’il inclut des données d’exemple. Si le modèle comporte un guide d’installation, une carte **Pour commencer** apparaît après l’installation en bas à droite de ses tables, applications et automatisations et coche chaque étape d’elle-même d’après vos données. Chaque étape propose **Ouvrir** et, selon l’étape, **Demander à l'IA**, **Marquer comme fait** ou **Passer** (un saut peut être annulé) ; une fois tout terminé, cliquez sur **Masquer**.
 
 Si les automatisations d’un modèle doivent se connecter à des plateformes externes, le détail du modèle les indique. Après l’installation, Teable ouvre la conversation du Projet et affiche au-dessus du champ de saisie la carte **Connecter des comptes** :
 
@@ -44,6 +44,8 @@ Dans la barre latérale de l’Espace, cliquez sur **...** à côté du Projet e
 ### Publier dans le centre de modèles
 
 Cliquez sur le nom du Projet en haut à gauche, ou sur **...** à côté du Projet dans la barre latérale de l’Espace, puis choisissez **Publier dans le centre de modèles**. Renseignez le nom, la description détaillée et la couverture, choisissez le contenu inclus et s’il faut inclure des données d’exemple, puis cliquez sur **Soumettre pour validation**. Pendant l’examen, vous pouvez cliquer sur **Retirer** pour retirer la soumission. Une fois validé, le modèle est publié ; s’il est refusé, la notification contient la note de l’examinateur. Toute modification ultérieure du Projet doit être soumise à nouveau ; tant qu’elle n’est pas validée, les autres utilisateurs continuent d’installer la version actuelle. Un modèle publié peut être retiré avec **Dépublier** ; les copies déjà installées ne sont pas affectées.
+
+Le **Guide** de la fenêtre de publication ajoute au modèle quelques étapes de configuration. Chaque étape a un titre, une description d’une ligne, un emplacement à ouvrir et une condition d’achèvement. Rédigez-le avec **Le rédiger avec Teable AI** ou utilisez **Modifier dans le projet**. Les conditions possibles : données d’exemple remplacées par du contenu réel, application publiée, automatisation exécutée avec succès une fois, comptes requis connectés, ou case cochée par l’utilisateur. Une condition portant sur les données ne doit pas déjà être vraie sur les données d’exemple, sinon le modèle ne peut pas être soumis.
 
 ### Renommer/supprimer un Projet {#renommersupprimer-une-base}
 
@@ -67,6 +69,7 @@ Les opérations courantes incluent :
 - **Créer des dossiers** : créez des dossiers dans le répertoire du Projet pour regrouper les ressources associées.
 - **Déplacer des ressources** : faites glisser des Tables, applications ou automatisations dans des dossiers, ou faites-les glisser pour les réorganiser.
 - **Organiser la hiérarchie** : les dossiers peuvent contenir des ressources comme des Tables et des applications, ainsi que des sous-dossiers. Gardez une hiérarchie suffisamment simple pour faciliter la navigation.
+- **Supprimer des dossiers** : un dossier part dans la corbeille avec tout son contenu et peut être restauré tant qu’il y est conservé ; la restauration conserve la structure du dossier. La fenêtre de confirmation liste ce qui est touché : les éléments qui ne peuvent pas être supprimés bloquent toute la suppression, les éléments hors du dossier qui référencent ses tables généreront des erreurs, une application publiée passe hors ligne immédiatement (son domaine personnalisé est libéré et ses paramètres de connexion sont supprimés ; après restauration, il faut la republier, relier à nouveau le domaine et reconfigurer la connexion), une application dont la table d’utilisateurs se trouve dans le dossier ne peut plus connecter personne, et les liens de partage sont supprimés définitivement. Si la suppression s’arrête en cours de route, ce qui a déjà été supprimé se trouve dans la corbeille élément par élément ; cliquez sur **Continuer la suppression** pour la terminer.
 - **Ajouter des descriptions** : pour les Tables, applications et automatisations, cliquez sur **Ajouter une description** sous le nom de la ressource dans l’en-tête. Utilisez les descriptions pour consigner l’objectif, le responsable, les notes de transmission ou les règles d’utilisation. Teable ouvre une description lorsque vous ouvrez sa ressource pour la première fois, puis de nouveau après sa modification.
 - **Vérifier les informations du nœud** : ouvrez le menu `...` d’une ressource et choisissez **Infos du noeud** pour afficher l’ID du dossier, de la Table, de l’automatisation ou de l’application, ainsi que les informations de création et de modification.
 
@@ -146,6 +149,8 @@ Un fichier d’export de Projet Teable (`.tea`) contient la structure et la conf
 2. Cliquez sur le bouton 「···」 dans l’angle supérieur droit de l’Espace pour ouvrir le menu
 3. Cliquez sur 「Importer」
 4. Choisissez **Fichier Teable** et téléversez le fichier `.tea`.
+
+Une fois le téléversement terminé, la fenêtre d’import affiche un aperçu du fichier : le nom du projet, le nombre de ressources de chaque type et les ressources rangées dans leurs dossiers (les dossiers sont repliés au départ). Si le fichier n’est pas un fichier `.tea` valide, la fenêtre indique qu’il ne peut pas être importé ; si le fichier ne peut simplement pas être analysé, vous pouvez poursuivre l’import.
 
 <img
   src="/images/docs/base/2026-11-11-space-more-menu-import.png"

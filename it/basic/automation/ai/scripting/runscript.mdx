@@ -214,6 +214,10 @@ output.set("records", data);
 
 Gli allegati sono elementi `{ url, mimetype, name }`, fino a 10 per chiamata, ciascuno di dimensioni inferiori a 20 MB e con un timeout di download di 30 secondi; sono supportati immagini, PDF e documenti Office. Il modello di chat predefinito potrebbe non leggere immagini e allegati simili, quindi specifica `modelKey` quando invii file. Ogni chiamata consuma Crediti.
 
+## Inviare email da uno script
+
+`POST /api/automation/runtime/email` invia un'email. Il corpo accetta `to` (o `bcc`), `subject` e `body`, più `cc`, `senderName` e le tue impostazioni SMTP facoltativi. `body` viene interpretato come Markdown per impostazione predefinita; con `"bodyType": "html"` viene inviato così com'è come HTML dell'email, senza convertire a capo né sintassi Markdown. Usalo per modelli HTML già pronti, tabelle o stili inline.
+
 ## Gestione degli errori
 
 Racchiudi sempre le operazioni rischiose in blocchi try/catch, in modo che il workflow possa gestire correttamente gli errori:
