@@ -215,6 +215,10 @@ output.set("records", data);
 
 Attachments are `{ url, mimetype, name }` items, up to 10 per call, each under 20MB and 30 seconds to download, covering images, PDFs, and Office documents. The default chat model may not read images and similar attachments, so pass `modelKey` when you send files. Each call consumes credits.
 
+## Send email from a script
+
+`POST /api/automation/runtime/email` sends an email. The body takes `to` (or `bcc`), `subject`, and `body`, plus optional `cc`, `senderName`, and your own SMTP settings. `body` is rendered as Markdown by default; with `"bodyType": "html"` it is sent as-is as the email HTML, so line breaks and Markdown syntax are not converted. Use it for a ready-made HTML template, tables, or inline styles.
+
 ## Error handling
 
 Always wrap risky operations in try/catch blocks so your automation can handle failures gracefully:

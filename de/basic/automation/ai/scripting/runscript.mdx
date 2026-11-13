@@ -214,6 +214,10 @@ output.set("records", data);
 
 Anhänge sind Elemente des Formats `{ url, mimetype, name }`: bis zu 10 pro Aufruf, jeweils unter 20 MB und mit 30 Sekunden Zeit zum Herunterladen. Unterstützt werden Bilder, PDFs und Office-Dokumente. Das Standard-Chatmodell kann Bilder und ähnliche Anhänge möglicherweise nicht lesen; übergeben Sie daher `modelKey`, wenn Sie Dateien senden. Jeder Aufruf verbraucht Guthaben.
 
+## E-Mail aus einem Skript senden
+
+`POST /api/automation/runtime/email` sendet eine E-Mail. Der Body enthält `to` (oder `bcc`), `subject` und `body` sowie optional `cc`, `senderName` und eigene SMTP-Einstellungen. `body` wird standardmäßig als Markdown gerendert; mit `"bodyType": "html"` wird er unverändert als E-Mail-HTML gesendet, Zeilenumbrüche und Markdown-Syntax werden dann nicht umgewandelt. Das eignet sich für fertige HTML-Vorlagen, Tabellen oder Inline-Styles.
+
 ## Fehlerbehandlung
 
 Schließen Sie riskante Vorgänge immer in try/catch-Blöcke ein, damit Ihr Workflow Fehler kontrolliert behandeln kann:

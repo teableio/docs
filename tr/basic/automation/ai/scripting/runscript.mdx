@@ -214,6 +214,10 @@ output.set("records", data);
 
 Ekler, her çağrıda en fazla 10 adet olmak üzere `{ url, mimetype, name }` öğeleridir; her biri 20 MB'tan küçük olmalı ve 30 saniye içinde indirilmelidir. Görüntüler, PDF'ler ve Office belgeleri desteklenir. Varsayılan sohbet modeli görüntüleri ve benzer ekleri okuyamayabilir; bu nedenle dosya gönderirken `modelKey` iletin. Her çağrı kredi tüketir.
 
+## Betikten e-posta gönderme
+
+`POST /api/automation/runtime/email` bir e-posta gönderir. İstek gövdesi `to` (veya `bcc`), `subject` ve `body` alır; isteğe bağlı olarak `cc`, `senderName` ve kendi SMTP ayarlarınızı da verebilirsiniz. `body` varsayılan olarak Markdown biçiminde işlenir; `"bodyType": "html"` verildiğinde `body` olduğu gibi e-posta HTML'i olarak gönderilir, satır sonları ve Markdown sözdizimi dönüştürülmez. Hazır bir HTML şablonu, tablolar veya satır içi stiller için kullanın.
+
 ## Hata işleme
 
 İş akışınızın hataları uygun şekilde ele alabilmesi için riskli işlemleri her zaman try/catch blokları içine alın:
