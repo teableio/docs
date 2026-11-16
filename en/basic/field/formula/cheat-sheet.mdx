@@ -42,11 +42,11 @@ Text functions handle joining, searching, replacing, extracting, and splitting s
 | CONCATENATE | Joins multiple value type parameters into a single text value. | `text1, [text2, ...]` | Text | `CONCATENATE("Hello ", "Teable") => Hello Teable` |
 | FIND | Finds the position of a substring in specified text. Returns 0 if substring not found. | `stringToFind, whereToSearch, [startFromPosition]` | Number | `FIND("Teable", "Hello Teable") => 7` |
 | SEARCH | Finds the position of a substring in specified text. Returns empty if substring not found. Similar to FIND but returns empty instead of 0. | `stringToFind, whereToSearch, [startFromPosition]` | Text or Empty | `SEARCH("Teable", "Hello Teable") => 7` |
-| MID | Extracts a specified number of characters from a text string starting at a specified position. | `text, whereToStart, count` | Text | `MID("Hello Teable", 6, 6) => "Teable"` |
+| MID | Extracts a specified number of characters from a text string starting at a specified position. | `text, whereToStart, count` | Text | `MID("Hello Teable", 7, 6) => "Teable"` |
 | LEFT | Extracts a specified number of characters from the start of a string. | `text, count` | Text | `LEFT("2023-09-06", 4) => "2023"` |
 | RIGHT | Extracts a specified number of characters from the end of a string. | `text, count` | Text | `RIGHT("2023-09-06", 5) => "09-06"` |
 | REPLACE | Replaces a specified number of characters starting at a specified position with replacement text. | `text, whereToStart, count, replacement` | Text | `REPLACE("Hello Table", 7, 5, "Teable") => "Hello Teable"` |
-| REGEXP_REPLACE | Replaces all substrings matching a regular expression with replacement text. | `text, regular_expression, replacement` | Text | `REGEXP_REPLACE("Hello Table", "H.* ", "") => "Teable"` |
+| REGEXP_REPLACE | Replaces all substrings matching a regular expression with replacement text. | `text, regular_expression, replacement` | Text | `REGEXP_REPLACE("Hello Teable", "H.* ", "") => "Teable"` |
 | SUBSTITUTE | Replaces old text with new text. Can specify an index to replace a specific occurrence of old text. If no index specified, replaces all occurrences. | `text, oldText, newText, [index]` | Text | `SUBSTITUTE("Hello Table", "Table", "Teable") => "Hello Teable"` |
 | TEXTBEFORE | Returns the text before the specified delimiter. | `text, delimiter` | Text | `TEXTBEFORE("20, 04, 79", ",") => "20"` |
 | TEXTSPLIT | Splits text by the specified delimiter and returns multiple text values. | `text, delimiter` | Array | `TEXTSPLIT("20, 04, 79", ",") => ["20", " 04", " 79"]` |
@@ -104,11 +104,11 @@ Array and other functions handle rollup arrays, deduplication, joining, cleaning
 
 | Function Name | Description | Input | Output | Example |
 | ------------ | ----------- | ----- | ------ | ------- |
-| COUNTALL | Returns the count of all elements, including text and blanks. | `value1, [value2, ...]` | Number | `COUNTALL(100, 200, "", "Teable", TRUE()) => 5` |
+| COUNTALL | Returns the count of all elements, including text and blanks. | `value1, [value2, ...]` | Number | `COUNTALL(100, 200, "", "Teable", TRUE) => 5` |
 | COUNTA | Returns the count of non-empty values. This function counts both numbers and text values. | `value1, [value2, ...]` | Number | `COUNTA(100, 200, 300, "", "Teable", TRUE) => 4` |
 | COUNT | Returns the count of numeric items. | `value1, [value2, ...]` | Number | `COUNT(100, 200, 300, "", "Teable", TRUE) => 3` |
-| ARRAY_JOIN | Joins an array of rollup items into a string using a separator. | `array, [separator]` | String | `ARRAY_JOIN(["Tom", "Jerry", "Mike"], "; ") => "Tom; Jerry; Mike"` |
-| ARRAY_UNIQUE | Returns only the unique items in an array. | `array` | Array | `ARRAY_UNIQUE([1, 2, 3, 2, 1]) => [1, 2, 3]` |
-| ARRAY_FLATTEN | Flattens an array by removing any array nesting. All items become elements of a single array. | `array` | Array | `ARRAY_FLATTEN([1, 2, " ", 3, true], ["ABC"]) => [1, 2, 3, " ", true, "ABC"]` |
-| ARRAY_COMPACT | Removes empty strings and null values from an array. Preserves "false" and strings containing one or more whitespace characters. | `array` | Array | `ARRAY_COMPACT([1, 2, 3, "", null, "ABC"]) => [1, 2, 3, "ABC"]` |
+| ARRAY_JOIN | Joins an array of rollup items into a string using a separator. | `array, [separator]` | String | `ARRAY_JOIN({Tags}, "; ") => "Tom; Jerry; Mike"` |
+| ARRAY_UNIQUE | Returns only the unique items in an array. | `array1, [array2, ...]` | Array | `ARRAY_UNIQUE({Tags1}, {Tags2}) => ["A", "B", "C"]` |
+| ARRAY_FLATTEN | Flattens an array by removing any array nesting. All items become elements of a single array. | `array1, [array2, ...]` | Array | `ARRAY_FLATTEN({Tags1}, {Tags2}) => ["A", "B", "B", "C"]` |
+| ARRAY_COMPACT | Removes empty strings and null values from an array. Preserves "false" and strings containing one or more whitespace characters. | `array` | Array | `ARRAY_COMPACT({Items}) => ["A", "B", "C"]` |
 | RECORD_ID | Returns the ID of the current record. | `-` | String | `RECORD_ID() => "recxxxxxx"` |

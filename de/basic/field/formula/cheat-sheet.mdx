@@ -42,11 +42,11 @@ Textfunktionen verarbeiten das Verbinden, Suchen, Ersetzen, Extrahieren und Auft
 | CONCATENATE | Verbindet mehrere Parameter verschiedener Werttypen zu einem einzigen Textwert. | `text1, [text2, ...]` | Text | `CONCATENATE("Hello ", "Teable") => Hello Teable` |
 | FIND | Ermittelt die Position einer Teilzeichenfolge im angegebenen Text. Gibt 0 zurück, wenn die Teilzeichenfolge nicht gefunden wird. | `stringToFind, whereToSearch, [startFromPosition]` | Zahl | `FIND("Teable", "Hello Teable") => 7` |
 | SEARCH | Ermittelt die Position einer Teilzeichenfolge im angegebenen Text. Gibt einen leeren Wert zurück, wenn die Teilzeichenfolge nicht gefunden wird. Ähnlich wie FIND, gibt jedoch einen leeren Wert statt 0 zurück. | `stringToFind, whereToSearch, [startFromPosition]` | Text oder leer | `SEARCH("Teable", "Hello Teable") => 7` |
-| MID | Extrahiert ab einer angegebenen Position eine bestimmte Anzahl von Zeichen aus einer Textzeichenfolge. | `text, whereToStart, count` | Text | `MID("Hello Teable", 6, 6) => "Teable"` |
+| MID | Extrahiert ab einer angegebenen Position eine bestimmte Anzahl von Zeichen aus einer Textzeichenfolge. | `text, whereToStart, count` | Text | `MID("Hello Teable", 7, 6) => "Teable"` |
 | LEFT | Extrahiert eine angegebene Anzahl von Zeichen vom Anfang einer Zeichenfolge. | `text, count` | Text | `LEFT("2023-09-06", 4) => "2023"` |
 | RIGHT | Extrahiert eine angegebene Anzahl von Zeichen vom Ende einer Zeichenfolge. | `text, count` | Text | `RIGHT("2023-09-06", 5) => "09-06"` |
 | REPLACE | Ersetzt ab einer angegebenen Position eine bestimmte Anzahl von Zeichen durch einen Ersatztext. | `text, whereToStart, count, replacement` | Text | `REPLACE("Hello Table", 7, 5, "Teable") => "Hello Teable"` |
-| REGEXP_REPLACE | Ersetzt alle Teilzeichenfolgen, die einem regulären Ausdruck entsprechen, durch einen Ersatztext. | `text, regular_expression, replacement` | Text | `REGEXP_REPLACE("Hello Table", "H.* ", "") => "Teable"` |
+| REGEXP_REPLACE | Ersetzt alle Teilzeichenfolgen, die einem regulären Ausdruck entsprechen, durch einen Ersatztext. | `text, regular_expression, replacement` | Text | `REGEXP_REPLACE("Hello Teable", "H.* ", "") => "Teable"` |
 | SUBSTITUTE | Ersetzt alten Text durch neuen Text. Mit einem Index kann ein bestimmtes Vorkommen des alten Texts ersetzt werden. Wenn kein Index angegeben ist, werden alle Vorkommen ersetzt. | `text, oldText, newText, [index]` | Text | `SUBSTITUTE("Hello Table", "Table", "Teable") => "Hello Teable"` |
 | TEXTBEFORE | Gibt den Text vor dem angegebenen Trennzeichen zurück. | `text, delimiter` | Text | `TEXTBEFORE("20, 04, 79", ",") => "20"` |
 | TEXTSPLIT | Teilt Text anhand des angegebenen Trennzeichens auf und gibt mehrere Textwerte zurück. | `text, delimiter` | Array | `TEXTSPLIT("20, 04, 79", ",") => ["20", " 04", " 79"]` |
@@ -104,11 +104,11 @@ Array- und weitere Funktionen verarbeiten Rollup-Arrays, Deduplizierung, Verknü
 
 | Funktionsname | Beschreibung | Eingabe | Ausgabe | Beispiel |
 | ------------ | ----------- | ----- | ------ | ------- |
-| COUNTALL | Gibt die Anzahl aller Elemente einschließlich Text und leerer Werte zurück. | `value1, [value2, ...]` | Zahl | `COUNTALL(100, 200, "", "Teable", TRUE()) => 5` |
+| COUNTALL | Gibt die Anzahl aller Elemente einschließlich Text und leerer Werte zurück. | `value1, [value2, ...]` | Zahl | `COUNTALL(100, 200, "", "Teable", TRUE) => 5` |
 | COUNTA | Gibt die Anzahl der nicht leeren Werte zurück. Diese Funktion zählt sowohl Zahlen- als auch Textwerte. | `value1, [value2, ...]` | Zahl | `COUNTA(100, 200, 300, "", "Teable", TRUE) => 4` |
 | COUNT | Gibt die Anzahl der numerischen Elemente zurück. | `value1, [value2, ...]` | Zahl | `COUNT(100, 200, 300, "", "Teable", TRUE) => 3` |
-| ARRAY_JOIN | Verbindet ein Array von Rollup-Elementen mithilfe eines Trennzeichens zu einer Zeichenfolge. | `array, [separator]` | Zeichenfolge | `ARRAY_JOIN(["Tom", "Jerry", "Mike"], "; ") => "Tom; Jerry; Mike"` |
-| ARRAY_UNIQUE | Gibt nur die eindeutigen Elemente eines Arrays zurück. | `array` | Array | `ARRAY_UNIQUE([1, 2, 3, 2, 1]) => [1, 2, 3]` |
-| ARRAY_FLATTEN | Glättet ein Array, indem alle Array-Verschachtelungen entfernt werden. Alle Elemente werden zu Elementen eines einzigen Arrays. | `array` | Array | `ARRAY_FLATTEN([1, 2, " ", 3, true], ["ABC"]) => [1, 2, 3, " ", true, "ABC"]` |
-| ARRAY_COMPACT | Entfernt leere Zeichenfolgen und Nullwerte aus einem Array. „false“ und Zeichenfolgen mit mindestens einem Leerzeichen bleiben erhalten. | `array` | Array | `ARRAY_COMPACT([1, 2, 3, "", null, "ABC"]) => [1, 2, 3, "ABC"]` |
+| ARRAY_JOIN | Verbindet ein Array von Rollup-Elementen mithilfe eines Trennzeichens zu einer Zeichenfolge. | `array, [separator]` | Zeichenfolge | `ARRAY_JOIN({Tags}, "; ") => "Tom; Jerry; Mike"` |
+| ARRAY_UNIQUE | Gibt nur die eindeutigen Elemente eines Arrays zurück. | `array1, [array2, ...]` | Array | `ARRAY_UNIQUE({Tags1}, {Tags2}) => ["A", "B", "C"]` |
+| ARRAY_FLATTEN | Glättet ein Array, indem alle Array-Verschachtelungen entfernt werden. Alle Elemente werden zu Elementen eines einzigen Arrays. | `array1, [array2, ...]` | Array | `ARRAY_FLATTEN({Tags1}, {Tags2}) => ["A", "B", "B", "C"]` |
+| ARRAY_COMPACT | Entfernt leere Zeichenfolgen und Nullwerte aus einem Array. „false“ und Zeichenfolgen mit mindestens einem Leerzeichen bleiben erhalten. | `array` | Array | `ARRAY_COMPACT({Items}) => ["A", "B", "C"]` |
 | RECORD_ID | Gibt die ID des aktuellen Datensatzes zurück. | `-` | Zeichenfolge | `RECORD_ID() => "recxxxxxx"` |

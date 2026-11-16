@@ -42,11 +42,11 @@ Las funciones de texto permiten unir, buscar, sustituir, extraer y dividir caden
 | CONCATENATE | Une varios parámetros de distintos tipos de valor en un único valor de texto. | `text1, [text2, ...]` | Texto | `CONCATENATE("Hello ", "Teable") => Hello Teable` |
 | FIND | Busca la posición de una subcadena en el texto especificado. Devuelve 0 si no encuentra la subcadena. | `stringToFind, whereToSearch, [startFromPosition]` | Número | `FIND("Teable", "Hello Teable") => 7` |
 | SEARCH | Busca la posición de una subcadena en el texto especificado. Devuelve un valor vacío si no encuentra la subcadena. Es similar a FIND, pero devuelve un valor vacío en lugar de 0. | `stringToFind, whereToSearch, [startFromPosition]` | Texto o vacío | `SEARCH("Teable", "Hello Teable") => 7` |
-| MID | Extrae un número especificado de caracteres de una cadena de texto a partir de una posición determinada. | `text, whereToStart, count` | Texto | `MID("Hello Teable", 6, 6) => "Teable"` |
+| MID | Extrae un número especificado de caracteres de una cadena de texto a partir de una posición determinada. | `text, whereToStart, count` | Texto | `MID("Hello Teable", 7, 6) => "Teable"` |
 | LEFT | Extrae un número especificado de caracteres desde el principio de una cadena. | `text, count` | Texto | `LEFT("2023-09-06", 4) => "2023"` |
 | RIGHT | Extrae un número especificado de caracteres desde el final de una cadena. | `text, count` | Texto | `RIGHT("2023-09-06", 5) => "09-06"` |
 | REPLACE | Sustituye un número especificado de caracteres a partir de una posición determinada por el texto de sustitución. | `text, whereToStart, count, replacement` | Texto | `REPLACE("Hello Table", 7, 5, "Teable") => "Hello Teable"` |
-| REGEXP_REPLACE | Sustituye todas las subcadenas que coinciden con una expresión regular por el texto de sustitución. | `text, regular_expression, replacement` | Texto | `REGEXP_REPLACE("Hello Table", "H.* ", "") => "Teable"` |
+| REGEXP_REPLACE | Sustituye todas las subcadenas que coinciden con una expresión regular por el texto de sustitución. | `text, regular_expression, replacement` | Texto | `REGEXP_REPLACE("Hello Teable", "H.* ", "") => "Teable"` |
 | SUBSTITUTE | Sustituye el texto antiguo por texto nuevo. Puedes indicar un índice para sustituir una aparición concreta del texto antiguo. Si no se especifica ningún índice, sustituye todas las apariciones. | `text, oldText, newText, [index]` | Texto | `SUBSTITUTE("Hello Table", "Table", "Teable") => "Hello Teable"` |
 | TEXTBEFORE | Devuelve el texto situado antes del delimitador especificado. | `text, delimiter` | Texto | `TEXTBEFORE("20, 04, 79", ",") => "20"` |
 | TEXTSPLIT | Divide el texto por el delimitador especificado y devuelve varios valores de texto. | `text, delimiter` | Matriz | `TEXTSPLIT("20, 04, 79", ",") => ["20", " 04", " 79"]` |
@@ -104,11 +104,11 @@ Las funciones de matrices y otras funciones procesan matrices de acumulación, e
 
 | Nombre de la función | Descripción | Entrada | Salida | Ejemplo |
 | ------------ | ----------- | ----- | ------ | ------- |
-| COUNTALL | Devuelve el número de todos los elementos, incluidos el texto y los valores vacíos. | `value1, [value2, ...]` | Número | `COUNTALL(100, 200, "", "Teable", TRUE()) => 5` |
+| COUNTALL | Devuelve el número de todos los elementos, incluidos el texto y los valores vacíos. | `value1, [value2, ...]` | Número | `COUNTALL(100, 200, "", "Teable", TRUE) => 5` |
 | COUNTA | Devuelve el número de valores no vacíos. Esta función cuenta tanto los números como los valores de texto. | `value1, [value2, ...]` | Número | `COUNTA(100, 200, 300, "", "Teable", TRUE) => 4` |
 | COUNT | Devuelve el número de elementos numéricos. | `value1, [value2, ...]` | Número | `COUNT(100, 200, 300, "", "Teable", TRUE) => 3` |
-| ARRAY_JOIN | Une una matriz de elementos acumulados en una cadena mediante un separador. | `array, [separator]` | Cadena | `ARRAY_JOIN(["Tom", "Jerry", "Mike"], "; ") => "Tom; Jerry; Mike"` |
-| ARRAY_UNIQUE | Devuelve únicamente los elementos únicos de una matriz. | `array` | Matriz | `ARRAY_UNIQUE([1, 2, 3, 2, 1]) => [1, 2, 3]` |
-| ARRAY_FLATTEN | Aplana una matriz eliminando cualquier anidamiento. Todos los elementos pasan a formar parte de una única matriz. | `array` | Matriz | `ARRAY_FLATTEN([1, 2, " ", 3, true], ["ABC"]) => [1, 2, 3, " ", true, "ABC"]` |
-| ARRAY_COMPACT | Elimina las cadenas vacías y los valores nulos de una matriz. Conserva "false" y las cadenas que contienen uno o más espacios en blanco. | `array` | Matriz | `ARRAY_COMPACT([1, 2, 3, "", null, "ABC"]) => [1, 2, 3, "ABC"]` |
+| ARRAY_JOIN | Une una matriz de elementos acumulados en una cadena mediante un separador. | `array, [separator]` | Cadena | `ARRAY_JOIN({Tags}, "; ") => "Tom; Jerry; Mike"` |
+| ARRAY_UNIQUE | Devuelve únicamente los elementos únicos de una matriz. | `array1, [array2, ...]` | Matriz | `ARRAY_UNIQUE({Tags1}, {Tags2}) => ["A", "B", "C"]` |
+| ARRAY_FLATTEN | Aplana una matriz eliminando cualquier anidamiento. Todos los elementos pasan a formar parte de una única matriz. | `array1, [array2, ...]` | Matriz | `ARRAY_FLATTEN({Tags1}, {Tags2}) => ["A", "B", "B", "C"]` |
+| ARRAY_COMPACT | Elimina las cadenas vacías y los valores nulos de una matriz. Conserva "false" y las cadenas que contienen uno o más espacios en blanco. | `array` | Matriz | `ARRAY_COMPACT({Items}) => ["A", "B", "C"]` |
 | RECORD_ID | Devuelve el identificador del Registro actual. | `-` | Cadena | `RECORD_ID() => "recxxxxxx"` |

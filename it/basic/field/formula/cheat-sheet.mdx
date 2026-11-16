@@ -42,11 +42,11 @@ Le funzioni di testo gestiscono unione, ricerca, sostituzione, estrazione e sudd
 | CONCATENATE | Unisce più parametri di tipo valore in un unico valore di testo. | `text1, [text2, ...]` | Testo | `CONCATENATE("Hello ", "Teable") => Hello Teable` |
 | FIND | Trova la posizione di una sottostringa nel testo specificato. Restituisce 0 se la sottostringa non viene trovata. | `stringToFind, whereToSearch, [startFromPosition]` | Numero | `FIND("Teable", "Hello Teable") => 7` |
 | SEARCH | Trova la posizione di una sottostringa nel testo specificato. Restituisce un valore vuoto se la sottostringa non viene trovata. È simile a FIND, ma restituisce un valore vuoto anziché 0. | `stringToFind, whereToSearch, [startFromPosition]` | Testo o vuoto | `SEARCH("Teable", "Hello Teable") => 7` |
-| MID | Estrae un numero specificato di caratteri da una stringa di testo, a partire da una posizione specificata. | `text, whereToStart, count` | Testo | `MID("Hello Teable", 6, 6) => "Teable"` |
+| MID | Estrae un numero specificato di caratteri da una stringa di testo, a partire da una posizione specificata. | `text, whereToStart, count` | Testo | `MID("Hello Teable", 7, 6) => "Teable"` |
 | LEFT | Estrae un numero specificato di caratteri dall'inizio di una stringa. | `text, count` | Testo | `LEFT("2023-09-06", 4) => "2023"` |
 | RIGHT | Estrae un numero specificato di caratteri dalla fine di una stringa. | `text, count` | Testo | `RIGHT("2023-09-06", 5) => "09-06"` |
 | REPLACE | Sostituisce un numero specificato di caratteri a partire da una posizione indicata con il testo sostitutivo. | `text, whereToStart, count, replacement` | Testo | `REPLACE("Hello Table", 7, 5, "Teable") => "Hello Teable"` |
-| REGEXP_REPLACE | Sostituisce tutte le sottostringhe che corrispondono a un'espressione regolare con il testo sostitutivo. | `text, regular_expression, replacement` | Testo | `REGEXP_REPLACE("Hello Table", "H.* ", "") => "Teable"` |
+| REGEXP_REPLACE | Sostituisce tutte le sottostringhe che corrispondono a un'espressione regolare con il testo sostitutivo. | `text, regular_expression, replacement` | Testo | `REGEXP_REPLACE("Hello Teable", "H.* ", "") => "Teable"` |
 | SUBSTITUTE | Sostituisce il testo precedente con quello nuovo. Puoi specificare un indice per sostituire una particolare occorrenza del testo precedente. Se non indichi alcun indice, sostituisce tutte le occorrenze. | `text, oldText, newText, [index]` | Testo | `SUBSTITUTE("Hello Table", "Table", "Teable") => "Hello Teable"` |
 | TEXTBEFORE | Restituisce il testo che precede il delimitatore specificato. | `text, delimiter` | Testo | `TEXTBEFORE("20, 04, 79", ",") => "20"` |
 | TEXTSPLIT | Divide il testo in base al delimitatore specificato e restituisce più valori di testo. | `text, delimiter` | Matrice | `TEXTSPLIT("20, 04, 79", ",") => ["20", " 04", " 79"]` |
@@ -104,11 +104,11 @@ Le funzioni per matrici e le altre funzioni gestiscono matrici di rollup, rimozi
 
 | Nome funzione | Descrizione | Input | Output | Esempio |
 | ------------ | ----------- | ----- | ------ | ------- |
-| COUNTALL | Restituisce il conteggio di tutti gli elementi, inclusi testo e valori vuoti. | `value1, [value2, ...]` | Numero | `COUNTALL(100, 200, "", "Teable", TRUE()) => 5` |
+| COUNTALL | Restituisce il conteggio di tutti gli elementi, inclusi testo e valori vuoti. | `value1, [value2, ...]` | Numero | `COUNTALL(100, 200, "", "Teable", TRUE) => 5` |
 | COUNTA | Restituisce il conteggio dei valori non vuoti. Questa funzione conta sia i numeri sia i valori di testo. | `value1, [value2, ...]` | Numero | `COUNTA(100, 200, 300, "", "Teable", TRUE) => 4` |
 | COUNT | Restituisce il conteggio degli elementi numerici. | `value1, [value2, ...]` | Numero | `COUNT(100, 200, 300, "", "Teable", TRUE) => 3` |
-| ARRAY_JOIN | Unisce una matrice di elementi di rollup in una stringa utilizzando un separatore. | `array, [separator]` | Stringa | `ARRAY_JOIN(["Tom", "Jerry", "Mike"], "; ") => "Tom; Jerry; Mike"` |
-| ARRAY_UNIQUE | Restituisce soltanto gli elementi univoci di una matrice. | `array` | Matrice | `ARRAY_UNIQUE([1, 2, 3, 2, 1]) => [1, 2, 3]` |
-| ARRAY_FLATTEN | Appiattisce una matrice rimuovendo qualsiasi annidamento. Tutti gli elementi diventano elementi di un'unica matrice. | `array` | Matrice | `ARRAY_FLATTEN([1, 2, " ", 3, true], ["ABC"]) => [1, 2, 3, " ", true, "ABC"]` |
-| ARRAY_COMPACT | Rimuove le stringhe vuote e i valori null da una matrice. Mantiene "false" e le stringhe contenenti uno o più spazi. | `array` | Matrice | `ARRAY_COMPACT([1, 2, 3, "", null, "ABC"]) => [1, 2, 3, "ABC"]` |
+| ARRAY_JOIN | Unisce una matrice di elementi di rollup in una stringa utilizzando un separatore. | `array, [separator]` | Stringa | `ARRAY_JOIN({Tags}, "; ") => "Tom; Jerry; Mike"` |
+| ARRAY_UNIQUE | Restituisce soltanto gli elementi univoci di una matrice. | `array1, [array2, ...]` | Matrice | `ARRAY_UNIQUE({Tags1}, {Tags2}) => ["A", "B", "C"]` |
+| ARRAY_FLATTEN | Appiattisce una matrice rimuovendo qualsiasi annidamento. Tutti gli elementi diventano elementi di un'unica matrice. | `array1, [array2, ...]` | Matrice | `ARRAY_FLATTEN({Tags1}, {Tags2}) => ["A", "B", "B", "C"]` |
+| ARRAY_COMPACT | Rimuove le stringhe vuote e i valori null da una matrice. Mantiene "false" e le stringhe contenenti uno o più spazi. | `array` | Matrice | `ARRAY_COMPACT({Items}) => ["A", "B", "C"]` |
 | RECORD_ID | Restituisce l'ID del Record corrente. | `-` | Stringa | `RECORD_ID() => "recxxxxxx"` |

@@ -42,11 +42,11 @@ Metin işlevleri dizeleri birleştirme, arama, değiştirme, ayıklama ve bölme
 | CONCATENATE | Birden çok değer türündeki parametreyi tek bir metin değerinde birleştirir. | `text1, [text2, ...]` | Metin | `CONCATENATE("Hello ", "Teable") => Hello Teable` |
 | FIND | Belirtilen metinde bir alt dizenin konumunu bulur. Alt dize bulunamazsa 0 döndürür. | `stringToFind, whereToSearch, [startFromPosition]` | Sayı | `FIND("Teable", "Hello Teable") => 7` |
 | SEARCH | Belirtilen metinde bir alt dizenin konumunu bulur. Alt dize bulunamazsa boş değer döndürür. FIND işlevine benzer, ancak 0 yerine boş değer döndürür. | `stringToFind, whereToSearch, [startFromPosition]` | Metin veya Boş | `SEARCH("Teable", "Hello Teable") => 7` |
-| MID | Belirtilen konumdan başlayarak bir metin dizesinden belirtilen sayıda karakter ayıklar. | `text, whereToStart, count` | Metin | `MID("Hello Teable", 6, 6) => "Teable"` |
+| MID | Belirtilen konumdan başlayarak bir metin dizesinden belirtilen sayıda karakter ayıklar. | `text, whereToStart, count` | Metin | `MID("Hello Teable", 7, 6) => "Teable"` |
 | LEFT | Bir dizenin başlangıcından belirtilen sayıda karakter ayıklar. | `text, count` | Metin | `LEFT("2023-09-06", 4) => "2023"` |
 | RIGHT | Bir dizenin sonundan belirtilen sayıda karakter ayıklar. | `text, count` | Metin | `RIGHT("2023-09-06", 5) => "09-06"` |
 | REPLACE | Belirtilen konumdan başlayan belirli sayıda karakteri yeni metinle değiştirir. | `text, whereToStart, count, replacement` | Metin | `REPLACE("Hello Table", 7, 5, "Teable") => "Hello Teable"` |
-| REGEXP_REPLACE | Düzenli ifadeyle eşleşen tüm alt dizeleri yeni metinle değiştirir. | `text, regular_expression, replacement` | Metin | `REGEXP_REPLACE("Hello Table", "H.* ", "") => "Teable"` |
+| REGEXP_REPLACE | Düzenli ifadeyle eşleşen tüm alt dizeleri yeni metinle değiştirir. | `text, regular_expression, replacement` | Metin | `REGEXP_REPLACE("Hello Teable", "H.* ", "") => "Teable"` |
 | SUBSTITUTE | Eski metni yeni metinle değiştirir. Eski metnin belirli bir örneğini değiştirmek için bir dizin belirtilebilir. Dizin belirtilmezse tüm örnekleri değiştirir. | `text, oldText, newText, [index]` | Metin | `SUBSTITUTE("Hello Table", "Table", "Teable") => "Hello Teable"` |
 | TEXTBEFORE | Belirtilen sınırlayıcıdan önceki metni döndürür. | `text, delimiter` | Metin | `TEXTBEFORE("20, 04, 79", ",") => "20"` |
 | TEXTSPLIT | Metni belirtilen sınırlayıcıya göre böler ve birden çok metin değeri döndürür. | `text, delimiter` | Dizi | `TEXTSPLIT("20, 04, 79", ",") => ["20", " 04", " 79"]` |
@@ -104,11 +104,11 @@ Dizi ve diğer işlevler; toplama dizileri, yinelenen öğeleri kaldırma, birle
 
 | İşlev Adı | Açıklama | Girdi | Çıktı | Örnek |
 | ------------ | ----------- | ----- | ------ | ------- |
-| COUNTALL | Metin ve boş değerler dahil tüm öğelerin sayısını döndürür. | `value1, [value2, ...]` | Sayı | `COUNTALL(100, 200, "", "Teable", TRUE()) => 5` |
+| COUNTALL | Metin ve boş değerler dahil tüm öğelerin sayısını döndürür. | `value1, [value2, ...]` | Sayı | `COUNTALL(100, 200, "", "Teable", TRUE) => 5` |
 | COUNTA | Boş olmayan değerlerin sayısını döndürür. Bu işlev hem sayıları hem de metin değerlerini sayar. | `value1, [value2, ...]` | Sayı | `COUNTA(100, 200, 300, "", "Teable", TRUE) => 4` |
 | COUNT | Sayısal öğelerin sayısını döndürür. | `value1, [value2, ...]` | Sayı | `COUNT(100, 200, 300, "", "Teable", TRUE) => 3` |
-| ARRAY_JOIN | Toplama öğelerinden oluşan bir diziyi ayırıcı kullanarak bir dizede birleştirir. | `array, [separator]` | Dize | `ARRAY_JOIN(["Tom", "Jerry", "Mike"], "; ") => "Tom; Jerry; Mike"` |
-| ARRAY_UNIQUE | Bir dizide yalnızca benzersiz öğeleri döndürür. | `array` | Dizi | `ARRAY_UNIQUE([1, 2, 3, 2, 1]) => [1, 2, 3]` |
-| ARRAY_FLATTEN | Tüm dizi iç içe yerleşimlerini kaldırarak bir diziyi düzleştirir. Tüm öğeler tek bir dizinin elemanları hâline gelir. | `array` | Dizi | `ARRAY_FLATTEN([1, 2, " ", 3, true], ["ABC"]) => [1, 2, 3, " ", true, "ABC"]` |
-| ARRAY_COMPACT | Bir dizideki boş dizeleri ve null değerleri kaldırır. "false" değerini ve bir ya da daha fazla boşluk karakteri içeren dizeleri korur. | `array` | Dizi | `ARRAY_COMPACT([1, 2, 3, "", null, "ABC"]) => [1, 2, 3, "ABC"]` |
+| ARRAY_JOIN | Toplama öğelerinden oluşan bir diziyi ayırıcı kullanarak bir dizede birleştirir. | `array, [separator]` | Dize | `ARRAY_JOIN({Tags}, "; ") => "Tom; Jerry; Mike"` |
+| ARRAY_UNIQUE | Bir dizide yalnızca benzersiz öğeleri döndürür. | `array1, [array2, ...]` | Dizi | `ARRAY_UNIQUE({Tags1}, {Tags2}) => ["A", "B", "C"]` |
+| ARRAY_FLATTEN | Tüm dizi iç içe yerleşimlerini kaldırarak bir diziyi düzleştirir. Tüm öğeler tek bir dizinin elemanları hâline gelir. | `array1, [array2, ...]` | Dizi | `ARRAY_FLATTEN({Tags1}, {Tags2}) => ["A", "B", "B", "C"]` |
+| ARRAY_COMPACT | Bir dizideki boş dizeleri ve null değerleri kaldırır. "false" değerini ve bir ya da daha fazla boşluk karakteri içeren dizeleri korur. | `array` | Dizi | `ARRAY_COMPACT({Items}) => ["A", "B", "C"]` |
 | RECORD_ID | Geçerli kaydın kimliğini döndürür. | `-` | Dize | `RECORD_ID() => "recxxxxxx"` |
