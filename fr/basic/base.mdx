@@ -43,7 +43,7 @@ Dans la barre latérale de l’Espace, cliquez sur **...** à côté du Projet e
 
 ### Publier dans le centre de modèles
 
-Les modèles se préparent dans un projet de modèle distinct : choisissez **En faire un modèle** dans le menu du Projet ou dans le menu contextuel d’un élément de la barre latérale, choisissez ce que vous voulez partager, ajoutez des enregistrements d’exemple, essayez le modèle et soumettez-le pour validation. Toutes les étapes sont détaillées dans [Transformer un Projet en modèle](/fr/basic/template). Un modèle publié auparavant directement depuis un Projet conserve **Publier dans le centre de modèles** dans le menu de ce Projet, pour soumettre une nouvelle version ou le dépublier ; les installations existantes ne sont pas affectées.
+Les modèles se préparent dans un projet de modèle distinct : choisissez **En faire un modèle** dans le menu du Projet ou dans le menu contextuel d’un élément de la barre latérale, choisissez ce que vous voulez partager, ajoutez des enregistrements d’exemple, essayez le modèle et publiez-le. Une fois publié, son lien s’ouvre et s’installe aussitôt ; la validation décide seulement s’il est inclus dans le centre de modèles. Toutes les étapes sont détaillées dans [Transformer un Projet en modèle](/fr/basic/template). Un modèle publié auparavant directement depuis un Projet conserve **Publier dans le centre de modèles** dans le menu de ce Projet, pour publier une nouvelle version ou le dépublier ; les installations existantes ne sont pas affectées.
 
 ### Renommer/supprimer un Projet {#renommersupprimer-une-base}
 
@@ -119,6 +119,7 @@ La vérification se contente de lire la configuration du Projet et ne modifie au
 - **Si le déplacement est possible** : Teable affiche la raison et bloque le déplacement lorsque le Projet cible se trouve dans un autre Espace, que l’un des deux Projets est en lecture seule, que vous n’avez pas les autorisations nécessaires ou que le Projet cible contient déjà un dossier du même nom.
 - **Ressources susceptibles de ne plus fonctionner** : les automatisations et applications qui restent dans le Projet actuel mais font référence à une Table déplacée peuvent ne plus fonctionner après le déplacement. C’est le cas, par exemple, si un déclencheur ou une action d’automatisation cible cette Table, si un script ou une requête HTTP contient l’ID de la Table, ou si une application utilise cette Table pour la connexion ou y fait référence dans son code.
 - **Liens entre Projets** : les Champs Lien entre une Table déplacée et une Table restée dans le Projet d’origine deviennent des liens entre Projets et continuent de fonctionner.
+- **Bacs à sable d’application en cours d’exécution** : si une application déplacée a encore un bac à sable actif dans l’App Builder, la vérification liste ces applications et le bouton devient **Fermer le bac à sable et déplacer**. Après confirmation, Teable ferme les bacs à sable avant le déplacement, et toute génération en cours est interrompue.
 
 **Déplacer tout ce qui est référencé** est activé par défaut : les ressources de la chaîne de références sont déplacées ensemble, afin de ne laisser aucune référence rompue. Les Tables liées ne sont pas déplacées.
 
@@ -149,6 +150,8 @@ Un fichier d’export de Projet Teable (`.tea`) contient la structure et la conf
 4. Choisissez **Fichier Teable** et téléversez le fichier `.tea`.
 
 Une fois le téléversement terminé, la fenêtre d’import affiche un aperçu du fichier : le nom du projet, le nombre de ressources de chaque type et les ressources rangées dans leurs dossiers (les dossiers sont repliés au départ). Si le fichier n’est pas un fichier `.tea` valide, la fenêtre indique qu’il ne peut pas être importé ; si le fichier ne peut simplement pas être analysé, vous pouvez poursuivre l’import.
+
+Une fois l’import terminé, si certaines valeurs d’utilisateur ou de lien n’ont pas pu être restaurées (par exemple un utilisateur du fichier qui n’est pas reconnu), une notification indique le nombre de cellules non restaurées ; les enregistrements eux-mêmes sont conservés. Pour conserver les enregistrements dont un utilisateur n’est pas reconnu, les champs Utilisateur obligatoires concernés cessent d’être obligatoires. Si vous recevez une telle notification, vérifiez le projet importé. Si des automatisations ou des applications du projet ont besoin de comptes connectés, la page affiche **N intégrations ne sont pas connectées** ; cliquez sur **Connecter** pour les compléter.
 
 <img
   src="/images/docs/base/2026-11-11-space-more-menu-import.png"

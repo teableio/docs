@@ -43,7 +43,7 @@ Nella barra laterale dello Spazio fai clic su **...** accanto al Progetto e sceg
 
 ### Pubblicare nel centro modelli
 
-I modelli si preparano in un progetto modello separato: scegli **Crea un modello** nel menu del Progetto o nel menu contestuale di un elemento della barra laterale, scegli cosa condividere, aggiungi Record di esempio, prova il modello e invialo per la revisione. Tutti i passaggi sono in [Trasformare un Progetto in modello](/it/basic/template). Un modello pubblicato in precedenza direttamente da un Progetto mantiene **Pubblica nel centro modelli** nel menu di quel Progetto, per inviare una nuova versione o annullarne la pubblicazione; le installazioni esistenti non vengono toccate.
+I modelli si preparano in un progetto modello separato: scegli **Crea un modello** nel menu del Progetto o nel menu contestuale di un elemento della barra laterale, scegli cosa condividere, aggiungi Record di esempio, prova il modello e pubblicalo. Una volta pubblicato, il suo link si apre e si installa subito; la revisione decide solo se il centro modelli lo include. Tutti i passaggi sono in [Trasformare un Progetto in modello](/it/basic/template). Un modello pubblicato in precedenza direttamente da un Progetto mantiene **Pubblica nel centro modelli** nel menu di quel Progetto, per pubblicare una nuova versione o annullarne la pubblicazione; le installazioni esistenti non vengono toccate.
 
 ### Rinominare o eliminare un Progetto {#rinominare-o-eliminare-una-base}
 
@@ -119,6 +119,7 @@ Il controllo si limita a leggere la configurazione del Progetto e non modifica a
 - **Se lo spostamento è consentito**: Teable mostra il motivo e blocca lo spostamento quando il Progetto di destinazione si trova in un altro Spazio, uno dei due Progetti è di sola lettura, non disponi delle autorizzazioni necessarie o il Progetto di destinazione contiene già una cartella con lo stesso nome.
 - **Risorse che potrebbero smettere di funzionare**: le Automazioni e le app che restano nel Progetto corrente ma fanno riferimento a una Tabella spostata potrebbero non funzionare più dopo lo spostamento. Succede, ad esempio, se un trigger o un'azione di un'Automazione punta alla Tabella, se uno script o una richiesta HTTP contiene l'ID della Tabella, oppure se un'app usa la Tabella per l'accesso o vi fa riferimento nel codice.
 - **Collegamenti tra Progetti**: i Campi Collegamento tra una Tabella spostata e una Tabella rimasta nel Progetto di origine diventano collegamenti tra Progetti e continuano a funzionare.
+- **Sandbox delle app in esecuzione**: se un'app spostata ha ancora una sandbox in esecuzione in App Builder, il controllo elenca queste app e il pulsante diventa **Chiudi sandbox e sposta**. Dopo la conferma, Teable chiude le sandbox prima dello spostamento, e l'eventuale generazione in corso si interrompe.
 
 **Sposta tutto ciò a cui si fa riferimento** è attivo per impostazione predefinita e sposta insieme le risorse della catena di riferimenti, così da non lasciare riferimenti interrotti. Le Tabelle collegate non vengono spostate.
 
@@ -149,6 +150,8 @@ Un file di esportazione di un Progetto Teable (`.tea`) contiene la struttura e l
 4. Scegli **File Teable** e carica il file `.tea`.
 
 Al termine del caricamento, la finestra di importazione mostra un'anteprima del file: il nome del progetto, il numero di risorse per tipo e le risorse disposte nelle loro cartelle (le cartelle partono chiuse). Se il file non è un file `.tea` valido, la finestra indica che non può essere importato; se invece non è possibile analizzarlo, puoi comunque proseguire con l'importazione.
+
+Al termine dell'importazione, se alcuni valori utente o di collegamento non è stato possibile ripristinarli (ad esempio perché un utente del file non viene riconosciuto), una notifica indica quante celle non sono state ripristinate; i Record in sé vengono mantenuti. Per mantenere i Record con utenti non riconosciuti, i Campi utente obbligatori interessati non sono più obbligatori. Se ricevi una notifica di questo tipo, controlla il progetto importato. Se automazioni o app del progetto richiedono account collegati, la pagina mostra **N integrazioni non sono collegate**; fai clic su **Collega** per completarle.
 
 <img
   src="/images/docs/base/2026-11-11-space-more-menu-import.png"

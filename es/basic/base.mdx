@@ -43,7 +43,7 @@ En la barra lateral del Espacio, haz clic en **...** junto al Proyecto y elige *
 
 ### Publicar en el centro de plantillas
 
-Las plantillas se crean en un proyecto de plantilla aparte: elige **Convertir en plantilla** en el menú del Proyecto o en el menú contextual de un elemento de la barra lateral, elige qué compartir, añade Registros de ejemplo, pruébala y envíala a revisión. Consulta todos los pasos en [Convertir un Proyecto en plantilla](/es/basic/template). Una plantilla publicada antes directamente desde un Proyecto conserva **Publicar en el centro de plantillas** en el menú de ese Proyecto, para enviar una nueva versión o despublicarla; las instalaciones existentes no se ven afectadas.
+Las plantillas se crean en un proyecto de plantilla aparte: elige **Convertir en plantilla** en el menú del Proyecto o en el menú contextual de un elemento de la barra lateral, elige qué compartir, añade Registros de ejemplo, pruébala y publícala. Una vez publicada, su enlace se puede abrir e instalar al momento; la revisión solo decide si el centro de plantillas la incluye. Consulta todos los pasos en [Convertir un Proyecto en plantilla](/es/basic/template). Una plantilla publicada antes directamente desde un Proyecto conserva **Publicar en el centro de plantillas** en el menú de ese Proyecto, para publicar una nueva versión o despublicarla; las instalaciones existentes no se ven afectadas.
 
 ### Cambiar el nombre o eliminar un Proyecto {#cambiar-el-nombre-o-eliminar-una-base}
 
@@ -119,6 +119,7 @@ La comprobación solo lee la configuración del Proyecto y no modifica ningún d
 - **Si se permite el traslado**: Teable indica el motivo y bloquea el traslado cuando el Proyecto de destino está en otro Espacio, alguno de los dos Proyectos es de solo lectura, no tienes permiso o el Proyecto de destino ya tiene una carpeta con el mismo nombre.
 - **Recursos que pueden dejar de funcionar**: Las automatizaciones y aplicaciones que se quedan en el Proyecto actual pero hacen referencia a una Tabla movida pueden dejar de funcionar tras el traslado. Por ejemplo, cuando un desencadenador o una acción de una automatización apunta a la Tabla, un script o una solicitud HTTP contiene el ID de la Tabla, o una aplicación usa la Tabla para el inicio de sesión o hace referencia a ella en su código.
 - **Enlaces entre Proyectos**: Los Campos de Enlace entre una Tabla movida y una Tabla que se queda en el Proyecto actual pasan a ser enlaces entre Proyectos y siguen funcionando.
+- **Sandboxes de aplicaciones en ejecución**: Si una aplicación que se mueve todavía tiene un sandbox en ejecución en App Builder, la comprobación muestra esas aplicaciones y el botón pasa a ser **Cerrar sandbox y mover**. Al confirmar, Teable cierra los sandboxes antes de mover, y cualquier generación en curso se interrumpe.
 
 **Mover todo lo referenciado** está activado de forma predeterminada y traslada también los recursos de la cadena de referencias, para que no queden referencias rotas. Las Tablas enlazadas no se mueven.
 
@@ -149,6 +150,8 @@ Un archivo de exportación de Proyecto de Teable (`.tea`) contiene la estructura
 4. Elige **Archivo de Teable** y carga el archivo `.tea`.
 
 Cuando termina la subida, la ventana de importación muestra una vista previa del archivo: el nombre del proyecto, el número de recursos de cada tipo y los recursos organizados en sus carpetas (las carpetas aparecen contraídas). Si el archivo no es un `.tea` válido, la ventana indica que no se puede importar; si solo no se puede analizar, puedes continuar con la importación.
+
+Cuando termina la importación, si algunos valores de usuario o de enlace no se pudieron restaurar (por ejemplo, porque no se reconoce un usuario del archivo), una notificación indica cuántas celdas no se restauraron; los Registros en sí se conservan. Para conservar los Registros con usuarios no reconocidos, los Campos de usuario obligatorios afectados dejan de ser obligatorios. Si recibes una notificación así, revisa el proyecto importado. Si las automatizaciones o aplicaciones del proyecto necesitan cuentas conectadas, la página muestra **Hay N integraciones sin conectar**; haz clic en **Conectar** para completarlas.
 
 <img
   src="/images/docs/base/2026-11-11-space-more-menu-import.png"
