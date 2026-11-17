@@ -44,7 +44,7 @@ In the space sidebar, click **...** next to a project and choose **Installed tem
 
 ### Publishing to the Template Center
 
-Templates are made in a separate template project: choose **Make a template** in the project menu or in a sidebar item's right-click menu, pick what to share, add sample records, try it, and submit it for review. See [Turn a project into a template](/en/basic/template) for the full steps. A template published straight from a project before keeps **Publish to Template Center** in that project's menu, for submitting a new version or unlisting it; existing installs are unaffected.
+Templates are made in a separate template project: choose **Make a template** in the project menu or in a sidebar item's right-click menu, pick what to share, add sample records, try it, and publish it. Once published, the template link opens and installs right away; the review only decides whether Template Center lists it. See [Turn a project into a template](/en/basic/template) for the full steps. A template published straight from a project before keeps **Publish to Template Center** in that project's menu, for publishing a new version or unlisting it; existing installs are unaffected.
 
 ### Renaming/Deleting a Project {#renamingdeleting-a-base}
 
@@ -120,6 +120,7 @@ The check only reads the project's configuration and does not change any data. I
 - **Whether the move is allowed**: Teable shows the reason and blocks the move when the target project is in a different Space, either project is read-only, you lack permission, or the target project already has a folder with the same name.
 - **Resources that may stop working**: Automations and apps that stay in the current project but reference a moved table may stop working after the move. For example, an automation trigger or action points to the table, a script or HTTP request contains the table ID, or an app signs in with the table or references it in code.
 - **Cross-project links**: Link to record fields between a moved table and a table that stays behind become cross-project links and keep working.
+- **Running app sandboxes**: When a moved app still has a sandbox running in App Builder, the check lists those apps and the button becomes **Close sandbox and move**. After you confirm, Teable closes the sandboxes before moving, and any generation in progress stops.
 
 **Move everything referenced** is on by default and moves the resources along the reference chain together, so no broken references are left behind. Linked tables do not move.
 
@@ -150,6 +151,8 @@ A Teable project export file (`.tea`) contains project structure and configurati
 4. Choose **Teable file** and upload the `.tea` file.
 
 After the upload finishes, the import window previews the file: the project name, the number of resources of each type, and the resources laid out in their folders (folders start collapsed). If the file is not a valid `.tea` file, the window says it cannot be imported; if the file simply cannot be analyzed, you can still continue.
+
+When the import finishes, if some user or link values could not be restored (for example, a user in the file cannot be recognized), a notification shows how many cells were not restored; the records themselves are kept. To keep records with unrecognized users, the affected required user fields stop being required. When you get such a notification, check the imported project. If automations or apps in the project need connected accounts, the page shows **N integrations are not connected**; click **Connect** to finish them.
 
 <img
   src="/images/docs/base/2026-11-11-space-more-menu-import.png"

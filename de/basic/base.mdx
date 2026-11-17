@@ -43,7 +43,7 @@ Klicken Sie in der Space-Seitenleiste neben dem Projekt auf **...** und wählen 
 
 ### Im Vorlagenzentrum veröffentlichen
 
-Vorlagen entstehen in einem separaten Vorlagenprojekt: Wählen Sie im Projektmenü oder im Kontextmenü eines Elements in der Seitenleiste **Als Vorlage erstellen**, legen Sie fest, was Sie teilen möchten, ergänzen Sie Beispieldatensätze, testen Sie die Vorlage und reichen Sie sie zur Prüfung ein. Alle Schritte finden Sie unter [Aus einem Projekt eine Vorlage erstellen](/de/basic/template). Bei einer Vorlage, die früher direkt aus einem Projekt veröffentlicht wurde, bleibt **Im Vorlagenzentrum veröffentlichen** im Menü dieses Projekts erhalten, um eine neue Version einzureichen oder die Veröffentlichung aufzuheben; bereits installierte Kopien bleiben davon unberührt.
+Vorlagen entstehen in einem separaten Vorlagenprojekt: Wählen Sie im Projektmenü oder im Kontextmenü eines Elements in der Seitenleiste **Als Vorlage erstellen**, legen Sie fest, was Sie teilen möchten, ergänzen Sie Beispieldatensätze, testen Sie die Vorlage und veröffentlichen Sie sie. Nach dem Veröffentlichen lässt sich der Vorlagenlink sofort öffnen und installieren; die Prüfung entscheidet nur, ob das Vorlagenzentrum die Vorlage aufnimmt. Alle Schritte finden Sie unter [Aus einem Projekt eine Vorlage erstellen](/de/basic/template). Bei einer Vorlage, die früher direkt aus einem Projekt veröffentlicht wurde, bleibt **Im Vorlagenzentrum veröffentlichen** im Menü dieses Projekts erhalten, um eine neue Version zu veröffentlichen oder die Veröffentlichung aufzuheben; bestehende Installationen sind nicht betroffen.
 
 ### Ein Projekt umbenennen/löschen {#eine-base-umbenennenlöschen}
 
@@ -119,6 +119,7 @@ Die Prüfung liest nur die Konfiguration des Projekts und ändert keine Daten. S
 - **Ob das Verschieben möglich ist**: Teable nennt den Grund und blockiert das Verschieben, wenn das Zielprojekt in einem anderen Space liegt, eines der beiden Projekte schreibgeschützt ist, Ihnen die Berechtigung fehlt oder das Zielprojekt bereits einen Ordner mit demselben Namen enthält.
 - **Ressourcen, die nicht mehr funktionieren könnten**: Automatisierungen und Apps, die im aktuellen Projekt bleiben, aber auf eine verschobene Tabelle verweisen, funktionieren danach möglicherweise nicht mehr. Das ist etwa der Fall, wenn ein Trigger oder eine Aktion einer Automatisierung auf die Tabelle zeigt, ein Skript oder eine HTTP-Anfrage die Tabellen-ID enthält oder eine App die Tabelle für die Anmeldung nutzt oder im Code auf sie verweist.
 - **Projektübergreifende Verknüpfungen**: Link-Felder zwischen einer verschobenen Tabelle und einer Tabelle, die im Projekt bleibt, werden zu projektübergreifenden Verknüpfungen und funktionieren weiter.
+- **Laufende App-Sandboxes**: Hat eine verschobene App im App Builder noch eine laufende Sandbox, listet die Prüfung diese Apps auf, und die Schaltfläche lautet **Sandbox schließen und verschieben**. Nach Ihrer Bestätigung schließt Teable die Sandboxes vor dem Verschieben; eine laufende Generierung wird abgebrochen.
 
 **Alles Referenzierte mitverschieben** ist standardmäßig aktiviert und verschiebt die Ressourcen entlang der Verweiskette mit, sodass keine fehlerhaften Verweise zurückbleiben. Verknüpfte Tabellen werden nicht mitverschoben.
 
@@ -149,6 +150,8 @@ Eine Teable-Projektexportdatei (`.tea`) enthält die Projektstruktur und Konfigu
 4. Wählen Sie **Teable-Datei** und laden Sie die `.tea`-Datei hoch.
 
 Nach dem Hochladen zeigt das Importfenster eine Vorschau der Datei: den Projektnamen, die Anzahl der Ressourcen je Typ und die Ressourcen in ihren Ordnern (Ordner sind zunächst eingeklappt). Ist die Datei keine gültige `.tea`-Datei, weist das Fenster darauf hin, dass sie nicht importiert werden kann; lässt sie sich nur nicht analysieren, können Sie den Import trotzdem fortsetzen.
+
+Wenn nach dem Import einige Benutzer- oder Verknüpfungswerte nicht wiederhergestellt werden konnten (zum Beispiel weil ein Benutzer aus der Datei nicht erkannt wird), zeigt eine Benachrichtigung die Anzahl der nicht wiederhergestellten Zellen; die Datensätze selbst bleiben erhalten. Damit Datensätze mit nicht erkannten Benutzern erhalten bleiben, verlieren die betroffenen Pflichtfelder vom Typ Benutzer ihre Pflichteinstellung. Prüfen Sie das importierte Projekt, wenn Sie eine solche Benachrichtigung erhalten. Brauchen Automatisierungen oder Apps im Projekt verbundene Konten, zeigt die Seite **N Integrationen sind nicht verbunden**; klicken Sie auf **Verbinden**, um sie nachzuholen.
 
 <img
   src="/images/docs/base/2026-11-11-space-more-menu-import.png"
