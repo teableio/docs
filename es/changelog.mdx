@@ -4,6 +4,70 @@ description: "Sigue las últimas versiones de Teable, sus nuevas funciones, mejo
 rss: true
 ---
 
+<Update label="17 nov 2026" rss={{ date: "2026-11-17" }} id="17-nov-2026">
+
+## Consultas inteligentes, búsqueda y mejoras de seguridad {#release-2026-11-17-section-1}
+
+### Nuevas funciones {#release-2026-11-17-section-2}
+
+* **Nueva herramienta MCP query-data**: en instancias con consultas estructuradas habilitadas, permite consultar, filtrar, paginar, agregar y agrupar registros, también por intervalos, sin SQL. Se mantienen los permisos existentes y las herramientas sql-query y get-records.
+* **Nueva búsqueda de chats en móvil**: busca en títulos y mensajes, consulta fragmentos ordenados por actividad reciente y salta a coincidencias resaltadas, incluso en mensajes antiguos.
+
+### Correcciones y mejoras {#release-2026-11-17-section-3}
+
+* **Mejorados los cálculos de DATETIME\_DIFF**: day/days devuelve días enteros correctos según la zona horaria de la fórmula, incluso durante cambios de horario de verano. Establece el cuarto parámetro en TRUE para obtener fracciones de día.
+* **Reforzada la seguridad de claves y operaciones administrativas**: mayor protección para secretos, credenciales, configuraciones, aplicaciones, automatizaciones y acceso administrativo.
+* **Mejorada la copia entre zonas horarias**: al copiar a una zona de destino se conservan las fechas y horas locales. Los valores no cambian si falta una zona de origen válida o si los alias de zona son equivalentes. Las zonas fijadas en el código de la aplicación requieren actualización manual.
+* **Corregida la publicación de versiones de aplicaciones**: las versiones guardadas que utilizan consultas con nombre vuelven a publicarse de forma fiable después de las actualizaciones.
+
+</Update>
+
+<Update label="16 nov 2026" rss={{ date: "2026-11-16" }} id="16-nov-2026">
+
+## Reconocimiento inteligente de fórmulas y optimización del rendimiento {#release-2026-11-16-section-1}
+
+### Nuevas funciones {#release-2026-11-16-section-2}
+
+* **Añadida la detección automática de zona horaria de fórmulas**: las fórmulas creadas mediante CLI o IA usan la zona común de los campos de fecha referenciados, respetan los ajustes explícitos y señalan los conflictos.
+* **Añadida la detección inteligente de campos de búsqueda y resumen**: la CLI y la IA identifican tablas vinculadas y campos de destino por su nombre, ajustan los tipos y avisan antes de la creación si falta un campo de destino.
+
+### Correcciones y mejoras {#release-2026-11-16-section-3}
+
+* **Mejorada la estabilidad de la vista previa y el despliegue de plantillas**: se corrigieron vistas previas bloqueadas en «Thinking deeply…» y se aclararon los errores de despliegue para facilitar el diagnóstico y los reintentos.
+* **Optimizado el rendimiento de búsqueda en tablas anchas**: el recuento de resultados es más rápido y mantiene la precisión, los filtros, los permisos, los campos ocultos y el alcance de búsqueda por campo.
+* **Corregida la creación de campos numéricos**: se resolvieron fallos de la CLI y la IA al crear campos de fórmula, resumen y resumen condicional con formato decimal, de porcentaje o de moneda.
+* **Restablecidas las automatizaciones entre proyectos**: las actualizaciones de vínculos bidireccionales entre registros de distintos proyectos vuelven a funcionar. Los flujos afectados se reanudan sin volver a publicarlos ni reiniciarlos manualmente.
+* **Mejorado el rendimiento de carga de chats y tablas**: se redujeron los tiempos de carga inicial para un acceso y uso más fluidos.
+* **Mejorada la estabilidad de verificación de dominios personalizados**: se evitan errores cuando los resultados de verificación no están disponibles temporalmente, lo que reduce problemas de configuración.
+
+</Update>
+
+<Update label="13 nov 2026" rss={{ date: "2026-11-13" }} id="13-nov-2026">
+
+## Permisos de tokens, inicio de sesión en aplicaciones y estabilidad {#release-2026-11-13-section-1}
+
+### Nuevas funciones {#release-2026-11-13-section-2}
+
+* **Añadidos permisos predefinidos para tokens de acceso personal**: cuatro preajustes, permisos agrupados, búsqueda y alcances más claros facilitan la configuración. Se pueden ordenar los tokens por caducidad y último uso, y se resaltan los caducados o próximos a caducar.
+* **Añadidos dominios personalizados para aplicaciones publicadas**: las instancias autoalojadas pueden asignar dominios, mostrar instrucciones de configuración y devolver a los usuarios al dominio configurado tras iniciar sesión.
+* **Añadido SSO OIDC para aplicaciones de App Builder**: tras configurar OIDC en la instancia, se puede habilitar SSO en la aplicación para iniciar sesión rápidamente con «Continuar con SSO».
+
+### Correcciones y mejoras {#release-2026-11-13-section-3}
+
+* **Mejorada la configuración de Kanban**: los avisos se cierran automáticamente tras la configuración y los registros creados en una columna heredan el valor de selección única correspondiente.
+* **Mejorada la visualización de fuentes de importación de proyectos**: nombres más claros, iconos coherentes y textos uniformes permiten identificar las fuentes más rápido.
+* **Mejorada la estabilidad de autenticación**: las indicaciones de inicio de sesión de clientes MCP y CLI conservan las credenciales válidas ante fallos temporales y muestran cuándo reintentar si se alcanza el límite de solicitudes.
+* **Mejoradas la creación de chats y la conservación de borradores**: los chats se crean al enviar el primer mensaje y los borradores sin enviar se conservan al actualizar la página.
+* **Mejorado el rendimiento de actualizaciones masivas**: menor consumo de memoria y mayor eficiencia al modificar pocos campos en tablas anchas.
+* **Mejorada la estabilidad de consultas tras convertir tipos de campo**: las consultas paginadas se recuperan correctamente después de una conversión fallida.
+* **Mejorada la renovación de sesiones de App Builder**: las aplicaciones activas e incrustadas prolongan las sesiones automáticamente y respetan los permisos y ajustes de inicio de sesión existentes.
+* **Mejoradas las páginas compartidas editables**: se restauraron los indicadores de progreso de importación y se reforzaron la privacidad y la seguridad de los enlaces compartidos.
+* **Mejoradas la seguridad y la fiabilidad de importaciones por URL**: el tratamiento del contenido reduce los fallos de importación y los riesgos de seguridad.
+* **Mejorada la publicación de aplicaciones con archivos grandes**: las aplicaciones con archivos grandes de texto, consultas generadas o GeoJSON ahora se publican de forma fiable.
+* **Mejoradas las interacciones en Android y pantallas táctiles**: se restauró la navegación hacia atrás por deslizamiento en Android y se mejoró el desplazamiento de la galería para evitar arrastrar tarjetas accidentalmente.
+
+</Update>
+
 <Update label="11 nov 2026" rss={{ date: "2026-11-11" }} id="11-nov-2026">
 
 ## Mejoras en permisos de rutinas, rendimiento y experiencia de uso {#release-2026-11-11-section-1}

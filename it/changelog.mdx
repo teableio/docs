@@ -4,6 +4,70 @@ description: "Segui le ultime versioni di Teable, con nuove funzionalità, migli
 rss: true
 ---
 
+<Update label="17 nov 2026" rss={{ date: "2026-11-17" }} id="17-nov-2026">
+
+## Query intelligenti, ricerca e miglioramenti alla sicurezza {#release-2026-11-17-section-1}
+
+### Nuove funzionalità {#release-2026-11-17-section-2}
+
+* **Nuovo strumento MCP query-data**: nelle istanze con query strutturate abilitate, consente di interrogare, filtrare, paginare, aggregare e raggruppare i record, anche per intervalli, senza SQL. Restano invariati i permessi esistenti e gli strumenti sql-query e get-records.
+* **Nuova ricerca nelle chat su mobile**: cerca nei titoli e nei messaggi, visualizza estratti ordinati per attività recente e raggiungi le corrispondenze evidenziate, anche nei messaggi meno recenti.
+
+### Correzioni e miglioramenti {#release-2026-11-17-section-3}
+
+* **Migliorati i calcoli DATETIME\_DIFF**: day/days restituisce giorni interi corretti secondo il fuso orario della formula, anche durante i cambi dell’ora legale. Imposta il quarto parametro su TRUE per ottenere frazioni di giorno.
+* **Rafforzata la sicurezza di chiavi e operazioni amministrative**: maggiore protezione per segreti, credenziali, configurazioni, app, automazioni e accesso amministrativo.
+* **Migliorata la copia tra fusi orari**: la copia verso un fuso di destinazione conserva date e orari locali. I valori restano invariati se manca un fuso di origine valido o se gli alias sono equivalenti. I fusi impostati direttamente nel codice delle app richiedono un aggiornamento manuale.
+* **Corretta la pubblicazione delle versioni delle app**: le versioni salvate che usano query con nome possono di nuovo essere pubblicate in modo affidabile dopo gli aggiornamenti.
+
+</Update>
+
+<Update label="16 nov 2026" rss={{ date: "2026-11-16" }} id="16-nov-2026">
+
+## Riconoscimento intelligente delle formule e ottimizzazione delle prestazioni {#release-2026-11-16-section-1}
+
+### Nuove funzionalità {#release-2026-11-16-section-2}
+
+* **Aggiunto il rilevamento automatico del fuso orario delle formule**: le formule create tramite CLI o IA usano il fuso comune dei campi data referenziati, rispettano le impostazioni esplicite e segnalano i conflitti.
+* **Aggiunto il riconoscimento intelligente dei campi lookup e rollup**: CLI e IA identificano tabelle collegate e campi di destinazione per nome, abbinano i tipi e segnalano i campi di destinazione mancanti prima della creazione.
+
+### Correzioni e miglioramenti {#release-2026-11-16-section-3}
+
+* **Migliorata la stabilità di anteprima e distribuzione dei modelli**: corrette le anteprime bloccate su «Thinking deeply…» e chiariti gli errori di distribuzione per facilitare diagnosi e nuovi tentativi.
+* **Ottimizzate le prestazioni di ricerca nelle tabelle ampie**: il conteggio dei risultati è più rapido, mantenendo corretti risultati, filtri, permessi, campi nascosti e ambiti di ricerca per campo.
+* **Corretta la creazione dei campi numerici**: risolti gli errori di CLI e IA nella creazione di campi formula, rollup e rollup condizionale con formato decimale, percentuale o valuta.
+* **Ripristinate le automazioni tra progetti**: gli aggiornamenti dei collegamenti bidirezionali tra record di progetti diversi funzionano di nuovo. I flussi interessati riprendono senza ripubblicazione o riavvio manuale.
+* **Migliorate le prestazioni di caricamento di chat e tabelle**: tempi di caricamento iniziale ridotti per un accesso e un utilizzo più fluidi.
+* **Migliorata la stabilità della verifica dei domini personalizzati**: evitati gli errori quando i risultati della verifica sono temporaneamente indisponibili, riducendo i problemi di configurazione.
+
+</Update>
+
+<Update label="13 nov 2026" rss={{ date: "2026-11-13" }} id="13-nov-2026">
+
+## Permessi dei token, accesso alle app e aggiornamenti di stabilità {#release-2026-11-13-section-1}
+
+### Nuove funzionalità {#release-2026-11-13-section-2}
+
+* **Aggiunti permessi predefiniti per i token di accesso personali**: quattro profili, permessi raggruppati, ricerca e ambiti più chiari semplificano la configurazione. I token si possono ordinare per scadenza e ultimo utilizzo, con evidenziazione di quelli scaduti o prossimi alla scadenza.
+* **Aggiunti domini personalizzati per le app pubblicate**: le istanze self-hosted possono associare domini, mostrare istruzioni di configurazione e reindirizzare gli utenti al dominio configurato dopo l’accesso.
+* **Aggiunto SSO OIDC per le app App Builder**: dopo aver configurato OIDC nell’istanza, è possibile abilitare SSO nell’app per accedere rapidamente tramite «Continua con SSO».
+
+### Correzioni e miglioramenti {#release-2026-11-13-section-3}
+
+* **Migliorata la configurazione Kanban**: gli avvisi si chiudono automaticamente dopo la configurazione e i record creati in una colonna ereditano il valore di selezione singola corrispondente.
+* **Migliorata la visualizzazione delle origini di importazione dei progetti**: nomi più chiari, icone coerenti e testi uniformi facilitano l’identificazione delle origini.
+* **Migliorata la stabilità dell’autenticazione**: indicazioni di accesso più chiare per client MCP e CLI preservano le credenziali valide in caso di errori temporanei e mostrano quando riprovare in caso di limiti alle richieste.
+* **Migliorate la creazione delle chat e la conservazione delle bozze**: le chat vengono create al primo messaggio e le bozze non inviate restano disponibili dopo l’aggiornamento della pagina.
+* **Migliorate le prestazioni degli aggiornamenti in blocco**: minore uso di memoria e maggiore efficienza quando si modificano pochi campi in tabelle ampie.
+* **Migliorata la stabilità delle query dopo la conversione del tipo di campo**: le query paginate tornano a funzionare correttamente dopo una conversione non riuscita.
+* **Migliorato il rinnovo delle sessioni App Builder**: le app attive e incorporate prolungano automaticamente le sessioni nel rispetto dei permessi e delle impostazioni di accesso esistenti.
+* **Migliorate le pagine condivise modificabili**: ripristinati gli indicatori di avanzamento delle importazioni e rafforzate privacy e sicurezza dei link di condivisione.
+* **Migliorate sicurezza e affidabilità delle importazioni da URL**: l’elaborazione dei contenuti è stata affinata per ridurre errori di importazione e rischi di sicurezza.
+* **Migliorata la pubblicazione delle app con file grandi**: le app che contengono file di testo, query generate o file GeoJSON di grandi dimensioni ora si pubblicano in modo affidabile.
+* **Migliorate le interazioni su Android e touchscreen**: ripristinata la navigazione indietro tramite scorrimento su Android e migliorato lo scorrimento della galleria per evitare trascinamenti accidentali delle schede.
+
+</Update>
+
 <Update label="11 nov 2026" rss={{ date: "2026-11-11" }} id="11-nov-2026">
 
 ## Miglioramenti ai permessi delle routine, alle prestazioni e all’esperienza d’uso {#release-2026-11-11-section-1}

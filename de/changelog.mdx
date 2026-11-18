@@ -4,6 +4,70 @@ description: "Verfolgen Sie die neuesten Teable-Versionen, Funktionen, Verbesser
 rss: true
 ---
 
+<Update label="17. November 2026" rss={{ date: "2026-11-17" }} id="17-november-2026">
+
+## Intelligente Abfragen, Suche und Sicherheitsverbesserungen {#release-2026-11-17-section-1}
+
+### Neue Funktionen {#release-2026-11-17-section-2}
+
+* **Neues MCP-Werkzeug query-data**: Auf Instanzen mit aktivierten strukturierten Abfragen lassen sich Datensätze ohne SQL abfragen, filtern, paginieren, aggregieren, gruppieren und in Intervalle einteilen. Bestehende Berechtigungen sowie sql-query und get-records bleiben erhalten.
+* **Neue Chat-Suche auf Mobilgeräten**: Durchsuchen Sie Titel und Nachrichten, sehen Sie nach letzter Aktivität sortierte Treffer mit Textauszügen und springen Sie zu hervorgehobenen Fundstellen, auch in älteren Nachrichten.
+
+### Fehlerbehebungen und Verbesserungen {#release-2026-11-17-section-3}
+
+* **DATETIME\_DIFF-Berechnungen verbessert**: day/days liefert unter Berücksichtigung der Formelzeitzone auch bei Sommerzeitwechseln korrekte ganze Tage. Setzen Sie den vierten Parameter auf TRUE, um Tagesbruchteile zu erhalten.
+* **Sicherheit von Schlüsseln und Verwaltungszugriffen verbessert**: Stärkerer Schutz für Secrets, Zugangsdaten, Konfigurationen, Apps, Automatisierungen und administrative Zugriffe.
+* **Kopieren mit Zeitzonenanpassung verbessert**: Beim Kopieren in eine Zielzeitzone bleiben lokale Datums- und Uhrzeitwerte erhalten. Ohne gültige Quellzeitzone sowie bei gleichwertigen Zeitzonenaliasen bleiben die Werte unverändert. Fest im App-Code eingetragene Zeitzonen müssen manuell aktualisiert werden.
+* **Veröffentlichung von App-Versionen korrigiert**: Gespeicherte App-Versionen mit benannten Abfragen lassen sich nach Upgrades wieder zuverlässig veröffentlichen.
+
+</Update>
+
+<Update label="16. November 2026" rss={{ date: "2026-11-16" }} id="16-november-2026">
+
+## Intelligente Formelerkennung und Leistungsoptimierung {#release-2026-11-16-section-1}
+
+### Neue Funktionen {#release-2026-11-16-section-2}
+
+* **Automatische Erkennung der Formelzeitzone hinzugefügt**: Über CLI oder KI erstellte Formeln übernehmen die gemeinsame Zeitzone referenzierter Datumsfelder. Explizite Einstellungen haben Vorrang; Konflikte werden gemeldet.
+* **Intelligente Erkennung von Lookup- und Rollup-Feldern hinzugefügt**: CLI und KI erkennen verknüpfte Tabellen und Zielfelder anhand ihrer Namen, übernehmen passende Feldtypen und weisen vor der Erstellung auf fehlende Zielfelder hin.
+
+### Fehlerbehebungen und Verbesserungen {#release-2026-11-16-section-3}
+
+* **Stabilität von Vorlagenvorschau und Bereitstellung verbessert**: Vorschauen bleiben nicht mehr bei „Thinking deeply…“ hängen. Klarere Fehlermeldungen bei der Bereitstellung erleichtern Diagnose und erneute Versuche.
+* **Suchleistung in breiten Tabellen optimiert**: Suchtreffer werden schneller gezählt, während Ergebnisse, Filter, Berechtigungen, ausgeblendete Felder und feldbezogene Suchbereiche korrekt bleiben.
+* **Erstellung numerischer Felder korrigiert**: Fehler bei der Erstellung von Formel-, Rollup- und bedingten Rollup-Feldern mit Dezimal-, Prozent- oder Währungsformat über CLI und KI wurden behoben.
+* **Projektübergreifende Automatisierungen wiederhergestellt**: Aktualisierungen bidirektionaler Datensatzverknüpfungen zwischen Projekten funktionieren wieder. Betroffene Abläufe laufen ohne erneute Veröffentlichung oder manuellen Neustart weiter.
+* **Ladeleistung von Chats und Tabellen verbessert**: Kürzere anfängliche Ladezeiten ermöglichen einen flüssigeren Zugriff und eine angenehmere Nutzung.
+* **Stabilität der Prüfung benutzerdefinierter Domains verbessert**: Vorübergehend nicht verfügbare Prüfergebnisse verursachen keine Fehler mehr, wodurch Probleme bei der Domainkonfiguration reduziert werden.
+
+</Update>
+
+<Update label="13. November 2026" rss={{ date: "2026-11-13" }} id="13-november-2026">
+
+## Token-Berechtigungen, App-Anmeldung und Stabilitätsverbesserungen {#release-2026-11-13-section-1}
+
+### Neue Funktionen {#release-2026-11-13-section-2}
+
+* **Berechtigungsvorlagen für persönliche Zugriffstokens hinzugefügt**: Vier Vorlagen, gruppierte Berechtigungen, Suche und klarere Zugriffsbereiche erleichtern die Einrichtung. Tokens lassen sich nach Ablauf und letzter Nutzung sortieren; abgelaufene oder bald ablaufende Tokens werden hervorgehoben.
+* **Benutzerdefinierte Domains für veröffentlichte Apps hinzugefügt**: Selbst gehostete Instanzen können Domains zuordnen, Anleitungen zur Einrichtung anzeigen und Benutzer nach der Anmeldung zur konfigurierten Domain zurückleiten.
+* **OIDC-SSO für App-Builder-Apps hinzugefügt**: Nach der OIDC-Konfiguration der Instanz kann SSO für die App aktiviert werden, um die schnelle Anmeldung über „Mit SSO fortfahren“ zu ermöglichen.
+
+### Fehlerbehebungen und Verbesserungen {#release-2026-11-13-section-3}
+
+* **Kanban-Konfiguration verbessert**: Hinweise schließen sich nach der Konfiguration automatisch. In einer Spalte erstellte Datensätze übernehmen den entsprechenden Einfachauswahlwert.
+* **Anzeige von Projektimportquellen verbessert**: Klarere Namen, einheitliche Symbole und konsistente Texte erleichtern die Auswahl der Importquelle.
+* **Authentifizierungsstabilität verbessert**: Bessere Anmeldehinweise für MCP-Clients und CLI erhalten gültige Zugangsdaten bei vorübergehenden Fehlern und zeigen bei Ratenbegrenzungen den Zeitpunkt für einen erneuten Versuch an.
+* **Erstellung neuer Chats und Aufbewahrung von Entwürfen verbessert**: Chats werden erst mit der ersten Nachricht erstellt. Nicht gesendete Entwürfe bleiben nach dem Neuladen erhalten.
+* **Leistung bei Massenaktualisierungen verbessert**: Weniger Speicherverbrauch und effizientere Verarbeitung beim Aktualisieren weniger Felder in breiten Tabellen.
+* **Abfragestabilität nach Feldtypkonvertierungen verbessert**: Paginierte Abfragen funktionieren nach fehlgeschlagenen Feldtypkonvertierungen wieder korrekt.
+* **Sitzungsverlängerung im App Builder verbessert**: Aktiv genutzte und eingebettete Apps verlängern Sitzungen automatisch unter Beachtung bestehender Berechtigungen und Anmeldeeinstellungen.
+* **Bearbeitbare freigegebene Seiten verbessert**: Importfortschrittsanzeigen wurden wiederhergestellt; Datenschutz und Sicherheit von Freigabelinks wurden gestärkt.
+* **Sicherheit und Zuverlässigkeit von URL-Importen verbessert**: Verbesserte Verarbeitung von URL-Inhalten reduziert Importfehler und Sicherheitsrisiken.
+* **Veröffentlichung von Apps mit großen Dateien stabilisiert**: Apps mit großen Textdateien, generierten Abfragedateien oder GeoJSON-Dateien lassen sich jetzt zuverlässig veröffentlichen.
+* **Bedienung auf Android und Touchscreens verbessert**: Die Zurücknavigation per Wischgeste auf Android funktioniert wieder. Verbessertes Scrollen in der Galerie verhindert versehentliches Ziehen von Karten.
+
+</Update>
+
 <Update label="11. November 2026" rss={{ date: "2026-11-11" }} id="11-november-2026">
 
 ## Verbesserungen an Routine-Berechtigungen, Leistung und Bedienung {#release-2026-11-11-section-1}
