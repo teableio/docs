@@ -25,7 +25,7 @@ Describe the goal once, and the automation is ready with no manual setup.
 |---|---|---|
 | Table | Yes | The table that contains the button field |
 | Watch fields | Yes | The button field(s) to monitor for clicks |
-| Filter | No | Only trigger if the record matches these conditions when the button is clicked |
+| Filter | No | Only trigger if the record matches these conditions when the button is clicked; a click on a record that does not match is rejected |
 
 ## How to create a Button field
 
@@ -68,7 +68,7 @@ This means you can use the row's data to populate emails, update other records, 
 
 - The button field itself does not store data — it is purely a trigger mechanism. You will not see a value in the cell; just a clickable button.
 - If you have multiple button fields in a table, you can create separate automations for each one, or use a single automation that watches multiple buttons and uses conditional logic.
-- The filter is evaluated at the moment the button is clicked. If the record does not match the filter, the automation simply does not run — the user will not see an error.
+- The filter is checked at the moment the button is clicked. If the record does not match, the click is rejected with the message "This record doesn't meet the automation's trigger conditions": the automation does not run and the click does not count toward the button's click count.
 - Button triggers are great for automations where you want human judgment before an action is taken, rather than fully automatic processing.
 
 ## Related
