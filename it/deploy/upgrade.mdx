@@ -71,11 +71,9 @@ come riferimento per l'aggiornamento. A ogni ciclo:
 
 ## Segreti obbligatori
 
-Teable non utilizza più segreti predefiniti incorporati come ripiego. Se il deployment
-si basava su tali valori, il primo avvio dopo l'aggiornamento si interrompe mostrando
-un elenco delle variabili d'ambiente necessarie e un blocco da copiare e incollare che
-preserva sessioni, token e dati crittografati esistenti. Aggiungi il blocco, riavvia,
-quindi pianifica una rotazione. Consulta [Segreti e rotazione](/it/deploy/env#secrets-and-rotation).
+All'app servono due segreti propri, `SECRET_KEY` e `SANDBOX_JWT_SECRET`. Un segreto mancante non impedisce l'avvio: l'istanza ripiega sui valori predefiniti pubblici incorporati nelle versioni precedenti, che chiunque può usare per falsificare token di autenticazione. Il log di avvio elenca i segreti mancanti e gli amministratori dell'istanza vedono un elemento **Segreti del server** in **Amministrazione di sistema → Impostazioni dell'istanza**, nel pannello **Configurazione in attesa**.
+
+Se un'istanza esistente usa ancora i valori predefiniti incorporati, oppure imposta altre variabili dedicate per i segreti, segui [Convergenza dei segreti](/it/deploy/secret-convergence) per portarla a questi due segreti. Consulta anche [Segreti e rotazione](/it/deploy/env#secrets-and-rotation).
 
 ## Migrazione del database
 

@@ -1,0 +1,81 @@
+---
+title: "Convergenza delle chiavi di cifratura: controllare i segreti del server e ricifrare i dati memorizzati"
+description: "Vedi quali variabili dedicate per i segreti un'istanza imposta ancora, ricifra con la chiave corrente il testo cifrato nel database e conta i token di accesso personali che dipendono ancora da una vecchia chiave. Usala dopo aver modificato o ridotto i segreti del server."
+sidebarTitle: "Convergenza delle chiavi di cifratura"
+---
+
+<Tip>Disponibile per il piano Business Self-hosted e versioni successive</Tip>
+
+Percorso: Amministrazione di sistema → Convergenza delle chiavi di cifratura
+
+Dopo la modifica o la rimozione di un segreto del server, i dati già presenti nel database sono ancora cifrati con quello vecchio. Questa pagina controlla la configurazione dei segreti e porta quei dati sotto la chiave corrente; dopodiché il vecchio segreto può essere rimosso. Per l'ordine dell'intera procedura, vedi [Convergenza dei segreti](/it/deploy/secret-convergence).
+
+La pagina ha tre schede: Testi cifrati memorizzati, Token di accesso personali e Segreti del server.
+
+## Segreti del server {#server-secrets}
+
+Sola lettura. Controlla le variabili d'ambiente e non mostra mai il valore di un segreto.
+
+Elenca `SECRET_KEY`, `SANDBOX_JWT_SECRET` e ogni segreto che ha ancora impostata una variabile propria o una variabile `_OLD`. Un segreto non elencato segue `SECRET_KEY` e non ha bisogno di una variabile propria.
+
+| Colonna | Significato |
+|---|---|
+| Variabile | La variabile d'ambiente e a cosa serve. Una variabile con l'etichetta **Deprecato** viene mantenuta solo per leggere i dati esistenti. **Non letto da questo deployment** significa che la variabile è impostata ma questa edizione o configurazione non la utilizza |
+| Valore da | Indica se il valore proviene dalla variabile stessa, ripiega su `SECRET_KEY`, è derivato da `SECRET_KEY` oppure è un precedente valore predefinito pubblico. Segue l'impronta del valore; **Valore pubblico** contrassegna un valore che chiunque può calcolare |
+| `_OLD` | Le variabili `_OLD` impostate, ciascuna con la propria impronta. `_OLD` serve solo a verificare o decifrare i dati esistenti |
+| Uguale a solo SECRET_KEY | **Uguale** significa che la rimozione della variabile dedicata non cambierebbe il valore. **Diverso** significa che il valore cambierebbe, quindi quello vecchio va prima conservato |
+
+Un'impronta è costituita dai primi 8 caratteri esadecimali dello SHA-256 del valore e serve per il confronto con il record nel tuo archivio dei segreti.
+
+La parte superiore della pagina riepiloga quante variabili dedicate e quante variabili `_OLD` sono ancora impostate e quanti dei valori sono pubblici, e segnala a parte quando `SECRET_KEY` non è impostato o è ancora il valore predefinito pubblico.
+
+## Testi cifrati memorizzati {#stored-ciphertexts}
+
+Ricifra con la chiave corrente il testo cifrato nel database: stringhe di connessione dei tenant di database, variabili d'ambiente delle app, configurazione IA e credenziali di terze parti. Non riscrive la copia dei passaggi a partire dalla quale viene eseguita un'Automazione attiva; vedi [Per quanto tempo resta ogni vecchio valore](/it/deploy/secret-convergence#old-value-retention).
+
+1. Fai clic su **Dry-run** (esecuzione di prova). Conta soltanto e non modifica nulla.
+2. Controlla il risultato, quindi fai clic su **Ricifra**.
+3. Esegui ancora una volta il dry-run e controlla che **Da ricifrare** e **Non decifrabili** siano entrambe a 0.
+
+| Colonna | Significato |
+|---|---|
+| Totale | Righe di questa tabella che contengono un valore segreto, cifrato o meno |
+| Aggiornate | Già sotto la chiave corrente; niente da fare |
+| Da ricifrare / Ricifrate | Righe che un dry-run riscriverebbe, oppure righe che un'esecuzione reale ha riscritto |
+| Conflitti di concorrenza | La riga è stata modificata da un'altra richiesta durante la riscrittura ed è stata saltata questa volta. Esegui di nuovo l'operazione |
+| Non decifrabili | Né la chiave corrente né alcun `_OLD` configurato apre la riga, che quindi viene lasciata com'è. Il risultato elenca gli ID di queste righe, fino a 50 per tabella |
+
+Le tabelle senza dati sono compresse per impostazione predefinita.
+
+<Warning>
+Prima dell'esecuzione: esegui il backup del database e delle variabili d'ambiente, comprese tutte le variabili `_OLD`, e assicurati che ogni istanza dell'app, comprese tutte le repliche e tutti i worker, sia stata riavviata con la nuova configurazione dei segreti.
+
+Dopo l'esecuzione: non eseguire il rollback delle variabili d'ambiente e non passare a un'immagine precedente. I dati riscritti si aprono solo con la chiave corrente.
+</Warning>
+
+Su un database di grandi dimensioni la richiesta può andare in timeout mentre il server continua a lavorare. Eseguirla di nuovo è sicuro: le righe già elaborate vengono saltate.
+
+Quando la chiave di cifratura di un elemento è ancora un valore predefinito pubblico, quell'elemento viene rifiutato: imposta prima `SECRET_KEY`.
+
+## Token di accesso personali {#personal-access-tokens}
+
+Un token di accesso personale non può essere ricifrato; solo il suo proprietario può rigenerarlo. Questa scheda conta i token che non sono scaduti ma non sono stati emessi con la chiave corrente, così puoi capire se una vecchia chiave può essere rimossa:
+
+- **Chiave precedente, funzionano ancora**: questi token smettono di funzionare una volta rimossa la vecchia chiave.
+- **Emessi prima dell'aggiornamento, non determinabili**: il token non registra la chiave con cui è stato emesso, quindi viene considerato ancora funzionante. Tieni conto anche di questi prima di rimuovere una vecchia chiave.
+- **Non funzionano più**: la chiave che li ha emessi non è più accettata, quindi questi token ora non funzionano.
+
+La vecchia chiave è la coppia conservata in `BACKEND_ACCESS_TOKEN_ENCRYPTION_KEY_OLD` / `IV_OLD`. Un'istanza che ha abbandonato i valori predefiniti incorporati conserva anche la coppia incorporata per la decifratura; questa resta e non spetta a te rimuoverla.
+
+La pagina dei token suggerisce ai proprietari di rigenerare quelli con una lunga validità residua.
+
+## Domande frequenti
+
+<AccordionGroup>
+  <Accordion title="Cosa fare se Non decifrabili non è 0?">
+    Di solito manca il vecchio valore con cui quelle righe sono state cifrate. Inseriscilo nella variabile `_OLD` corrispondente, riavvia ed esegui di nuovo il dry-run. La ricifratura salta queste righe e non le danneggia.
+  </Accordion>
+  <Accordion title="La ricifratura richiede un'interruzione del servizio?">
+    Di per sé no: i dati in uso continuano a essere letti e scritti. La modifica della configurazione dei segreti richiede invece un riavvio; vedi [Convergenza dei segreti](/it/deploy/secret-convergence).
+  </Accordion>
+</AccordionGroup>
