@@ -16,11 +16,11 @@ Sayfada üç sekme vardır: Saklanan şifreli metinler, Kişisel erişim tokenle
 
 Salt okunurdur. Ortam değişkenlerini denetler ve hiçbir zaman bir gizli anahtarın değerini göstermez.
 
-`SECRET_KEY`, `SANDBOX_JWT_SECRET` ve hâlâ kendi değişkeni veya bir `_OLD` değişkeni ayarlı olan her gizli anahtar listelenir. Listelenmeyen bir gizli anahtar `SECRET_KEY` değerini izler ve kendi değişkenine ihtiyaç duymaz.
+`SECRET_KEY`, `SANDBOX_JWT_SECRET` ve hâlâ kendi değişkeni veya bir `_OLD` değişkeni ayarlı olan her gizli anahtar listelenir. Listelenmeyen bir gizli anahtar `SECRET_KEY` değerini izler ve kendi değişkenine ihtiyaç duymaz. `BACKEND_STORED_CREDENTIAL_ENCRYPTION_SECRET` ayarlandığında veritabanında şifrelenen kimlik bilgileri bunun yerine o değişkeni izler; bkz. [Saklanan kimlik bilgileri için ayrı bir kök gizli anahtar](/tr/deploy/secret-convergence#stored-credential-root).
 
 | Sütun | Anlamı |
 |---|---|
-| Değişken | Ortam değişkeni ve ne için kullanıldığı. **Kullanımdan kalkacak** olarak etiketlenen bir değişken yalnızca mevcut verileri okumak için tutulur. **Bu dağıtım tarafından okunmuyor**, değişkenin ayarlı olduğu ancak bu sürüm türünün veya yapılandırmanın onu kullanmadığı anlamına gelir |
+| Değişken | Ortam değişkeni ve ne için kullanıldığı. **Kullanımdan kalkacak** olarak etiketlenen bir değişkenin yerini başka bir değişken almıştır: ayarlı olduğu sürece geçerliliğini korur, ancak yeni bir dağıtımda ayarlanmamalıdır. **Bu dağıtım tarafından okunmuyor**, değişkenin ayarlı olduğu ancak bu sürüm türünün veya yapılandırmanın onu kullanmadığı anlamına gelir |
 | Değerin kaynağı | Değerin değişkenin kendisinden mi geldiği, `SECRET_KEY` değerine mi düştüğü, `SECRET_KEY` değerinden mi türetildiği yoksa eski bir herkese açık varsayılan değer mi olduğu. Ardından değerin parmak izi gelir; **Herkese açık değer**, herkesin hesaplayabileceği bir değeri işaretler |
 | `_OLD` | Ayarlı olan `_OLD` değişkenleri; her biri parmak iziyle birlikte. `_OLD` yalnızca mevcut verileri doğrular veya bunların şifresini çözer |
 | Yalnızca SECRET_KEY ile aynı | **Aynı**, özel değişkenin kaldırılmasının değeri değiştirmeyeceği anlamına gelir. **Farklı**, değerin değişeceği ve bu nedenle önce eski değerin saklanması gerektiği anlamına gelir |

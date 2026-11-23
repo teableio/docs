@@ -16,11 +16,11 @@ La página tiene tres pestañas: Textos cifrados almacenados, Tokens de acceso p
 
 Solo lectura. Comprueba las variables de entorno y nunca muestra el valor de un secreto.
 
-Enumera `SECRET_KEY`, `SANDBOX_JWT_SECRET` y cada secreto que todavía tiene establecida su propia variable o una variable `_OLD`. Un secreto que no aparece en la lista sigue a `SECRET_KEY` y no necesita una variable propia.
+Enumera `SECRET_KEY`, `SANDBOX_JWT_SECRET` y cada secreto que todavía tiene establecida su propia variable o una variable `_OLD`. Un secreto que no aparece en la lista sigue a `SECRET_KEY` y no necesita una variable propia. Una vez establecida `BACKEND_STORED_CREDENTIAL_ENCRYPTION_SECRET`, las credenciales cifradas en la base de datos siguen a esa variable; consulta [Un secreto raíz propio para las credenciales almacenadas](/es/deploy/secret-convergence#stored-credential-root).
 
 | Columna | Significado |
 |---|---|
-| Variable | La variable de entorno y para qué se usa. Una variable con la etiqueta **Obsoleto** se conserva solo para leer datos existentes. **Este despliegue no lo lee** significa que la variable está establecida, pero esta edición o configuración no la utiliza |
+| Variable | La variable de entorno y para qué se usa. Una variable con la etiqueta **Obsoleto** ha sido sustituida: sigue teniendo efecto mientras esté establecida, pero un despliegue nuevo no debe establecerla. **Este despliegue no lo lee** significa que la variable está establecida, pero esta edición o configuración no la utiliza |
 | Valor de | Indica si el valor procede de la propia variable, recurre a `SECRET_KEY`, se deriva de `SECRET_KEY` o es un antiguo valor predeterminado público. A continuación aparece la huella del valor; **Valor público** marca un valor que cualquiera puede calcular |
 | `_OLD` | Las variables `_OLD` que están establecidas, cada una con su huella. `_OLD` solo verifica o descifra datos existentes |
 | Igual que solo con SECRET_KEY | **Igual** significa que eliminar la variable dedicada no cambiaría el valor. **Distinto** significa que el valor cambiaría, por lo que antes hay que conservar el anterior |

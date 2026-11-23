@@ -16,11 +16,11 @@ Die Seite hat drei Tabs: Gespeicherte Chiffretexte, Persönliche Zugriffstokens 
 
 Nur lesend. Der Tab prüft die Umgebungsvariablen und zeigt niemals den Wert eines Geheimnisses an.
 
-Er führt `SECRET_KEY`, `SANDBOX_JWT_SECRET` und jedes Geheimnis auf, für das noch eine eigene Variable oder eine `_OLD`-Variable gesetzt ist. Ein Geheimnis, das nicht aufgeführt ist, folgt `SECRET_KEY` und braucht keine eigene Variable.
+Er führt `SECRET_KEY`, `SANDBOX_JWT_SECRET` und jedes Geheimnis auf, für das noch eine eigene Variable oder eine `_OLD`-Variable gesetzt ist. Ein Geheimnis, das nicht aufgeführt ist, folgt `SECRET_KEY` und braucht keine eigene Variable. Sobald `BACKEND_STORED_CREDENTIAL_ENCRYPTION_SECRET` gesetzt ist, folgen die in der Datenbank verschlüsselten Zugangsdaten stattdessen dieser Variable; siehe [Ein eigener Stammschlüssel für gespeicherte Zugangsdaten](/de/deploy/secret-convergence#stored-credential-root).
 
 | Spalte | Bedeutung |
 |---|---|
-| Variable | Die Umgebungsvariable und wofür sie verwendet wird. Eine als **Veraltet** gekennzeichnete Variable bleibt nur erhalten, um vorhandene Daten zu lesen. **Von diesem Deployment nicht gelesen** bedeutet, dass die Variable gesetzt ist, diese Edition oder Konfiguration aber keine Verwendung für sie hat |
+| Variable | Die Umgebungsvariable und wofür sie verwendet wird. Eine als **Veraltet** gekennzeichnete Variable wurde abgelöst: Solange sie gesetzt ist, wirkt sie weiter, ein neues Deployment sollte sie aber nicht setzen. **Von diesem Deployment nicht gelesen** bedeutet, dass die Variable gesetzt ist, diese Edition oder Konfiguration aber keine Verwendung für sie hat |
 | Wert aus | Ob der Wert aus der Variable selbst stammt, auf `SECRET_KEY` zurückfällt, aus `SECRET_KEY` abgeleitet ist oder ein früherer öffentlicher Standardwert ist. Darauf folgt der Fingerabdruck des Werts; **Öffentlicher Wert** kennzeichnet einen Wert, den jeder berechnen kann |
 | `_OLD` | Die gesetzten `_OLD`-Variablen, jeweils mit ihrem Fingerabdruck. `_OLD` dient nur dazu, vorhandene Daten zu verifizieren oder zu entschlüsseln |
 | Gleich wie nur SECRET_KEY | **Gleich** bedeutet, dass das Entfernen der dedizierten Variable den Wert nicht ändern würde. **Abweichend** bedeutet, dass sich der Wert ändern würde; der alte muss daher zuerst aufbewahrt werden |

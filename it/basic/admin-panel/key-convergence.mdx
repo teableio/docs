@@ -16,11 +16,11 @@ La pagina ha tre schede: Testi cifrati memorizzati, Token di accesso personali e
 
 Sola lettura. Controlla le variabili d'ambiente e non mostra mai il valore di un segreto.
 
-Elenca `SECRET_KEY`, `SANDBOX_JWT_SECRET` e ogni segreto che ha ancora impostata una variabile propria o una variabile `_OLD`. Un segreto non elencato segue `SECRET_KEY` e non ha bisogno di una variabile propria.
+Elenca `SECRET_KEY`, `SANDBOX_JWT_SECRET` e ogni segreto che ha ancora impostata una variabile propria o una variabile `_OLD`. Un segreto non elencato segue `SECRET_KEY` e non ha bisogno di una variabile propria. Una volta impostata `BACKEND_STORED_CREDENTIAL_ENCRYPTION_SECRET`, le credenziali cifrate nel database seguono invece quella variabile; vedi [Un segreto radice separato per le credenziali memorizzate](/it/deploy/secret-convergence#stored-credential-root).
 
 | Colonna | Significato |
 |---|---|
-| Variabile | La variabile d'ambiente e a cosa serve. Una variabile con l'etichetta **Deprecato** viene mantenuta solo per leggere i dati esistenti. **Non letto da questo deployment** significa che la variabile è impostata ma questa edizione o configurazione non la utilizza |
+| Variabile | La variabile d'ambiente e a cosa serve. Una variabile con l'etichetta **Deprecato** è stata sostituita: finché è impostata ha ancora effetto, ma un nuovo deployment non dovrebbe impostarla. **Non letto da questo deployment** significa che la variabile è impostata ma questa edizione o configurazione non la utilizza |
 | Valore da | Indica se il valore proviene dalla variabile stessa, ripiega su `SECRET_KEY`, è derivato da `SECRET_KEY` oppure è un precedente valore predefinito pubblico. Segue l'impronta del valore; **Valore pubblico** contrassegna un valore che chiunque può calcolare |
 | `_OLD` | Le variabili `_OLD` impostate, ciascuna con la propria impronta. `_OLD` serve solo a verificare o decifrare i dati esistenti |
 | Uguale a solo SECRET_KEY | **Uguale** significa che la rimozione della variabile dedicata non cambierebbe il valore. **Diverso** significa che il valore cambierebbe, quindi quello vecchio va prima conservato |

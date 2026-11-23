@@ -16,11 +16,11 @@ The page has three tabs: Stored ciphertexts, Personal access tokens, and Server 
 
 Read-only. It checks the environment variables and never shows a secret's value.
 
-It lists `SECRET_KEY`, `SANDBOX_JWT_SECRET`, and each secret that still has its own variable or an `_OLD` variable set. A secret that is not listed follows `SECRET_KEY` and needs no variable of its own.
+It lists `SECRET_KEY`, `SANDBOX_JWT_SECRET`, and each secret that still has its own variable or an `_OLD` variable set. A secret that is not listed follows `SECRET_KEY` and needs no variable of its own. Once `BACKEND_STORED_CREDENTIAL_ENCRYPTION_SECRET` is set, the credentials encrypted in the database follow that variable instead; see [A separate root for stored credentials](/en/deploy/secret-convergence#stored-credential-root).
 
 | Column | Meaning |
 |---|---|
-| Variable | The environment variable and what it is used for. A variable labelled **Deprecated** is kept only to read existing data. **Not read by this deployment** means the variable is set but this edition or configuration has no use for it |
+| Variable | The environment variable and what it is used for. A variable labelled **Deprecated** has been superseded: it still takes effect while set, but a new deployment should not set it. **Not read by this deployment** means the variable is set but this edition or configuration has no use for it |
 | Value from | Whether the value comes from the variable itself, falls back to `SECRET_KEY`, is derived from `SECRET_KEY`, or is a former public default. The value's fingerprint follows; **Public value** marks a value anyone can compute |
 | `_OLD` | The `_OLD` variables that are set, each with its fingerprint. `_OLD` only verifies or decrypts existing data |
 | Same as SECRET_KEY alone | **Same** means removing the dedicated variable would not change the value. **Different** means the value would change, so the old one has to be kept first |
