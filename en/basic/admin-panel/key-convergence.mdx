@@ -59,11 +59,13 @@ When the encryption key of an item is still a public default, that item is refus
 
 ## Personal access tokens {#personal-access-tokens}
 
-A personal access token cannot be re-encrypted; only its owner can regenerate it. This tab counts the tokens that have not expired but were not issued under the current key/iv, so you can tell whether an old key/iv can be removed:
+A personal access token cannot be re-encrypted; only its owner can regenerate it. This tab counts the tokens that have not expired but were not issued under the current key, so you can tell whether an old key can be removed:
 
-- **Older key/iv, still working**: these tokens stop working once the old key/iv is removed.
-- **Issued before the upgrade, can't tell**: the token does not record the key/iv it was issued under, so it is treated as still working. Take these into account too before removing an old key/iv.
-- **Stopped**: the key/iv that issued them is no longer accepted, so these tokens do not work now.
+- **Older key, still working**: these tokens stop working once the old key is removed.
+- **Issued before the upgrade, can't tell**: the token does not record the key it was issued under, so it is treated as still working. Take these into account too before removing an old key.
+- **Stopped**: the key that issued them is no longer accepted, so these tokens do not work now.
+
+The old key is the pair kept in `BACKEND_ACCESS_TOKEN_ENCRYPTION_KEY_OLD` / `IV_OLD`. An instance that moved off the built-in defaults also keeps the built-in pair for decryption; that one stays and is not yours to remove.
 
 The token page suggests that owners regenerate the ones with a long time left.
 
