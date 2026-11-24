@@ -78,8 +78,8 @@ Puedes descargar toda la aplicación como archivo ZIP en cualquier momento:
 3. Selecciona **Descargar código** y, en el cuadro de diálogo, vuelve a hacer clic en **Descargar código** para guardar un archivo ZIP que incluya todos los archivos de origen.
 
 <img
-  src="/images/docs/ai/2026-11-17-app-builder-settings-menu.png"
-  alt="Menú Configuración del encabezado de la aplicación, con Credenciales y configuración, Sincronización con GitHub, Código e Historial de versiones, y el botón Ajustes de inicio de sesión a su izquierda"
+  src="/images/docs/ai/2026-11-24-app-builder-settings-menu.png"
+  alt="Menú Configuración del encabezado de la aplicación, con Credenciales y configuración, Usuarios e identidades, Sincronización con GitHub, Código, Cambios de datos e Historial de versiones, y el botón Ajustes de inicio de sesión a su izquierda"
   className="docs-screenshot"
 />
 
@@ -177,7 +177,7 @@ Estas acciones quedan anotadas en el registro de auditoría:
 - **Copiar las variables de entorno de la app**: copiar las variables de entorno, que incluyen el token de acceso.
 - **Exportar código de la app**: descargar el código; la entrada indica si se incluyó el `.env`.
 
-Cuando una aplicación escribe datos del Proyecto con su token de acceso, el registro de auditoría muestra **App Robot** como operador. No hay historial de uso ni alertas por token, y las lecturas no se registran.
+Cuando una aplicación escribe datos del Proyecto con su token de acceso, el registro de auditoría muestra **App Robot** como operador. Las acciones que un usuario de la aplicación inicia a través de ella muestran a ese usuario en **Actor**. No hay historial de uso ni alertas por token, y las lecturas no se registran.
 
 En las instancias autoalojadas (plan Business o superior), los administradores de la instancia consultan el registro en **Administración del sistema** → **Registro de auditoría**. Las entradas se conservan un mes y se pueden filtrar por usuario, Espacio, Proyecto y tipo de operación; las entradas indicadas arriba están en el grupo **Aplicaciones**. Consulta [Registro de auditoría](/es/basic/admin-panel/audit-log).
 
@@ -341,7 +341,7 @@ Deja un Campo vacío para conservar el valor que App Builder escribió por ti. A
 Para exigir que los visitantes inicien sesión antes de poder usar la aplicación, haz clic en el botón **Añadir inicio de sesión**, a la izquierda de **Publicar** en el encabezado. Una vez configurado, el botón pasa a ser **Ajustes de inicio de sesión** y su icono de escudo se vuelve verde; si desactivas el inicio de sesión, se muestra **Inicio de sesión desactivado**.
 
 <img
-  src="/images/docs/ai/2026-11-17-app-builder-login-settings.png"
+  src="/images/docs/ai/2026-11-24-app-builder-login-settings.png"
   alt="Ajustes de inicio de sesión de la aplicación"
   className="docs-screenshot"
 />
@@ -349,16 +349,35 @@ Para exigir que los visitantes inicien sesión antes de poder usar la aplicació
 Cuando habilitas el inicio de sesión:
 
 1. Elige dónde se almacenarán los usuarios de la aplicación. Puedes crear una Tabla **Usuarios** o reutilizar una Tabla que otra aplicación ya usa como Tabla de usuarios. Cada usuario que inicia sesión se almacena como un Registro y varias aplicaciones pueden reutilizar la misma Tabla de usuarios.
+   Haz clic en **Editar** junto a la tabla de usuarios para cambiar la tabla y elegir el **Campo de correo**, que asocia al usuario con su registro en el primer inicio de sesión. También puedes elegir un **Campo de nombre (opcional)** (campo de texto) y un **Campo de avatar (opcional)** (campo de adjuntos) para mostrar a los usuarios en **Previsualizar como**, **Usuarios e identidades** y el historial de registros. Cuando ya hay usuarios que han iniciado sesión en la aplicación, la tabla de usuarios y el campo de correo no se pueden cambiar.
 2. Elige al menos un método de inicio de sesión, como **Código de un solo uso por correo**, **Google**, **SSO (OIDC)** o **Iniciar sesión con Teable**. Los métodos disponibles dependen de los ajustes de autenticación de la instancia. Si activas **SSO (OIDC)** en una aplicación creada anteriormente, la IA añade automáticamente un botón de SSO a su página de inicio de sesión.
 3. Elige una política de acceso: **Cualquiera puede registrarse**, **Dominios de correo permitidos** o **Solo por invitación**.
+
+<img
+  src="/images/docs/ai/2026-11-24-app-builder-login-user-table.png"
+  alt="Ventana emergente de edición de la tabla de usuarios con la tabla de usuarios, el campo de correo, el campo de nombre y el campo de avatar"
+  className="docs-screenshot"
+/>
 
 Una vez configurado el inicio de sesión, abre **Ajustes de inicio de sesión**, elige a alguien de la tabla de usuarios en **Previsualizar como**, haz clic en **Previsualizar** y confirma; la vista previa inicia sesión como ese usuario sin código. Si la tabla de usuarios está vacía, puedes añadir un usuario allí mismo, y los usuarios que rechazan los dominios de correo permitidos aparecen atenuados. Haz clic en **Cerrar sesión** para terminar. Este inicio de sesión solo vale en la vista previa y caduca a la hora.
 
 Los cambios en el inicio de sesión aparecen en el entorno de vista previa de la aplicación después de volver a cargarlo. Publica de nuevo la aplicación para aplicar esos cambios a la aplicación publicada.
 
+En aplicaciones creadas anteriormente, **Avanzado**, al final de los ajustes de inicio de sesión, muestra **Actualización disponible**. Despliega **Avanzado** y haz clic en **Actualizar** en **Código de acceso** para actualizar el código de inicio de sesión generado. El código se guarda como borrador; revisa la vista previa antes de publicarlo. Los usuarios con una sesión antigua quizá tengan que volver a iniciar sesión. Tras la actualización, cuando un usuario de la aplicación modifica datos a través de ella, el **Iniciador** del historial de registros muestra a ese usuario.
+
+Para registrar quién crea y modifica los registros de una tabla, haz clic en **Elegir tablas** en **Creador y modificador**, selecciona las tablas, haz clic en **Continuar** y, después, en **Guardar cambios**. Las tablas seleccionadas empiezan a registrarlo de inmediato; los registros existentes mantienen un creador y modificador desconocidos, y no se puede desactivar. También puedes elegir **Activar la atribución de registros** en el menú Más de una tabla en la barra lateral para activarlo solo en esa tabla.
+
 Si necesitas tu propio cliente de Google OAuth, enviar códigos de acceso desde tu dirección de correo o iniciar sesión con contraseña, solicítalo expresamente en el chat. App Builder desactivará el inicio de sesión integrado de la plataforma e implementará uno personalizado en la aplicación. Comprueba el inicio de sesión y los controles de acceso a las páginas en la vista previa antes de volver a publicar la aplicación.
 
 Para ver ejemplos de esta función, consulta [ejemplos de inicio de sesión en aplicaciones](https://teable.ai/es/blog/built-in-login-for-app-builder).
+
+#### Ver los usuarios de la aplicación
+
+En el menú **Configuración** del encabezado de la aplicación, elige **Usuarios e identidades** para ver los usuarios que han iniciado sesión en la aplicación. Arriba puedes cambiar entre las configuraciones de inicio de sesión **Actual** y **Publicada**; la lista se puede buscar por nombre, correo o ID y filtrar por método de inicio de sesión y estado de la sesión.
+
+Haz clic en un usuario para ver, en **Resumen**, **Identidades de inicio de sesión**, **Sesiones** y **Diagnóstico**, sus métodos de inicio de sesión, si sus sesiones son válidas y por qué se rechaza actualmente una sesión. **Último acceso** es la última vez que se emitió una sesión, no indica si el usuario está conectado ahora. Esta vista es solo de consulta: aquí no se pueden desactivar usuarios ni revocar sesiones.
+
+Solo los roles **Propietario** y **Creador** ven esta opción. Los detalles de la identidad de inicio de sesión, como el correo verificado, el nombre de la identidad y el avatar, solo se muestran al rol **Propietario**.
 
 ### Historial de versiones y reversión
 Teable realiza un seguimiento automático de cada implementación.

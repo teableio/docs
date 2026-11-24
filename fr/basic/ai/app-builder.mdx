@@ -78,8 +78,8 @@ Vous pouvez télécharger l’intégralité de l’application sous forme d’ar
 3. Sélectionnez **Télécharger le code**, puis cliquez de nouveau sur **Télécharger le code** dans la boîte de dialogue pour enregistrer une archive ZIP qui comprend tous les fichiers sources.
 
 <img
-  src="/images/docs/ai/2026-11-17-app-builder-settings-menu.png"
-  alt="Menu Paramètres dans l’en-tête de l’application, avec Identifiants et configuration, Synchronisation GitHub, Code et Historique des versions, et le bouton Paramètres de connexion à sa gauche"
+  src="/images/docs/ai/2026-11-24-app-builder-settings-menu.png"
+  alt="Menu Paramètres dans l’en-tête de l’application, avec Identifiants et configuration, Utilisateurs et identités, Synchronisation GitHub, Code, Modifications des données et Historique des versions, et le bouton Paramètres de connexion à sa gauche"
   className="docs-screenshot"
 />
 
@@ -177,7 +177,7 @@ Les actions suivantes sont consignées dans le journal d’audit :
 - **Copier les variables d'environnement de l'application** : la copie des variables d’environnement, qui contiennent le jeton d’accès.
 - **Exporter le code de l'application** : le téléchargement du code ; l’entrée indique si le fichier `.env` était inclus.
 
-Lorsqu’une application écrit des données du Projet avec son jeton d’accès, le journal d’audit affiche **App Robot** comme opérateur. Il n’existe ni historique d’utilisation par jeton ni alertes, et les lectures ne sont pas consignées.
+Lorsqu’une application écrit des données du Projet avec son jeton d’accès, le journal d’audit affiche **App Robot** comme opérateur. Les actions qu’un utilisateur de l’application déclenche via celle-ci affichent cet utilisateur dans **Acteur**. Il n’existe ni historique d’utilisation par jeton ni alertes, et les lectures ne sont pas consignées.
 
 Sur les instances auto-hébergées (offre Business ou supérieure), les administrateurs d’instance consultent le journal dans **Administration système** → **Journal d'audit**. Les journaux sont conservés un mois et peuvent être filtrés par utilisateur, Espace, Projet et type d’opération ; les entrées ci-dessus figurent sous **Applications**. Voir [Journal d’audit](/fr/basic/admin-panel/audit-log).
 
@@ -341,7 +341,7 @@ Laissez un champ vide pour conserver la valeur que le Créateur d’applications
 Pour exiger des visiteurs qu’ils se connectent avant de pouvoir utiliser l’application, cliquez sur le bouton **Ajouter la connexion** à gauche de **Publier**, dans l’en-tête de l’application. Une fois la connexion configurée, le bouton devient **Paramètres de connexion** et son icône de bouclier passe au vert ; si vous désactivez la connexion, il affiche **Connexion désactivée**.
 
 <img
-  src="/images/docs/ai/2026-11-17-app-builder-login-settings.png"
+  src="/images/docs/ai/2026-11-24-app-builder-login-settings.png"
   alt="Paramètres de connexion à l’application"
   className="docs-screenshot"
 />
@@ -349,16 +349,35 @@ Pour exiger des visiteurs qu’ils se connectent avant de pouvoir utiliser l’a
 Lorsque vous activez la connexion :
 
 1. Choisissez où stocker les utilisateurs de l’application. Vous pouvez créer une Table **Utilisateurs** ou réutiliser une Table qu’une autre application utilise déjà comme Table d’utilisateurs. Chaque utilisateur connecté est stocké sous forme d’un Enregistrement, et la même Table d’utilisateurs peut être réutilisée par plusieurs applications.
+   Cliquez sur **Modifier** à côté de la table des utilisateurs pour changer de table et choisir le **Champ e-mail**, qui associe un utilisateur à son enregistrement lors de sa première connexion. Vous pouvez aussi choisir un **Champ du nom (facultatif)** (champ texte) et un **Champ de l’avatar (facultatif)** (champ pièce jointe) pour afficher les utilisateurs dans **Prévisualiser en tant que**, **Utilisateurs et identités** et l’historique des enregistrements. Une fois que des utilisateurs se sont connectés à l’application, la table des utilisateurs et le champ e-mail ne peuvent plus être modifiés.
 2. Choisissez au moins une méthode de connexion, telle que **Email OTP**, **Google**, **SSO (OIDC)** ou **Se connecter avec Teable**. Les méthodes disponibles dépendent des paramètres d’authentification de votre instance. Si vous activez **SSO (OIDC)** pour une application créée auparavant, l’IA ajoute automatiquement un bouton SSO à sa page de connexion.
 3. Choisissez une politique d’accès : **Tout le monde peut s’inscrire**, **Domaines e-mail autorisés** ou **Sur invitation uniquement**.
+
+<img
+  src="/images/docs/ai/2026-11-24-app-builder-login-user-table.png"
+  alt="Fenêtre de modification de la table des utilisateurs avec la table des utilisateurs, le champ e-mail, le champ du nom et le champ de l’avatar"
+  className="docs-screenshot"
+/>
 
 Une fois la connexion configurée, ouvrez **Paramètres de connexion**, choisissez une personne de la table d’utilisateurs dans **Prévisualiser en tant que**, cliquez sur **Prévisualiser** et confirmez ; l’aperçu se connecte alors en tant que cet utilisateur, sans code. Si la table d’utilisateurs est vide, vous pouvez y ajouter un utilisateur directement, et les utilisateurs refusés par les domaines d’e-mail autorisés apparaissent grisés. Cliquez sur **Se déconnecter** pour y mettre fin. Cette connexion ne vaut que dans l’aperçu et expire au bout d’une heure.
 
 Les modifications de connexion apparaissent dans l’environnement d’aperçu de l’application après son rechargement. Publiez à nouveau l’application pour appliquer ces modifications à l’application publiée.
 
+Pour les applications créées précédemment, **Avancé**, en bas des paramètres de connexion, affiche **Mise à jour disponible**. Développez **Avancé** et cliquez sur **Mettre à jour** sous **Code de connexion** pour mettre à jour le code de connexion généré. Le code est enregistré comme brouillon ; vérifiez l’aperçu avant de le publier. Les utilisateurs disposant d’une ancienne session devront peut-être se reconnecter. Après la mise à jour, lorsqu’un utilisateur de l’application modifie des données via celle-ci, l’**Initiateur** dans l’historique des enregistrements indique cet utilisateur.
+
+Pour enregistrer qui crée et modifie les enregistrements d’une table, cliquez sur **Choisir les tables** sous **Créateur et modificateur**, sélectionnez les tables, cliquez sur **Continuer**, puis sur **Enregistrer les modifications**. Les tables sélectionnées commencent immédiatement l’enregistrement ; les enregistrements existants gardent un créateur et un modificateur inconnus, et ce réglage ne peut pas être désactivé. Vous pouvez aussi choisir **Activer l’attribution des enregistrements** dans le menu Plus d’une table de la barre latérale pour l’activer sur une seule table.
+
 Si vous avez besoin de votre propre client Google OAuth, de codes de connexion envoyés depuis votre adresse e-mail ou d’une connexion par mot de passe, demandez-le explicitement dans le chat. Le créateur d’applications désactive la connexion intégrée à la plateforme et met en place une connexion personnalisée dans l’application. Vérifiez la connexion et les contrôles d’accès aux pages dans l’aperçu avant de republier l’application.
 
 Découvrez cette fonctionnalité en pratique : [exemples de connexion à une application](https://teable.ai/fr/blog/built-in-login-for-app-builder).
+
+#### Consulter les utilisateurs de l’application
+
+Dans le menu **Paramètres** de l’en-tête de l’application, choisissez **Utilisateurs et identités** pour voir les utilisateurs qui se sont connectés à l’application. En haut, vous pouvez basculer entre les configurations de connexion **Actuelle** et **Publiée** ; la liste peut être recherchée par nom, e-mail ou ID et filtrée par méthode de connexion et état de session.
+
+Cliquez sur un utilisateur pour voir, sous **Vue d’ensemble**, **Identités de connexion**, **Sessions** et **Diagnostic**, ses méthodes de connexion, si ses sessions sont valides et pourquoi une session est actuellement refusée. **Dernière connexion** correspond à la dernière émission d’une session, et n’indique pas si l’utilisateur est en ligne. Cette vue est en lecture seule : vous ne pouvez pas y désactiver d’utilisateurs ni révoquer de sessions.
+
+Seuls les rôles **Propriétaire** et **Créateur** voient cette entrée. Les détails de l’identité de connexion, comme l’e-mail vérifié, le nom de l’identité et l’avatar, ne sont visibles que pour le rôle **Propriétaire**.
 
 ### Historique des versions et restauration
 Teable suit automatiquement chaque déploiement.

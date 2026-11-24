@@ -78,8 +78,8 @@ Sie können die gesamte App jederzeit als ZIP-Archiv herunterladen:
 3. Wählen Sie **Code herunterladen** und klicken Sie im Dialog erneut auf **Code herunterladen**, um ein ZIP-Archiv zu speichern, das alle Quelldateien enthält.
 
 <img
-  src="/images/docs/ai/2026-11-17-app-builder-settings-menu.png"
-  alt="Einstellungsmenü in der Kopfzeile der App mit Zugangsdaten & Konfiguration, GitHub-Synchronisierung, Code und Versionsverlauf, links daneben die Schaltfläche Login-Einstellungen"
+  src="/images/docs/ai/2026-11-24-app-builder-settings-menu.png"
+  alt="Einstellungsmenü in der Kopfzeile der App mit Zugangsdaten & Konfiguration, Benutzer und Identitäten, GitHub-Synchronisierung, Code, Datenänderungen und Versionsverlauf, links daneben die Schaltfläche Login-Einstellungen"
   className="docs-screenshot"
 />
 
@@ -177,7 +177,7 @@ Diese Aktionen werden im Audit-Log erfasst:
 - **App-Umgebungsvariablen kopieren**: das Kopieren der Umgebungsvariablen, die das Zugriffstoken enthalten.
 - **App-Code exportieren**: das Herunterladen des Codes; der Eintrag zeigt, ob die `.env` enthalten war.
 
-Schreibt eine App mit ihrem Zugriffstoken Projektdaten, zeigt das Audit-Log **App Robot** als Operator an. Einen Nutzungsverlauf und Warnungen pro Token gibt es nicht, und Lesezugriffe werden nicht erfasst.
+Schreibt eine App mit ihrem Zugriffstoken Projektdaten, zeigt das Audit-Log **App Robot** als Operator an. Aktionen, die ein App-Benutzer über die App auslöst, zeigen diesen App-Benutzer unter **Akteur**. Einen Nutzungsverlauf und Warnungen pro Token gibt es nicht, und Lesezugriffe werden nicht erfasst.
 
 In selbst gehosteten Instanzen (Business-Plan und höher) sehen Instanzadministratoren das Log unter **Systemverwaltung** → **Audit-Log** ein. Logs werden einen Monat aufbewahrt und lassen sich nach Benutzer, Space, Projekt und Operationstyp filtern; die oben genannten Einträge stehen unter **Apps**. Siehe [Audit-Log](/de/basic/admin-panel/audit-log).
 
@@ -341,7 +341,7 @@ Lassen Sie ein Feld leer, um den Wert beizubehalten, den der App-Builder für Si
 Damit sich Besucher anmelden müssen, bevor sie die App nutzen können, klicken Sie in der Kopfzeile der App links neben **Veröffentlichen** auf die Schaltfläche **Login hinzufügen**. Sobald die Anmeldung konfiguriert ist, heißt die Schaltfläche **Login-Einstellungen**, und ihr Schildsymbol wird grün; nach dem Deaktivieren des Logins wird **Login deaktiviert** angezeigt.
 
 <img
-  src="/images/docs/ai/2026-11-17-app-builder-login-settings.png"
+  src="/images/docs/ai/2026-11-24-app-builder-login-settings.png"
   alt="App-Anmeldeeinstellungen"
   className="docs-screenshot"
 />
@@ -349,16 +349,35 @@ Damit sich Besucher anmelden müssen, bevor sie die App nutzen können, klicken 
 Wenn Sie die Anmeldung aktivieren:
 
 1. Wählen Sie aus, wo App-Nutzer gespeichert werden. Sie können eine **Benutzer**-Tabelle erstellen oder eine Tabelle wiederverwenden, die bereits eine andere App als Nutzertabelle verwendet. Jeder angemeldete Nutzer wird als ein Datensatz gespeichert, und dieselbe Nutzertabelle kann von mehreren Apps wiederverwendet werden.
+   Klicken Sie neben der Benutzertabelle auf **Bearbeiten**, um die Tabelle zu wechseln und das **E-Mail-Feld** festzulegen, über das ein Benutzer bei der ersten Anmeldung seinem Datensatz zugeordnet wird. Zusätzlich können Sie ein **Namensfeld (optional)** (Textfeld) und ein **Avatarfeld (optional)** (Anhangfeld) festlegen, damit Benutzer in **Vorschau als**, **Benutzer und Identitäten** und im Datensatzverlauf angezeigt werden. Sobald sich Benutzer bei der App angemeldet haben, lassen sich Benutzertabelle und E-Mail-Feld nicht mehr ändern.
 2. Wählen Sie mindestens eine Anmeldemethode, beispielsweise **Email OTP**, **Google**, **SSO (OIDC)** oder **Mit Teable anmelden**. Die verfügbaren Methoden hängen von den Authentifizierungseinstellungen Ihrer Instanz ab. Aktivieren Sie **SSO (OIDC)** für eine früher erstellte App, fügt die KI der Anmeldeseite automatisch eine SSO-Schaltfläche hinzu.
 3. Wählen Sie eine Zugriffsrichtlinie: **Jeder kann sich registrieren**, **Erlaubte E-Mail-Domains** oder **Nur auf Einladung**.
+
+<img
+  src="/images/docs/ai/2026-11-24-app-builder-login-user-table.png"
+  alt="Bearbeiten-Popover der Benutzertabelle mit Benutzertabelle, E-Mail-Feld, Namensfeld und Avatarfeld"
+  className="docs-screenshot"
+/>
 
 Ist der Login konfiguriert, öffnen Sie **Login-Einstellungen** und wählen unter **Vorschau als** eine Person aus der Nutzertabelle, klicken auf **Vorschau** und bestätigen; die Vorschau meldet sich dann ohne Code als dieser Nutzer an. Ist die Nutzertabelle leer, können Sie direkt dort einen Nutzer hinzufügen; Nutzer, die die erlaubten E-Mail-Domains abweisen, sind ausgegraut. Mit **Abmelden** beenden Sie die Anmeldung. Sie gilt nur in der Vorschau und läuft nach einer Stunde ab.
 
 Änderungen an der Anmeldung erscheinen nach dem Neuladen in der Vorschauumgebung der App. Veröffentlichen Sie die App erneut, um diese Änderungen auf die veröffentlichte App anzuwenden.
 
+Bei älteren Apps zeigt **Erweitert** unten in den Login-Einstellungen **Update verfügbar** an. Klappen Sie **Erweitert** auf und klicken Sie unter **Anmeldecode** auf **Aktualisieren**, um den generierten Anmeldecode zu aktualisieren. Der Anmeldecode wird als Entwurf gespeichert; prüfen Sie die Vorschau, bevor Sie ihn veröffentlichen. Benutzer mit einer alten Anmeldesitzung müssen sich eventuell neu anmelden. Nach dem Update zeigt **Initiator** im Datensatzverlauf den jeweiligen App-Benutzer, wenn dieser Daten über die App ändert.
+
+Um in einer Tabelle zu erfassen, wer Datensätze erstellt und geändert hat, klicken Sie unter **Ersteller und Bearbeiter** auf **Tabellen auswählen**, wählen die Tabellen aus, klicken auf **Weiter** und dann auf **Änderungen speichern**. Die ausgewählten Tabellen beginnen sofort mit der Erfassung; bestehende Datensätze behalten einen unbekannten Ersteller und Bearbeiter, und die Erfassung lässt sich nicht wieder deaktivieren. Alternativ wählen Sie im Weitere-Menü einer Tabelle in der Seitenleiste **Datensatzzuordnung aktivieren**, um sie für eine einzelne Tabelle einzuschalten.
+
 Wenn Sie einen eigenen Google-OAuth-Client, Anmeldecodes von Ihrer eigenen E-Mail-Adresse oder eine Anmeldung mit Passwort benötigen, fordern Sie dies ausdrücklich im Chat an. Der App-Builder deaktiviert die integrierte Plattformanmeldung und setzt die individuelle Anmeldung in der App um. Prüfen Sie Anmeldung und Seitenzugriff in der Vorschau, bevor Sie die bereits veröffentlichte App erneut veröffentlichen.
 
 Beispiele zum Einsatz dieser Funktion finden Sie hier: [Beispiele für die App-Anmeldung](https://teable.ai/de/blog/built-in-login-for-app-builder).
+
+#### App-Benutzer anzeigen
+
+Wählen Sie im Menü **Einstellungen** in der Kopfzeile der App **Benutzer und Identitäten**, um die Benutzer zu sehen, die sich bei dieser App angemeldet haben. Oben wechseln Sie zwischen der Login-Konfiguration **Aktuell** und **Veröffentlicht**; die Liste lässt sich nach Name, E-Mail oder ID durchsuchen und nach Anmeldemethode und Sitzungsstatus filtern.
+
+Klicken Sie auf einen Benutzer, um unter **Übersicht**, **Login-Identitäten**, **Sitzungen** und **Diagnose** seine Anmeldemethoden zu sehen, ob seine Sitzungen gültig sind und warum eine Sitzung aktuell abgelehnt wird. **Letzte Anmeldung** ist der Zeitpunkt, zu dem zuletzt eine Sitzung ausgestellt wurde, nicht ob der Benutzer gerade online ist. Diese Ansicht dient nur zum Anzeigen: Benutzer lassen sich hier nicht deaktivieren und Sitzungen nicht widerrufen.
+
+Nur die Rollen **Eigentümer** und **Ersteller** sehen diesen Eintrag. Details der Login-Identität wie die bestätigte E-Mail-Adresse, der Identitätsname und das Avatarbild sind nur für die Rolle **Eigentümer** sichtbar.
 
 ### Versionsverlauf und Rollback
 Teable verfolgt jede Bereitstellung automatisch.
