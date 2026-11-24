@@ -76,6 +76,8 @@ comme feuille de mise à niveau. À chaque cycle :
 
 L’application a besoin de deux secrets qui lui sont propres, `SECRET_KEY` et `SANDBOX_JWT_SECRET`. L’absence d’un secret ne bloque pas le démarrage : l’instance se rabat sur les valeurs par défaut publiques intégrées aux anciennes versions, que n’importe qui peut utiliser pour fabriquer des jetons de connexion. Le journal de démarrage liste les secrets manquants, et les administrateurs d’instance voient un élément **Secrets du serveur** dans **Administration système → Paramètres d'instance**, dans le panneau **Configuration en attente**.
 
+<Warning>Une version ultérieure refusera de démarrer tant que `SECRET_KEY` n’est pas défini ou qu’il est encore la valeur par défaut publique. Si votre instance fonctionne ainsi, [passez à votre propre SECRET_KEY](/fr/deploy/secret-convergence#own-secret-key) avant de mettre à niveau vers cette version.</Warning>
+
 Si une instance existante fonctionne encore avec les valeurs par défaut intégrées, ou définit d’autres variables de secret dédiées, suivez [Convergence des secrets](/fr/deploy/secret-convergence) pour la faire passer à ces deux secrets. Consultez aussi [Secrets et rotation](/fr/deploy/env#secrets-and-rotation).
 
 ## Migration de base de données

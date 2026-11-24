@@ -68,6 +68,8 @@ Teable 应用以**日期型 release tag** 发布，形如
 
 应用自己只需要 `SECRET_KEY` 和 `SANDBOX_JWT_SECRET` 两个密钥。缺少密钥不会阻止启动：实例会回退到旧版本内置的公开默认值，任何人都可以据此伪造登录令牌。启动日志会列出缺少的密钥，实例管理员在 **系统管理 → 实例设置** 的「待配置项」里也会看到「服务端密钥」提醒。
 
+<Warning>后续版本在 `SECRET_KEY` 未设置或仍是公开的默认值时将拒绝启动。实例如果还是这种情况，请在升级到那个版本之前[换上自己的 SECRET_KEY](/zh/deploy/secret-convergence#own-secret-key)。</Warning>
+
 已有实例如果还在用内置默认值，或者设着其他专属密钥变量，按[密钥收敛](/zh/deploy/secret-convergence)的步骤改成只用这两个密钥。详见[密钥与轮换](/zh/deploy/env#密钥与轮换)。
 
 ## 数据库迁移
