@@ -101,6 +101,25 @@ I risultati delle formule possono anche utilizzare le impostazioni di [formattaz
 - **Esegui test passo dopo passo**: suddividi le formule complesse in parti più piccole e testale separatamente.
 - **Evita calcoli ripetuti**: se lo stesso calcolo viene usato in più punti, valuta la possibilità di archiviare il risultato in un Campo separato.
 
+### Aggiornamento pianificato
+
+Di solito una formula viene ricalcolata quando cambiano i campi a cui fa riferimento. Una formula che usa `TODAY()`, `NOW()`, `FROMNOW()` o `TONOW()` cambia anche con il passare del tempo, ad esempio "giorni alla scadenza": anche se il record non cambia, il risultato dovrebbe aggiornarsi il giorno dopo.
+
+Per questi campi, fai clic su **Aggiorna ora** nel menu dell'intestazione di colonna per ricalcolare subito l'intera colonna all'ora attuale. Per mantenerlo aggiornato automaticamente, attiva **Aggiorna automaticamente secondo pianificazione** nelle impostazioni del campo (piano Business o superiore):
+
+<img
+  src="/images/docs/base/2026-11-24-field-periodic-refresh.png"
+  alt="Area dell'aggiornamento pianificato in fondo alle impostazioni di un campo formula, con l'aggiornamento automatico attivo e frequenza giornaliera"
+  className="docs-screenshot"
+/>
+
+- Una formula che usa solo `TODAY()` si aggiorna una volta al giorno; il cambio di data segue il fuso orario mostrato nelle impostazioni.
+- Una formula che usa `NOW()`, `FROMNOW()` o `TONOW()` si aggiorna circa ogni 15 minuti e ogni volta ricalcola tutti i record della tabella. Sulle tabelle grandi può consumare molte risorse; se basta la precisione al giorno, usa `TODAY()`.
+
+L'aggiornamento automatico avviene solo se la base è stata usata di recente; una base inutilizzata da tempo si mette in pari alla successiva apertura di una tabella. **Ultimo aggiornamento** nelle impostazioni del campo indica quando è avvenuto l'ultimo. Se il piano viene declassato, l'aggiornamento automatico si sospende mantenendo l'impostazione e riprende dopo il passaggio al piano Business o superiore; **Aggiorna ora** non è interessato.
+
+Anche i campi [lookup](/it/basic/field/lookup), [rollup](/it/basic/field/rollup), [lookup condizionale](/it/basic/field/conditional-lookup) e [rollup condizionale](/it/basic/field/conditional-rollup) il cui filtro usa una data relativa come **oggi**, **settimana corrente** o **numero di giorni passati** si possono aggiornare subito o secondo pianificazione. Si aggiornano ogni giorno, settimana o mese, in base al periodo più breve presente nel filtro.
+
 ### Limiti di complessità
 
 Quando salvi una formula, Teable la espande prima nella struttura che partecipa davvero al calcolo, poi ne verifica le dimensioni. Se supera un limite, il salvataggio viene rifiutato e il messaggio indica che cosa eccede e quale limite si applica — il numero di nodi espansi, la profondità di annidamento del calcolo, la profondità dei riferimenti tra formule — e la modifica non viene salvata.

@@ -101,6 +101,25 @@ Formula results can also use [formatting](/en/basic/field/common/formatter) and 
 - **Test step by step**: Break complex formulas into smaller parts and test them separately.
 - **Avoid repeated calculations**: If the same calculation is used in several places, consider storing the result in a separate field.
 
+### Scheduled refresh
+
+Formulas usually recalculate when the fields they reference change. A formula that uses `TODAY()`, `NOW()`, `FROMNOW()`, or `TONOW()` also changes with time, such as "days until the due date": even if the record doesn't change, the result should update the next day.
+
+For these fields, click **Refresh now** in the column header menu to recalculate the whole column at the current time right away. To keep it up to date automatically, turn on **Auto-refresh on schedule** in the field settings (Business or higher):
+
+<img
+  src="/images/docs/base/2026-11-24-field-periodic-refresh.png"
+  alt="Scheduled refresh area at the bottom of a formula field's settings, with auto-refresh on schedule turned on and a daily cadence"
+  className="docs-screenshot"
+/>
+
+- A formula that uses only `TODAY()` refreshes once a day, using the time zone shown in the settings to decide when the date changes.
+- A formula that uses `NOW()`, `FROMNOW()`, or `TONOW()` refreshes about every 15 minutes and recalculates every record in the table each time. On large tables this can use significant resources; if day precision is enough, use `TODAY()` instead.
+
+Automatic refresh runs only while the project is in recent use; a project that hasn't been used for a while catches up the next time someone opens a table. **Last refreshed** in the field settings shows when the latest refresh ran. If the plan is downgraded, automatic refresh pauses and keeps its setting, then resumes after an upgrade to Business or higher; **Refresh now** is not affected.
+
+[Lookup](/en/basic/field/lookup), [rollup](/en/basic/field/rollup), [conditional lookup](/en/basic/field/conditional-lookup), and [conditional rollup](/en/basic/field/conditional-rollup) fields whose filter uses a relative date such as **today**, **current week**, or **past number of days** can also be refreshed now or set to refresh on schedule. They refresh daily, weekly, or monthly, following the shortest period in the filter.
+
 ### Complexity Limits
 
 When you save a formula, Teable first expands it into the structure that actually takes part in the computation, then checks the size of that structure. If it exceeds a limit, the save is rejected and the message names what went over and the limit that applies — the number of expanded nodes, the nesting depth of the computation, the depth of references between formulas — and the change is not saved.

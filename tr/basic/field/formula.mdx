@@ -101,6 +101,25 @@ Formül sonuçlarında yüzde, ilerleme çubuğu veya simge stilleri gibi [biçi
 - **Adım adım test edin**: Karmaşık formülleri daha küçük parçalara ayırın ve ayrı ayrı test edin.
 - **Yinelenen hesaplamalardan kaçının**: Aynı hesaplama birden fazla yerde kullanılıyorsa sonucu ayrı bir alanda saklamayı değerlendirin.
 
+### Zamanlanmış yenileme
+
+Formüller genellikle başvurdukları alanlar değiştiğinde yeniden hesaplanır. `TODAY()`, `NOW()`, `FROMNOW()` veya `TONOW()` kullanan bir formül zamanla da değişir; örneğin "son tarihe kalan gün": kayıt değişmese bile sonuç ertesi gün güncellenmelidir.
+
+Bu alanlarda sütun başlığı menüsünden **Şimdi yenile**'ye tıklayarak tüm sütunu o anki zamana göre hemen yeniden hesaplayabilirsiniz. Alanın otomatik olarak güncel kalması için alan ayarlarında **Plana göre otomatik yenile**'yi açın (Business veya üzeri):
+
+<img
+  src="/images/docs/base/2026-11-24-field-periodic-refresh.png"
+  alt="Formül alanı ayarlarının altındaki zamanlanmış yenileme bölümü; plana göre otomatik yenileme açık ve günlük yenileniyor"
+  className="docs-screenshot"
+/>
+
+- Yalnızca `TODAY()` kullanan bir formül günde bir kez yenilenir; tarih değişimi ayarlarda gösterilen saat dilimine göre belirlenir.
+- `NOW()`, `FROMNOW()` veya `TONOW()` kullanan bir formül yaklaşık 15 dakikada bir yenilenir ve her seferinde tablodaki tüm kayıtları yeniden hesaplar. Büyük tablolarda bu çok kaynak tüketebilir; gün hassasiyeti yeterliyse bunun yerine `TODAY()` kullanın.
+
+Otomatik yenileme yalnızca proje yakın zamanda kullanılıyorsa çalışır; bir süredir kullanılmayan bir proje, bir sonraki tablo açılışında eksiklerini tamamlar. Alan ayarlarındaki **Son yenileme**, en son yenilemenin zamanını gösterir. Plan düşürülürse otomatik yenileme ayarı korunarak duraklatılır ve Business veya üzerine yükseltildiğinde devam eder; **Şimdi yenile** bundan etkilenmez.
+
+Filtresinde **bugün**, **bu hafta** veya **geçmiş gün sayısı** gibi göreli bir tarih kullanan [arama](/tr/basic/field/lookup), [toplama](/tr/basic/field/rollup), [koşullu arama](/tr/basic/field/conditional-lookup) ve [koşullu toplama](/tr/basic/field/conditional-rollup) alanları da hemen veya plana göre yenilenebilir. Filtredeki en kısa döneme göre günlük, haftalık veya aylık yenilenirler.
+
 ### Karmaşıklık sınırları
 
 Bir formülü kaydettiğinizde Teable önce onu hesaplamaya gerçekten katılan yapıya açar, sonra bu yapının boyutunu denetler. Bir sınır aşılırsa kayıt reddedilir; ileti neyin aştığını ve geçerli sınırı belirtir — açılmış düğüm sayısı, hesaplama yapısının iç içe geçme derinliği, formüller arası başvuru derinliği — ve değişiklik kaydedilmez.
