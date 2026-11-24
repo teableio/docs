@@ -23,7 +23,7 @@ Il liste `SECRET_KEY`, `SANDBOX_JWT_SECRET` et chaque secret pour lequel une var
 | Variable | La variable d’environnement et son usage. Une variable portant l’étiquette **Obsolète** a été remplacée : elle reste prise en compte tant qu’elle est définie, mais un nouveau déploiement ne doit pas la définir. **Non lu par ce déploiement** signifie que la variable est définie mais que cette édition ou cette configuration n’en a pas l’usage |
 | Valeur issue de | Indique si la valeur provient de la variable elle-même, se rabat sur `SECRET_KEY`, est dérivée de `SECRET_KEY` ou est une ancienne valeur par défaut publique. L’empreinte de la valeur suit ; **Valeur publique** signale une valeur que n’importe qui peut calculer |
 | `_OLD` | Les variables `_OLD` définies, chacune avec son empreinte. `_OLD` sert uniquement à vérifier ou à déchiffrer les données existantes |
-| Identique à SECRET_KEY seul | **Identique** signifie que la suppression de la variable dédiée ne changerait pas la valeur. **Différent** signifie que la valeur changerait ; l’ancienne doit donc d’abord être conservée |
+| Identique à SECRET_KEY seul | **Identique** signifie que la suppression de la variable dédiée ne changerait pas la valeur. Pour ce qui est chiffré dans la base de données, cela ne vaut que tant que `BACKEND_STORED_CREDENTIAL_ENCRYPTION_SECRET` n’est pas définie sur une autre valeur. **Différent** signifie que la valeur changerait ; l’ancienne doit donc d’abord être conservée |
 
 Une empreinte correspond aux 8 premiers caractères hexadécimaux du SHA-256 de la valeur ; elle permet de la comparer à ce qui est enregistré dans votre gestionnaire de secrets.
 

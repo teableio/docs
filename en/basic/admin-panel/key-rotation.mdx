@@ -23,7 +23,7 @@ It lists `SECRET_KEY`, `SANDBOX_JWT_SECRET`, and each secret that still has its 
 | Variable | The environment variable and what it is used for. A variable labelled **Deprecated** has been superseded: it still takes effect while set, but a new deployment should not set it. **Not read by this deployment** means the variable is set but this edition or configuration has no use for it |
 | Value from | Whether the value comes from the variable itself, falls back to `SECRET_KEY`, is derived from `SECRET_KEY`, or is a former public default. The value's fingerprint follows; **Public value** marks a value anyone can compute |
 | `_OLD` | The `_OLD` variables that are set, each with its fingerprint. `_OLD` only verifies or decrypts existing data |
-| Same as SECRET_KEY alone | **Same** means removing the dedicated variable would not change the value. **Different** means the value would change, so the old one has to be kept first |
+| Same as SECRET_KEY alone | **Same** means removing the dedicated variable would not change the value. For what is encrypted in the database, that holds only while `BACKEND_STORED_CREDENTIAL_ENCRYPTION_SECRET` is not set to a different value. **Different** means the value would change, so the old one has to be kept first |
 
 A fingerprint is the first 8 hex characters of the value's SHA-256, for comparing with the record in your secret store.
 

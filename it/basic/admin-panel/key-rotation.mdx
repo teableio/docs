@@ -23,7 +23,7 @@ Elenca `SECRET_KEY`, `SANDBOX_JWT_SECRET` e ogni segreto che ha ancora impostata
 | Variabile | La variabile d'ambiente e a cosa serve. Una variabile con l'etichetta **Deprecato** è stata sostituita: finché è impostata ha ancora effetto, ma un nuovo deployment non dovrebbe impostarla. **Non letto da questo deployment** significa che la variabile è impostata ma questa edizione o configurazione non la utilizza |
 | Valore da | Indica se il valore proviene dalla variabile stessa, ripiega su `SECRET_KEY`, è derivato da `SECRET_KEY` oppure è un precedente valore predefinito pubblico. Segue l'impronta del valore; **Valore pubblico** contrassegna un valore che chiunque può calcolare |
 | `_OLD` | Le variabili `_OLD` impostate, ciascuna con la propria impronta. `_OLD` serve solo a verificare o decifrare i dati esistenti |
-| Uguale a solo SECRET_KEY | **Uguale** significa che la rimozione della variabile dedicata non cambierebbe il valore. **Diverso** significa che il valore cambierebbe, quindi quello vecchio va prima conservato |
+| Uguale a solo SECRET_KEY | **Uguale** significa che la rimozione della variabile dedicata non cambierebbe il valore. Per ciò che è cifrato nel database, vale solo finché `BACKEND_STORED_CREDENTIAL_ENCRYPTION_SECRET` non è impostata su un valore diverso. **Diverso** significa che il valore cambierebbe, quindi quello vecchio va prima conservato |
 
 Un'impronta è costituita dai primi 8 caratteri esadecimali dello SHA-256 del valore e serve per il confronto con il record nel tuo archivio dei segreti.
 
