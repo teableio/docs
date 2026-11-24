@@ -101,6 +101,25 @@ Formelergebnisse können außerdem Einstellungen für [Formatierung](/de/basic/f
 - **Schrittweise testen**: Teilen Sie komplexe Formeln in kleinere Teile auf und testen Sie diese separat.
 - **Wiederholte Berechnungen vermeiden**: Wenn dieselbe Berechnung an mehreren Stellen verwendet wird, sollten Sie das Ergebnis in einem separaten Feld speichern.
 
+### Geplante Aktualisierung
+
+Formeln werden normalerweise neu berechnet, wenn sich die referenzierten Felder ändern. Eine Formel mit `TODAY()`, `NOW()`, `FROMNOW()` oder `TONOW()` ändert sich zusätzlich mit der Zeit, etwa „Tage bis zur Fälligkeit“: Auch wenn sich der Datensatz nicht ändert, sollte das Ergebnis am nächsten Tag ein anderes sein.
+
+Klicken Sie bei solchen Feldern im Spaltenkopfmenü auf **Jetzt aktualisieren**, um die ganze Spalte sofort mit der aktuellen Zeit neu zu berechnen. Damit das Feld automatisch aktuell bleibt, aktivieren Sie in den Feldeinstellungen **Automatisch nach Zeitplan aktualisieren** (Business oder höher):
+
+<img
+  src="/images/docs/base/2026-11-24-field-periodic-refresh.png"
+  alt="Bereich für die geplante Aktualisierung unten in den Einstellungen eines Formelfelds, automatische Aktualisierung aktiviert, täglicher Rhythmus"
+  className="docs-screenshot"
+/>
+
+- Eine Formel, die nur `TODAY()` verwendet, wird einmal täglich aktualisiert; der Datumswechsel richtet sich nach der in den Einstellungen angezeigten Zeitzone.
+- Eine Formel mit `NOW()`, `FROMNOW()` oder `TONOW()` wird etwa alle 15 Minuten aktualisiert und berechnet dabei jedes Mal alle Datensätze der Tabelle neu. Bei großen Tabellen kann das viele Ressourcen beanspruchen; wenn Tagesgenauigkeit genügt, verwenden Sie stattdessen `TODAY()`.
+
+Die automatische Aktualisierung läuft nur, solange das Projekt in letzter Zeit genutzt wird; ein länger ungenutztes Projekt holt sie beim nächsten Öffnen einer Tabelle nach. **Zuletzt aktualisiert** in den Feldeinstellungen zeigt, wann zuletzt aktualisiert wurde. Nach einem Plan-Downgrade wird die automatische Aktualisierung pausiert, die Einstellung bleibt erhalten und wird nach einem Upgrade auf Business oder höher fortgesetzt; **Jetzt aktualisieren** ist davon nicht betroffen.
+
+Auch [Suchfelder](/de/basic/field/lookup), [Rollup-Felder](/de/basic/field/rollup), [bedingte Suchfelder](/de/basic/field/conditional-lookup) und [bedingte Rollup-Felder](/de/basic/field/conditional-rollup), deren Filter ein relatives Datum wie **heute**, **Aktuelle Woche** oder **letzte Anzahl an Tagen** verwendet, lassen sich sofort oder nach Zeitplan aktualisieren. Sie werden täglich, wöchentlich oder monatlich aktualisiert, je nach kürzestem Zeitraum im Filter.
+
 ### Komplexitätsgrenzen
 
 Beim Speichern einer Formel entfaltet Teable sie zuerst zu der Struktur, die tatsächlich an der Berechnung teilnimmt, und prüft dann deren Größe. Wird eine Grenze überschritten, lehnt Teable das Speichern ab und nennt in der Meldung, was übersteht und welche Grenze gilt — die Zahl der entfalteten Knoten, die Verschachtelungstiefe der Berechnung, die Tiefe der Verweise zwischen Formeln — und die Änderung wird nicht gespeichert.

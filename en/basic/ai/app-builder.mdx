@@ -78,8 +78,8 @@ You can download the entire app as a ZIP archive at any time:
 3. Select **Download code**, then click **Download code** again in the dialog to save a ZIP archive that includes all source files.
 
 <img
-  src="/images/docs/ai/2026-11-17-app-builder-settings-menu.png"
-  alt="The Settings menu at the top of the app, with Credentials & config, GitHub sync, Code, and Version history, and the Sign-in settings button to its left"
+  src="/images/docs/ai/2026-11-24-app-builder-settings-menu.png"
+  alt="The Settings menu at the top of the app, with Credentials & config, Users and identities, GitHub sync, Code, Data changes, and Version history, and the Sign-in settings button to its left"
   className="docs-screenshot"
 />
 
@@ -177,7 +177,7 @@ These actions are recorded in the audit log:
 - **Copy app env variables**: copying the env variables, which include the access token.
 - **Export app code**: downloading the code; the record shows whether the `.env` was included.
 
-When an app writes project data with its access token, the audit log shows **App Robot** as the operator. Per-token usage history and alerts aren't available, and reads aren't recorded.
+When an app writes project data with its access token, the audit log shows **App Robot** as the operator. Actions an app user initiates through the app show that app user under **Actor**. Per-token usage history and alerts aren't available, and reads aren't recorded.
 
 On self-hosted instances (Business plan and above), instance administrators view the log under **System Admin** → **Audit log**. Logs are kept for one month and can be filtered by user, space, project and operation type; the entries above are under **Apps**. See [Audit log](/en/basic/admin-panel/audit-log).
 
@@ -341,7 +341,7 @@ Leave a field empty to keep the value App Builder wrote for you. Saving applies 
 Click the **Add sign-in** button to the left of **Publish** at the top of the app to require visitors to sign in before they can use the app. Once sign-in is configured, the button changes to **Sign-in settings** and its shield icon turns green; after you turn sign-in off, it shows **Sign-in disabled**.
 
 <img
-  src="/images/docs/ai/2026-11-17-app-builder-login-settings.png"
+  src="/images/docs/ai/2026-11-24-app-builder-login-settings.png"
   alt="App login settings"
   className="docs-screenshot"
 />
@@ -349,16 +349,35 @@ Click the **Add sign-in** button to the left of **Publish** at the top of the ap
 When you enable login:
 
 1. Choose where to store app users. You can create a **Users** table or reuse a table that another app already uses as its user table. Each signed-in user is stored as one record, and the same user table can be reused by multiple apps.
+   Click **Edit** next to the user table to change the table and set the **Email field**, which matches a user to their record at first sign-in. You can also set a **Name field (optional)** (a text field) and an **Avatar field (optional)** (an attachment field) to show users in **Preview as**, **Users and identities**, and record history. Once users have signed in to the app, the user table and email field can no longer be changed.
 2. Choose at least one sign-in method, such as **Email OTP**, **Google**, **SSO (OIDC)**, or **Sign in with Teable**. Available methods depend on your instance's authentication settings. When you turn on **SSO (OIDC)** for an app created earlier, the AI adds the SSO button to its sign-in page automatically.
 3. Choose an access policy: **Anyone can sign up**, **Allowed email domains**, or **Invite only**.
+
+<img
+  src="/images/docs/ai/2026-11-24-app-builder-login-user-table.png"
+  alt="The user table edit popover with the user table, email field, name field, and avatar field"
+  className="docs-screenshot"
+/>
 
 After sign-in is configured, open **Sign-in settings** and use **Preview as** to pick someone from the user table, then click **Preview** and confirm; the preview signs in as that user without a code. If the user table is empty you can add a user right there, and users the allowed email domains turn away are greyed out. Click **Sign out** to end it. This sign-in works only in the preview and expires after one hour.
 
 Login changes appear in the app preview environment after it reloads. Publish the app again to apply those changes to the published app.
 
+For apps created earlier, **Advanced** at the bottom of the sign-in settings shows **Update available**. Expand **Advanced** and click **Update** under **Login code** to update the generated login code. The login code is saved as a draft; check the preview before you publish it. Users on an old sign-in session may need to sign in again. After the update, when an app user changes data through the app, **Initiator** in record history shows that app user.
+
+To record who created and modified records in a table, click **Choose tables** under **Creator and modifier**, select the tables, click **Continue**, and then click **Save changes**. The selected tables start recording right away; existing records keep an unknown creator and modifier, and this can't be turned off. You can also choose **Enable record attribution** from a table's more menu in the sidebar to turn it on for a single table.
+
 If you need your own Google OAuth client, login codes sent from your own email address, or password login, explicitly request it in the chat. App Builder will turn off the built-in platform login and implement custom login in the app. Check login and page access controls in the preview before publishing the updated app.
 
 For examples of this feature in use, read [app login examples](https://teable.ai/blog/built-in-login-for-app-builder).
+
+#### View App Users
+
+In the **Settings** menu at the top of the app, choose **Users and identities** to see the users who have signed in to this app. At the top you can switch between the **Current** and **Published** sign-in configurations; the list can be searched by name, email, or ID and filtered by sign-in method and session state.
+
+Click a user to see their sign-in methods, whether their sessions are valid, and why a session is currently rejected, under **Overview**, **Login identities**, **Sessions**, and **Diagnostics**. **Last sign-in** is when a session was last issued, not whether the user is online now. This view is read-only: you can't disable users or revoke sessions here.
+
+Only the **Owner** and **Creator** roles see this entry. Login identity details such as the verified email, identity name, and avatar are shown only to the **Owner** role.
 
 ### Version History & Rollback
 Teable automatically tracks every deployment.

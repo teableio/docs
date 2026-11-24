@@ -101,6 +101,25 @@ Les résultats de Formule peuvent également utiliser les paramètres de [mise e
 - **Tester étape par étape** : décomposez les formules complexes en éléments plus petits et testez-les séparément.
 - **Éviter les calculs répétés** : si le même calcul est utilisé à plusieurs endroits, envisagez d’en stocker le résultat dans un Champ distinct.
 
+### Actualisation planifiée
+
+Une formule est généralement recalculée lorsque les champs qu’elle référence changent. Une formule qui utilise `TODAY()`, `NOW()`, `FROMNOW()` ou `TONOW()` évolue aussi avec le temps, par exemple « jours avant l’échéance » : même si l’enregistrement ne change pas, le résultat doit changer le lendemain.
+
+Pour ces champs, cliquez sur **Actualiser maintenant** dans le menu de l’en-tête de colonne afin de recalculer immédiatement toute la colonne à l’heure actuelle. Pour qu’il reste à jour automatiquement, activez **Actualiser automatiquement selon le planning** dans les paramètres du champ (offre Business ou supérieure) :
+
+<img
+  src="/images/docs/base/2026-11-24-field-periodic-refresh.png"
+  alt="Zone d’actualisation planifiée en bas des paramètres d’un champ formule, avec l’actualisation automatique activée et une fréquence quotidienne"
+  className="docs-screenshot"
+/>
+
+- Une formule qui n’utilise que `TODAY()` est actualisée une fois par jour ; le changement de date suit le fuseau horaire affiché dans les paramètres.
+- Une formule qui utilise `NOW()`, `FROMNOW()` ou `TONOW()` est actualisée environ toutes les 15 minutes et recalcule à chaque fois tous les enregistrements de la table. Sur une grande table, cela peut consommer beaucoup de ressources ; si une précision au jour suffit, utilisez plutôt `TODAY()`.
+
+L’actualisation automatique n’a lieu que si la base a été utilisée récemment ; une base inutilisée depuis un moment rattrape son retard à la prochaine ouverture d’une table. **Dernière actualisation** dans les paramètres du champ indique quand la plus récente a eu lieu. En cas de passage à une offre inférieure, l’actualisation automatique est suspendue avec son réglage conservé, puis reprend après le passage à l’offre Business ou supérieure ; **Actualiser maintenant** n’est pas concerné.
+
+Les champs de [recherche](/fr/basic/field/lookup), de [agrégation](/fr/basic/field/rollup), de [recherche conditionnelle](/fr/basic/field/conditional-lookup) et de [agrégation conditionnelle](/fr/basic/field/conditional-rollup) dont le filtre utilise une date relative comme **aujourd'hui**, **semaine en cours** ou **nombre de jours passés** peuvent aussi être actualisés immédiatement ou selon un planning. Ils sont actualisés chaque jour, chaque semaine ou chaque mois, selon la période la plus courte du filtre.
+
 ### Limites de complexité
 
 À l’enregistrement d’une formule, Teable la déploie d’abord dans la structure qui participe réellement au calcul, puis vérifie la taille de cette structure. Si une limite est dépassée, l’enregistrement est refusé et le message indique ce qui dépasse et la limite en vigueur — nombre de nœuds déployés, profondeur d’imbrication du calcul, profondeur des références entre formules — et la modification n’est pas enregistrée.
