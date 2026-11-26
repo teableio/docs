@@ -27,7 +27,7 @@ Salt okunurdur. Ortam değişkenlerini denetler ve hiçbir zaman bir gizli anaht
 
 Parmak izi, değerin SHA-256 özetinin ilk 8 onaltılık karakteridir; gizli anahtar deponuzdaki kayıtla karşılaştırmak içindir.
 
-Sayfanın üst kısmı, kaç özel değişkenin ve kaç `_OLD` değişkeninin hâlâ ayarlı olduğunu ve değerlerden kaçının herkese açık olduğunu özetler; `SECRET_KEY` ayarlanmamışsa veya hâlâ herkese açık varsayılan değerse bunu ayrıca belirtir.
+Sayfanın üst kısmı, kaç özel değişkenin ve kaç `_OLD` değişkeninin hâlâ ayarlı olduğunu ve değerlerden kaçının herkese açık olduğunu özetler; `SECRET_KEY` ayarlanmamışsa veya hâlâ herkese açık varsayılan değerse bunu ayrıca belirtir. Bu durumda, mevcut verisi olan bir örneğin yeni değer ayarlanmadan önce başlangıç günlüğünde listelenen `_OLD` değişkenlerine ihtiyaç duyduğunu da belirtir.
 
 ## Saklanan şifreli metinler {#stored-ciphertexts}
 
@@ -56,6 +56,16 @@ Veri içermeyen tablolar varsayılan olarak daraltılmış gösterilir.
 Büyük bir veritabanında sunucu çalışmayı sürdürürken istek zaman aşımına uğrayabilir. Yeniden çalıştırmak güvenlidir: daha önce işlenmiş satırlar atlanır.
 
 Bir öğenin şifreleme anahtarı hâlâ herkese açık bir varsayılan değerse o öğe reddedilir: önce `SECRET_KEY` değerini ayarlayın.
+
+### Otomasyon kimlik bilgileri {#automation-credentials}
+
+Tablonun altındadır. Otomasyon adımlarında ve yayımlanmış sürümlerde, yukarıdaki yeniden şifrelemenin kapsamadığı e-posta parolası veya webhook gizli anahtarı saklanıp saklanmadığını kontrol eder ve onayınızdan sonra bunları taşır.
+
+1. **Kontrol et ve taşı** düğmesine tıklayın. Kontrolün kendisi hiçbir şeyi değiştirmez.
+2. Taşınacak bir şey bulunursa iletişim kutusunda onaylayın. Her e-posta parolası, bir üyeye ait olan ve otomasyona verilen bir gizli anahtara dönüşür: bu üye adımı son düzenleyen kişi, yoksa hâlâ alan sahibiyse adımı oluşturan kişi, yoksa en uzun süredir alan sahibi olan kişidir. Her webhook gizli anahtarı ayrı saklanır. Otomasyonlar çalışmaya devam eder.
+3. Sonucu okuyun. Burada bir şey kalmadığında ve yukarıdaki dry-run yeniden şifrelenecek satır göstermediğinde, önceki üçüncü taraf kimlik bilgisi anahtarı kaldırılabilir.
+
+Taşınamayanlar nedeniyle birlikte yerinde kalır: gizli anahtarın sahibi olabilecek üye kalmadı, şifresi çözülemiyor veya otomasyon kapalı (açıldıktan sonra yeniden çalıştırın).
 
 ## Kişisel erişim tokenleri {#personal-access-tokens}
 

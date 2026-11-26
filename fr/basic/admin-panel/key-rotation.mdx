@@ -27,7 +27,7 @@ Il liste `SECRET_KEY`, `SANDBOX_JWT_SECRET` et chaque secret pour lequel une var
 
 Une empreinte correspond aux 8 premiers caractères hexadécimaux du SHA-256 de la valeur ; elle permet de la comparer à ce qui est enregistré dans votre gestionnaire de secrets.
 
-Le haut de la page récapitule le nombre de variables dédiées et de variables `_OLD` encore définies ainsi que le nombre de valeurs publiques, et signale séparément le cas où `SECRET_KEY` n’est pas défini ou est encore la valeur par défaut publique.
+Le haut de la page récapitule le nombre de variables dédiées et de variables `_OLD` encore définies ainsi que le nombre de valeurs publiques, et signale séparément le cas où `SECRET_KEY` n’est pas défini ou est encore la valeur par défaut publique. Elle rappelle alors aussi qu’une instance contenant déjà des données a besoin des variables `_OLD` indiquées par le journal de démarrage avant de définir une nouvelle valeur.
 
 ## Textes chiffrés stockés {#stored-ciphertexts}
 
@@ -56,6 +56,16 @@ Après l’exécution : ne rétablissez pas les anciennes variables d’environn
 Sur une base de données volumineuse, la requête peut expirer alors que le serveur continue de travailler. Vous pouvez la relancer sans risque : les lignes déjà traitées sont ignorées.
 
 Lorsque la clé de chiffrement d’un élément est encore une valeur par défaut publique, cet élément est refusé : définissez d’abord `SECRET_KEY`.
+
+### Identifiants des automatisations {#automation-credentials}
+
+Sous le tableau. Vérifie si les étapes d’automatisation et les versions publiées contiennent des mots de passe de messagerie ou des secrets de webhook, que le rechiffrement ci-dessus ne couvre pas, et les migre après votre confirmation.
+
+1. Cliquez sur **Vérifier et migrer**. La vérification elle-même ne modifie rien.
+2. S’il y a quelque chose à migrer, confirmez dans la boîte de dialogue. Chaque mot de passe de messagerie devient un secret appartenant à un membre et accordé à l’automatisation : la dernière personne à avoir modifié l’étape, sinon son créateur s’il est encore propriétaire de l’espace, sinon le plus ancien propriétaire de l’espace. Chaque secret de webhook est stocké à part. Les automatisations continuent de fonctionner.
+3. Lisez le résultat. Lorsqu’il ne reste rien ici et qu’un dry-run ci-dessus n’affiche plus aucune ligne à rechiffrer, l’ancienne clé des identifiants tiers peut être retirée.
+
+Ce qui ne peut pas être migré reste en place, avec la raison : plus aucun membre à qui attribuer le secret, déchiffrement impossible, ou automatisation désactivée (relancez une fois qu’elle est activée).
 
 ## Jetons d'accès personnels {#personal-access-tokens}
 

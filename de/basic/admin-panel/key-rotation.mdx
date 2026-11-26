@@ -27,7 +27,7 @@ Er führt `SECRET_KEY`, `SANDBOX_JWT_SECRET` und jedes Geheimnis auf, für das n
 
 Ein Fingerabdruck besteht aus den ersten 8 Hexadezimalzeichen des SHA-256 des Werts und dient zum Vergleich mit dem Eintrag in Ihrem Geheimnisspeicher.
 
-Oben auf der Seite steht zusammengefasst, wie viele dedizierte Variablen und `_OLD`-Variablen noch gesetzt sind und wie viele der Werte öffentlich sind; gesondert wird darauf hingewiesen, wenn `SECRET_KEY` nicht gesetzt ist oder noch der öffentliche Standardwert ist.
+Oben auf der Seite steht zusammengefasst, wie viele dedizierte Variablen und `_OLD`-Variablen noch gesetzt sind und wie viele der Werte öffentlich sind; gesondert wird darauf hingewiesen, wenn `SECRET_KEY` nicht gesetzt ist oder noch der öffentliche Standardwert ist. In diesem Fall weist sie auch darauf hin, dass eine Instanz mit vorhandenen Daten zuerst die im Startprotokoll aufgeführten `_OLD`-Variablen braucht, bevor ein neuer Wert gesetzt wird.
 
 ## Gespeicherte Chiffretexte {#stored-ciphertexts}
 
@@ -56,6 +56,16 @@ Nach dem Ausführen: Setzen Sie die Umgebungsvariablen nicht zurück und wechsel
 Bei einer großen Datenbank kann die Anfrage in ein Timeout laufen, während der Server weiterarbeitet. Ein erneutes Ausführen ist unbedenklich: Bereits verarbeitete Zeilen werden übersprungen.
 
 Ist der Verschlüsselungsschlüssel eines Eintrags noch ein öffentlicher Standardwert, wird dieser Eintrag abgelehnt: Setzen Sie zuerst `SECRET_KEY`.
+
+### Automatisierungs-Zugangsdaten {#automation-credentials}
+
+Unterhalb der Tabelle. Prüft, ob Automatisierungsschritte und veröffentlichte Versionen E-Mail-Passwörter oder Webhook-Geheimnisse enthalten, die die Neuverschlüsselung oben nicht abdeckt, und migriert sie nach Ihrer Bestätigung.
+
+1. Klicken Sie auf **Prüfen und migrieren**. Die Prüfung selbst ändert nichts.
+2. Wird etwas zum Migrieren gefunden, bestätigen Sie im Dialog. Jedes E-Mail-Passwort wird zu einem Secret, das einem Mitglied gehört und für die Automatisierung freigegeben ist: dem letzten Bearbeiter des Schritts, andernfalls dessen Ersteller, sofern dieser noch Space-Eigentümer ist, andernfalls dem Space-Eigentümer mit der längsten Zugehörigkeit. Jedes Webhook-Geheimnis wird getrennt gespeichert. Die Automatisierungen laufen weiter.
+3. Lesen Sie das Ergebnis. Wenn hier nichts mehr übrig ist und ein Dry-run oben keine neu zu verschlüsselnde Zeile mehr zeigt, kann der vorherige Schlüssel für Drittanbieter-Zugangsdaten entfernt werden.
+
+Was sich nicht migrieren lässt, bleibt, wo es ist, mit Angabe des Grundes: kein Mitglied mehr, dem das Secret gehören könnte, nicht entschlüsselbar oder eine deaktivierte Automatisierung (nach dem Aktivieren erneut ausführen).
 
 ## Persönliche Zugriffstokens {#personal-access-tokens}
 

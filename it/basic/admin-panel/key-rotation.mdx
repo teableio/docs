@@ -27,7 +27,7 @@ Elenca `SECRET_KEY`, `SANDBOX_JWT_SECRET` e ogni segreto che ha ancora impostata
 
 Un'impronta è costituita dai primi 8 caratteri esadecimali dello SHA-256 del valore e serve per il confronto con il record nel tuo archivio dei segreti.
 
-La parte superiore della pagina riepiloga quante variabili dedicate e quante variabili `_OLD` sono ancora impostate e quanti dei valori sono pubblici, e segnala a parte quando `SECRET_KEY` non è impostato o è ancora il valore predefinito pubblico.
+La parte superiore della pagina riepiloga quante variabili dedicate e quante variabili `_OLD` sono ancora impostate e quanti dei valori sono pubblici, e segnala a parte quando `SECRET_KEY` non è impostato o è ancora il valore predefinito pubblico. In quel caso ricorda anche che un'istanza con dati esistenti ha bisogno delle variabili `_OLD` elencate nel log di avvio prima di impostare un nuovo valore.
 
 ## Testi cifrati memorizzati {#stored-ciphertexts}
 
@@ -56,6 +56,16 @@ Dopo l'esecuzione: non eseguire il rollback delle variabili d'ambiente e non pas
 Su un database di grandi dimensioni la richiesta può andare in timeout mentre il server continua a lavorare. Eseguirla di nuovo è sicuro: le righe già elaborate vengono saltate.
 
 Quando la chiave di cifratura di un elemento è ancora un valore predefinito pubblico, quell'elemento viene rifiutato: imposta prima `SECRET_KEY`.
+
+### Credenziali delle automazioni {#automation-credentials}
+
+Sotto la tabella. Controlla se i passaggi delle automazioni e le versioni pubblicate contengono password email o segreti webhook, che la ricifratura qui sopra non copre, e li migra dopo la tua conferma.
+
+1. Fai clic su **Controlla e migra**. Il controllo in sé non modifica nulla.
+2. Se trova qualcosa da migrare, conferma nella finestra di dialogo. Ogni password email diventa un segreto di proprietà di un membro e concesso all'automazione: l'ultimo che ha modificato il passaggio, altrimenti chi lo ha creato, se è ancora proprietario dello spazio, altrimenti il proprietario dello spazio di più lunga data. Ogni segreto webhook viene memorizzato a parte. Le automazioni continuano a funzionare.
+3. Leggi l'esito. Quando qui non resta nulla e un dry-run qui sopra non mostra righe da ricifrare, la chiave precedente delle credenziali di terze parti può essere rimossa.
+
+Ciò che non può essere migrato resta dov'è, con il motivo: nessun membro rimasto che possa possedere il segreto, non decifrabile oppure automazione disattivata (riesegui quando sarà attiva).
 
 ## Token di accesso personali {#personal-access-tokens}
 

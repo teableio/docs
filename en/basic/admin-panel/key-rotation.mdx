@@ -27,7 +27,7 @@ It lists `SECRET_KEY`, `SANDBOX_JWT_SECRET`, and each secret that still has its 
 
 A fingerprint is the first 8 hex characters of the value's SHA-256, for comparing with the record in your secret store.
 
-The top of the page sums up how many dedicated variables and `_OLD` variables are still set and how many of the values are public, and says so separately when `SECRET_KEY` is not set or is still the public default.
+The top of the page sums up how many dedicated variables and `_OLD` variables are still set and how many of the values are public, and says so separately when `SECRET_KEY` is not set or is still the public default. In that case it also says that an instance with existing data needs the `_OLD` variables listed in the startup log before a new value is set.
 
 ## Stored ciphertexts {#stored-ciphertexts}
 
@@ -56,6 +56,16 @@ After you run it: do not roll back the environment variables or move to an older
 On a large database the request may time out while the server keeps working. Running it again is safe: rows already handled are skipped.
 
 When the encryption key of an item is still a public default, that item is refused: set `SECRET_KEY` first.
+
+### Automation credentials {#automation-credentials}
+
+Below the table. It checks automation steps and published versions for mail passwords and webhook secrets stored in them, which the re-encryption above does not cover, and migrates them once you confirm.
+
+1. Click **Check and migrate**. The check itself changes nothing.
+2. If it finds something to migrate, confirm in the dialog. Each mail password becomes a secret owned by a member and granted to the automation: the step's last editor, else its creator while still a space owner, else the longest-standing space owner. Each webhook secret is stored apart. The automations keep running.
+3. Read the outcome. When nothing is left here and a dry-run above shows no row to re-encrypt, the previous third-party credential key can be removed.
+
+What cannot be migrated stays where it is, with the reason: no member left to own the secret, undecryptable, or an automation that is off (run it again once it is on).
 
 ## Personal access tokens {#personal-access-tokens}
 
