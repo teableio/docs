@@ -1,0 +1,91 @@
+---
+title: "Key rotation: check server secrets and re-encrypt stored data"
+description: "See which dedicated secret variables an instance still sets, re-encrypt the ciphertext in the database under the current key, and count the personal access tokens that still depend on an old key. Use it after changing or trimming server secrets."
+sidebarTitle: "Key rotation"
+---
+
+<Tip>Available for self-hosted Business plan and above</Tip>
+
+Path: System Admin → Key rotation
+
+After a server secret is changed or removed, the data already in the database is still encrypted under the old one. This page checks the secret configuration and moves that data under the current key, after which the old secret can go. For the order of the whole procedure, see [Secret convergence](/en/deploy/secret-convergence).
+
+The page has four tabs: Stored ciphertexts, Personal access tokens, JWT credentials, and Server secrets. The JWT credentials tab is described on [its own page](/en/basic/admin-panel/jwt-credentials).
+
+## Server secrets {#server-secrets}
+
+Read-only. It checks the environment variables and never shows a secret's value.
+
+It lists `SECRET_KEY`, `SANDBOX_JWT_SECRET`, and each secret that still has its own variable or an `_OLD` variable set. A secret that is not listed follows `SECRET_KEY` and needs no variable of its own. Once `BACKEND_STORED_CREDENTIAL_ENCRYPTION_SECRET` is set, the credentials encrypted in the database follow that variable instead; see [A separate root for stored credentials](/en/deploy/secret-convergence#stored-credential-root).
+
+| Column | Meaning |
+|---|---|
+| Variable | The environment variable and what it is used for. A variable labelled **Deprecated** has been superseded: it still takes effect while set, but a new deployment should not set it. **Not read by this deployment** means the variable is set but this edition or configuration has no use for it |
+| Value from | Whether the value comes from the variable itself, falls back to `SECRET_KEY`, is derived from `SECRET_KEY`, or is a former public default. The value's fingerprint follows; **Public value** marks a value anyone can compute |
+| `_OLD` | The `_OLD` variables that are set, each with its fingerprint. `_OLD` only verifies or decrypts existing data |
+| Same as SECRET_KEY alone | **Same** means removing the dedicated variable would not change the value. For what is encrypted in the database, that holds only while `BACKEND_STORED_CREDENTIAL_ENCRYPTION_SECRET` is not set to a different value. **Different** means the value would change, so the old one has to be kept first |
+
+A fingerprint is the first 8 hex characters of the value's SHA-256, for comparing with the record in your secret store.
+
+The top of the page sums up how many dedicated variables and `_OLD` variables are still set and how many of the values are public, and says so separately when `SECRET_KEY` is not set or is still the public default. In that case it also says that an instance with existing data needs the `_OLD` variables listed in the startup log before a new value is set.
+
+## Stored ciphertexts {#stored-ciphertexts}
+
+Re-encrypts the ciphertext in the database under the current key: database tenant connection strings, app environment variables, AI configuration and third-party credentials. It does not rewrite the copy of the steps that a live automation runs from; see [How long each old value stays](/en/deploy/secret-convergence#old-value-retention).
+
+1. Click **Dry-run**. It only counts and changes nothing.
+2. Check the result, then click **Re-encrypt**.
+3. Run the dry-run once more and check that **Needs re-encryption** and **Undecryptable** are both 0.
+
+| Column | Meaning |
+|---|---|
+| Total | Rows in this table that hold a secret value, encrypted or not |
+| Up to date | Already under the current key; nothing to do |
+| Needs re-encryption / Re-encrypted | Rows a dry-run would rewrite, or rows a real run has rewritten |
+| Concurrent conflicts | The row was changed by another request during the rewrite and was skipped this time. Run it again |
+| Undecryptable | Neither the current key nor any configured `_OLD` opens the row, so it is left as it is. The result lists the IDs of these rows, up to 50 per table |
+
+Tables with no data are collapsed by default.
+
+<Warning>
+Before you run it: back up the database and the environment variables, every `_OLD` variable included, and make sure each app instance, all replicas and workers included, has restarted on the new secret configuration.
+
+After you run it: do not roll back the environment variables or move to an older image. The rewritten data only opens with the current key.
+</Warning>
+
+On a large database the request may time out while the server keeps working. Running it again is safe: rows already handled are skipped.
+
+When the encryption key of an item is still a public default, that item is refused: set `SECRET_KEY` first.
+
+### Automation credentials {#automation-credentials}
+
+Below the table. It checks automation steps and published versions for mail passwords and webhook secrets stored in them, which the re-encryption above does not cover, and migrates them once you confirm.
+
+1. Click **Check and migrate**. The check itself changes nothing.
+2. If it finds something to migrate, confirm in the dialog. Each mail password becomes a secret owned by a member and granted to the automation: the step's last editor, else its creator while still a space owner, else the longest-standing space owner. Each webhook secret is stored apart. The automations keep running.
+3. Read the outcome. When nothing is left here and a dry-run above shows no row to re-encrypt, the previous third-party credential key can be removed.
+
+What cannot be migrated stays where it is, with the reason: no member left to own the secret, undecryptable, or an automation that is off (run it again once it is on).
+
+## Personal access tokens {#personal-access-tokens}
+
+A personal access token cannot be re-encrypted; only its owner can regenerate it. This tab counts the tokens that have not expired but were not issued under the current key, so you can tell whether an old key can be removed:
+
+- **Older key, still working**: these tokens stop working once the old key is removed.
+- **Issued before the upgrade, can't tell**: the token does not record the key it was issued under, so it is treated as still working. Take these into account too before removing an old key.
+- **Stopped**: the key that issued them is no longer accepted, so these tokens do not work now.
+
+The old key is the pair kept in `BACKEND_ACCESS_TOKEN_ENCRYPTION_KEY_OLD` / `IV_OLD`. An instance that moved off the built-in defaults also keeps the built-in pair for decryption; that one stays and is not yours to remove.
+
+The token page suggests that owners regenerate the ones with a long time left.
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="What if Undecryptable is not 0?">
+    Usually the old value those rows were encrypted with is missing. Put it in the matching `_OLD` variable, restart, and run the dry-run again. The re-encryption skips these rows and does not damage them.
+  </Accordion>
+  <Accordion title="Does re-encrypting need downtime?">
+    Not by itself: data in use keeps being read and written. Changing the secret configuration does need a restart; see [Secret convergence](/en/deploy/secret-convergence).
+  </Accordion>
+</AccordionGroup>

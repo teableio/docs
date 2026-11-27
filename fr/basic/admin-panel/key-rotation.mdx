@@ -1,0 +1,91 @@
+---
+title: "Rotation des clés : vérifier les secrets du serveur et rechiffrer les données stockées"
+description: "Consultez les variables de secret dédiées qu’une instance définit encore, rechiffrez avec la clé actuelle les textes chiffrés de la base de données et comptez les jetons d’accès personnels qui dépendent encore d’une ancienne clé. À utiliser après avoir modifié ou réduit les secrets du serveur."
+sidebarTitle: "Rotation des clés"
+---
+
+<Tip>Disponible avec le forfait Business auto-hébergé et les forfaits supérieurs</Tip>
+
+Chemin : Administration système → Rotation des clés
+
+Après la modification ou la suppression d’un secret du serveur, les données déjà présentes dans la base de données sont toujours chiffrées avec l’ancien. Cette page vérifie la configuration des secrets et fait passer ces données sous la clé actuelle, après quoi l’ancien secret peut être retiré. Pour l’ordre de l’ensemble de la procédure, consultez [Convergence des secrets](/fr/deploy/secret-convergence).
+
+La page comporte quatre onglets : Textes chiffrés stockés, Jetons d'accès personnels, JWT credentials (identifiants JWT) et Secrets du serveur. L’onglet JWT credentials est décrit sur [sa propre page](/fr/basic/admin-panel/jwt-credentials).
+
+## Secrets du serveur {#server-secrets}
+
+Lecture seule. L’onglet vérifie les variables d’environnement et n’affiche jamais la valeur d’un secret.
+
+Il liste `SECRET_KEY`, `SANDBOX_JWT_SECRET` et chaque secret pour lequel une variable dédiée ou une variable `_OLD` est encore définie. Un secret qui n’est pas listé suit `SECRET_KEY` et n’a pas besoin d’une variable qui lui soit propre. Une fois `BACKEND_STORED_CREDENTIAL_ENCRYPTION_SECRET` défini, les identifiants chiffrés dans la base de données suivent cette variable à la place ; voir [Un secret racine distinct pour les identifiants stockés](/fr/deploy/secret-convergence#stored-credential-root).
+
+| Colonne | Signification |
+|---|---|
+| Variable | La variable d’environnement et son usage. Une variable portant l’étiquette **Obsolète** a été remplacée : elle reste prise en compte tant qu’elle est définie, mais un nouveau déploiement ne doit pas la définir. **Non lu par ce déploiement** signifie que la variable est définie mais que cette édition ou cette configuration n’en a pas l’usage |
+| Valeur issue de | Indique si la valeur provient de la variable elle-même, se rabat sur `SECRET_KEY`, est dérivée de `SECRET_KEY` ou est une ancienne valeur par défaut publique. L’empreinte de la valeur suit ; **Valeur publique** signale une valeur que n’importe qui peut calculer |
+| `_OLD` | Les variables `_OLD` définies, chacune avec son empreinte. `_OLD` sert uniquement à vérifier ou à déchiffrer les données existantes |
+| Identique à SECRET_KEY seul | **Identique** signifie que la suppression de la variable dédiée ne changerait pas la valeur. Pour ce qui est chiffré dans la base de données, cela ne vaut que tant que `BACKEND_STORED_CREDENTIAL_ENCRYPTION_SECRET` n’est pas définie sur une autre valeur. **Différent** signifie que la valeur changerait ; l’ancienne doit donc d’abord être conservée |
+
+Une empreinte correspond aux 8 premiers caractères hexadécimaux du SHA-256 de la valeur ; elle permet de la comparer à ce qui est enregistré dans votre gestionnaire de secrets.
+
+Le haut de la page récapitule le nombre de variables dédiées et de variables `_OLD` encore définies ainsi que le nombre de valeurs publiques, et signale séparément le cas où `SECRET_KEY` n’est pas défini ou est encore la valeur par défaut publique. Elle rappelle alors aussi qu’une instance contenant déjà des données a besoin des variables `_OLD` indiquées par le journal de démarrage avant de définir une nouvelle valeur.
+
+## Textes chiffrés stockés {#stored-ciphertexts}
+
+Rechiffre avec la clé actuelle les textes chiffrés de la base de données : chaînes de connexion des locataires de base de données, variables d’environnement des applications, configuration IA et identifiants tiers. L’onglet ne réécrit pas la copie des étapes à partir de laquelle s’exécute une automatisation active ; voir [Durée de conservation de chaque ancienne valeur](/fr/deploy/secret-convergence#old-value-retention).
+
+1. Cliquez sur **Dry-run** (simulation). L’opération se contente de compter et ne modifie rien.
+2. Vérifiez le résultat, puis cliquez sur **Rechiffrer**.
+3. Lancez la simulation une fois de plus et vérifiez que **À rechiffrer** et **Indéchiffrable** sont tous deux à 0.
+
+| Colonne | Signification |
+|---|---|
+| Total | Lignes de cette table qui contiennent une valeur secrète, chiffrée ou non |
+| À jour | Déjà sous la clé actuelle ; rien à faire |
+| À rechiffrer / Rechiffré | Lignes qu’une simulation réécrirait, ou lignes qu’une exécution réelle a réécrites |
+| Conflits | La ligne a été modifiée par une autre requête pendant la réécriture et a été ignorée cette fois-ci. Relancez l’opération |
+| Indéchiffrable | Ni la clé actuelle ni aucun `_OLD` configuré n’ouvre la ligne ; elle est donc laissée telle quelle. Le résultat liste les ID de ces lignes, jusqu’à 50 par table |
+
+Les tables sans données sont repliées par défaut.
+
+<Warning>
+Avant l’exécution : sauvegardez la base de données et les variables d’environnement, y compris toutes les variables `_OLD`, et assurez-vous que chaque instance de l’application, y compris tous les réplicas et tous les workers, a redémarré avec la nouvelle configuration des secrets.
+
+Après l’exécution : ne rétablissez pas les anciennes variables d’environnement et ne passez pas à une image plus ancienne. Les données réécrites ne s’ouvrent qu’avec la clé actuelle.
+</Warning>
+
+Sur une base de données volumineuse, la requête peut expirer alors que le serveur continue de travailler. Vous pouvez la relancer sans risque : les lignes déjà traitées sont ignorées.
+
+Lorsque la clé de chiffrement d’un élément est encore une valeur par défaut publique, cet élément est refusé : définissez d’abord `SECRET_KEY`.
+
+### Identifiants des automatisations {#automation-credentials}
+
+Sous le tableau. Vérifie si les étapes d’automatisation et les versions publiées contiennent des mots de passe de messagerie ou des secrets de webhook, que le rechiffrement ci-dessus ne couvre pas, et les migre après votre confirmation.
+
+1. Cliquez sur **Vérifier et migrer**. La vérification elle-même ne modifie rien.
+2. S’il y a quelque chose à migrer, confirmez dans la boîte de dialogue. Chaque mot de passe de messagerie devient un secret appartenant à un membre et accordé à l’automatisation : la dernière personne à avoir modifié l’étape, sinon son créateur s’il est encore propriétaire de l’espace, sinon le plus ancien propriétaire de l’espace. Chaque secret de webhook est stocké à part. Les automatisations continuent de fonctionner.
+3. Lisez le résultat. Lorsqu’il ne reste rien ici et qu’un dry-run ci-dessus n’affiche plus aucune ligne à rechiffrer, l’ancienne clé des identifiants tiers peut être retirée.
+
+Ce qui ne peut pas être migré reste en place, avec la raison : plus aucun membre à qui attribuer le secret, déchiffrement impossible, ou automatisation désactivée (relancez une fois qu’elle est activée).
+
+## Jetons d'accès personnels {#personal-access-tokens}
+
+Un jeton d’accès personnel ne peut pas être rechiffré ; seul son propriétaire peut le régénérer. Cet onglet compte les jetons qui n’ont pas expiré mais qui n’ont pas été émis avec la clé actuelle, afin que vous puissiez déterminer si une ancienne clé peut être supprimée :
+
+- **Clé plus ancienne, fonctionnent encore** : ces jetons cessent de fonctionner une fois l’ancienne clé supprimée.
+- **Émis avant la mise à niveau, indéterminés** : le jeton n’enregistre pas la clé avec laquelle il a été émis ; il est donc considéré comme fonctionnant encore. Tenez-en compte également avant de supprimer une ancienne clé.
+- **Ne fonctionnent plus** : la clé qui les a émis n’est plus acceptée ; ces jetons ne fonctionnent donc plus à présent.
+
+L’ancienne clé est la paire conservée dans `BACKEND_ACCESS_TOKEN_ENCRYPTION_KEY_OLD` / `IV_OLD`. Une instance qui a abandonné les valeurs par défaut intégrées conserve aussi la paire intégrée pour le déchiffrement ; celle-ci reste en place et ce n’est pas à vous de la supprimer.
+
+La page des jetons suggère aux propriétaires de régénérer ceux dont la durée de validité restante est longue.
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Que faire si Indéchiffrable n’est pas à 0 ?">
+    Le plus souvent, l’ancienne valeur avec laquelle ces lignes ont été chiffrées manque. Placez-la dans la variable `_OLD` correspondante, redémarrez, puis relancez la simulation. Le rechiffrement ignore ces lignes et ne les endommage pas.
+  </Accordion>
+  <Accordion title="Le rechiffrement nécessite-t-il une interruption de service ?">
+    Pas en lui-même : les données en cours d’utilisation continuent d’être lues et écrites. La modification de la configuration des secrets nécessite en revanche un redémarrage ; voir [Convergence des secrets](/fr/deploy/secret-convergence).
+  </Accordion>
+</AccordionGroup>

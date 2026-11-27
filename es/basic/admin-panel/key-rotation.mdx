@@ -1,0 +1,91 @@
+---
+title: "Rotación de claves: comprobar los secretos del servidor y volver a cifrar los datos almacenados"
+description: "Consulta qué variables de secretos dedicadas sigue teniendo establecidas una instancia, vuelve a cifrar con la clave actual el texto cifrado de la base de datos y cuenta los tokens de acceso personal que aún dependen de una clave anterior. Úsala después de cambiar o reducir los secretos del servidor."
+sidebarTitle: "Rotación de claves"
+---
+
+<Tip>Disponible para el plan Business autoalojado y los planes superiores</Tip>
+
+Ruta: Administración del sistema → Rotación de claves
+
+Después de cambiar o eliminar un secreto del servidor, los datos que ya están en la base de datos siguen cifrados con el anterior. Esta página comprueba la configuración de los secretos y pasa esos datos a la clave actual; después, el secreto anterior se puede retirar. Para conocer el orden de todo el procedimiento, consulta [Convergencia de secretos](/es/deploy/secret-convergence).
+
+La página tiene cuatro pestañas: Textos cifrados almacenados, Tokens de acceso personal, Credenciales JWT y Secretos del servidor. La pestaña Credenciales JWT se describe en [su propia página](/es/basic/admin-panel/jwt-credentials).
+
+## Secretos del servidor {#server-secrets}
+
+Solo lectura. Comprueba las variables de entorno y nunca muestra el valor de un secreto.
+
+Enumera `SECRET_KEY`, `SANDBOX_JWT_SECRET` y cada secreto que todavía tiene establecida su propia variable o una variable `_OLD`. Un secreto que no aparece en la lista sigue a `SECRET_KEY` y no necesita una variable propia. Una vez establecida `BACKEND_STORED_CREDENTIAL_ENCRYPTION_SECRET`, las credenciales cifradas en la base de datos siguen a esa variable; consulta [Un secreto raíz propio para las credenciales almacenadas](/es/deploy/secret-convergence#stored-credential-root).
+
+| Columna | Significado |
+|---|---|
+| Variable | La variable de entorno y para qué se usa. Una variable con la etiqueta **Obsoleto** ha sido sustituida: sigue teniendo efecto mientras esté establecida, pero un despliegue nuevo no debe establecerla. **Este despliegue no lo lee** significa que la variable está establecida, pero esta edición o configuración no la utiliza |
+| Valor de | Indica si el valor procede de la propia variable, recurre a `SECRET_KEY`, se deriva de `SECRET_KEY` o es un antiguo valor predeterminado público. A continuación aparece la huella del valor; **Valor público** marca un valor que cualquiera puede calcular |
+| `_OLD` | Las variables `_OLD` que están establecidas, cada una con su huella. `_OLD` solo verifica o descifra datos existentes |
+| Igual que solo con SECRET_KEY | **Igual** significa que eliminar la variable dedicada no cambiaría el valor. Para lo que está cifrado en la base de datos, esto solo se cumple mientras `BACKEND_STORED_CREDENTIAL_ENCRYPTION_SECRET` no tenga un valor distinto. **Distinto** significa que el valor cambiaría, por lo que antes hay que conservar el anterior |
+
+Una huella son los primeros 8 caracteres hexadecimales del SHA-256 del valor, para compararla con el registro de tu almacén de secretos.
+
+La parte superior de la página resume cuántas variables dedicadas y variables `_OLD` siguen establecidas y cuántos de los valores son públicos, e indica por separado cuando `SECRET_KEY` no está establecida o sigue siendo el valor predeterminado público. En ese caso también indica que una instancia con datos existentes necesita las variables `_OLD` que enumera el registro de arranque antes de establecer un valor nuevo.
+
+## Textos cifrados almacenados {#stored-ciphertexts}
+
+Vuelve a cifrar con la clave actual el texto cifrado de la base de datos: cadenas de conexión de inquilinos de base de datos, variables de entorno de las aplicaciones, configuración de IA y credenciales de terceros. No reescribe la copia de los pasos a partir de la cual se ejecuta una automatización activa; consulta [Cuánto tiempo se conserva cada valor anterior](/es/deploy/secret-convergence#old-value-retention).
+
+1. Haz clic en **Dry-run** (simulación). Solo cuenta y no cambia nada.
+2. Comprueba el resultado y después haz clic en **Volver a cifrar**.
+3. Ejecuta la simulación una vez más y comprueba que **Necesitan recifrado** y **No descifrables** sean ambos 0.
+
+| Columna | Significado |
+|---|---|
+| Total | Filas de esta tabla que contienen un valor secreto, cifrado o no |
+| Al día | Ya están bajo la clave actual; no hay que hacer nada |
+| Necesitan recifrado / Recifradas | Filas que una simulación reescribiría, o filas que una ejecución real ha reescrito |
+| Conflictos concurrentes | Otra solicitud modificó la fila durante la reescritura y esta vez se omitió. Vuelve a ejecutarlo |
+| No descifrables | Ni la clave actual ni ningún `_OLD` configurado abre la fila, por lo que se deja como está. El resultado enumera los ID de estas filas, hasta 50 por tabla |
+
+Las tablas sin datos aparecen contraídas de forma predeterminada.
+
+<Warning>
+Antes de ejecutarlo: haz una copia de seguridad de la base de datos y de las variables de entorno, incluidas todas las variables `_OLD`, y asegúrate de que cada instancia de la aplicación, incluidas todas las réplicas y los workers, se haya reiniciado con la nueva configuración de secretos.
+
+Después de ejecutarlo: no reviertas las variables de entorno ni pases a una imagen anterior. Los datos reescritos solo se abren con la clave actual.
+</Warning>
+
+En una base de datos grande, la solicitud puede agotar el tiempo de espera mientras el servidor sigue trabajando. Volver a ejecutarlo es seguro: las filas ya tratadas se omiten.
+
+Cuando la clave de cifrado de un elemento sigue siendo un valor predeterminado público, ese elemento se rechaza: establece primero `SECRET_KEY`.
+
+### Credenciales de automatización {#automation-credentials}
+
+Debajo de la tabla. Comprueba si los pasos de automatización y las versiones publicadas contienen contraseñas de correo o secretos de webhook, que el recifrado de arriba no cubre, y los migra cuando lo confirmes.
+
+1. Haz clic en **Comprobar y migrar**. La comprobación en sí no cambia nada.
+2. Si encuentra algo que migrar, confirma en el cuadro de diálogo. Cada contraseña de correo se convierte en un secreto propiedad de un miembro y concedido a la automatización: el último que editó el paso; si no, quien lo creó, mientras siga siendo propietario del espacio; si no, el propietario del espacio con más antigüedad. Cada secreto de webhook se almacena aparte. Las automatizaciones siguen funcionando.
+3. Lee el resultado. Cuando aquí no quede nada y un Dry-run de arriba no muestre filas por recifrar, se puede retirar la clave anterior de las credenciales de terceros.
+
+Lo que no se puede migrar se queda donde está, con el motivo: no queda ningún miembro que pueda ser propietario del secreto, no se puede descifrar o la automatización está desactivada (vuelve a ejecutar cuando esté activada).
+
+## Tokens de acceso personal {#personal-access-tokens}
+
+Un token de acceso personal no se puede volver a cifrar; solo su propietario puede regenerarlo. Esta pestaña cuenta los tokens que no han caducado pero que no se emitieron con la clave actual, para que puedas saber si se puede eliminar una clave anterior:
+
+- **Clave anterior, todavía funcionan**: estos tokens dejan de funcionar cuando se elimina la clave anterior.
+- **Emitidos antes de la actualización, no se puede saber**: el token no registra la clave con la que se emitió, por lo que se considera que sigue funcionando. Tenlos también en cuenta antes de eliminar una clave anterior.
+- **Ya no funcionan**: la clave con la que se emitieron ya no se acepta, por lo que estos tokens no funcionan ahora.
+
+La clave anterior es el par que se conserva en `BACKEND_ACCESS_TOKEN_ENCRYPTION_KEY_OLD` / `IV_OLD`. Una instancia que dejó de usar los valores predeterminados integrados también conserva el par integrado para descifrar; ese se mantiene y no te corresponde eliminarlo.
+
+La página de tokens sugiere a los propietarios que regeneren los que aún tienen mucho tiempo de validez por delante.
+
+## Preguntas frecuentes
+
+<AccordionGroup>
+  <Accordion title="¿Qué hago si No descifrables no es 0?">
+    Normalmente falta el valor anterior con el que se cifraron esas filas. Ponlo en la variable `_OLD` correspondiente, reinicia y vuelve a ejecutar la simulación. El recifrado omite estas filas y no las daña.
+  </Accordion>
+  <Accordion title="¿Volver a cifrar requiere tiempo de inactividad?">
+    Por sí solo, no: los datos en uso se siguen leyendo y escribiendo. Cambiar la configuración de los secretos sí requiere un reinicio; consulta [Convergencia de secretos](/es/deploy/secret-convergence).
+  </Accordion>
+</AccordionGroup>

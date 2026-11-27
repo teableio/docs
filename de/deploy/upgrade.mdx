@@ -74,11 +74,13 @@ als Upgrade-Übersicht. Bei jeder Aktualisierung:
 
 ## Erforderliche Secrets
 
-Teable greift nicht mehr auf integrierte Standard-Secrets zurück. Wenn Ihre Bereitstellung
-auf diesen Standardwerten beruhte, wird der erste Start nach dem Upgrade mit einer Liste der benötigten
-Umgebungsvariablen und einem Kopier-und-Einfügen-Block angehalten, der Ihre bestehenden Sitzungen,
-Token und verschlüsselten Daten bewahrt. Fügen Sie den Block hinzu, starten Sie neu und planen Sie
-anschließend eine Rotation. Siehe [Secrets und Rotation](/de/deploy/env#secrets-and-rotation).
+Die App benötigt zwei eigene Secrets, `SECRET_KEY` und `SANDBOX_JWT_SECRET`. Ein fehlendes Secret blockiert den Start nicht: Die Instanz greift auf die in älteren Versionen integrierten öffentlichen Standardwerte zurück, mit denen jeder Anmeldetoken fälschen kann. Das Startprotokoll listet die fehlenden Secrets auf, und Instanzadministratoren sehen unter **Systemverwaltung → Instanzeinstellungen** im Bereich **Ausstehende Konfiguration** den Eintrag **Server-Secrets**.
+
+<Warning>Eine spätere Version startet nicht mehr, solange `SECRET_KEY` nicht gesetzt ist oder noch der öffentliche Standardwert ist. Läuft Ihre Instanz so, [stellen Sie auf einen eigenen SECRET_KEY um](/de/deploy/secret-convergence#own-secret-key), bevor Sie auf diese Version aktualisieren.</Warning>
+
+<Warning>Spätere Versionen entfernen außerdem einige der anderen dedizierten Secret-Variablen, zusammen mit dem Code, der sie liest. Ein Termin steht nicht fest. Wenn Sie eine Aktualisierung planen, führen Sie sie bald durch und folgen Sie [Selbst gehostete Instanz auf SECRET_KEY allein umstellen](/de/deploy/secret-convergence) auf einer Version, die sie noch liest: Eine Instanz, die direkt auf eine Version ohne diese Variablen springt, kann nicht mehr lesen, was mit ihnen gespeichert wurde.</Warning>
+
+Wenn eine bestehende Instanz noch mit den integrierten Standardwerten läuft oder andere dedizierte Secret-Variablen setzt, folgen Sie [Konvergenz der Geheimnisse](/de/deploy/secret-convergence), um sie auf diese beiden Secrets umzustellen. Siehe auch [Geheimnisse und Rotation](/de/deploy/env#secrets-and-rotation).
 
 ## Datenbankmigration
 

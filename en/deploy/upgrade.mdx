@@ -74,11 +74,13 @@ as the upgrade sheet. On each round:
 
 ## Required secrets
 
-Teable no longer falls back to built-in default secrets. If your deployment
-relied on those defaults, the first start after upgrading stops with a list of
-the environment variables it needs and a copy-paste block that preserves your
-existing sessions, tokens, and encrypted data. Add the block, restart, then
-plan a rotation. See [Secrets and rotation](/en/deploy/env#secrets-and-rotation).
+The app needs two secrets of its own, `SECRET_KEY` and `SANDBOX_JWT_SECRET`. A missing secret does not block startup: the instance falls back to the public defaults built into older versions, which anyone can use to forge login tokens. The startup log lists the missing secrets, and instance admins see a **Server secrets** item under **System Admin → Instance settings**, in the **Pending configuration** panel.
+
+<Warning>A later version will refuse to start while `SECRET_KEY` is unset or still its public default. If your instance runs that way, [switch to your own SECRET_KEY](/en/deploy/secret-convergence#own-secret-key) before upgrading to that version.</Warning>
+
+<Warning>Later versions will also remove some of the other dedicated secret variables, together with the code that reads them. No date is set. If you plan to upgrade, do it soon and follow [Move a self-hosted instance to SECRET_KEY alone](/en/deploy/secret-convergence) on a version that still reads them: an instance that jumps straight to a version without them can no longer read what was stored under them.</Warning>
+
+If an existing instance still runs on the built-in defaults, or sets other dedicated secret variables, follow [Secret convergence](/en/deploy/secret-convergence) to move it to these two secrets. See also [Secrets and rotation](/en/deploy/env#secrets-and-rotation).
 
 ## Database migration
 

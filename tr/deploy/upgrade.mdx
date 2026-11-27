@@ -72,12 +72,13 @@ dosyasını kullanıp bu ikisini birbirine bağlar. Her turda:
 
 ## Zorunlu gizli anahtarlar
 
-Teable artık yerleşik varsayılan gizli anahtarlara geri dönmez. Dağıtımınız bu varsayılanlara
-dayanıyorsa yükseltmeden sonraki ilk başlatma, ihtiyaç duyulan ortam değişkenlerinin bir
-listesiyle birlikte mevcut oturumlarınızı, belirteçlerinizi ve şifrelenmiş verilerinizi koruyan,
-kopyalayıp yapıştırabileceğiniz bir blok göstererek durur. Bloğu ekleyip yeniden başlatın ve
-ardından anahtarları döndürmeyi planlayın. [Gizli anahtarlar ve döndürme](/tr/deploy/env#secrets-and-rotation)
-bölümüne bakın.
+Uygulamanın kendisine iki gizli anahtar gerekir: `SECRET_KEY` ve `SANDBOX_JWT_SECRET`. Eksik bir gizli anahtar başlatmayı engellemez: örnek, eski sürümlerde yerleşik olan herkese açık varsayılan değerleri kullanır ve herkes bu değerlerle sahte oturum açma token'ları üretebilir. Başlangıç günlüğü eksik gizli anahtarları listeler; örnek yöneticileri de **Sistem Yönetimi → Örnek ayarları** altında, **Yapılandırma bekleyen öğeler** panelinde bir **Sunucu gizli anahtarları** öğesi görür.
+
+<Warning>Sonraki bir sürüm, `SECRET_KEY` ayarlanmamışken veya hâlâ herkese açık varsayılan değerken başlamayı reddedecek. Örneğiniz bu şekilde çalışıyorsa, o sürüme yükseltmeden önce [kendi SECRET_KEY değerinize geçin](/tr/deploy/secret-convergence#own-secret-key).</Warning>
+
+<Warning>Sonraki sürümler, diğer özel gizli anahtar değişkenlerinin bir kısmını da onları okuyan kodla birlikte kaldıracak. Tarih belirlenmedi. Yükseltme yapmayı planlıyorsanız bunu yakın zamanda yapın ve bu değişkenleri hâlâ okuyan bir sürümde [Kendi sunucunuzdaki örneği yalnızca SECRET_KEY'e geçirme](/tr/deploy/secret-convergence) sayfasındaki adımları izleyin: bu değişkenlerin bulunmadığı bir sürüme doğrudan geçen bir örnek, onlarla saklanmış olanları artık okuyamaz.</Warning>
+
+Mevcut bir örnek hâlâ yerleşik varsayılan değerlerle çalışıyorsa veya başka özel gizli anahtar değişkenleri ayarlıyorsa, onu bu iki gizli anahtara geçirmek için [Gizli anahtar yakınsaması](/tr/deploy/secret-convergence) sayfasındaki adımları izleyin. Ayrıca [Gizli anahtarlar ve döndürme](/tr/deploy/env#secrets-and-rotation) bölümüne bakın.
 
 ## Veritabanı geçişi
 

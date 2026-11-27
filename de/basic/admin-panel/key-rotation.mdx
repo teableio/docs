@@ -1,0 +1,91 @@
+---
+title: "Schlüsselrotation: Server-Geheimnisse prüfen und gespeicherte Daten neu verschlüsseln"
+description: "Sehen Sie, welche dedizierten Geheimnisvariablen eine Instanz noch setzt, verschlüsseln Sie den Chiffretext in der Datenbank mit dem aktuellen Schlüssel neu und zählen Sie die persönlichen Zugriffstoken, die noch von einem alten Schlüssel abhängen. Verwenden Sie die Seite, nachdem Sie Server-Geheimnisse geändert oder reduziert haben."
+sidebarTitle: "Schlüsselrotation"
+---
+
+<Tip>Verfügbar ab dem selbst gehosteten Business-Plan</Tip>
+
+Pfad: Systemverwaltung → Schlüsselrotation
+
+Nachdem ein Server-Geheimnis geändert oder entfernt wurde, sind die bereits in der Datenbank vorhandenen Daten noch mit dem alten verschlüsselt. Diese Seite prüft die Geheimniskonfiguration und stellt diese Daten auf den aktuellen Schlüssel um; danach kann das alte Geheimnis entfallen. Die Reihenfolge des gesamten Ablaufs finden Sie unter [Konvergenz der Geheimnisse](/de/deploy/secret-convergence).
+
+Die Seite hat vier Tabs: Gespeicherte Chiffretexte, Persönliche Zugriffstokens, JWT credentials (JWT-Zugangsdaten) und Server-Geheimnisse. Der Tab JWT credentials wird auf [einer eigenen Seite](/de/basic/admin-panel/jwt-credentials) beschrieben.
+
+## Server-Geheimnisse {#server-secrets}
+
+Nur lesend. Der Tab prüft die Umgebungsvariablen und zeigt niemals den Wert eines Geheimnisses an.
+
+Er führt `SECRET_KEY`, `SANDBOX_JWT_SECRET` und jedes Geheimnis auf, für das noch eine eigene Variable oder eine `_OLD`-Variable gesetzt ist. Ein Geheimnis, das nicht aufgeführt ist, folgt `SECRET_KEY` und braucht keine eigene Variable. Sobald `BACKEND_STORED_CREDENTIAL_ENCRYPTION_SECRET` gesetzt ist, folgen die in der Datenbank verschlüsselten Zugangsdaten stattdessen dieser Variable; siehe [Ein eigener Stammschlüssel für gespeicherte Zugangsdaten](/de/deploy/secret-convergence#stored-credential-root).
+
+| Spalte | Bedeutung |
+|---|---|
+| Variable | Die Umgebungsvariable und wofür sie verwendet wird. Eine als **Veraltet** gekennzeichnete Variable wurde abgelöst: Solange sie gesetzt ist, wirkt sie weiter, ein neues Deployment sollte sie aber nicht setzen. **Von diesem Deployment nicht gelesen** bedeutet, dass die Variable gesetzt ist, diese Edition oder Konfiguration aber keine Verwendung für sie hat |
+| Wert aus | Ob der Wert aus der Variable selbst stammt, auf `SECRET_KEY` zurückfällt, aus `SECRET_KEY` abgeleitet ist oder ein früherer öffentlicher Standardwert ist. Darauf folgt der Fingerabdruck des Werts; **Öffentlicher Wert** kennzeichnet einen Wert, den jeder berechnen kann |
+| `_OLD` | Die gesetzten `_OLD`-Variablen, jeweils mit ihrem Fingerabdruck. `_OLD` dient nur dazu, vorhandene Daten zu verifizieren oder zu entschlüsseln |
+| Gleich wie nur SECRET_KEY | **Gleich** bedeutet, dass das Entfernen der dedizierten Variable den Wert nicht ändern würde. Für das, was in der Datenbank verschlüsselt ist, gilt das nur, solange `BACKEND_STORED_CREDENTIAL_ENCRYPTION_SECRET` nicht auf einen anderen Wert gesetzt ist. **Abweichend** bedeutet, dass sich der Wert ändern würde; der alte muss daher zuerst aufbewahrt werden |
+
+Ein Fingerabdruck besteht aus den ersten 8 Hexadezimalzeichen des SHA-256 des Werts und dient zum Vergleich mit dem Eintrag in Ihrem Geheimnisspeicher.
+
+Oben auf der Seite steht zusammengefasst, wie viele dedizierte Variablen und `_OLD`-Variablen noch gesetzt sind und wie viele der Werte öffentlich sind; gesondert wird darauf hingewiesen, wenn `SECRET_KEY` nicht gesetzt ist oder noch der öffentliche Standardwert ist. In diesem Fall weist sie auch darauf hin, dass eine Instanz mit vorhandenen Daten zuerst die im Startprotokoll aufgeführten `_OLD`-Variablen braucht, bevor ein neuer Wert gesetzt wird.
+
+## Gespeicherte Chiffretexte {#stored-ciphertexts}
+
+Verschlüsselt den Chiffretext in der Datenbank mit dem aktuellen Schlüssel neu: Verbindungszeichenfolgen von Datenbank-Tenants, App-Umgebungsvariablen, KI-Konfiguration und Drittanbieter-Zugangsdaten. Die Kopie der Schritte, mit der eine aktive Automatisierung läuft, wird dabei nicht neu geschrieben; siehe [Wie lange jeder alte Wert bleibt](/de/deploy/secret-convergence#old-value-retention).
+
+1. Klicken Sie auf **Dry-run** (Probelauf). Er zählt nur und ändert nichts.
+2. Prüfen Sie das Ergebnis und klicken Sie dann auf **Neu verschlüsseln**.
+3. Führen Sie den Probelauf noch einmal aus und prüfen Sie, dass **Benötigt Neuverschlüsselung** und **Nicht entschlüsselbar** beide 0 sind.
+
+| Spalte | Bedeutung |
+|---|---|
+| Gesamt | Zeilen dieser Tabelle, die einen geheimen Wert enthalten, ob verschlüsselt oder nicht |
+| Aktuell | Bereits mit dem aktuellen Schlüssel verschlüsselt; nichts zu tun |
+| Benötigt Neuverschlüsselung / Neu verschlüsselt | Zeilen, die ein Probelauf neu schreiben würde, oder Zeilen, die ein echter Lauf neu geschrieben hat |
+| Konflikte | Die Zeile wurde während des Neuschreibens von einer anderen Anfrage geändert und diesmal übersprungen. Führen Sie den Lauf erneut aus |
+| Nicht entschlüsselbar | Weder der aktuelle Schlüssel noch ein konfiguriertes `_OLD` öffnet die Zeile; sie bleibt daher unverändert. Das Ergebnis listet die IDs dieser Zeilen auf, bis zu 50 pro Tabelle |
+
+Tabellen ohne Daten sind standardmäßig eingeklappt.
+
+<Warning>
+Vor dem Ausführen: Sichern Sie die Datenbank und die Umgebungsvariablen, einschließlich jeder `_OLD`-Variable, und stellen Sie sicher, dass jede App-Instanz, einschließlich aller Replikate und Worker, mit der neuen Geheimniskonfiguration neu gestartet wurde.
+
+Nach dem Ausführen: Setzen Sie die Umgebungsvariablen nicht zurück und wechseln Sie nicht auf ein älteres Image. Die neu geschriebenen Daten lassen sich nur mit dem aktuellen Schlüssel öffnen.
+</Warning>
+
+Bei einer großen Datenbank kann die Anfrage in ein Timeout laufen, während der Server weiterarbeitet. Ein erneutes Ausführen ist unbedenklich: Bereits verarbeitete Zeilen werden übersprungen.
+
+Ist der Verschlüsselungsschlüssel eines Eintrags noch ein öffentlicher Standardwert, wird dieser Eintrag abgelehnt: Setzen Sie zuerst `SECRET_KEY`.
+
+### Automatisierungs-Zugangsdaten {#automation-credentials}
+
+Unterhalb der Tabelle. Prüft, ob Automatisierungsschritte und veröffentlichte Versionen E-Mail-Passwörter oder Webhook-Geheimnisse enthalten, die die Neuverschlüsselung oben nicht abdeckt, und migriert sie nach Ihrer Bestätigung.
+
+1. Klicken Sie auf **Prüfen und migrieren**. Die Prüfung selbst ändert nichts.
+2. Wird etwas zum Migrieren gefunden, bestätigen Sie im Dialog. Jedes E-Mail-Passwort wird zu einem Secret, das einem Mitglied gehört und für die Automatisierung freigegeben ist: dem letzten Bearbeiter des Schritts, andernfalls dessen Ersteller, sofern dieser noch Space-Eigentümer ist, andernfalls dem Space-Eigentümer mit der längsten Zugehörigkeit. Jedes Webhook-Geheimnis wird getrennt gespeichert. Die Automatisierungen laufen weiter.
+3. Lesen Sie das Ergebnis. Wenn hier nichts mehr übrig ist und ein Dry-run oben keine neu zu verschlüsselnde Zeile mehr zeigt, kann der vorherige Schlüssel für Drittanbieter-Zugangsdaten entfernt werden.
+
+Was sich nicht migrieren lässt, bleibt, wo es ist, mit Angabe des Grundes: kein Mitglied mehr, dem das Secret gehören könnte, nicht entschlüsselbar oder eine deaktivierte Automatisierung (nach dem Aktivieren erneut ausführen).
+
+## Persönliche Zugriffstokens {#personal-access-tokens}
+
+Ein persönliches Zugriffstoken lässt sich nicht neu verschlüsseln; nur sein Eigentümer kann es neu generieren. Dieser Tab zählt die Token, die nicht abgelaufen sind, aber nicht mit dem aktuellen Schlüssel ausgestellt wurden, damit Sie erkennen, ob ein alter Schlüssel entfernt werden kann:
+
+- **Älterer Schlüssel, funktioniert noch**: Diese Token funktionieren nicht mehr, sobald der alte Schlüssel entfernt wird.
+- **Vor dem Upgrade ausgestellt, nicht bestimmbar**: Im Token ist nicht festgehalten, mit welchem Schlüssel es ausgestellt wurde; es gilt daher als weiterhin funktionsfähig. Berücksichtigen Sie auch diese Token, bevor Sie einen alten Schlüssel entfernen.
+- **Nicht mehr gültig**: Der Schlüssel, mit dem sie ausgestellt wurden, wird nicht mehr akzeptiert; diese Token funktionieren jetzt also nicht.
+
+Der alte Schlüssel ist das Paar, das in `BACKEND_ACCESS_TOKEN_ENCRYPTION_KEY_OLD` / `IV_OLD` aufbewahrt wird. Eine Instanz, die von den integrierten Standardwerten umgestellt wurde, behält außerdem das integrierte Paar zur Entschlüsselung; dieses bleibt bestehen, und es zu entfernen, ist nicht Ihre Aufgabe.
+
+Die Tokenseite empfiehlt den Eigentümern, die Token mit langer Restlaufzeit neu zu generieren.
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Was tun, wenn „Nicht entschlüsselbar“ nicht 0 ist?">
+    Meist fehlt der alte Wert, mit dem diese Zeilen verschlüsselt wurden. Tragen Sie ihn in die passende `_OLD`-Variable ein, starten Sie neu und führen Sie den Probelauf erneut aus. Die Neuverschlüsselung überspringt diese Zeilen und beschädigt sie nicht.
+  </Accordion>
+  <Accordion title="Erfordert die Neuverschlüsselung eine Ausfallzeit?">
+    Für sich genommen nicht: Daten, die in Gebrauch sind, werden weiterhin gelesen und geschrieben. Das Ändern der Geheimniskonfiguration erfordert dagegen einen Neustart; siehe [Konvergenz der Geheimnisse](/de/deploy/secret-convergence).
+  </Accordion>
+</AccordionGroup>
