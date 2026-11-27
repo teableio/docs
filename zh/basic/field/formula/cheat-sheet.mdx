@@ -44,11 +44,11 @@ sidebarTitle: "函数速查表"
 | CONCATENATE            | 连接多种值类型参数为单一文本值。| `text1, [text2, ...]`                              | Text          | `CONCATENATE("Hello ", "Teable") => Hello Teable`                           |
 | FIND                   | 在指定文本中查找子字符串的位置。如果未找到子字符串，则结果为 0。| `stringToFind, whereToSearch, [startFromPosition]` | Number        | `FIND("Teable", "Hello Teable") => 7`                                       |
 | SEARCH                 | 在指定文本中查找子字符串的位置。与 `FIND` 类似，但未找到子字符串时返回空值。| `stringToFind, whereToSearch, [startFromPosition]` | Text or Empty | `SEARCH("Teable", "Hello Teable") => 7`                                     |
-| MID                    | 提取从指定位置开始的指定数量的子字符串。| `text, whereToStart, count`                        | Text          | `MID("Hello Teable", 6, 6) => "Teable"`                                     |
+| MID                    | 提取从指定位置开始的指定数量的子字符串。| `text, whereToStart, count`                        | Text          | `MID("Hello Teable", 7, 6) => "Teable"`                                     |
 | LEFT                   | 提取字符串开始的指定数量的字符。| `text, count`                                      | Text          | `LEFT("2023-09-06", 4) => "2023"`                                           |
 | RIGHT                  | 提取字符串结束的指定数量的字符。| `text, count`                                      | Text          | `RIGHT("2023-09-06", 5) => "09-06"`                                         |
 | REPLACE                | 用替换文本替换从开始字符开始的指定数量的字符。| `text, whereToStart, count, replacement`           | Text          | `REPLACE("Hello Table", 7, 5, "Teable") => "Hello Teable"`                  |
-| REGEXP\_REPLACE        | 使用替换文本替换匹配正则表达式的所有子字符串。| `text, regular_expression, replacement`            | Text          | `REGEXP_REPLACE("Hello Table", "H.* ", "") => "Teable"`                     |
+| REGEXP\_REPLACE        | 使用替换文本替换匹配正则表达式的所有子字符串。| `text, regular_expression, replacement`            | Text          | `REGEXP_REPLACE("Hello Teable", "H.* ", "") => "Teable"`                     |
 | SUBSTITUTE             | 用新文本替换旧文本。可以指定索引号来替换旧文本的特定出现。如果未指定索引号，则将替换旧文本的所有出现。| `text, oldText, newText, [index]`                  | Text          | `SUBSTITUTE("Hello Table", "Table", "Teable") => "Hello Teable"`            |
 | TEXTBEFORE             | 返回指定分隔符之前的文本内容。| `text, delimiter`                                  | Text          | `TEXTBEFORE("20, 04, 79", ",") => "20"`                                     |
 | TEXTSPLIT              | 按指定分隔符拆分文本，并返回多个文本值。| `text, delimiter`                                  | Array         | `TEXTSPLIT("20, 04, 79", ",") => ["20", " 04", " 79"]`                      |
@@ -109,11 +109,11 @@ sidebarTitle: "函数速查表"
 
 | 函数名称           | 描述                                          | 输入                      | 输出     | 示例                                                                            |
 | -------------- | ------------------------------------------- | ----------------------- | ------ | ----------------------------------------------------------------------------- |
-| COUNTALL       | 返回所有元素的数量，包括文本和空白。| `value1, [value2, ...]` | Number | `COUNTALL(100, 200, "", "Teable", TRUE()) => 5`                               |
+| COUNTALL       | 返回所有元素的数量，包括文本和空白。| `value1, [value2, ...]` | Number | `COUNTALL(100, 200, "", "Teable", TRUE) => 5`                               |
 | COUNTA         | 返回非空值的数量。此函数既计算数字又计算文本值。| `value1, [value2, ...]` | Number | `COUNTA(100, 200, 300, "", "Teable", TRUE) => 4`                              |
 | COUNT          | 返回数字项的数量。| `value1, [value2, ...]` | Number | `COUNT(100, 200, 300, "", "Teable", TRUE) => 3`                               |
-| ARRAY\_JOIN    | 使用分隔符将汇总项数组连接成一个字符串。| `array, [separator]`    | String | `ARRAY_JOIN(["Tom", "Jerry", "Mike"], "; ") => "Tom; Jerry; Mike"`            |
-| ARRAY\_UNIQUE  | 返回数组中仅有的唯一项。| `array`                 | Array  | `ARRAY_UNIQUE([1, 2, 3, 2, 1]) => [1, 2, 3]`                                  |
-| ARRAY\_FLATTEN | 展平嵌套数组，让所有项目成为单个数组的元素。| `array`                 | Array  | `ARRAY_FLATTEN([1, 2, " ", 3, true], ["ABC"]) => [1, 2, 3, " ", true, "ABC"]` |
-| ARRAY\_COMPACT | 从数组中删除空字符串和 `null` 值。保留 `false` 和包含空白字符的字符串。| `array`                 | Array  | `ARRAY_COMPACT([1, 2, 3, "", null, "ABC"]) => [1, 2, 3, "ABC"]`               |
+| ARRAY\_JOIN    | 使用分隔符将汇总项数组连接成一个字符串。| `array, [separator]`    | String | `ARRAY_JOIN({Tags}, "; ") => "Tom; Jerry; Mike"`            |
+| ARRAY\_UNIQUE  | 返回数组中仅有的唯一项。| `array1, [array2, ...]`                 | Array  | `ARRAY_UNIQUE({Tags1}, {Tags2}) => ["A", "B", "C"]`                                  |
+| ARRAY\_FLATTEN | 展平嵌套数组，让所有项目成为单个数组的元素。| `array1, [array2, ...]`                 | Array  | `ARRAY_FLATTEN({Tags1}, {Tags2}) => ["A", "B", "B", "C"]` |
+| ARRAY\_COMPACT | 从数组中删除空字符串和 `null` 值。保留 `false` 和包含空白字符的字符串。| `array`                 | Array  | `ARRAY_COMPACT({Items}) => ["A", "B", "C"]`               |
 | RECORD\_ID     | 返回当前记录的 ID。| `-`                     | String | `RECORD_ID() => "recxxxxxx"`                                                  |

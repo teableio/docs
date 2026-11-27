@@ -42,11 +42,11 @@ sidebarTitle: "関数チートシート"
 | CONCATENATE | 複数の値型の引数を1つのテキスト値に結合します。| `text1, [text2, ...]` | Text | `CONCATENATE("Hello ", "Teable") => Hello Teable` |
 | FIND | 指定したテキスト内で部分文字列の位置を検索します。見つからない場合は0を返します。| `stringToFind, whereToSearch, [startFromPosition]` | Number | `FIND("Teable", "Hello Teable") => 7` |
 | SEARCH | 指定したテキスト内で部分文字列の位置を検索します。見つからない場合は空を返します。FINDと似ていますが、0ではなく空を返します。| `stringToFind, whereToSearch, [startFromPosition]` | Text or Empty | `SEARCH("Teable", "Hello Teable") => 7` |
-| MID | テキスト文字列の指定位置から、指定した文字数を抽出します。| `text, whereToStart, count` | Text | `MID("Hello Teable", 6, 6) => "Teable"` |
+| MID | テキスト文字列の指定位置から、指定した文字数を抽出します。| `text, whereToStart, count` | Text | `MID("Hello Teable", 7, 6) => "Teable"` |
 | LEFT | 文字列の先頭から指定した文字数を抽出します。| `text, count` | Text | `LEFT("2023-09-06", 4) => "2023"` |
 | RIGHT | 文字列の末尾から指定した文字数を抽出します。| `text, count` | Text | `RIGHT("2023-09-06", 5) => "09-06"` |
 | REPLACE | 指定位置から指定した文字数を置換テキストに置き換えます。| `text, whereToStart, count, replacement` | Text | `REPLACE("Hello Table", 7, 5, "Teable") => "Hello Teable"` |
-| REGEXP_REPLACE | 正規表現に一致するすべての部分文字列を置換テキストに置き換えます。| `text, regular_expression, replacement` | Text | `REGEXP_REPLACE("Hello Table", "H.* ", "") => "Teable"` |
+| REGEXP_REPLACE | 正規表現に一致するすべての部分文字列を置換テキストに置き換えます。| `text, regular_expression, replacement` | Text | `REGEXP_REPLACE("Hello Teable", "H.* ", "") => "Teable"` |
 | SUBSTITUTE | 古いテキストを新しいテキストに置き換えます。インデックスを指定すると、古いテキストの特定の出現箇所だけを置換できます。省略した場合はすべての出現箇所を置換します。| `text, oldText, newText, [index]` | Text | `SUBSTITUTE("Hello Table", "Table", "Teable") => "Hello Teable"` |
 | TEXTBEFORE | 指定した区切り文字より前のテキストを返します。| `text, delimiter` | Text | `TEXTBEFORE("20, 04, 79", ",") => "20"` |
 | TEXTSPLIT | 指定した区切り文字でテキストを分割し、複数のテキスト値を返します。| `text, delimiter` | Array | `TEXTSPLIT("20, 04, 79", ",") => ["20", " 04", " 79"]` |
@@ -104,11 +104,11 @@ sidebarTitle: "関数チートシート"
 
 | 関数名 | 説明 | 入力 | 出力 | 例 |
 | ------------ | ----------- | ----- | ------ | ------- |
-| COUNTALL | テキストと空白を含む、すべての要素の数を返します。| `value1, [value2, ...]` | Number | `COUNTALL(100, 200, "", "Teable", TRUE()) => 5` |
+| COUNTALL | テキストと空白を含む、すべての要素の数を返します。| `value1, [value2, ...]` | Number | `COUNTALL(100, 200, "", "Teable", TRUE) => 5` |
 | COUNTA | 空でない値の数を返します。数値とテキスト値の両方を数えます。| `value1, [value2, ...]` | Number | `COUNTA(100, 200, 300, "", "Teable", TRUE) => 4` |
 | COUNT | 数値項目の数を返します。| `value1, [value2, ...]` | Number | `COUNT(100, 200, 300, "", "Teable", TRUE) => 3` |
-| ARRAY_JOIN | 区切り文字を使用して、ロールアップ項目の配列を文字列に結合します。| `array, [separator]` | String | `ARRAY_JOIN(["Tom", "Jerry", "Mike"], "; ") => "Tom; Jerry; Mike"` |
-| ARRAY_UNIQUE | 配列内の一意の項目だけを返します。| `array` | Array | `ARRAY_UNIQUE([1, 2, 3, 2, 1]) => [1, 2, 3]` |
-| ARRAY_FLATTEN | 配列の入れ子をすべて取り除き、平坦化します。すべての項目が1つの配列の要素になります。| `array` | Array | `ARRAY_FLATTEN([1, 2, " ", 3, true], ["ABC"]) => [1, 2, 3, " ", true, "ABC"]` |
-| ARRAY_COMPACT | 配列から空文字列とnull値を削除します。「false」と、1文字以上の空白を含む文字列は保持します。| `array` | Array | `ARRAY_COMPACT([1, 2, 3, "", null, "ABC"]) => [1, 2, 3, "ABC"]` |
+| ARRAY_JOIN | 区切り文字を使用して、ロールアップ項目の配列を文字列に結合します。| `array, [separator]` | String | `ARRAY_JOIN({Tags}, "; ") => "Tom; Jerry; Mike"` |
+| ARRAY_UNIQUE | 配列内の一意の項目だけを返します。| `array1, [array2, ...]` | Array | `ARRAY_UNIQUE({Tags1}, {Tags2}) => ["A", "B", "C"]` |
+| ARRAY_FLATTEN | 配列の入れ子をすべて取り除き、平坦化します。すべての項目が1つの配列の要素になります。| `array1, [array2, ...]` | Array | `ARRAY_FLATTEN({Tags1}, {Tags2}) => ["A", "B", "B", "C"]` |
+| ARRAY_COMPACT | 配列から空文字列とnull値を削除します。「false」と、1文字以上の空白を含む文字列は保持します。| `array` | Array | `ARRAY_COMPACT({Items}) => ["A", "B", "C"]` |
 | RECORD_ID | 現在のレコードのIDを返します。| `-` | String | `RECORD_ID() => "recxxxxxx"` |

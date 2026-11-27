@@ -42,11 +42,11 @@ Les fonctions de texte permettent de réunir, rechercher, remplacer, extraire et
 | CONCATENATE | Réunit plusieurs paramètres de différents types de valeur en une seule valeur textuelle. | `text1, [text2, ...]` | Texte | `CONCATENATE("Hello ", "Teable") => Hello Teable` |
 | FIND | Recherche la position d’une sous-chaîne dans le texte indiqué. Renvoie 0 si la sous-chaîne est introuvable. | `stringToFind, whereToSearch, [startFromPosition]` | Nombre | `FIND("Teable", "Hello Teable") => 7` |
 | SEARCH | Recherche la position d’une sous-chaîne dans le texte indiqué. Renvoie une valeur vide si la sous-chaîne est introuvable. Fonction similaire à FIND, mais renvoie une valeur vide au lieu de 0. | `stringToFind, whereToSearch, [startFromPosition]` | Texte ou valeur vide | `SEARCH("Teable", "Hello Teable") => 7` |
-| MID | Extrait un nombre précis de caractères d’une chaîne de texte à partir d’une position donnée. | `text, whereToStart, count` | Texte | `MID("Hello Teable", 6, 6) => "Teable"` |
+| MID | Extrait un nombre précis de caractères d’une chaîne de texte à partir d’une position donnée. | `text, whereToStart, count` | Texte | `MID("Hello Teable", 7, 6) => "Teable"` |
 | LEFT | Extrait un nombre précis de caractères au début d’une chaîne. | `text, count` | Texte | `LEFT("2023-09-06", 4) => "2023"` |
 | RIGHT | Extrait un nombre précis de caractères à la fin d’une chaîne. | `text, count` | Texte | `RIGHT("2023-09-06", 5) => "09-06"` |
 | REPLACE | Remplace par un autre texte un nombre précis de caractères à partir d’une position donnée. | `text, whereToStart, count, replacement` | Texte | `REPLACE("Hello Table", 7, 5, "Teable") => "Hello Teable"` |
-| REGEXP_REPLACE | Remplace par un autre texte toutes les sous-chaînes correspondant à une expression régulière. | `text, regular_expression, replacement` | Texte | `REGEXP_REPLACE("Hello Table", "H.* ", "") => "Teable"` |
+| REGEXP_REPLACE | Remplace par un autre texte toutes les sous-chaînes correspondant à une expression régulière. | `text, regular_expression, replacement` | Texte | `REGEXP_REPLACE("Hello Teable", "H.* ", "") => "Teable"` |
 | SUBSTITUTE | Remplace un ancien texte par un nouveau. Un indice peut désigner une occurrence précise de l’ancien texte. Sans indice, toutes les occurrences sont remplacées. | `text, oldText, newText, [index]` | Texte | `SUBSTITUTE("Hello Table", "Table", "Teable") => "Hello Teable"` |
 | TEXTBEFORE | Renvoie le texte situé avant le séparateur indiqué. | `text, delimiter` | Texte | `TEXTBEFORE("20, 04, 79", ",") => "20"` |
 | TEXTSPLIT | Scinde le texte selon le séparateur indiqué et renvoie plusieurs valeurs textuelles. | `text, delimiter` | Tableau | `TEXTSPLIT("20, 04, 79", ",") => ["20", " 04", " 79"]` |
@@ -104,11 +104,11 @@ Les fonctions de tableau et les autres fonctions traitent les tableaux d’agré
 
 | Nom de la fonction | Description | Entrée | Sortie | Exemple |
 | ------------ | ----------- | ----- | ------ | ------- |
-| COUNTALL | Renvoie le nombre total d’éléments, y compris les textes et les valeurs vides. | `value1, [value2, ...]` | Nombre | `COUNTALL(100, 200, "", "Teable", TRUE()) => 5` |
+| COUNTALL | Renvoie le nombre total d’éléments, y compris les textes et les valeurs vides. | `value1, [value2, ...]` | Nombre | `COUNTALL(100, 200, "", "Teable", TRUE) => 5` |
 | COUNTA | Renvoie le nombre de valeurs non vides. Cette fonction compte à la fois les valeurs numériques et textuelles. | `value1, [value2, ...]` | Nombre | `COUNTA(100, 200, 300, "", "Teable", TRUE) => 4` |
 | COUNT | Renvoie le nombre d’éléments numériques. | `value1, [value2, ...]` | Nombre | `COUNT(100, 200, 300, "", "Teable", TRUE) => 3` |
-| ARRAY_JOIN | Réunit les éléments d’un tableau d’agrégation dans une chaîne à l’aide d’un séparateur. | `array, [separator]` | Chaîne | `ARRAY_JOIN(["Tom", "Jerry", "Mike"], "; ") => "Tom; Jerry; Mike"` |
-| ARRAY_UNIQUE | Renvoie uniquement les éléments uniques d’un tableau. | `array` | Tableau | `ARRAY_UNIQUE([1, 2, 3, 2, 1]) => [1, 2, 3]` |
-| ARRAY_FLATTEN | Aplatit un tableau en supprimant toute imbrication. Tous les éléments deviennent ceux d’un tableau unique. | `array` | Tableau | `ARRAY_FLATTEN([1, 2, " ", 3, true], ["ABC"]) => [1, 2, 3, " ", true, "ABC"]` |
-| ARRAY_COMPACT | Supprime les chaînes vides et les valeurs nulles d’un tableau. Conserve « false » et les chaînes contenant un ou plusieurs espaces. | `array` | Tableau | `ARRAY_COMPACT([1, 2, 3, "", null, "ABC"]) => [1, 2, 3, "ABC"]` |
+| ARRAY_JOIN | Réunit les éléments d’un tableau d’agrégation dans une chaîne à l’aide d’un séparateur. | `array, [separator]` | Chaîne | `ARRAY_JOIN({Tags}, "; ") => "Tom; Jerry; Mike"` |
+| ARRAY_UNIQUE | Renvoie uniquement les éléments uniques d’un tableau. | `array1, [array2, ...]` | Tableau | `ARRAY_UNIQUE({Tags1}, {Tags2}) => ["A", "B", "C"]` |
+| ARRAY_FLATTEN | Aplatit un tableau en supprimant toute imbrication. Tous les éléments deviennent ceux d’un tableau unique. | `array1, [array2, ...]` | Tableau | `ARRAY_FLATTEN({Tags1}, {Tags2}) => ["A", "B", "B", "C"]` |
+| ARRAY_COMPACT | Supprime les chaînes vides et les valeurs nulles d’un tableau. Conserve « false » et les chaînes contenant un ou plusieurs espaces. | `array` | Tableau | `ARRAY_COMPACT({Items}) => ["A", "B", "C"]` |
 | RECORD_ID | Renvoie l’identifiant de l’Enregistrement actuel. | `-` | Chaîne | `RECORD_ID() => "recxxxxxx"` |
